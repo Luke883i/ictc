@@ -1,0 +1,43 @@
+name: ictc-v3-runtime
+on: [pull_request, workflow_dispatch]
+permissions: {contents: read}
+concurrency:
+  group: ictc-v3-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Check modules
+        run: |
+          node --check v3/server.mjs
+          node --check v3/audit.mjs
+          node --check v3/saturation.mjs
+          node --check v3/lib/store.mjs
+          node --check v3/lib/project.mjs
+          node --check v3/lib/api.mjs
+          node --check v3/public/app.js
+          for file in v3/public/js/*.js; do node --check "$file"; done
+          bash -n ictc-v3.sh
+      - name: Runtime audit
+        run: bash ictc-v3.sh audit
+      - name: M plus 100 saturation
+        run: node v3/saturation.mjs
+      - name: Launcher lifecycle
+        env:
+          ICTC_NO_OPEN: '1'
+          ICTC_PORT: '4591'
+          ICTC_RUNTIME_DIR: ${{ runner.temp }}/ictc-v3-runtime
+          ICTC_STATE_DIR: ${{ runner.temp }}/ictc-v3-state
+        run: |
+          trap 'bash ictc-v3.sh stop || true' EXIT
+          bash ictc-v3.sh start --no-open
+          curl --fail --silent http://127.0.0.1:4591/api/health
+          curl --fail --silent http://127.0.0.1:4591/api/bootstrap > /dev/null
+          bash ictc-v3.sh status
+          bash ictc-v3.sh stop
