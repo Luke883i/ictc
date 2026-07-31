@@ -3,14 +3,18 @@
 ## Modello della beta
 
 - `data/seed.json`: dati dimostrativi versionati;
-- `runtime/ledger.jsonl`: eventi append-only locali, non versionati;
-- `runtime/state.json`: proiezione derivata, ricostruibile;
-- `runtime/blobs/`: contenuti acquisiti localmente, non versionati;
-- `schemas/`: contratti machine-readable.
+- `${ICTC_RUNTIME_DIR:-runtime}/ledger.jsonl`: eventi append-only locali;
+- `${ICTC_RUNTIME_DIR:-runtime}/blobs/`: contenuti acquisiti localmente;
+- `schemas/`: contratti machine-readable;
+- `.ictc/`: PID e log del launcher, non fonte di verità.
 
 ## Autorità
 
-Il ledger è la fonte operativa locale degli eventi. La proiezione è derivata e può essere ricostruita. La UI consuma proiezioni tipizzate, non file raw.
+Il ledger è la fonte operativa locale degli eventi. La proiezione è derivata e ricostruibile. La UI consuma proiezioni tipizzate, non file raw.
+
+## Isolamento dei test
+
+E2E e runtime audit impostano una directory temporanea con `ICTC_RUNTIME_DIR`. I test non devono scrivere nella SOT dell'utente.
 
 ## Dati sensibili
 

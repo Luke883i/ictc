@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-beta.3
+
+- aggiunto launcher `ictc.sh`;
+- aggiunti audit runtime, accessibilità e documentazione;
+- isolata la SOT dei test con `ICTC_RUNTIME_DIR`;
+- corretto wiring di dettaglio, ricerca, modalità fonte, motion e navigazione accessibile;
+- rafforzati path traversal check, header e limiti upload.
+
 Le modifiche rilevanti sono documentate secondo Keep a Changelog. Il progetto usa versionamento semantico quando viene pubblicata una release.
 
 ## [Unreleased]

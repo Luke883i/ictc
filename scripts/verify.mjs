@@ -1,8 +1,12 @@
 import { strict as assert } from 'node:assert';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { buildState, buildCapsule, answerFromCapsule, proposeSourceMetadata, createMatter, verifyLedger, sha256 } from '../lib/domain.mjs';
 
+const root = path.resolve(new URL('..', import.meta.url).pathname);
+const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const state = await buildState();
-assert.equal(state.meta.version, '2.0.0-beta.2');
+assert.equal(state.meta.version, packageJson.version);
 assert.ok(state.views.headline.limitations.length > 0);
 assert.ok(state.views.sourceCards.every(item => item.claimClass.includes('source')));
 assert.equal(state.views.traceCards.length, 4);

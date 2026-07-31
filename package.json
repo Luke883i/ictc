@@ -1,6 +1,6 @@
 {
   "name": "ictc",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "private": true,
   "type": "module",
   "engines": {
@@ -20,6 +20,11 @@
     "test": "npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e",
     "wiring:check": "node scripts/ui-wiring-check.mjs",
     "ascii:export": "node scripts/ascii-export.mjs",
-    "trace:preview": "node scripts/trace-preview.mjs"
+    "trace:preview": "node scripts/trace-preview.mjs",
+    "audit:runtime": "node scripts/runtime-audit.mjs",
+    "audit:a11y": "node scripts/accessibility-audit.mjs",
+    "audit:docs": "node scripts/docs-audit.mjs",
+    "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
+    "start:all": "./ictc.sh start"
   }
 }

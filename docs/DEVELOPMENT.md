@@ -3,12 +3,17 @@
 ## Setup
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Luke883i/ictc.git
 cd ictc
 nvm use
-npm ci
-npm test
-npm start
+./ictc.sh audit
+./ictc.sh start
+```
+
+Per lavorare con il server in primo piano:
+
+```bash
+./ictc.sh start --foreground
 ```
 
 ## Branch
@@ -29,19 +34,15 @@ docs/<scopo>
 3. Non assegnare a output AI stati riservati alla decisione umana.
 4. Ogni controllo UI deve comparire in `docs/ui-wiring-manifest.json`.
 5. Ogni scrittura critica deve essere persistita, riletta e collegata a receipt.
-6. Non modificare manualmente artefatti generati.
+6. I test devono usare `ICTC_RUNTIME_DIR` isolata e non contaminare `runtime/`.
+7. Non modificare manualmente artefatti generati.
 
 ## Ciclo minimo
 
 ```bash
-npm run contract
-npm run schema:check
-npm run labels:check
-npm run epistemic:check
-npm run wiring:check
-npm run verify
-npm run e2e
+./ictc.sh audit
 npm run visual
+npm run git:handshake
 ```
 
 ## Pull request
@@ -53,6 +54,6 @@ La PR deve dichiarare:
 - impatto epistemico;
 - modifiche allo schema o alle API;
 - Definition of Done;
-- test eseguiti;
+- test e audit eseguiti;
 - limiti e non-obiettivi;
 - eventuale piano di rollback.

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-motion="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f4f6f2">
+  <meta name="theme-color" content="#eef1ed">
   <meta name="color-scheme" content="light">
   <title>ICTC v2 — Presidio epistemico</title>
   <link rel="stylesheet" href="styles.css">
@@ -12,56 +12,57 @@
   <a class="skip-link" href="#main">Vai al contenuto</a>
   <div class="app-shell" id="appShell" data-view="radar">
     <aside class="sidebar" aria-label="Navigazione principale">
-      <button class="brand" data-nav="radar" aria-label="ICTC — Radar">
-        <span class="brand-mark">I</span><span class="brand-name">ICTC</span>
+      <button type="button" class="brand" data-nav="radar" aria-label="ICTC — Radar">
+        <span class="brand-mark" aria-hidden="true">I</span><span class="brand-name">ICTC</span>
       </button>
       <nav class="primary-nav">
-        <button class="nav-item active" data-nav="radar"><span class="nav-icon">◉</span><span>Radar</span></button>
-        <button class="nav-item" data-nav="changes"><span class="nav-icon">⌁</span><span>Novità</span></button>
-        <button class="nav-item" data-nav="sources"><span class="nav-icon">◎</span><span>Fonti</span></button>
-        <button class="nav-item" data-nav="coverage"><span class="nav-icon">▦</span><span>Copertura</span></button>
-        <button class="nav-item" data-nav="matters"><span class="nav-icon">◇</span><span>Eventi</span></button>
-        <button class="nav-item" data-nav="trace"><span class="nav-icon">┆</span><span>Traccia</span></button>
+        <button type="button" class="nav-item active" data-nav="radar" aria-current="page"><span class="nav-icon" aria-hidden="true">◉</span><span>Radar</span></button>
+        <button type="button" class="nav-item" data-nav="changes"><span class="nav-icon" aria-hidden="true">⌁</span><span>Novità</span></button>
+        <button type="button" class="nav-item" data-nav="sources"><span class="nav-icon" aria-hidden="true">◎</span><span>Fonti</span></button>
+        <button type="button" class="nav-item" data-nav="coverage"><span class="nav-icon" aria-hidden="true">▦</span><span>Copertura</span></button>
+        <button type="button" class="nav-item" data-nav="matters"><span class="nav-icon" aria-hidden="true">◇</span><span>Eventi</span></button>
+        <button type="button" class="nav-item" data-nav="trace"><span class="nav-icon" aria-hidden="true">┆</span><span>Traccia</span></button>
       </nav>
       <div class="sidebar-tail">
-        <button class="nav-item" id="openAssistant"><span class="nav-icon assistant-mark">AI</span><span>Assistente</span></button>
-        <button class="profile-button" aria-label="Profilo Maria Rossi"><span>MR</span><i></i></button>
+        <button type="button" class="nav-item" id="openAssistant" aria-controls="assistantPanel" aria-expanded="false"><span class="nav-icon assistant-mark" aria-hidden="true">AI</span><span>Assistente</span></button>
+        <button type="button" class="profile-button" aria-label="Profilo dimostrativo: Maria Rossi"><span>MR</span><i aria-hidden="true"></i></button>
       </div>
     </aside>
 
     <section class="workspace">
       <header class="topbar">
         <div class="context-title"><span>Azienda Demo</span><strong id="topTitle">Radar normativo</strong></div>
-        <button class="search-trigger" id="openCommand"><span>⌕</span><span>Cerca o apri un oggetto</span><kbd>Ctrl K</kbd></button>
+        <button type="button" class="search-trigger" id="openCommand" aria-haspopup="dialog" aria-controls="commandDialog"><span aria-hidden="true">⌕</span><span>Cerca o apri un oggetto</span><kbd>Ctrl K</kbd></button>
         <div class="top-actions">
-          <span class="local-chip"><i></i>SOT locale</span>
-          <button class="button secondary" id="newSourceTop">Aggiungi fonte</button>
-          <button class="button primary" id="newMatterTop">Segnala evento</button>
+          <button type="button" class="button secondary assistant-top" id="openAssistantTop" aria-controls="assistantPanel" aria-expanded="false" aria-label="Apri assistente AI locale">AI</button>
+          <span class="local-chip"><i aria-hidden="true"></i>SOT locale</span>
+          <button type="button" class="button secondary" id="newSourceTop">Aggiungi fonte</button>
+          <button type="button" class="button primary" id="newMatterTop">Segnala evento</button>
         </div>
       </header>
 
-      <main id="main" class="main" tabindex="-1" aria-live="polite"></main>
+      <main id="main" class="main" tabindex="-1"></main>
 
       <footer class="activity-bar">
-        <div class="handshake" id="handshake" aria-live="polite">
-          <span class="hands">🤲</span><strong>Pronto</strong><small>Nessuna azione in corso</small>
+        <div class="handshake" id="handshake" role="status" aria-live="polite" aria-atomic="true">
+          <span class="hands" aria-hidden="true">🤲</span><strong>Pronto</strong><small>Nessuna azione in corso</small>
         </div>
-        <div class="activity-meta"><span id="integrityState">Verifica locale in corso</span><button id="motionToggle">Movimento: automatico</button></div>
+        <div class="activity-meta"><span id="integrityState">Verifica locale in corso</span><button type="button" id="motionToggle" aria-pressed="false">Movimento: sistema</button></div>
       </footer>
     </section>
 
-    <aside class="assistant-panel" id="assistantPanel" aria-label="Assistente AI locale">
+    <aside class="assistant-panel" id="assistantPanel" aria-label="Assistente AI locale" aria-hidden="true">
       <header>
         <div><span class="eyebrow">Sessione locale</span><h2>Assistente</h2></div>
-        <button class="icon-button" id="closeAssistant" aria-label="Chiudi assistente">×</button>
+        <button type="button" class="icon-button" id="closeAssistant" aria-label="Chiudi assistente">×</button>
       </header>
-      <section class="capsule-card">
-        <div class="capsule-flow"><span>UI</span><i></i><span>capsula</span><i></i><span>AI</span></div>
+      <section class="capsule-card" aria-labelledby="capsuleLabel">
+        <div class="capsule-flow" aria-hidden="true"><span>UI</span><i></i><span>capsula</span><i></i><span>AI</span></div>
         <strong id="capsuleLabel">Radar</strong>
         <p>Legge soltanto gli esiti evocati dalla UI. Non amplia il contesto e non scrive.</p>
       </section>
       <div class="guardrails"><span>read-only</span><span>single session</span><span>proposte soltanto</span></div>
-      <div class="assistant-messages" id="assistantMessages">
+      <div class="assistant-messages" id="assistantMessages" aria-live="polite">
         <article class="message ai-message">
           <small>ICTC AI · stato: proposta</small>
           <p>Posso spiegare la catena, i limiti e ciò che richiede una decisione umana. Non posso dichiarare conformità o modificare dati.</p>
@@ -85,15 +86,15 @@
       <p class="intro">L’originale viene conservato localmente. La classificazione AI resta una proposta finché una persona non completa la review.</p>
       <div class="stepper" aria-label="Flusso"><span class="active">1 · acquisisci</span><span>2 · proponi</span><span>3 · valuta</span><span>4 · ricevi</span></div>
       <div class="segmented" role="group" aria-label="Tipo fonte">
-        <button type="button" class="active" data-source-mode="link">Link</button>
-        <button type="button" data-source-mode="file">PDF o DOC</button>
+        <button type="button" class="active" data-source-mode="link" aria-pressed="true">Link</button>
+        <button type="button" data-source-mode="file" aria-pressed="false">PDF o DOC</button>
       </div>
-      <label>Titolo leggibile<input name="title" required placeholder="Es. Determina ACN del 30 luglio"></label>
-      <label id="urlField">Link<input name="url" type="url" placeholder="https://..."></label>
-      <label id="fileField" hidden>Documento<input name="file" type="file" accept=".pdf,.doc,.docx,.txt,.md,application/pdf"></label>
-      <label>Perché pensi sia rilevante<textarea name="notes" rows="3" placeholder="Una frase è sufficiente"></textarea></label>
-      <div class="epistemic-note"><span>◌</span><p><b>Stato iniziale:</b> fonte candidata. Non modifica il quadro attivo.</p></div>
-      <div id="sourceResult" class="inline-result" hidden></div>
+      <label for="sourceTitleInput">Titolo leggibile</label><input id="sourceTitleInput" name="title" required placeholder="Es. Determina ACN del 30 luglio">
+      <div id="urlField"><label for="sourceUrl">Link</label><input id="sourceUrl" name="url" type="url" required placeholder="https://..."></div>
+      <div id="fileField" hidden><label for="sourceFile">Documento</label><input id="sourceFile" name="file" type="file" accept=".pdf,.doc,.docx,.txt,.md,application/pdf"></div>
+      <label for="sourceNotes">Perché pensi sia rilevante</label><textarea id="sourceNotes" name="notes" rows="3" placeholder="Una frase è sufficiente"></textarea>
+      <div class="epistemic-note"><span aria-hidden="true">◌</span><p><b>Stato iniziale:</b> fonte candidata. Non modifica il quadro attivo.</p></div>
+      <div id="sourceResult" class="inline-result" role="status" aria-live="polite" hidden></div>
       <footer><button type="button" class="button secondary" data-close="sourceDialog">Annulla</button><button type="submit" class="button primary">Acquisisci localmente</button></footer>
     </form>
   </dialog>
@@ -104,19 +105,24 @@
       <span class="eyebrow">Segnalazione guidata</span>
       <h2 id="matterTitle">Racconta cosa è successo</h2>
       <p class="intro">Descrivi i fatti con parole tue. Tipo, gravità, owner e RACI restano proposte finché vengono confermati.</p>
-      <label>Titolo breve<input name="title" placeholder="Es. Accessi anomali al portale fornitore"></label>
-      <label>Racconto originale<textarea name="summary" rows="6" required placeholder="Cosa hai osservato? Quando? Chi o cosa è coinvolto?"></textarea></label>
+      <label for="matterTitleInput">Titolo breve</label><input id="matterTitleInput" name="title" placeholder="Es. Accessi anomali al portale fornitore">
+      <label for="matterSummary">Racconto originale</label><textarea id="matterSummary" name="summary" rows="6" required placeholder="Cosa hai osservato? Quando? Chi o cosa è coinvolto?"></textarea>
       <div class="two-columns">
-        <label>Fattispecie iniziale<select name="kind"><option value="signal">Segnalazione</option><option value="near-miss">Quasi incidente</option><option value="incident">Incidente percepito</option></select></label>
-        <label>Urgenza percepita<select name="severity"><option value="unknown">Non so</option><option value="low">Bassa</option><option value="medium">Media</option><option value="high">Alta</option><option value="critical">Critica</option></select></label>
+        <div><label for="matterKind">Fattispecie iniziale</label><select id="matterKind" name="kind"><option value="signal">Segnalazione</option><option value="near-miss">Quasi incidente</option><option value="incident">Incidente percepito</option></select></div>
+        <div><label for="matterSeverity">Urgenza percepita</label><select id="matterSeverity" name="severity"><option value="unknown">Non so</option><option value="low">Bassa</option><option value="medium">Media</option><option value="high">Alta</option><option value="critical">Critica</option></select></div>
       </div>
-      <div class="epistemic-note"><span>◌</span><p>La narrazione viene conservata separatamente da fatti, ipotesi e decisioni.</p></div>
-      <footer><button type="button" class="button secondary" data-close="matterDialog">Annulla</button><button type="submit" class="button primary">🤲 Crea il caso</button></footer>
+      <div class="epistemic-note"><span aria-hidden="true">◌</span><p>La narrazione viene conservata separatamente da fatti, ipotesi e decisioni.</p></div>
+      <footer><button type="button" class="button secondary" data-close="matterDialog">Annulla</button><button type="submit" class="button primary">Crea il caso</button></footer>
     </form>
   </dialog>
 
-  <dialog class="command-dialog" id="commandDialog" aria-label="Ricerca globale">
-    <div class="command-box"><input id="commandInput" placeholder="Cerca fonti, novità, job, controlli o eventi"><div id="commandResults"></div></div>
+  <dialog class="command-dialog" id="commandDialog" aria-labelledby="commandTitle">
+    <div class="command-box">
+      <div class="command-head"><h2 id="commandTitle">Cerca nel presidio</h2><button type="button" id="closeCommand" class="icon-button" aria-label="Chiudi ricerca">×</button></div>
+      <label class="visually-hidden" for="commandInput">Cerca fonti, novità, job, controlli o eventi</label>
+      <input id="commandInput" autocomplete="off" placeholder="Cerca fonti, novità, job, controlli o eventi">
+      <div id="commandResults" aria-live="polite"></div>
+    </div>
   </dialog>
 
   <script type="module" src="app.js"></script>

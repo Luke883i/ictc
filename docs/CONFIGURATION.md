@@ -1,14 +1,22 @@
 # Configurazione
 
-La beta usa configurazione minima tramite variabili di ambiente.
-
 | Variabile | Default | Descrizione |
 |---|---:|---|
-| `PORT` | `4173` | Porta HTTP locale |
+| `ICTC_PORT` / `PORT` | `4173` | Porta HTTP locale |
+| `ICTC_HOST` | `127.0.0.1` | Indirizzo di bind |
+| `ICTC_RUNTIME_DIR` | `./runtime` | SOT locale: ledger e blob |
+| `ICTC_STATE_DIR` | `./.ictc` | PID, log e stato del launcher |
+| `ICTC_NO_OPEN` | `0` | Con `1` non apre il browser |
+| `BROWSER` | non impostato | Comando browser preferito |
 
-Il server ascolta su `127.0.0.1` per impostazione progettuale della beta locale.
+Esempi:
 
-`.env.example` documenta i valori ammessi. I file `.env*` sono ignorati, con l'eccezione del file di esempio.
+```bash
+ICTC_PORT=4300 ./ictc.sh start
+ICTC_RUNTIME_DIR=/tmp/ictc-isolated ./ictc.sh start --no-open
+```
+
+Il server ascolta su `127.0.0.1` per impostazione progettuale. Cambiare `ICTC_HOST` espone la beta a un perimetro diverso e richiede una review di sicurezza.
 
 ## Segreti
 
