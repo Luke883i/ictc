@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/outcome-envelope.schema.json",
+  "title": "ICTC OutcomeEnvelope",
+  "type": "object",
+  "required": ["id", "label", "statement", "claimClass", "epistemicStatus", "producer", "inputs", "limitations", "data"],
+  "properties": {
+    "id": {"type": "string", "minLength": 3},
+    "label": {"type": "string", "minLength": 1},
+    "statement": {"type": "string", "minLength": 1},
+    "claimClass": {"type": "string", "minLength": 1},
+    "epistemicStatus": {
+      "type": "string",
+      "enum": ["observed", "verified", "attention-required", "awaiting-human-review", "human-reviewed", "human-owned", "ai-proposed", "candidate", "failed", "unavailable", "human-rejected", "mapped", "designed", "operating-declared", "evidence-available"]
+    },
+    "producer": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {"type": {"type": "string"}, "id": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "id"],
+        "properties": {"type": {"type": "string"}, "id": {"type": "string"}},
+        "additionalProperties": false
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "nextAction": {"type": ["string", "null"]},
+    "receiptRef": {"type": ["string", "null"]},
+    "observedAt": {"type": ["string", "null"], "format": "date-time"},
+    "reviewedAt": {"type": ["string", "null"], "format": "date-time"},
+    "data": {"type": "object"}
+  },
+  "additionalProperties": false
+}
