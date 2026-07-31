@@ -1,0 +1,2 @@
+ICTC fixture: contenuto sintetico per verificare hash, path deterministico e readback locale.
+Non contiene dati personali, segreti o codice eseguibile.

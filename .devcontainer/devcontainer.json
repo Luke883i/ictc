@@ -1,0 +1,28 @@
+{
+  "name": "ICTC Living Evidence Atlas",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "forwardPorts": [4173],
+  "portsAttributes": {
+    "4173": {
+      "label": "ICTC current webapp",
+      "onAutoForward": "notify",
+      "visibility": "private",
+      "protocol": "http"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n"
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}

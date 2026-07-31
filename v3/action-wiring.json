@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "actions": [
+    {"id":"source-propose","selector":"#sourceForm","controlSource":"v3/public/index.html","handler":"async function source","checkpoint":"source-propose","route":"/api/sources","receiptExpected":true},
+    {"id":"source-review","selector":"[data-source]","controlSource":"v3/public/js/views-work.js","handler":"[data-source]","checkpoint":"source-review","route":"/api/sources/:id/review","receiptExpected":true},
+    {"id":"finding-review","selector":"[data-finding]","controlSource":"v3/public/js/views-work.js","handler":"[data-finding]","checkpoint":"finding-review","route":"/api/findings/:id/review","receiptExpected":true},
+    {"id":"job-run","selector":"[data-job]","controlSource":"v3/public/js/views-work.js","handler":"[data-job]","checkpoint":"job-run","route":"/api/jobs/:id/run","receiptExpected":true},
+    {"id":"change-decision","selector":"#decisionForm","controlSource":"v3/public/index.html","handler":"async function decision","checkpoint":"change-decision","route":"/api/changes/:id/decide","receiptExpected":true},
+    {"id":"control-map","selector":"#controlForm","controlSource":"v3/public/index.html","handler":"async function control","checkpoint":"control-map","route":"/api/changes/:id/map-control","receiptExpected":true},
+    {"id":"matter-create","selector":"#matterForm","controlSource":"v3/public/index.html","handler":"async function matter","checkpoint":"matter-create","route":"/api/matters","receiptExpected":true},
+    {"id":"matter-owner","selector":"[data-owner]","controlSource":"v3/public/js/views-assurance.js","handler":"[data-owner]","checkpoint":"matter-owner","route":"/api/matters/:id/confirm-owner","receiptExpected":true},
+    {"id":"matter-transition","selector":"[data-transition]","controlSource":"v3/public/js/views-assurance.js","handler":"[data-transition]","checkpoint":"matter-transition","route":"/api/matters/:id/transition","receiptExpected":true}
+  ]
+}
