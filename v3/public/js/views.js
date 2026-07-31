@@ -1,0 +1,1 @@
+import{home,atlas,journeys}from'./views-home.js';import{changes,sources}from'./views-work.js';import{matters,evidence,system}from'./views-assurance.js';export const views={home,atlas,journeys,changes,sources,matters,evidence,system};
