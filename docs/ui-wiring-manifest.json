@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0-beta.2",
+  "controls": [
+    {"id":"nav","selector":"[data-nav]","effect":"changes active view from server-projected OutcomeEnvelopes","evidence":"bind"},
+    {"id":"source-submit","selector":"#sourceForm","effect":"POST /api/sources, append event, rebuild projection, receipt","evidence":"submitSource"},
+    {"id":"matter-submit","selector":"#matterForm","effect":"POST /api/matters, append event, rebuild projection, receipt","evidence":"submitMatter"},
+    {"id":"source-review","selector":"[data-review]","effect":"POST /api/sources/:id/review","evidence":"reviewSource"},
+    {"id":"finding-review","selector":"[data-finding-review]","effect":"POST /api/findings/:id/review","evidence":"reviewFinding"},
+    {"id":"owner-confirm","selector":"[data-confirm-owner]","effect":"POST /api/matters/:id/confirm-owner","evidence":"confirmOwner"},
+    {"id":"job-run","selector":"[data-run-job]","effect":"POST /api/scout-jobs/:id/run","evidence":"runJob"},
+    {"id":"trace-select","selector":"[data-trace-id]","effect":"selects deterministic runtime trace from bootstrap","evidence":"bindDynamic"},
+    {"id":"change-filter","selector":"[data-change-filter]","effect":"filters existing OutcomeEnvelopes without changing truth","evidence":"bindDynamic"},
+    {"id":"assistant","selector":"#assistantForm","effect":"POST /api/assistant with deterministic local capsule","evidence":"ask"},
+    {"id":"search","selector":"#commandInput","effect":"searches projected OutcomeEnvelopes","evidence":"bind"},
+    {"id":"detail","selector":"[data-envelope]","effect":"opens provenance, limits and receipt for projected envelope","evidence":"openDetail"}
+  ]
+}

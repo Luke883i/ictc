@@ -1,0 +1,61 @@
+openapi: 3.1.0
+info:
+  title: ICTC Local API
+  version: 2.0.0-beta.2
+  description: Local proof-oriented API. Responses do not constitute legal determinations.
+servers:
+  - url: http://127.0.0.1:4173
+paths:
+  /api/health:
+    get:
+      responses:
+        '200': {description: Service health}
+  /api/bootstrap:
+    get:
+      responses:
+        '200': {description: Projected local state and OutcomeEnvelopes}
+  /api/runtime/integrity:
+    get:
+      responses:
+        '200': {description: Ledger hash-chain verification}
+  /api/session:
+    post:
+      responses:
+        '201': {description: Read-only local assistant session}
+  /api/sources:
+    post:
+      description: Propose a source; never promotes it automatically.
+      responses:
+        '201': {description: Candidate source and receipt}
+  /api/sources/{id}/review:
+    post:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '201': {description: Human review receipt}
+  /api/findings/{id}/review:
+    post:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '201': {description: Human review receipt}
+  /api/scout-jobs/{id}/run:
+    post:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '201': {description: Deterministic result and optional AI proposal}
+  /api/matters:
+    post:
+      responses:
+        '201': {description: Reported matter and receipt}
+  /api/matters/{id}/confirm-owner:
+    post:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '201': {description: Human owner decision receipt}
+  /api/assistant:
+    post:
+      responses:
+        '200': {description: Read-only proposal grounded in a local capsule}
