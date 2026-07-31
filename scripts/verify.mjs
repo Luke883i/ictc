@@ -5,8 +5,13 @@ import { buildState, buildCapsule, answerFromCapsule, proposeSourceMetadata, cre
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+const releaseManifest = JSON.parse(await readFile(path.join(root, 'v1/release.json'), 'utf8'));
+const seed = JSON.parse(await readFile(path.join(root, 'data/seed.json'), 'utf8'));
 const state = await buildState();
-assert.equal(state.meta.version, packageJson.version);
+
+assert.equal(packageJson.version, releaseManifest.productVersion);
+assert.equal(state.meta.version, seed.meta.version);
+assert.notEqual(state.meta.version, packageJson.version, 'Il motore legacy non deve essere rinominato come release v1');
 assert.ok(state.views.headline.limitations.length > 0);
 assert.ok(state.views.sourceCards.every(item => item.claimClass.includes('source')));
 assert.equal(state.views.traceCards.length, 4);

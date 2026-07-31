@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0] - 2026-07-31
+
+### Stable scope
+
+- runtime canonico coerente fra `npm start` e `./ictc.sh start`;
+- manifest di release e endpoint `/api/release`;
+- health v1 con classe `stable-local-single-user`;
+- safe-bind fail-closed per esposizioni non autenticate;
+- upload binari disabilitati per default finché manca uno scanner;
+- attestazione E2E con restart, receipt, hash-chain e journey core;
+- simulazioni buyer per c-level, auditor e CTO;
+- saturation gate M=36 e M+100 senza novelty;
+- vista Sistema con readiness, scope ed esclusioni.
+
+### Limitations
+
+La v1 non include OIDC/RBAC, multi-tenancy, malware scanning, scouting remoto reale, scheduler persistente, HA, storage distribuito o telemetria centralizzata. La stabilità è limitata allo scope locale e single-user.
+
 ## 2.0.0-beta.3
 
 - aggiunto launcher `ictc.sh`;

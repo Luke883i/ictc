@@ -1,13 +1,14 @@
 {
   "name": "ictc",
-  "version": "2.0.0-beta.3",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "node server.mjs",
+    "start": "node v3/server.mjs",
+    "start:legacy": "node server.mjs",
     "contract": "node scripts/repository-contract.mjs",
     "schema:check": "node scripts/schema-check.mjs",
     "labels:check": "node scripts/label-lint.mjs",
@@ -25,6 +26,8 @@
     "audit:a11y": "node scripts/accessibility-audit.mjs",
     "audit:docs": "node scripts/docs-audit.mjs",
     "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
-    "start:all": "./ictc.sh start"
+    "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
+    "release:check": "npm run audit && node v3/action-frame-audit.mjs && node v3/support-bundle-audit.mjs && npm run audit:v1",
+    "start:all": "./ictc.sh start --profile all"
   }
 }

@@ -1,0 +1,3 @@
+ICTC v1 release evidence fixture.
+This synthetic file proves deterministic hashing and readback only.
+It does not prove authority, safety, legal relevance, or absence of malware.

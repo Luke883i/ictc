@@ -23,6 +23,7 @@ assert.match(launcher, /run_v3 status \|\| rc=1/);
 assert.match(launcher, /run_v2 status \|\| rc=1/);
 assert.match(legacy, /server\.mjs/);
 assert.match(current, /nohup node v3\/server\.mjs/);
+assert.match(current, /v1\/release\.json/);
 for (const [name, source] of [['v3', current], ['v2', legacy]]) {
   assert.match(source, /printf '%s\\n' "\$!" > "\$tmp"/, `${name}: PID del processo Node non scritto direttamente`);
   assert.ok(!/cd[^\n]*&&[^\n]*nohup[^\n]*&[^\n]*(echo|printf)[^\n]*\$!/.test(source), `${name}: race PID su AND-list in background`);
@@ -47,7 +48,7 @@ const runtime = path.join(sandbox, 'runtime');
 const currentPort = await freePort();
 let legacyPort = await freePort();
 while (legacyPort === currentPort) legacyPort = await freePort();
-const mock = `import http from 'node:http';\nconst port=Number(process.env.PORT||4173);\nconst host=process.env.ICTC_HOST||process.env.HOST||'127.0.0.1';\nconst server=http.createServer((req,res)=>{res.setHeader('content-type','application/json');if(req.url==='/api/health')return res.end(JSON.stringify({ok:true,service:'mock'}));if(req.url==='/api/runtime/integrity')return res.end(JSON.stringify({ok:true,eventCount:0,head:'GENESIS'}));res.statusCode=404;res.end(JSON.stringify({error:'not found'}));});\nserver.listen(port,host);\nfor(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>server.close(()=>process.exit(0)));\n`;
+const mock = `import http from 'node:http';\nconst port=Number(process.env.PORT||4173);\nconst host=process.env.ICTC_HOST||process.env.HOST||'127.0.0.1';\nconst server=http.createServer((req,res)=>{res.setHeader('content-type','application/json');if(req.url==='/api/health')return res.end(JSON.stringify({ok:true,service:'mock',version:'1.0.0'}));if(req.url==='/api/release')return res.end(JSON.stringify({version:'1.0.0',readiness:'ready'}));if(req.url==='/api/runtime/integrity')return res.end(JSON.stringify({ok:true,eventCount:0,head:'GENESIS'}));res.statusCode=404;res.end(JSON.stringify({error:'not found'}));});\nserver.listen(port,host);\nfor(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>server.close(()=>process.exit(0)));\n`;
 const run = (args, expected = 0) => {
   const result = spawnSync('bash', [path.join(sandbox, 'ictc.sh'), ...args], {
     cwd: sandbox,
@@ -66,19 +67,21 @@ const run = (args, expected = 0) => {
 };
 try {
   await mkdir(path.join(sandbox, 'v3'), { recursive: true });
+  await mkdir(path.join(sandbox, 'v1'), { recursive: true });
   for (const file of ['ictc.sh','ictc-v2.sh','ictc-v3.sh']) {
     await copyFile(path.join(root, file), path.join(sandbox, file));
     await chmod(path.join(sandbox, file), 0o755);
   }
+  await writeFile(path.join(sandbox, 'v1/release.json'), '{}\n');
   await writeFile(path.join(sandbox, 'server.mjs'), mock);
   await writeFile(path.join(sandbox, 'v3/server.mjs'), mock);
   run(['start', '--profile', 'current', '--no-open']);
-  assert.match(run(['status', '--profile', 'current']), /profile=v3 processo=attivo .* health=ok/);
+  assert.match(run(['status', '--profile', 'current']), /profile=v3 .*processo=attivo .*health=ok/);
   run(['stop', '--profile', 'current']);
   run(['start', '--profile', 'all', '--no-open']);
   const allStatus = run(['status', '--profile', 'all']);
-  assert.match(allStatus, /profile=v3 processo=attivo .* health=ok/);
-  assert.match(allStatus, /profile=v2 processo=attivo .* health=ok/);
+  assert.match(allStatus, /profile=v3 .*processo=attivo .*health=ok/);
+  assert.match(allStatus, /profile=v2 processo=attivo .*health=ok/);
   run(['stop', '--profile', 'all']);
   run(['status', '--profile', 'all'], 1);
 } finally {
@@ -90,4 +93,4 @@ try {
   await rm(sandbox, { recursive: true, force: true });
 }
 
-console.log('launcher-audit: ok (profiles current/v3/v2/all, durable PID ownership, combined status, Codespaces)');
+console.log('launcher-audit: ok (profiles current/v3/v2/all, v1 manifest preflight, durable PID ownership, combined status, Codespaces)');

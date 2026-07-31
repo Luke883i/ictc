@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0.0",
+  "product": "ICTC",
+  "productVersion": "1.0.0",
+  "releaseName": "ICTC v1 Stable Local",
+  "attestationType": "internal-engineering-attestation",
+  "stabilityClass": "stable-local-single-user",
+  "claim": "Stabile end-to-end nello scope locale e single-user dichiarato; non certificato da una terza parte e non enterprise-ready.",
+  "stableScope": [
+    "avvio locale con Node.js 22 e launcher canonico",
+    "uso single-user su loopback o Codespace con porta privata",
+    "intake di fonti tramite link",
+    "review umana di fonti e finding",
+    "decisione di impatto e mapping astratto ai controlli",
+    "segnalazioni, owner, RACI e transizioni consentite",
+    "ledger append-only, readback, receipt e verifica della hash-chain",
+    "assistente locale read-only e senza write authority",
+    "ActionFrame e DecisionCheckpoint prima delle scritture"
+  ],
+  "excludedScope": [
+    "servizio multiutente o esposizione pubblica non autenticata",
+    "OIDC, RBAC, non ripudio e segregazione dei tenant",
+    "upload binari non scansionati nel profilo stabile",
+    "scouting istituzionale remoto e scheduler persistente",
+    "conformità legale, efficacia dei controlli o obblighi di notifica determinati automaticamente",
+    "alta disponibilità, storage distribuito e telemetria centralizzata"
+  ],
+  "differentiators": [
+    {
+      "id": "DIF-001",
+      "title": "Catena epistemica esplicita",
+      "buyerValue": "Ogni esito distingue osservazione, proposta, review, decisione e receipt.",
+      "proof": "OutcomeEnvelope, ActionFrame, DecisionCheckpoint e ledger append-only."
+    },
+    {
+      "id": "DIF-002",
+      "title": "Anti-overclaim by design",
+      "buyerValue": "La UI dichiara ciò che un esito non prova nel punto in cui l'utente decide.",
+      "proof": "Contratto epistemico, label lint e write-action boundaries."
+    },
+    {
+      "id": "DIF-003",
+      "title": "Audit trail ricostruibile",
+      "buyerValue": "L'auditor può risalire da un oggetto a input, produttore, evento e receipt.",
+      "proof": "Hash-chain, readback, object drill-down e ledger sanitizzato."
+    },
+    {
+      "id": "DIF-004",
+      "title": "AI delimitata",
+      "buyerValue": "L'AI opera su una capsula locale, cita gli oggetti e non può scrivere o decidere.",
+      "proof": "Session scope, cited item IDs e writeAuthority=false."
+    },
+    {
+      "id": "DIF-005",
+      "title": "Portabilità operativa",
+      "buyerValue": "Il prodotto si avvia senza dipendenze runtime esterne e mantiene rollback v2.",
+      "proof": "Node.js 22, launcher, Codespaces e profili isolati."
+    }
+  ],
+  "buyerResistances": [
+    {
+      "persona": "c-level",
+      "resistance": "Sembra un'altra dashboard di compliance senza prova di valore.",
+      "mitigation": "Mostrare decisioni pendenti, tempo alla receipt, catene verificabili e limiti; nessun punteggio sintetico non denominato.",
+      "residualRisk": "Il ROI deve essere misurato su processi reali e utenti reali."
+    },
+    {
+      "persona": "auditor",
+      "resistance": "Integrità tecnica e completezza del perimetro potrebbero essere confuse.",
+      "mitigation": "Separare hash-chain, provenienza, applicabilità, review e unknowns; esporre scope ed esclusioni nel runtime.",
+      "residualRisk": "La completezza delle fonti richiede governance e scouting reali."
+    },
+    {
+      "persona": "cto",
+      "resistance": "Il prototipo locale potrebbe essere presentato come piattaforma enterprise.",
+      "mitigation": "Fail-closed sul bind non-loopback, upload binari disabilitati, readiness machine-readable e scope stable-local-single-user.",
+      "residualRisk": "OIDC, RBAC, storage e osservabilità enterprise restano da progettare."
+    }
+  ],
+  "definitionOfDone": [
+    {"id":"DOD-001","criterion":"npm start avvia il runtime canonico v1","evidence":"package.json + health check","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-002","criterion":"health e readiness dichiarano versione, scope e guardrail","evidence":"GET /api/health e GET /api/release","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-003","criterion":"bind non-loopback non autenticato rifiutato per default","evidence":"startup guard","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-004","criterion":"upload binario non scansionato rifiutato per default","evidence":"source intake policy","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-005","criterion":"journey fonte completa con receipt e readback","evidence":"source proposed/reviewed","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-006","criterion":"journey change completa con review, decisione e mapping","evidence":"finding/change events","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-007","criterion":"journey evento completa con owner e transizione","evidence":"matter events","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-008","criterion":"ledger integro e ricostruibile dopo restart","evidence":"same runtime dir + hash-chain","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-009","criterion":"assistente senza write authority e con anti-overclaim","evidence":"assistant capsule","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-010","criterion":"obiezioni c-level, auditor e CTO coperte da evidenze runtime","evidence":"buyer simulation artifact","test":"v1/buyer-simulation.mjs","required":true},
+    {"id":"DOD-011","criterion":"M=36 scenari canonici e M+100 senza nuova primitiva","evidence":"saturation artifact","test":"v1/saturation.mjs","required":true},
+    {"id":"DOD-012","criterion":"fixture blob verificata tramite hash e readback","evidence":"fixture manifest","test":"v1/fixture-audit.mjs","required":true}
+  ],
+  "metrics": [
+    {"id":"MET-001","name":"coreJourneySuccessRate","target":1,"unit":"ratio"},
+    {"id":"MET-002","name":"receiptReadbackRate","target":1,"unit":"ratio"},
+    {"id":"MET-003","name":"ledgerIntegrityRate","target":1,"unit":"ratio"},
+    {"id":"MET-004","name":"startupDurationMax","target":10000,"unit":"ms"},
+    {"id":"MET-005","name":"localHealthP95Max","target":1000,"unit":"ms"},
+    {"id":"MET-006","name":"criticalInScopeBlockers","target":0,"unit":"count"},
+    {"id":"MET-007","name":"noveltyAfterM","target":0,"unit":"count"}
+  ],
+  "saturation": {
+    "M": 36,
+    "MPlus100": 136,
+    "primitiveCount": 12,
+    "lastNoveltyScenario": 12,
+    "noveltyAfterM": 0,
+    "limitation": "Saturazione progettuale bounded allo scope v1; non prova completezza universale o comprensione umana."
+  }
+}
