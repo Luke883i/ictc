@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0.0",
+  "file": "source-note.txt",
+  "mimeType": "text/plain",
+  "bytes": 152,
+  "sha256": "832e01bf75c2fcac0f72fa3e2644472a7d27c06d771fb4aa281974029a5a00e5",
+  "purpose": "Fixture sintetica per il blob integrity audit; non attesta sicurezza del contenuto."
+}

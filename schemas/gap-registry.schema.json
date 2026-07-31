@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/gap-registry.schema.json",
+  "title": "ICTC gap registry",
+  "type": "object",
+  "required": ["schemaVersion", "scope", "states", "gaps"],
+  "properties": {
+    "schemaVersion": {"type": "string"},
+    "scope": {"type": "string", "minLength": 1},
+    "states": {"type": "array", "items": {"enum": ["closed", "mitigated", "open", "accepted"]}, "minItems": 4, "uniqueItems": true},
+    "gaps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "severity", "layer", "userImpact", "epistemicRisk", "changePaths", "testPaths", "evidence", "nextAction", "limitations"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^GAP-[0-9]{3}$"},
+          "title": {"type": "string", "minLength": 5},
+          "status": {"enum": ["closed", "mitigated", "open", "accepted"]},
+          "severity": {"enum": ["low", "medium", "high", "critical"]},
+          "layer": {"type": "string", "minLength": 2},
+          "userImpact": {"type": "string", "minLength": 10},
+          "epistemicRisk": {"type": "string", "minLength": 10},
+          "changePaths": {"type": "array", "items": {"type": "string"}},
+          "testPaths": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}},
+          "nextAction": {"type": "string", "minLength": 5},
+          "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

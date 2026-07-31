@@ -2,22 +2,21 @@
 set -Eeuo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-V3="$ROOT/v3"
-STATE="${ICTC_STATE_DIR:-$ROOT/.ictc}"
+STATE="${ICTC_STATE_DIR:-$ROOT/.ictc/v2}"
+RUNTIME="${ICTC_RUNTIME_DIR:-$ROOT/runtime}"
 RUN="$STATE/run"
 LOG="$STATE/logs"
-PID="$RUN/v3.pid"
-OUT="$LOG/v3.log"
+PID="$RUN/server.pid"
+OUT="$LOG/server.log"
 HOST="${ICTC_HOST:-127.0.0.1}"
-PORT="${PORT:-${ICTC_PORT:-4173}}"
+PORT="${ICTC_PORT:-4174}"
 ACCESS_HOST="${ICTC_ACCESS_HOST:-127.0.0.1}"
 URL="http://$ACCESS_HOST:$PORT"
-RUNTIME="${ICTC_RUNTIME_DIR:-$V3/runtime}"
 NO_OPEN="${ICTC_NO_OPEN:-0}"
 umask 077
 
 say(){ printf '%s\n' "$*"; }
-fail(){ printf 'ICTC v3: %s\n' "$*" >&2; exit 1; }
+fail(){ printf 'ICTC v2: %s\n' "$*" >&2; exit 1; }
 pid_value(){
   local value
   [ -r "$PID" ] || return 1
@@ -32,7 +31,7 @@ preflight(){
   command -v node >/dev/null || fail 'Node.js non trovato'
   command -v curl >/dev/null || fail 'curl non trovato'
   [ "$(node -p "Number(process.versions.node.split('.')[0])")" -ge 22 ] || fail 'Node.js 22+ richiesto'
-  [ -f "$V3/server.mjs" ] || fail 'Runtime v3 assente'
+  [ -f "$ROOT/server.mjs" ] || fail 'server.mjs assente'
   mkdir -p "$RUN" "$LOG" "$RUNTIME/blobs"
 }
 
@@ -50,8 +49,8 @@ launch(){
   rm -f "$tmp"
   (
     cd "$ROOT"
-    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" \
-      nohup node v3/server.mjs >>"$OUT" 2>&1 &
+    PORT="$PORT" HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" \
+      nohup node server.mjs >>"$OUT" 2>&1 &
     printf '%s\n' "$!" > "$tmp"
   )
   mv "$tmp" "$PID"
@@ -61,16 +60,16 @@ start(){
   preflight
   if alive; then
     health || fail "PID $(pid_value) attivo ma health non disponibile su $URL"
-    say "ICTC v3 già attivo: $URL"
+    say "ICTC v2 già attivo: $URL"
     open_browser
     return
   fi
   rm -f "$PID"
-  if health; then fail "La porta $PORT risponde ma non è associata a un PID ICTC v3 gestito"; fi
+  if health; then fail "La porta $PORT risponde ma non è associata a un PID ICTC v2 gestito"; fi
   launch
   for _ in $(seq 1 60); do
     if alive && health; then
-      say "ICTC v3 attivo: $URL"
+      say "ICTC v2 attivo: $URL"
       open_browser
       return
     fi
@@ -84,8 +83,8 @@ start(){
 stop(){
   if ! alive; then
     rm -f "$PID"
-    if health; then fail "Servizio raggiungibile su $URL ma non gestito dal PID ICTC v3"; fi
-    say 'ICTC v3 non attivo'
+    if health; then fail "Servizio raggiungibile su $URL ma non gestito dal PID ICTC v2"; fi
+    say 'ICTC v2 non attivo'
     return
   fi
   local value
@@ -97,32 +96,32 @@ stop(){
   done
   rm -f "$PID"
   if health; then fail "Il processo $value è stato arrestato ma $URL risponde ancora"; fi
-  say 'ICTC v3 arrestato'
+  say 'ICTC v2 arrestato'
 }
 
 status(){
   local value
   if ! alive; then
-    if health; then say "profile=v3 processo=non-gestito health=ok url=$URL"; else say "profile=v3 processo=non-attivo health=non-raggiungibile url=$URL"; fi
+    if health; then say "profile=v2 processo=non-gestito health=ok url=$URL"; else say "profile=v2 processo=non-attivo health=non-raggiungibile url=$URL"; fi
     return 1
   fi
   value="$(pid_value)"
-  if ! health; then say "profile=v3 processo=attivo pid=$value health=non-raggiungibile url=$URL"; return 1; fi
-  say "profile=v3 processo=attivo pid=$value health=ok url=$URL"
-  curl -fsS "$URL/api/runtime/integrity"
+  if ! health; then say "profile=v2 processo=attivo pid=$value health=non-raggiungibile url=$URL"; return 1; fi
+  say "profile=v2 processo=attivo pid=$value health=ok url=$URL"
+  curl -fsS "$URL/api/runtime/integrity" || true
   printf '\n'
 }
 
 case "${1:-help}" in
-  start) shift; [ "${1:-}" = '--no-open' ] && NO_OPEN=1; start ;;
+  start) shift; [ "${1:-}" = --no-open ] && NO_OPEN=1; start ;;
   stop) stop ;;
   restart) stop; start ;;
   status) status ;;
   open) open_browser ;;
   logs) mkdir -p "$LOG"; touch "$OUT"; tail -f "$OUT" ;;
-  doctor) preflight; say "profile=v3 node=$(node --version) bind=$HOST url=$URL runtime=$RUNTIME" ;;
-  test) preflight; node "$V3/audit.mjs" ;;
-  audit) preflight; node "$V3/audit.mjs"; node "$V3/saturation.mjs" ;;
-  help|-h|--help) echo './ictc-v3.sh start [--no-open] | stop | restart | status | open | logs | doctor | test | audit' ;;
+  doctor) preflight; say "profile=v2 node=$(node --version) bind=$HOST url=$URL runtime=$RUNTIME" ;;
+  test) preflight; npm --prefix "$ROOT" test ;;
+  audit) preflight; npm --prefix "$ROOT" run audit ;;
+  help|-h|--help) echo './ictc-v2.sh start|stop|restart|status|open|logs|doctor|test|audit' ;;
   *) fail 'Comando sconosciuto' ;;
 esac

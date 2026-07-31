@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ictc.local/schemas/action-wiring.schema.json",
+  "title":"ICTC v3 Action Wiring Manifest",
+  "type":"object",
+  "required":["schemaVersion","actions"],
+  "properties":{
+    "schemaVersion":{"type":"string"},
+    "actions":{"type":"array","minItems":1,"items":{"type":"object","required":["id","selector","controlSource","handler","checkpoint","route","receiptExpected"],"properties":{"id":{"type":"string"},"selector":{"type":"string"},"controlSource":{"type":"string"},"handler":{"type":"string"},"checkpoint":{"type":"string"},"route":{"type":"string"},"receiptExpected":{"const":true}},"additionalProperties":false}}
+  },
+  "additionalProperties":false
+}

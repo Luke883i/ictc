@@ -1,0 +1,86 @@
+name: ictc-post-merge-audit
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ictc-post-merge-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Shell and configuration contracts
+        run: |
+          bash -n ictc.sh
+          bash -n ictc-v2.sh
+          bash -n ictc-v3.sh
+          bash -n .devcontainer/post-create.sh
+          bash -n .devcontainer/post-start.sh
+          node -e "JSON.parse(require('fs').readFileSync('.devcontainer/devcontainer.json'))"
+          node -e "JSON.parse(require('fs').readFileSync('schemas/action-frame.schema.json'))"
+          node -e "JSON.parse(require('fs').readFileSync('schemas/action-wiring.schema.json'))"
+          node -e "JSON.parse(require('fs').readFileSync('v3/action-wiring.json'))"
+      - name: Historical suite
+        run: npm run audit
+      - name: Post-merge contracts
+        run: |
+          node v3/gap-audit.mjs
+          node v3/ux-audit.mjs
+          node v3/action-frame-audit.mjs
+          node v3/support-bundle-audit.mjs
+          node v3/blob-audit.mjs
+          node v3/launcher-audit.mjs
+          node v3/enduser-simulation.mjs
+      - name: Browser module syntax
+        run: |
+          node --check v3/public/app.js
+          node --check v3/public/js/action-frame-model.js
+          node --check v3/public/js/action-frame-ui.js
+          node --check v3/public/js/support-bundle-model.js
+          node --check v3/public/js/support-bundle.js
+          node --check v3/public/js/interactions.js
+          node --check v3/public/js/render.js
+      - name: Canonical launcher lifecycle
+        env:
+          ICTC_NO_OPEN: '1'
+          ICTC_PORT: '4691'
+          ICTC_LEGACY_PORT: '4692'
+          ICTC_RUNTIME_DIR: ${{ runner.temp }}/ictc-runtime
+          ICTC_STATE_DIR: ${{ runner.temp }}/ictc-state
+        run: |
+          trap './ictc.sh stop --profile all || true' EXIT
+          ./ictc.sh start --profile current --no-open
+          curl --fail --silent http://127.0.0.1:4691/api/health
+          curl --fail --silent http://127.0.0.1:4691/epistemic-contract.json > /dev/null
+          curl --fail --silent http://127.0.0.1:4691/action-frame.css > /dev/null
+          curl --fail --silent http://127.0.0.1:4691/js/action-frame-model.js > /dev/null
+          ./ictc.sh status --profile current
+          ./ictc.sh stop --profile current
+          ./ictc.sh start --profile all --no-open
+          curl --fail --silent http://127.0.0.1:4691/api/health
+          curl --fail --silent http://127.0.0.1:4692/api/health
+          ./ictc.sh status --profile all
+          ./ictc.sh stop --profile all
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-post-merge-audit
+          path: |
+            artifacts/gap-audit.json
+            artifacts/v3-ux-audit.json
+            artifacts/action-frame-audit.json
+            artifacts/support-bundle-audit.json
+            artifacts/enduser-simulation.json
+            artifacts/runtime-audit.json
+            artifacts/accessibility-audit.json
+            artifacts/documentation-audit.json
+          retention-days: 14

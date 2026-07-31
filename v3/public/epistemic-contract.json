@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.1.0",
+  "title": "ICTC end-user epistemic presentation contract",
+  "primaryQuestion": "Che cosa deve fare qui l’utente?",
+  "secondaryQuestion": "A quale processo appartiene questa azione?",
+  "lenses": [
+    {"id":"orient","label":"Orientarmi","question":"Che cosa richiede la mia attenzione?","requiredFields":["label","statement","epistemicStatus","nextAction"],"maxPrimaryFacts":4},
+    {"id":"decide","label":"Decidere","question":"Che cosa posso decidere e che cosa manca?","requiredFields":["statement","inputs","limitations","nextAction"],"maxPrimaryFacts":6},
+    {"id":"verify","label":"Verificare","question":"Come è stato derivato e dove è la receipt?","requiredFields":["producer","inputs","limitations","receiptRef"],"maxPrimaryFacts":8}
+  ],
+  "intermediateObjects": [
+    {
+      "claimClass": "action-frame",
+      "label": "ActionFrame",
+      "purpose": "Tradurre un oggetto runtime in una scelta locale senza modificare stato o autorità.",
+      "requiredFields": ["userQuestion","objectRef","processRef","action","prerequisites","consequence","doesNotMean","evidenceAfter"],
+      "persistence": "session-view-only",
+      "authority": "derived-guidance"
+    },
+    {
+      "claimClass": "decision-checkpoint",
+      "label": "DecisionCheckpoint",
+      "purpose": "Mostrare stato prima, stato dopo, conseguenza, limite ed evidenza attesa prima di una scrittura.",
+      "requiredFields": ["writeActionId","before","after","doesNotMean","requiresReceipt"],
+      "persistence": "not-persisted",
+      "authority": "human-confirmation-gate"
+    }
+  ],
+  "stateMeanings": {
+    "derived-guidance": "Una proiezione deterministica suggerisce dove agire; non è un evento di dominio né una decisione.",
+    "observed": "Un dato o un'operazione è stato registrato; non è una decisione.",
+    "verified": "Una verifica tecnica deterministica è passata; non prova correttezza giuridica.",
+    "attention-required": "Serve attenzione umana prima di usare l'esito per una scelta.",
+    "awaiting-human-review": "La catena attende una review esplicita.",
+    "candidate": "L'oggetto è proposto e non appartiene ancora al perimetro attivo.",
+    "ai-proposed": "L'AI ha prodotto una proposta delimitata senza autorità decisionale.",
+    "human-reviewed": "Una persona ha registrato una review; restano validi i limiti dichiarati.",
+    "human-owned": "Una persona ha confermato ownership o responsabilità.",
+    "failed": "L'operazione non è stata completata.",
+    "unavailable": "L'esito non è disponibile e non deve essere inferito."
+  },
+  "compressionRules": [
+    "Il primo livello risponde a che cosa deve fare qui l’utente, non al nome del processo.",
+    "Il processo sottostante resta visibile nel drill-down Perché questa azione compare qui.",
+    "Ogni ActionFrame espone una sola azione primaria, prerequisiti, conseguenza, non-significato ed evidenza attesa.",
+    "Il primo livello mostra una conseguenza locale, uno stato testuale e una sola prossima azione.",
+    "Il secondo livello mostra produttore, input, limiti e decisioni disponibili.",
+    "Il terzo livello mostra receipt, hash, identificativi e dati tecnici.",
+    "Nessun conteggio diventa automaticamente punteggio di conformità o rischio.",
+    "Un campo assente viene mostrato come non disponibile, mai ricostruito per supposizione.",
+    "La proposta AI e la decisione umana devono essere visivamente e semanticamente distinte."
+  ],
+  "writeActions": [
+    {"id":"source-propose","label":"Salva fonte candidata","before":"nessun oggetto o input locale","after":"candidate","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["fonte applicabile","fonte autorevole","perimetro completo"]},
+    {"id":"source-review","label":"Registra review fonte","before":"candidate","after":"human-reviewed","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["obbligo applicabile","conformità","completezza del perimetro"]},
+    {"id":"finding-review","label":"Registra review differenza","before":"awaiting-human-review","after":"human-reviewed","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["materialità legale automatica","obbligo di notifica"]},
+    {"id":"job-run","label":"Esegui scouting simulato","before":"job locale","after":"observed oppure ai-proposed","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["acquisizione remota reale","aggiornamento istituzionale","materialità"]},
+    {"id":"change-decision","label":"Registra decisione d’impatto","before":"impact-to-assess","after":"decision-recorded oppure controls-to-map","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["parere legale universale","conformità automatica"]},
+    {"id":"control-map","label":"Registra mapping controllo","before":"controls-to-map","after":"coverage-mapped","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["controllo progettato","controllo operativo","controllo efficace"]},
+    {"id":"matter-create","label":"Crea caso","before":"racconto non registrato","after":"facts-to-confirm","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["incidente legalmente qualificato","obbligo di notifica","owner confermato"]},
+    {"id":"matter-owner","label":"Conferma owner e RACI","before":"facts-to-confirm","after":"human-owned","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["classificazione normativa definitiva","caso risolto"]},
+    {"id":"matter-transition","label":"Registra transizione caso","before":"human-owned","after":"workflow-state","requiresHumanConfirmation":true,"requiresReceipt":true,"doesNotMean":["assenza di rischio residuo","chiusura regolatoria"]}
+  ],
+  "capabilityStates": {
+    "operational": "Il percorso è eseguibile e verificato nella beta.",
+    "bounded": "Il percorso è eseguibile con limiti dichiarati.",
+    "simulated": "La catena è wired ma l'integrazione esterna è simulata.",
+    "unavailable": "La capacità non è implementata e non viene emulata in UI."
+  }
+}
