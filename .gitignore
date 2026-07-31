@@ -10,3 +10,5 @@ artifacts/
 !.env.example
 npm-debug.log*
 coverage/
+
+.ictc/

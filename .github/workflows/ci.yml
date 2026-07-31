@@ -11,7 +11,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -19,7 +19,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npm test
+      - run: npm run audit
       - run: npm run git:handshake
       - run: npm run release:manifest
       - uses: actions/upload-artifact@v6
@@ -27,5 +27,8 @@ jobs:
           name: ictc-contract-artifacts
           path: |
             artifacts/release-manifest.json
+            artifacts/runtime-audit.json
+            artifacts/accessibility-audit.json
+            artifacts/documentation-audit.json
             artifacts/ascii/
           retention-days: 14

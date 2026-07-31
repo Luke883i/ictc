@@ -1,17 +1,22 @@
 {
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "controls": [
-    {"id":"nav","selector":"[data-nav]","effect":"changes active view from server-projected OutcomeEnvelopes","evidence":"bind"},
-    {"id":"source-submit","selector":"#sourceForm","effect":"POST /api/sources, append event, rebuild projection, receipt","evidence":"submitSource"},
-    {"id":"matter-submit","selector":"#matterForm","effect":"POST /api/matters, append event, rebuild projection, receipt","evidence":"submitMatter"},
+    {"id":"nav","selector":"[data-nav]","effect":"changes active view from server-projected OutcomeEnvelopes","evidence":"navigate"},
+    {"id":"source-submit","selector":"#sourceForm","effect":"POST /api/sources, append event, readback, receipt","evidence":"submitSource"},
+    {"id":"source-mode","selector":"[data-source-mode]","effect":"switches required input between link and local file","evidence":"setSourceMode"},
+    {"id":"matter-submit","selector":"#matterForm","effect":"POST /api/matters, append event, readback, receipt","evidence":"submitMatter"},
     {"id":"source-review","selector":"[data-review]","effect":"POST /api/sources/:id/review","evidence":"reviewSource"},
     {"id":"finding-review","selector":"[data-finding-review]","effect":"POST /api/findings/:id/review","evidence":"reviewFinding"},
     {"id":"owner-confirm","selector":"[data-confirm-owner]","effect":"POST /api/matters/:id/confirm-owner","evidence":"confirmOwner"},
     {"id":"job-run","selector":"[data-run-job]","effect":"POST /api/scout-jobs/:id/run","evidence":"runJob"},
     {"id":"trace-select","selector":"[data-trace-id]","effect":"selects deterministic runtime trace from bootstrap","evidence":"bindDynamic"},
-    {"id":"change-filter","selector":"[data-change-filter]","effect":"filters existing OutcomeEnvelopes without changing truth","evidence":"bindDynamic"},
-    {"id":"assistant","selector":"#assistantForm","effect":"POST /api/assistant with deterministic local capsule","evidence":"ask"},
-    {"id":"search","selector":"#commandInput","effect":"searches projected OutcomeEnvelopes","evidence":"bind"},
-    {"id":"detail","selector":"[data-envelope]","effect":"opens provenance, limits and receipt for projected envelope","evidence":"openDetail"}
+    {"id":"change-filter","selector":"[data-change-filter]","effect":"filters projected OutcomeEnvelopes without changing truth","evidence":"bindDynamic"},
+    {"id":"assistant","selector":"#assistantForm","effect":"POST /api/assistant with deterministic local capsule","evidence":"askAssistant"},
+    {"id":"assistant-panel","selector":"#openAssistant","effect":"opens read-only assistant and updates aria state","evidence":"openAssistant"},
+    {"id":"search","selector":"#commandInput","effect":"searches projected OutcomeEnvelopes and wires each result","evidence":"searchOutcomes"},
+    {"id":"command-shortcut","selector":"#openCommand","effect":"opens search from button or Ctrl/Cmd+K","evidence":"openCommand"},
+    {"id":"detail","selector":"[data-envelope]","effect":"opens provenance, limits and receipt for projected envelope","evidence":"openDetail"},
+    {"id":"motion","selector":"#motionToggle","effect":"toggles reduced motion without changing application state","evidence":"toggleMotion"},
+    {"id":"activity","selector":"#handshake","effect":"represents local read, write, readback and error states","evidence":"setActivity"}
   ]
 }

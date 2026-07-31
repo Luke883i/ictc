@@ -10,15 +10,19 @@ concurrency:
 jobs:
   visual:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - run: npm ci --ignore-scripts
-      - run: npx playwright install --with-deps chromium
+      - name: Install pinned browser audit tool
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.55.0
+          npx playwright install --with-deps chromium
       - run: npm run visual
+      - run: npm run audit:a11y
       - run: npm run schema:check
       - uses: actions/upload-artifact@v6
         with:
@@ -27,5 +31,6 @@ jobs:
             artifacts/screenshots/dashboard-v2.png
             artifacts/screenshots/trace-v2.png
             artifacts/visual-attestation.json
+            artifacts/accessibility-audit.json
             artifacts/visual.log
           retention-days: 14
