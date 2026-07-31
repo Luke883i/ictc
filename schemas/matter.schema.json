@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/matter.schema.json",
+  "title": "ICTC Matter",
+  "type": "object",
+  "required": ["id", "kind", "title", "originalNarrative", "reportedAt", "workflowState", "severityPerceived", "owner", "raci", "nextAction", "facts"],
+  "properties": {
+    "id": {"type": "string"},
+    "kind": {"enum": ["signal", "near-miss", "incident"]},
+    "title": {"type": "string"},
+    "originalNarrative": {"type": "string"},
+    "reportedAt": {"type": "string", "format": "date-time"},
+    "workflowState": {"enum": ["facts-to-confirm", "owned", "investigating", "closed"]},
+    "severityPerceived": {"enum": ["unknown", "low", "medium", "high", "critical"]},
+    "owner": {"type": "string"},
+    "raci": {
+      "type": "object",
+      "required": ["accountable", "responsible", "consulted", "informed"],
+      "properties": {
+        "accountable": {"type": "string"},
+        "responsible": {"type": "string"},
+        "consulted": {"type": "array", "items": {"type": "string"}},
+        "informed": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "nextAction": {"type": "string"},
+    "deadline": {"type": ["string", "null"], "format": "date-time"},
+    "facts": {"type": "array", "items": {"type": "object", "required": ["text", "state"]}}
+  },
+  "additionalProperties": true
+}

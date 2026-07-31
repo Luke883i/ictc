@@ -1,0 +1,29 @@
+version: 1
+surfaces:
+  product_intent:
+    authority: docs/00_PROMPT_CLARIFICATION.md
+  epistemic_contract:
+    authority: docs/02_EPISTEMIC_CONTRACT.md
+  user_journeys:
+    authority: docs/04_USER_JOURNEYS.md
+  architecture:
+    authority: docs/11_ARCHITECTURE.md
+  enduser_language:
+    authority: docs/03_ENDUSER_LANGUAGE.md
+  ui_wiring:
+    authority: docs/ui-wiring-manifest.json
+  api:
+    authority: docs/openapi.yaml
+  schemas:
+    authority: schemas/
+  runtime_domain:
+    authority: lib/domain.mjs
+  runtime_api:
+    authority: server.mjs
+  generated_artifacts:
+    authority: scripts/
+    classification: derived
+rules:
+  - generated artifacts are never hand-edited
+  - UI labels cannot redefine epistemic status
+  - AI output cannot create human-reviewed or human-owned state

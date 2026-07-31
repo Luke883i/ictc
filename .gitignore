@@ -1,0 +1,12 @@
+node_modules/
+runtime/state.json
+runtime/ledger.jsonl
+runtime/blobs/*
+!runtime/blobs/.gitkeep
+artifacts/
+.DS_Store
+.env
+.env.*
+!.env.example
+npm-debug.log*
+coverage/

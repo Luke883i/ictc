@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "tenant": "Azienda Demo",
+    "version": "2.0.0-beta.2",
+    "generatedAt": "2026-07-31T12:00:00Z",
+    "disclaimer": "ICTC attesta il processo locale di osservazione e review; non certifica automaticamente applicabilità o conformità legale."
+  },
+  "ecosystems": [
+    {"id":"eco-acn","label":"ACN e CSIRT Italia","purpose":"Normativa, determinazioni, misure e comunicazioni operative cyber","configuredChannels":7,"observedChannels":6,"reviewOwner":"Compliance e Cybersecurity"},
+    {"id":"eco-garante","label":"Garante Privacy","purpose":"Provvedimenti, linee guida e canali operativi privacy","configuredChannels":6,"observedChannels":6,"reviewOwner":"DPO Office"},
+    {"id":"eco-eu","label":"Unione europea","purpose":"Regolamenti, direttive e atti europei","configuredChannels":8,"observedChannels":6,"reviewOwner":"Legal e Compliance"},
+    {"id":"eco-it","label":"Normativa italiana","purpose":"Leggi, decreti e recepimenti","configuredChannels":6,"observedChannels":5,"reviewOwner":"Legal e Compliance"}
+  ],
+  "sources": [
+    {"id":"src-acn-nis2","ecosystemId":"eco-acn","title":"ACN — area NIS2","kind":"official-web","locator":"https://www.acn.gov.it/portale/nis2","authorityClass":"primary-official","lifecycle":"active","lastCheckedAt":"2026-07-31T09:20:00Z","lastContentChangeAt":"2026-07-31T08:40:00Z","reviewState":"change-awaiting-review","reviewOwner":"Compliance e Cybersecurity","checksum":"sha256-demo-acn-nis2"},
+    {"id":"src-csirt","ecosystemId":"eco-acn","title":"CSIRT Italia — avvisi e bollettini","kind":"official-web","locator":"https://www.csirt.gov.it/","authorityClass":"primary-operational","lifecycle":"active","lastCheckedAt":"2026-07-31T10:00:00Z","lastContentChangeAt":"2026-07-31T07:10:00Z","reviewState":"observed-no-review-required","reviewOwner":"Cybersecurity Operations","checksum":"sha256-demo-csirt"},
+    {"id":"src-garante-breach","ecosystemId":"eco-garante","title":"Garante — violazioni di dati personali","kind":"official-web","locator":"https://www.garanteprivacy.it/temi/data-breach","authorityClass":"primary-official","lifecycle":"active","lastCheckedAt":"2026-07-31T09:10:00Z","lastContentChangeAt":"2026-07-30T14:20:00Z","reviewState":"change-awaiting-review","reviewOwner":"DPO Office","checksum":"sha256-demo-garante"},
+    {"id":"src-eurlex-gdpr","ecosystemId":"eco-eu","title":"EUR-Lex — Regolamento (UE) 2016/679","kind":"official-law","locator":"https://eur-lex.europa.eu/eli/reg/2016/679/oj","authorityClass":"primary-law","lifecycle":"active","lastCheckedAt":"2026-07-31T05:10:00Z","lastContentChangeAt":"2024-05-01T00:00:00Z","reviewState":"observed-no-review-required","reviewOwner":"Legal e Privacy","checksum":"sha256-demo-gdpr"},
+    {"id":"src-normattiva-138","ecosystemId":"eco-it","title":"Normattiva — D.Lgs. 138/2024","kind":"official-law","locator":"https://www.normattiva.it/","authorityClass":"primary-law","lifecycle":"active","lastCheckedAt":"2026-07-31T05:20:00Z","lastContentChangeAt":"2026-06-12T00:00:00Z","reviewState":"reviewed","reviewOwner":"Legal e Cybersecurity","checksum":"sha256-demo-dlgs138"}
+  ],
+  "findings": [
+    {"id":"finding-acn-001","sourceId":"src-acn-nis2","jobId":"job-acn-daily","findingType":"content-change","detectedAt":"2026-07-31T08:45:00Z","statement":"Il contenuto osservato differisce dall'ultima versione locale.","materiality":"undetermined","aiProposal":{"themes":["NIS2","adempimenti","misure"],"summary":"Possibile aggiornamento operativo; contenuto da qualificare.","confidenceBand":"medium"},"humanState":"awaiting-review"},
+    {"id":"finding-garante-001","sourceId":"src-garante-breach","jobId":"job-garante-daily","findingType":"new-document","detectedAt":"2026-07-30T14:25:00Z","statement":"Un nuovo documento è stato acquisito nel canale osservato.","materiality":"undetermined","aiProposal":{"themes":["data breach","notifica","accountability"],"summary":"Possibile rilevanza per il processo di gestione delle violazioni.","confidenceBand":"medium"},"humanState":"awaiting-review"}
+  ],
+  "scoutJobs": [
+    {"id":"job-acn-daily","label":"Osservazione ACN quotidiana","ecosystemId":"eco-acn","schedule":"giornaliero · 06:30 Europe/Rome","mode":"deterministic-fetch-plus-ai-proposal","lastRunAt":"2026-07-31T08:45:00Z","nextRunAt":"2026-08-01T04:30:00Z","lastRunState":"proposal-created","reviewOwner":"Compliance e Cybersecurity"},
+    {"id":"job-garante-daily","label":"Osservazione Garante quotidiana","ecosystemId":"eco-garante","schedule":"giornaliero · 06:40 Europe/Rome","mode":"deterministic-fetch-plus-ai-proposal","lastRunAt":"2026-07-31T08:50:00Z","nextRunAt":"2026-08-01T04:40:00Z","lastRunState":"completed-no-change","reviewOwner":"DPO Office"},
+    {"id":"job-eu-weekly","label":"Osservazione fonti UE settimanale","ecosystemId":"eco-eu","schedule":"settimanale · lunedì 07:00 Europe/Rome","mode":"deterministic-fetch-plus-ai-proposal","lastRunAt":"2026-07-27T05:00:00Z","nextRunAt":"2026-08-03T05:00:00Z","lastRunState":"completed-no-change","reviewOwner":"Legal e Compliance"}
+  ],
+  "controlCoverage": [
+    {"id":"cov-reg-monitor","family":"Monitoraggio normativo","coverageState":"evidence-available","statement":"Esistono fonti censite, job configurati, review owner e ricevute locali.","owner":"Compliance","limitations":["Non dimostra che ogni fonte possibile sia censita","Non dimostra conformità ai singoli obblighi"]},
+    {"id":"cov-incident","family":"Gestione incidenti e quasi incidenti","coverageState":"operating-declared","statement":"È definito un workflow comune con owner, RACI, decisioni e ricevute.","owner":"CISO e DPO","limitations":["Efficacia operativa non testata in questa beta","Notifiche reali richiedono decisione e canali esterni"]},
+    {"id":"cov-notification","family":"Valutazione comunicazioni regolatorie","coverageState":"mapped","statement":"Sono identificati i percorsi Privacy e NIS2 come valutazioni distinte.","owner":"Legal, DPO e NIS Contact Point","limitations":["Nessuna comunicazione è inviata automaticamente"]}
+  ],
+  "matters": [
+    {"id":"matter-001","kind":"near-miss","title":"Allegato errato intercettato prima dell'invio","originalNarrative":"Un allegato destinato a un fornitore è stato bloccato prima della consegna esterna.","reportedAt":"2026-07-31T08:20:00Z","workflowState":"facts-to-confirm","severityPerceived":"low","owner":"Privacy Operations","raci":{"accountable":"DPO Office","responsible":"Privacy Operations","consulted":["Legal","IT Security"],"informed":["Process Owner"]},"nextAction":"Confermare dai log se il messaggio ha lasciato il dominio aziendale","deadline":"2026-07-31T14:30:00Z","facts":[{"text":"Il messaggio è stato bloccato dal controllo di posta","state":"reported"},{"text":"La consegna esterna non è ancora confermata dai log","state":"unknown"}]},
+    {"id":"matter-002","kind":"incident","title":"Accessi anomali a un portale fornitore","originalNarrative":"Sono stati osservati accessi anomali a un portale esterno con possibile esposizione di dati e impatto sul servizio.","reportedAt":"2026-07-31T07:45:00Z","workflowState":"owned","severityPerceived":"high","owner":"Cybersecurity Incident Manager","raci":{"accountable":"CISO","responsible":"Incident Response Team","consulted":["DPO","Legal","Procurement","Service Owner"],"informed":["Executive Sponsor"]},"nextAction":"Consolidare i fatti minimi e aprire valutazioni Privacy e NIS2 separate","deadline":"2026-07-31T10:30:00Z","facts":[{"text":"Accessi anomali osservati dal fornitore","state":"reported"},{"text":"Esposizione di dati personali","state":"hypothesis"},{"text":"Impatto sul servizio","state":"hypothesis"}]}
+  ]
+}

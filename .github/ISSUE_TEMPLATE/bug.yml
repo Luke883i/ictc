@@ -1,0 +1,35 @@
+name: Defect
+about: Report a runtime, wiring, claim or evidence defect
+title: "[DEFECT] "
+labels: ["defect", "triage"]
+body:
+  - type: dropdown
+    id: class
+    attributes:
+      label: Defect class
+      options:
+        - Runtime or wiring
+        - Epistemic claim or label
+        - Persistence, readback or receipt
+        - Accessibility or visual
+        - Security or authorization
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: chain
+    attributes:
+      label: Outcome IDs, inputs and receipts
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true

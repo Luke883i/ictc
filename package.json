@@ -1,0 +1,25 @@
+{
+  "name": "ictc",
+  "version": "2.0.0-beta.2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "contract": "node scripts/repository-contract.mjs",
+    "schema:check": "node scripts/schema-check.mjs",
+    "labels:check": "node scripts/label-lint.mjs",
+    "epistemic:check": "node scripts/epistemic-check.mjs",
+    "verify": "node scripts/verify.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "visual": "bash scripts/visual-check.sh",
+    "git:handshake": "node scripts/git-handshake.mjs",
+    "release:manifest": "node scripts/release-manifest.mjs",
+    "test": "npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e",
+    "wiring:check": "node scripts/ui-wiring-check.mjs",
+    "ascii:export": "node scripts/ascii-export.mjs",
+    "trace:preview": "node scripts/trace-preview.mjs"
+  }
+}

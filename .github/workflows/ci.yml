@@ -1,0 +1,31 @@
+name: ictc-ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ictc-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run git:handshake
+      - run: npm run release:manifest
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ictc-contract-artifacts
+          path: |
+            artifacts/release-manifest.json
+            artifacts/ascii/
+          retention-days: 14

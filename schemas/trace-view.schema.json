@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/trace-view.schema.json",
+  "title": "ICTC Runtime Trace View",
+  "type": "object",
+  "required": [
+    "traceId",
+    "steps"
+  ],
+  "properties": {
+    "traceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "status",
+          "statusLabel",
+          "statement",
+          "producer",
+          "inputRefs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "statusLabel": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          },
+          "producer": {
+            "type": "string"
+          },
+          "inputRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "receiptRef": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

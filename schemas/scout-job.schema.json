@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/scout-job.schema.json",
+  "title": "ICTC ScoutJob",
+  "type": "object",
+  "required": ["id", "label", "ecosystemId", "schedule", "mode", "lastRunState", "reviewOwner"],
+  "properties": {
+    "id": {"type": "string"},
+    "label": {"type": "string"},
+    "ecosystemId": {"type": "string"},
+    "schedule": {"type": "string"},
+    "mode": {"enum": ["deterministic-fetch", "deterministic-fetch-plus-ai-proposal"]},
+    "lastRunAt": {"type": ["string", "null"], "format": "date-time"},
+    "nextRunAt": {"type": ["string", "null"], "format": "date-time"},
+    "lastRunState": {"enum": ["never-run", "completed-no-change", "proposal-created", "failed"]},
+    "reviewOwner": {"type": "string"}
+  },
+  "additionalProperties": false
+}

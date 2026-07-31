@@ -1,0 +1,25 @@
+import { strict as assert } from 'node:assert';
+import { buildState, buildCapsule, answerFromCapsule, proposeSourceMetadata, createMatter, verifyLedger, sha256 } from '../lib/domain.mjs';
+
+const state = await buildState();
+assert.equal(state.meta.version, '2.0.0-beta.2');
+assert.ok(state.views.headline.limitations.length > 0);
+assert.ok(state.views.sourceCards.every(item => item.claimClass.includes('source')));
+assert.equal(state.views.traceCards.length, 4);
+assert.ok(state.views.traceCards.every(item => item.claimClass === 'runtime-trace' && item.data.steps.length >= 5));
+assert.equal(proposeSourceMetadata({ title: 'Nuova determina ACN NIS2' }).ecosystemId, 'eco-acn');
+assert.equal(proposeSourceMetadata({ title: 'Provvedimento Garante privacy' }).ecosystemId, 'eco-garante');
+const matter = createMatter({ summary: 'Accesso anomalo a sistema del fornitore con dati personali', severity: 'high' });
+assert.equal(matter.workflowState, 'facts-to-confirm');
+assert.ok(matter.raci.consulted.includes('DPO'));
+assert.ok(matter.raci.consulted.includes('Cybersecurity'));
+const capsule = buildCapsule(state, { scope: 'radar' });
+assert.equal(capsule.writeAuthority, false);
+const answer = answerFromCapsule(capsule, 'Posso dire che siamo conformi?');
+assert.equal(answer.epistemicStatus, 'ai-proposed');
+assert.match(answer.answer, /No:/);
+const base = { id: '1', type: 'x', actor: 'a', producer: 'p', at: '2026-01-01T00:00:00.000Z', previousHash: 'GENESIS', payload: {} };
+const event = { ...base, hash: sha256(JSON.stringify(base)) };
+assert.equal(verifyLedger([event]).ok, true);
+assert.equal(verifyLedger([{ ...event, hash: 'bad' }]).ok, false);
+console.log('verify: ok');

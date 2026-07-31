@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/finding.schema.json",
+  "title": "ICTC Finding",
+  "type": "object",
+  "required": ["id", "findingType", "detectedAt", "statement", "materiality", "humanState"],
+  "properties": {
+    "id": {"type": "string"},
+    "sourceId": {"type": ["string", "null"]},
+    "jobId": {"type": ["string", "null"]},
+    "findingType": {"type": "string"},
+    "detectedAt": {"type": "string", "format": "date-time"},
+    "statement": {"type": "string"},
+    "materiality": {"enum": ["undetermined", "not-material", "material"]},
+    "aiProposal": {"type": ["object", "null"]},
+    "humanState": {"type": "string"}
+  },
+  "additionalProperties": true
+}

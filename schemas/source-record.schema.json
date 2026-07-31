@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/source-record.schema.json",
+  "title": "ICTC SourceRecord",
+  "type": "object",
+  "required": ["id", "ecosystemId", "title", "kind", "locator", "authorityClass", "lifecycle", "reviewState", "reviewOwner"],
+  "properties": {
+    "id": {"type": "string"},
+    "ecosystemId": {"type": "string"},
+    "title": {"type": "string", "minLength": 1},
+    "kind": {"type": "string"},
+    "locator": {"type": "string", "minLength": 1},
+    "authorityClass": {"type": "string"},
+    "lifecycle": {"enum": ["candidate", "active", "retired"]},
+    "lastCheckedAt": {"type": ["string", "null"], "format": "date-time"},
+    "lastContentChangeAt": {"type": ["string", "null"], "format": "date-time"},
+    "reviewState": {"type": "string"},
+    "reviewOwner": {"type": "string"},
+    "checksum": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}
