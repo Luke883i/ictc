@@ -23,7 +23,7 @@ try {
   const state = await req('/api/bootstrap');
   assert.equal(state.meta.version, '1.0.0');
   assert.equal(state.release.stabilityClass, 'stable-local-single-user');
-  assert.ok(state.views.balloons.length && state.views.semanticGraph.edges.length >= 10 && state.views.journeys.length === 3);
+  assert.ok(state.views.jobs.length && state.views.matters.length && state.views.semanticGraph.edges.length >= 10 && state.views.traces.length === 4);
   await req('/api/sources', { method: 'POST', body: JSON.stringify({ title: 'Blocked', fileName: 'sample.txt', contentBase64: Buffer.from('sample').toString('base64') }) }, 503);
   const source = await req('/api/sources', { method: 'POST', body: JSON.stringify({ title: 'Fonte audit', url: 'https://example.invalid/audit' }) });
   assert.equal(source.receipt.readbackVerified, true);
@@ -37,7 +37,7 @@ try {
   await req(`/api/changes/${change.id}/map-control`, { method: 'POST', body: JSON.stringify({ controlId: 'control-monitor', rationale: 'mapping astratto' }) });
   const matter = await req('/api/matters', { method: 'POST', body: JSON.stringify({ summary: 'Accesso anomalo del fornitore con dati personali' }) });
   await req(`/api/matters/${matter.matter.id}/confirm-owner`, { method: 'POST', body: JSON.stringify({ owner: matter.matter.owner, raci: matter.matter.raci }) });
-  await req(`/api/matters/${matter.matter.id}/transition`, { method: 'POST', body: JSON.stringify({ to: 'assessing' }) });
+  await req(`/api/matters/${matter.matter.id}/transition`, { method: 'POST', body: JSON.stringify({ to: 'assessing', evidence: { classification: 'event', severity: 'medium', scope: 'Account e portale fornitore.', impact: 'Possibile esposizione di dati personali.', confidence: 'medium' } }) });
   const session = await req('/api/session', { method: 'POST', body: '{}' });
   const ai = await req('/api/assistant', { method: 'POST', body: JSON.stringify({ sessionId: session.sessionId, objectId: state.views.findings[0].id, question: 'Siamo conformi?' }) });
   assert.equal(ai.capsule.writeAuthority, false);
@@ -45,7 +45,7 @@ try {
   const ledger = await req('/api/runtime/ledger');
   assert.equal(ledger.integrity.ok, true);
   assert.ok(ledger.events.every(item => !item.payload));
-  console.log(`v1-runtime-audit: ok (${Object.keys(state2.objectIndex).length} objects, ${state2.views.semanticGraph.edges.length} relations, 3 journeys)`);
+  console.log(`v1-runtime-audit: ok (${Object.keys(state2.objectIndex).length} objects, ${state2.views.semanticGraph.edges.length} relations, 2 services)`);
 } finally {
   child.kill('SIGTERM');
   await rm(runtime, { recursive: true, force: true });

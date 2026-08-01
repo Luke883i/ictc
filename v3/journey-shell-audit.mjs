@@ -28,7 +28,9 @@ assert.equal(contract.incidentPhases.length, 4);
 for (const item of contract.visibleObjects) assert.ok(item.id && item.purpose && Array.isArray(item.usedBy) && item.userAction);
 const operatingContext = contract.visibleObjects.find(item => item.id === 'operating-context');
 assert.deepEqual(operatingContext.usedBy.sort(), ['matter', 'monitoring-job'].sort());
-assert.match(api, /normalizeOperatingContext/);
+assert.match(api, /createRuntimeModel/);
+assert.match(api, /model\.createMonitoring/);
+assert.match(api, /model\.createMatter/);
 assert.match(shell, /operatingContext: form\.get\('operatingContext'\)/);
 for (const phase of contract.incidentPhases) assert.ok(phase.from && phase.to && phase.phase && phase.label && phase.fields.every(field => field.id && field.label && field.required));
 mark('two-products-and-incident-process', 'due servizi primari e quattro transizioni documentate');
@@ -69,9 +71,9 @@ for (const kind of ['source-review','finding-review','job-schedule','change-deci
 assert.doesNotMatch(html, /sourceNotes|name="notes"/);
 mark('no-orphan-controls', `${staticForms.length} form, ${dialogIds.size} dialog e attività runtime senza controlli orfani`);
 
-for (const token of ['ICTC_AI_ENDPOINT', 'ICTC_MONITORING_REMOTE', 'writeFile', 'blobRef', 'inputDigest', 'schedulerTick']) assert.ok(monitoring.includes(token), `monitoring runtime senza ${token}`);
+for (const token of ['ICTC_AI_ENDPOINT', 'ICTC_MONITORING_REMOTE', 'createBlobStore', 'blobRef', 'inputDigest', 'schedulerTick']) assert.ok(monitoring.includes(token), `monitoring runtime senza ${token}`);
 assert.match(api, /contentText/);
-assert.match(api, /phaseEvidence|validateIncidentEvidence/);
+assert.match(api, /phaseEvidence|model\.validateIncidentEvidence/);
 mark('backend-services', 'scheduler, provider AI configurabile, storage blob e prove di fase');
 assert.match(html, /data-mode="monitoring"/);
 assert.match(html, /data-mode="incidents"/);
