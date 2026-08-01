@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "ICTC Persona Journey UX",
+  "claimClass": "bounded-persona-journey-engineering-attestation",
+  "claim": "La UI deriva incarichi e oggetti dal bootstrap runtime per cinque lenti di lavoro; non costituisce autenticazione, certificazione WCAG, conformità o validazione con utenti reali.",
+  "definitionOfDone": [
+    {"id":"JUX-DOD-001","criterion":"La prima scelta è un incarico/persona, non una tassonomia di moduli","required":true},
+    {"id":"JUX-DOD-002","criterion":"Ogni persona ha una journey di cinque passi e un confine decisionale","required":true},
+    {"id":"JUX-DOD-003","criterion":"Una sola attività primaria è presentata nel viewport iniziale","required":true},
+    {"id":"JUX-DOD-004","criterion":"Ogni attività deriva da oggetti bootstrap o da un’azione volontaria dichiarata","required":true},
+    {"id":"JUX-DOD-005","criterion":"Ogni scrittura passa da checkpoint, route backend, refresh bootstrap e receipt","required":true},
+    {"id":"JUX-DOD-006","criterion":"Persona selezionata non viene presentata come identità o autorizzazione","required":true},
+    {"id":"JUX-DOD-007","criterion":"Assenza, zero e failure restano distinguibili","required":true},
+    {"id":"JUX-DOD-008","criterion":"Ogni attività mostra whyHere, conseguenza, non-significato ed evidenza attesa","required":true},
+    {"id":"JUX-DOD-009","criterion":"Auditor, executive e operator restano read-only nelle loro attività principali","required":true},
+    {"id":"JUX-DOD-010","criterion":"Ricerca, dettaglio e assistente non ampliano il perimetro oltre object plus deterministic neighbors","required":true},
+    {"id":"JUX-DOD-011","criterion":"Tastiera, focus, reflow, target 44px, reduced motion e forced colors sono verificati","required":true},
+    {"id":"JUX-DOD-012","criterion":"Il browser test completa almeno una scrittura sul backend reale e verifica la receipt","required":true},
+    {"id":"JUX-DOD-013","criterion":"Il runtime test completa source, change e matter journey via API","required":true},
+    {"id":"JUX-DOD-014","criterion":"M=60 e M+100=160 non introducono nuove primitive dopo M","required":true},
+    {"id":"JUX-DOD-015","criterion":"Screenshot runtime, hash e log delle asserzioni sono artefatti CI","required":true},
+    {"id":"JUX-DOD-016","criterion":"Il viewport iniziale mostra una sola attività primaria; percorso, limiti e coda sono progressivi","required":true},
+    {"id":"JUX-DOD-017","criterion":"Ogni oggetto visibile ha uno scopo onto-epistemico dichiarato per la persona selezionata","required":true},
+    {"id":"JUX-DOD-018","criterion":"Il cambio di persona non assegna permessi e non altera la SOT","required":true}
+  ],
+  "metrics": [
+    {"id":"JUX-MET-001","name":"personaJourneyCoverage","target":1,"unit":"ratio"},
+    {"id":"JUX-MET-002","name":"taskContractCompleteness","target":1,"unit":"ratio"},
+    {"id":"JUX-MET-003","name":"writePathReceiptRate","target":1,"unit":"ratio"},
+    {"id":"JUX-MET-004","name":"primaryActionsInitialViewport","target":1,"unit":"count"},
+    {"id":"JUX-MET-005","name":"readOnlyPersonaWriteActions","target":0,"unit":"count"},
+    {"id":"JUX-MET-006","name":"missingEmptyFailureConfusion","target":0,"unit":"count"},
+    {"id":"JUX-MET-007","name":"minimumTargetSize","target":44,"unit":"css-px"},
+    {"id":"JUX-MET-008","name":"keyboardCriticalPathCoverage","target":1,"unit":"ratio"},
+    {"id":"JUX-MET-009","name":"runtimeJourneysCompleted","target":3,"unit":"count"},
+    {"id":"JUX-MET-010","name":"noveltyAfterM","target":0,"unit":"count"},
+    {"id":"JUX-MET-011","name":"initialExpandedTaskCount","target":1,"unit":"count"},
+    {"id":"JUX-MET-012","name":"objectPurposeCoverage","target":1,"unit":"ratio"},
+    {"id":"JUX-MET-013","name":"duplicateUniversalLayers","target":0,"unit":"count"}
+  ],
+  "saturation": {
+    "M": 60,
+    "MPlus100": 160,
+    "primitiveCount": 18,
+    "lastNoveltyScenario": 18,
+    "noveltyAfterM": 0,
+    "limitation": "Saturazione bounded alle persone, stati, modalità e disturbi simulati; non prova completezza universale o comprensione umana."
+  },
+  "limitations": [
+    "La UI non sostituisce OIDC/RBAC.",
+    "Le lenti executive e auditor non producono decisioni di dominio.",
+    "Gli audit automatici non certificano WCAG.",
+    "Restano necessari test moderati con utenti e tecnologie assistive reali."
+  ]
+}
