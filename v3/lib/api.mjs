@@ -38,7 +38,8 @@ const headers = type => ({
 
 function send(res, status, value, type = 'application/json; charset=utf-8') {
   res.writeHead(status, headers(type));
-  res.end(type.includes('json') ? JSON.stringify(value) : value);
+  const body = Buffer.isBuffer(value) ? value : type.includes('json') ? JSON.stringify(value) : value;
+  res.end(body);
 }
 
 async function input(req) {

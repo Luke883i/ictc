@@ -68,7 +68,8 @@ const staticForms = [...html.matchAll(/<form\b[^>]*id="([^"]+)"/g)].map(match =>
 for (const formId of staticForms) assert.ok(shell.includes(`$('#${formId}').addEventListener`) || formId === 'checkpointForm', `${formId}: form senza handler`);
 for (const target of [...`${html}\n${shell}`.matchAll(/data-open-dialog="([^"]+)"/g)].map(match => match[1])) assert.ok(dialogIds.has(target), `${target}: dialog target assente`);
 for (const id of ['searchOpen','comfortOpen','assistantOpen']) assert.ok(shell.includes(`$('#${id}').addEventListener`), `${id}: controllo statico senza handler`);
-for (const kind of ['source-review','finding-review','job-schedule','change-decision','control-map','matter-owner','matter-transition']) assert.ok(shell.includes(`kind === '${kind}'`) || shell.includes(`kind === 'source-review' || kind === 'finding-review'`), `${kind}: attività senza handler`);
+const handledTaskKinds = new Set([...shell.matchAll(/kind\s*===\s*'([^']+)'/g)].map(match => match[1]));
+for (const kind of ['source-review','finding-review','job-schedule','change-decision','control-map','matter-owner','matter-transition']) assert.ok(handledTaskKinds.has(kind), `${kind}: attività senza handler`);
 assert.doesNotMatch(html, /sourceNotes|name="notes"/);
 mark('no-orphan-controls', `${staticForms.length} form, ${dialogIds.size} dialog e attività runtime senza controlli orfani`);
 
