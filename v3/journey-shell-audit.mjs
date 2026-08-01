@@ -30,7 +30,7 @@ const operatingContext = contract.visibleObjects.find(item => item.id === 'opera
 assert.deepEqual(operatingContext.usedBy.sort(), ['matter', 'monitoring-job'].sort());
 assert.match(api, /createRuntimeModel/);
 assert.match(api, /model\.createMonitoring/);
-assert.match(api, /model\.createMatter/);
+assert.match(api, /model\.createIncident/);
 assert.match(shell, /operatingContext: form\.get\('operatingContext'\)/);
 for (const phase of contract.incidentPhases) assert.ok(phase.from && phase.to && phase.phase && phase.label && phase.fields.every(field => field.id && field.label && field.required));
 mark('two-products-and-incident-process', 'due servizi primari e quattro transizioni documentate');
@@ -73,7 +73,7 @@ mark('no-orphan-controls', `${staticForms.length} form, ${dialogIds.size} dialog
 
 for (const token of ['ICTC_AI_ENDPOINT', 'ICTC_MONITORING_REMOTE', 'createBlobStore', 'blobRef', 'inputDigest', 'schedulerTick']) assert.ok(monitoring.includes(token), `monitoring runtime senza ${token}`);
 assert.match(api, /contentText/);
-assert.match(api, /phaseEvidence|model\.validateIncidentEvidence/);
+assert.match(api, /phaseEvidence|model\.validateIncidentTransition/);
 mark('backend-services', 'scheduler, provider AI configurabile, storage blob e prove di fase');
 assert.match(html, /data-mode="monitoring"/);
 assert.match(html, /data-mode="incidents"/);

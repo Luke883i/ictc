@@ -23,8 +23,8 @@ mark('object-purpose', `${contract.visibleObjects.length} oggetti con scopo e us
 const expected = ['job-create','job-schedule','job-run','source-propose','source-review','finding-review','change-decision','control-map','matter-create','matter-owner','matter-transition'];
 assert.deepEqual(contract.actions.filter(item => item.receiptExpected).map(item => item.id).sort(), expected.sort());
 for (const token of ['/api/jobs','/schedule','/run','/api/sources','/api/matters','/transition']) assert.ok(api.includes(token) || shell.includes(token), `wiring assente: ${token}`);
-assert.match(monitoring, /askAiToStudy/); assert.match(monitoring, /createBlobStore/); assert.match(monitoring, /blobs\.putText/); assert.match(blobStore, /rename\(temporaryPath, targetPath\)/); assert.match(monitoring, /schedulerTick/);
-mark('runtime-wiring', 'scheduler, AI configurabile, storage atomico, route e receipt');
+assert.match(monitoring, /askAiToStudy/); assert.match(monitoring, /createBlobStore/); assert.match(monitoring, /blobs\.putText/); assert.match(blobStore, /link\(temporary, target\)/); assert.match(monitoring, /schedulerTick/);
+mark('runtime-wiring', 'scheduler, AI configurabile, storage content-addressed atomico, route e receipt');
 assert.match(app, /startJourneyShell/); assert.doesNotMatch(app, /mountEpistemicGuide|mountActionFrames|mountAdvancedUx/);
 assert.match(shell, /deriveCoreWorkspace/); assert.match(shell, /fetch\('\/core-workspaces\.json'/); assert.match(shell, /api\('\/api\/bootstrap'/); assert.match(shell, /async function checkpoint/); assert.match(shell, /state\.lastReceipt\s*=\s*result\.receipt/); assert.match(shell, /await refresh\(\)/);
 mark('ui-runtime-cycle', 'focus → checkpoint → write → receipt → bootstrap');
