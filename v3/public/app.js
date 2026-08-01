@@ -4,6 +4,7 @@ import { bind } from './js/interactions.js';
 import { mountEpistemicGuide } from './js/epistemic-guide.js';
 import { mountActionFrames } from './js/action-frame-ui.js';
 import { mountSupportBundle } from './js/support-bundle.js';
+import { mountAdvancedUx } from './js/advanced-ux.js';
 
 function applyReleaseGuardrails() {
   const release = S.data?.release;
@@ -28,6 +29,7 @@ async function boot() {
   const controlSelect = $('#controlSelect');
   if (controlSelect && Array.isArray(S.data.controls)) controlSelect.innerHTML = S.data.controls.map(item => `<option value="${item.id}">${esc(item.label)}</option>`).join('');
   mountActionFrames();
+  mountAdvancedUx();
   mountSupportBundle();
   render();
   integrity();

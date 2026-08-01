@@ -16,6 +16,7 @@
     "verify": "node scripts/verify.mjs",
     "e2e": "node scripts/e2e.mjs",
     "visual": "bash scripts/visual-check.sh",
+    "visual:ux": "python3 v3/visual-ux-check.py",
     "git:handshake": "node scripts/git-handshake.mjs",
     "release:manifest": "node scripts/release-manifest.mjs",
     "test": "npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e",
@@ -25,9 +26,10 @@
     "audit:runtime": "node scripts/runtime-audit.mjs",
     "audit:a11y": "node scripts/accessibility-audit.mjs",
     "audit:docs": "node scripts/docs-audit.mjs",
+    "audit:ux:advanced": "node v3/ux-audit-advanced.mjs && node v3/ux-journey-simulation.mjs && node v3/ux-saturation-advanced.mjs",
     "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
     "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
-    "release:check": "npm run audit && node v3/action-frame-audit.mjs && node v3/support-bundle-audit.mjs && npm run audit:v1",
+    "release:check": "npm run audit && node v3/action-frame-audit.mjs && node v3/support-bundle-audit.mjs && npm run audit:ux:advanced && npm run audit:v1",
     "start:all": "./ictc.sh start --profile all"
   }
 }
