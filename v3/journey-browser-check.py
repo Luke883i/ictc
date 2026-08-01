@@ -188,7 +188,7 @@ def run():
         page.locator("#comfortOpen").click()
         page.locator("#textScale").select_option("large")
         page.locator('#comfortDialog button[value="save"]').click()
-        page.wait_for_function("document.documentElement.dataset.text === 'large'")
+        page.locator('html[data-text="large"]').wait_for()
         page.keyboard.press("Control+K")
         page.locator("#searchDialog").wait_for(state="visible")
         page.locator('[data-dialog-close="searchDialog"]').click()
