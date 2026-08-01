@@ -61,7 +61,7 @@ try {
   const coreCopy = contents.get('docs/CORE_UI_COPY_AUDIT.md');
   assert.match(coreDesign, /monitoraggio programmato/i); assert.match(coreDesign, /inserimento manuale/i);
   assert.match(coreDesign, /NIST SP 800-61 Rev\. 3/i); assert.match(coreDesign, /ISO\/IEC 27035/i);
-  assert.match(coreDesign, /segnalazione → ownership → triage → risposta → recovery → lessons learned/i);
+  for (const phaseLabel of ['Segnala evento','Conferma responsabilità','Registra il triage','Avvia la risposta','Registra il ripristino','Chiudi e registra le lezioni']) assert.match(coreDesign, new RegExp(phaseLabel, 'i'));
   assert.match(coreDod, /M=40/); assert.match(coreDod, /M\+100=140/); assert.match(coreDod, /novelty dopo M/i);
   assert.match(coreCopy, /Inventario automatico/i); assert.match(readme, /Per l’uso quotidiano basta/);
   assert.match(readme, /status.*non è necessario per l’avvio/is); assert.match(readme, /npm run audit:ux:core/);
