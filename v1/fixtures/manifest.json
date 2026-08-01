@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "file": "release-evidence.txt",
+  "bytes": 179,
+  "sha256": "5f3b1d852c9a4d1d78b9b5ff0430b4df8a94359c75a6dc6d5185b3a29cd3852e",
+  "claim": "Integrità e readback deterministici della fixture sintetica.",
+  "doesNotMean": [
+    "assenza di malware",
+    "autorevolezza",
+    "rilevanza legale",
+    "sicurezza del contenuto"
+  ]
+}

@@ -12,6 +12,7 @@ La SOT è locale in `v3/runtime/`. Le scritture generano eventi append-only, rea
 
 ```bash
 ./ictc-v3.sh status
+./ictc-v3.sh logs
 ./ictc-v3.sh audit
 ./ictc-v3.sh stop
 ```

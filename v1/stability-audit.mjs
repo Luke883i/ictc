@@ -1,0 +1,230 @@
+import { strict as assert } from 'node:assert';
+import { spawn, spawnSync } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import net from 'node:net';
+import os from 'node:os';
+import path from 'node:path';
+import { performance } from 'node:perf_hooks';
+import { readReleaseManifest, sha256 } from './release.mjs';
+
+const root = path.resolve(new URL('..', import.meta.url).pathname);
+const runtime = await mkdtemp(path.join(os.tmpdir(), 'ictc-v1-runtime-'));
+const artifactDir = path.join(root, 'artifacts');
+await mkdir(artifactDir, { recursive: true });
+
+const freePort = () => new Promise((resolve, reject) => {
+  const server = net.createServer();
+  server.unref();
+  server.on('error', reject);
+  server.listen(0, '127.0.0.1', () => {
+    const { port } = server.address();
+    server.close(error => error ? reject(error) : resolve(port));
+  });
+});
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const percentile = (values, ratio) => [...values].sort((a, b) => a - b)[Math.max(0, Math.ceil(values.length * ratio) - 1)];
+
+let child;
+let stderr = '';
+async function start(port) {
+  stderr = '';
+  const startedAt = performance.now();
+  child = spawn(process.execPath, ['v3/server.mjs'], {
+    cwd: root,
+    env: {
+      ...process.env,
+      PORT: String(port),
+      ICTC_PORT: String(port),
+      ICTC_HOST: '127.0.0.1',
+      ICTC_RUNTIME_DIR: runtime,
+      CODESPACES: '',
+      ICTC_ALLOW_UNAUTHENTICATED_BIND: '',
+      ICTC_ENABLE_UNSCANNED_UPLOADS: ''
+    },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+  child.stderr.on('data', chunk => { stderr += chunk; });
+  const base = `http://127.0.0.1:${port}`;
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    try {
+      const response = await fetch(`${base}/api/health`);
+      if (response.ok) return { base, startupMs: performance.now() - startedAt };
+    } catch {}
+    if (child.exitCode !== null) throw new Error(`Server terminato durante l'avvio: ${stderr}`);
+    await sleep(100);
+  }
+  throw new Error(`Timeout avvio server: ${stderr}`);
+}
+async function stop() {
+  if (!child || child.exitCode !== null) return;
+  child.kill('SIGTERM');
+  await Promise.race([
+    new Promise(resolve => child.once('exit', resolve)),
+    sleep(3000).then(() => child.kill('SIGKILL'))
+  ]);
+}
+async function request(base, pathname, options = {}, expectedStatus = null) {
+  const response = await fetch(base + pathname, {
+    headers: { 'content-type': 'application/json', ...(options.headers || {}) },
+    ...options
+  });
+  const body = (response.headers.get('content-type') || '').includes('json') ? await response.json() : await response.text();
+  if (expectedStatus !== null) assert.equal(response.status, expectedStatus, `${pathname}: ${JSON.stringify(body)}`);
+  else assert.ok(response.ok, `${pathname}: ${response.status} ${JSON.stringify(body)}`);
+  return body;
+}
+
+const manifest = await readReleaseManifest();
+const manifestHash = sha256(JSON.stringify(manifest));
+const checks = [];
+const receipts = [];
+const mark = (id, evidence) => checks.push({ id, status: 'passed', evidence });
+let first;
+try {
+  const port = await freePort();
+  first = await start(port);
+  assert.ok(first.startupMs <= 10000, `Startup ${first.startupMs}ms oltre soglia`);
+  mark('DOD-001', `runtime canonico avviato in ${Math.round(first.startupMs)} ms`);
+
+  const health = await request(first.base, '/api/health');
+  const release = await request(first.base, '/api/release');
+  assert.equal(health.version, '1.0.0');
+  assert.equal(health.stabilityClass, 'stable-local-single-user');
+  assert.equal(release.version, '1.0.0');
+  assert.equal(release.readiness, 'ready');
+  assert.equal(release.guardrails.binaryUpload, 'disabled-by-default');
+  assert.equal(release.manifestSha256, manifestHash);
+  mark('DOD-002', `health/readiness v${release.version}, manifest ${manifestHash.slice(0, 12)}`);
+
+  const unsafe = spawnSync(process.execPath, ['v3/server.mjs'], {
+    cwd: root,
+    timeout: 5000,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PORT: String(await freePort()),
+      ICTC_HOST: '0.0.0.0',
+      CODESPACES: '',
+      ICTC_ALLOW_UNAUTHENTICATED_BIND: ''
+    }
+  });
+  assert.notEqual(unsafe.status, 0, 'Il bind non-loopback deve fallire senza override');
+  assert.match(`${unsafe.stderr}${unsafe.stdout}`, /rifiuta il bind non autenticato/i);
+  mark('DOD-003', 'bind 0.0.0.0 rifiutato senza override');
+
+  await request(first.base, '/api/sources', {
+    method: 'POST',
+    body: JSON.stringify({ title: 'Binary blocked', fileName: 'sample.txt', contentBase64: Buffer.from('synthetic').toString('base64') })
+  }, 503);
+  mark('DOD-004', 'upload binario non scansionato rifiutato per default');
+
+  const bootstrap = await request(first.base, '/api/bootstrap');
+  assert.equal(bootstrap.meta.version, '1.0.0');
+  assert.equal(bootstrap.release.version, '1.0.0');
+
+  const proposed = await request(first.base, '/api/sources', {
+    method: 'POST',
+    body: JSON.stringify({ title: 'Fonte v1 audit', url: 'https://example.invalid/v1-audit' })
+  });
+  receipts.push(proposed.receipt);
+  const sourceReview = await request(first.base, `/api/sources/${proposed.source.id}/review`, {
+    method: 'POST', body: JSON.stringify({ outcome: 'accepted' })
+  });
+  receipts.push(sourceReview.receipt);
+  mark('DOD-005', `fonte ${proposed.source.id} proposta e revisionata`);
+
+  const finding = bootstrap.findings[0];
+  const findingReview = await request(first.base, `/api/findings/${finding.id}/review`, {
+    method: 'POST', body: JSON.stringify({ outcome: 'relevant' })
+  });
+  receipts.push(findingReview.receipt);
+  const afterReview = await request(first.base, '/api/bootstrap');
+  const change = afterReview.changes.find(item => item.findingId === finding.id);
+  assert.ok(change, 'Change story non creata');
+  const decision = await request(first.base, `/api/changes/${change.id}/decide`, {
+    method: 'POST', body: JSON.stringify({ outcome: 'action-required', rationale: 'Simulazione v1' })
+  });
+  receipts.push(decision.receipt);
+  const mapping = await request(first.base, `/api/changes/${change.id}/map-control`, {
+    method: 'POST', body: JSON.stringify({ controlId: 'control-monitor', rationale: 'Mapping astratto v1' })
+  });
+  receipts.push(mapping.receipt);
+  mark('DOD-006', `finding ${finding.id} → decisione → mapping`);
+
+  const matterCreated = await request(first.base, '/api/matters', {
+    method: 'POST', body: JSON.stringify({ title: 'Evento v1', kind: 'signal', summary: 'Accesso anomalo del fornitore con dati personali' })
+  });
+  receipts.push(matterCreated.receipt);
+  const owner = await request(first.base, `/api/matters/${matterCreated.matter.id}/confirm-owner`, {
+    method: 'POST', body: JSON.stringify({ owner: matterCreated.matter.owner, raci: matterCreated.matter.raci })
+  });
+  receipts.push(owner.receipt);
+  const transitioned = await request(first.base, `/api/matters/${matterCreated.matter.id}/transition`, {
+    method: 'POST', body: JSON.stringify({ to: 'assessing' })
+  });
+  receipts.push(transitioned.receipt);
+  mark('DOD-007', `matter ${matterCreated.matter.id} con owner e transizione`);
+
+  const session = await request(first.base, '/api/session', { method: 'POST', body: '{}' });
+  const assistant = await request(first.base, '/api/assistant', {
+    method: 'POST',
+    body: JSON.stringify({ sessionId: session.sessionId, objectId: bootstrap.views.findings[0].id, question: 'Siamo conformi?' })
+  });
+  assert.equal(assistant.capsule.writeAuthority, false);
+  assert.match(assistant.answer, /^No\./);
+  mark('DOD-009', 'assistente read-only e risposta anti-overclaim');
+
+  assert.ok(receipts.every(item => item?.readbackVerified === true));
+  const integrityBefore = await request(first.base, '/api/runtime/integrity');
+  assert.equal(integrityBefore.ok, true);
+  const ledger = await request(first.base, '/api/runtime/ledger');
+  assert.ok(ledger.events.every(item => item.payload === undefined));
+  await stop();
+
+  const secondPort = await freePort();
+  const second = await start(secondPort);
+  const integrityAfter = await request(second.base, '/api/runtime/integrity');
+  assert.equal(integrityAfter.ok, true);
+  assert.equal(integrityAfter.eventCount, integrityBefore.eventCount);
+  assert.equal(integrityAfter.head, integrityBefore.head);
+  const rebuilt = await request(second.base, '/api/bootstrap');
+  assert.ok(rebuilt.sources.some(item => item.id === proposed.source.id));
+  mark('DOD-008', `${integrityAfter.eventCount} eventi ricostruiti con head invariato`);
+
+  const healthLatencies = [];
+  for (let index = 0; index < 20; index += 1) {
+    const startAt = performance.now();
+    await request(second.base, '/api/health');
+    healthLatencies.push(performance.now() - startAt);
+  }
+  const healthP95 = percentile(healthLatencies, 0.95);
+  assert.ok(healthP95 <= 1000, `Health p95 ${healthP95}ms oltre soglia`);
+  assert.equal(release.blockers.length, 0);
+
+  const artifact = {
+    schemaVersion: '1.0.0',
+    generatedAt: new Date().toISOString(),
+    attestationType: 'internal-engineering-attestation',
+    externallyCertified: false,
+    result: 'passed',
+    productVersion: '1.0.0',
+    stabilityClass: 'stable-local-single-user',
+    manifestSha256: manifestHash,
+    checks,
+    metrics: {
+      coreJourneySuccessRate: 1,
+      receiptReadbackRate: receipts.filter(item => item.readbackVerified).length / receipts.length,
+      ledgerIntegrityRate: integrityAfter.ok ? 1 : 0,
+      startupDurationMs: Math.round(first.startupMs),
+      localHealthP95Ms: Math.round(healthP95 * 100) / 100,
+      criticalInScopeBlockers: release.blockers.length,
+      eventCountAfterRestart: integrityAfter.eventCount
+    },
+    limitations: manifest.excludedScope
+  };
+  await writeFile(path.join(artifactDir, 'v1-stability-attestation.json'), JSON.stringify(artifact, null, 2));
+  console.log(`v1-stability-audit: ok (${checks.length} DoD checks, ${receipts.length} receipts, health p95 ${artifact.metrics.localHealthP95Ms} ms)`);
+} finally {
+  await stop();
+  await rm(runtime, { recursive: true, force: true });
+}

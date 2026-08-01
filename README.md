@@ -1,82 +1,86 @@
 # ICTC — Integrated Compliance Tower Control
 
-ICTC è una beta locale proof-oriented per osservare fonti normative, gestire differenze, review, segnalazioni e incidenti mantenendo distinta ogni fase della catena epistemica.
+ICTC v1 è una webapp proof-oriented per osservare fonti, qualificare differenze, registrare decisioni e gestire eventi mantenendo distinta ogni fase della catena epistemica.
 
 ICTC attesta operazioni locali, persistenza, readback, decisioni registrate e integrità tecnica. Non determina automaticamente completezza del perimetro, applicabilità legale, conformità, efficacia dei controlli o obblighi di notifica.
 
-## Versione corrente proposta: v3 Living Evidence Atlas
+## Versione corrente: ICTC 1.0.0
+
+La v1 è **stabile nello scope locale e single-user dichiarato**. L'attestazione è ingegneristica interna: non è una certificazione di terza parte e non rende il prodotto enterprise-ready.
 
 ## Avvio rapido
 
 ```bash
+npm ci --ignore-scripts
 ./ictc.sh start
 ./ictc.sh status
+```
+
+Anche `npm start` avvia il runtime canonico v1 in foreground.
+
+```bash
 ./ictc.sh logs
 ./ictc.sh audit
 ./ictc.sh stop
 ```
 
-`current` usa la v3. La v2 è disponibile solo tramite `./ictc.sh start --profile v2`; `--profile all` avvia entrambi con porte, PID, log e SOT separati.
+Il runtime storico v2 resta disponibile soltanto con `./ictc.sh start --profile v2`; `--profile all` avvia v1 e v2 con porte, PID, log e SOT separati. L'alias `--profile v3` resta per compatibilità e indica la generazione tecnica del runtime corrente.
 
-Per compatibilità restano disponibili i comandi diretti storici:
+## Scope stabile
 
-```bash
-./ictc-v3.sh start
-./ictc-v3.sh status
-./ictc-v3.sh logs
-./ictc-v3.sh audit
-./ictc-v3.sh stop
-```
+- loopback locale o Codespace con porta privata;
+- singolo operatore;
+- intake di fonti tramite link;
+- review di fonti e finding;
+- decisione di impatto e mapping astratto;
+- segnalazioni, owner, RACI e transizioni;
+- ledger append-only, receipt, readback e ricostruzione;
+- AI locale read-only e senza write authority;
+- `OutcomeEnvelope → ActionFrame → DecisionCheckpoint → azione wired → Receipt`.
 
-Il comando canonico per nuovi utenti è `ictc.sh`.
+## Guardrail v1
 
-## Cosa si può usare nella v3
+- un bind non-loopback privo di autenticazione viene rifiutato per default;
+- gli upload binari sono disabilitati finché non esiste quarantena e scansione;
+- `/api/release` espone scope, esclusioni, readiness e hash del manifest;
+- `/api/health` espone versione e classe di stabilità;
+- la vista **Sistema** mostra readiness, deployment e limiti.
 
-- Oggi con balloon runtime;
-- Atlante con relazioni deterministiche e lista alternativa;
-- percorsi guidati, change story e incident room;
-- audit trail e receipt;
-- guida epistemica con tre lenti: orientarsi, decidere, verificare;
-- `ActionFrame` che rispondono a “che cosa devo fare qui?”;
-- `DecisionCheckpoint` prima di ogni scrittura;
-- support bundle sanitizzato dalla vista Sistema.
+Gli override `ICTC_ALLOW_UNAUTHENTICATED_BIND=1` e `ICTC_ENABLE_UNSCANNED_UPLOADS=1` portano il runtime fuori dallo scope stabile e richiedono accettazione esplicita del rischio.
 
-## Modello di interazione
+## Differenziazione
+
+ICTC non produce un compliance score. La differenza è la possibilità di ricostruire:
 
 ```text
-OutcomeEnvelope → ActionFrame → DecisionCheckpoint → azione wired → Receipt
+osservazione → proposta → review → decisione → persistenza → receipt
 ```
 
-L'`ActionFrame` è una guida deterministica e temporanea: non modifica stato o autorità. Il processo sottostante compare nel drill-down “Perché questa azione compare qui”. Il checkpoint mostra stato prima/dopo, conseguenza, limiti ed evidenza attesa.
+Ogni superficie dichiara input, produttore, limiti e ciò che l'esito non prova. L'AI usa una capsula locale e non può scrivere o decidere.
 
-## Confine epistemico
-
-Ogni `OutcomeEnvelope` espone stato, produttore, input, limiti, prossima azione e receipt. ICTC non determina automaticamente completezza, applicabilità legale, conformità, efficacia dei controlli o obblighi di notifica.
-
-## Verifica
+## Verifica della release
 
 ```bash
-npm ci --ignore-scripts
-./ictc.sh audit
-node v3/action-frame-audit.mjs
-node v3/support-bundle-audit.mjs
+npm run release:check
 ```
 
-Il registro machine-readable è `v3/gaps.json`. I gap critici residui — scansione dei file e identità/autorizzazione — restano visibili e impediscono l'uso enterprise.
+Il gate verifica suite storica, accessibilità, wiring, fixture blob, journey E2E, restart, safe bind, binary-upload policy, simulazioni buyer e saturazione `M=36 → M+100=136` senza nuova primitiva dopo M.
 
-## Documentazione v3
+Artefatti principali:
 
+- `artifacts/v1-stability-attestation.json`;
+- `artifacts/v1-buyer-simulation.json`;
+- `artifacts/v1-saturation.json`.
+
+## Documentazione v1
+
+- [Audit buyer e differenziazione](docs/V1_BUYER_AUDIT.md)
+- [Definition of Done e checklist](docs/V1_STABILITY_DOD.md)
 - [Modello UX object-focused](docs/OBJECT_FOCUSED_ACTION_MODEL.md)
-- [Audit PR 1–3](docs/POST_MERGE_AUDIT_PR1_PR3.md)
-- [Journey e audit onto-epistemico](docs/USER_JOURNEY_AUDIT_V4.md)
-- [Profili di esecuzione](docs/RUN_PROFILES.md)
 - [Registro dei gap](docs/GAP_REGISTER.md)
+- [Profili di esecuzione](docs/RUN_PROFILES.md)
 - [GitHub Codespaces](docs/CODESPACES.md)
-- [Runtime e wiring](docs/RUNTIME_AND_WIRING_V3.md)
-- [Design system](docs/DESIGN_SYSTEM_V3.md)
 
-## Requisiti e sicurezza
+## Fuori scope
 
-Node.js 22+, `curl`, workstation, Codespace o ambiente di prova isolato. Non sono implementati autenticazione enterprise, multi-tenancy, scheduler persistente, fetcher istituzionali reali, malware scanning, storage distribuito o alta disponibilità.
-
-Per sviluppo consultare [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/README.md](docs/README.md), [SECURITY.md](SECURITY.md) e [SUPPORT.md](SUPPORT.md).
+Non sono implementati OIDC/RBAC, multi-tenancy, malware scanning, scouting istituzionale reale, scheduler persistente, storage distribuito, alta disponibilità o telemetria centralizzata. Non esporre ICTC come servizio aziendale multiutente senza completare questi controlli.
