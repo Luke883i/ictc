@@ -31,7 +31,8 @@ assert.deepEqual(operatingContext.usedBy.sort(), ['matter', 'monitoring-job'].so
 assert.match(api, /createRuntimeModel/);
 assert.match(api, /model\.createMonitoring/);
 assert.match(api, /model\.createIncident/);
-assert.match(shell, /operatingContext: form\.get\('operatingContext'\)/);
+const operatingContextBindings = [...shell.matchAll(/operatingContext\s*:\s*form\.get\('operatingContext'\)/g)];
+assert.ok(operatingContextBindings.length >= 2, `binding contesto operativo insufficienti: ${operatingContextBindings.length}`);
 for (const phase of contract.incidentPhases) assert.ok(phase.from && phase.to && phase.phase && phase.label && phase.fields.every(field => field.id && field.label && field.required));
 mark('two-products-and-incident-process', 'due servizi primari e quattro transizioni documentate');
 
