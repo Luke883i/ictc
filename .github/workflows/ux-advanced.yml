@@ -1,0 +1,52 @@
+name: ictc-advanced-ux
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ictc-advanced-ux-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  ux-contract-and-visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts
+      - run: npm run audit:ux:advanced
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Runtime visual verification
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1
+          export ICTC_PORT=4797
+          export PORT=4797
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-advanced-ux-runtime"
+          trap './ictc.sh stop --profile current || true' EXIT
+          ./ictc.sh start --profile current
+          curl -fsS "http://127.0.0.1:4797/api/health"
+          ICTC_VISUAL_URL="http://127.0.0.1:4797/" python v3/visual-ux-check.py
+          ./ictc.sh stop --profile current
+          trap - EXIT
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-advanced-ux
+          path: |
+            artifacts/advanced-ux-audit.json
+            artifacts/advanced-ux-journeys.json
+            artifacts/advanced-ux-saturation.json
+            artifacts/advanced-ux-visual.json
+            artifacts/screenshots/advanced-ux.png
+          if-no-files-found: warn
+          retention-days: 30

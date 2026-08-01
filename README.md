@@ -58,24 +58,51 @@ osservazione → proposta → review → decisione → persistenza → receipt
 
 Ogni superficie dichiara input, produttore, limiti e ciò che l'esito non prova. L'AI usa una capsula locale e non può scrivere o decidere.
 
+## Layer UX/UI avanzato
+
+Il `Projection Stack` comprime la SOT corrente in quattro livelli navigabili:
+
+```text
+Osserva → Decidi → Agisci → Verifica
+```
+
+Ogni livello è una proiezione deterministica con stato nominato, input, produttore, limitazioni e una sola azione primaria. Non è un workflow obbligatorio, un punteggio o un verdetto.
+
+La toolbar **Comfort** permette di adattare testo, densità, contrasto e movimento senza modificare dati o stati ICTC. È raggiungibile anche con `Alt+U` e supporta tastiera, reflow, forced-colors e movimento ridotto.
+
+Verifica dedicata:
+
+```bash
+npm run audit:ux:advanced
+npm run visual:ux
+```
+
+La saturazione UX usa `M=48` e `M+100=148`, con novelty dopo M uguale a zero nello scope simulato.
+
 ## Verifica della release
 
 ```bash
 npm run release:check
 ```
 
-Il gate verifica suite storica, accessibilità, wiring, fixture blob, journey E2E, restart, safe bind, binary-upload policy, simulazioni buyer e saturazione `M=36 → M+100=136` senza nuova primitiva dopo M.
+Il gate verifica suite storica, accessibilità, wiring, fixture blob, journey E2E, restart, safe bind, binary-upload policy, simulazioni buyer, layer UX avanzato e saturazioni bounded.
 
 Artefatti principali:
 
 - `artifacts/v1-stability-attestation.json`;
 - `artifacts/v1-buyer-simulation.json`;
-- `artifacts/v1-saturation.json`.
+- `artifacts/v1-saturation.json`;
+- `artifacts/advanced-ux-audit.json`;
+- `artifacts/advanced-ux-journeys.json`;
+- `artifacts/advanced-ux-saturation.json`;
+- `artifacts/advanced-ux-visual.json`.
 
 ## Documentazione v1
 
 - [Audit buyer e differenziazione](docs/V1_BUYER_AUDIT.md)
 - [Definition of Done e checklist](docs/V1_STABILITY_DOD.md)
+- [Audit UX/UI avanzato](docs/ADVANCED_UX_AUDIT.md)
+- [DoD UX/UI avanzata](docs/ADVANCED_UX_DOD.md)
 - [Modello UX object-focused](docs/OBJECT_FOCUSED_ACTION_MODEL.md)
 - [Registro dei gap](docs/GAP_REGISTER.md)
 - [Profili di esecuzione](docs/RUN_PROFILES.md)
@@ -84,3 +111,5 @@ Artefatti principali:
 ## Fuori scope
 
 Non sono implementati OIDC/RBAC, multi-tenancy, malware scanning, scouting istituzionale reale, scheduler persistente, storage distribuito, alta disponibilità o telemetria centralizzata. Non esporre ICTC come servizio aziendale multiutente senza completare questi controlli.
+
+Gli audit automatici del layer UX non costituiscono certificazione WCAG o test con tecnologie assistive reali. Restano necessarie verifiche manuali con NVDA, VoiceOver, TalkBack, high contrast e utenti rappresentativi.
