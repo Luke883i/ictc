@@ -1,79 +1,92 @@
 import { strict as assert } from 'node:assert';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
-const contract = JSON.parse(await readFile(path.join(root, 'v3/public/epistemic-contract.json'), 'utf8'));
-const guide = await readFile(path.join(root, 'v3/public/js/epistemic-guide.js'), 'utf8');
+const contract = JSON.parse(await readFile(path.join(root, 'v3/public/persona-journeys.json'), 'utf8'));
 const app = await readFile(path.join(root, 'v3/public/app.js'), 'utf8');
-const guideCss = await readFile(path.join(root, 'v3/public/epistemic-guide.css'), 'utf8');
-const frameModel = await readFile(path.join(root, 'v3/public/js/action-frame-model.js'), 'utf8');
-const frameUi = await readFile(path.join(root, 'v3/public/js/action-frame-ui.js'), 'utf8');
-const frameCss = await readFile(path.join(root, 'v3/public/action-frame.css'), 'utf8');
-const interactions = await readFile(path.join(root, 'v3/public/js/interactions.js'), 'utf8');
-const support = await readFile(path.join(root, 'v3/public/js/support-bundle-model.js'), 'utf8');
+const shell = await readFile(path.join(root, 'v3/public/js/journey-shell.js'), 'utf8');
+const model = await readFile(path.join(root, 'v3/public/js/journey-model.js'), 'utf8');
+const css = await readFile(path.join(root, 'v3/public/styles.css'), 'utf8');
+const api = await readFile(path.join(root, 'v3/lib/api.mjs'), 'utf8');
 const checks = [];
 const mark = (name, detail) => checks.push({ name, status: 'passed', detail });
 
-assert.deepEqual(contract.lenses.map(item => item.id), ['orient', 'decide', 'verify']);
-for (const lens of contract.lenses) {
-  assert.ok(lens.question && lens.requiredFields.length >= 4);
-  assert.ok(lens.maxPrimaryFacts <= 8, `${lens.id}: densità primaria eccessiva`);
+assert.equal(contract.claimClass, 'persona-journey-projection-contract');
+assert.match(contract.primaryQuestion, /completare adesso/i);
+assert.match(contract.boundary, /non è identità.*autenticazione.*autorizzazione/i);
+assert.equal(contract.personas.length, 5);
+for (const persona of contract.personas) {
+  for (const field of ['id', 'label', 'entryQuestion', 'mandate', 'decisionBoundary', 'journey', 'sections']) {
+    assert.ok(persona[field], `${persona.id || 'persona'}: ${field} assente`);
+  }
+  assert.equal(persona.journey.length, 5, `${persona.id}: journey non minimale a cinque passi`);
 }
-mark('progressive-lenses', 'orientarsi, decidere, verificare');
+mark('persona-journey-contract', '5 lenti, mandato, confine e journey a cinque passi');
 
-assert.match(contract.primaryQuestion, /Che cosa deve fare qui/);
-assert.match(contract.secondaryQuestion, /processo/);
-assert.ok(contract.intermediateObjects.some(item => item.claimClass === 'action-frame'));
-assert.ok(contract.intermediateObjects.some(item => item.claimClass === 'decision-checkpoint'));
-mark('object-focused-abstractions', 'ActionFrame prima, processo nel drill-down, DecisionCheckpoint prima della scrittura');
-
-for (const [state, meaning] of Object.entries(contract.stateMeanings)) {
-  assert.ok(meaning.length >= 30, `${state}: significato troppo breve`);
-  assert.ok(!/^conforme|certificato|sicuro$/i.test(meaning));
+assert.ok(contract.objectPurposes.length >= 7);
+for (const purpose of contract.objectPurposes) {
+  assert.ok(contract.personas.some(persona => persona.id === purpose.personaId), `${purpose.personaId}: persona sconosciuta`);
+  assert.ok(purpose.claimClasses.length && purpose.purpose && purpose.allowedActions.length && purpose.antiEquivalence);
 }
-assert.ok(contract.stateMeanings['derived-guidance']);
-mark('state-language', `${Object.keys(contract.stateMeanings).length} stati spiegati senza verdetti`);
+mark('object-purpose-boundaries', `${contract.objectPurposes.length} scopi riconciliati con persona e anti-equivalenza`);
 
-for (const action of contract.writeActions) {
-  for (const field of ['id', 'before', 'after', 'requiresHumanConfirmation', 'requiresReceipt', 'doesNotMean']) assert.notEqual(action[field], undefined, `${action.id}: ${field} assente`);
-  assert.equal(action.requiresHumanConfirmation, true);
-  assert.equal(action.requiresReceipt, true);
-  assert.ok(action.doesNotMean.length >= 2);
-  assert.match(interactions, new RegExp(`withActionCheckpoint\\('${action.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`), `${action.id}: checkpoint non wired`);
+const expectedWrites = ['source-propose', 'source-review', 'finding-review', 'change-decision', 'control-map', 'matter-create', 'matter-owner', 'matter-transition'];
+const writeActions = contract.actions.filter(action => action.kind === 'write');
+assert.deepEqual(writeActions.map(action => action.id).sort(), [...expectedWrites].sort());
+for (const action of writeActions) {
+  assert.equal(action.receiptExpected, true, `${action.id}: receipt non obbligatoria`);
+  const routeToken = action.route.split('/').filter(part => part && !part.startsWith(':')).at(-1);
+  assert.ok(api.includes(routeToken), `${action.id}: route non rappresentata nel backend`);
+  assert.ok(model.includes(action.id), `${action.id}: task non derivato dal modello`);
 }
-mark('write-action-boundaries', `${contract.writeActions.length} azioni con before/after/receipt e checkpoint`);
+mark('runtime-write-contract', `${writeActions.length} scritture collegate a task, route e receipt`);
 
-assert.match(app, /mountEpistemicGuide/);
-assert.match(app, /mountActionFrames/);
-assert.match(app, /mountSupportBundle/);
-for (const token of ['/epistemic-contract.json', '/gap-registry.json', 'data-guide-lens', 'data-guide-object']) assert.ok(guide.includes(token), `Guida senza token ${token}`);
-assert.match(guide, /receipt/i);
-assert.match(guide, /limitations|limit/);
-assert.match(guide, /Escape/);
-assert.match(guideCss, /prefers-reduced-motion/);
-assert.match(guideCss, /min-height:44px/);
-mark('guide-wiring', 'contratto, gap, oggetto selezionato, tastiera e target minimi');
+assert.match(app, /startJourneyShell/);
+assert.doesNotMatch(app, /mountEpistemicGuide|mountActionFrames|mountAdvancedUx/);
+assert.match(shell, /deriveJourneyWorkspace/);
+assert.match(shell, /fetch\('\/persona-journeys\.json'/);
+assert.match(shell, /api\('\/api\/bootstrap'/);
+assert.match(shell, /async function checkpoint/);
+assert.match(shell, /dialog\.showModal\(\)/);
+assert.match(shell, /async function mutate/);
+assert.match(shell, /state\.lastReceipt\s*=\s*result\.receipt/);
+assert.match(shell, /await refresh\(\)/);
+assert.match(shell, /readbackVerified/);
+mark('journey-shell-wiring', 'shell unica, checkpoint, scrittura, refresh e receipt');
 
-for (const token of ['userQuestion', 'processRef', 'prerequisites', 'consequence', 'doesNotMean', 'evidenceAfter']) assert.ok(frameModel.includes(token), `ActionFrame senza ${token}`);
-assert.match(frameUi, /Che cosa devi fare qui/);
-assert.match(frameUi, /Perché questa azione compare qui/);
-assert.match(frameUi, /showModal/);
-assert.match(frameCss, /min-height:44px/);
-assert.match(frameCss, /prefers-reduced-motion/);
-mark('action-frame-wiring', 'una sola azione primaria, processo secondario, checkpoint e accessibilità di base');
+for (const token of ['objectPurpose', 'sotRef', 'whyHere', 'consequence', 'doesNotMean', 'evidenceAfter', 'availability']) {
+  assert.ok(model.includes(token), `JourneyTask senza ${token}`);
+}
+assert.match(model, /unavailable/);
+assert.match(model, /Il bootstrap non contiene la collezione necessaria/);
+assert.match(model, /Assenza di rischio o attività/);
+mark('journey-task-epistemics', 'scopo, SOT, conseguenza, limiti, evidenza e stati degradati');
 
-for (const forbidden of ['narrative', 'locator', 'contentBase64', 'rationale']) assert.match(support, new RegExp(forbidden, 'i'));
-assert.match(support, /redactions/);
-assert.match(support, /non attesta/i);
-mark('support-bundle-boundary', 'diagnostica locale con denylist e limiti espliciti');
+assert.match(shell, /data-task-action/);
+assert.match(shell, /class=\"primary\"/);
+assert.match(shell, /data-open-object/);
+assert.match(shell, /role=\"status\"/);
+assert.match(shell, /ArrowLeft|ArrowRight/);
+assert.match(shell, /Home|End/);
+assert.match(css, /--target:\s*44px/);
+assert.match(css, /min-height:\s*var\(--target\)/);
+assert.match(css, /prefers-reduced-motion:\s*reduce/);
+assert.match(css, /forced-colors:\s*active/);
+mark('accessibility-and-ergonomics', 'azione primaria, focus/tastiera, live status, target, motion e forced colors');
 
 for (const pattern of [/compliance score/i, /pienamente conforme/i, /nessun rischio/i, /certificato automaticamente/i]) {
-  assert.ok(!pattern.test(`${JSON.stringify(contract)}\n${guide}\n${frameModel}\n${frameUi}`), `Overclaim nella nuova superficie: ${pattern}`);
+  assert.ok(!pattern.test(`${JSON.stringify(contract)}\n${model}\n${shell}`), `Overclaim nella shell journey-first: ${pattern}`);
 }
-mark('anti-overclaim', 'nessuna label vietata nelle superfici object-focused');
+mark('anti-overclaim', 'nessun verdetto sintetico nelle superfici attive');
 
 const artifactDir = path.join(root, 'artifacts');
 await mkdir(artifactDir, { recursive: true });
-await writeFile(path.join(artifactDir, 'v3-ux-audit.json'), JSON.stringify({ schemaVersion: '1.1.0', generatedAt: new Date().toISOString(), result: 'passed', checks }, null, 2));
-console.log(`v3-ux-audit: ok (${checks.length} checks)`);
+await writeFile(path.join(artifactDir, 'v3-ux-audit.json'), JSON.stringify({
+  schemaVersion: '2.0.0',
+  generatedAt: new Date().toISOString(),
+  result: 'passed',
+  profile: 'journey-first-runtime-ui',
+  checks
+}, null, 2));
+console.log(`v3-ux-audit: ok (${checks.length} checks, journey-first)`);
