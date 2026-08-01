@@ -26,7 +26,7 @@ check('mobile-reflow', /@media\(max-width:650px\)/.test(css), 'reflow compatto')
 check('live-status', /role="status" aria-live="polite"/.test(html), 'annunci non invasivi');
 check('dialog-focus-return', /dialogReturnFocus/.test(shell) && /target\.focus\(\)/.test(shell), 'ritorno del focus');
 check('keyboard-tabs', /ArrowLeft/.test(shell) && /ArrowRight/.test(shell) && /Home/.test(shell) && /End/.test(shell), 'tab dettaglio da tastiera');
-check('search-shortcut', /ctrlKey/.test(shell) && /metaKey/.test(shell) && /toLowerCase\(\) === 'k'/.test(shell), 'Ctrl/Cmd+K');
+check('search-shortcut', /\(\s*event\.ctrlKey\s*\|\|\s*event\.metaKey\s*\)\s*&&\s*event\.key\.toLowerCase\(\)\s*===\s*'k'/.test(shell), 'Ctrl/Cmd+K');
 check('status-not-color-only', /statusLabels/.test(shell) && /status-badge/.test(shell), 'stato espresso con testo');
 check('responsive-tables', /compact-row/.test(css) && /grid-template-columns:1fr/.test(css), 'tabelle ricomposte su mobile');
 check('primary-action-count', /focus-actions/.test(shell) && /id="primaryTaskAction"/.test(shell), 'una azione primaria nel focus');
