@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0.0",
+  "claimClass": "persona-journey-projection-contract",
+  "primaryQuestion": "Che cosa devi completare adesso, nel tuo incarico?",
+  "boundary": "La persona è una lente di lavoro selezionata nel browser; non è identità, autenticazione, autorizzazione o prova di ruolo.",
+  "personas": [
+    {"id":"regulatory-analyst","label":"Analista normativo","entryQuestion":"Devo qualificare una novità o ampliare il perimetro conoscitivo","mandate":"Trasformare fonti e differenze osservate in review e decisioni contestuali documentate.","decisionBoundary":"Può registrare review, decisioni d’impatto e mapping astratti; non determina conformità universale o applicabilità legale automatica.","journey":["Acquisisci","Revisiona la fonte","Valuta la differenza","Decidi l’impatto","Collega il presidio"],"sections":["work","records","evidence"]},
+    {"id":"incident-lead","label":"Responsabile evento","entryQuestion":"Devo prendere in carico un evento e farlo avanzare","mandate":"Conservare il racconto, confermare responsabilità e registrare transizioni consentite.","decisionBoundary":"Può confermare owner/RACI e avanzare il caso; non determina automaticamente qualificazione normativa, notifica o rischio residuo.","journey":["Raccogli il racconto","Conferma la responsabilità","Valuta","Rispondi","Chiudi con review"],"sections":["work","records","evidence"]},
+    {"id":"auditor","label":"Auditor","entryQuestion":"Devo ricostruire come è stato prodotto un esito","mandate":"Seguire un claim fino a input, produttore, relazione, evento e receipt.","decisionBoundary":"La lente è read-only; integrità e receipt non provano verità sostanziale, completezza o conformità.","journey":["Scegli il claim","Leggi la provenienza","Segui le relazioni","Verifica la receipt","Annota il limite"],"sections":["work","records","evidence"]},
+    {"id":"executive","label":"Direzione","entryQuestion":"Devo capire quale decisione richiede sponsorship o attenzione","mandate":"Vedere decisioni aperte, responsabilità e conseguenze senza punteggi sintetici.","decisionBoundary":"La lente è read-only e non sostituisce review, ownership o decisioni registrate nel dominio.","journey":["Scegli il tema","Leggi la decisione aperta","Valuta la conseguenza","Apri il responsabile","Verifica la prova"],"sections":["work","records","evidence"]},
+    {"id":"platform-operator","label":"Operatore piattaforma","entryQuestion":"Devo verificare che il runtime sia pronto e diagnosticabile","mandate":"Controllare readiness, integrità, stato dei servizi e produrre diagnostica sanitizzata.","decisionBoundary":"Lo stato tecnico non è un giudizio di conformità né una prova di completezza del perimetro.","journey":["Controlla la release","Verifica la SOT","Ispeziona il ledger","Produci diagnostica","Escala il limite"],"sections":["work","evidence","system"]}
+  ],
+  "actions": [
+    {"id":"source-propose","kind":"write","route":"POST /api/sources","receiptExpected":true},
+    {"id":"source-review","kind":"write","route":"POST /api/sources/:id/review","receiptExpected":true},
+    {"id":"finding-review","kind":"write","route":"POST /api/findings/:id/review","receiptExpected":true},
+    {"id":"change-decision","kind":"write","route":"POST /api/changes/:id/decide","receiptExpected":true},
+    {"id":"control-map","kind":"write","route":"POST /api/changes/:id/map-control","receiptExpected":true},
+    {"id":"matter-create","kind":"write","route":"POST /api/matters","receiptExpected":true},
+    {"id":"matter-owner","kind":"write","route":"POST /api/matters/:id/confirm-owner","receiptExpected":true},
+    {"id":"matter-transition","kind":"write","route":"POST /api/matters/:id/transition","receiptExpected":true},
+    {"id":"object-open","kind":"read","route":"GET /api/objects/:id","receiptExpected":false},
+    {"id":"ledger-read","kind":"read","route":"GET /api/runtime/ledger","receiptExpected":false},
+    {"id":"support-bundle","kind":"local-read","route":"GET /api/release + GET /api/runtime/integrity","receiptExpected":false}
+  ],
+  "accessibility": {"targetSizeCssPixels":44,"minimumTextZoomPercent":200,"keyboard":["Tab","Enter","Space","Escape","ArrowLeft","ArrowRight","Home","End","Ctrl/Cmd+K"],"adaptations":["visible-focus","reduced-motion","forced-colors","reflow-400px","live-region","dialog-focus-return"]},
+  "limitations": ["Le journey sono proiezioni deterministiche del bootstrap e non nuovi stati di dominio.","La selezione di persona non concede autorizzazioni.","Una coda vuota non equivale a conformità, completezza o assenza di rischio.","I test automatici non certificano accessibilità o usabilità con utenti reali."],
+  "objectPurposes": [
+    {"personaId":"regulatory-analyst","claimClasses":["source-record"],"purpose":"Stabilire se una fonte candidata entra nel perimetro locale tramite review umana.","allowedActions":["source-review","object-open"],"antiEquivalence":"Fonte presente non equivale a fonte applicabile o autorevole."},
+    {"personaId":"regulatory-analyst","claimClasses":["finding"],"purpose":"Qualificare localmente una differenza osservata senza trasformarla in materialità automatica.","allowedActions":["finding-review","object-open"],"antiEquivalence":"Differenza osservata non equivale a cambiamento materiale."},
+    {"personaId":"regulatory-analyst","claimClasses":["regulatory-change-story"],"purpose":"Registrare una decisione contestuale e, quando richiesto, un mapping astratto.","allowedActions":["change-decision","control-map","object-open"],"antiEquivalence":"Decisione locale o mapping non equivalgono a conformità o efficacia."},
+    {"personaId":"incident-lead","claimClasses":["matter"],"purpose":"Conservare fatti, responsabilità e transizioni consentite del caso.","allowedActions":["matter-owner","matter-transition","object-open"],"antiEquivalence":"Caso aperto o chiuso non determina qualificazione normativa o rischio residuo."},
+    {"personaId":"auditor","claimClasses":["source-record","finding","regulatory-change-story","matter","runtime-trace"],"purpose":"Ricostruire provenienza, input, relazioni e receipt in sola lettura.","allowedActions":["object-open","ledger-read"],"antiEquivalence":"Integrità e receipt non provano verità sostanziale o completezza."},
+    {"personaId":"executive","claimClasses":["regulatory-change-story","matter"],"purpose":"Comprendere decisioni e responsabilità aperte senza sostituire gli owner di dominio.","allowedActions":["object-open"],"antiEquivalence":"Visibilità direzionale non equivale a decisione registrata o priorità automatica."},
+    {"personaId":"platform-operator","claimClasses":["runtime-stage","release-boundary"],"purpose":"Verificare readiness, integrità e capacità tecniche del runtime.","allowedActions":["ledger-read","support-bundle","object-open"],"antiEquivalence":"Stato tecnico non equivale a conformità del cliente o enterprise readiness."}
+  ]
+}

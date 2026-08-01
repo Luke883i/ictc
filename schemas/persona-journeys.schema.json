@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/persona-journeys.schema.json",
+  "title": "ICTC persona journey projection contract",
+  "type": "object",
+  "required": ["schemaVersion","claimClass","primaryQuestion","boundary","personas","actions","objectPurposes","accessibility","limitations"],
+  "properties": {
+    "schemaVersion":{"type":"string"},
+    "claimClass":{"const":"persona-journey-projection-contract"},
+    "primaryQuestion":{"type":"string","minLength":10},
+    "boundary":{"type":"string","minLength":20},
+    "personas":{"type":"array","minItems":5,"uniqueItems":true,"items":{"type":"object","required":["id","label","entryQuestion","mandate","decisionBoundary","journey","sections"],"properties":{"id":{"type":"string","pattern":"^[a-z0-9-]+$"},"label":{"type":"string"},"entryQuestion":{"type":"string"},"mandate":{"type":"string"},"decisionBoundary":{"type":"string"},"journey":{"type":"array","minItems":5,"maxItems":5,"items":{"type":"string"}},"sections":{"type":"array","minItems":3,"items":{"enum":["work","records","evidence","system"]}}}}},
+    "actions":{"type":"array","minItems":10},
+    "objectPurposes":{"type":"array","minItems":7,"items":{"type":"object","required":["personaId","claimClasses","purpose","allowedActions","antiEquivalence"],"properties":{"personaId":{"type":"string"},"claimClasses":{"type":"array","minItems":1,"items":{"type":"string"}},"purpose":{"type":"string","minLength":20},"allowedActions":{"type":"array","minItems":1,"items":{"type":"string"}},"antiEquivalence":{"type":"string","minLength":20}}}},
+    "accessibility":{"type":"object","required":["targetSizeCssPixels","keyboard","adaptations"]},
+    "limitations":{"type":"array","minItems":4,"items":{"type":"string"}}
+  }
+}

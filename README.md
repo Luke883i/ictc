@@ -36,7 +36,21 @@ Il runtime storico v2 resta disponibile soltanto con `./ictc.sh start --profile 
 - segnalazioni, owner, RACI e transizioni;
 - ledger append-only, receipt, readback e ricostruzione;
 - AI locale read-only e senza write authority;
-- `OutcomeEnvelope → ActionFrame → DecisionCheckpoint → azione wired → Receipt`.
+- journey-first UI con checkpoint prima delle scritture.
+
+## Esperienza journey-first
+
+ICTC non apre più con una tassonomia di moduli o con una dashboard universale. La prima domanda è:
+
+> Che cosa devi completare adesso?
+
+Le lenti disponibili sono Analista normativo, Responsabile evento, Auditor, Direzione e Operatore piattaforma. Ogni lente mostra una sola attività primaria derivata dal bootstrap runtime, con oggetto SOT, scopo nella journey, confine decisionale, conseguenza, limite ed evidenza attesa.
+
+```text
+persona → incarico → oggetto SOT → checkpoint → route → readback → receipt
+```
+
+La persona è una preferenza di presentazione nel browser: non è identità, autenticazione o autorizzazione.
 
 ## Guardrail v1
 
@@ -44,7 +58,7 @@ Il runtime storico v2 resta disponibile soltanto con `./ictc.sh start --profile 
 - gli upload binari sono disabilitati finché non esiste quarantena e scansione;
 - `/api/release` espone scope, esclusioni, readiness e hash del manifest;
 - `/api/health` espone versione e classe di stabilità;
-- la vista **Sistema** mostra readiness, deployment e limiti.
+- la lente **Operatore piattaforma** mostra readiness, deployment e limiti.
 
 Gli override `ICTC_ALLOW_UNAUTHENTICATED_BIND=1` e `ICTC_ENABLE_UNSCANNED_UPLOADS=1` portano il runtime fuori dallo scope stabile e richiedono accettazione esplicita del rischio.
 
@@ -58,52 +72,29 @@ osservazione → proposta → review → decisione → persistenza → receipt
 
 Ogni superficie dichiara input, produttore, limiti e ciò che l'esito non prova. L'AI usa una capsula locale e non può scrivere o decidere.
 
-## Layer UX/UI avanzato
-
-Il `Projection Stack` comprime la SOT corrente in quattro livelli navigabili:
-
-```text
-Osserva → Decidi → Agisci → Verifica
-```
-
-Ogni livello è una proiezione deterministica con stato nominato, input, produttore, limitazioni e una sola azione primaria. Non è un workflow obbligatorio, un punteggio o un verdetto.
-
-La toolbar **Comfort** permette di adattare testo, densità, contrasto e movimento senza modificare dati o stati ICTC. È raggiungibile anche con `Alt+U` e supporta tastiera, reflow, forced-colors e movimento ridotto.
-
-Verifica dedicata:
-
-```bash
-npm run audit:ux:advanced
-npm run visual:ux
-```
-
-La saturazione UX usa `M=48` e `M+100=148`, con novelty dopo M uguale a zero nello scope simulato.
-
 ## Verifica della release
 
 ```bash
 npm run release:check
+npm run audit:ux:journey
 ```
 
-Il gate verifica suite storica, accessibilità, wiring, fixture blob, journey E2E, restart, safe bind, binary-upload policy, simulazioni buyer, layer UX avanzato e saturazioni bounded.
+Con runtime attivo, il gate journey verifica anche tre percorsi API e un browser path con scrittura reale:
 
-Artefatti principali:
+```bash
+ICTC_BASE_URL=http://127.0.0.1:4807 node v3/journey-runtime-check.mjs
+ICTC_BASE_URL=http://127.0.0.1:4807 python3 v3/journey-browser-check.py
+```
 
-- `artifacts/v1-stability-attestation.json`;
-- `artifacts/v1-buyer-simulation.json`;
-- `artifacts/v1-saturation.json`;
-- `artifacts/advanced-ux-audit.json`;
-- `artifacts/advanced-ux-journeys.json`;
-- `artifacts/advanced-ux-saturation.json`;
-- `artifacts/advanced-ux-visual.json`.
+La saturazione journey-first copre `M=60 → M+100=160` senza nuova primitiva dopo M. È una conclusione bounded e non prova completezza universale o comprensione umana.
 
 ## Documentazione v1
 
 - [Audit buyer e differenziazione](docs/V1_BUYER_AUDIT.md)
-- [Definition of Done e checklist](docs/V1_STABILITY_DOD.md)
-- [Audit UX/UI avanzato](docs/ADVANCED_UX_AUDIT.md)
-- [DoD UX/UI avanzata](docs/ADVANCED_UX_DOD.md)
-- [Modello UX object-focused](docs/OBJECT_FOCUSED_ACTION_MODEL.md)
+- [Definition of Done v1](docs/V1_STABILITY_DOD.md)
+- [Audit della UI precedente](docs/JOURNEY_FIRST_UI_AUDIT.md)
+- [Design journey-first a ritroso](docs/JOURNEY_FIRST_UI_DESIGN.md)
+- [DoD e metriche journey-first](docs/JOURNEY_FIRST_UI_DOD.md)
 - [Registro dei gap](docs/GAP_REGISTER.md)
 - [Profili di esecuzione](docs/RUN_PROFILES.md)
 - [GitHub Codespaces](docs/CODESPACES.md)
@@ -111,5 +102,3 @@ Artefatti principali:
 ## Fuori scope
 
 Non sono implementati OIDC/RBAC, multi-tenancy, malware scanning, scouting istituzionale reale, scheduler persistente, storage distribuito, alta disponibilità o telemetria centralizzata. Non esporre ICTC come servizio aziendale multiutente senza completare questi controlli.
-
-Gli audit automatici del layer UX non costituiscono certificazione WCAG o test con tecnologie assistive reali. Restano necessarie verifiche manuali con NVDA, VoiceOver, TalkBack, high contrast e utenti rappresentativi.
