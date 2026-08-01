@@ -1,104 +1,132 @@
 # ICTC — Integrated Compliance Tower Control
 
-ICTC v1 è una webapp proof-oriented per osservare fonti, qualificare differenze, registrare decisioni e gestire eventi mantenendo distinta ogni fase della catena epistemica.
+ICTC v1 registra fonti, differenze, decisioni e casi mantenendo separati osservazione, proposta automatica, review umana e prova tecnica.
 
-ICTC attesta operazioni locali, persistenza, readback, decisioni registrate e integrità tecnica. Non determina automaticamente completezza del perimetro, applicabilità legale, conformità, efficacia dei controlli o obblighi di notifica.
+ICTC attesta operazioni locali, persistenza e integrità tecnica. Non determina automaticamente completezza del perimetro, applicabilità legale, conformità, efficacia dei controlli o obblighi di notifica.
 
 ## Versione corrente: ICTC 1.0.0
 
-La v1 è **stabile nello scope locale e single-user dichiarato**. L'attestazione è ingegneristica interna: non è una certificazione di terza parte e non rende il prodotto enterprise-ready.
+La v1 è stabile nello scope locale e single-user dichiarato. L’attestazione è ingegneristica interna, non una certificazione di terza parte.
 
 ## Avvio rapido
 
+Per l’uso quotidiano basta:
+
 ```bash
-npm ci --ignore-scripts
 ./ictc.sh start
-./ictc.sh status
 ```
 
-Anche `npm start` avvia il runtime canonico v1 in foreground.
+`./ictc.sh status` verifica lo stato ma non è necessario per l’avvio.
+
+Alla prima installazione, o quando cambia `package-lock.json`, eseguire prima:
 
 ```bash
+npm ci --ignore-scripts
+```
+
+Comandi operativi:
+
+```bash
+./ictc.sh status
 ./ictc.sh logs
 ./ictc.sh audit
 ./ictc.sh stop
 ```
 
-Il runtime storico v2 resta disponibile soltanto con `./ictc.sh start --profile v2`; `--profile all` avvia v1 e v2 con porte, PID, log e SOT separati. L'alias `--profile v3` resta per compatibilità e indica la generazione tecnica del runtime corrente.
+`npm start` avvia lo stesso runtime in foreground. Il runtime storico v2 resta disponibile con `./ictc.sh start --profile v2`.
 
 ## Scope stabile
 
 - loopback locale o Codespace con porta privata;
 - singolo operatore;
-- intake di fonti tramite link;
-- review di fonti e finding;
-- decisione di impatto e mapping astratto;
-- segnalazioni, owner, RACI e transizioni;
-- ledger append-only, receipt, readback e ricostruzione;
-- AI locale read-only e senza write authority;
-- journey-first UI con checkpoint prima delle scritture.
+- contenuti tramite link o testo;
+- scheduler locale con configurazione persistita nel ledger;
+- acquisizione remota e studio AI soltanto quando configurati esplicitamente;
+- review umana di fonti e differenze;
+- decisione di impatto e collegamento a controlli;
+- incidenti e quasi incidenti dalla segnalazione alle lezioni apprese;
+- contesti operativi per azienda, ente pubblico e impresa regolamentata;
+- ledger append-only, blob testuali, ricevute e ricostruzione;
+- assistente locale read-only.
 
-## Esperienza journey-first
+## Interfaccia
 
-ICTC non apre più con una tassonomia di moduli o con una dashboard universale. La prima domanda è:
+La navigazione primaria contiene due sole aree.
 
-> Che cosa devi completare adesso?
+### Monitoraggio normativo
 
-Le lenti disponibili sono Analista normativo, Responsabile evento, Auditor, Direzione e Operatore piattaforma. Ogni lente mostra una sola attività primaria derivata dal bootstrap runtime, con oggetto SOT, scopo nella journey, confine decisionale, conseguenza, limite ed evidenza attesa.
+Due ingressi producono lo stesso reticolo verificabile:
 
 ```text
-persona → incarico → oggetto SOT → checkpoint → route → readback → receipt
+monitoraggio programmato → fonte → differenza → decisione → controllo
+contenuto dell’utente   → fonte → differenza → decisione → controllo
 ```
 
-La persona è una preferenza di presentazione nel browser: non è identità, autenticazione o autorizzazione.
+Un monitoraggio conserva URL, frequenza, prossima esecuzione e domanda di studio. Quando acquisizione remota e provider AI sono configurati, ICTC salva il contenuto osservato come blob, calcola il digest, confronta la baseline e chiede all’AI una proposta delimitata. Senza provider AI registra il confronto e mostra esplicitamente che lo studio non è disponibile. La rilevanza resta sempre una decisione umana.
+
+### Incidenti e quasi incidenti
+
+```text
+segnalazione → responsabilità → triage → risposta → ripristino → lezioni
+```
+
+Ogni fase richiede evidenze strutturate, produce una ricevuta e aggiorna la cronologia. Il processo supporta la gestione operativa; non determina automaticamente qualificazione normativa, obblighi di notifica o rischio residuo.
+
+Ogni area mostra una sola prossima azione. Origine, limiti, identificativi e prova tecnica restano nel dettaglio. I contesti operativi non creano nuove aree: qualificano organizzazione, owner e perimetro senza attribuire autorizzazioni o applicabilità.
+
+## Configurazione opzionale del monitoraggio
+
+```bash
+ICTC_MONITORING_REMOTE=1
+ICTC_AI_ENDPOINT=https://provider.example/v1/chat/completions
+ICTC_AI_MODEL=model-name
+ICTC_AI_API_KEY=...
+./ictc.sh start
+```
+
+Il monitoraggio remoto applica vincoli anti-SSRF, timeout, limite dimensionale e rifiuto degli host privati per default. Configurazioni esterne devono essere valutate nel contesto operativo dell’organizzazione.
 
 ## Guardrail v1
 
-- un bind non-loopback privo di autenticazione viene rifiutato per default;
-- gli upload binari sono disabilitati finché non esiste quarantena e scansione;
-- `/api/release` espone scope, esclusioni, readiness e hash del manifest;
-- `/api/health` espone versione e classe di stabilità;
-- la lente **Operatore piattaforma** mostra readiness, deployment e limiti.
+- bind non-loopback rifiutato per default;
+- upload binari disabilitati finché non esiste quarantena e scansione;
+- `/api/release` espone scope, esclusioni e readiness;
+- `/api/health` espone versione, scheduler, acquisizione remota e disponibilità AI;
+- una ricevuta prova una scrittura locale, non la verità del contenuto.
 
-Gli override `ICTC_ALLOW_UNAUTHENTICATED_BIND=1` e `ICTC_ENABLE_UNSCANNED_UPLOADS=1` portano il runtime fuori dallo scope stabile e richiedono accettazione esplicita del rischio.
-
-## Differenziazione
-
-ICTC non produce un compliance score. La differenza è la possibilità di ricostruire:
-
-```text
-osservazione → proposta → review → decisione → persistenza → receipt
-```
-
-Ogni superficie dichiara input, produttore, limiti e ciò che l'esito non prova. L'AI usa una capsula locale e non può scrivere o decidere.
+Gli override `ICTC_ALLOW_UNAUTHENTICATED_BIND=1`, `ICTC_ALLOW_PRIVATE_MONITORING=1` e `ICTC_ENABLE_UNSCANNED_UPLOADS=1` richiedono accettazione esplicita del rischio.
 
 ## Verifica della release
 
 ```bash
 npm run release:check
-npm run audit:ux:journey
+npm run audit:ux:core
 ```
 
-Con runtime attivo, il gate journey verifica anche tre percorsi API e un browser path con scrittura reale:
+Con runtime e provider di test attivi:
 
 ```bash
-ICTC_BASE_URL=http://127.0.0.1:4807 node v3/journey-runtime-check.mjs
-ICTC_BASE_URL=http://127.0.0.1:4807 python3 v3/journey-browser-check.py
+ICTC_BASE_URL=http://127.0.0.1:4807 \
+ICTC_MOCK_URL=http://127.0.0.1:4899 \
+node v3/journey-runtime-check.mjs
+
+ICTC_BASE_URL=http://127.0.0.1:4807 \
+python3 v3/journey-browser-check.py
 ```
 
-La saturazione journey-first copre `M=60 → M+100=160` senza nuova primitiva dopo M. È una conclusione bounded e non prova completezza universale o comprensione umana.
+La saturazione UI usa `M=40 → M+100=140` senza nuove primitive dopo M nello scope simulato.
 
 ## Documentazione v1
 
+- [Audit del testo end-user](docs/CORE_UI_COPY_AUDIT.md)
+- [Design delle due aree](docs/CORE_UI_DESIGN.md)
+- [Definition of Done UI](docs/CORE_UI_DOD.md)
 - [Audit buyer e differenziazione](docs/V1_BUYER_AUDIT.md)
 - [Definition of Done v1](docs/V1_STABILITY_DOD.md)
-- [Audit della UI precedente](docs/JOURNEY_FIRST_UI_AUDIT.md)
-- [Design journey-first a ritroso](docs/JOURNEY_FIRST_UI_DESIGN.md)
-- [DoD e metriche journey-first](docs/JOURNEY_FIRST_UI_DOD.md)
 - [Registro dei gap](docs/GAP_REGISTER.md)
 - [Profili di esecuzione](docs/RUN_PROFILES.md)
 - [GitHub Codespaces](docs/CODESPACES.md)
 
 ## Fuori scope
 
-Non sono implementati OIDC/RBAC, multi-tenancy, malware scanning, scouting istituzionale reale, scheduler persistente, storage distribuito, alta disponibilità o telemetria centralizzata. Non esporre ICTC come servizio aziendale multiutente senza completare questi controlli.
+Non sono implementati OIDC/RBAC, multi-tenancy, malware scanning, crawling gestito su larga scala, scheduler ad alta disponibilità, storage distribuito o telemetria centralizzata. Non esporre ICTC come servizio aziendale multiutente senza completare questi controlli.

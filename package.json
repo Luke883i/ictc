@@ -1,6 +1,36 @@
 {
-  "name":"ictc","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22"},
-  "scripts":{
-    "start":"node v3/server.mjs","start:legacy":"node server.mjs","contract":"node scripts/repository-contract.mjs","schema:check":"node scripts/schema-check.mjs","labels:check":"node scripts/label-lint.mjs","epistemic:check":"node scripts/epistemic-check.mjs","verify":"node scripts/verify.mjs","e2e":"node scripts/e2e.mjs","visual":"bash scripts/visual-check.sh","visual:ux":"python3 v3/journey-browser-check.py","git:handshake":"node scripts/git-handshake.mjs","release:manifest":"node scripts/release-manifest.mjs","test":"npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e","wiring:check":"node scripts/ui-wiring-check.mjs","ascii:export":"node scripts/ascii-export.mjs","trace:preview":"node scripts/trace-preview.mjs","audit:runtime":"node scripts/runtime-audit.mjs","audit:a11y":"node scripts/accessibility-audit.mjs","audit:docs":"node scripts/docs-audit.mjs","audit:ux:journey":"node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/journey-saturation.mjs","audit":"npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs","audit:v1":"node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs","release:check":"npm run audit && npm run audit:ux:journey && node v3/support-bundle-audit.mjs && npm run audit:v1","start:all":"./ictc.sh start --profile all"
+  "name": "ictc",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node v3/server.mjs",
+    "start:legacy": "node server.mjs",
+    "contract": "node scripts/repository-contract.mjs",
+    "schema:check": "node scripts/schema-check.mjs",
+    "labels:check": "node scripts/label-lint.mjs",
+    "epistemic:check": "node scripts/epistemic-check.mjs",
+    "verify": "node scripts/verify.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "visual": "bash scripts/visual-check.sh",
+    "visual:ux": "python3 v3/journey-browser-check.py",
+    "git:handshake": "node scripts/git-handshake.mjs",
+    "release:manifest": "node scripts/release-manifest.mjs",
+    "test": "npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e",
+    "wiring:check": "node scripts/ui-wiring-check.mjs",
+    "ascii:export": "node scripts/ascii-export.mjs",
+    "trace:preview": "node scripts/trace-preview.mjs",
+    "audit:runtime": "node scripts/runtime-audit.mjs",
+    "audit:a11y": "node scripts/accessibility-audit.mjs",
+    "audit:docs": "node scripts/docs-audit.mjs",
+    "audit:ux:journey": "npm run audit:ux:core",
+    "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
+    "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
+    "release:check": "npm run audit && npm run audit:ux:core && node v3/support-bundle-audit.mjs && npm run audit:v1",
+    "start:all": "./ictc.sh start --profile all",
+    "audit:ux:core": "node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs"
   }
 }
