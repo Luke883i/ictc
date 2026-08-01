@@ -1,6 +1,6 @@
-# ICTC v3 runtime — Journey-first workspace
+# ICTC v3 runtime — Monitoraggio e Incidenti
 
-La generazione tecnica v3 alimenta la release ICTC v1. Il backend, il ledger e gli OutcomeEnvelope restano invariati; la UI corrente organizza gli stessi oggetti per incarico utente.
+La generazione tecnica v3 alimenta ICTC v1. La UI attiva espone soltanto due servizi e usa lo stesso backend, ledger, storage blob e proiezione runtime.
 
 ```bash
 ./ictc-v3.sh start
@@ -10,29 +10,54 @@ La generazione tecnica v3 alimenta la release ICTC v1. Il backend, il ledger e g
 ./ictc-v3.sh stop
 ```
 
-## UI attiva
+## Monitoraggio normativo
 
-La prima scelta è una lente di lavoro, non un modulo:
+### Percorso programmato
 
-- Analista normativo;
-- Responsabile evento;
-- Auditor;
-- Direzione;
-- Operatore piattaforma.
+```text
+configurazione → review fonte → scheduling → acquisizione → digest → studio AI opzionale → finding → review → decisione → controllo
+```
 
-Ogni workspace mostra una sola attività primaria e usa progressive disclosure per percorso, limiti e coda. Tutte le attività derivano dal bootstrap runtime o da un intento umano esplicito. Le scritture passano da checkpoint, route, readback e receipt.
+- configurazione e prossima esecuzione persistono nel ledger;
+- il contenuto osservato viene salvato in `runtime/blobs/`;
+- l’AI viene invocata soltanto se endpoint e modello sono configurati;
+- un fallimento AI resta `failed` e non produce una proposta fittizia;
+- una differenza resta da revisionare da una persona.
+
+### Percorso manuale
+
+```text
+URL o testo → fonte candidata → finding → review → decisione → controllo
+```
+
+Il reticolo visibile deriva dagli edge `monitors`, `derived-from`, `observed-by`, `review-created` e `covered-by` proiettati dal runtime.
+
+## Incidenti e quasi incidenti
+
+```text
+segnalazione → ownership → triage → risposta → recovery → lessons learned
+```
+
+Le transizioni sono consentite in sequenza e richiedono campi di evidenza definiti da `core-workspaces.json`. Il modello è una sintesi operativa ispirata a NIST SP 800-61 Rev. 3 e ISO/IEC 27035; non determina automaticamente incident classification legale o notifiche.
+
+## Ciclo di scrittura
+
+```text
+controllo visibile → conferma → route API → append → readback → receipt → bootstrap aggiornato
+```
+
+Un controllo privo di input o output runtime non deve essere presente nella UI.
 
 ## Contratti e gate
 
 ```bash
-npm run audit:ux:journey
+npm run audit:ux:core
 ```
 
-Con server attivo:
+Il gate runtime usa `v3/mock-monitoring-provider.mjs` per verificare acquisizione, provider AI compatibile, blob, digest, reticolo, tutte le fasi incidente e receipt. Il browser gate produce due screenshot del runtime.
 
-```bash
-ICTC_BASE_URL=http://127.0.0.1:4807 node v3/journey-runtime-check.mjs
-ICTC_BASE_URL=http://127.0.0.1:4807 python3 v3/journey-browser-check.py
-```
+La SOT locale risiede nella directory runtime configurata. Integrità, digest e ricevute non equivalgono a verità, completezza o conformità.
 
-La SOT è locale in `v3/runtime/`. Integrità tecnica, receipt e hash non equivalgono a verità, completezza o conformità.
+## Contesti operativi
+
+Azienda, ente pubblico e impresa regolamentata sono contesti dei due servizi, non moduli separati. Il contesto viene validato, persistito e proiettato nella UI; non concede autorizzazioni e non determina applicabilità.

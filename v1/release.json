@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "product": "ICTC",
   "productVersion": "1.0.0",
   "releaseName": "ICTC v1 Stable Local",
@@ -9,33 +9,35 @@
   "stableScope": [
     "avvio locale con Node.js 22 e launcher canonico",
     "uso single-user su loopback o Codespace con porta privata",
-    "intake di fonti tramite link",
+    "intake di fonti tramite link o testo con blob e digest locali",
+    "scheduler locale con configurazione e prossima esecuzione persistite",
+    "acquisizione remota e studio AI soltanto quando configurati esplicitamente",
     "review umana di fonti e finding",
     "decisione di impatto e mapping astratto ai controlli",
-    "segnalazioni, owner, RACI e transizioni consentite",
+    "incidenti e quasi incidenti con ownership, triage, risposta, recovery e lessons learned",
     "ledger append-only, readback, receipt e verifica della hash-chain",
     "assistente locale read-only e senza write authority",
-    "JourneyTask per persona e DecisionCheckpoint prima delle scritture"
+    "interfaccia compatta con Monitoraggio e Incidenti, conferma prima delle scritture"
   ],
   "excludedScope": [
     "servizio multiutente o esposizione pubblica non autenticata",
     "OIDC, RBAC, non ripudio e segregazione dei tenant",
     "upload binari non scansionati nel profilo stabile",
-    "scouting istituzionale remoto e scheduler persistente",
+    "crawling gestito su larga scala, scheduler ad alta disponibilità e garanzie sui provider esterni",
     "conformità legale, efficacia dei controlli o obblighi di notifica determinati automaticamente",
     "alta disponibilità, storage distribuito e telemetria centralizzata"
   ],
   "differentiators": [
-    {"id":"DIF-001","title":"Catena epistemica esplicita","buyerValue":"Ogni esito distingue osservazione, proposta, review, decisione e receipt.","proof":"OutcomeEnvelope, JourneyTask, DecisionCheckpoint e ledger append-only."},
-    {"id":"DIF-002","title":"Anti-overclaim by design","buyerValue":"La UI dichiara ciò che un esito non prova nel punto in cui l'utente decide.","proof":"Contratto epistemico, label lint e write-action boundaries."},
-    {"id":"DIF-003","title":"Audit trail ricostruibile","buyerValue":"L'auditor può risalire da un oggetto a input, produttore, evento e receipt.","proof":"Hash-chain, readback, object drill-down e ledger sanitizzato."},
-    {"id":"DIF-004","title":"AI delimitata","buyerValue":"L'AI opera su una capsula locale, cita gli oggetti e non può scrivere o decidere.","proof":"Session scope, cited item IDs e writeAuthority=false."},
-    {"id":"DIF-005","title":"Portabilità operativa","buyerValue":"Il prodotto si avvia senza dipendenze runtime esterne e mantiene rollback v2.","proof":"Node.js 22, launcher, Codespaces e profili isolati."}
+    {"id":"DIF-001","title":"Catena epistemica esplicita","buyerValue":"Ogni esito distingue osservazione, proposta, review, decisione e receipt.","proof":"Oggetti runtime, conferma prima delle scritture e ledger append-only."},
+    {"id":"DIF-002","title":"Anti-overclaim by design","buyerValue":"La UI dichiara ciò che un esito non prova nel punto in cui l’utente decide.","proof":"Contratto, copy audit e write-action boundaries."},
+    {"id":"DIF-003","title":"Audit trail ricostruibile","buyerValue":"L’auditor può risalire da un oggetto a input, produttore, evento e receipt.","proof":"Hash-chain, readback, object drill-down e ledger sanitizzato."},
+    {"id":"DIF-004","title":"AI delimitata","buyerValue":"L’AI opera su contenuto osservato, espone modello e limiti e non può scrivere o decidere.","proof":"Provider configurabile, stato unavailable/failed e writeAuthority=false."},
+    {"id":"DIF-005","title":"Portabilità operativa","buyerValue":"Il prodotto si avvia senza dipendenze runtime esterne obbligatorie e mantiene rollback v2.","proof":"Node.js 22, launcher, Codespaces e profili isolati."}
   ],
   "buyerResistances": [
     {"persona":"c-level","resistance":"Sembra un'altra dashboard di compliance senza prova di valore.","mitigation":"Mostrare decisioni pendenti, tempo alla receipt, catene verificabili e limiti; nessun punteggio sintetico non denominato.","residualRisk":"Il ROI deve essere misurato su processi reali e utenti reali."},
-    {"persona":"auditor","resistance":"Integrità tecnica e completezza del perimetro potrebbero essere confuse.","mitigation":"Separare hash-chain, provenienza, applicabilità, review e unknowns; esporre scope ed esclusioni nel runtime.","residualRisk":"La completezza delle fonti richiede governance e scouting reali."},
-    {"persona":"cto","resistance":"Il prototipo locale potrebbe essere presentato come piattaforma enterprise.","mitigation":"Fail-closed sul bind non-loopback, upload binari disabilitati, readiness machine-readable e scope stable-local-single-user.","residualRisk":"OIDC, RBAC, storage e osservabilità enterprise restano da progettare."}
+    {"persona":"auditor","resistance":"Integrità tecnica e completezza del perimetro potrebbero essere confuse.","mitigation":"Separare hash-chain, provenienza, applicabilità, review e unknowns; esporre scope ed esclusioni nel runtime.","residualRisk":"La completezza delle fonti richiede governance e provider reali."},
+    {"persona":"cto","resistance":"Il runtime locale potrebbe essere presentato come piattaforma enterprise.","mitigation":"Fail-closed sul bind non-loopback, upload binari disabilitati, readiness machine-readable e scope stable-local-single-user.","residualRisk":"OIDC, RBAC, storage e osservabilità enterprise restano da progettare."}
   ],
   "definitionOfDone": [
     {"id":"DOD-001","criterion":"npm start avvia il runtime canonico v1","evidence":"package.json + health check","test":"v1/stability-audit.mjs","required":true},

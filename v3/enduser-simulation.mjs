@@ -42,10 +42,15 @@ try {
   assert.ok(ai.every(object => !/human-reviewed|human-owned|verified/.test(object.epistemicStatus)));
   mark('ai-authority-boundary', `${ai.length} proposte AI senza stato umano`);
   const relations = state.relations || state.atlas?.relations || state.views?.semanticGraph?.edges || [];
-  const journeys = state.journeys || state.views?.journeys || [];
+  const traces = state.traces || state.views?.traces || [];
+  const services = [
+    ['monitoring', state.views?.jobs],
+    ['incidents', state.views?.matters]
+  ].filter(([, items]) => Array.isArray(items) && items.length);
   assert.ok(relations.length >= 10, `relazioni insufficienti: ${relations.length}`);
-  assert.ok(journeys.length >= 3, `journey insufficienti: ${journeys.length}`);
-  mark('drilldown-network', `${relations.length} relazioni e ${journeys.length} journey`);
+  assert.deepEqual(services.map(([id]) => id), ['monitoring', 'incidents']);
+  assert.ok(traces.length >= 4, `tracce runtime insufficienti: ${traces.length}`);
+  mark('drilldown-network', `${relations.length} relazioni, ${services.length} servizi e ${traces.length} tracce runtime`);
   assert.deepEqual(contract.lenses.map(item => item.id), ['orient', 'decide', 'verify']);
   assert.ok(contract.intermediateObjects.some(item => item.claimClass === 'action-frame'));
   assert.ok(contract.intermediateObjects.some(item => item.claimClass === 'decision-checkpoint'));
@@ -61,8 +66,8 @@ try {
   mark('runtime-integrity', `${integrity.eventCount ?? 0} eventi, catena coerente`);
   const artifactDir = path.join(root, 'artifacts');
   await mkdir(artifactDir, { recursive: true });
-  await writeFile(path.join(artifactDir, 'enduser-simulation.json'), JSON.stringify({ schemaVersion: '1.1.0', generatedAt: new Date().toISOString(), result: 'passed', checks, objectCount: unique.length, relationCount: relations.length, journeyCount: journeys.length, actionFrameCount: frames.length }, null, 2));
-  console.log(`enduser-simulation: ok (${unique.length} objects, ${relations.length} relations, ${journeys.length} journeys, ${frames.length} action frames)`);
+  await writeFile(path.join(artifactDir, 'enduser-simulation.json'), JSON.stringify({ schemaVersion: '1.1.0', generatedAt: new Date().toISOString(), result: 'passed', checks, objectCount: unique.length, relationCount: relations.length, serviceCount: services.length, traceCount: traces.length, actionFrameCount: frames.length }, null, 2));
+  console.log(`enduser-simulation: ok (${unique.length} objects, ${relations.length} relations, ${services.length} services, ${traces.length} traces, ${frames.length} action frames)`);
 } finally {
   child.kill('SIGTERM');
   if (stderr) process.stderr.write(stderr);

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ictc.local/schemas/core-workspaces.schema.json",
+  "title": "ICTC core workspace contract",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "claimClass",
+    "primaryQuestion",
+    "workspaces",
+    "visibleObjects",
+    "actions",
+    "incidentPhases",
+    "copyRules",
+    "limitations",
+    "operatingScenarios"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "3.0.0"},
+    "claimClass": {"const": "core-workspace-contract"},
+    "primaryQuestion": {"type": "string"},
+    "workspaces": {"type": "array","minItems": 2,"maxItems": 2,"items": {"type": "object","required": ["id","label","description","flow","boundary"]}},
+    "visibleObjects": {"type": "array","minItems": 8,"items": {"type": "object","required": ["id","purpose","usedBy","userAction"]}},
+    "actions": {"type": "array","minItems": 13,"items": {"type": "object","required": ["id","route","receiptExpected"]}},
+    "incidentPhases": {"type": "array","minItems": 4,"maxItems": 4,"items": {"type": "object","required": ["from","to","phase","label","summary","fields"]}},
+    "copyRules": {"type": "object","required": ["maximumPrimaryActions","maximumHeaderActions","forbiddenPrimaryTerms","emptyStateBoundary"]},
+    "limitations": {"type": "array","minItems": 4},
+    "operatingScenarios": {"type": "array","minItems": 3,"maxItems": 3,"items": {"type": "object","required": ["id","label","services","typicalInputs","roles","highLeverageContext","boundary"],"properties": {"id":{"enum":["enterprise","public-administration","regulated-enterprise"]},"label":{"type":"string"},"services":{"type":"array","minItems":1,"items":{"enum":["monitoring","incidents"]}},"typicalInputs":{"type":"array","minItems":1,"items":{"type":"string"}},"roles":{"type":"array","minItems":1,"items":{"type":"string"}},"highLeverageContext":{"type":"array","minItems":3,"items":{"type":"string"}},"boundary":{"type":"string"}}}}
+  }
+}

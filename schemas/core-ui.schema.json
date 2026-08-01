@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ictc.local/schemas/core-ui.schema.json",
+  "title":"ICTC core UI DoD",
+  "type":"object",
+  "required":["schemaVersion","name","claim","workspaces","definitionOfDone","metrics","saturation","limitations"],
+  "properties":{
+    "schemaVersion":{"const":"2.0.0"},
+    "name":{"const":"ICTC Core UI"},
+    "claim":{"type":"string","minLength":80},
+    "workspaces":{"type":"array","prefixItems":[{"const":"monitoring"},{"const":"incidents"}],"minItems":2,"maxItems":2},
+    "definitionOfDone":{"type":"array","minItems":18,"items":{"type":"object","required":["id","criterion","required"]}},
+    "metrics":{"type":"array","minItems":11,"items":{"type":"object","required":["id","name","target","unit"]}},
+    "saturation":{"type":"object","required":["M","MPlus100","primitiveCount","lastNoveltyScenario","noveltyAfterM"],"properties":{"M":{"const":40},"MPlus100":{"const":140},"noveltyAfterM":{"const":0}}},
+    "limitations":{"type":"array","minItems":4}
+  }
+}
