@@ -65,6 +65,7 @@ jobs:
         with:
           name: ictc-core-ui
           path: |
+            artifacts/runtime-kernel-check.json
             artifacts/journey-shell-audit.json
             artifacts/journey-accessibility-audit.json
             artifacts/core-copy-audit.json

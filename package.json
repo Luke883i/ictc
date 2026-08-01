@@ -24,6 +24,7 @@
     "ascii:export": "node scripts/ascii-export.mjs",
     "trace:preview": "node scripts/trace-preview.mjs",
     "audit:runtime": "node scripts/runtime-audit.mjs",
+    "audit:runtime:kernel": "node v3/runtime-kernel-check.mjs",
     "audit:a11y": "node scripts/accessibility-audit.mjs",
     "audit:docs": "node scripts/docs-audit.mjs",
     "audit:ux:journey": "npm run audit:ux:core",
@@ -31,6 +32,6 @@
     "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
     "release:check": "npm run audit && npm run audit:ux:core && node v3/support-bundle-audit.mjs && npm run audit:v1",
     "start:all": "./ictc.sh start --profile all",
-    "audit:ux:core": "node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs"
+    "audit:ux:core": "npm run audit:runtime:kernel && node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs"
   }
 }
