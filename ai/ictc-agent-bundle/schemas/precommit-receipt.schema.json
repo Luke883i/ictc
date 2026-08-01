@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "blobs": {
+      "type": "array"
+    },
+    "parent": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "predicted_tree": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "tests": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "repository",
+    "parent",
+    "predicted_tree",
+    "blobs",
+    "tests",
+    "status"
+  ],
+  "type": "object"
+}

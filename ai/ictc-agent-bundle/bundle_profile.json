@@ -1,0 +1,19 @@
+{
+  "authority_effect": "NONE_DERIVED",
+  "auto_installing": true,
+  "autopoiesis": "CONTROLLED_SUCCESSOR_MATERIALIZATION",
+  "bundle_version": "1.0.0",
+  "canonical_sot": false,
+  "default_branch": "main",
+  "immutable_in_place": [
+    "AGENTS.md",
+    "method/",
+    "docs/AUTOPOIESIS.md",
+    "config/repository_contract.json"
+  ],
+  "mutable_overlay": "runtime",
+  "profile": "ICTC_REPOSITORY_AI_HANDOFF",
+  "repository": "Luke883i/ictc",
+  "schema_version": "1.0.0",
+  "standalone": true
+}

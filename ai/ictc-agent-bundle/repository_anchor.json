@@ -1,0 +1,22 @@
+{
+  "ci_status_at_snapshot": "NOT_OBSERVED",
+  "default_branch": "main",
+  "feature_head_before_merge": "56544a8669a32025a3a51431264d92c10bb3511d",
+  "feature_merge_base": "848e87cd4dbae363d172b6226786c29b9a0fce64",
+  "merge_commit": {
+    "pull_request": 8,
+    "sha": "39dba493a9ccff78cf6a32d9b4cb111c04bfdc55",
+    "title": "Refocus ICTC on monitoring and incident workflows"
+  },
+  "observed_at": "2026-08-01T20:18:09Z",
+  "observed_main_sha": "39dba493a9ccff78cf6a32d9b4cb111c04bfdc55",
+  "release": {
+    "product_name": "Integrated Compliance Tower Control",
+    "runtime_generation": "v3",
+    "stability_class": "stable-local-single-user",
+    "version": "1.0.0"
+  },
+  "repository": "Luke883i/ictc",
+  "schema_version": "1.0.0",
+  "source_note": "Anchor derived from GitHub commit and PR metadata; repository must be re-read on every use."
+}

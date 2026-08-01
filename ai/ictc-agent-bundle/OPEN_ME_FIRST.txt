@@ -1,0 +1,3 @@
+CONSEGNA QUESTA CARTELLA O LO ZIP A UN AGENTE AI CON ACCESSO AL REPOSITORY ICTC.
+L'agente deve leggere START_HERE.md e AGENTS.md, verificare l'integrita due volte e poi osservare il repository reale.
+Il bundle e derivato: non sostituisce README, AGENTS.md, CONTRIBUTING.md, schemi, workflow o Git.
