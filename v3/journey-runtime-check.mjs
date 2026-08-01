@@ -2,8 +2,6 @@ import { strict as assert } from 'node:assert';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { deriveCoreWorkspace, deriveSemanticRows } from './public/js/journey-model.js';
-import { append } from './lib/store.mjs';
-import { schedulerTick } from './lib/monitoring-runtime.mjs';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.ICTC_BASE_URL || 'http://127.0.0.1:4807';
@@ -26,6 +24,9 @@ const health = await request('/api/health');
 assert.equal(health.ok, true);
 assert.equal(health.monitoring.scheduler, 'active');
 assert.equal(health.monitoring.aiStudy, 'configured');
+process.env.ICTC_RUNTIME_DIR = health.runtime;
+const { append } = await import('./lib/store.mjs');
+const { schedulerTick } = await import('./lib/monitoring-runtime.mjs');
 checks.push('health-and-monitoring-capabilities');
 
 let state = await request('/api/bootstrap');
