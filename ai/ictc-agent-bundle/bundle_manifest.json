@@ -1,0 +1,156 @@
+{
+  "algorithm": "sha256",
+  "files": [
+    {
+      "bytes": 1966,
+      "path": "AGENTS.md",
+      "sha256": "f86281ef413bc92d165e2c7a8f3a583913e328e30324669c1e9db21a744792f4"
+    },
+    {
+      "bytes": 826,
+      "path": "AI_BOOT_PROMPT.md",
+      "sha256": "12404300ea8d6a1ac9ebd3c19ea35dace24ae466bd2458bc40c846de6d867305"
+    },
+    {
+      "bytes": 835,
+      "path": "INSTALL.py",
+      "sha256": "c812ecb41521f32b30b9906efc76db779899cd9c1196deab3ac86ee32624e65b"
+    },
+    {
+      "bytes": 298,
+      "path": "OPEN_ME_FIRST.txt",
+      "sha256": "cd367ec5db64378b38fde16e56eeda00a9dcc29d1b90261d1e20cda64c8f3a94"
+    },
+    {
+      "bytes": 949,
+      "path": "README.md",
+      "sha256": "4bccce53dbfca96325d852389b35d5c6585ee70d3b89c54fb60b541b3569d95d"
+    },
+    {
+      "bytes": 812,
+      "path": "START.py",
+      "sha256": "5f609da995e6c3aad5843a5101616545d199ffdd12d0808556438ec5518ca4f5"
+    },
+    {
+      "bytes": 1316,
+      "path": "START_HERE.md",
+      "sha256": "c028c0171c95ff8d0995492f2b8ea0f41be0ef0f360236aff3d75cf7975229b2"
+    },
+    {
+      "bytes": 830,
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "56c9a0c57f4b736fe97d3c8a644ffb7c6867adf2aa2c863194d507da1eb3bfb6"
+    },
+    {
+      "bytes": 495,
+      "path": "bundle_profile.json",
+      "sha256": "a9812be30dd500601511764a64e4c81119d720d1eb672c8008254ab41db088a2"
+    },
+    {
+      "bytes": 1173,
+      "path": "config/repository_contract.json",
+      "sha256": "7722e0378c467c61b0e90b44abe04e274ab6582ec1b7b802dd4860d9fcbebd11"
+    },
+    {
+      "bytes": 1287,
+      "path": "config/test_catalog.json",
+      "sha256": "7008c074bbf74ea3ad5ec0c568a9101db7ba81f5b01701e114ee90037ac955cf"
+    },
+    {
+      "bytes": 1019,
+      "path": "docs/ANTI_CONTAMINATION.md",
+      "sha256": "2d38d5dfb75e5ae9c268cc264ff4576a3fbb61f86e5d1de7b2a591da6de4e5a7"
+    },
+    {
+      "bytes": 1982,
+      "path": "docs/AUTOPOIESIS.md",
+      "sha256": "b4eef5e234975ab69599ba9aeab73ac1771fd2dcf6f52b370ac2461f19369918"
+    },
+    {
+      "bytes": 761,
+      "path": "docs/LIMITS.md",
+      "sha256": "a09782d31a83470c8ac0d5914c2ff8380d3afa3a32c468d05238bced11d653b4"
+    },
+    {
+      "bytes": 2788,
+      "path": "history/DEVELOPMENT_HISTORY.md",
+      "sha256": "025afb1a58128027327dc6983c9ac6bfed884099d6643cdd7cf3fbf37321793b"
+    },
+    {
+      "bytes": 2837,
+      "path": "history/PR8_COMMIT_CHAIN.json",
+      "sha256": "d81dac94068861b9f11817a5b225f9f67353521d86c308ed186d201b456ab333"
+    },
+    {
+      "bytes": 2661,
+      "path": "method/DEVELOPMENT_METHOD.md",
+      "sha256": "acd7d7425e637cc10392f45895532afed35e5647966ed71400c17db1aca71e73"
+    },
+    {
+      "bytes": 1414,
+      "path": "method/GIT_OBJECT_PROTOCOL.md",
+      "sha256": "562968bc9b5e3d97add2335b80330377e8408b5fdcbf9469080d035f4007e4b9"
+    },
+    {
+      "bytes": 874,
+      "path": "method/PRECOMMIT_PROTOCOL.md",
+      "sha256": "536c5f843bb432ca8e6e6fec6afbc360d5ea0e0815adaadae018718dd8ce73c7"
+    },
+    {
+      "bytes": 2181,
+      "path": "method/TEST_AND_CONTROL_MATRIX.md",
+      "sha256": "81304767d9fee560d9fd814a890f2ebb1ab1148b607b4018ba8022e54cf96ec7"
+    },
+    {
+      "bytes": 852,
+      "path": "repository_anchor.json",
+      "sha256": "9747738751b2ff5caaa34b51e2f408bf4636223394c1ac910e63cd46e6ee37af"
+    },
+    {
+      "bytes": 682,
+      "path": "schemas/precommit-receipt.schema.json",
+      "sha256": "3d11a8f96e6d8b24597fd097124f80c1f37557cb27a7a2d7407e8328a2d65ed5"
+    },
+    {
+      "bytes": 527,
+      "path": "tools/build_bundle.py",
+      "sha256": "45db78ae3ab6bd2a6e50f92e0e8a80e0c52a6d6130764668654496e10ab60926"
+    },
+    {
+      "bytes": 4820,
+      "path": "tools/common.py",
+      "sha256": "c4c9a6238a07e0fb71effc8c80a35022a55142ddc013e1e096326b0e0b73e195"
+    },
+    {
+      "bytes": 2147,
+      "path": "tools/doctor.py",
+      "sha256": "8139355685ad7113578b98847286a1047f3dfec884d801aea3afc95bfd86ea05"
+    },
+    {
+      "bytes": 2177,
+      "path": "tools/materialize_successor.py",
+      "sha256": "d4087149f0ac51051212138e5a8942a64ecbbbd0e5d0d6062e8ab97072aaae28"
+    },
+    {
+      "bytes": 4482,
+      "path": "tools/precommit_receipt.py",
+      "sha256": "cd51055dfa41d8f284f13740a7ad666799aee1badc68b2fa2754ca23b9240fbd"
+    },
+    {
+      "bytes": 3915,
+      "path": "tools/refresh_from_repo.py",
+      "sha256": "156899808ccd62bcbc5a2217f78bc7b9e275b7cd0b528da515c3523f51173367"
+    },
+    {
+      "bytes": 3152,
+      "path": "tools/selftest.py",
+      "sha256": "9682176e877258b698c26f3f056c606878857ba1a54b27c98d68ebe374a5cf14"
+    },
+    {
+      "bytes": 321,
+      "path": "tools/verify_integrity.py",
+      "sha256": "2b546a111fe57579027f1b838de04d76e4b1629ceab65a44b8f5e54f1eb050e7"
+    }
+  ],
+  "schema_version": "1.0.0"
+}

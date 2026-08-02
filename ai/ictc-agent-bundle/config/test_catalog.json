@@ -1,0 +1,80 @@
+{
+  "live_optional": [
+    {
+      "argv": [
+        "node",
+        "v3/journey-runtime-check.mjs"
+      ],
+      "id": "runtime",
+      "requires": [
+        "running ICTC",
+        "mock provider when AI path is tested"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "v3/journey-browser-check.py"
+      ],
+      "id": "browser",
+      "requires": [
+        "running ICTC",
+        "playwright",
+        "chromium"
+      ]
+    }
+  ],
+  "precommit_full": [
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "id": "test"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "audit:ux:core"
+      ],
+      "id": "core-ui"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "release:check"
+      ],
+      "id": "release"
+    }
+  ],
+  "precommit_quick": [
+    {
+      "argv": [
+        "npm",
+        "run",
+        "contract"
+      ],
+      "id": "contract"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "schema:check"
+      ],
+      "id": "schema"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "verify"
+      ],
+      "id": "verify"
+    }
+  ],
+  "rule": "Commands are sealed bundle data; tools never execute commands read from the target repository.",
+  "schema_version": "1.0.0"
+}

@@ -1,0 +1,55 @@
+{
+  "authority_paths": [
+    "AGENTS.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "docs",
+    "schemas",
+    "package.json",
+    ".github/workflows"
+  ],
+  "default_branch": "main",
+  "outside_scope": [
+    "oidc-rbac",
+    "multi-tenancy",
+    "malware-scanning",
+    "distributed-storage",
+    "ha-scheduler",
+    "centralized-telemetry"
+  ],
+  "repository": "Luke883i/ictc",
+  "required_paths": [
+    "README.md",
+    "CONTRIBUTING.md",
+    "package.json",
+    "ictc.sh",
+    "ictc-v3.sh",
+    "v3/server.mjs",
+    "v3/lib/api.mjs",
+    "v3/lib/store.mjs",
+    ".github/workflows/core-ui.yml"
+  ],
+  "runtime": {
+    "default_url": "http://127.0.0.1:4173",
+    "launcher": "./ictc.sh start",
+    "node_minimum": 22,
+    "server": "v3/server.mjs"
+  },
+  "schema_version": "1.0.0",
+  "sensitive_method_paths": [
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+    "docs/DEVELOPMENT.md",
+    "docs/TESTING.md",
+    "docs/ENGINEERING_GOVERNANCE.md",
+    ".github/workflows"
+  ],
+  "stable_scope": [
+    "loopback-or-private-codespace",
+    "single-user",
+    "text-or-link-intake",
+    "append-only-ledger",
+    "content-addressed-text-blobs",
+    "human-review-required"
+  ]
+}

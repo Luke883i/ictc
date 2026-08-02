@@ -1,0 +1,84 @@
+{
+  "base_sha": "848e87cd4dbae363d172b6226786c29b9a0fce64",
+  "commits": [
+    {
+      "authored_at": "2026-08-01T12:36:19Z",
+      "message": "Refocus UI on monitoring and incident workflows",
+      "sha": "f1e22ae1e7a41e2fb21b63cc0fca55f2811f969d"
+    },
+    {
+      "authored_at": "2026-08-01T14:42:47Z",
+      "message": "Fix shared CI release gates",
+      "sha": "3d538fb5349b0b42720aa60f50147164a3a8c19a"
+    },
+    {
+      "authored_at": "2026-08-01T17:36:15Z",
+      "message": "Add content-addressed blob store",
+      "sha": "589cf5d746e6a6dd61eeb5f1fed15f9bf2d350c6"
+    },
+    {
+      "authored_at": "2026-08-01T17:36:29Z",
+      "message": "Add monitoring network policy",
+      "sha": "0033c153c5bd7e270f00c76903ababe57b6b8177"
+    },
+    {
+      "authored_at": "2026-08-01T17:36:46Z",
+      "message": "Add runtime object model",
+      "sha": "4a5ce47643f423e6106b007bd2cc8894d2ef0e16"
+    },
+    {
+      "authored_at": "2026-08-01T17:37:19Z",
+      "message": "Add runtime kernel checks",
+      "sha": "8167c2748910368cfe79a65e5e0a93aaf337edc4"
+    },
+    {
+      "authored_at": "2026-08-01T17:39:58Z",
+      "message": "Wire runtime model and blob kernel",
+      "sha": "0d09e305be4eacab0072060ce3ea2c8da0c4db1f"
+    },
+    {
+      "authored_at": "2026-08-01T18:03:26Z",
+      "message": "Fix CI audits for runtime kernel refactor",
+      "sha": "1475ecf345a151125609a06659215c122e89e8e7"
+    },
+    {
+      "authored_at": "2026-08-01T18:08:33Z",
+      "message": "Fix remaining CI audit assertions",
+      "sha": "dfb2b78b5b78d6ef44d2be730f32ec905f3a4192"
+    },
+    {
+      "authored_at": "2026-08-01T18:13:36Z",
+      "message": "Fix remaining workflow audits",
+      "sha": "1f721359f006df48384c272591b13a449e8e2133"
+    },
+    {
+      "authored_at": "2026-08-01T19:13:02Z",
+      "message": "Fix compact handlers and static JSON responses",
+      "sha": "4e7716c05edf9059135fa73c287d5a2d04de32b9"
+    },
+    {
+      "authored_at": "2026-08-01T19:17:18Z",
+      "message": "Fix compact search shortcut audit",
+      "sha": "6e37cf2964f8e2408bc591587593261891b777f8"
+    },
+    {
+      "authored_at": "2026-08-01T19:46:31Z",
+      "message": "Bind runtime check to launched profile state",
+      "sha": "36fdfc7f2f55d435ef2e48377c81b4d093a65225"
+    },
+    {
+      "authored_at": "2026-08-01T20:01:13Z",
+      "message": "Fix direct ES module shell render",
+      "sha": "5d02d2049148850c1cd54de3e91caa78a2bea0ff"
+    },
+    {
+      "authored_at": "2026-08-01T20:16:22Z",
+      "message": "Make browser preference wait CSP-safe",
+      "sha": "56544a8669a32025a3a51431264d92c10bb3511d"
+    }
+  ],
+  "feature_head": "56544a8669a32025a3a51431264d92c10bb3511d",
+  "merge_sha": "39dba493a9ccff78cf6a32d9b4cb111c04bfdc55",
+  "note": "Times normalized to UTC from observed GitHub metadata.",
+  "schema_version": "1.0.0"
+}
