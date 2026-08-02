@@ -1,6 +1,6 @@
 import {
   $, $$, esc, state, statusLabels, roleLabels, api, announce, openDialog, closeDialog,
-  applyPreferences, savePreferences, currentWorkspace, currentTask, setAccessSelection, clearAccessSelection
+  applyPreferences, savePreferences, currentWorkspace, currentTask, setAccessSelection, clearAccessSelection, ApiError
 } from './journey-shell-common.js';
 import { render } from './journey-shell-render.js';
 
@@ -55,7 +55,9 @@ export async function refresh() {
 }
 
 export async function renewSession() {
-  state.sessionId = (await api('/api/session', { method: 'POST', body: '{}' })).sessionId;
+  const session = await api('/api/session', { method: 'POST', body: '{}' });
+  state.sessionId = session.sessionId;
+  state.sessionExpiresAt = session.expiresAt;
 }
 
 export async function switchAccess(actorId, tenantId) {
@@ -86,15 +88,44 @@ export async function checkpoint(task, summary, execute) {
   return execute();
 }
 
+
+function createCommandId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  if (globalThis.crypto?.getRandomValues) {
+    const bytes = globalThis.crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = [...bytes].map(value => value.toString(16).padStart(2, '0'));
+    return `${hex.slice(0, 4).join('')}-${hex.slice(4, 6).join('')}-${hex.slice(6, 8).join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10).join('')}`;
+  }
+  return `cmd-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}`;
+}
+
 export async function mutate(path, payload, label) {
   announce(`${label}: registrazione in corso`);
+  const commandId = createCommandId();
+  const expectedHead = state.data?.meta?.integrity?.head || 'GENESIS';
+  const options = { method: 'POST', headers: { 'x-ictc-command-id': commandId, 'x-ictc-expected-head': expectedHead }, body: JSON.stringify(payload) };
+  const send = () => api(path, options);
   try {
-    const result = await api(path, { method: 'POST', body: JSON.stringify(payload) });
+    let result;
+    try { result = await send(); }
+    catch (error) { if (error instanceof TypeError) result = await send(); else throw error; }
     state.lastReceipt = result.receipt || null;
+    state.selectedTaskId = null;
     announce(`${label}: ricevuta ${String(result.receipt?.hash || '').slice(0, 10)}`, 'saved');
     await refresh();
     return result;
-  } catch (error) { announce(error.message, 'error'); throw error; }
+  } catch (error) {
+    if (error instanceof ApiError && ['ledger-head-changed', 'state-conflict'].includes(error.code)) {
+      state.selectedTaskId = null;
+      await refresh();
+      announce('Attività aggiornata da un’altra persona. Controlla il nuovo prossimo passo.', 'error');
+      return null;
+    }
+    announce(error.message, 'error');
+    throw error;
+  }
 }
 
 function openChoice(task) {
@@ -179,3 +210,4 @@ export async function askAssistant(event) {
   $('#assistantMessages').insertAdjacentHTML('beforeend', `<article class="message"><b>Tu</b><p>${esc(question)}</p></article><article class="message"><b>Assistente · proposta</b><p>${esc(result.answer)}</p><small>${esc(result.limitations.join(' · '))}</small></article>`);
   $('#assistantQuestion').value = '';
 }
+

@@ -1,6 +1,16 @@
 import { deriveCoreWorkspace } from './journey-model.js';
 export const $ = (selector, root = document) => root.querySelector(selector);
 export const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+export class ApiError extends Error {
+  constructor(message, status, code = 'request-failed', details = null) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.details = details;
+  }
+}
 export const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 export const statusLabels = {
   observed: 'Osservato', candidate: 'Da rivedere', 'awaiting-human-review': 'Da rivedere', 'human-reviewed': 'Registrato',
@@ -18,6 +28,7 @@ export const eventLabels = {
 export const aiStatusLabels = { completed: 'Completato', failed: 'Errore', unavailable: 'Non configurato' };
 export const schedulerLabels = { active: 'Pianificazione attiva', disabled: 'Pianificazione disattivata', 'not-started': 'Pianificazione non avviata' };
 export const roleLabels = { viewer: 'Lettore', analyst: 'Analista', reviewer: 'Reviewer', owner: 'Owner', admin: 'Admin', system: 'Servizio' };
+export const permissionLabels = { read: 'lettura', observe: 'inserimento', run: 'esecuzione', report: 'segnalazione', review: 'review', decide: 'decisione', 'manage-case': 'gestione caso', admin: 'amministrazione' };
 export const phaseLabels = {
   'facts-to-confirm': 'Segnalazione', owned: 'Triage', assessing: 'Analisi', responding: 'Risposta',
   'closure-review': 'Ripristino', closed: 'Chiuso'
@@ -37,6 +48,7 @@ export const state = {
   activeObject: null,
   detailTab: 'meaning',
   sessionId: null,
+  sessionExpiresAt: null,
   lastReceipt: null,
   choiceTask: null,
   phaseTask: null
@@ -63,7 +75,7 @@ export async function api(path, options = {}) {
   });
   const type = response.headers.get('content-type') || '';
   const body = type.includes('json') ? await response.json() : await response.text();
-  if (!response.ok) throw new Error(body?.error || body || `${response.status}`);
+  if (!response.ok) throw new ApiError(body?.error || body || `${response.status}`, response.status, body?.code || 'request-failed', body);
   return body;
 }
 let announceTimer;
@@ -108,6 +120,8 @@ export function currentWorkspace() { return deriveCoreWorkspace(state.data, stat
 export function currentTask(id) { const workspace = currentWorkspace(); return workspace.tasks.find(item => item.id === id) || workspace.activeTask; }
 export function workspaceContract() { return state.contract.workspaces.find(item => item.id === state.mode); }
 export function can(permission) { return Boolean(state.data?.meta?.access?.current?.permissions?.includes(permission)); }
+export function actionPermission(actionId) { return state.contract?.actions?.find(item => item.id === actionId)?.permission || 'read'; }
+export function canAction(actionId) { return can(actionPermission(actionId)); }
 export function statusBadge(status) { return `<span class="status-badge status-${esc(status)}">${esc(statusLabels[status] || status)}</span>`; }
 export function objectButton(item, fallback = 'Apri') {
   if (!item?.id) return '<span class="cell-empty">—</span>';

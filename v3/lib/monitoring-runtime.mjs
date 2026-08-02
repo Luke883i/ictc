@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import dns from 'node:dns/promises';
-import { append, apply, now, readLedger, tenantPaths, DEFAULT_TENANT_ID } from './store.mjs';
+import { append, apply, findCommand, now, readLedger, tenantPaths, DEFAULT_TENANT_ID, WriteConflictError } from './store.mjs';
 import { createBlobStore } from './blob-store.mjs';
 import { isPrivateAddress } from './network-policy.mjs';
 import { loadAccessDirectory, serviceContext } from './access-context.mjs';
@@ -94,7 +94,17 @@ export async function runMonitoringJob(contextOrJobId, jobIdOrOptions = {}, opti
   if (runtimeState.inFlight.has(key)) throw new Error('Monitoraggio già in esecuzione per questo tenant.');
   runtimeState.inFlight.add(key);
   try {
-    const domain = apply(await readLedger(context), context.tenant);
+    if (options.commandId) {
+      const replay = await findCommand(context, options.commandId, 'job.completed', context.actor.id);
+      if (replay) {
+        const persisted = replay.event.payload;
+        return { job: persisted.job, finding: persisted.finding, comparison: persisted.job.lastComparison, ai: persisted.job.lastStudy.ai, receipt: replay.receipt };
+      }
+    }
+    const events = await readLedger(context);
+    const currentHead = events.at(-1)?.hash || 'GENESIS';
+    if (options.expectedHead && options.expectedHead !== currentHead) throw new WriteConflictError('Il monitoraggio è cambiato dopo l’ultima lettura.', 'ledger-head-changed');
+    const domain = apply(events, context.tenant);
     const job = domain.jobs.find(item => item.id === jobId);
     if (!job) throw new Error('Monitoraggio non trovato.');
     const source = domain.sources.find(item => item.id === job.sourceId) || domain.sources.find(item => item.ecosystem === job.ecosystem);
@@ -108,8 +118,10 @@ export async function runMonitoringJob(contextOrJobId, jobIdOrOptions = {}, opti
     const finding = comparison === 'changed' ? { id: `finding-${crypto.randomUUID().slice(0, 8)}`, sourceId: source.id, jobId: job.id, type: 'content-change', statement: ai.summary || 'Il contenuto osservato differisce dall’ultima baseline registrata.', humanState: 'awaiting-review', materiality: 'undetermined', aiProposal: ai.status === 'completed' ? ai.summary : 'Studio AI non disponibile o non completato; review umana richiesta.', aiStudy: ai } : null;
     const completedAt = now();
     const updatedJob = { ...job, state: comparison === 'changed' ? 'change-awaiting-review' : comparison === 'baseline-created' ? 'baseline-recorded' : 'completed-no-change', lastRunAt: completedAt, nextRunAt: nextRunAt(job.schedule?.intervalMinutes), lastDigest: inputDigest, lastComparison: comparison, lastStudy: { trigger: options.trigger || 'manual', observedAt: completedAt, locator: observed.locator, contentType: stored.mediaType, blobRef: stored.locator, inputDigest, byteLength: stored.byteLength, ai } };
-    const result = await append(context, 'job.completed', { job: updatedJob, finding }, ai.status === 'completed' ? 'remote-observation-plus-ai-proposal' : 'remote-observation');
-    return { job: updatedJob, finding, comparison, ai, receipt: result.receipt };
+    const commandId = options.commandId || (options.trigger === 'scheduled' ? `scheduler:${context.tenant.id}:${job.id}:${job.nextRunAt || currentHead}` : null);
+    const result = await append(context, 'job.completed', { job: updatedJob, finding }, ai.status === 'completed' ? 'remote-observation-plus-ai-proposal' : 'remote-observation', { commandId, expectedHead: currentHead, actionId: 'job-run' });
+    const persisted = result.event.payload;
+    return { job: persisted.job, finding: persisted.finding, comparison: persisted.job.lastComparison, ai: persisted.job.lastStudy.ai, receipt: result.receipt };
   } finally { runtimeState.inFlight.delete(key); }
 }
 

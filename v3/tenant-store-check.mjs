@@ -25,10 +25,19 @@ try {
   const stateB = store.apply(eventsB, tenantB);
   assert.equal(stateA.sources.some(item => item.id.startsWith('b-')), false);
   assert.equal(stateB.sources.some(item => item.id.startsWith('a-')), false);
+  const created = await store.append(actorA, 'job.created', { source: { id: 'source-pure', title: 'Pure source' }, job: { id: 'job-pure', sourceId: 'source-pure', enabled: false, state: 'draft' } }, 'test');
+  await store.append(actorA, 'job.scheduled', { id: 'job-pure', job: { id: 'job-pure', sourceId: 'source-pure', enabled: true, state: 'scheduled' } }, 'test');
+  const projectionEvents = await store.readLedger(tenantA.id);
+  const beforeProjection = JSON.stringify(projectionEvents);
+  const projected = store.apply(projectionEvents, tenantA);
+  assert.equal(projected.jobs.find(item => item.id === 'job-pure').enabled, true);
+  assert.equal(JSON.stringify(projectionEvents), beforeProjection);
+  assert.equal(store.verify(projectionEvents, tenantA.id).ok, true);
+  assert.equal(created.receipt.readbackVerified, true);
   const receipt = await store.append(actorA, 'matter.reported', { matter: { id: 'case-a', title: 'Caso A', state: 'facts-to-confirm', timeline: [], phaseEvidence: {} } }, 'test');
   assert.equal(receipt.receipt.tenantId, tenantA.id);
   assert.equal(receipt.receipt.actorRole, 'owner');
-  console.log('tenant-store-check: ok (40 concurrent writes, 2 isolated ledgers)');
+  console.log('tenant-store-check: ok (40 concurrent writes, pure projection, 2 isolated ledgers)');
 } finally {
   await rm(runtime, { recursive: true, force: true });
 }

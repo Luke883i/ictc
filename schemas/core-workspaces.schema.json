@@ -7,10 +7,10 @@
   "properties": {
     "schemaVersion": {"const": "3.1.0"},
     "claimClass": {"const": "core-workspace-contract"},
-    "primaryQuestion": {"type": "string", "minLength": 10},
+    "primaryQuestion": {"type":"string","minLength":10},
     "workspaces": {"type":"array","minItems":2,"maxItems":2,"items":{"type":"object","required":["id","label","description","flow","boundary"]}},
     "visibleObjects": {"type":"array","minItems":9,"items":{"type":"object","required":["id","purpose","usedBy","userAction"]}},
-    "actions": {"type":"array","minItems":14,"items":{"type":"object","required":["id","route","permission","receiptExpected"]}},
+    "actions": {"type":"array","minItems":14,"items":{"type":"object","required":["id","method","path","route","permission","userLabel","projection","event","producer","receiptExpected"]}},
     "incidentPhases": {"type":"array","minItems":4,"maxItems":4,"items":{"type":"object","required":["from","to","phase","label","summary","fields"]}},
     "copyRules": {"type":"object","required":["maximumPrimaryActions","maximumHeaderActions","maximumMonitoringServiceActions","maximumIncidentServiceActions","forbiddenPrimaryTerms","emptyStateBoundary"]},
     "limitations": {"type":"array","minItems":4},
