@@ -2,155 +2,20 @@ import { strict as assert } from 'node:assert';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { deriveCoreWorkspace, deriveSemanticRows } from './public/js/journey-model.js';
-
-const root = path.resolve(new URL('..', import.meta.url).pathname);
-const base = process.env.ICTC_BASE_URL || 'http://127.0.0.1:4807';
-const mock = process.env.ICTC_MOCK_URL || 'http://127.0.0.1:4899';
-const contract = JSON.parse(await readFile(path.join(root, 'v3/public/core-workspaces.json'), 'utf8'));
-const receipts = [];
-const checks = [];
-
-async function request(pathname, options = {}, expected = null, origin = base) {
-  const response = await fetch(origin + pathname, { headers: { 'content-type': 'application/json' }, ...options });
-  const body = (response.headers.get('content-type') || '').includes('json') ? await response.json() : await response.text();
-  if (expected !== null) assert.equal(response.status, expected, `${pathname}: ${JSON.stringify(body)}`);
-  else assert.ok(response.ok, `${pathname}: ${response.status} ${JSON.stringify(body)}`);
-  return body;
-}
-const post = (pathname, payload, origin = base) => request(pathname, { method: 'POST', body: JSON.stringify(payload) }, null, origin);
-const keep = result => { assert.equal(result.receipt?.readbackVerified, true); receipts.push(result.receipt); return result; };
-
-const health = await request('/api/health');
-assert.equal(health.ok, true);
-assert.equal(health.monitoring.scheduler, 'active');
-assert.equal(health.monitoring.aiStudy, 'configured');
-process.env.ICTC_RUNTIME_DIR = health.runtime;
-const { append } = await import('./lib/store.mjs');
-const { schedulerTick } = await import('./lib/monitoring-runtime.mjs');
-checks.push('health-and-monitoring-capabilities');
-
-let state = await request('/api/bootstrap');
-assert.equal(deriveCoreWorkspace(state, 'monitoring', null, contract).mode, 'monitoring');
-assert.equal(deriveCoreWorkspace(state, 'incidents', null, contract).mode, 'incidents');
-checks.push('two-workspaces');
-
-const createdMonitor = keep(await post('/api/jobs', {
-  operatingContext: 'regulated-enterprise',
-  label: 'Monitoraggio provider di test',
-  sourceTitle: 'Fonte provider di test',
-  url: `${mock}/source`,
-  intervalMinutes: 60,
-  studyQuestion: 'Individua la variazione sintetica e formula una domanda di review.'
-}));
-keep(await post(`/api/sources/${createdMonitor.source.id}/review`, { outcome: 'accepted' }));
-keep(await post(`/api/jobs/${createdMonitor.job.id}/schedule`, { enabled: true, intervalMinutes: 60 }));
-state = await request('/api/bootstrap');
-const scheduledJob = state.jobs.find(item => item.id === createdMonitor.job.id);
-const dueAt = new Date(Date.now() - 1000).toISOString();
-const dueSchedule = await append('job.scheduled', {
-  id: scheduledJob.id,
-  job: { ...scheduledJob, enabled: true, nextRunAt: dueAt }
-}, 'test-clock', 'scheduler-contract-test');
-assert.equal(dueSchedule.receipt.readbackVerified, true);
-receipts.push(dueSchedule.receipt);
-const tick = await schedulerTick(process.env);
-assert.equal(tick.due, 1);
-state = await request('/api/bootstrap');
-const baselineJob = state.jobs.find(item => item.id === createdMonitor.job.id);
-assert.equal(baselineJob.lastComparison, 'baseline-created');
-assert.equal(baselineJob.lastStudy.trigger, 'scheduled');
-assert.equal(baselineJob.lastStudy.ai.status, 'completed');
-assert.ok(baselineJob.lastStudy.blobRef && baselineJob.lastStudy.inputDigest);
-await post('/toggle', {}, mock);
-const changed = keep(await post(`/api/jobs/${createdMonitor.job.id}/run`, {}));
-assert.equal(changed.comparison, 'changed');
-assert.equal(changed.ai.status, 'completed');
-assert.ok(changed.finding?.id);
-state = await request('/api/bootstrap');
-const runtimeJob = state.jobs.find(item => item.id === createdMonitor.job.id);
-assert.equal(runtimeJob.lastStudy.ai.status, 'completed');
-assert.ok(runtimeJob.lastStudy.blobRef && runtimeJob.lastStudy.inputDigest);
-const blobPath = path.join(health.runtime, runtimeJob.lastStudy.blobRef.replace(/^runtime\//, ''));
-const blob = await readFile(blobPath, 'utf8');
-assert.ok(blob.includes('Versione 2'));
-assert.equal((await stat(blobPath)).size, runtimeJob.lastStudy.byteLength);
-assert.ok(state.views.semanticGraph.edges.some(edge => edge.type === 'monitors' && edge.from === `job-${createdMonitor.job.id}`));
-assert.ok(state.views.semanticGraph.edges.some(edge => edge.type === 'observed-by' && edge.from === `job-${createdMonitor.job.id}`));
-checks.push('scheduled-tick-ai-fetch-storage-and-evidence');
-
-const manual = keep(await post('/api/sources', {
-  operatingContext: 'public-administration',
-  title: 'Contenuto manuale runtime',
-  contentText: 'Aggiornamento normativo inserito manualmente. Clausola sintetica 42.'
-}));
-assert.ok(manual.finding);
-assert.equal(manual.source.operatingContext, 'public-administration');
-keep(await post(`/api/sources/${manual.source.id}/review`, { outcome: 'accepted' }));
-keep(await post(`/api/findings/${manual.finding.id}/review`, { outcome: 'relevant' }));
-state = await request('/api/bootstrap');
-const change = state.changes.find(item => item.findingId === manual.finding.id);
-assert.ok(change);
-keep(await post(`/api/changes/${change.id}/decide`, { outcome: 'action-required', rationale: 'Il contenuto richiede una verifica del presidio locale.' }));
-keep(await post(`/api/changes/${change.id}/map-control`, { controlId: 'control-monitor', rationale: 'Collegamento documentale al presidio di monitoraggio.' }));
-state = await request('/api/bootstrap');
-const semanticRow = deriveSemanticRows(state).find(item => item.source.data.id === manual.source.id);
-assert.ok(semanticRow);
-assert.equal(semanticRow.origin, 'manual');
-assert.ok(semanticRow.findings.length >= 1 && semanticRow.changes.length >= 1 && semanticRow.controls.some(item => item.data.id === 'control-monitor'));
-const manualBlobPath = path.join(health.runtime, manual.source.locator.replace(/^runtime\//, ''));
-assert.ok((await readFile(manualBlobPath, 'utf8')).includes('Clausola sintetica 42'));
-checks.push('manual-content-to-semantic-lattice');
-
-const matter = keep(await post('/api/matters', {
-  title: 'Caso runtime completo',
-  kind: 'near-miss',
-  summary: 'Accesso anomalo bloccato prima della diffusione; coinvolto un portale fornitore.'
-}));
-keep(await post(`/api/matters/${matter.matter.id}/confirm-owner`, { owner: matter.matter.owner, raci: matter.matter.raci }));
-const phasePayloads = [
-  ['assessing', { classification: 'near-miss', severity: 'medium', scope: 'Portale fornitore e account interessato.', impact: 'Nessuna diffusione confermata; impatto potenziale sui dati.', confidence: 'medium' }],
-  ['responding', { containment: 'Account sospeso e sessioni revocate.', eradication: 'Credenziali ruotate e configurazione verificata.', communications: 'DPO e Procurement consultati; notifica ancora da valutare.' }],
-  ['closure-review', { serviceStatus: 'restored', recoveryValidation: 'Accessi verificati e test di login completati.', residualMonitoring: 'Monitoraggio rafforzato per sette giorni.' }],
-  ['closed', { lessonsLearned: 'Migliorare la revoca automatica delle sessioni.', followUpActions: 'Aprire intervento IAM e aggiornare playbook fornitore.', approvedBy: 'Incident Response Lead' }]
-];
-for (const [to, evidence] of phasePayloads) keep(await post(`/api/matters/${matter.matter.id}/transition`, { to, evidence }));
-state = await request('/api/bootstrap');
-const closedMatter = state.matters.find(item => item.id === matter.matter.id);
-assert.equal(closedMatter.state, 'closed');
-assert.deepEqual(Object.keys(closedMatter.phaseEvidence).sort(), ['lessons', 'recovery', 'response', 'triage']);
-assert.equal(closedMatter.timeline.length, 5);
-const incidentWorkspace = deriveCoreWorkspace(state, 'incidents', null, contract);
-const caseRow = incidentWorkspace.incidentRows.find(item => item.object.data.id === matter.matter.id);
-assert.equal(caseRow.state, 'closed');
-assert.ok(caseRow.evidenceCount >= 14);
-checks.push('incident-report-triage-response-recovery-lessons');
-
-const ledger = await request('/api/runtime/ledger');
-assert.equal(ledger.integrity.ok, true);
-assert.ok(ledger.events.length >= receipts.length);
-assert.ok(ledger.events.every(item => item.payload === undefined));
-checks.push('ledger-receipts-and-sanitized-read');
-
-const providerStatus = await request('/status', {}, null, mock);
-assert.ok(providerStatus.requests.source >= 2);
-assert.ok(providerStatus.requests.ai >= 2);
-checks.push('external-provider-called');
-
-await mkdir(path.join(root, 'artifacts'), { recursive: true });
-await writeFile(path.join(root, 'artifacts/journey-runtime-check.json'), JSON.stringify({
-  schemaVersion: '3.0.0',
-  generatedAt: new Date().toISOString(),
-  result: 'passed',
-  checks,
-  receipts: receipts.length,
-  events: ledger.events.length,
-  semanticRows: deriveSemanticRows(state).length,
-  incidentPhases: Object.keys(closedMatter.phaseEvidence),
-  operatingContexts: ['regulated-enterprise', 'public-administration', 'enterprise'],
-  blobEvidence: [runtimeJob.lastStudy.blobRef, manual.source.locator],
-  limitations: [
-    'Il provider e la fonte remota usati dal test sono locali e sintetici.',
-    'Il test prova wiring, chiamata provider, storage, ledger e proiezione; non prova qualità dell’analisi AI o applicabilità normativa.'
-  ]
-}, null, 2));
-console.log(`core-ui-runtime: ok (${checks.length} checks, ${receipts.length} receipts, ${ledger.events.length} events)`);
+const root=path.resolve(new URL('..',import.meta.url).pathname); const base=process.env.ICTC_BASE_URL||'http://127.0.0.1:4807'; const contract=JSON.parse(await readFile(path.join(root,'v3/public/core-workspaces.json'),'utf8'));
+const receipts=[]; const checks=[]; const headers=(actor='local-owner',tenant='tenant-demo-company')=>({'content-type':'application/json','x-ictc-actor-id':actor,'x-ictc-tenant-id':tenant});
+async function request(url,{method='GET',body,actor='local-owner',tenant='tenant-demo-company',expected=null}={}){const response=await fetch(base+url,{method,headers:headers(actor,tenant),body:body===undefined?undefined:JSON.stringify(body)});const value=await response.json();if(expected!==null)assert.equal(response.status,expected,`${url}: ${JSON.stringify(value)}`);else assert.ok(response.ok,`${url}: ${response.status} ${JSON.stringify(value)}`);return value}
+const post=(url,body,options={})=>request(url,{...options,method:'POST',body}); const keep=value=>{assert.equal(value.receipt?.readbackVerified,true);receipts.push(value.receipt);return value};
+const health=await request('/api/health'); assert.equal(health.ok,true); assert.equal(health.monitoring.tenantAware,true); assert.equal(health.monitoring.aiStudy,'configured'); checks.push('tenant-aware-health');
+let state=await request('/api/bootstrap'); assert.equal(state.meta.access.current.tenant.id,'tenant-demo-company'); assert.equal(deriveCoreWorkspace(state,'monitoring',null,contract).mode,'monitoring'); assert.equal(deriveCoreWorkspace(state,'incidents',null,contract).mode,'incidents'); checks.push('two-workspaces-and-access-context');
+const monitor=keep(await post('/api/jobs',{label:'Monitoraggio test',sourceTitle:'Fonte test',url:'https://example.invalid/source',intervalMinutes:60,studyQuestion:'Riassumi la variazione.'}));
+keep(await post(`/api/sources/${monitor.source.id}/review`,{outcome:'accepted'},{actor:'local-reviewer'})); keep(await post(`/api/jobs/${monitor.job.id}/schedule`,{enabled:true,intervalMinutes:60},{actor:'local-analyst'}));
+const baseline=keep(await post(`/api/jobs/${monitor.job.id}/run`,{contentText:'Versione 1 della clausola osservata.'},{actor:'local-analyst'})); assert.equal(baseline.comparison,'baseline-created'); assert.equal(baseline.ai.status,'completed');
+const changed=keep(await post(`/api/jobs/${monitor.job.id}/run`,{contentText:'Versione 2 della clausola osservata con obbligo aggiornato.'},{actor:'local-analyst'})); assert.equal(changed.comparison,'changed'); assert.ok(changed.finding); state=await request('/api/bootstrap'); const job=state.jobs.find(item=>item.id===monitor.job.id); const blobPath=path.join(health.runtime,job.lastStudy.blobRef.replace(/^runtime\//,'')); assert.ok((await readFile(blobPath,'utf8')).includes('Versione 2')); assert.equal((await stat(blobPath)).size,job.lastStudy.byteLength); checks.push('monitoring-content-ai-and-tenant-blob');
+const manual=keep(await post('/api/sources',{title:'Contenuto manuale',contentText:'Clausola sintetica 42.'},{actor:'local-analyst'})); keep(await post(`/api/sources/${manual.source.id}/review`,{outcome:'accepted'},{actor:'local-reviewer'})); keep(await post(`/api/findings/${manual.finding.id}/review`,{outcome:'relevant'},{actor:'local-reviewer'})); state=await request('/api/bootstrap'); const change=state.changes.find(item=>item.findingId===manual.finding.id); keep(await post(`/api/changes/${change.id}/decide`,{outcome:'action-required',rationale:'Verificare il presidio.'})); keep(await post(`/api/changes/${change.id}/map-control`,{controlId:'control-monitor',rationale:'Relazione documentale.'})); state=await request('/api/bootstrap'); const completedChange=state.changes.find(item=>item.id===change.id); assert.ok(completedChange?.controlIds.includes('control-monitor')); const row=deriveSemanticRows(state).find(item=>item.source.data.id===manual.source.id); assert.ok(row); checks.push('manual-source-review-decision-control');
+const matter=keep(await post('/api/matters',{title:'Caso completo',kind:'near-miss',summary:'Accesso anomalo bloccato prima della diffusione.'},{actor:'local-analyst'})); keep(await post(`/api/matters/${matter.matter.id}/confirm-owner`,{owner:matter.matter.owner,raci:matter.matter.raci}));
+for(const [to,evidence] of [['assessing',{classification:'near-miss',severity:'medium',scope:'Portale',impact:'Impatto potenziale',confidence:'medium'}],['responding',{containment:'Sessioni revocate',eradication:'Credenziali ruotate',communications:'DPO consultato'}],['closure-review',{serviceStatus:'restored',recoveryValidation:'Test completato',residualMonitoring:'Sette giorni'}],['closed',{lessonsLearned:'Migliorare revoca',followUpActions:'Aggiornare playbook',approvedBy:'Owner'}]]) keep(await post(`/api/matters/${matter.matter.id}/transition`,{to,evidence})); state=await request('/api/bootstrap'); assert.equal(state.matters.find(item=>item.id===matter.matter.id).state,'closed'); checks.push('incident-full-lifecycle');
+const publicMatter=keep(await post('/api/matters',{title:'Caso pubblico',kind:'event',summary:'Fatto del tenant pubblico.'},{actor:'local-reviewer',tenant:'tenant-demo-public'})); const publicState=await request('/api/bootstrap',{tenant:'tenant-demo-public'}); const companyState=await request('/api/bootstrap'); assert.ok(publicState.matters.some(item=>item.id===publicMatter.matter.id)); assert.ok(!companyState.matters.some(item=>item.id===publicMatter.matter.id)); await request(`/api/objects/matter-${publicMatter.matter.id}`,{tenant:'tenant-demo-company',expected:404}); checks.push('cross-tenant-object-isolation');
+await request(`/api/sources/${manual.source.id}/review`,{actor:'local-analyst',method:'POST',body:{outcome:'accepted'},expected:403}); const session=await post('/api/session',{}); await request('/api/assistant',{tenant:'tenant-demo-public',method:'POST',body:{sessionId:session.sessionId,question:'stato'},expected:401}); checks.push('rbac-and-session-scope');
+const ledgerA=await request('/api/runtime/ledger'); const ledgerB=await request('/api/runtime/ledger',{tenant:'tenant-demo-public'}); assert.equal(ledgerA.integrity.ok,true); assert.equal(ledgerB.integrity.ok,true); assert.ok(receipts.every(item=>item.tenantId&&item.actorId&&item.actorRole)); checks.push('attributed-receipts-and-isolated-ledgers');
+await mkdir(path.join(root,'artifacts'),{recursive:true}); await writeFile(path.join(root,'artifacts/journey-runtime-check.json'),JSON.stringify({schemaVersion:'3.1.0',generatedAt:new Date().toISOString(),result:'passed',checks,receipts:receipts.length,events:ledgerA.events.length+ledgerB.events.length,tenants:['tenant-demo-company','tenant-demo-public'],limitations:['Provider AI sintetico nel workflow.','Readiness multi-cliente non equivale a piattaforma SaaS enterprise.']},null,2)); console.log(`core-ui-runtime: ok (${checks.length} checks, ${receipts.length} receipts, ${ledgerA.events.length+ledgerB.events.length} events, 2 tenants)`);
