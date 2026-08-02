@@ -16,7 +16,10 @@
     "modalità locale dimostrativa su loopback",
     "modalità trusted-header dietro identity-aware proxy amministrato",
     "migrazione non distruttiva del ledger single-user nel tenant predefinito",
-    "UI compatta con una prossima azione e audit trail progressivo"
+    "UI compatta con una prossima azione e audit trail progressivo",
+    "scritture browser conflict-safe tramite ledger head osservato",
+    "retry idempotenti tramite command id",
+    "sessioni AI a scadenza e limitate per attore"
   ],
   "excludedScope": [
     "provider OIDC nativo, MFA, provisioning SCIM e gestione password",
@@ -32,28 +35,29 @@
     {"id":"DOD-MC-003","criterion":"scritture concorrenti mantengono hash-chain indipendenti","test":"v3/tenant-store-check.mjs","required":true},
     {"id":"DOD-MC-004","criterion":"API nega azioni senza permesso e non accetta attore o tenant dal payload","test":"v3/multi-client-runtime-check.mjs","required":true},
     {"id":"DOD-MC-005","criterion":"oggetti e sessioni non attraversano il confine tenant","test":"v3/multi-client-runtime-check.mjs","required":true},
-    {"id":"DOD-MC-006","criterion":"UI espone cliente e ruolo con task read-only quando necessario","test":"v3/multi-client-ui-check.mjs","required":true},
-    {"id":"DOD-MC-007","criterion":"M=40 e M+100 non introducono nuove primitive","test":"v3/multi-client-saturation.mjs","required":true},
-    {"id":"DOD-MC-008","criterion":"bind di rete richiede identity boundary esplicito","test":"v1/stability-audit.mjs","required":true}
+    {"id":"DOD-MC-006","criterion":"UI mette nel focus il primo task eseguibile e separa quelli in attesa","test":"v3/guided-journey-check.mjs","required":true},
+    {"id":"DOD-MC-007","criterion":"M=48 e M+100 non introducono nuove primitive","test":"v3/multi-client-saturation.mjs","required":true},
+    {"id":"DOD-MC-008","criterion":"bind di rete richiede identity boundary esplicito","test":"v1/stability-audit.mjs","required":true},
+    {"id":"DOD-MC-009","criterion":"retry identici non duplicano eventi e scritture obsolete ricevono 409","test":"v3/multi-user-command-check.mjs","required":true},
+    {"id":"DOD-MC-010","criterion":"permesso, route, evento e proiezione sono definiti da un unico action contract","test":"v3/action-contract-check.mjs","required":true},
+    {"id":"DOD-MC-011","criterion":"sessioni AI scadono e sono limitate per attore e tenant","test":"v3/multi-user-command-check.mjs","required":true},
+    {"id":"DOD-MC-012","criterion":"23 criteri di readiness multi-user sono verificati","test":"v3/multi-user-dod-check.mjs","required":true}
   ],
   "metrics": [
     {"id":"MET-MC-001","name":"crossTenantDisclosureCount","target":0,"unit":"count"},
     {"id":"MET-MC-002","name":"unauthorizedWriteSuccessCount","target":0,"unit":"count"},
     {"id":"MET-MC-003","name":"receiptAttributionRate","target":1,"unit":"ratio"},
     {"id":"MET-MC-004","name":"tenantLedgerIntegrityRate","target":1,"unit":"ratio"},
-    {"id":"MET-MC-005","name":"noveltyAfterM","target":0,"unit":"count"}
+    {"id":"MET-MC-005","name":"noveltyAfterM","target":0,"unit":"count"},
+    {"id":"MET-MC-006","name":"staleWriteSuccessCount","target":0,"unit":"count"},
+    {"id":"MET-MC-007","name":"idempotentReplayDuplicateEvents","target":0,"unit":"count"},
+    {"id":"MET-MC-008","name":"actionContractCoverage","target":1,"unit":"ratio"}
   ],
-  "saturation": {
-    "M": 40,
-    "MPlus100": 140,
-    "primitiveCount": 24,
-    "noveltyAfterM": 0,
-    "limitation": "Bounded alla slice multi-cliente locale/trusted-header; non prova sicurezza SaaS o comprensione umana."
-  },
+  "saturation": {"M":48,"MPlus100":148,"primitiveCount":38,"noveltyAfterM":0,"limitation":"Bounded alla slice multi-cliente locale/trusted-header; non prova sicurezza SaaS o comprensione umana.","lastNoveltyScenario":21},
   "differentiators": [
     {"id":"DIF-MC-001","title":"Isolamento verificabile","buyerValue":"Ogni cliente ha ledger, blob e sessioni separati.","proof":"tenant-store-check e multi-client-runtime-check."},
     {"id":"DIF-MC-002","title":"Decisioni attribuite","buyerValue":"Ogni receipt espone tenant, attore e ruolo.","proof":"event envelope, hash-chain e readback."},
-    {"id":"DIF-MC-003","title":"UI proporzionale al ruolo","buyerValue":"Lo stesso workflow resta leggibile anche quando l’azione è negata.","proof":"task permission-aware e multi-client-ui-check."},
+    {"id":"DIF-MC-003","title":"UI proporzionale al ruolo","buyerValue":"Lo stesso workflow resta leggibile anche quando l’azione è negata.","proof":"task permission-aware e guided-journey-check."},
     {"id":"DIF-MC-004","title":"Anti-overclaim","buyerValue":"Readiness, pilot e limiti enterprise restano distinti.","proof":"release manifest e checkpoint."}
   ],
   "buyerResistances": [

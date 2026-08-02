@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "ICTC optimal multi-user journey DoD",
+  "criteria": [
+    {"id":"MU-DOD-001","criterion":"Tenant e principal sono risolti prima del dominio"},
+    {"id":"MU-DOD-002","criterion":"Ogni scrittura richiede un permesso contrattualizzato"},
+    {"id":"MU-DOD-003","criterion":"Payload client non controlla tenant o attore"},
+    {"id":"MU-DOD-004","criterion":"Ledger e blob sono isolati per tenant"},
+    {"id":"MU-DOD-005","criterion":"Receipt attribuisce tenant, attore, ruolo e azione"},
+    {"id":"MU-DOD-006","criterion":"Ogni comando ha un identificativo idempotente"},
+    {"id":"MU-DOD-007","criterion":"Scritture obsolete sono respinte con conflict"},
+    {"id":"MU-DOD-008","criterion":"Retry dello stesso comando restituisce la stessa receipt"},
+    {"id":"MU-DOD-009","criterion":"Sessioni AI sono tenant e actor scoped"},
+    {"id":"MU-DOD-010","criterion":"Sessioni hanno scadenza e limite"},
+    {"id":"MU-DOD-011","criterion":"Oggetti cross-tenant non sono enumerabili"},
+    {"id":"MU-DOD-012","criterion":"La UI espone solo Monitoraggio e Incidenti"},
+    {"id":"MU-DOD-013","criterion":"La UI ha tre ingressi core complessivi"},
+    {"id":"MU-DOD-014","criterion":"Il focus contiene il primo task eseguibile"},
+    {"id":"MU-DOD-015","criterion":"Task bloccati sono separati nella coda In attesa"},
+    {"id":"MU-DOD-016","criterion":"Ogni azione visibile ha permission route event producer projection"},
+    {"id":"MU-DOD-017","criterion":"Ogni scrittura produce readback verificato"},
+    {"id":"MU-DOD-018","criterion":"Transizioni incidente non saltano fasi"},
+    {"id":"MU-DOD-019","criterion":"AI resta read-only e delimitata"},
+    {"id":"MU-DOD-020","criterion":"Empty e waiting state mantengono il limite epistemico"},
+    {"id":"MU-DOD-021","criterion":"Saturazione M=48 e M+100=148 senza novelty dopo M"},
+    {"id":"MU-DOD-022","criterion":"Workflow CI esegue accesso comandi UI saturazione e DoD"},
+    {"id":"MU-DOD-023","criterion":"La proiezione non modifica gli eventi del ledger"}
+  ],
+  "limitations": ["Non sostituisce OIDC MFA SCIM o non ripudio","Non prova alta disponibilità o locking distribuito","Non determina conformità o obblighi di notifica","Richiede test con utenti reali per la comprensione"]
+}

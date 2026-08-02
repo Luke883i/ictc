@@ -18,12 +18,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: Access, isolation, RBAC and session scope
-        run: npm run audit:access
-      - name: Minimal UI and M plus 100 saturation
-        run: |
-          node v3/multi-client-ui-check.mjs
-          node v3/multi-client-saturation.mjs
+      - name: Multi-user readiness contract
+        run: npm run audit:multi-client
       - name: Full compatibility gate
         run: npm run release:check
       - uses: actions/upload-artifact@v6
@@ -32,6 +28,7 @@ jobs:
           name: ictc-multi-client-readiness
           path: |
             artifacts/multi-client-saturation.json
+            artifacts/multi-user-dod.json
             artifacts/v1-stability-attestation.json
             artifacts/journey-shell-audit.json
             artifacts/core-copy-audit.json
