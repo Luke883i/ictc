@@ -1,7 +1,8 @@
 import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { deriveCoreWorkspace, validateCoreTask } from './public/js/journey-model.js';
+import { validateCoreTask } from './public/js/journey-model.js';
+import { deriveGuidedWorkspace } from './public/js/journey-guidance.js';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const read = relative => readFile(path.join(root, relative), 'utf8');
@@ -14,7 +15,8 @@ const contract = JSON.parse(contractText);
 
 assert.deepEqual(contract.workspaces.map(item => item.id), ['monitoring', 'incidents']);
 assert.equal(contract.visibleObjects.find(item => item.id === 'tenant-context')?.usedBy.length, 3);
-assert.ok(contract.actions.every(item => item.permission));
+assert.ok(contract.actions.every(item => item.permission && item.method && item.path && item.userLabel && item.projection));
+assert.equal(contract.actions.find(item => item.id === 'job-schedule').permission, 'run');
 assert.match(html, /id="actorSelect"/);
 assert.match(html, /id="tenantSelect"/);
 assert.doesNotMatch(html, /name="operatingContext"|id="monitorContext"|id="sourceContext"|id="matterContext"/);
@@ -22,6 +24,9 @@ assert.match(common, /x-ictc-actor-id/);
 assert.match(common, /x-ictc-tenant-id/);
 assert.match(actions, /loadAccess/);
 assert.match(actions, /switchAccess/);
+assert.match(actions, /x-ictc-command-id/);
+assert.match(actions, /x-ictc-expected-head/);
+assert.match(actions, /ledger-head-changed/);
 assert.doesNotMatch(actions, /operatingContext\s*:/);
 assert.doesNotMatch(actions, /\bby\s*:/);
 assert.match(render, /Monitora URL/);
@@ -42,14 +47,17 @@ function fixture(role, permissions) {
     objectIndex:{'source-src-1':sourceView,'matter-matter-1':matterView}
   };
 }
-const viewerMonitoring = deriveCoreWorkspace(fixture('viewer', ['read']), 'monitoring', null, contract);
-const reviewerMonitoring = deriveCoreWorkspace(fixture('reviewer', ['read','review']), 'monitoring', null, contract);
-const viewerIncident = deriveCoreWorkspace(fixture('viewer', ['read']), 'incidents', null, contract);
-const ownerIncident = deriveCoreWorkspace(fixture('owner', ['read','manage-case']), 'incidents', null, contract);
-assert.ok(viewerMonitoring.activeTask.readOnly);
+const viewerMonitoring = deriveGuidedWorkspace(fixture('viewer', ['read']), 'monitoring', null, contract);
+const reviewerMonitoring = deriveGuidedWorkspace(fixture('reviewer', ['read','review']), 'monitoring', null, contract);
+const viewerIncident = deriveGuidedWorkspace(fixture('viewer', ['read']), 'incidents', null, contract);
+const ownerIncident = deriveGuidedWorkspace(fixture('owner', ['read','manage-case']), 'incidents', null, contract);
+assert.equal(viewerMonitoring.activeTask, null);
+assert.equal(viewerMonitoring.actionableTasks.length, 0);
+assert.equal(viewerMonitoring.waitingTasks.length, 1);
 assert.equal(reviewerMonitoring.activeTask.readOnly, false);
-assert.ok(viewerIncident.activeTask.readOnly);
+assert.equal(viewerIncident.activeTask, null);
+assert.equal(viewerIncident.waitingTasks.length, 1);
 assert.equal(ownerIncident.activeTask.readOnly, false);
-for (const value of [viewerMonitoring.activeTask, reviewerMonitoring.activeTask, viewerIncident.activeTask, ownerIncident.activeTask]) assert.ok(validateCoreTask(value));
+for (const value of [...viewerMonitoring.waitingTasks, reviewerMonitoring.activeTask, ...viewerIncident.waitingTasks, ownerIncident.activeTask]) assert.ok(validateCoreTask(value));
 
-console.log('multi-client-ui-check: ok (2 services, tenant selector, permission-aware tasks, minimal labels)');
+console.log('multi-client-ui-check: ok (2 services, actionable/waiting queues, contract-driven permissions)');
