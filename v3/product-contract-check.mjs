@@ -1,0 +1,18 @@
+import { strict as assert } from 'node:assert';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+const root = path.resolve(new URL('..', import.meta.url).pathname);
+const contract = JSON.parse(await readFile(path.join(root,'v3/product-contract.json'),'utf8'));
+assert.equal(contract.services.length,2,'ICTC deve avere esattamente due servizi');
+assert.deepEqual(contract.services.map(item=>item.id),['monitoring','incidents']);
+assert.equal(contract.roles.length,2,'ICTC deve avere esattamente due ruoli');
+assert.deepEqual(contract.roles.map(item=>item.id),['admin','user']);
+const admin = contract.roles[0].permissions; const user = contract.roles[1].permissions;
+assert.ok(admin.includes('configure-ai') && admin.includes('manage-jobs') && admin.includes('close-incident'));
+assert.ok(!user.includes('configure-ai') && !user.includes('manage-jobs') && user.includes('contribute') && user.includes('report-incident'));
+assert.ok(contract.complianceDocumentTypes.includes('decision') && contract.complianceDocumentTypes.includes('guideline') && contract.complianceDocumentTypes.includes('standard'));
+assert.deepEqual(contract.incidentStates,['draft','ready','submitted','closed']);
+assert.ok(contract.boundaries.every(item=>item.length>20));
+await mkdir(path.join(root,'artifacts'),{recursive:true});
+await writeFile(path.join(root,'artifacts/product-contract-check.json'),JSON.stringify({result:'passed',services:2,roles:2,documentTypes:contract.complianceDocumentTypes.length,boundaries:contract.boundaries.length},null,2));
+console.log('product-contract-check: ok (2 services, 2 roles, explicit boundaries)');

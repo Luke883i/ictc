@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "product": "Integrated Compliance Tower Control",
+  "promise": "Censire fonti di compliance e accompagnare segnalazioni di incidenti con AI configurata e risultati sempre revisionabili.",
+  "services": [
+    {
+      "id": "monitoring",
+      "label": "Monitoraggio normativo",
+      "outcome": "Un catalogo di fonti candidate con origine, classificazione, stato e prova del run.",
+      "primaryActions": ["create-job", "contribute-source", "review-results"]
+    },
+    {
+      "id": "incidents",
+      "label": "Incidenti",
+      "outcome": "Una segnalazione strutturata, una bozza AI modificabile e una cronologia amministrativa.",
+      "primaryActions": ["report-incident", "generate-draft", "submit-report"]
+    }
+  ],
+  "roles": [
+    {
+      "id": "admin",
+      "label": "Amministratore",
+      "permissions": ["read", "configure-ai", "manage-jobs", "contribute", "report-incident", "edit-own-incident", "generate-incident-draft", "submit-own-incident", "close-incident"]
+    },
+    {
+      "id": "user",
+      "label": "Utente",
+      "permissions": ["read", "contribute", "report-incident", "edit-own-incident", "generate-incident-draft", "submit-own-incident"]
+    }
+  ],
+  "complianceDocumentTypes": ["law", "legislative-decree", "decree", "regulation", "decision", "guideline", "circular", "standard", "other"],
+  "complianceItemRequiredFields": ["documentType", "title", "authority", "jurisdiction", "identifier", "sourceUrl", "status", "summary", "confidence"],
+  "incidentKinds": ["event", "near-miss", "incident"],
+  "incidentStates": ["draft", "ready", "submitted", "closed"],
+  "boundaries": [
+    "ICTC propone classificazioni e formulazioni; non determina applicabilità, obblighi o conformità.",
+    "I promemoria temporali derivano dai dati inseriti e non sostituiscono una valutazione legale.",
+    "Le fonti caricate dagli utenti restano contributi da verificare.",
+    "Le chiavi API non sono salvate nel database: il runtime usa una variabile d'ambiente configurata dall'amministratore."
+  ]
+}
