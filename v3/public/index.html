@@ -1,42 +1,160 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ICTC · Monitoraggio e incidenti</title>
-  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="multi-client.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICTC · Monitoraggio normativo e incidenti</title>
+  <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
 </head>
 <body>
-<a class="skip-link" href="#main">Vai al contenuto</a>
-<div class="app-shell">
-  <header class="app-header" aria-label="Barra applicazione">
-    <div class="brand" aria-label="ICTC"><span>ICTC</span></div>
-    <nav class="core-nav" aria-label="Servizi"><button type="button" data-mode="monitoring" aria-current="page">Monitoraggio</button><button type="button" data-mode="incidents" aria-current="false">Incidenti</button></nav>
-    <div class="access-switcher" aria-label="Contesto di lavoro">
-      <label id="actorField" for="actorSelect"><span>Profilo</span><select id="actorSelect"></select></label>
-      <label for="tenantSelect"><span>Cliente</span><select id="tenantSelect"></select></label>
+<a class="skip-link" href="#content">Vai al contenuto</a>
+<header class="topbar">
+  <div>
+    <strong class="brand">ICTC</strong>
+    <span class="product-line">Monitoraggio normativo e gestione incidenti</span>
+  </div>
+  <div class="identity">
+    <label for="roleSelect">Modalità locale</label>
+    <select id="roleSelect">
+      <option value="admin">Amministratore</option>
+      <option value="user">Utente</option>
+    </select>
+    <span id="runtimeStatus" role="status">Connessione…</span>
+  </div>
+</header>
+<nav class="service-nav" aria-label="Servizi ICTC">
+  <button type="button" data-service="monitoring" aria-current="page">Monitoraggio normativo</button>
+  <button type="button" data-service="incidents" aria-current="false">Incidenti</button>
+</nav>
+<main id="content" tabindex="-1">
+  <section id="monitoringView" class="view">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Servizio 1 di 2</p>
+        <h1>Monitoraggio normativo</h1>
+        <p>Configura ricerche AI, raccogli fonti e consulta il catalogo candidato.</p>
+      </div>
+      <div class="head-actions admin-only">
+        <button id="openSettings" type="button">Configura AI</button>
+        <button id="openJob" class="primary" type="button">Nuovo monitoraggio</button>
+      </div>
+    </header>
+
+    <section id="aiSetup" class="callout admin-only" hidden>
+      <div><strong>Configura l’AI per avviare i monitoraggi</strong><p>Endpoint, modello e prompt globali si applicano a tutto ICTC. La chiave resta in una variabile d’ambiente del runtime.</p></div>
+      <button id="setupNow" type="button">Configura</button>
+    </section>
+
+    <div class="two-column">
+      <section class="card">
+        <div class="section-head"><div><h2>Monitoraggi</h2><p>Solo l’amministratore li configura; tutti possono vedere stato ed esito.</p></div><span id="jobCount" class="count">0</span></div>
+        <div id="jobsList" class="stack"></div>
+      </section>
+      <section class="card">
+        <div class="section-head"><div><h2>Contribuisci</h2><p>Un solo punto per link, testo e documenti.</p></div></div>
+        <form id="contributionForm" class="form-stack">
+          <label>Titolo<input name="title" required maxlength="500"></label>
+          <label>Link, facoltativo<input name="url" type="url"></label>
+          <label>Testo, facoltativo<textarea name="text" rows="5"></textarea></label>
+          <label>Documenti, facoltativi<input name="files" type="file" multiple></label>
+          <p class="hint">Inserisci almeno un link, un testo o un documento. Ogni contributo resta da verificare.</p>
+          <button class="primary" type="submit">Aggiungi fonte</button>
+        </form>
+      </section>
     </div>
-    <div class="header-actions"><span id="runtimeState" class="runtime-state" role="status">Accesso in verifica</span><button id="searchOpen" type="button" aria-haspopup="dialog">Cerca</button><button id="comfortOpen" type="button" aria-haspopup="dialog" aria-label="Impostazioni di lettura">Lettura</button></div>
-  </header>
-  <main id="main" tabindex="-1"></main>
-  <div id="operationStatus" class="operation-status" data-visible="false" role="status" aria-live="polite" aria-atomic="true">Pronto</div>
-</div>
 
-<dialog id="comfortDialog" aria-labelledby="comfortTitle"><form method="dialog" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="comfortTitle">Lettura</h2><button type="submit" value="cancel" class="icon-button" aria-label="Chiudi">×</button></header><label for="textScale">Testo<select id="textScale"><option value="default">Predefinito</option><option value="large">Grande</option><option value="xlarge">Molto grande</option></select></label><label for="density">Spaziatura<select id="density"><option value="comfortable">Normale</option><option value="compact">Compatta</option><option value="spacious">Ampia</option></select></label><label for="contrast">Contrasto<select id="contrast"><option value="system">Sistema</option><option value="high">Alto</option></select></label><label for="motion">Animazioni<select id="motion"><option value="system">Sistema</option><option value="reduced">Ridotte</option></select></label><p class="note">Le preferenze restano nel browser.</p><button type="submit" value="save" class="primary">Applica</button></form></dialog>
+    <section class="card">
+      <div class="section-head"><div><h2>Catalogo candidato</h2><p>Fonti identificate dall’AI con metadati ispirati a ELI. Nessun elemento equivale automaticamente ad applicabilità.</p></div><span id="catalogCount" class="count">0</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fonte</th><th>Tipo</th><th>Autorità</th><th>Giurisdizione</th><th>Stato</th><th>Confidenza</th></tr></thead>
+          <tbody id="catalogBody"></tbody>
+        </table>
+      </div>
+      <div id="catalogEmpty" class="empty">Nessun risultato. Configura un monitoraggio oppure aggiungi una fonte.</div>
+    </section>
+  </section>
 
-<dialog id="monitorDialog" aria-labelledby="monitorTitle"><form id="monitorForm" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="monitorTitle">Monitora un URL</h2><button type="button" class="icon-button" data-dialog-close="monitorDialog" aria-label="Chiudi">×</button></header><label for="monitorName">Nome<input id="monitorName" name="label" required></label><label for="monitorUrl">URL<input id="monitorUrl" name="url" type="url" required></label><label for="monitorInterval">Frequenza<select id="monitorInterval" name="intervalMinutes"><option value="60">Ogni ora</option><option value="1440" selected>Ogni giorno</option><option value="10080">Ogni settimana</option></select></label><details><summary>Domanda AI facoltativa</summary><label for="monitorQuestion">Domanda<textarea id="monitorQuestion" name="studyQuestion" rows="3">Individua variazioni da sottoporre a review umana.</textarea></label></details><p class="note">La fonte resta da rivedere prima dell’attivazione.</p><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="runDialog" aria-labelledby="runTitle"><form id="runForm" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="runTitle">Esegui monitoraggio</h2><button type="button" class="icon-button" data-dialog-close="runDialog" aria-label="Chiudi">×</button></header><label for="runSelect">Monitoraggio<select id="runSelect" name="jobId"></select></label><label for="runContent">Contenuto osservato, facoltativo<textarea id="runContent" name="contentText" rows="6"></textarea></label><p class="note">Senza testo, ICTC usa l’acquisizione remota solo se abilitata.</p><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="scheduleDialog" aria-labelledby="scheduleTitle"><form id="scheduleForm" class="dialog-frame compact-dialog"><input type="hidden" name="id"><header class="dialog-header"><h2 id="scheduleTitle">Attiva</h2><button type="button" class="icon-button" data-dialog-close="scheduleDialog" aria-label="Chiudi">×</button></header><label for="scheduleInterval">Frequenza<select id="scheduleInterval" name="intervalMinutes"><option value="60">Ogni ora</option><option value="1440" selected>Ogni giorno</option><option value="10080">Ogni settimana</option></select></label><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="choiceDialog" aria-labelledby="choiceTitle"><form id="choiceForm" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="choiceTitle">Registra esito</h2><button type="button" class="icon-button" data-dialog-close="choiceDialog" aria-label="Chiudi">×</button></header><p id="choiceContext" class="dialog-intro"></p><fieldset><legend>Esito</legend><div id="choiceOptions" class="choice-options"></div></fieldset><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="sourceDialog" aria-labelledby="sourceTitle"><form id="sourceForm" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="sourceTitle">Aggiungi contenuto</h2><button type="button" class="icon-button" data-dialog-close="sourceDialog" aria-label="Chiudi">×</button></header><label for="sourceName">Titolo<input id="sourceName" name="title" required></label><label for="sourceUrl">URL, facoltativo<input id="sourceUrl" name="url" type="url"></label><label for="sourceText">Testo, facoltativo<textarea id="sourceText" name="contentText" rows="7"></textarea></label><p class="note">Inserisci almeno URL o testo. Il contenuto resta da rivedere.</p><button class="primary" type="submit">Continua</button></form></dialog>
+  <section id="incidentsView" class="view" hidden>
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Servizio 2 di 2</p>
+        <h1>Incidenti</h1>
+        <p>Registra fatti, allega evidenze e prepara una formulazione amministrativa modificabile.</p>
+      </div>
+      <div class="head-actions"><button id="openIncident" class="primary" type="button">Nuova segnalazione</button></div>
+    </header>
+    <section class="callout neutral">
+      <div><strong>ICTC non decide se l’evento è notificabile</strong><p>I promemoria 24 ore, 72 ore e un mese sono calcolati dalla data inserita e richiedono una valutazione competente.</p></div>
+    </section>
+    <section class="card">
+      <div class="section-head"><div><h2>Segnalazioni</h2><p>Fatti, bozza AI, invio e chiusura in una sola cronologia.</p></div><span id="incidentCount" class="count">0</span></div>
+      <div id="incidentList" class="stack"></div>
+    </section>
+  </section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
 
-<dialog id="matterDialog" aria-labelledby="matterTitle"><form id="matterForm" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="matterTitle">Segnala</h2><button type="button" class="icon-button" data-dialog-close="matterDialog" aria-label="Chiudi">×</button></header><label for="matterName">Titolo<input id="matterName" name="title"></label><label for="matterKind">Tipo iniziale<select id="matterKind" name="kind"><option value="event">Evento</option><option value="near-miss">Quasi incidente</option><option value="incident">Possibile incidente</option></select></label><label for="matterSummary">Fatti osservati<textarea id="matterSummary" name="summary" rows="6" required></textarea></label><p class="note">Il tipo iniziale non è una qualificazione normativa.</p><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="incidentPhaseDialog" aria-labelledby="incidentPhaseTitle"><form id="incidentPhaseForm" class="dialog-frame compact-dialog"><input type="hidden" name="id"><input type="hidden" name="to"><header class="dialog-header"><h2 id="incidentPhaseTitle">Aggiorna caso</h2><button type="button" class="icon-button" data-dialog-close="incidentPhaseDialog" aria-label="Chiudi">×</button></header><p id="incidentPhaseSummary" class="dialog-intro"></p><div id="incidentPhaseFields"></div><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="decisionDialog" aria-labelledby="decisionTitle"><form id="decisionForm" class="dialog-frame compact-dialog"><input type="hidden" name="id"><header class="dialog-header"><h2 id="decisionTitle">Decidi impatto</h2><button type="button" class="icon-button" data-dialog-close="decisionDialog" aria-label="Chiudi">×</button></header><label for="decisionOutcome">Esito<select id="decisionOutcome" name="outcome"><option value="monitor">Monitorare</option><option value="action-required">Azione richiesta</option><option value="not-applicable">Non applicabile qui</option></select></label><label for="decisionRationale">Motivazione<textarea id="decisionRationale" name="rationale" rows="4" required></textarea></label><button class="primary" type="submit">Continua</button></form></dialog>
-<dialog id="controlDialog" aria-labelledby="controlTitle"><form id="controlForm" class="dialog-frame compact-dialog"><input type="hidden" name="id"><header class="dialog-header"><h2 id="controlTitle">Collega controllo</h2><button type="button" class="icon-button" data-dialog-close="controlDialog" aria-label="Chiudi">×</button></header><label for="controlSelect">Controllo<select id="controlSelect" name="controlId"></select></label><label for="controlRationale">Motivazione<textarea id="controlRationale" name="rationale" rows="4"></textarea></label><p class="note">Il collegamento non prova efficacia.</p><button class="primary" type="submit">Continua</button></form></dialog>
+<dialog id="settingsDialog" aria-labelledby="settingsTitle">
+  <form id="settingsForm" class="dialog-form">
+    <header><div><p class="eyebrow">Amministrazione</p><h2 id="settingsTitle">Configurazione globale AI</h2></div><button type="button" data-close="settingsDialog" aria-label="Chiudi">×</button></header>
+    <fieldset><legend>Organizzazione e scope</legend>
+      <label>Organizzazione<input name="organizationName" required></label>
+      <label>Scope del monitoraggio<textarea name="organizationScope" rows="3" required></textarea></label>
+    </fieldset>
+    <fieldset><legend>Provider compatibile OpenAI</legend>
+      <label>Endpoint<input name="endpoint" type="url" placeholder="https://…/v1/chat/completions" required></label>
+      <label>Modello<input name="model" required></label>
+      <label>Variabile della chiave API<input name="apiKeyEnv" placeholder="ICTC_LLM_API_KEY"></label>
+      <label>Temperatura<input name="temperature" type="number" min="0" max="2" step="0.1"></label>
+    </fieldset>
+    <fieldset><legend>Prompt globali</legend>
+      <label>Censimento compliance<textarea name="compliancePrompt" rows="8" required></textarea></label>
+      <label>Bozza incidente<textarea name="incidentPrompt" rows="8" required></textarea></label>
+    </fieldset>
+    <footer><button type="button" data-close="settingsDialog">Annulla</button><button class="primary" type="submit">Salva configurazione</button></footer>
+  </form>
+</dialog>
 
-<dialog id="checkpointDialog" aria-labelledby="checkpointTitle"><form method="dialog" class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="checkpointTitle">Conferma registrazione</h2><button type="submit" value="cancel" class="icon-button" aria-label="Annulla">×</button></header><p id="checkpointSummary" class="dialog-intro"></p><dl class="checkpoint-grid"><dt>Prima</dt><dd id="checkpointBefore"></dd><dt>Dopo</dt><dd id="checkpointAfter"></dd><dt>Prova</dt><dd id="checkpointEvidence"></dd></dl><section class="boundary-box"><h3>Non significa</h3><ul id="checkpointLimits"></ul></section><footer class="dialog-actions"><button type="submit" value="cancel">Annulla</button><button type="submit" value="confirm" class="primary">Registra</button></footer></form></dialog>
-<dialog id="detailDialog" aria-labelledby="detailTitle"><div class="dialog-frame detail-frame"><header class="dialog-header"><div><span id="detailStatus" class="eyebrow"></span><h2 id="detailTitle"></h2></div><button type="button" class="icon-button" data-dialog-close="detailDialog" aria-label="Chiudi">×</button></header><div class="detail-tabs" role="tablist" aria-label="Dettaglio"><button id="detailTabMeaning" type="button" role="tab" data-detail-tab="meaning" aria-controls="detailBody" aria-selected="true">Sintesi</button><button id="detailTabProvenance" type="button" role="tab" data-detail-tab="provenance" aria-controls="detailBody" aria-selected="false" tabindex="-1">Origine</button><button id="detailTabEvidence" type="button" role="tab" data-detail-tab="evidence" aria-controls="detailBody" aria-selected="false" tabindex="-1">Prova</button></div><div id="detailBody" role="tabpanel" aria-labelledby="detailTabMeaning" tabindex="0"></div><footer class="detail-footer"><button id="assistantOpen" type="button">Chiedi all’assistente</button></footer></div></dialog>
-<dialog id="assistantDialog" aria-labelledby="assistantTitle"><div class="dialog-frame compact-dialog"><header class="dialog-header"><div><span class="eyebrow">AI · sola lettura</span><h2 id="assistantTitle">Chiedi sull’oggetto</h2></div><button type="button" class="icon-button" data-dialog-close="assistantDialog" aria-label="Chiudi">×</button></header><p id="assistantCapsule" class="dialog-intro">Nessun oggetto selezionato.</p><div id="assistantMessages" class="messages" aria-live="polite"></div><form id="assistantForm"><label for="assistantQuestion">Domanda<textarea id="assistantQuestion" rows="4" required></textarea></label><button class="primary" type="submit">Invia</button></form></div></dialog>
-<dialog id="searchDialog" aria-labelledby="searchTitle"><div class="dialog-frame compact-dialog"><header class="dialog-header"><h2 id="searchTitle">Cerca</h2><button type="button" class="icon-button" data-dialog-close="searchDialog" aria-label="Chiudi">×</button></header><label for="searchInput">Oggetto<input id="searchInput" type="search" autocomplete="off"></label><div id="searchResults" class="search-results"></div></div></dialog>
-</body></html>
+<dialog id="jobDialog" aria-labelledby="jobTitle">
+  <form id="jobForm" class="dialog-form">
+    <header><div><p class="eyebrow">Monitoraggio</p><h2 id="jobTitle">Nuovo monitoraggio</h2></div><button type="button" data-close="jobDialog" aria-label="Chiudi">×</button></header>
+    <label>Nome<input name="name" required maxlength="240"></label>
+    <label>Scope specifico<textarea name="scope" rows="4" required placeholder="Es. sicurezza delle informazioni, Italia e UE, settore sanitario"></textarea></label>
+    <label>Giurisdizioni<input name="jurisdictions" placeholder="Italia, Unione europea"></label>
+    <label>Autorità o fonti prioritarie<input name="authorities" placeholder="ACN, Garante, EUR-Lex"></label>
+    <fieldset><legend>Tipi di documento</legend><div id="documentTypes" class="checks"></div></fieldset>
+    <label>URL iniziali, uno per riga<textarea name="sourceUrls" rows="4"></textarea></label>
+    <label>Prompt specifico, facoltativo<textarea name="prompt" rows="6" placeholder="Lascia vuoto per usare il prompt globale"></textarea></label>
+    <div class="inline-fields"><label>Intervallo, ore<input name="intervalHours" type="number" min="1" max="8760" value="24"></label><label class="checkbox"><input name="enabled" type="checkbox" checked> Attivo</label></div>
+    <footer><button type="button" data-close="jobDialog">Annulla</button><button class="primary" type="submit">Crea monitoraggio</button></footer>
+  </form>
+</dialog>
+
+<dialog id="incidentDialog" aria-labelledby="incidentTitle">
+  <form id="incidentForm" class="dialog-form">
+    <header><div><p class="eyebrow">Segnalazione</p><h2 id="incidentTitle">Nuovo evento</h2></div><button type="button" data-close="incidentDialog" aria-label="Chiudi">×</button></header>
+    <label>Tipo<select name="kind"><option value="event">Evento</option><option value="near-miss">Quasi incidente</option><option value="incident">Possibile incidente</option></select></label>
+    <label>Titolo<input name="title" maxlength="500"></label>
+    <div class="inline-fields"><label>Conoscenza dell’evento<input name="awarenessAt" type="datetime-local" required></label><label>Rilevazione<input name="detectedAt" type="datetime-local"></label></div>
+    <label>Fatti osservati<textarea name="facts" rows="7" required></textarea></label>
+    <label>Servizi o sistemi coinvolti<input name="affectedServices" placeholder="Uno o più valori separati da virgola"></label>
+    <label>Impatto noto o potenziale<textarea name="impact" rows="4"></textarea></label>
+    <label>Indicatori disponibili<input name="indicators" placeholder="IP, hash, account, eventi; separati da virgola"></label>
+    <label>Misure già adottate<input name="mitigations" placeholder="Separare con virgola"></label>
+    <div class="checks"><label><input name="maliciousSuspected" type="checkbox"> Possibile atto malevolo</label><label><input name="crossBorder" type="checkbox"> Possibile impatto transfrontaliero</label></div>
+    <label>Contatti coinvolti<input name="contacts" placeholder="Separare con virgola"></label>
+    <label>Allegati<input name="files" type="file" multiple></label>
+    <footer><button type="button" data-close="incidentDialog">Annulla</button><button class="primary" type="submit">Registra fatti</button></footer>
+  </form>
+</dialog>
+
+<dialog id="incidentDetailDialog" aria-labelledby="incidentDetailTitle">
+  <div class="dialog-form">
+    <header><div><p id="incidentDetailMeta" class="eyebrow"></p><h2 id="incidentDetailTitle"></h2></div><button type="button" data-close="incidentDetailDialog" aria-label="Chiudi">×</button></header>
+    <div id="incidentDetailBody"></div>
+    <label>Formulazione finale<textarea id="incidentNarrative" rows="10"></textarea></label>
+    <footer id="incidentActions"></footer>
+  </div>
+</dialog>
