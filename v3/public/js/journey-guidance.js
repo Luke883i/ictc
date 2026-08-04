@@ -91,4 +91,4 @@ export function installGuidedJourney(state, contract) {
   return () => observer.disconnect();
 }
 
-export const guidanceInternals = Object.freeze({ taskActionIds, setTextIfChanged });
+export const guidanceInternals = Object.freeze({ taskActionIds, setTextIfChanged, waitingFocus, labelQueues });
