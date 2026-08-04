@@ -1,17 +1,25 @@
 import { strict as assert } from 'node:assert';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-const root = path.resolve(new URL('..', import.meta.url).pathname);
-const html = await readFile(path.join(root,'v3/public/index.html'),'utf8');
-const js = await readFile(path.join(root,'v3/public/app.js'),'utf8');
-const css = await readFile(path.join(root,'v3/public/styles.css'),'utf8');
-assert.match(html,/<html lang="it">/);
-assert.equal([...html.matchAll(/data-service="/g)].length,2,'la navigazione deve contenere due soli servizi');
-for(const value of ['Monitoraggio normativo','Incidenti','Configura AI','Nuovo monitoraggio','Contribuisci','Nuova segnalazione','Formulazione finale']) assert.ok(html.includes(value),`label assente: ${value}`);
-for(const value of ['Catena delle decisioni','Chiedi all’assistente','Impostazioni di lettura','Cliente attivo','Profilo organizzativo']) assert.ok(!html.includes(value),`rumore UI presente: ${value}`);
-assert.equal([...html.matchAll(/id="contributionForm"/g)].length,1,'deve esistere un solo punto di contribuzione');
-for(const route of ['/api/admin/settings','/api/jobs','/api/contributions','/api/incidents']) assert.ok(js.includes(route),`route UI non wired: ${route}`);
-assert.ok(css.length < 12_000,'CSS troppo esteso per una UI minimale');
-await mkdir(path.join(root,'artifacts'),{recursive:true});
-await writeFile(path.join(root,'artifacts/ui-contract-check.json'),JSON.stringify({result:'passed',services:2,contributionPoints:1,htmlBytes:html.length,jsBytes:js.length,cssBytes:css.length},null,2));
-console.log('ui-contract-check: ok (two services, one contribution point, no legacy noise)');
+import { readdir, readFile } from 'node:fs/promises';
+const publicRoot = new URL('./public/', import.meta.url);
+const html = await readFile(new URL('index.html', publicRoot), 'utf8');
+const cssFiles = (await readdir(publicRoot)).filter(name => name.endsWith('.css'));
+const uiFiles = (await readdir(new URL('ui/', publicRoot))).filter(name => name.endsWith('.js'));
+const js = [
+  await readFile(new URL('app.js', publicRoot), 'utf8'),
+  ...await Promise.all(uiFiles.map(name => readFile(new URL(`ui/${name}`, publicRoot), 'utf8')))
+].join('\n');
+const css = (await Promise.all(cssFiles.map(name => readFile(new URL(name, publicRoot), 'utf8')))).join('\n');
+assert.equal((html.match(/data-service=/g)||[]).length, 2);
+assert.ok(html.includes('Che cosa deve sorvegliare ICTC?'));
+assert.ok(html.includes('Racconto originale'));
+assert.ok(html.includes('Quando ne avete avuto conoscenza?'));
+assert.equal((html.match(/name="objective"[^>]*required/g)||[]).length, 1);
+assert.equal((html.match(/name="originalNarrative"[^>]*required/g)||[]).length, 1);
+assert.equal((html.match(/name="awarenessAt"[^>]*required/g)||[]).length, 1);
+for (const wow of ['proofPulse','Plan Reveal','AI Lens','Question Compass','Origin Diff']) assert.ok(html.includes(wow) || js.includes(wow), wow);
+for (const forbidden of ['tenantSelect','reviewer','semantic graph','control mapping','owner confirmation']) assert.ok(!`${html}\n${js}`.toLowerCase().includes(forbidden.toLowerCase()), forbidden);
+assert.ok(js.includes('evidenceUrl') || js.includes('/api/evidence/'));
+assert.ok(js.includes('x-ictc-expected-revision'));
+assert.ok(css.includes('prefers-reduced-motion'));
+assert.ok(uiFiles.length >= 5, 'UI responsibilities must stay modular');
+console.log(`ui-contract-check: ok (${uiFiles.length} UI modules, progressive intake, provenance wow)`);
