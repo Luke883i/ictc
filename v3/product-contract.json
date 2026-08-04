@@ -1,41 +1,72 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.1.0",
   "product": "Integrated Compliance Tower Control",
-  "promise": "Censire fonti di compliance e accompagnare segnalazioni di incidenti con AI configurata e risultati sempre revisionabili.",
+  "promise": "Trasformare fonti normative e segnalazioni grezze in fascicoli verificabili, senza sostituire la decisione umana.",
   "services": [
     {
       "id": "monitoring",
-      "label": "Monitoraggio normativo",
-      "outcome": "Un catalogo di fonti candidate con origine, classificazione, stato e prova del run.",
-      "primaryActions": ["create-job", "contribute-source", "review-results"]
+      "label": "Fonti normative",
+      "jobToBeDone": "Sapere quali fonti ufficiali possono incidere sul perimetro dichiarato e perché sono nel catalogo.",
+      "entry": "Descrivere in linguaggio naturale ciò che deve essere sorvegliato oppure aggiungere materiale.",
+      "exit": "Fonte verificata o scartata con origine, versione, decisione e ricevuta.",
+      "primaryJourney": ["objective", "ai-plan", "human-activate", "automatic-run", "candidate-source", "human-decision", "evidence-bundle"]
     },
     {
       "id": "incidents",
-      "label": "Incidenti",
-      "outcome": "Una segnalazione strutturata, una bozza AI modificabile e una cronologia amministrativa.",
-      "primaryActions": ["report-incident", "generate-draft", "submit-report"]
+      "label": "Segnalazioni",
+      "jobToBeDone": "Registrare ciò che è accaduto e arrivare a una formulazione amministrativa verificata.",
+      "entry": "Raccontare l'accaduto, indicare quando se ne è avuta conoscenza e allegare eventuali prove.",
+      "exit": "Segnalazione confermata e inviata con cronologia, allegati, domande, risposte e ricevuta.",
+      "primaryJourney": ["raw-intake", "ai-lens", "gap-question", "human-answer", "draft", "human-confirm", "evidence-bundle"]
     }
   ],
   "roles": [
     {
       "id": "admin",
       "label": "Amministratore",
-      "permissions": ["read", "configure-ai", "manage-jobs", "contribute", "report-incident", "edit-own-incident", "generate-incident-draft", "submit-own-incident", "close-incident"]
+      "permissions": ["read", "configure-ai", "manage-monitoring", "review-source", "contribute-source", "report-incident", "edit-own-incident", "submit-own-incident", "read-all-incidents", "close-incident", "verify-integrity"]
     },
     {
       "id": "user",
       "label": "Utente",
-      "permissions": ["read", "contribute", "report-incident", "edit-own-incident", "generate-incident-draft", "submit-own-incident"]
+      "permissions": ["read", "contribute-source", "report-incident", "edit-own-incident", "submit-own-incident"]
     }
   ],
-  "complianceDocumentTypes": ["law", "legislative-decree", "decree", "regulation", "decision", "guideline", "circular", "standard", "other"],
-  "complianceItemRequiredFields": ["documentType", "title", "authority", "jurisdiction", "identifier", "sourceUrl", "status", "summary", "confidence"],
-  "incidentKinds": ["event", "near-miss", "incident"],
-  "incidentStates": ["draft", "ready", "submitted", "closed"],
+  "experiencePrinciples": [
+    "Una sola azione primaria per contesto.",
+    "Una domanda è ammessa solo se cambia il passo successivo, completa una prova o abilita una decisione.",
+    "Il racconto originale e il materiale caricato restano immutabili e separati dalle proposte AI.",
+    "Ogni proposta AI mostra origine, limiti e traccia tecnica.",
+    "Ogni scrittura restituisce una ricevuta visibile e ogni fascicolo è esportabile.",
+    "La complessità viene rivelata progressivamente, mai anticipata nel primo passo."
+  ],
+  "wowMechanisms": [
+    "AI Lens: trasforma il materiale grezzo in fatti, ipotesi, gap e prossimo passo senza nascondere l'originale.",
+    "Proof Pulse: ogni azione conclusa mostra revisione, hash e accesso immediato al fascicolo.",
+    "Question Compass: una sola domanda alla volta con Perché ora e Come sarà usata.",
+    "Plan Reveal: il piano di monitoraggio appare come anteprima spiegabile prima dell'attivazione.",
+    "Origin Diff: confronto tra racconto originale e formulazione finale con marcatori di provenienza."
+  ],
   "boundaries": [
-    "ICTC propone classificazioni e formulazioni; non determina applicabilità, obblighi o conformità.",
-    "I promemoria temporali derivano dai dati inseriti e non sostituiscono una valutazione legale.",
-    "Le fonti caricate dagli utenti restano contributi da verificare.",
-    "Le chiavi API non sono salvate nel database: il runtime usa una variabile d'ambiente configurata dall'amministratore."
-  ]
+    "I risultati AI sono piani, candidati o bozze: non sono decisioni.",
+    "ICTC non determina applicabilità, conformità, significatività o obblighi di notifica.",
+    "Una fonte diventa verificata soltanto dopo una decisione umana registrata.",
+    "Una segnalazione diventa inviata soltanto dopo conferma esplicita dell'autore.",
+    "Le chiavi del provider AI non sono persistite.",
+    "La modalità locale simula l'identità e non è un confine di sicurezza di produzione."
+  ],
+  "experienceMetrics": {
+    "services": 2,
+    "roles": 2,
+    "monitoringMissionRequiredQuestions": 1,
+    "incidentIntakeRequiredQuestions": 2,
+    "sourceContributionRequiredQuestions": 0,
+    "questionJustificationCoverage": 1,
+    "writeReceiptCoverage": 1,
+    "aiTraceCoverage": 1,
+    "roleLeakage": 0,
+    "maxPrimaryActionsPerContext": 1,
+    "rawInputPreservation": 1,
+    "evidenceExportCoverage": 1
+  }
 }

@@ -1,21 +1,39 @@
 import http from 'node:http';
-import { fileURLToPath } from 'node:url';
-async function readJson(request) { const chunks = []; for await (const chunk of request) chunks.push(chunk); return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); }
-function json(response, body) { const payload = JSON.stringify(body); response.writeHead(200, {'content-type':'application/json','content-length':Buffer.byteLength(payload)}); response.end(payload); }
-export function createMockAIProvider() {
-  return http.createServer(async (request, response) => {
-    if (request.method !== 'POST') { response.writeHead(404); response.end(); return; }
-    const body = await readJson(request); const user = JSON.parse(body.messages?.find(item => item.role === 'user')?.content || '{}');
-    const result = user.task === 'incident-draft' ? {
-      summary: `Segnalazione ${user.incident.kind}: ${user.incident.facts}`, chronology: [user.incident.detectedAt || user.incident.awarenessAt, user.incident.awarenessAt],
-      affectedServices: user.incident.affectedServices, impact: user.incident.impact || 'Impatto da completare', indicators: user.incident.indicators,
-      mitigations: user.incident.mitigations, rootCause: 'Da determinare mediante analisi tecnica', openQuestions: ['Confermare perimetro e durata','Verificare eventuali obblighi applicabili'],
-      notificationData: { maliciousSuspected:user.incident.maliciousSuspected, crossBorder:user.incident.crossBorder }
-    } : { items: [
-      { documentType:'directive', title:'Direttiva (UE) 2022/2555', authority:'Parlamento europeo e Consiglio', jurisdiction:'Unione europea', identifier:'2022/2555', sourceUrl:'https://eur-lex.europa.eu/eli/dir/2022/2555/oj', canonicalUri:'http://data.europa.eu/eli/dir/2022/2555/oj', status:'in force', datePublished:'2022-12-27', dateEffective:'2023-01-16', language:'it', summary:'Misure per un livello comune elevato di cibersicurezza.', confidence:0.98, relations:[] },
-      { documentType:'delibera', title:'Tassonomia ACN degli incidenti informatici', authority:'Agenzia per la cybersicurezza nazionale', jurisdiction:'Italia', identifier:'Determina 9 febbraio 2026', sourceUrl:'https://www.gazzettaufficiale.it/eli/id/2026/02/17/26A00713/sg', status:'published', datePublished:'2026-02-17', dateEffective:'2026-02-17', language:'it', summary:'Tassonomia di riferimento per segnalazioni e notifiche.', confidence:0.94, relations:['Legge 90/2024'] }
-    ] };
-    json(response, { choices:[{message:{content:JSON.stringify(result)}}] });
-  });
+const port = Number(process.env.MOCK_AI_PORT || 4899);
+function responseFor(system, user) {
+  const purpose = (system.match(/ICTC_PURPOSE_RUNTIME:([a-z-]+)/) || [])[1] || (system.match(/ICTC_PURPOSE:([a-z-]+)/) || [])[1];
+  let input = {}; try { input = JSON.parse(user); } catch {}
+  if (purpose === 'monitoring-plan') return {
+    queries: [`${input.objective || 'sicurezza informazioni'} site:gov.it`, `${input.objective || 'sicurezza informazioni'} site:europa.eu`],
+    preferredSources: ['EUR-Lex', 'Agenzia per la cybersicurezza nazionale', 'Garante per la protezione dei dati personali'],
+    inclusionCriteria: ['fonte ufficiale', 'pertinenza al perimetro dichiarato', 'identificativo o URL verificabile'],
+    exclusionCriteria: ['commento non ufficiale senza fonte primaria', 'duplicato della stessa versione'],
+    rationale: `Piano mirato al perimetro: ${input.objective || 'non indicato'}`
+  };
+  if (purpose === 'compliance-discovery') return { items: [
+    { title:'Direttiva (UE) 2022/2555 — NIS2', documentType:'directive', authority:'Unione europea', jurisdiction:'Unione europea', identifier:'CELEX:32022L2555', sourceUrl:'https://eur-lex.europa.eu/eli/dir/2022/2555/oj', publicationDate:'2022-12-27', effectiveDate:'2023-01-16', summary:'Misure per un livello comune elevato di cibersicurezza.', relevance:'Fonte ufficiale coerente con il perimetro di sicurezza delle informazioni.', confidence:.96 },
+    { title:'Linee guida sulla gestione degli incidenti', documentType:'guideline', authority:'Autorità nazionale', jurisdiction:'Italia', identifier:'LG-INC-001', sourceUrl:'https://example.org/official-guideline', publicationDate:'2026-01-15', effectiveDate:'', summary:'Indicazioni operative per raccolta e gestione delle segnalazioni.', relevance:'Guida ufficiale utile al processo amministrativo degli incidenti.', confidence:.82 }
+  ]};
+  if (purpose === 'contribution-enrichment') return { items: [{ title:'Fonte caricata dall’utente', documentType:'other', authority:'Da verificare', jurisdiction:'Da verificare', identifier:'', sourceUrl:input.contribution?.links?.[0] || '', publicationDate:'', effectiveDate:'', summary:'Materiale contribuito da un utente.', relevance:input.contribution?.note || 'Da valutare nel perimetro.', confidence:.55 }]};
+  if (purpose === 'incident-analysis') {
+    const text = String(input.originalNarrative || '').toLowerCase();
+    const signals = [];
+    if (/ancora|continua|in corso/.test(text)) signals.push('ongoing');
+    if (/dato personale|cliente|email/.test(text)) signals.push('personal-data');
+    if (/phishing|ransomware|attacco|malevol/.test(text)) signals.push('malicious');
+    if (/estero|europa|francia|germania/.test(text)) signals.push('cross-border');
+    if (/log|siem|alert|rilevat/.test(text)) signals.push('technical-detection');
+    return { proposedKind:text.includes('quasi')?'near-miss':'incident', kindConfidence:.78, extractedFacts:[input.originalNarrative], assumptions:signals.includes('malicious')?['La natura intenzionale deve essere confermata.']:[], signals, timeline:[{at:input.awarenessAt,event:'Conoscenza organizzativa dell’episodio',source:'user'}], affectedServices:[], impact:'', mitigations:[], indicators:[], suggestedQuestions:[] };
+  }
+  if (purpose === 'incident-draft') return { narrative:`In data ${input.awarenessAt || 'non indicata'} l’organizzazione ha acquisito conoscenza del seguente episodio: ${input.originalNarrative || ''}. Le informazioni sono state consolidate con le risposte disponibili e richiedono verifica umana.`, factsUsed:[input.originalNarrative || ''], unresolvedPoints:(input.unresolvedQuestions || []).map(item=>item.label), limitations:['La formulazione non determina obblighi di notifica.'] };
+  return { ok:true };
 }
-if (process.argv[1] === fileURLToPath(import.meta.url)) { const port = Number(process.env.PORT || 4899); createMockAIProvider().listen(port, '127.0.0.1', () => console.log(`mock AI on ${port}`)); }
+const server = http.createServer(async (request,response) => {
+  const chunks=[]; for await (const chunk of request) chunks.push(chunk);
+  let body={}; try{body=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{}
+  const system=body.messages?.find(item=>item.role==='system')?.content || ''; const user=body.messages?.find(item=>item.role==='user')?.content || '{}';
+  const content=JSON.stringify(responseFor(system,user)); const payload=JSON.stringify({id:`mock-${Date.now()}`,choices:[{message:{content}}]});
+  response.writeHead(200,{'content-type':'application/json','content-length':Buffer.byteLength(payload),'x-request-id':`req-${Date.now()}`}); response.end(payload);
+});
+server.listen(port,'127.0.0.1',()=>console.log(`mock-ai ${port}`));
+for (const signal of ['SIGINT','SIGTERM']) process.on(signal,()=>server.close(()=>process.exit(0)));

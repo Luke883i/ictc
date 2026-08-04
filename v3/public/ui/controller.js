@@ -1,0 +1,12 @@
+import { $, api, state } from './common.js';
+import { render } from './render.js';
+import { renderIncidentWorkspace, renderPlanDialog, renderSourceDialog } from './workspaces.js';
+
+export async function refresh({ keepDialog = true } = {}) {
+  state.data = await api('/api/bootstrap');
+  state.role = state.data.actor.role;
+  render();
+  if (keepDialog && state.activeIncidentId && $('#incidentWorkspace').open) renderIncidentWorkspace();
+  if (keepDialog && state.activeSourceId && $('#sourceDialog').open) renderSourceDialog();
+  if (keepDialog && state.activeMissionId && $('#planDialog').open) renderPlanDialog();
+}

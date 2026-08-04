@@ -3,158 +3,128 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ICTC · Monitoraggio normativo e incidenti</title>
+  <meta name="color-scheme" content="light dark">
+  <title>ICTC · Fonti normative e segnalazioni</title>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
 </head>
 <body>
-<a class="skip-link" href="#content">Vai al contenuto</a>
+<a class="skip-link" href="#main">Vai al contenuto</a>
 <header class="topbar">
-  <div>
-    <strong class="brand">ICTC</strong>
-    <span class="product-line">Monitoraggio normativo e gestione incidenti</span>
-  </div>
-  <div class="identity">
-    <label for="roleSelect">Modalità locale</label>
-    <select id="roleSelect">
-      <option value="admin">Amministratore</option>
-      <option value="user">Utente</option>
-    </select>
-    <span id="runtimeStatus" role="status">Connessione…</span>
+  <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">I</span><span><b>ICTC</b><small>Compliance evidence workspace</small></span></a>
+  <div class="top-actions">
+    <button id="openSettings" class="ghost admin-only" type="button">AI</button>
+    <label class="role-control"><span>Modalità locale</span><select id="roleSelect"><option value="admin">Amministratore</option><option value="user">Utente</option></select></label>
+    <span id="runtimeStatus" class="runtime-status" role="status">Connessione…</span>
   </div>
 </header>
 <nav class="service-nav" aria-label="Servizi ICTC">
-  <button type="button" data-service="monitoring" aria-current="page">Monitoraggio normativo</button>
-  <button type="button" data-service="incidents" aria-current="false">Incidenti</button>
+  <button type="button" data-service="monitoring" aria-current="page"><span>01</span> Fonti normative</button>
+  <button type="button" data-service="incidents" aria-current="false"><span>02</span> Segnalazioni</button>
 </nav>
-<main id="content" tabindex="-1">
+<main id="main" tabindex="-1">
   <section id="monitoringView" class="view">
-    <header class="page-head">
-      <div>
-        <p class="eyebrow">Servizio 1 di 2</p>
-        <h1>Monitoraggio normativo</h1>
-        <p>Configura ricerche AI, raccogli fonti e consulta il catalogo candidato.</p>
+    <section class="hero hero-monitoring">
+      <div class="hero-copy">
+        <p class="eyebrow">Monitoraggio guidato</p>
+        <h1>Descrivi il risultato.<br><span>L’AI prepara il piano.</span></h1>
+        <p>Parti dall’obiettivo, non dalla tassonomia. Prima dell’attivazione vedrai cosa sarà cercato, incluso ed escluso.</p>
       </div>
-      <div class="head-actions admin-only">
-        <button id="openSettings" type="button">Configura AI</button>
-        <button id="openJob" class="primary" type="button">Nuovo monitoraggio</button>
-      </div>
-    </header>
-
-    <section id="aiSetup" class="callout admin-only" hidden>
-      <div><strong>Configura l’AI per avviare i monitoraggi</strong><p>Endpoint, modello e prompt globali si applicano a tutto ICTC. La chiave resta in una variabile d’ambiente del runtime.</p></div>
-      <button id="setupNow" type="button">Configura</button>
+      <form id="missionForm" class="focus-card">
+        <label class="prompt-field">Che cosa deve sorvegliare ICTC?
+          <textarea name="objective" rows="5" required placeholder="Esempio: ogni fonte ufficiale italiana ed europea sulla sicurezza delle informazioni applicabile al settore sanitario"></textarea>
+        </label>
+        <div class="compact-fields">
+          <label>Ritmo<select name="cadence"><option value="168">Settimanale</option><option value="24">Giornaliero</option><option value="720">Mensile</option></select></label>
+          <label>Fonti già note, facoltative<input name="sourceHints" placeholder="ACN, Garante, EUR-Lex"></label>
+        </div>
+        <button class="primary magnetic" type="submit"><span>Prepara il piano</span><i aria-hidden="true">→</i></button>
+        <p class="microcopy">Il piano AI è una proposta modificabile. L’attivazione resta una decisione dell’amministratore.</p>
+      </form>
     </section>
 
-    <div class="two-column">
-      <section class="card">
-        <div class="section-head"><div><h2>Monitoraggi</h2><p>Solo l’amministratore li configura; tutti possono vedere stato ed esito.</p></div><span id="jobCount" class="count">0</span></div>
-        <div id="jobsList" class="stack"></div>
-      </section>
-      <section class="card">
-        <div class="section-head"><div><h2>Contribuisci</h2><p>Un solo punto per link, testo e documenti.</p></div></div>
-        <form id="contributionForm" class="form-stack">
-          <label>Titolo<input name="title" required maxlength="500"></label>
-          <label>Link, facoltativo<input name="url" type="url"></label>
-          <label>Testo, facoltativo<textarea name="text" rows="5"></textarea></label>
-          <label>Documenti, facoltativi<input name="files" type="file" multiple></label>
-          <p class="hint">Inserisci almeno un link, un testo o un documento. Ogni contributo resta da verificare.</p>
-          <button class="primary" type="submit">Aggiungi fonte</button>
-        </form>
-      </section>
-    </div>
+    <section id="aiSetup" class="setup-banner admin-only" hidden>
+      <div><span class="signal-dot"></span><strong>Prima configura il provider AI</strong><p>Endpoint, modello e prompt si propagano ai due servizi; la chiave resta in una variabile d’ambiente.</p></div>
+      <button id="setupNow" type="button">Configura ora</button>
+    </section>
 
-    <section class="card">
-      <div class="section-head"><div><h2>Catalogo candidato</h2><p>Fonti identificate dall’AI con metadati ispirati a ELI. Nessun elemento equivale automaticamente ad applicabilità.</p></div><span id="catalogCount" class="count">0</span></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Fonte</th><th>Tipo</th><th>Autorità</th><th>Giurisdizione</th><th>Stato</th><th>Confidenza</th></tr></thead>
-          <tbody id="catalogBody"></tbody>
-        </table>
+    <section class="section-block">
+      <header class="section-head"><div><p class="eyebrow">Controllo automatico</p><h2>Monitoraggi</h2></div><span id="missionCount" class="counter">0</span></header>
+      <div id="missionsList" class="mission-grid"></div>
+    </section>
+
+    <section class="section-block split-block">
+      <div>
+        <header class="section-head"><div><p class="eyebrow">Catalogo</p><h2>Fonti candidate</h2><p>Ogni elemento mostra perché è entrato, da dove proviene e chi lo ha verificato.</p></div><span id="catalogCount" class="counter">0</span></header>
+        <div class="filter-row"><input id="catalogSearch" type="search" placeholder="Cerca titolo, autorità o identificativo"><select id="catalogState"><option value="">Tutti gli stati</option><option value="candidate">Da verificare</option><option value="verified">Verificate</option><option value="rejected">Scartate</option></select></div>
+        <div id="catalogList" class="catalog-list"></div>
       </div>
-      <div id="catalogEmpty" class="empty">Nessun risultato. Configura un monitoraggio oppure aggiungi una fonte.</div>
+      <aside class="contribute-card">
+        <span class="drop-orbit" aria-hidden="true"></span>
+        <p class="eyebrow">Contributo umano</p>
+        <h2>Hai una fonte?</h2>
+        <p>Incolla un link, scrivi una nota o trascina un documento. Non serve classificarlo: ICTC conserva l’originale e propone i metadati.</p>
+        <button id="openContribution" class="primary" type="button">Aggiungi materiale</button>
+      </aside>
     </section>
   </section>
 
   <section id="incidentsView" class="view" hidden>
-    <header class="page-head">
-      <div>
-        <p class="eyebrow">Servizio 2 di 2</p>
-        <h1>Incidenti</h1>
-        <p>Registra fatti, allega evidenze e prepara una formulazione amministrativa modificabile.</p>
+    <section class="hero hero-incidents">
+      <div class="hero-copy">
+        <p class="eyebrow">Segnalazione progressiva</p>
+        <h1>Racconta i fatti.<br><span>ICTC trova i gap.</span></h1>
+        <p>Il racconto originale viene conservato prima dell’AI. In seguito vedrai una sola domanda alla volta, sempre con il motivo e l’uso probatorio.</p>
       </div>
-      <div class="head-actions"><button id="openIncident" class="primary" type="button">Nuova segnalazione</button></div>
-    </header>
-    <section class="callout neutral">
-      <div><strong>ICTC non decide se l’evento è notificabile</strong><p>I promemoria 24 ore, 72 ore e un mese sono calcolati dalla data inserita e richiedono una valutazione competente.</p></div>
+      <div class="focus-card incident-entry">
+        <div class="ai-lens-demo" aria-hidden="true"><span>Racconto</span><b>→</b><span>Fatti</span><b>→</b><span>Domande</span><b>→</b><span>Prova</span></div>
+        <button id="openIncident" class="primary magnetic" type="button"><span>Nuova segnalazione</span><i aria-hidden="true">→</i></button>
+        <p class="microcopy">ICTC non decide se l’episodio è notificabile. I promemoria temporali richiedono valutazione competente.</p>
+      </div>
     </section>
-    <section class="card">
-      <div class="section-head"><div><h2>Segnalazioni</h2><p>Fatti, bozza AI, invio e chiusura in una sola cronologia.</p></div><span id="incidentCount" class="count">0</span></div>
-      <div id="incidentList" class="stack"></div>
+    <section class="section-block">
+      <header class="section-head"><div><p class="eyebrow">Fascicoli</p><h2>Segnalazioni</h2><p>Dal racconto originario alla formulazione confermata, senza perdere la provenienza.</p></div><span id="incidentCount" class="counter">0</span></header>
+      <div id="incidentList" class="incident-grid"></div>
     </section>
   </section>
 </main>
+
+<div id="proofPulse" class="proof-pulse" role="status" aria-live="polite" hidden>
+  <span class="pulse-ring" aria-hidden="true"></span><div><b id="proofAction">Registrato</b><small id="proofHash"></small></div><button id="dismissProof" type="button" aria-label="Chiudi ricevuta">×</button>
+</div>
 <div id="toast" role="status" aria-live="polite"></div>
 
-<dialog id="settingsDialog" aria-labelledby="settingsTitle">
-  <form id="settingsForm" class="dialog-form">
-    <header><div><p class="eyebrow">Amministrazione</p><h2 id="settingsTitle">Configurazione globale AI</h2></div><button type="button" data-close="settingsDialog" aria-label="Chiudi">×</button></header>
-    <fieldset><legend>Organizzazione e scope</legend>
-      <label>Organizzazione<input name="organizationName" required></label>
-      <label>Scope del monitoraggio<textarea name="organizationScope" rows="3" required></textarea></label>
-    </fieldset>
-    <fieldset><legend>Provider compatibile OpenAI</legend>
-      <label>Endpoint<input name="endpoint" type="url" placeholder="https://…/v1/chat/completions" required></label>
-      <label>Modello<input name="model" required></label>
-      <label>Variabile della chiave API<input name="apiKeyEnv" placeholder="ICTC_LLM_API_KEY"></label>
-      <label>Temperatura<input name="temperature" type="number" min="0" max="2" step="0.1"></label>
-    </fieldset>
-    <fieldset><legend>Prompt globali</legend>
-      <label>Censimento compliance<textarea name="compliancePrompt" rows="8" required></textarea></label>
-      <label>Bozza incidente<textarea name="incidentPrompt" rows="8" required></textarea></label>
-    </fieldset>
+<dialog id="settingsDialog" class="dialog wide" aria-labelledby="settingsTitle">
+  <form id="settingsForm" class="dialog-shell">
+    <header><div><p class="eyebrow">Amministrazione</p><h2 id="settingsTitle">AI globale</h2><p>Una configurazione, due servizi, tracce separate per ogni chiamata.</p></div><button type="button" data-close="settingsDialog" aria-label="Chiudi">×</button></header>
+    <div class="dialog-body two-pane-form">
+      <section><h3>Organizzazione</h3><label>Nome<input name="organizationName" required></label><label>Perimetro<textarea name="organizationScope" rows="4" required></textarea></label><label>Giurisdizioni<input name="jurisdictions" placeholder="Italia, Unione europea"></label></section>
+      <section><h3>Provider</h3><label>Endpoint<input name="endpoint" type="url" required></label><label>Modello<input name="model" required></label><label>Variabile chiave API<input name="apiKeyEnv"></label><label>Temperatura<input name="temperature" type="number" min="0" max="2" step="0.1"></label></section>
+      <details class="advanced"><summary>Prompt avanzati</summary><label>Piano monitoraggio<textarea name="monitoringPlan" rows="5"></textarea></label><label>Ricerca fonti<textarea name="complianceDiscovery" rows="5"></textarea></label><label>Arricchimento contributi<textarea name="contributionEnrichment" rows="5"></textarea></label><label>Analisi segnalazione<textarea name="incidentAnalysis" rows="5"></textarea></label><label>Formulazione segnalazione<textarea name="incidentDraft" rows="5"></textarea></label></details>
+    </div>
     <footer><button type="button" data-close="settingsDialog">Annulla</button><button class="primary" type="submit">Salva configurazione</button></footer>
   </form>
 </dialog>
 
-<dialog id="jobDialog" aria-labelledby="jobTitle">
-  <form id="jobForm" class="dialog-form">
-    <header><div><p class="eyebrow">Monitoraggio</p><h2 id="jobTitle">Nuovo monitoraggio</h2></div><button type="button" data-close="jobDialog" aria-label="Chiudi">×</button></header>
-    <label>Nome<input name="name" required maxlength="240"></label>
-    <label>Scope specifico<textarea name="scope" rows="4" required placeholder="Es. sicurezza delle informazioni, Italia e UE, settore sanitario"></textarea></label>
-    <label>Giurisdizioni<input name="jurisdictions" placeholder="Italia, Unione europea"></label>
-    <label>Autorità o fonti prioritarie<input name="authorities" placeholder="ACN, Garante, EUR-Lex"></label>
-    <fieldset><legend>Tipi di documento</legend><div id="documentTypes" class="checks"></div></fieldset>
-    <label>URL iniziali, uno per riga<textarea name="sourceUrls" rows="4"></textarea></label>
-    <label>Prompt specifico, facoltativo<textarea name="prompt" rows="6" placeholder="Lascia vuoto per usare il prompt globale"></textarea></label>
-    <div class="inline-fields"><label>Intervallo, ore<input name="intervalHours" type="number" min="1" max="8760" value="24"></label><label class="checkbox"><input name="enabled" type="checkbox" checked> Attivo</label></div>
-    <footer><button type="button" data-close="jobDialog">Annulla</button><button class="primary" type="submit">Crea monitoraggio</button></footer>
+<dialog id="planDialog" class="dialog full" aria-labelledby="planTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Plan Reveal</p><h2 id="planTitle">Piano proposto</h2><p>Prima di attivarlo, verifica come l’AI ha tradotto il tuo obiettivo.</p></div><button type="button" data-close="planDialog" aria-label="Chiudi">×</button></header><div id="planBody" class="dialog-body"></div><footer id="planActions"></footer></div></dialog>
+
+<dialog id="contributionDialog" class="dialog" aria-labelledby="contributionTitle">
+  <form id="contributionForm" class="dialog-shell">
+    <header><div><p class="eyebrow">Punto unico</p><h2 id="contributionTitle">Aggiungi materiale</h2><p>Il materiale originale viene conservato prima della classificazione AI.</p></div><button type="button" data-close="contributionDialog" aria-label="Chiudi">×</button></header>
+    <div class="dialog-body"><label>Link, uno per riga<textarea name="links" rows="3" placeholder="https://..."></textarea></label><label>Testo<textarea name="text" rows="7" placeholder="Incolla qui il contenuto rilevante"></textarea></label><label class="dropzone">Documenti<input name="files" type="file" multiple><span>Trascina o seleziona fino a 10 file, 5 MB ciascuno</span></label><label>Perché potrebbe essere rilevante? <small>facoltativo</small><textarea name="note" rows="3"></textarea></label></div>
+    <footer><button type="button" data-close="contributionDialog">Annulla</button><button class="primary" type="submit">Conserva e analizza</button></footer>
   </form>
 </dialog>
 
-<dialog id="incidentDialog" aria-labelledby="incidentTitle">
-  <form id="incidentForm" class="dialog-form">
-    <header><div><p class="eyebrow">Segnalazione</p><h2 id="incidentTitle">Nuovo evento</h2></div><button type="button" data-close="incidentDialog" aria-label="Chiudi">×</button></header>
-    <label>Tipo<select name="kind"><option value="event">Evento</option><option value="near-miss">Quasi incidente</option><option value="incident">Possibile incidente</option></select></label>
-    <label>Titolo<input name="title" maxlength="500"></label>
-    <div class="inline-fields"><label>Conoscenza dell’evento<input name="awarenessAt" type="datetime-local" required></label><label>Rilevazione<input name="detectedAt" type="datetime-local"></label></div>
-    <label>Fatti osservati<textarea name="facts" rows="7" required></textarea></label>
-    <label>Servizi o sistemi coinvolti<input name="affectedServices" placeholder="Uno o più valori separati da virgola"></label>
-    <label>Impatto noto o potenziale<textarea name="impact" rows="4"></textarea></label>
-    <label>Indicatori disponibili<input name="indicators" placeholder="IP, hash, account, eventi; separati da virgola"></label>
-    <label>Misure già adottate<input name="mitigations" placeholder="Separare con virgola"></label>
-    <div class="checks"><label><input name="maliciousSuspected" type="checkbox"> Possibile atto malevolo</label><label><input name="crossBorder" type="checkbox"> Possibile impatto transfrontaliero</label></div>
-    <label>Contatti coinvolti<input name="contacts" placeholder="Separare con virgola"></label>
-    <label>Allegati<input name="files" type="file" multiple></label>
-    <footer><button type="button" data-close="incidentDialog">Annulla</button><button class="primary" type="submit">Registra fatti</button></footer>
+<dialog id="incidentDialog" class="dialog full" aria-labelledby="incidentTitle">
+  <form id="incidentForm" class="dialog-shell">
+    <header><div><p class="eyebrow">Intake minimo</p><h2 id="incidentTitle">Che cosa è successo?</h2><p>Non servono classificazioni iniziali. Conserviamo il racconto prima di interpretarlo.</p></div><button type="button" data-close="incidentDialog" aria-label="Chiudi">×</button></header>
+    <div class="dialog-body intake-layout"><label class="prompt-field">Racconto originale<textarea name="originalNarrative" rows="12" required placeholder="Descrivi liberamente ciò che è stato osservato, chi lo ha segnalato e ciò che è noto in questo momento"></textarea></label><aside><label>Quando ne avete avuto conoscenza?<input name="awarenessAt" type="datetime-local" required></label><label class="dropzone">Elementi disponibili<input name="files" type="file" multiple><span>Log, screenshot, email, documenti</span></label><div class="evidence-note"><b>Prova preservata</b><p>Testo e allegati saranno registrati con data e digest prima della chiamata AI.</p></div></aside></div>
+    <footer><button type="button" data-close="incidentDialog">Annulla</button><button class="primary" type="submit">Registra il racconto</button></footer>
   </form>
 </dialog>
 
-<dialog id="incidentDetailDialog" aria-labelledby="incidentDetailTitle">
-  <div class="dialog-form">
-    <header><div><p id="incidentDetailMeta" class="eyebrow"></p><h2 id="incidentDetailTitle"></h2></div><button type="button" data-close="incidentDetailDialog" aria-label="Chiudi">×</button></header>
-    <div id="incidentDetailBody"></div>
-    <label>Formulazione finale<textarea id="incidentNarrative" rows="10"></textarea></label>
-    <footer id="incidentActions"></footer>
-  </div>
-</dialog>
+<dialog id="sourceDialog" class="dialog full" aria-labelledby="sourceTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Provenienza</p><h2 id="sourceTitle"></h2><p id="sourceMeta"></p></div><button type="button" data-close="sourceDialog" aria-label="Chiudi">×</button></header><div id="sourceBody" class="dialog-body"></div><footer id="sourceActions"></footer></div></dialog>
+<dialog id="incidentWorkspace" class="dialog full" aria-labelledby="workspaceTitle"><div class="dialog-shell"><header><div><p id="workspaceMeta" class="eyebrow"></p><h2 id="workspaceTitle"></h2><p>AI Lens, domande motivate e formulazione finale nello stesso fascicolo.</p></div><button type="button" data-close="incidentWorkspace" aria-label="Chiudi">×</button></header><div id="workspaceBody" class="dialog-body"></div><footer id="workspaceActions"></footer></div></dialog>
+</body>
+</html>

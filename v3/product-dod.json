@@ -1,0 +1,27 @@
+{
+  "version": "1.1.0",
+  "criteria": [
+    {"id":"scope-2-services","metric":"services","target":2},
+    {"id":"scope-2-roles","metric":"roles","target":2},
+    {"id":"monitoring-minimal-entry","metric":"monitoringMissionRequiredQuestions","targetMax":1},
+    {"id":"incident-minimal-entry","metric":"incidentIntakeRequiredQuestions","target":2},
+    {"id":"contribution-minimal-entry","metric":"sourceContributionRequiredQuestions","targetMax":1},
+    {"id":"question-purpose","metric":"questionJustificationCoverage","target":1},
+    {"id":"one-primary-action","metric":"maxPrimaryActionsPerContext","targetMax":1},
+    {"id":"receipt-all-writes","metric":"writeReceiptCoverage","target":1},
+    {"id":"trace-all-ai","metric":"aiTraceCoverage","target":1},
+    {"id":"no-role-leak","metric":"roleLeakage","target":0},
+    {"id":"raw-input-preserved","metric":"rawInputPreservation","target":1},
+    {"id":"evidence-export","metric":"evidenceExportCoverage","target":1},
+    {"id":"human-source-decision","assertion":"catalog verification requires admin decision"},
+    {"id":"human-incident-confirmation","assertion":"incident submission requires author confirmation"},
+    {"id":"attachment-digests","assertion":"all stored attachments have sha256"},
+    {"id":"integrity-chain","assertion":"audit chain is verifiable after restart"},
+    {"id":"ai-failure-safe","assertion":"raw intake persists when AI is unavailable"},
+    {"id":"retry-safe","assertion":"command retries are idempotent"},
+    {"id":"optimistic-conflict","assertion":"stale edits fail with conflict"},
+    {"id":"scheduler","assertion":"due monitoring missions run automatically"},
+    {"id":"phase-relevance","assertion":"questions are asked only after raw intake and only while editable"},
+    {"id":"saturation","assertion":"no new journey primitive appears in M+100 scenarios"}
+  ]
+}

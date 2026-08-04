@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.1.0",
+  "principle": "Una domanda è ammessa solo se la risposta cambia il passo successivo, completa una prova o abilita una decisione.",
+  "monitoring": {
+    "initial": [
+      {"id":"objective","label":"Che cosa deve sorvegliare ICTC?","required":true,"whyNow":"Definisce il perimetro prima che l'AI proponga fonti e query.","evidenceUse":"Resta come criterio di inclusione del monitoraggio e dei risultati."},
+      {"id":"cadence","label":"Con quale ritmo?","required":false,"default":"weekly","whyNow":"Serve soltanto per pianificare l'esecuzione automatica.","evidenceUse":"Documenta la frequenza prevista del controllo."},
+      {"id":"sourceHints","label":"Fonti ufficiali già note?","required":false,"whyNow":"Riduce il rumore quando sono già note autorità o repertori affidabili.","evidenceUse":"Registra le fonti indicate dall'amministratore."}
+    ],
+    "forbiddenInitial": ["documentType", "authority", "jurisdiction", "confidence", "prompt", "jobName", "enabled"]
+  },
+  "sourceContribution": {
+    "initial": [
+      {"id":"material","label":"Aggiungi un link, un testo o un documento","required":true,"whyNow":"È l'evidenza minima da sottoporre a classificazione.","evidenceUse":"Origine, digest e allegati entrano nel fascicolo."},
+      {"id":"note","label":"Perché potrebbe essere rilevante?","required":false,"whyNow":"Aiuta l'AI e il revisore senza imporre una classificazione.","evidenceUse":"Conserva il contesto dichiarato dall'autore."}
+    ],
+    "forbiddenInitial": ["title", "documentType", "authority", "jurisdiction", "identifier", "confidence"]
+  },
+  "incidents": {
+    "initial": [
+      {"id":"narrative","label":"Che cosa è successo?","required":true,"whyNow":"Raccoglie il racconto originale prima di qualsiasi classificazione.","evidenceUse":"È la dichiarazione iniziale, conservata separatamente dalle proposte AI."},
+      {"id":"awarenessAt","label":"Quando ne avete avuto conoscenza?","required":true,"whyNow":"Ancora la cronologia e i promemoria senza concludere obblighi legali.","evidenceUse":"Resta come dato temporale dichiarato dall'utente."},
+      {"id":"attachments","label":"Hai elementi da allegare?","required":false,"whyNow":"Preserva evidenze disponibili prima che vengano disperse o modificate.","evidenceUse":"Ogni allegato è registrato con digest, dimensione e data."}
+    ],
+    "forbiddenInitial": ["kind", "title", "detectedAt", "affectedServices", "impact", "indicators", "mitigations", "maliciousSuspected", "crossBorder", "contacts"],
+    "followUpPolicy": {"requiredProperties":["id","label","whyNow","evidenceUse","requiredForSubmission","trigger"],"unknownAllowed":true,"humanConfirmationRequired":true,"oneAtATime":true}
+  }
+}

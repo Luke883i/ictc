@@ -1,44 +1,37 @@
 import { strict as assert } from 'node:assert';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import { createICTCServer } from './server.mjs';
-import { createMockAIProvider } from './mock-ai-provider.mjs';
-
-const stateRoot=await mkdtemp(path.join(os.tmpdir(),'ictc-e2e-'));
-const mock=createMockAIProvider(); await new Promise(resolve=>mock.listen(0,'127.0.0.1',resolve));
-const mockPort=mock.address().port;
-const env={...process.env};
-async function start(){const runtime=await createICTCServer({stateRoot,env,schedulerMs:999999}); await new Promise(resolve=>runtime.server.listen(0,'127.0.0.1',resolve)); return runtime;}
-let runtime=await start();
-let base=`http://127.0.0.1:${runtime.server.address().port}`;
-const headers=(role='user',actor=`e2e-${role}`)=>({'content-type':'application/json','x-ictc-role':role,'x-ictc-actor-id':actor});
-async function request(route,{method='GET',role='user',actor,body}={}){const response=await fetch(base+route,{method,headers:headers(role,actor),body:body===undefined?undefined:JSON.stringify(body)}); const data=await response.json(); return {status:response.status,data};}
+import { mkdtemp, rm } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import os from 'node:os'; import path from 'node:path';
+const root = path.resolve(new URL('..', import.meta.url).pathname); const runtime=await mkdtemp(path.join(os.tmpdir(),'ictc-e2e-'));
+const apiPort=4807 + (process.pid % 100); const aiPort=4907 + (process.pid % 100); const base=`http://127.0.0.1:${apiPort}`;
+let server; let mock; let revision=0;
+function start(command,args,env){const child=spawn(command,args,{cwd:root,env:{...process.env,...env},stdio:['ignore','pipe','pipe']}); child.stdout.on('data',d=>process.env.ICTC_E2E_VERBOSE&&process.stdout.write(d)); child.stderr.on('data',d=>process.env.ICTC_E2E_VERBOSE&&process.stderr.write(d)); return child;}
+async function wait(url){for(let i=0;i<100;i++){try{const r=await fetch(url);if(r.ok)return;}catch{} await new Promise(r=>setTimeout(r,80));}throw new Error(`timeout ${url}`);}
+async function get(role='admin',actor=`e2e-${role}`){const r=await fetch(`${base}/api/bootstrap`,{headers:{'x-ictc-role':role,'x-ictc-actor-id':actor}}); assert.equal(r.status,200); const body=await r.json(); revision=body.revision; return body;}
+async function write(pathname,body,role='admin',actor=`e2e-${role}`){const r=await fetch(`${base}${pathname}`,{method:'POST',headers:{'content-type':'application/json','x-ictc-role':role,'x-ictc-actor-id':actor,'x-ictc-command-id':`e2e-${Date.now()}-${Math.random()}`,'x-ictc-expected-revision':String(revision)},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(`${pathname}: ${data.error}`),{data,status:r.status});return data;}
+async function put(pathname,body,role='admin',actor=`e2e-${role}`){const r=await fetch(`${base}${pathname}`,{method:'PUT',headers:{'content-type':'application/json','x-ictc-role':role,'x-ictc-actor-id':actor,'x-ictc-command-id':`e2e-${Date.now()}-${Math.random()}`,'x-ictc-expected-revision':String(revision)},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(`${pathname}: ${data.error}`);return data;}
+async function stop(child){if(!child||child.killed)return; child.kill('SIGTERM'); await new Promise(resolve=>{child.once('exit',resolve);setTimeout(()=>{child.kill('SIGKILL');resolve();},1500).unref();});}
 try{
-  let result=await request('/api/health'); assert.equal(result.status,200); assert.equal(result.data.readiness,'needs-ai-configuration'); assert.deepEqual(result.data.services,['monitoring','incidents']); assert.deepEqual(result.data.roles,['admin','user']);
-  result=await request('/api/admin/settings',{method:'PUT',body:{}}); assert.equal(result.status,403);
-  result=await request('/api/admin/settings',{method:'PUT',role:'admin',body:{organization:{name:'ICTC Test',scope:'Sicurezza delle informazioni in Italia e UE'},llm:{endpoint:`http://127.0.0.1:${mockPort}/v1/chat/completions`,model:'mock',apiKeyEnv:'',temperature:.1},prompts:{complianceDiscovery:'Censisci fonti e restituisci JSON.',incidentDraft:'Consolida fatti e restituisci JSON.'}}}); assert.equal(result.status,200); assert.equal(result.data.settings.llm.ready,true);
-  result=await request('/api/jobs',{method:'POST',body:{name:'vietato',scope:'x'}}); assert.equal(result.status,403);
-  result=await request('/api/jobs',{method:'POST',role:'admin',body:{name:'Fonti cyber Italia UE',scope:'Norme, determine, regolamenti e linee guida cyber',jurisdictions:['Italia','Unione europea'],authorities:['ACN','EUR-Lex'],documentTypes:['law','decision','regulation','guideline'],sourceUrls:['https://eur-lex.europa.eu'],enabled:false,intervalHours:24}}); assert.equal(result.status,201); const jobId=result.data.job.id;
-  const fileData=Buffer.from('evidenza test').toString('base64');
-  result=await request('/api/contributions',{method:'POST',body:{kind:'mixed',title:'Contributo utente',url:'https://example.test/fonte',text:'Fonte da verificare',attachments:[{name:'fonte.txt',mime:'text/plain',dataBase64:fileData}]}}); assert.equal(result.status,201); assert.equal(result.data.contribution.attachments.length,1); const attachment=result.data.contribution.attachments[0]; assert.equal(attachment.bytes,13); assert.equal(attachment.sha256.length,64);
-  const parallel=await Promise.all(Array.from({length:8},(_,index)=>request('/api/contributions',{method:'POST',actor:`u-${index}`,body:{kind:'text',title:`Fonte ${index}`,text:`testo ${index}`}}))); assert.ok(parallel.every(item=>item.status===201));
-  result=await request(`/api/jobs/${jobId}/run`,{method:'POST',role:'admin',body:{}}); assert.equal(result.status,200); assert.equal(result.data.result.discovered,2); assert.equal(result.data.result.inserted,2);
-  result=await request('/api/bootstrap'); assert.equal(result.data.complianceItems.length,2); assert.deepEqual(new Set(result.data.complianceItems.map(item=>item.documentType)),new Set(['law','decision'])); assert.ok(result.data.complianceItems.every(item=>item.reviewState==='candidate'));
-  result=await request('/api/incidents',{method:'POST',actor:'reporter',body:{kind:'near-miss',title:'Accesso anomalo',awarenessAt:'2026-08-04T10:00:00.000Z',detectedAt:'2026-08-04T09:50:00.000Z',facts:'Tentativo di accesso non riuscito osservato sui log.',affectedServices:['Portale clienti'],impact:'Nessuna indisponibilità osservata',indicators:['198.51.100.8'],mitigations:['Account bloccato'],maliciousSuspected:true,crossBorder:false,contacts:['SOC'],attachments:[]}}); assert.equal(result.status,201); const incidentId=result.data.incident.id; assert.equal(result.data.incident.state,'draft'); assert.equal(result.data.incident.reminders.earlyWarning24h,'2026-08-05T10:00:00.000Z');
-  result=await request(`/api/incidents/${incidentId}`,{method:'PATCH',actor:'other-user',body:{impact:'modifica'}}); assert.equal(result.status,403);
-  result=await request(`/api/incidents/${incidentId}/draft`,{method:'POST',actor:'reporter',body:{}}); assert.equal(result.status,200); assert.equal(result.data.incident.state,'ready'); assert.match(result.data.incident.standardDraft.summary,/Segnalazione near-miss/);
-  result=await request(`/api/incidents/${incidentId}/submit`,{method:'POST',actor:'reporter',body:{narrative:'Formulazione verificata e inviata.'}}); assert.equal(result.status,200); assert.equal(result.data.incident.state,'submitted');
-  result=await request(`/api/incidents/${incidentId}/close`,{method:'POST',body:{}}); assert.equal(result.status,403);
-  result=await request(`/api/incidents/${incidentId}/close`,{method:'POST',role:'admin',body:{}}); assert.equal(result.status,200); assert.equal(result.data.incident.state,'closed');
-  const snapshot=runtime.store.snapshot(); assert.equal(snapshot.jobs.length,1); assert.equal(snapshot.contributions.length,9); assert.equal(snapshot.complianceItems.length,2); assert.equal(snapshot.incidents.length,1); assert.ok(snapshot.audit.length>=16);
-  await new Promise(resolve=>runtime.server.close(resolve));
-  runtime=await start(); base=`http://127.0.0.1:${runtime.server.address().port}`;
-  result=await request('/api/bootstrap',{role:'admin'}); assert.equal(result.data.jobs.length,1); assert.equal(result.data.contributions.length,9); assert.equal(result.data.incidents[0].state,'closed');
-  const stored=JSON.parse(await readFile(path.join(stateRoot,'state.json'),'utf8')); assert.equal(stored.revision,snapshot.revision); assert.ok(stored.audit.every(item=>item.actorId&&item.role&&item.action));
-  console.log(`e2e-check: ok (${stored.audit.length} audited writes, 2 roles, 2 services, persistence restart)`);
-} finally {
-  if(runtime?.server?.listening) await new Promise(resolve=>runtime.server.close(resolve));
-  if(mock.listening) await new Promise(resolve=>mock.close(resolve));
-  await rm(stateRoot,{recursive:true,force:true});
-}
+  mock=start(process.execPath,['v3/mock-ai-provider.mjs'],{MOCK_AI_PORT:String(aiPort)}); await wait(`http://127.0.0.1:${aiPort}`);
+  const serverEnv={PORT:String(apiPort),ICTC_HOST:'127.0.0.1',ICTC_RUNTIME_DIR:runtime,ICTC_ALLOW_PRIVATE_AI:'1',ICTC_LLM_API_KEY:'test-key',ICTC_SCHEDULER_TICK_MS:'100000'};
+  server=start(process.execPath,['v3/server.mjs'],serverEnv); await wait(`${base}/api/health`);
+  let state=await get(); assert.deepEqual(state.actor.role,'admin'); assert.equal(state.integrity.ok,true);
+  const settings=await put('/api/admin/settings',{organization:{name:'Azienda E2E',scope:'Sicurezza informazioni Italia UE',jurisdictions:['Italia','UE']},llm:{endpoint:`http://127.0.0.1:${aiPort}/v1/chat/completions`,model:'mock',apiKeyEnv:'ICTC_LLM_API_KEY',temperature:.1}}); assert.equal(settings.receipt.action,'settings.updated');
+  state=await get(); const missionDraft=await write('/api/missions/draft',{objective:'Fonti ufficiali su sicurezza delle informazioni per sanità',cadence:168,sourceHints:['ACN','EUR-Lex']}); const missionId=missionDraft.result.id; assert.ok(missionDraft.result.plan.queries.length);
+  state=await get(); await write(`/api/missions/${missionId}/activate`,{}); state=await get(); const run=await write(`/api/missions/${missionId}/run`,{}); assert.equal(run.result.state,'completed');
+  state=await get(); assert.ok(state.catalog.length>=2); const sourceId=state.catalog[0].id; const decision=await write(`/api/catalog/${sourceId}/decision`,{decision:'verified',reason:'URL e identificativo verificati'}); assert.equal(decision.result.state,'verified');
+  state=await get('user','alice'); const contribution=await write('/api/contributions',{links:['https://example.org/source'],text:'Materiale di esempio',note:'Potrebbe integrare il perimetro',attachments:[{name:'memo.txt',mime:'text/plain',dataBase64:Buffer.from('memo').toString('base64')}]},'user','alice'); assert.equal(contribution.raw.result.attachments[0].sha256.length,64);
+  state=await get('user','alice'); const intake=await write('/api/incidents/intake',{originalNarrative:'Un alert nei log indica un possibile attacco phishing ancora in corso su account email clienti.',awarenessAt:new Date().toISOString(),attachments:[{name:'log.txt',mime:'text/plain',dataBase64:Buffer.from('alert').toString('base64')}]},'user','alice'); const incidentId=intake.incident.id; assert.ok(intake.raw.receipt.hash); assert.equal(intake.incident.originalNarrative.includes('phishing'),true);
+  for(let guard=0;guard<20;guard++){
+    state=await get('user','alice'); const incident=state.incidents.find(x=>x.id===incidentId); if(!incident.nextQuestion)break;
+    const q=incident.nextQuestion; const values={classification:'incident',affectedServices:'Posta elettronica e CRM',impact:'Possibile accesso non autorizzato',actionsTaken:'Account sospeso e password reimpostata',ongoing:'unknown',personalData:'yes',maliciousActivity:'yes',crossBorder:'unknown',detectedAt:new Date().toISOString()};
+    await write(`/api/incidents/${incidentId}/answers`,{answers:[{id:q.id,value:values[q.id] || 'unknown'}]},'user','alice');
+  }
+  state=await get('user','alice'); assert.equal(state.incidents.find(x=>x.id===incidentId).nextQuestion,null);
+  const drafted=await write(`/api/incidents/${incidentId}/draft`,{},'user','alice'); assert.ok(drafted.result.finalNarrative);
+  state=await get('user','alice'); const finalNarrative=state.incidents.find(x=>x.id===incidentId).finalNarrative; const submitted=await write(`/api/incidents/${incidentId}/submit`,{finalNarrative,confirmed:true},'user','alice'); assert.equal(submitted.result.state,'submitted');
+  state=await get('admin','admin-e2e'); const closed=await write(`/api/incidents/${incidentId}/close`,{note:'Chiusura amministrativa di test'},'admin','admin-e2e'); assert.equal(closed.result.state,'closed');
+  const evidence=await fetch(`${base}/api/evidence/incident/${incidentId}`,{headers:{'x-ictc-role':'admin','x-ictc-actor-id':'admin-e2e'}}); assert.equal(evidence.status,200); const bundle=await evidence.json(); assert.equal(bundle.integrity.ok,true); assert.ok(bundle.events.length>=5);
+  const oldHead=bundle.integrity.head; await stop(server); server=start(process.execPath,['v3/server.mjs'],serverEnv); await wait(`${base}/api/health`); state=await get('admin','admin-e2e'); assert.equal(state.integrity.head,oldHead); assert.equal(state.incidents.find(x=>x.id===incidentId).state,'closed');
+  console.log(`e2e-check: ok (${state.integrity.events} audited writes, 2 services, AI gaps, evidence restart)`);
+}finally{await stop(server);await stop(mock);await rm(runtime,{recursive:true,force:true});}
