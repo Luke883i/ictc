@@ -38,7 +38,7 @@ function waitingFocus(workspace) {
   if (focus.dataset.guidanceState === 'waiting') return;
   focus.dataset.guidanceState = 'waiting';
   focus.classList.add('empty-focus');
-  focus.innerHTML = `<div><span class="eyebrow">Prossimo passo</span><h2>Nessuna azione per il tuo ruolo</h2><p>${workspace.waitingTasks.length} attività attendono un ruolo autorizzato.</p></div><button id="primaryTaskAction" type="button" hidden aria-hidden="true">Solo lettura</button><p class="boundary-note">Puoi leggere oggetti e prove. Non significa conformità, completezza o assenza di rischio.</p>`;
+  focus.innerHTML = `<div><span class="eyebrow">Prossimo passo</span><h2>Nessuna azione per il tuo ruolo</h2><p>${workspace.waitingTasks.length} attività attendono un ruolo autorizzato.</p></div><button id="primaryTaskAction" type="button" hidden aria-hidden="true" disabled aria-disabled="true">Solo lettura</button><p class="boundary-note">Puoi leggere oggetti e prove. Non significa conformità, completezza o assenza di rischio.</p>`;
 }
 
 function labelQueues(workspace) {
