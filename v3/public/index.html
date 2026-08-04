@@ -30,7 +30,7 @@
         <h1>Descrivi il risultato.<br><span>L’AI prepara il piano.</span></h1>
         <p>Parti dall’obiettivo, non dalla tassonomia. Prima dell’attivazione vedrai cosa sarà cercato, incluso ed escluso.</p>
       </div>
-      <form id="missionForm" class="focus-card">
+      <form id="missionForm" class="focus-card admin-only">
         <label class="prompt-field">Che cosa deve sorvegliare ICTC?
           <textarea name="objective" rows="5" required placeholder="Esempio: ogni fonte ufficiale italiana ed europea sulla sicurezza delle informazioni applicabile al settore sanitario"></textarea>
         </label>
@@ -38,9 +38,10 @@
           <label>Ritmo<select name="cadence"><option value="168">Settimanale</option><option value="24">Giornaliero</option><option value="720">Mensile</option></select></label>
           <label>Fonti già note, facoltative<input name="sourceHints" placeholder="ACN, Garante, EUR-Lex"></label>
         </div>
-        <button class="primary magnetic" type="submit"><span>Prepara il piano</span><i aria-hidden="true">→</i></button>
+        <details class="mission-prompt"><summary>Istruzione specifica del monitoraggio</summary><label>Prompt modificabile<textarea name="promptOverride" rows="5" placeholder="Lascia vuoto per usare il prompt globale di ricerca fonti"></textarea></label></details><button class="primary magnetic" type="submit"><span>Prepara il piano</span><i aria-hidden="true">→</i></button>
         <p class="microcopy">Il piano AI è una proposta modificabile. L’attivazione resta una decisione dell’amministratore.</p>
       </form>
+        <div id="userMonitoringIntro" class="focus-card role-intro" hidden><p class="eyebrow">Vista utente</p><h2>Consulta le fonti.<br>Contribuisci con ciò che conosci.</h2><p>I monitoraggi sono configurati dall’amministratore. Qui trovi gli esiti e puoi aggiungere link, testo o documenti senza classificarli.</p><button class="primary" type="button" data-open-contribution>Aggiungi materiale</button></div>
     </section>
 
     <section id="aiSetup" class="setup-banner admin-only" hidden>
@@ -65,6 +66,7 @@
         <h2>Hai una fonte?</h2>
         <p>Incolla un link, scrivi una nota o trascina un documento. Non serve classificarlo: ICTC conserva l’originale e propone i metadati.</p>
         <button id="openContribution" class="primary" type="button">Aggiungi materiale</button>
+        <div id="contributionList" class="contribution-status" aria-live="polite"></div>
       </aside>
     </section>
   </section>
