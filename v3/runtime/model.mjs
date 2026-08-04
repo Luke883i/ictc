@@ -14,6 +14,11 @@ export function findCatalog(state, id) {
   if (!item) throw httpError(404, 'Fonte non trovata', 'not-found');
   return item;
 }
+export function findContribution(state, id) {
+  const item = state.contributions.find(entry => entry.id === id);
+  if (!item) throw httpError(404, 'Contributo non trovato', 'not-found');
+  return item;
+}
 export function findIncident(state, id) {
   const item = state.incidents.find(entry => entry.id === id);
   if (!item) throw httpError(404, 'Segnalazione non trovata', 'not-found');
@@ -23,14 +28,38 @@ export function canAccessIncident(actor, incident) {
   return actor.role === 'admin' || incident.createdBy === actor.id;
 }
 export function ensureIncidentOwner(actor, incident) {
-  if (!canAccessIncident(actor, incident)) throw httpError(403, 'Puoi operare soltanto sulle tue segnalazioni', 'not-owner');
+  if (incident.createdBy !== actor.id) throw httpError(403, 'Puoi modificare soltanto le segnalazioni che hai creato', 'not-owner');
+}
+export function canAccessContribution(actor, contribution) {
+  return actor.role === 'admin' || contribution.createdBy === actor.id;
+}
+export function ensureContributionOwner(actor, contribution) {
+  if (contribution.createdBy !== actor.id) throw httpError(403, 'Puoi elaborare soltanto i contributi che hai creato', 'not-owner');
 }
 export function catalogKey(item) {
   return `${item.identifier || ''}|${item.sourceUrl || ''}|${item.title || ''}`.toLowerCase();
 }
+function observationFrom(item) {
+  return {
+    observedAt: item.origin?.observedAt || now(),
+    origin: structuredClone(item.origin || null),
+    title: item.title,
+    documentType: item.documentType,
+    authority: item.authority,
+    jurisdiction: item.jurisdiction,
+    identifier: item.identifier,
+    sourceUrl: item.sourceUrl,
+    publicationDate: item.publicationDate,
+    effectiveDate: item.effectiveDate,
+    summary: item.summary,
+    relevance: item.relevance,
+    confidence: item.confidence,
+    aiTrace: structuredClone(item.aiTrace || null)
+  };
+}
 export function normalizeCatalogItem(raw, origin, trace, idFactory) {
   const documentType = asString(raw.documentType, 80).toLowerCase();
-  return {
+  const item = {
     id: idFactory('source'),
     title: asString(raw.title, 1_000) || 'Fonte senza titolo',
     documentType: DOCUMENT_TYPES.includes(documentType) ? documentType : 'other',
@@ -43,8 +72,22 @@ export function normalizeCatalogItem(raw, origin, trace, idFactory) {
     summary: asString(raw.summary, 5_000),
     relevance: asString(raw.relevance, 3_000),
     confidence: Math.max(0, Math.min(1, Number(raw.confidence || 0))),
-    state: 'candidate', origin, aiTrace: trace, decisions: [], createdAt: now(), updatedAt: now()
+    state: 'candidate', origin, aiTrace: trace, decisions: [], observations: [], createdAt: now(), updatedAt: now()
   };
+  item.observations.push(observationFrom(item));
+  return item;
+}
+export function mergeCatalogObservation(existing, normalized) {
+  const preserved = {
+    id: existing.id,
+    state: existing.state,
+    decisions: existing.decisions || [],
+    observations: existing.observations || [],
+    createdAt: existing.createdAt
+  };
+  Object.assign(existing, normalized, preserved, { updatedAt: now() });
+  existing.observations = [...preserved.observations, observationFrom(normalized)].slice(-250);
+  return existing;
 }
 export function missionProjection(mission, state) {
   const runs = state.runs.filter(run => run.missionId === mission.id);
@@ -60,20 +103,51 @@ export function incidentProjection(incident) {
     evidenceUrl: `/api/evidence/incident/${incident.id}`
   };
 }
+function userSettings(settings) {
+  return {
+    organization: structuredClone(settings.organization),
+    llm: {
+      configured: Boolean(settings.llm.endpoint && settings.llm.model),
+      ready: Boolean(settings.llm.endpoint && settings.llm.model && (!settings.llm.apiKeyEnv || process.env[settings.llm.apiKeyEnv])),
+      model: settings.llm.model || ''
+    },
+    prompts: null,
+    updatedAt: settings.updatedAt,
+    updatedBy: settings.updatedBy
+  };
+}
 export function visibleState(actor, store, version) {
   const state = store.snapshot();
+  const visibleContributions = state.contributions.filter(item => canAccessContribution(actor, item));
+  const visibleIncidents = state.incidents.filter(item => canAccessIncident(actor, item));
+  const privateIds = new Set([
+    ...visibleContributions.map(item => item.id),
+    ...visibleIncidents.map(item => item.id)
+  ]);
+  const recentEvents = state.audit.filter(event => {
+    if (actor.role === 'admin') return true;
+    if (!event.subject) return event.actorId === actor.id;
+    if (['incident', 'contribution'].includes(event.subject.type)) return privateIds.has(event.subject.id);
+    return true;
+  }).slice(-8).reverse();
   return {
     version,
     revision: state.revision,
     actor,
-    settings: publicSettings(state.settings),
+    settings: actor.role === 'admin' ? publicSettings(state.settings) : userSettings(state.settings),
     missions: state.missions.map(item => missionProjection(item, state)),
     catalog: state.catalog.map(item => ({ ...item, evidenceUrl: `/api/evidence/catalog/${item.id}` })),
-    contributions: state.contributions.map(item => ({ ...item, evidenceUrl: `/api/evidence/contribution/${item.id}` })),
-    incidents: state.incidents.filter(item => canAccessIncident(actor, item)).map(incidentProjection),
+    contributions: visibleContributions.map(item => ({ ...item, evidenceUrl: `/api/evidence/contribution/${item.id}` })),
+    incidents: visibleIncidents.map(incidentProjection),
     integrity: store.verifyChain(),
-    recentEvents: state.audit.slice(-8).reverse(),
-    experience: { services: 2, roles: 2, maxPrimaryActionsPerContext: 1 }
+    recentEvents,
+    experience: {
+      services: 2,
+      roles: 2,
+      maxPrimaryActionsPerContext: 1,
+      aiAuthority: 'assist-only',
+      evidenceMode: 'receipt-and-bundle'
+    }
   };
 }
 export function validateSettings(input, current) {

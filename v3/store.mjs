@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   DEFAULT_PROMPTS, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS, asString, canonicalJson,
@@ -8,7 +8,7 @@ import {
 
 function initialState() {
   return {
-    schemaVersion: '2.0.0', revision: 0,
+    schemaVersion: '2.1.0', revision: 0,
     settings: {
       organization: {
         name: 'Organizzazione',
@@ -26,12 +26,17 @@ function mergeState(parsed) {
   const base = initialState();
   return {
     ...base, ...parsed,
+    schemaVersion: base.schemaVersion,
     settings: {
       ...base.settings, ...(parsed.settings || {}),
       organization: { ...base.settings.organization, ...(parsed.settings?.organization || {}) },
       llm: { ...base.settings.llm, ...(parsed.settings?.llm || {}) },
       prompts: { ...base.settings.prompts, ...(parsed.settings?.prompts || {}) }
     },
+    missions: (parsed.missions || []).map(item => ({ planHistory: [], planVersion: item.plan ? 1 : 0, ...item })),
+    contributions: (parsed.contributions || []).map(item => ({ enrichmentAttempts: 0, ...item })),
+    catalog: (parsed.catalog || []).map(item => ({ observations: [], decisions: [], ...item })),
+    incidents: (parsed.incidents || []).map(item => ({ formulationVersions: [], formulationDirty: !item.finalNarrative, ...item })),
     commandResults: parsed.commandResults || {}
   };
 }
@@ -141,6 +146,12 @@ export class Store {
     }
     return saved;
   }
+  async deleteAttachments(files = []) {
+    for (const file of files) {
+      try { await unlink(path.join(this.attachmentsPath, asString(file.id, 200))); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+  }
   async attachment(idValue) {
     const attachmentId = asString(idValue, 200);
     const all = [
@@ -159,23 +170,53 @@ export class Store {
     else if (type === 'contribution') subject = state.contributions.find(item => item.id === subjectId);
     if (!subject) return null;
     if (type === 'incident' && actor.role !== 'admin' && subject.createdBy !== actor.id) return null;
+    if (type === 'contribution' && actor.role !== 'admin' && subject.createdBy !== actor.id) return null;
+
     const relatedIds = new Set([subjectId]);
+    let related = null;
     if (type === 'mission') {
-      for (const run of state.runs.filter(item => item.missionId === subjectId)) relatedIds.add(run.id);
-      for (const item of state.catalog.filter(item => item.origin?.missionId === subjectId)) relatedIds.add(item.id);
+      const runs = state.runs.filter(item => item.missionId === subjectId);
+      const catalog = state.catalog.filter(item => (item.observations || []).some(obs => obs.origin?.missionId === subjectId) || item.origin?.missionId === subjectId);
+      for (const item of runs) relatedIds.add(item.id);
+      for (const item of catalog) relatedIds.add(item.id);
+      related = { runs, catalog };
+    } else if (type === 'catalog') {
+      const origins = (subject.observations || []).map(item => item.origin).filter(Boolean);
+      if (subject.origin) origins.push(subject.origin);
+      const missionIds = new Set(origins.map(item => item.missionId).filter(Boolean));
+      const runIds = new Set(origins.map(item => item.runId).filter(Boolean));
+      const contributionIds = new Set(origins.map(item => item.contributionId).filter(Boolean));
+      for (const value of [...missionIds, ...runIds, ...contributionIds]) relatedIds.add(value);
+      related = {
+        missions: state.missions.filter(item => missionIds.has(item.id)),
+        runs: state.runs.filter(item => runIds.has(item.id)),
+        contributions: state.contributions.filter(item => contributionIds.has(item.id)).map(item => ({ ...item, text: item.text ? '[preserved in contribution bundle]' : '' }))
+      };
+    } else if (type === 'contribution') {
+      const catalog = state.catalog.filter(item => (item.observations || []).some(obs => obs.origin?.contributionId === subjectId) || item.origin?.contributionId === subjectId);
+      for (const item of catalog) relatedIds.add(item.id);
+      related = { catalog };
+    } else if (type === 'incident') {
+      related = {
+        attachments: subject.attachments || [],
+        formulations: subject.formulationVersions || []
+      };
     }
     const events = state.audit.filter(event => event.subject && relatedIds.has(event.subject.id));
+    const manifest = {
+      subjectSha256: sha256(subject),
+      relatedSha256: sha256(related),
+      eventsSha256: sha256(events),
+      integrityHead: this.verifyChain().head
+    };
     return {
-      schemaVersion: '1.0.0', generatedAt: now(), generatedBy: actor.id, type, subject,
-      related: type === 'mission' ? {
-        runs: state.runs.filter(item => item.missionId === subjectId),
-        catalog: state.catalog.filter(item => item.origin?.missionId === subjectId)
-      } : null,
-      events, integrity: this.verifyChain(),
+      schemaVersion: '1.1.0', generatedAt: now(), generatedBy: actor.id, type, subject,
+      related, events, manifest, integrity: this.verifyChain(),
       limitations: [
         'Il fascicolo dimostra le operazioni registrate dal runtime, non la verità sostanziale del contenuto.',
         'I risultati AI restano proposte o estrazioni e richiedono controllo umano.',
-        'La catena hash non equivale a firma qualificata o marcatura temporale certificata.'
+        'La catena hash non equivale a firma qualificata o marcatura temporale certificata.',
+        'La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.'
       ]
     };
   }

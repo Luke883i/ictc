@@ -1,5 +1,5 @@
 import { routeMatch, httpError, requirePermission, sendEvidence } from './http.mjs';
-import { canAccessIncident } from './model.mjs';
+import { canAccessContribution, canAccessIncident } from './model.mjs';
 import { safeFilename } from '../domain.mjs';
 
 export function createEvidenceHandler({ store, permissions }) {
@@ -18,12 +18,16 @@ export function createEvidenceHandler({ store, permissions }) {
       requirePermission(actor, 'read', permissions);
       const item = await store.attachment(params.id);
       if (!item) throw httpError(404, 'Allegato non trovato', 'not-found');
-      const incident = store.snapshot().incidents.find(entry => (entry.attachments || []).some(file => file.id === params.id));
+      const snapshot = store.snapshot();
+      const incident = snapshot.incidents.find(entry => (entry.attachments || []).some(file => file.id === params.id));
       if (incident && !canAccessIncident(actor, incident)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
+      const contribution = snapshot.contributions.find(entry => (entry.attachments || []).some(file => file.id === params.id));
+      if (contribution && !canAccessContribution(actor, contribution)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
       response.writeHead(200, {
         'content-type': item.metadata.mime,
         'content-length': item.buffer.length,
         'content-disposition': `attachment; filename="${safeFilename(item.metadata.name)}"`,
+        'cache-control': 'no-store',
         'x-content-type-options': 'nosniff'
       });
       response.end(item.buffer);
