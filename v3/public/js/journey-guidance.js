@@ -28,9 +28,15 @@ export function deriveGuidedWorkspace(data, mode = 'monitoring', selectedTaskId 
   return { ...base, tasks, actionableTasks, waitingTasks, activeTask: selected || actionableTasks[0] || null };
 }
 
+function setTextIfChanged(node, value) {
+  if (node && node.textContent !== value) node.textContent = value;
+}
+
 function waitingFocus(workspace) {
   const focus = document.querySelector('.focus-line');
   if (!focus || workspace.actionableTasks.length || !workspace.waitingTasks.length) return;
+  if (focus.dataset.guidanceState === 'waiting') return;
+  focus.dataset.guidanceState = 'waiting';
   focus.classList.add('empty-focus');
   focus.innerHTML = `<div><span class="eyebrow">Prossimo passo</span><h2>Nessuna azione per il tuo ruolo</h2><p>${workspace.waitingTasks.length} attività attendono un ruolo autorizzato.</p></div><button id="primaryTaskAction" type="button" hidden aria-hidden="true">Solo lettura</button><p class="boundary-note">Puoi leggere oggetti e prove. Non significa conformità, completezza o assenza di rischio.</p>`;
 }
@@ -39,14 +45,16 @@ function labelQueues(workspace) {
   const disclosure = document.querySelector('.task-disclosure');
   if (!disclosure) return;
   const summary = disclosure.querySelector('summary');
-  if (summary) summary.textContent = workspace.actionableTasks.length > 1 ? `Da fare (${workspace.actionableTasks.length - 1})` : `In attesa di un altro ruolo (${workspace.waitingTasks.length})`;
+  const summaryText = workspace.actionableTasks.length > 1
+    ? `Da fare (${workspace.actionableTasks.length - 1})`
+    : `In attesa di un altro ruolo (${workspace.waitingTasks.length})`;
+  setTextIfChanged(summary, summaryText);
   for (const button of disclosure.querySelectorAll('[data-task]')) {
     const task = workspace.tasks.find(item => item.id === button.dataset.task);
     if (!task?.readOnly) continue;
-    button.disabled = true;
-    button.setAttribute('aria-disabled', 'true');
-    const tail = button.lastElementChild;
-    if (tail) tail.textContent = `Richiede ${task.permission}`;
+    if (!button.disabled) button.disabled = true;
+    if (button.getAttribute('aria-disabled') !== 'true') button.setAttribute('aria-disabled', 'true');
+    setTextIfChanged(button.lastElementChild, `Richiede ${task.permission}`);
   }
 }
 
@@ -83,4 +91,4 @@ export function installGuidedJourney(state, contract) {
   return () => observer.disconnect();
 }
 
-export const guidanceInternals = Object.freeze({ taskActionIds });
+export const guidanceInternals = Object.freeze({ taskActionIds, setTextIfChanged });
