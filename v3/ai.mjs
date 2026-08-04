@@ -1,51 +1,92 @@
-import { asArray, asString, normalizeDocumentType } from './domain.mjs';
+import { asString, canonicalJson, now, redactEndpoint, sha256 } from './domain.mjs';
 
-function extractJson(text) {
-  const value = asString(text, 200_000).replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
-  const firstObject = value.indexOf('{'); const lastObject = value.lastIndexOf('}');
-  if (firstObject < 0 || lastObject <= firstObject) throw Object.assign(new Error('La risposta AI non contiene JSON'), { status: 502, code: 'invalid-ai-response' });
-  return JSON.parse(value.slice(firstObject, lastObject + 1));
+function parseJsonContent(content) {
+  const text = asString(content, 200_000);
+  const unfenced = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+  try { return JSON.parse(unfenced); }
+  catch {
+    const start = unfenced.indexOf('{'); const end = unfenced.lastIndexOf('}');
+    if (start >= 0 && end > start) return JSON.parse(unfenced.slice(start, end + 1));
+    throw new Error('Il provider AI non ha restituito JSON valido');
+  }
 }
-async function callCompatibleChat(settings, system, payload, env = process.env) {
-  const endpoint = asString(settings.llm.endpoint, 2_000); const model = asString(settings.llm.model, 300); const keyName = asString(settings.llm.apiKeyEnv, 120);
-  if (!endpoint || !model) throw Object.assign(new Error('Configura endpoint e modello AI'), { status: 409, code: 'ai-not-configured' });
-  const key = keyName ? env[keyName] : '';
-  if (keyName && !key) throw Object.assign(new Error(`Variabile ${keyName} non disponibile nel runtime`), { status: 409, code: 'ai-secret-missing' });
-  const headers = { 'content-type': 'application/json' }; if (key) headers.authorization = `Bearer ${key}`;
-  const response = await fetch(endpoint, {
-    method: 'POST', headers,
-    body: JSON.stringify({ model, temperature: Number(settings.llm.temperature ?? 0.1), response_format: { type: 'json_object' }, messages: [{ role: 'system', content: system }, { role: 'user', content: JSON.stringify(payload) }] }),
-    signal: AbortSignal.timeout(Number(process.env.ICTC_AI_TIMEOUT_MS || 45_000))
-  });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw Object.assign(new Error(body?.error?.message || body?.error || `Errore provider AI: ${response.status}`), { status: 502, code: 'ai-provider-error' });
-  return extractJson(body?.choices?.[0]?.message?.content);
+function ensureEndpointAllowed(endpoint) {
+  const url = new URL(endpoint);
+  const host = url.hostname.toLowerCase();
+  const privateHost = host === 'localhost' || host === '127.0.0.1' || host === '::1' || /^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(host);
+  if (privateHost && process.env.ICTC_ALLOW_PRIVATE_AI !== '1') {
+    throw Object.assign(new Error('Endpoint AI privato non consentito senza ICTC_ALLOW_PRIVATE_AI=1'), { status: 400, code: 'private-ai-endpoint' });
+  }
 }
-export async function discoverCompliance(settings, job, contributions, env = process.env) {
-  const raw = await callCompatibleChat(settings, asString(job.prompt, 30_000) || settings.prompts.complianceDiscovery, {
-    task: 'compliance-discovery', organizationScope: settings.organization.scope,
-    job: { name: job.name, scope: job.scope, jurisdictions: job.jurisdictions, authorities: job.authorities, documentTypes: job.documentTypes, sourceUrls: job.sourceUrls },
-    userContributions: contributions.map(item => ({ id: item.id, kind: item.kind, title: item.title, url: item.url, text: item.text, attachments: item.attachments }))
-  }, env);
-  return asArray(raw.items, 500).map(item => ({
-    documentType: normalizeDocumentType(item.documentType), title: asString(item.title, 1_000), authority: asString(item.authority, 500),
-    jurisdiction: asString(item.jurisdiction, 200), identifier: asString(item.identifier, 300), sourceUrl: asString(item.sourceUrl, 2_000),
-    canonicalUri: asString(item.canonicalUri, 2_000), status: asString(item.status, 120) || 'unknown', datePublished: asString(item.datePublished, 80),
-    dateEffective: asString(item.dateEffective, 80), language: asString(item.language, 30) || 'it', summary: asString(item.summary, 8_000),
-    confidence: Math.max(0, Math.min(1, Number(item.confidence ?? 0))), relations: asArray(item.relations, 50).map(value => asString(value, 500)).filter(Boolean)
-  })).filter(item => item.title && (item.sourceUrl || item.identifier));
-}
-export async function draftIncident(settings, incident, env = process.env) {
-  const raw = await callCompatibleChat(settings, settings.prompts.incidentDraft, { task: 'incident-draft', incident: {
-    kind: incident.kind, title: incident.title, awarenessAt: incident.awarenessAt, detectedAt: incident.detectedAt, facts: incident.facts,
-    affectedServices: incident.affectedServices, impact: incident.impact, indicators: incident.indicators, mitigations: incident.mitigations,
-    maliciousSuspected: incident.maliciousSuspected, crossBorder: incident.crossBorder, contacts: incident.contacts, attachments: incident.attachments
-  } }, env);
-  return {
-    summary: asString(raw.summary, 10_000), chronology: asArray(raw.chronology, 100).map(item => asString(item, 1_000)).filter(Boolean),
-    affectedServices: asArray(raw.affectedServices, 100).map(item => asString(item, 500)).filter(Boolean), impact: asString(raw.impact, 10_000),
-    indicators: asArray(raw.indicators, 100).map(item => asString(item, 500)).filter(Boolean), mitigations: asArray(raw.mitigations, 100).map(item => asString(item, 1_000)).filter(Boolean),
-    rootCause: asString(raw.rootCause, 5_000), openQuestions: asArray(raw.openQuestions, 100).map(item => asString(item, 1_000)).filter(Boolean),
-    notificationData: raw.notificationData && typeof raw.notificationData === 'object' ? raw.notificationData : {}
+export async function callJson(settings, purpose, systemPrompt, payload, options = {}) {
+  const endpoint = asString(settings.llm.endpoint, 4_000); const model = asString(settings.llm.model, 500);
+  if (!endpoint || !model) throw Object.assign(new Error('Provider AI non configurato'), { status: 409, code: 'ai-not-configured' });
+  ensureEndpointAllowed(endpoint);
+  const keyEnv = asString(settings.llm.apiKeyEnv, 200); const key = keyEnv ? process.env[keyEnv] : '';
+  if (keyEnv && !key) throw Object.assign(new Error(`Variabile ${keyEnv} non disponibile`), { status: 409, code: 'ai-key-missing' });
+  const requestedAt = now(); const prompt = `${systemPrompt}\n\nICTC_PURPOSE_RUNTIME:${purpose}`; const inputJson = canonicalJson(payload);
+  const body = {
+    model, temperature: Number(settings.llm.temperature ?? 0.1), response_format: { type: 'json_object' },
+    messages: [{ role: 'system', content: prompt }, { role: 'user', content: inputJson }]
   };
+  const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), Number(options.timeoutMs || 45_000));
+  let response; let responseText = '';
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST', headers: { 'content-type': 'application/json', ...(key ? { authorization: `Bearer ${key}` } : {}) },
+      body: JSON.stringify(body), signal: controller.signal
+    });
+    responseText = await response.text();
+  } catch (error) {
+    const message = error.name === 'AbortError' ? 'Timeout del provider AI' : `Provider AI non raggiungibile: ${error.message}`;
+    throw Object.assign(new Error(message), { status: 502, code: error.name === 'AbortError' ? 'ai-timeout' : 'ai-unavailable' });
+  } finally { clearTimeout(timeout); }
+  if (!response.ok) throw Object.assign(new Error(`Provider AI: ${response.status}`), { status: 502, code: 'ai-provider-error', details: responseText.slice(0, 1_000) });
+  let envelope; try { envelope = JSON.parse(responseText); } catch { throw Object.assign(new Error('Risposta del provider AI non valida'), { status: 502, code: 'ai-response-invalid' }); }
+  const content = envelope.choices?.[0]?.message?.content ?? envelope.output_text ?? envelope.content;
+  const output = typeof content === 'object' ? content : parseJsonContent(content);
+  return {
+    output,
+    trace: {
+      purpose, endpoint: redactEndpoint(endpoint), model, requestedAt, completedAt: now(),
+      promptSha256: sha256(prompt), inputSha256: sha256(inputJson), outputSha256: sha256(output),
+      providerRequestId: asString(response.headers.get('x-request-id') || envelope.id, 500),
+      limitations: ['Output generato da AI e non verificato automaticamente.']
+    }
+  };
+}
+export function createMonitoringPlan(settings, mission) {
+  return callJson(settings, 'monitoring-plan', settings.prompts.monitoringPlan, {
+    organization: settings.organization, objective: mission.objective, cadenceHours: mission.cadenceHours,
+    sourceHints: mission.sourceHints, promptOverride: mission.promptOverride || null
+  });
+}
+export function discoverCompliance(settings, mission, plan, context = {}) {
+  const prompt = mission.promptOverride || settings.prompts.complianceDiscovery;
+  return callJson(settings, 'compliance-discovery', prompt, {
+    organization: settings.organization, objective: mission.objective, plan,
+    previousIdentifiers: context.previousIdentifiers || [], contributionContext: context.contributionContext || null,
+    outputContract: { items: [{ title: 'string', documentType: 'controlled string', authority: 'string', jurisdiction: 'string', identifier: 'string', sourceUrl: 'official http(s) URL', publicationDate: 'ISO date or empty', effectiveDate: 'ISO date or empty', summary: 'string', relevance: 'string', confidence: '0..1' }] }
+  });
+}
+export function enrichContribution(settings, contribution) {
+  return callJson(settings, 'contribution-enrichment', settings.prompts.contributionEnrichment, {
+    organization: settings.organization,
+    contribution: { note: contribution.note, links: contribution.links, text: contribution.text, attachments: contribution.attachments.map(item => ({ name: item.name, mime: item.mime, bytes: item.bytes, sha256: item.sha256 })) }
+  });
+}
+export function analyzeIncident(settings, incident) {
+  return callJson(settings, 'incident-analysis', settings.prompts.incidentAnalysis, {
+    organization: settings.organization, originalNarrative: incident.originalNarrative, awarenessAt: incident.awarenessAt,
+    attachments: incident.attachments.map(item => ({ name: item.name, mime: item.mime, bytes: item.bytes, sha256: item.sha256 })),
+    outputContract: { proposedKind: 'event|near-miss|incident|unknown', kindConfidence: '0..1', extractedFacts: ['string'], assumptions: ['string'], signals: ['ongoing|personal-data|malicious|cross-border|technical-detection'], timeline: [{ at: 'ISO date or empty', event: 'string', source: 'user|attachment|inference' }], affectedServices: ['string'], impact: 'string', mitigations: ['string'], indicators: ['string'], suggestedQuestions: [{ label: 'string', reason: 'string' }] }
+  });
+}
+export function draftIncident(settings, incident, questions) {
+  return callJson(settings, 'incident-draft', settings.prompts.incidentDraft, {
+    organization: settings.organization, originalNarrative: incident.originalNarrative, awarenessAt: incident.awarenessAt,
+    attachments: incident.attachments.map(item => ({ name: item.name, mime: item.mime, sha256: item.sha256 })),
+    analysis: incident.analysis, answers: incident.answers, unresolvedQuestions: questions,
+    outputContract: { narrative: 'string', factsUsed: ['string'], unresolvedPoints: ['string'], limitations: ['string'] }
+  });
 }
