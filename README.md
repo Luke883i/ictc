@@ -1,46 +1,39 @@
 # ICTC
 
-**Integrated Compliance Tower Control** svolge due sole funzioni:
+ICTC gestisce due soli processi:
 
-1. configura monitoraggi AI per censire norme, decreti, regolamenti, determine, delibere, linee guida, circolari e standard entro uno scope dichiarato;
-2. raccoglie e accompagna segnalazioni di eventi, quasi incidenti e possibili incidenti fino a una formulazione amministrativa verificata dall'utente.
+1. **Fonti normative** — l'amministratore descrive l'obiettivo di sorveglianza, l'AI propone un piano, il runtime esegue i monitoraggi e le persone verificano o scartano le fonti candidate.
+2. **Segnalazioni** — l'utente registra il racconto originale e la data di conoscenza, l'AI evidenzia fatti e gap, il sistema pone una domanda motivata alla volta e l'utente conferma la formulazione finale.
+
+I soli ruoli sono `admin` e `user`.
 
 ## Avvio
 
-Richiede Node.js 22 o superiore.
-
 ```bash
+npm ci
 ./ictc.sh start --no-open
 ```
 
-Apri `http://127.0.0.1:4173`.
+Aprire `http://127.0.0.1:4173`.
 
-```bash
-./ictc.sh status
-./ictc.sh stop
-npm test
-```
+## Provider AI
 
-## Primo utilizzo
-
-1. entra come **Amministratore** nella modalità locale;
-2. configura endpoint compatibile OpenAI, modello, nome della variabile d'ambiente contenente la chiave e i due prompt globali;
-3. crea un monitoraggio indicando scope, tipi documentali, autorità, fonti iniziali e frequenza;
-4. gli utenti consultano il catalogo e aggiungono link, testo o documenti da un unico form;
-5. gli utenti registrano eventi o quasi incidenti, generano una bozza AI, la modificano e la inviano.
-
-La chiave API non viene salvata nel database. Esempio:
+La UI amministrativa configura endpoint, modello e nome della variabile d'ambiente contenente la chiave. La chiave non viene salvata nel runtime.
 
 ```bash
 export ICTC_LLM_API_KEY='...'
 ```
 
+Gli endpoint privati richiedono esplicitamente `ICTC_ALLOW_PRIVATE_AI=1`.
+
+## Verifica
+
+```bash
+npm test
+```
+
+Il gate verifica contratto, rilevanza delle domande, UI progressiva, saturazione `1..M` e `M+100`, ricevute, catena hash, conflitti, allegati, fascicoli ed end-to-end con provider AI mock.
+
 ## Confini
 
-ICTC produce **candidati e bozze**. Non determina applicabilità normativa, conformità, significatività dell'incidente o obblighi di notifica. I promemoria 24 ore, 72 ore e un mese sono supporti operativi derivati dalla data inserita.
-
-Architettura, riferimenti e saturazione sono documentati in:
-
-- `docs/PRODUCT_BLUEPRINT.md`
-- `docs/RUNTIME_E2E.md`
-- `docs/REFERENCES.md`
+ICTC non determina applicabilità, conformità, significatività o obblighi di notifica. I risultati AI sono piani, estrazioni e bozze da verificare. La catena hash locale non equivale a firma qualificata o marcatura temporale certificata.
