@@ -25,7 +25,7 @@ jobs:
           node --check v1/buyer-simulation.mjs
           node --check v1/saturation.mjs
           node --check v3/server.mjs
-          node -e "const p=require('./package.json'); if(p.version!=='1.0.0'||p.scripts.start!=='node v3/server.mjs') process.exit(1)"
+          node -e "const p=require('./package.json'); if(p.version!=='1.1.0-rc.1'||p.scripts.start!=='node v3/server.mjs') process.exit(1)"
           bash -n ictc.sh
           bash -n ictc-v3.sh
       - name: Full release gate
@@ -42,7 +42,7 @@ jobs:
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 60); do curl --fail --silent http://127.0.0.1:4781/api/health && break; sleep .2; done
           curl --fail --silent http://127.0.0.1:4781/api/release > "${{ runner.temp }}/release.json"
-          node -e "const r=require('${{ runner.temp }}/release.json'); if(r.version!=='1.0.0'||r.readiness!=='ready') process.exit(1)"
+          node -e "const r=require('${{ runner.temp }}/release.json'); if(r.version!=='1.1.0-rc.1'||r.readiness!=='ready') process.exit(1)"
       - name: Launcher lifecycle
         env:
           ICTC_NO_OPEN: '1'

@@ -9,9 +9,9 @@
     "name":{"const":"ICTC Core UI"},
     "claim":{"type":"string","minLength":80},
     "workspaces":{"type":"array","prefixItems":[{"const":"monitoring"},{"const":"incidents"}],"minItems":2,"maxItems":2},
-    "definitionOfDone":{"type":"array","minItems":18,"items":{"type":"object","required":["id","criterion","required"]}},
+    "definitionOfDone":{"type":"array","minItems":23,"items":{"type":"object","required":["id","criterion","required"]}},
     "metrics":{"type":"array","minItems":11,"items":{"type":"object","required":["id","name","target","unit"]}},
-    "saturation":{"type":"object","required":["M","MPlus100","primitiveCount","lastNoveltyScenario","noveltyAfterM"],"properties":{"M":{"const":40},"MPlus100":{"const":140},"noveltyAfterM":{"const":0}}},
+    "saturation":{"type":"object","required":["M","MPlus100","primitiveCount","lastNoveltyScenario","noveltyAfterM"],"properties":{"M":{"const":48},"MPlus100":{"const":148},"primitiveCount":{"const":38},"lastNoveltyScenario":{"const":21},"noveltyAfterM":{"const":0}}},
     "limitations":{"type":"array","minItems":4}
   }
 }

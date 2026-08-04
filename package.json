@@ -1,6 +1,6 @@
 {
   "name": "ictc",
-  "version": "1.0.0",
+  "version": "1.1.0-rc.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -30,8 +30,11 @@
     "audit:ux:journey": "npm run audit:ux:core",
     "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
     "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
-    "release:check": "npm run audit && npm run audit:ux:core && node v3/support-bundle-audit.mjs && npm run audit:v1",
+    "audit:access": "node v3/access-context-check.mjs && node v3/tenant-store-check.mjs && node v3/multi-client-runtime-check.mjs",
+    "audit:multi-client": "npm run audit:access && npm run audit:commands && node v3/guided-journey-check.mjs && node v3/multi-client-ui-check.mjs && node v3/multi-client-saturation.mjs && node v3/multi-user-dod-check.mjs",
+    "release:check": "npm run audit && npm run audit:ux:core && npm run audit:multi-client && node v3/support-bundle-audit.mjs && npm run audit:v1",
     "start:all": "./ictc.sh start --profile all",
-    "audit:ux:core": "npm run audit:runtime:kernel && node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs"
+    "audit:ux:core": "npm run audit:runtime:kernel && node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs",
+    "audit:commands": "node v3/action-contract-check.mjs && node v3/multi-user-command-check.mjs"
   }
 }
