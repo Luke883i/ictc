@@ -98,7 +98,7 @@ Questi ruoli non sostituiscono un IdP. In `trusted-header` devono essere derivat
 
 ## Saturazione
 
-La simulazione combina cinque ruoli, cinque profili tenant, cinque intenti e otto perturbazioni. A `M=40` sono emerse 24 primitive. Nei successivi 100 scenari non compare alcuna nuova primitiva.
+La simulazione combina cinque ruoli, cinque profili tenant, cinque intenti e otto perturbazioni. A `M=40` sono emerse 24 primitive. L'estensione fino a `M+100=140` non introduce nuove primitive: nei successivi 100 scenari la novità resta pari a zero.
 
 Le primitive includono selezione tenant, membership, ruolo, permesso, ledger e blob isolati, receipt attribuita, task read-only, denial, `404` cross-tenant, session scope, passaggi dei due servizi, failure ed empty state.
 
