@@ -5,7 +5,7 @@ import path from 'node:path';
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const html = await readFile(path.join(root, 'v3/public/index.html'), 'utf8');
 const css = await readFile(path.join(root, 'v3/public/styles.css'), 'utf8');
-const shell = (await Promise.all(['journey-shell.js','journey-shell-common.js','journey-shell-render.js','journey-shell-actions.js'].map(name => readFile(path.join(root, 'v3/public/js', name), 'utf8')))).join('\n');
+const shell = (await Promise.all(['journey-shell.js','journey-shell-common.js','journey-shell-render.js','journey-shell-actions.js','journey-shell-bindings.js'].map(name => readFile(path.join(root, 'v3/public/js', name), 'utf8')))).join('\n');
 const checks = [];
 const check = (name, condition, detail) => { assert.ok(condition, `${name}: ${detail}`); checks.push({ name, status: 'passed', detail }); };
 check('language', /<html lang="it">/.test(html), 'lingua italiana dichiarata');
