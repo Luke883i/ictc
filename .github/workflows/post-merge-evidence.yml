@@ -1,0 +1,32 @@
+name: ictc-post-merge-evidence
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - name: Release health
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4807 ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime" ICTC_STATE_DIR="$RUNNER_TEMP/state"
+          trap './ictc.sh stop --profile current || true' EXIT
+          ./ictc.sh start --profile current --no-open
+          curl -fsS http://127.0.0.1:4807/api/health > artifacts/post-merge-health.json
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-post-merge-evidence
+          path: artifacts/*.json
+          if-no-files-found: error
+          retention-days: 60

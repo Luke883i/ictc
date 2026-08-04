@@ -1,0 +1,41 @@
+import { strict as assert } from 'node:assert';
+import { runtimeHarness } from './runtime-test-harness.mjs';
+const h=await runtimeHarness('ictc-v15-e2e');
+try {
+  let b=await h.bootstrap(); assert.equal(b.body.version,'1.5.0-rc.1');
+  assert.equal((await h.request('PUT','/api/admin/settings',{},'user','alice')).status,403);
+  let r=await h.ok('POST','/api/missions/draft',{objective:'Official EU and Italian information-security sources',cadence:168});
+  const mission=r.body.mission.id; assert.equal(r.body.mission.state,'needs-plan'); assert.ok(r.body.raw.receipt.hash);
+  r=await h.ok('POST','/api/contributions',{text:'Official decision to verify'},'user','alice');
+  const contribution=r.body.raw.result.id; assert.equal(r.body.raw.result.state,'recorded'); assert.ok(r.body.warning);
+  r=await h.ok('POST','/api/incidents/intake',{originalNarrative:'Phishing alert still active on customer email',awarenessAt:new Date().toISOString()},'user','alice');
+  const incident=r.body.incident.id; assert.ok(r.body.warning); assert.ok(r.body.incident.originalNarrative.includes('Phishing'));
+  await h.ok('PUT','/api/admin/settings',{organization:{name:'E2E',scope:'Italy and EU',jurisdictions:['Italy','EU']},llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1/chat/completions`,model:'mock',apiKeyEnv:'ICTC_LLM_API_KEY'}});
+  r=await h.ok('POST',`/api/missions/${mission}/revise`,{objective:'Official EU and Italian information-security and cloud sources'}); assert.equal(r.body.mission.state,'draft');
+  await h.ok('POST',`/api/missions/${mission}/activate`,{});
+  assert.equal((await h.request('POST',`/api/missions/${mission}/pause`,{})).status,400);
+  await h.ok('POST',`/api/missions/${mission}/pause`,{reason:'Scope check'}); await h.ok('POST',`/api/missions/${mission}/resume`,{});
+  await h.ok('POST',`/api/missions/${mission}/run`,{}); await h.ok('POST',`/api/missions/${mission}/run`,{});
+  await h.ok('POST',`/api/contributions/${contribution}/enrich`,{},'user','alice');
+  await h.ok('POST',`/api/incidents/${incident}/analyze`,{},'user','alice');
+  assert.equal((await h.request('POST',`/api/incidents/${incident}/draft`,{},'user','alice')).body.code,'questions-open');
+  b=await h.bootstrap('user','bob'); assert.equal(b.body.incidents.length,0); assert.equal(b.body.contributions.length,0); assert.equal(b.body.settings.prompts,null); assert.equal('endpoint' in b.body.settings.llm,false);
+  const values={classification:'incident',affectedServices:'Email and CRM',impact:'Possible unauthorized access',actionsTaken:'Account disabled',ongoing:'unknown',personalData:'yes',maliciousActivity:'yes',crossBorder:'unknown',detectedAt:new Date().toISOString()};
+  for(let i=0;i<20;i++){b=await h.bootstrap('user','alice');const x=b.body.incidents.find(v=>v.id===incident);if(!x.nextQuestion)break;await h.ok('POST',`/api/incidents/${incident}/answers`,{answers:[{id:x.nextQuestion.id,value:values[x.nextQuestion.id]||'unknown'}]},'user','alice');}
+  b=await h.bootstrap('user','alice'); let x=b.body.incidents.find(v=>v.id===incident); assert.equal(x.nextQuestion,null); assert.equal(x.answers.classification.adoption,'ai-suggestion-confirmed');
+  r=await h.ok('POST',`/api/incidents/${incident}/draft`,{},'user','alice'); assert.equal(r.body.result.formulationVersions.length,1);
+  r=await h.ok('POST',`/api/incidents/${incident}/formulation`,{finalNarrative:`${r.body.result.finalNarrative} Human review.`,source:'human-review'},'user','alice'); const sha=r.body.result.formulationVersions.at(-1).sha256;
+  assert.equal((await h.request('POST',`/api/incidents/${incident}/submit`,{confirmed:true,formulationSha256:'0'.repeat(64)},'user','alice')).body.code,'formulation-conflict');
+  await h.ok('POST',`/api/incidents/${incident}/submit`,{confirmed:true,formulationSha256:sha},'user','alice');
+  assert.equal((await h.request('POST',`/api/incidents/${incident}/close`,{},'admin','test-admin')).status,400);
+  await h.ok('POST',`/api/incidents/${incident}/close`,{note:'Administrative verification complete'},'admin','test-admin');
+  b=await h.bootstrap(); const source=b.body.catalog[0]; assert.ok(source.observations.length>=2);
+  assert.equal((await h.request('POST',`/api/catalog/${source.id}/decision`,{decision:'verified'},'admin','test-admin')).status,400);
+  await h.ok('POST',`/api/catalog/${source.id}/decision`,{decision:'verified',reason:'Official identifier, authority and URL checked'},'admin','test-admin');
+  const evidence=await fetch(`${h.base}/api/evidence/incident/${incident}`,{headers:h.identity('admin','test-admin')}); const bundle=await evidence.json(); assert.equal(bundle.integrity.ok,true); assert.equal(bundle.related.formulations.length,2); assert.equal(bundle.manifest.subjectSha256.length,64);
+  const forbidden=await fetch(`${h.base}/api/evidence/contribution/${contribution}`,{headers:h.identity('user','bob')}); assert.equal(forbidden.status,404);
+  const replay='fixed-command'; await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); r=await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); assert.equal(r.body.raw.replayed,true);
+  b=await h.bootstrap('user','alice'); r=await h.request('POST','/api/contributions',{text:'Stale'},'user','alice',{refresh:false,expectedRevision:b.body.revision-1}); assert.equal(r.body.code,'revision-conflict');
+  b=await h.bootstrap(); assert.equal(b.body.integrity.ok,true); assert.ok(b.body.integrity.events>=25);
+  console.log(`v15-e2e: ok (${b.body.integrity.events} audited writes, recovery, authority, privacy, versions, evidence)`);
+} finally { await h.close(); }
