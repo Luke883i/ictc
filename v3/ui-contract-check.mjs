@@ -1,0 +1,17 @@
+import { strict as assert } from 'node:assert';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+const root = path.resolve(new URL('..', import.meta.url).pathname);
+const html = await readFile(path.join(root,'v3/public/index.html'),'utf8');
+const js = await readFile(path.join(root,'v3/public/app.js'),'utf8');
+const css = await readFile(path.join(root,'v3/public/styles.css'),'utf8');
+assert.match(html,/<html lang="it">/);
+assert.equal([...html.matchAll(/data-service="/g)].length,2,'la navigazione deve contenere due soli servizi');
+for(const value of ['Monitoraggio normativo','Incidenti','Configura AI','Nuovo monitoraggio','Contribuisci','Nuova segnalazione','Formulazione finale']) assert.ok(html.includes(value),`label assente: ${value}`);
+for(const value of ['Catena delle decisioni','Chiedi all’assistente','Impostazioni di lettura','Cliente attivo','Profilo organizzativo']) assert.ok(!html.includes(value),`rumore UI presente: ${value}`);
+assert.equal([...html.matchAll(/id="contributionForm"/g)].length,1,'deve esistere un solo punto di contribuzione');
+for(const route of ['/api/admin/settings','/api/jobs','/api/contributions','/api/incidents']) assert.ok(js.includes(route),`route UI non wired: ${route}`);
+assert.ok(css.length < 12_000,'CSS troppo esteso per una UI minimale');
+await mkdir(path.join(root,'artifacts'),{recursive:true});
+await writeFile(path.join(root,'artifacts/ui-contract-check.json'),JSON.stringify({result:'passed',services:2,contributionPoints:1,htmlBytes:html.length,jsBytes:js.length,cssBytes:css.length},null,2));
+console.log('ui-contract-check: ok (two services, one contribution point, no legacy noise)');
