@@ -1,162 +1,32 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROFILE="${ICTC_PROFILE:-current}"
-COMMAND=""
-NO_OPEN="${ICTC_NO_OPEN:-0}"
-PORT="${ICTC_PORT:-4173}"
-LEGACY_PORT="${ICTC_LEGACY_PORT:-4174}"
-STATE_ROOT="${ICTC_STATE_DIR:-$ROOT/.ictc}"
-RUNTIME_ROOT="${ICTC_RUNTIME_DIR:-$ROOT/.ictc/runtime}"
-ARGS=()
-
-say(){ printf '%s\n' "$*"; }
-fail(){ printf 'ICTC: %s\n' "$*" >&2; exit 1; }
-
-usage(){
-  cat <<'TXT'
-ICTC launcher
-
-  ./ictc.sh start [--profile current|v3|v2|all] [--no-open]
-  ./ictc.sh stop|restart|status|logs|doctor|test|audit [--profile ...]
-  ./ictc.sh codespace
-
-Profiles:
-  current, v3  Living Evidence Atlas on ICTC_PORT (default 4173)
-  v2           Legacy epistemic beta on ICTC_LEGACY_PORT (default 4174)
-  all          Starts current and legacy runtimes with isolated state
-TXT
+PORT="${ICTC_PORT:-${PORT:-4173}}"
+HOST="${ICTC_HOST:-127.0.0.1}"
+STATE="${ICTC_STATE_DIR:-$ROOT/.ictc}"
+RUNTIME="${ICTC_RUNTIME_DIR:-$STATE/runtime}"
+RUN="$STATE/run" LOG="$STATE/logs" PID="$RUN/ictc.pid" OUT="$LOG/ictc.log"
+NO_OPEN="${ICTC_NO_OPEN:-0}" COMMAND=""
+while (($#)); do case "$1" in start|stop|restart|status|logs|doctor|test|audit) COMMAND="$1";; --no-open) NO_OPEN=1;; --profile) shift; [[ "${1:-}" =~ ^(current|v3)$ ]] || { echo 'Sono supportati solo current e v3' >&2; exit 2; };; -h|--help|help) COMMAND=help;; *) echo "Argomento sconosciuto: $1" >&2; exit 2;; esac; shift || true; done
+COMMAND="${COMMAND:-help}"; URL="http://127.0.0.1:$PORT"
+mkdir -p "$RUN" "$LOG" "$RUNTIME"
+pid(){ [[ -r "$PID" ]] && cat "$PID"; }
+alive(){ local p; p="$(pid 2>/dev/null || true)"; [[ "$p" =~ ^[0-9]+$ ]] && kill -0 "$p" 2>/dev/null; }
+health(){ curl -fsS --max-time 2 "$URL/api/health" >/dev/null 2>&1; }
+start(){
+  command -v node >/dev/null; command -v curl >/dev/null; [[ "$(node -p "Number(process.versions.node.split('.')[0])")" -ge 22 ]]
+  if alive && health; then echo "ICTC già attivo: $URL"; return; fi
+  rm -f "$PID"
+  (cd "$ROOT"; PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" nohup node v3/server.mjs >>"$OUT" 2>&1 & echo $! >"$PID.tmp")
+  mv "$PID.tmp" "$PID"
+  for _ in $(seq 1 80); do if alive && health; then echo "ICTC attivo: $URL"; [[ "$NO_OPEN" = 1 ]] || { command -v xdg-open >/dev/null && xdg-open "$URL" >/dev/null 2>&1 & }; return; fi; sleep .2; done
+  tail -40 "$OUT" >&2 || true; exit 1
 }
-
-while (($#)); do
-  case "$1" in
-    --profile) shift; PROFILE="${1:-}"; [ -n "$PROFILE" ] || fail 'Valore --profile mancante' ;;
-    --no-open) NO_OPEN=1 ;;
-    -h|--help|help) COMMAND=help ;;
-    start|stop|restart|status|logs|open|doctor|test|audit|codespace) COMMAND="$1" ;;
-    *) ARGS+=("$1") ;;
-  esac
-  shift || true
-done
-
-COMMAND="${COMMAND:-help}"
-case "$PROFILE" in current|v3) PROFILE=v3;; v2|all) :;; *) fail "Profilo sconosciuto: $PROFILE";; esac
-
-require_file(){ [ -f "$1" ] || fail "File richiesto assente: ${1#$ROOT/}"; }
-preflight(){
-  command -v bash >/dev/null || fail 'bash non trovato'
-  command -v node >/dev/null || fail 'Node.js non trovato'
-  command -v curl >/dev/null || fail 'curl non trovato'
-  [ "$(node -p "Number(process.versions.node.split('.')[0])")" -ge 22 ] || fail 'Node.js 22+ richiesto'
-  require_file "$ROOT/ictc-v3.sh"
-  require_file "$ROOT/ictc-v2.sh"
-  mkdir -p "$STATE_ROOT" "$RUNTIME_ROOT"
-}
-
-run_v3(){
-  ICTC_STATE_DIR="$STATE_ROOT/v3" \
-  ICTC_RUNTIME_DIR="$RUNTIME_ROOT/v3" \
-  PORT="$PORT" ICTC_PORT="$PORT" ICTC_NO_OPEN="$NO_OPEN" \
-  bash "$ROOT/ictc-v3.sh" "$@"
-}
-
-run_v2(){
-  ICTC_STATE_DIR="$STATE_ROOT/v2" \
-  ICTC_RUNTIME_DIR="$RUNTIME_ROOT/v2" \
-  ICTC_PORT="$LEGACY_PORT" ICTC_NO_OPEN="$NO_OPEN" \
-  bash "$ROOT/ictc-v2.sh" "$@"
-}
-
-run_profile(){
-  local command="$1"; shift || true
-  case "$PROFILE" in
-    v3) run_v3 "$command" "$@" ;;
-    v2) run_v2 "$command" "$@" ;;
-    all)
-      case "$command" in
-        start)
-          run_v3 start "$@"
-          if ! run_v2 start "$@"; then
-            run_v3 stop || true
-            return 1
-          fi
-          ;;
-        stop)
-          run_v2 stop || true
-          run_v3 stop || true
-          ;;
-        restart)
-          run_profile stop
-          run_profile start "$@"
-          ;;
-        status)
-          local rc=0
-          run_v3 status || rc=1
-          run_v2 status || rc=1
-          return "$rc"
-          ;;
-        logs) say 'Use due terminali: ./ictc.sh logs --profile v3 e ./ictc.sh logs --profile v2' ;;
-        open) run_v3 open; run_v2 open ;;
-        doctor) run_v3 doctor; run_v2 doctor ;;
-        *) fail "Comando $command non supportato con --profile all" ;;
-      esac
-      ;;
-  esac
-}
-
-codespace_url(){
-  if [ "${CODESPACES:-}" = true ] && [ -n "${CODESPACE_NAME:-}" ] && [ -n "${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-}" ]; then
-    printf 'https://%s-%s.%s\n' "$CODESPACE_NAME" "$PORT" "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
-  else
-    printf 'http://127.0.0.1:%s\n' "$PORT"
-  fi
-}
-
-run_audit(){
-  preflight
-  case "$PROFILE" in
-    v2) npm --prefix "$ROOT" run audit ;;
-    v3)
-      npm --prefix "$ROOT" run audit
-      run_v3 audit
-      node "$ROOT/v3/gap-audit.mjs"
-      node "$ROOT/v3/ux-audit.mjs"
-      node "$ROOT/v3/blob-audit.mjs"
-      node "$ROOT/v3/launcher-audit.mjs"
-      node "$ROOT/v3/enduser-simulation.mjs"
-      ;;
-    all)
-      PROFILE=v3 run_audit
-      PROFILE=v2 run_audit
-      ;;
-  esac
-}
-
+stop(){ if alive; then local p; p="$(pid)"; kill "$p" 2>/dev/null || true; for _ in $(seq 1 30); do kill -0 "$p" 2>/dev/null || break; sleep .1; done; fi; rm -f "$PID"; echo 'ICTC arrestato'; }
 case "$COMMAND" in
-  help) usage ;;
-  codespace)
-    preflight
-    PROFILE=v3; NO_OPEN=1
-    export ICTC_HOST=0.0.0.0
-    run_v3 start --no-open
-    say "ICTC Codespaces: $(codespace_url)"
-    say 'La visibilità della porta deve restare Private salvo decisione esplicita.'
-    ;;
-  doctor)
-    preflight
-    say "node=$(node --version) profile=$PROFILE current_port=$PORT legacy_port=$LEGACY_PORT"
-    say "state_root=$STATE_ROOT runtime_root=$RUNTIME_ROOT codespaces=${CODESPACES:-false}"
-    run_profile doctor
-    ;;
-  audit) run_audit ;;
-  test)
-    preflight
-    if [ "$PROFILE" = v2 ]; then npm --prefix "$ROOT" test; else run_v3 test; fi
-    ;;
-  start|stop|restart|status|logs|open)
-    preflight
-    run_profile "$COMMAND" "${ARGS[@]}"
-    ;;
-  *) fail "Comando sconosciuto: $COMMAND" ;;
+  start) start;; stop) stop;; restart) stop; start;;
+  status) if alive && health; then echo "ICTC attivo: $URL pid=$(pid)"; curl -fsS "$URL/api/health"; echo; else echo "ICTC non attivo: $URL"; exit 1; fi;;
+  logs) touch "$OUT"; tail -f "$OUT";; doctor) echo "node=$(node --version) url=$URL runtime=$RUNTIME";;
+  test) (cd "$ROOT" && npm test);; audit) (cd "$ROOT" && npm run audit);;
+  help) echo './ictc.sh start [--no-open] | stop | restart | status | logs | doctor | test | audit';;
 esac

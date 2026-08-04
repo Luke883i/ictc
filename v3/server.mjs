@@ -1,68 +1,83 @@
 import http from 'node:http';
-import { buildState, errorResponse, handleApi, handleStatic, requestContext } from './lib/api.mjs';
-import { RUNTIME } from './lib/store.mjs';
-import { monitoringCapabilities, startMonitoringScheduler, stopMonitoringScheduler } from './lib/monitoring-runtime.mjs';
-import { assertSafeBind, releaseSnapshot } from '../v1/release.mjs';
+import { readFile, stat } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { Store } from './store.mjs';
+import { DOCUMENT_TYPES, INCIDENT_KINDS, ROLES, VERSION, asArray, asString, id, now, publicSettings, reminderDates, uniqueStrings } from './domain.mjs';
+import { discoverCompliance, draftIncident } from './ai.mjs';
 
-const HOST = process.env.ICTC_HOST || '127.0.0.1';
-const PORT = Number(process.env.PORT || process.env.ICTC_PORT || 4173);
-const policy = assertSafeBind({ ...process.env, ICTC_HOST: HOST });
-const jsonHeaders = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', 'permissions-policy': 'camera=(), microphone=(), geolocation=()', 'content-security-policy': "default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'" };
-const sendJson = (res, status, value) => { res.writeHead(status, jsonHeaders); res.end(JSON.stringify(value)); };
-const readRaw = async req => { let raw = ''; for await (const chunk of req) { raw += chunk; if (raw.length > 8_000_000) throw new Error('Payload oltre limite'); } return raw; };
-const replayRequest = (req, raw) => ({ method: req.method, headers: req.headers, async *[Symbol.asyncIterator]() { if (raw) yield Buffer.from(raw); } });
-
-async function handleReleaseBoundary(req, res, url) {
-  if (req.method === 'GET' && url.pathname === '/api/health') {
-    const release = await releaseSnapshot({ ...process.env, ICTC_HOST: HOST });
-    sendJson(res, 200, {
-      ok: release.readiness !== 'blocked',
-      service: 'ictc',
-      version: release.version,
-      stabilityClass: release.stabilityClass,
-      readiness: release.readiness,
-      localSot: true,
-      runtime: RUNTIME,
-      access: { tenantAware: true, identityMode: process.env.ICTC_IDENTITY_MODE || 'local-directory' },
-      monitoring: monitoringCapabilities(process.env)
-    });
-    return true;
-  }
-  if (req.method === 'GET' && url.pathname === '/api/release') {
-    sendJson(res, 200, await releaseSnapshot({ ...process.env, ICTC_HOST: HOST }));
-    return true;
-  }
-  if (req.method === 'GET' && url.pathname === '/api/bootstrap') {
-    const context = requestContext(req);
-    const [state, release] = await Promise.all([buildState(context), releaseSnapshot({ ...process.env, ICTC_HOST: HOST })]);
-    state.meta = { ...state.meta, version: release.version, releaseChannel: 'readiness', stabilityClass: release.stabilityClass };
-    state.release = release;
-    sendJson(res, 200, state);
-    return true;
-  }
-  if (req.method === 'POST' && url.pathname === '/api/sources') {
-    const raw = await readRaw(req);
-    let body = {};
-    try { body = raw ? JSON.parse(raw) : {}; } catch {}
-    if (body.contentBase64 && !policy.binaryUploadEnabled) {
-      sendJson(res, 503, { error: 'Upload binario disabilitato: manca una catena di quarantena e scansione.', capability: 'binary-upload', state: 'unavailable', nextAction: 'Usare un link o testo oppure un ambiente di laboratorio con rischio esplicito.', doesNotMean: ['Il file non è stato valutato.', 'Il rifiuto non implica che il file sia malevolo.'] });
-      return true;
-    }
-    return await handleApi(replayRequest(req, raw), res, url) !== false;
-  }
-  return false;
+const here = path.dirname(fileURLToPath(import.meta.url));
+const publicRoot = path.join(here, 'public');
+const contract = JSON.parse(await readFile(path.join(here, 'product-contract.json'), 'utf8'));
+const mime = new Map([['.html','text/html; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.css','text/css; charset=utf-8'],['.json','application/json; charset=utf-8'],['.svg','image/svg+xml']]);
+const permissionMap = { admin: new Set(contract.roles.find(item => item.id === 'admin').permissions), user: new Set(contract.roles.find(item => item.id === 'user').permissions) };
+function httpError(status, message, code = 'request-failed', details = null) { return Object.assign(new Error(message), { status, code, details }); }
+function actorFrom(request) {
+  const identityMode = process.env.ICTC_IDENTITY_MODE === 'trusted-header' ? 'trusted-header' : 'local';
+  const roleHeader = asString(request.headers['x-ictc-role'], 20).toLowerCase();
+  const actorId = asString(request.headers['x-ictc-actor-id'], 160) || (roleHeader === 'admin' ? 'local-admin' : 'local-user');
+  if (identityMode === 'trusted-header' && !roleHeader) throw httpError(401, 'Identità non disponibile', 'identity-required');
+  const role = ROLES.includes(roleHeader) ? roleHeader : 'user';
+  return { id: actorId, role, identityMode, permissions: [...permissionMap[role]] };
 }
+function requirePermission(actor, permission) { if (!permissionMap[actor.role].has(permission)) throw httpError(403, 'Operazione non consentita', 'forbidden'); }
+function json(response, status, body) { const payload = JSON.stringify(body); response.writeHead(status, {'content-type':'application/json; charset=utf-8','content-length':Buffer.byteLength(payload),'cache-control':'no-store'}); response.end(payload); }
+async function bodyJson(request, limit = 8_000_000) { const chunks=[]; let size=0; for await (const chunk of request) { size+=chunk.length; if(size>limit) throw httpError(413,'Richiesta troppo grande','payload-too-large'); chunks.push(chunk); } if(!chunks.length) return {}; try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw httpError(400,'JSON non valido','invalid-json');} }
+function match(pathname, pattern) { const keys=[]; const regex=new RegExp(`^${pattern.replace(/:[A-Za-z0-9_]+/g,value=>{keys.push(value.slice(1));return '([^/]+)';})}$`); const found=pathname.match(regex); return found ? Object.fromEntries(keys.map((key,index)=>[key,decodeURIComponent(found[index+1])])) : null; }
+function findIncident(state, incidentId) { const incident=state.incidents.find(item=>item.id===incidentId); if(!incident) throw httpError(404,'Segnalazione non trovata','not-found'); return incident; }
+function canEditIncident(actor, incident) { return actor.role==='admin' || incident.createdBy===actor.id; }
+function ensureEditable(actor, incident) { if(!canEditIncident(actor,incident)) throw httpError(403,'Puoi modificare soltanto le tue segnalazioni','not-owner'); if(!['draft','ready'].includes(incident.state)) throw httpError(409,'La segnalazione non è più modificabile','state-conflict'); }
+function normalizeJob(input, existing={}) {
+  const documentTypes=uniqueStrings(input.documentTypes??existing.documentTypes).map(value=>value.toLowerCase()).filter(value=>DOCUMENT_TYPES.has(value));
+  return {...existing,name:asString(input.name??existing.name,240),scope:asString(input.scope??existing.scope,5_000),jurisdictions:uniqueStrings(input.jurisdictions??existing.jurisdictions),authorities:uniqueStrings(input.authorities??existing.authorities),documentTypes:documentTypes.length?documentTypes:[...DOCUMENT_TYPES],sourceUrls:uniqueStrings(input.sourceUrls??existing.sourceUrls,100),prompt:asString(input.prompt??existing.prompt,30_000),enabled:Boolean(input.enabled??existing.enabled),intervalHours:Math.max(1,Math.min(8_760,Number(input.intervalHours??existing.intervalHours??24)))};
+}
+function normalizeIncidentInput(input) {
+  const kind=asString(input.kind,30); if(!INCIDENT_KINDS.has(kind)) throw httpError(400,'Tipo segnalazione non valido','invalid-incident-kind');
+  const awarenessAt=asString(input.awarenessAt,80)||now(); if(Number.isNaN(new Date(awarenessAt).valueOf())) throw httpError(400,'Data di conoscenza non valida','invalid-awareness-at');
+  return {kind,title:asString(input.title,500),awarenessAt,detectedAt:asString(input.detectedAt,80),facts:asString(input.facts,20_000),affectedServices:uniqueStrings(input.affectedServices,100),impact:asString(input.impact,10_000),indicators:uniqueStrings(input.indicators,100),mitigations:uniqueStrings(input.mitigations,100),maliciousSuspected:Boolean(input.maliciousSuspected),crossBorder:Boolean(input.crossBorder),contacts:uniqueStrings(input.contacts,50)};
+}
+function itemKey(item) { return `${item.identifier||''}|${item.sourceUrl||''}|${item.title}`.toLowerCase(); }
 
-const server = http.createServer(async (req, res) => {
-  try {
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-    if (url.pathname.startsWith('/api/')) {
-      if (await handleReleaseBoundary(req, res, url)) return;
-      if (await handleApi(req, res, url) !== false) return;
-      return sendJson(res, 404, { error: 'API non trovata' });
+export async function createICTCServer(options={}) {
+  const stateRoot=options.stateRoot||process.env.ICTC_RUNTIME_DIR||path.join(here,'runtime');
+  const store=await new Store(stateRoot).init(); const runningJobs=new Set();
+  async function executeJob(jobId, actor={id:'scheduler',role:'admin'}) {
+    if(runningJobs.has(jobId)) throw httpError(409,'Monitoraggio già in esecuzione','job-running');
+    const snapshot=store.snapshot(); const job=snapshot.jobs.find(item=>item.id===jobId); if(!job) throw httpError(404,'Monitoraggio non trovato','not-found');
+    runningJobs.add(jobId); const runId=id('run');
+    await store.mutate(actor,'job.started',draft=>{const target=draft.jobs.find(item=>item.id===jobId); target.status='running'; target.lastRunAt=now(); target.lastError=null;});
+    try {
+      const items=await discoverCompliance(snapshot.settings,job,snapshot.contributions,options.env||process.env); const completedAt=now();
+      return await store.mutate(actor,'job.completed',draft=>{const target=draft.jobs.find(item=>item.id===jobId); const known=new Map(draft.complianceItems.map(item=>[itemKey(item),item])); let inserted=0,updated=0; for(const candidate of items){const key=itemKey(candidate),prior=known.get(key); if(prior){Object.assign(prior,candidate,{updatedAt:completedAt,lastRunId:runId,jobId});updated++;}else{const created={id:id('compliance'),...candidate,reviewState:'candidate',createdAt:completedAt,updatedAt:completedAt,lastRunId:runId,jobId};draft.complianceItems.push(created);known.set(key,created);inserted++;}} target.status='idle';target.lastCompletedAt=completedAt;target.lastResult={runId,discovered:items.length,inserted,updated};target.nextRunAt=target.enabled?new Date(Date.now()+target.intervalHours*3_600_000).toISOString():null;return target.lastResult;});
+    } catch(error) {
+      await store.mutate(actor,'job.failed',draft=>{const target=draft.jobs.find(item=>item.id===jobId);if(target){target.status='error';target.lastError=asString(error.message,2_000);}}); throw error;
+    } finally { runningJobs.delete(jobId); }
+  }
+  async function runDueJobs(){const snapshot=store.snapshot();const due=snapshot.jobs.filter(job=>job.enabled&&!runningJobs.has(job.id)&&(!job.nextRunAt||new Date(job.nextRunAt).valueOf()<=Date.now()));for(const job of due) executeJob(job.id).catch(error=>console.error('scheduler job failed',job.id,error.message));}
+  const timer=setInterval(runDueJobs,Math.max(10_000,Number(options.schedulerMs||process.env.ICTC_SCHEDULER_TICK_MS||60_000))); timer.unref();
+  const server=http.createServer(async(request,response)=>{try{
+    const url=new URL(request.url,'http://127.0.0.1'); const pathname=url.pathname;
+    if(pathname==='/api/health'&&request.method==='GET'){const settings=publicSettings(store.snapshot().settings,options.env||process.env);return json(response,200,{ok:true,service:'ictc',version:VERSION,readiness:settings.llm.ready?'ready':'needs-ai-configuration',services:['monitoring','incidents'],roles:ROLES,ai:settings.llm});}
+    if(pathname==='/api/release'&&request.method==='GET') return json(response,200,{version:VERSION,readiness:'ready',product:contract.product});
+    if(pathname.startsWith('/api/')){
+      const actor=actorFrom(request);
+      if(pathname==='/api/bootstrap'&&request.method==='GET'){requirePermission(actor,'read');const state=store.snapshot();return json(response,200,{version:VERSION,actor,contract,settings:publicSettings(state.settings,options.env||process.env),jobs:state.jobs,contributions:state.contributions,complianceItems:state.complianceItems,incidents:state.incidents,revision:state.revision});}
+      if(pathname==='/api/admin/settings'&&request.method==='PUT'){requirePermission(actor,'configure-ai');const input=await bodyJson(request);const updated=await store.mutate(actor,'settings.updated',draft=>{draft.settings.organization={name:asString(input.organization?.name,300)||draft.settings.organization.name,scope:asString(input.organization?.scope,10_000)||draft.settings.organization.scope};draft.settings.llm={endpoint:asString(input.llm?.endpoint,2_000),model:asString(input.llm?.model,300),apiKeyEnv:asString(input.llm?.apiKeyEnv,120),temperature:Math.max(0,Math.min(2,Number(input.llm?.temperature??0.1)))};draft.settings.prompts={complianceDiscovery:asString(input.prompts?.complianceDiscovery,30_000)||draft.settings.prompts.complianceDiscovery,incidentDraft:asString(input.prompts?.incidentDraft,30_000)||draft.settings.prompts.incidentDraft};draft.settings.updatedAt=now();draft.settings.updatedBy=actor.id;return publicSettings(draft.settings,options.env||process.env);});return json(response,200,{settings:updated});}
+      if(pathname==='/api/jobs'&&request.method==='POST'){requirePermission(actor,'manage-jobs');const input=await bodyJson(request),job=normalizeJob(input);if(!job.name||!job.scope) throw httpError(400,'Nome e scope sono obbligatori','invalid-job');const created=await store.mutate(actor,'job.created',draft=>{const value={id:id('job'),...job,status:'idle',createdAt:now(),createdBy:actor.id,lastRunAt:null,lastCompletedAt:null,lastResult:null,lastError:null,nextRunAt:job.enabled?now():null};draft.jobs.push(value);return value;});return json(response,201,{job:created});}
+      let params=match(pathname,'/api/jobs/:id');
+      if(params&&request.method==='PATCH'){requirePermission(actor,'manage-jobs');const input=await bodyJson(request);const updated=await store.mutate(actor,'job.updated',draft=>{const job=draft.jobs.find(item=>item.id===params.id);if(!job) throw httpError(404,'Monitoraggio non trovato','not-found');Object.assign(job,normalizeJob(input,job),{updatedAt:now(),updatedBy:actor.id});if(!job.enabled)job.nextRunAt=null;else if(!job.nextRunAt)job.nextRunAt=now();return job;});return json(response,200,{job:updated});}
+      params=match(pathname,'/api/jobs/:id/run'); if(params&&request.method==='POST'){requirePermission(actor,'manage-jobs');return json(response,200,{result:await executeJob(params.id,actor)});}
+      if(pathname==='/api/contributions'&&request.method==='POST'){requirePermission(actor,'contribute');const input=await bodyJson(request);const kind=['link','text','file','mixed'].includes(input.kind)?input.kind:'mixed';const attachments=await store.saveAttachments(asArray(input.attachments,10));const contribution=await store.mutate(actor,'contribution.created',draft=>{const value={id:id('contribution'),kind,title:asString(input.title,500),url:asString(input.url,2_000),text:asString(input.text,30_000),attachments,createdAt:now(),createdBy:actor.id};if(!value.url&&!value.text&&!value.attachments.length) throw httpError(400,'Inserisci almeno link, testo o file','empty-contribution');draft.contributions.push(value);return value;});return json(response,201,{contribution});}
+      if(pathname==='/api/incidents'&&request.method==='POST'){requirePermission(actor,'report-incident');const input=await bodyJson(request),base=normalizeIncidentInput(input);if(!base.facts) throw httpError(400,'Descrivi i fatti osservati','facts-required');const attachments=await store.saveAttachments(asArray(input.attachments,10));const incident=await store.mutate(actor,'incident.created',draft=>{const value={id:id('incident'),...base,attachments,state:'draft',reminders:reminderDates(base.awarenessAt),standardDraft:null,createdAt:now(),updatedAt:now(),createdBy:actor.id,submittedAt:null,closedAt:null};draft.incidents.push(value);return value;});return json(response,201,{incident});}
+      params=match(pathname,'/api/incidents/:id'); if(params&&request.method==='PATCH'){requirePermission(actor,'edit-own-incident');const input=await bodyJson(request),attachments=await store.saveAttachments(asArray(input.attachments,10));const updated=await store.mutate(actor,'incident.updated',draft=>{const incident=findIncident(draft,params.id);ensureEditable(actor,incident);const base=normalizeIncidentInput({...incident,...input});Object.assign(incident,base,{updatedAt:now(),reminders:reminderDates(base.awarenessAt)});if(attachments.length)incident.attachments.push(...attachments);return incident;});return json(response,200,{incident:updated});}
+      params=match(pathname,'/api/incidents/:id/draft'); if(params&&request.method==='POST'){requirePermission(actor,'generate-incident-draft');const snapshot=store.snapshot(),incident=findIncident(snapshot,params.id);ensureEditable(actor,incident);const standardDraft=await draftIncident(snapshot.settings,incident,options.env||process.env);const updated=await store.mutate(actor,'incident.ai-drafted',draft=>{const target=findIncident(draft,params.id);ensureEditable(actor,target);target.standardDraft=standardDraft;target.state='ready';target.updatedAt=now();return target;});return json(response,200,{incident:updated});}
+      params=match(pathname,'/api/incidents/:id/submit'); if(params&&request.method==='POST'){requirePermission(actor,'submit-own-incident');const input=await bodyJson(request);const submitted=await store.mutate(actor,'incident.submitted',draft=>{const incident=findIncident(draft,params.id);ensureEditable(actor,incident);const narrative=asString(input.narrative,30_000)||incident.standardDraft?.summary;if(!narrative) throw httpError(409,'Genera o inserisci una formulazione prima dell’invio','narrative-required');incident.finalNarrative=narrative;incident.state='submitted';incident.submittedAt=now();incident.updatedAt=now();return incident;});return json(response,200,{incident:submitted});}
+      params=match(pathname,'/api/incidents/:id/close'); if(params&&request.method==='POST'){requirePermission(actor,'close-incident');const closed=await store.mutate(actor,'incident.closed',draft=>{const incident=findIncident(draft,params.id);if(incident.state!=='submitted') throw httpError(409,'Puoi chiudere soltanto una segnalazione inviata','state-conflict');incident.state='closed';incident.closedAt=now();incident.updatedAt=now();return incident;});return json(response,200,{incident:closed});}
+      params=match(pathname,'/api/attachments/:id'); if(params&&request.method==='GET'){requirePermission(actor,'read');const state=store.snapshot();const attachments=[...state.contributions.flatMap(item=>item.attachments),...state.incidents.flatMap(item=>item.attachments)];const attachment=attachments.find(item=>item.id===params.id);if(!attachment) throw httpError(404,'Allegato non trovato','not-found');const file=path.join(store.attachmentsPath,attachment.id);response.writeHead(200,{'content-type':attachment.mime,'content-length':attachment.bytes,'content-disposition':`attachment; filename*=UTF-8''${encodeURIComponent(attachment.name)}`,'x-content-type-options':'nosniff'});response.end(await readFile(file));return;}
+      throw httpError(404,'API non trovata','not-found');
     }
-    return await handleStatic(req, res, url);
-  } catch (error) { return errorResponse(res, error); }
-});
-server.listen(PORT, HOST, () => { startMonitoringScheduler(process.env); console.log(`ICTC multi-client readiness on http://${HOST}:${PORT} (${policy.deploymentClass})`); });
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { stopMonitoringScheduler(); server.close(() => process.exit(0)); });
+    const relative=pathname==='/'?'index.html':pathname.replace(/^\//,'');const target=path.normalize(path.join(publicRoot,relative));if(!target.startsWith(publicRoot)) throw httpError(404,'Risorsa non trovata','not-found');const info=await stat(target).catch(()=>null);if(!info?.isFile()) throw httpError(404,'Risorsa non trovata','not-found');const content=await readFile(target);response.writeHead(200,{'content-type':mime.get(path.extname(target))||'application/octet-stream','content-length':content.length,'cache-control':'no-cache'});response.end(content);
+  }catch(error){if((error.status||500)>=500)console.error(error);if(!response.headersSent)json(response,error.status||500,{error:error.message||'Errore interno',code:error.code||'internal-error',details:error.details||null});else response.end();}});
+  server.on('close',()=>clearInterval(timer)); return {server,store,executeJob,runDueJobs};
+}
+if(process.argv[1]===fileURLToPath(import.meta.url)){const host=process.env.ICTC_HOST||'127.0.0.1',port=Number(process.env.PORT||process.env.ICTC_PORT||4173);const{server}=await createICTCServer();server.listen(port,host,()=>console.log(`ICTC ${VERSION} attivo su http://${host}:${port}`));}

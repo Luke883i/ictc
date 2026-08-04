@@ -1,40 +1,14 @@
 {
   "name": "ictc",
-  "version": "1.1.0-rc.1",
+  "version": "1.2.0-rc.1",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
+  "engines": {"node": ">=22"},
   "scripts": {
     "start": "node v3/server.mjs",
-    "start:legacy": "node server.mjs",
-    "contract": "node scripts/repository-contract.mjs",
-    "schema:check": "node scripts/schema-check.mjs",
-    "labels:check": "node scripts/label-lint.mjs",
-    "epistemic:check": "node scripts/epistemic-check.mjs",
-    "verify": "node scripts/verify.mjs",
-    "e2e": "node scripts/e2e.mjs",
-    "visual": "bash scripts/visual-check.sh",
-    "visual:ux": "python3 v3/journey-browser-check.py",
-    "git:handshake": "node scripts/git-handshake.mjs",
-    "release:manifest": "node scripts/release-manifest.mjs",
-    "test": "npm run contract && npm run schema:check && npm run labels:check && npm run epistemic:check && npm run wiring:check && npm run verify && npm run ascii:export && npm run e2e",
-    "wiring:check": "node scripts/ui-wiring-check.mjs",
-    "ascii:export": "node scripts/ascii-export.mjs",
-    "trace:preview": "node scripts/trace-preview.mjs",
-    "audit:runtime": "node scripts/runtime-audit.mjs",
-    "audit:runtime:kernel": "node v3/runtime-kernel-check.mjs",
-    "audit:a11y": "node scripts/accessibility-audit.mjs",
-    "audit:docs": "node scripts/docs-audit.mjs",
-    "audit:ux:journey": "npm run audit:ux:core",
-    "audit": "npm test && npm run audit:runtime && npm run audit:a11y && npm run audit:docs",
-    "audit:v1": "node v1/fixture-audit.mjs && node v1/saturation.mjs && node v1/stability-audit.mjs && node v1/buyer-simulation.mjs",
-    "audit:access": "node v3/access-context-check.mjs && node v3/tenant-store-check.mjs && node v3/multi-client-runtime-check.mjs",
-    "audit:multi-client": "npm run audit:access && npm run audit:commands && node v3/guided-journey-check.mjs && node v3/multi-client-ui-check.mjs && node v3/multi-client-saturation.mjs && node v3/multi-user-dod-check.mjs",
-    "release:check": "npm run audit && npm run audit:ux:core && npm run audit:multi-client && node v3/support-bundle-audit.mjs && npm run audit:v1",
-    "start:all": "./ictc.sh start --profile all",
-    "audit:ux:core": "npm run audit:runtime:kernel && node v3/journey-shell-audit.mjs && node v3/journey-accessibility-audit.mjs && node v3/core-copy-audit.mjs && node v3/journey-saturation.mjs && node v3/ux-audit.mjs",
-    "audit:commands": "node v3/action-contract-check.mjs && node v3/multi-user-command-check.mjs"
+    "check": "node --check v3/server.mjs && node --check v3/store.mjs && node --check v3/ai.mjs && node --check v3/public/app.js && node v3/product-contract-check.mjs && node v3/ui-contract-check.mjs",
+    "test": "npm run check && node v3/abstract-saturation.mjs && node v3/runtime-saturation.mjs && node v3/e2e-check.mjs",
+    "audit": "npm test",
+    "release:check": "npm test"
   }
 }

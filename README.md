@@ -1,62 +1,46 @@
-# ICTC — Integrated Compliance Tower Control
+# ICTC
 
-ICTC registra fonti, variazioni, decisioni e casi mantenendo separati osservazione, proposta automatica, review umana e prova tecnica.
+**Integrated Compliance Tower Control** svolge due sole funzioni:
 
-## Stato corrente
+1. configura monitoraggi AI per censire norme, decreti, regolamenti, determine, delibere, linee guida, circolari e standard entro uno scope dichiarato;
+2. raccoglie e accompagna segnalazioni di eventi, quasi incidenti e possibili incidenti fino a una formulazione amministrativa verificata dall'utente.
 
-La release `1.1.0-rc.1` è una **slice di readiness multi-cliente**: ledger, blob, sessioni e ricevute sono isolati per tenant; ruoli e permessi sono applicati lato server. Non è ancora una piattaforma SaaS enterprise.
+## Avvio
 
-## Avvio locale
-
-```bash
-npm ci --ignore-scripts
-./ictc.sh start
-```
-
-Aprire `http://127.0.0.1:4173`. La directory locale consente di simulare persone, ruoli e due clienti senza esporre il servizio in rete.
-
-## I due servizi
-
-### Monitoraggio
-
-```text
-Osserva → Rivedi → Decidi → Collega → Prova
-```
-
-L'utente registra un URL o un contenuto, revisiona la fonte e le differenze, decide l'impatto e collega un controllo. ICTC conserva blob, digest, attore, ruolo, tenant e receipt; non determina conformità o applicabilità.
-
-### Incidenti
-
-```text
-Segnala → Assegna → Valuta → Rispondi → Ripristina → Impara → Prova
-```
-
-L'utente registra i fatti, conferma responsabilità, completa triage, risposta, ripristino e lezioni. ICTC impedisce salti di fase e conserva le evidenze; non decide automaticamente notifiche o rischio residuo.
-
-La journey completa è documentata in [docs/MULTI_CLIENT_READINESS.md](docs/MULTI_CLIENT_READINESS.md).
-
-## Identity boundary
-
-La modalità locale è dimostrativa. Per un pilot di rete:
+Richiede Node.js 22 o superiore.
 
 ```bash
-ICTC_HOST=0.0.0.0 \
-ICTC_IDENTITY_MODE=trusted-header \
-ICTC_TRUSTED_IDENTITY_BOUNDARY=1 \
 ./ictc.sh start --no-open
 ```
 
-Il servizio deve stare dietro un identity-aware proxy che elimini gli header client e inserisca `x-ictc-actor-id` e `x-ictc-tenant-id` verificati. Non esporre direttamente questa modalità.
-
-## Verifica
+Apri `http://127.0.0.1:4173`.
 
 ```bash
-npm run audit:multi-client
-npm run release:check
+./ictc.sh status
+./ictc.sh stop
+npm test
 ```
 
-I gate coprono access context, isolamento tenant, concorrenza del ledger, RBAC, session scope, UI permission-aware e saturazione `M=40 → M+100=140`.
+## Primo utilizzo
 
-## Limiti
+1. entra come **Amministratore** nella modalità locale;
+2. configura endpoint compatibile OpenAI, modello, nome della variabile d'ambiente contenente la chiave e i due prompt globali;
+3. crea un monitoraggio indicando scope, tipi documentali, autorità, fonti iniziali e frequenza;
+4. gli utenti consultano il catalogo e aggiungono link, testo o documenti da un unico form;
+5. gli utenti registrano eventi o quasi incidenti, generano una bozza AI, la modificano e la inviano.
 
-OIDC nativo, MFA, SCIM, non ripudio, multi-regione, storage distribuito, billing e lifecycle SaaS restano fuori scope. Una receipt prova una scrittura riletta nel tenant; non prova la verità del contenuto o l'efficacia del controllo.
+La chiave API non viene salvata nel database. Esempio:
+
+```bash
+export ICTC_LLM_API_KEY='...'
+```
+
+## Confini
+
+ICTC produce **candidati e bozze**. Non determina applicabilità normativa, conformità, significatività dell'incidente o obblighi di notifica. I promemoria 24 ore, 72 ore e un mese sono supporti operativi derivati dalla data inserita.
+
+Architettura, riferimenti e saturazione sono documentati in:
+
+- `docs/PRODUCT_BLUEPRINT.md`
+- `docs/RUNTIME_E2E.md`
+- `docs/REFERENCES.md`
