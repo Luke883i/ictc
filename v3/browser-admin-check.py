@@ -49,10 +49,15 @@ with sync_playwright() as p:
     html = html.replace('<head>', f'<head><base href="{ORIGIN}/">', 1)
     page.set_content(html, wait_until='networkidle')
 
-    page.get_by_role('button', name='Amministrazione').click()
+    page.locator('#openAdminCenter').click()
     page.locator('#adminCenter').wait_for(state='visible')
-    page.get_by_text('Storage durevole', exact=True).wait_for()
-    page.get_by_text('Blocco', exact=True).first.wait_for()
+    durable_storage = page.locator('#adminReadiness .readiness-row').filter(
+        has_text='Storage durevole'
+    )
+    durable_storage.wait_for()
+    blocker = durable_storage.locator('.score.warn')
+    blocker.wait_for()
+    assert blocker.inner_text().strip() == 'Bloccante'
 
     governance_form = page.locator('#governanceForm')
     governance_form.locator('input[name="environmentName"]').fill('audit-browser')
@@ -62,9 +67,9 @@ with sync_playwright() as p:
         lambda response: response.url.endswith('/api/admin/governance')
         and response.request.method == 'PUT'
     ) as governance_response:
-        governance_form.get_by_role('button', name='Registra governance').click()
+        governance_form.locator('button[type="submit"]').click()
     assert governance_response.value.status == 200
-    page.get_by_text('Governance registrata').wait_for()
+    page.get_by_text('Governance registrata', exact=True).wait_for()
 
     user_form = page.locator('#userForm')
     user_form.locator('input[name="id"]').fill('browser-auditor')
@@ -74,7 +79,7 @@ with sync_playwright() as p:
         lambda response: response.url.endswith('/api/admin/users')
         and response.request.method == 'POST'
     ) as create_response:
-        user_form.get_by_role('button', name='Provisiona utente').click()
+        user_form.locator('button[type="submit"]').click()
     assert create_response.value.status == 201
     created = create_response.value.json()
     assert created['result']['id'] == 'browser-auditor'
@@ -82,7 +87,7 @@ with sync_playwright() as p:
 
     # Reopen the control plane to prove persistence independently from transient DOM timing.
     page.locator('[data-admin-close]').click()
-    page.get_by_role('button', name='Amministrazione').click()
+    page.locator('#openAdminCenter').click()
     page.locator('#adminCenter').wait_for(state='visible')
     row = page.locator('.user-row').filter(has_text='browser-auditor')
     row.wait_for()
@@ -92,10 +97,10 @@ with sync_playwright() as p:
         lambda response: response.url.endswith('/api/admin/users/browser-auditor')
         and response.request.method == 'PATCH'
     ) as disable_response:
-        row.get_by_role('button', name='Disabilita').click()
+        row.locator('[data-user-toggle="browser-auditor"]').click()
     assert disable_response.value.status == 200
     page.locator('.user-row').filter(has_text='browser-auditor').get_by_role(
-        'button', name='Riattiva'
+        'button', name='Riattiva', exact=True
     ).wait_for()
 
     page.locator('[data-admin-close]').click()
@@ -106,8 +111,8 @@ with sync_playwright() as p:
         page.locator('#roleSelect').select_option('auditor')
     assert role_response.value.status == 200
     assert role_response.value.json()['actor']['role'] == 'auditor'
-    page.get_by_role('button', name='Amministrazione').wait_for(state='hidden')
-    page.get_by_role('button', name='AI').wait_for(state='hidden')
+    page.locator('#openAdminCenter').wait_for(state='hidden')
+    page.locator('#openSettings').wait_for(state='hidden')
 
     assert not errors, errors
     (ART / 'browser-admin-check.json').write_text(
