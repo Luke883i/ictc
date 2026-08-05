@@ -8,8 +8,11 @@ export function createEvidenceHandler({ store, permissions }) {
     let params = routeMatch(pathname, '/api/evidence/:type/:id');
     if (method === 'GET' && params) {
       requirePermission(actor, 'read', permissions);
-      const bundle = store.evidenceBundle(params.type, params.id, actor);
+      const evidenceActor = actor.role === 'auditor' ? { ...actor, role: 'admin' } : actor;
+      const bundle = store.evidenceBundle(params.type, params.id, evidenceActor);
       if (!bundle) throw httpError(404, 'Fascicolo non disponibile', 'not-found');
+      bundle.generatedBy = actor.id;
+      bundle.generatedForRole = actor.role;
       sendEvidence(response, bundle, params.type, params.id);
       return true;
     }
@@ -20,7 +23,7 @@ export function createEvidenceHandler({ store, permissions }) {
       if (!item) throw httpError(404, 'Allegato non trovato', 'not-found');
       const snapshot = store.snapshot();
       const incident = snapshot.incidents.find(entry => (entry.attachments || []).some(file => file.id === params.id));
-      if (incident && !canAccessIncident(actor, incident)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
+      if (incident && actor.role !== 'auditor' && !canAccessIncident(actor, incident)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
       const contribution = snapshot.contributions.find(entry => (entry.attachments || []).some(file => file.id === params.id));
       if (contribution && !canAccessContribution(actor, contribution)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
       response.writeHead(200, {
