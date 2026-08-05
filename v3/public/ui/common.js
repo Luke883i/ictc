@@ -23,6 +23,12 @@ function headers(write = false) {
   if (write) { values['x-ictc-command-id'] = commandId(); values['x-ictc-expected-revision'] = String(state.data?.revision ?? 0); }
   return values;
 }
+function syncRevision(body) {
+  const revision = Number(body?.receipt?.revision);
+  if (!Number.isFinite(revision) || !state.data) return;
+  state.data.revision = Math.max(Number(state.data.revision || 0), revision);
+  if (state.data.integrity) state.data.integrity.revision = state.data.revision;
+}
 export async function api(path, options = {}) {
   const write = options.method && options.method !== 'GET';
   const response = await fetch(path, {...options, headers:{...headers(write),...(options.headers || {})}});
@@ -31,6 +37,7 @@ export async function api(path, options = {}) {
   if (!response.ok) {
     const error = new Error(body?.error || body || `Errore ${response.status}`); error.code = body?.code; error.details = body?.details; error.status = response.status; throw error;
   }
+  if (write) syncRevision(body);
   return body;
 }
 export function notify(message, error = false) {
