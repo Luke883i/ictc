@@ -34,7 +34,9 @@ def main():
         PHASE = 'bootstrap'
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.goto(f'{BASE}/', wait_until='networkidle')
-        page.get_by_role('heading', name='Cosa devi fare adesso?').wait_for()
+        page.get_by_role('heading', name='Completa la configurazione AI', exact=True).wait_for()
+        assert page.locator('#homeWhyMe').inner_text().strip()
+        assert page.locator('#homeHumanGate').inner_text().strip()
 
         PHASE = 'readiness'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -101,7 +103,8 @@ def main():
         PHASE = 'page-errors'
         assert not errors, errors
         checks = [
-            'home-admin-entry',
+            'reborn-3-admin-entry',
+            'admin-why-me-and-human-gate',
             'honest-blockers',
             'governance-write',
             'user-provision-persisted',

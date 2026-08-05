@@ -28,12 +28,21 @@ with sync_playwright() as p:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
 
-    print('browser-check: home bootstrap', flush=True)
+    print('browser-check: Reborn 3 home bootstrap', flush=True)
     page.goto(f'{BASE}/', wait_until='networkidle')
-    page.get_by_role('heading', name='Cosa devi fare adesso?').wait_for()
+    page.get_by_role('heading', name='Completa la configurazione AI', exact=True).wait_for()
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
+    assert page.locator('#homeView > section').count() == 3
+    assert page.locator('#homeView #homePrimaryAction').count() == 1
     assert page.locator('#homeJourney .journey-step').count() == 4
-    page.locator('#homePrimaryAction').get_by_text('Configura AI', exact=True).wait_for()
+    for selector in ['#homeReason', '#homeWhyMe', '#homeHow', '#homeOutcome']:
+        assert page.locator(selector).inner_text().strip()
+    decision_box = page.locator('.reborn-decision').bounding_box()
+    assert decision_box and decision_box['height'] <= 360, decision_box
+    page.locator('.trust-brief summary').click()
+    for selector in ['#homeAiNote', '#homeHumanGate', '#homeEvidence']:
+        assert page.locator(selector).inner_text().strip()
+    page.locator('#homePrimaryAction').get_by_text('Apri configurazione', exact=True).wait_for()
 
     print('browser-check: contextual AI configuration', flush=True)
     page.locator('#homePrimaryAction').click()
@@ -47,10 +56,12 @@ with sync_playwright() as p:
     form.get_by_role('button', name='Salva configurazione').click()
     page.locator('#settingsDialog').wait_for(state='hidden')
     page.locator('#runtimeStatus').get_by_text('AI pronta', exact=False).wait_for()
+    page.get_by_role('heading', name='Definisci il primo obiettivo', exact=True).wait_for()
     page.locator('#homePrimaryAction').get_by_text('Crea un monitoraggio', exact=True).wait_for()
     page.locator('#homePrimaryAction').click()
     page.locator('#monitoringView').wait_for(state='visible')
     page.get_by_role('heading', name='Definisci cosa monitorare.').wait_for()
+    page.locator('#monitoringGuide').wait_for()
 
     print('browser-check: monitoring journey', flush=True)
     mission = page.locator('#missionForm')
@@ -91,16 +102,18 @@ with sync_playwright() as p:
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
     page.locator('#contributionDialog').wait_for(state='hidden')
 
-    print('browser-check: user home and capability projection', flush=True)
+    print('browser-check: user decision capsule and capability projection', flush=True)
     page.locator('#roleSelect').select_option('user')
     page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
     assert page.locator('#missionForm').is_hidden()
     assert page.locator('#openSettings').is_hidden()
     page.locator('[data-service="home"]').click()
     page.locator('#homeView').wait_for(state='visible')
+    page.get_by_role('heading', name='Registra ciò che è accaduto', exact=True).wait_for()
     page.locator('#homePrimaryAction').get_by_text('Registra un evento', exact=True).wait_for()
+    assert 'chi osserva' in page.locator('#homeWhyMe').inner_text().lower()
     assert page.locator('#homeJourney .journey-step').count() == 4
-    page.locator('[data-home-action="monitoring"]').click()
+    page.locator('[data-service="monitoring"]').click()
     page.locator('#userMonitoringIntro').wait_for(state='visible')
     page.locator('#userMonitoringIntro').get_by_role('button', name='Aggiungi materiale').click()
     page.locator('#contributionForm textarea[name="text"]').fill('Contributo creato dall’utente')
@@ -162,9 +175,11 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART / 'runtime-journeys.png'), full_page=True)
 
     checks = [
-        'single-role-aware-home', 'contextual-ai-setup', 'horizontal-admin-journey', 'contextual-monitoring-cta',
+        'reborn-3-decision-capsule', 'single-primary-action', 'why-now', 'why-me', 'how', 'outcome',
+        'ai-human-evidence-disclosure', 'three-home-regions', 'compact-desktop-geometry',
+        'contextual-ai-setup', 'horizontal-admin-method', 'contextual-monitoring-cta',
         'plan-review', 'plan-version', 'pause-resume', 'protected-mission-evidence', 'source-reason',
-        'contribution', 'user-home-guidance', 'role-correct-user-view', 'contextual-event-cta',
+        'contribution', 'user-decision-capsule', 'role-correct-user-view', 'contextual-event-cta',
         'ai-analysis', 'adaptive-question', 'human-confirmation', 'original-comparison',
         'formulation-version', 'incident-submit', 'protected-incident-evidence', 'reasoned-close', 'proof-pulse'
     ]
@@ -174,4 +189,4 @@ with sync_playwright() as p:
     page.close(run_before_unload=False)
     context.close()
     browser.close()
-    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct horizontal journeys, teardown complete)', flush=True)
+    print(f'browser-check: ok ({len(checks)} live UX checks, Reborn 3 role journeys, teardown complete)', flush=True)

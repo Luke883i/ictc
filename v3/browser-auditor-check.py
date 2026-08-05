@@ -113,9 +113,14 @@ try:
 
     enter_phase('auditor-home-guidance')
     page.locator('#homeView').wait_for(state='visible')
+    page.get_by_role('heading', name='Consulta le evidenze disponibili', exact=True).wait_for()
     page.locator('#homePrimaryAction').get_by_text('Apri le evidenze', exact=True).wait_for()
     assert page.locator('#homeJourney .journey-step').count() == 4
     assert 'sola lettura' in page.locator('#homeSummary').inner_text().lower()
+    assert 'auditor' in page.locator('#homeWhyMe').inner_text().lower()
+    page.locator('.trust-brief summary').click()
+    assert 'non verità sostanziale' in page.locator('#homeEvidence').inner_text().lower()
+    assert 'decisioni restano attribuite' in page.locator('#homeHumanGate').inner_text().lower()
     for selector in ['#openAdminCenter', '#openSettings']:
         page.locator(selector).wait_for(state='hidden')
 
@@ -136,8 +141,10 @@ try:
 
     checks = [
         'auditor-bootstrap-identity',
-        'auditor-home-guidance',
-        'auditor-horizontal-journey',
+        'reborn-3-auditor-decision-capsule',
+        'auditor-why-me',
+        'auditor-human-evidence-boundary',
+        'auditor-horizontal-method',
         'auditor-admin-controls-hidden',
         'auditor-monitoring-write-controls-hidden',
         'auditor-event-write-controls-hidden',
