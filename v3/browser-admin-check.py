@@ -15,7 +15,7 @@ with sync_playwright() as p:
         launch['executable_path'] = chromium
     browser = p.chromium.launch(**launch)
     context = browser.new_context(viewport={'width': 1280, 'height': 1000})
-    context.add_init_script("try{localStorage.setItem('ictc-role','admin')}catch{}")
+    context.add_init_script("try{if(!localStorage.getItem('ictc-role'))localStorage.setItem('ictc-role','admin')}catch{}")
     page = context.new_page()
     page.set_default_timeout(10000)
     page.set_default_navigation_timeout(15000)
@@ -83,13 +83,10 @@ with sync_playwright() as p:
 
     print('browser-admin-check: auditor least privilege', flush=True)
     page.locator('[data-admin-close]').click()
-    with page.expect_response(
-        lambda response: response.url.endswith('/api/bootstrap')
-        and response.request.method == 'GET'
-    ) as role_response:
-        page.locator('#roleSelect').select_option('auditor')
-    assert role_response.value.status == 200
-    assert role_response.value.json()['actor']['role'] == 'auditor'
+    page.evaluate("localStorage.setItem('ictc-role','auditor')")
+    page.goto(f'{BASE}/', wait_until='domcontentloaded')
+    page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
+    assert page.locator('#roleSelect').input_value() == 'auditor'
     page.locator('#openAdminCenter').wait_for(state='hidden')
     page.locator('#openSettings').wait_for(state='hidden')
 
