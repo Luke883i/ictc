@@ -1,124 +1,59 @@
-name: ictc-ci
-on:
-  pull_request:
-  push:
-    branches: [main]
-  workflow_dispatch:
-permissions:
-  contents: read
-concurrency:
-  group: ictc-ci-${{ github.ref }}
-  cancel-in-progress: true
-jobs:
-  contract-and-audit:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with: {node-version: '22', cache: npm}
-      - run: npm ci --ignore-scripts
-      - name: Syntax
-        run: npm run check
-      - name: Product contract
-        run: node v3/product-contract-check.mjs
-      - name: Question and UI contracts
-        run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs
-      - name: Onto-epistemic and journey audits
-        run: node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs
-      - name: Experience saturation
-        run: node v3/experience-saturation.mjs
-      - name: Security boundaries
-        run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
-      - name: Honest enterprise posture and M plus 100
-        run: node v3/enterprise-readiness-check.mjs
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: ictc-contract-audit
-          path: artifacts/*.json
-          if-no-files-found: error
-          retention-days: 30
+import assert from 'node:assert/strict';
+import { runtimeHarness } from './runtime-test-harness.mjs';
 
-  runtime-e2e:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 18
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with: {node-version: '22', cache: npm}
-      - run: npm ci --ignore-scripts
-      - name: Evidence and persistence
-        run: node v3/evidence-check.mjs
-      - name: Attachment replay safety
-        run: node v3/attachment-replay-check.mjs
-      - name: Enterprise administration
-        run: node v3/enterprise-runtime-check.mjs
-      - name: End-to-end journeys
-        run: node v3/v15-e2e.mjs
-      - name: Runtime saturation
-        run: node v3/v15-runtime-saturation.mjs
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: ictc-runtime-evidence
-          path: artifacts/*.json
-          if-no-files-found: error
-          retention-days: 30
+const runtime = await runtimeHarness('ictc-enterprise-admin');
+const get = async (path, role = 'admin', actor = `local-${role}`) => {
+  const response = await fetch(`${runtime.base}${path}`, { headers: runtime.identity(role, actor) });
+  return { status: response.status, body: await response.json().catch(() => ({})) };
+};
+try {
+  const bootstrap = await runtime.bootstrap('admin', 'local-admin');
+  assert.equal(bootstrap.status, 200);
+  assert.equal(bootstrap.body.version, '1.7.0-rc.1');
+  assert.equal(bootstrap.body.experience.roles, 3);
 
-  browser-journeys:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with: {node-version: '22', cache: npm}
-      - uses: actions/setup-python@v6
-        with: {python-version: '3.12'}
-      - run: npm ci --ignore-scripts
-      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
-      - run: python -m playwright install --with-deps chromium
-      - name: Live browser journeys
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
-          export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
-          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-runtime"
-          export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
-          export ICTC_CHROMIUM="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
-          node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-mock.log" 2>&1 &
-          MOCK_PID=$!
-          trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
-          for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
-          ./ictc.sh start --profile current --no-open
-          python v3/browser-check.py
-          python v3/browser-admin-check.py
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: ictc-browser-evidence
-          path: |
-            artifacts/browser-check.json
-            artifacts/browser-admin-check.json
-            artifacts/*.png
-          if-no-files-found: error
-          retention-days: 30
+  const usersBefore = await get('/api/admin/users');
+  assert.equal(usersBefore.status, 200);
+  assert.ok(usersBefore.body.users.some(user => user.role === 'auditor'));
 
-  launcher-smoke:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with: {node-version: '22', cache: npm}
-      - run: npm ci --ignore-scripts
-      - name: Canonical launcher
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          export ICTC_NO_OPEN=1 ICTC_PORT=4807 ICTC_STATE_DIR="$RUNNER_TEMP/state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime"
-          trap './ictc.sh stop --profile current || true' EXIT
-          ./ictc.sh start --profile current --no-open
-          curl -fsS http://127.0.0.1:4807/api/health
-          ./ictc.sh status --profile current
+  const created = await runtime.ok('POST', '/api/admin/users', {
+    id: 'enterprise-auditor', displayName: 'Enterprise Auditor', email: 'auditor@example.test', role: 'auditor'
+  }, 'admin', 'local-admin');
+  assert.equal(created.body.result.role, 'auditor');
+  assert.equal(created.body.receipt.action, 'admin.user.created');
+
+  const disabled = await runtime.ok('PATCH', '/api/admin/users/enterprise-auditor', { status: 'disabled' }, 'admin', 'local-admin');
+  assert.equal(disabled.body.result.status, 'disabled');
+  assert.equal(disabled.body.receipt.action, 'admin.user.updated');
+
+  const governance = await runtime.ok('PUT', '/api/admin/governance', {
+    environment: { name: 'enterprise-eu', classification: 'confidential', owner: 'Compliance Operations' },
+    monthlyBudgetUsd: 800, warningPercent: 75,
+    allowedModels: ['test-model'], requireHumanApproval: true
+  }, 'admin', 'local-admin');
+  assert.equal(governance.body.result.governance.monthlyBudgetUsd, 800);
+  assert.equal(governance.body.result.environment.name, 'enterprise-eu');
+  assert.equal('retentionDays' in governance.body.result.governance, false);
+  assert.equal('incidentSlaHours' in governance.body.result.governance, false);
+
+  const usage = await get('/api/admin/usage');
+  assert.equal(usage.status, 200);
+  assert.equal(typeof usage.body.estimatedCostUsd, 'number');
+
+  const readiness = await get('/api/admin/readiness');
+  assert.equal(readiness.status, 200);
+  assert.equal(readiness.body.level, 'enterprise-blocked');
+  assert.ok(readiness.body.controls.every(item => item.evidence && (item.status === 'verified' || item.action)));
+  assert.ok(readiness.body.controls.some(item => item.id === 'durable-storage' && item.status === 'blocker'));
+  assert.ok(readiness.body.controls.some(item => item.id === 'identity-directory' && item.status === 'verified'));
+
+  const lastAdmin = await runtime.request('PATCH', '/api/admin/users/local-admin', { status: 'disabled' }, 'admin', 'local-admin');
+  assert.equal(lastAdmin.status, 409);
+  assert.equal(lastAdmin.body.code, 'last-admin-required');
+
+  const forbidden = await get('/api/admin/users', 'user', 'local-user');
+  assert.equal(forbidden.status, 403);
+  console.log('enterprise-runtime-check: ok (users, honest governance, posture blockers, last-admin safety, least privilege)');
+} finally {
+  await runtime.close();
+}
