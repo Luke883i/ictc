@@ -14,9 +14,9 @@ with sync_playwright() as p:
     if chromium:
         launch['executable_path'] = chromium
     browser = p.chromium.launch(**launch)
-    admin_context = browser.new_context(viewport={'width': 1280, 'height': 1000})
-    admin_context.add_init_script("try{localStorage.setItem('ictc-role','admin')}catch{}")
-    page = admin_context.new_page()
+    context = browser.new_context(viewport={'width': 1280, 'height': 1000})
+    context.add_init_script("try{localStorage.setItem('ictc-role','admin')}catch{}")
+    page = context.new_page()
     page.set_default_timeout(10000)
     page.set_default_navigation_timeout(15000)
     errors = []
@@ -81,26 +81,19 @@ with sync_playwright() as p:
         'button', name='Riattiva', exact=True
     ).wait_for()
 
-    print('browser-admin-check: auditor context', flush=True)
-    auditor_context = browser.new_context(viewport={'width': 1280, 'height': 1000})
-    auditor_context.add_init_script("try{localStorage.setItem('ictc-role','auditor')}catch{}")
-    auditor_page = auditor_context.new_page()
-    auditor_page.set_default_timeout(10000)
-    auditor_page.set_default_navigation_timeout(15000)
-    auditor_errors = []
-    auditor_page.on('pageerror', lambda error: auditor_errors.append(str(error)))
-    auditor_page.goto(f'{BASE}/', wait_until='domcontentloaded')
+    print('browser-admin-check: auditor least privilege', flush=True)
+    page.locator('[data-admin-close]').click()
+    page.locator('#roleSelect').select_option('auditor')
 
     print('browser-admin-check: auditor identity', flush=True)
-    auditor_page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
-    assert auditor_page.locator('#roleSelect').input_value() == 'auditor'
+    page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
+    assert page.locator('#roleSelect').input_value() == 'auditor'
 
     print('browser-admin-check: auditor controls', flush=True)
-    auditor_page.locator('#openAdminCenter').wait_for(state='hidden')
-    auditor_page.locator('#openSettings').wait_for(state='hidden')
+    page.locator('#openAdminCenter').wait_for(state='hidden')
+    page.locator('#openSettings').wait_for(state='hidden')
 
     assert not errors, errors
-    assert not auditor_errors, auditor_errors
     checks = [
         'honest-blockers',
         'governance-write',
@@ -113,8 +106,6 @@ with sync_playwright() as p:
         encoding='utf8',
     )
     print('browser-admin-check: evidence complete', flush=True)
-    auditor_page.close(run_before_unload=False)
-    auditor_context.close()
     page.close(run_before_unload=False)
-    admin_context.close()
+    context.close()
     browser.close()
