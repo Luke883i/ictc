@@ -42,13 +42,33 @@ def main():
             page.goto(f'{BASE}/', wait_until='domcontentloaded')
         assert bootstrap.value.status == 200
 
-        PHASE = 'auditor-identity'
+        PHASE = 'auditor-observed-state'
         print(f'browser-auditor-check: {PHASE}', flush=True)
-        status = page.locator('#runtimeStatus[data-actor-role="auditor"]')
-        status.wait_for(state='visible')
-        assert 'Auditor' in status.inner_text()
-        assert page.locator('#roleSelect').input_value() == 'auditor'
-        assert page.evaluate("localStorage.getItem('ictc-role')") == 'auditor'
+        page.wait_for_timeout(1500)
+        closed = page.is_closed()
+        status_count = 0 if closed else page.locator('#runtimeStatus').count()
+        role_count = 0 if closed else page.locator('#roleSelect').count()
+        observed = {
+            'url': None if closed else page.url,
+            'closed': closed,
+            'statusCount': status_count,
+            'roleSelectCount': role_count,
+            'pageErrors': list(errors),
+        }
+        if not closed and status_count:
+            status = page.locator('#runtimeStatus')
+            observed.update({
+                'text': status.inner_text(timeout=1000),
+                'actorRole': status.get_attribute('data-actor-role', timeout=1000),
+                'requestedRole': status.get_attribute('data-requested-role', timeout=1000),
+                'selectedRole': page.locator('#roleSelect').input_value(timeout=1000) if role_count else None,
+                'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
+            })
+        assert not closed and status_count == 1 and role_count == 1, json.dumps(observed, ensure_ascii=False)
+        assert observed.get('actorRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
+        assert 'Auditor' in observed.get('text', ''), json.dumps(observed, ensure_ascii=False)
+        assert observed.get('selectedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
+        assert observed.get('storedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
 
         PHASE = 'auditor-least-privilege'
         print(f'browser-auditor-check: {PHASE}', flush=True)
