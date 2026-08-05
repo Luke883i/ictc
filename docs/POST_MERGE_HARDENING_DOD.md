@@ -13,11 +13,12 @@ ICTC may attest only operations recorded by its runtime: preserved inputs, AI re
 ### 1. Runtime identity and bind boundary
 
 - Local identity accepts loopback clients only.
-- Local actor identifiers are runtime-owned and cannot be supplied by the client.
+- By default, local actor identifiers are runtime-owned and client-supplied actor IDs are ignored.
+- Multi-actor simulation is available only through the explicit `ICTC_ALLOW_LOCAL_ACTOR_SWITCH=1` opt-in and remains loopback-only; it is for test/demo use, not a production identity boundary.
 - Non-loopback binding is rejected by default.
 - Network binding requires trusted-header mode, explicit opt-in and a proxy secret of at least 32 characters.
 - Trusted identity requests require role, actor ID and constant-time proxy-secret verification.
-- Negative checks cover spoofed IDs, remote local-mode clients, missing proxy secret and unsafe binding.
+- Negative checks cover spoofed IDs without opt-in, remote local-mode clients, missing proxy secret and unsafe binding.
 
 ### 2. AI network boundary
 
@@ -49,7 +50,8 @@ ICTC may attest only operations recorded by its runtime: preserved inputs, AI re
 | Gate | Target |
 |---|---:|
 | Local identity accepted from non-loopback | 0 |
-| Client-controlled actor IDs in local mode | 0 |
+| Client-controlled actor IDs accepted by default local mode | 0 |
+| Multi-actor local simulation without explicit opt-in | 0 |
 | Accidental non-loopback binds | 0 |
 | Unauthenticated trusted-header requests accepted | 0 |
 | AI redirects not revalidated | 0 |
