@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0] - 2026-08-05
+
+### Stable scope
+
+- Home compatta con una sola priorità contestuale e otto risposte decisionali;
+- profilo di accesso canonico emesso dal server per amministratore, utente e auditor;
+- mappa progressiva di identità, azioni consentite, azioni vietate, effetti e tracce;
+- mappa di autorità aperta automaticamente per l’auditor e zero controlli di scrittura;
+- lessico normalizzato fra Materiale, Fonte ed Evidenza;
+- navigazione priva di numerazione decorativa e geometria desktop compressa;
+- saturazione 1→N su 23.328 scenari, N=23.392 e no-novelty a N+100;
+- gate statici, runtime e browser legati alla release 1.4.0.
+
+### Limitations
+
+La release certifica repository e journey selezionate, non un deployment produttivo. Restano esterni identità attendibile, TLS, storage durevole, restore, malware scanning, osservabilità, audit umano di accessibilità e giudizio legale o di conformità.
+
 ## [1.0.0] - 2026-07-31
 
 ### Stable scope
