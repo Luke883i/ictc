@@ -1,52 +1,43 @@
 # ICTC
 
-**Integrated Compliance Tower Control** gestisce due soli processi:
+**Integrated Compliance Tower Control** is an evidence-first workspace for two governed processes:
 
-1. **Fonti normative** — l'amministratore dichiara il risultato di sorveglianza; l'AI propone un piano; il runtime conserva intenti, versioni, run e osservazioni; una persona verifica o scarta ogni fonte candidata.
-2. **Segnalazioni** — l'utente registra racconto originale, data di conoscenza e allegati; l'AI estrae fatti e gap; la persona adotta o corregge ogni proposta, salva versioni della formulazione e invia una versione identificata dal digest.
+1. **Regulatory monitoring** — preserve the objective, obtain an AI-proposed plan, review it, activate a canonical monitoring mission, inspect candidate sources and record a reasoned human decision.
+2. **Events and incidents** — preserve the original description and attachments, separate AI extraction from human adoption, version the final formulation and retain linked evidence.
 
-I soli ruoli applicativi sono `admin` e `user`. L'AI assiste in modo pervasivo, ma non possiede autorità di decisione o scrittura autonoma.
+The application roles are `admin`, `user` and `auditor`. The server returns explicit capabilities and the UI projects available actions from those capabilities. AI output remains assistive and never determines applicability, compliance, significance or notification duties.
 
-## Avvio
+## Semantic Workbench
 
-Richiede Node.js 22 o superiore.
+The read-only endpoints below project the canonical runtime state; they do not introduce another monitoring model or scheduler:
+
+```text
+GET /api/workbench/meta
+GET /api/workbench/metrics
+GET /api/workbench/graph
+```
+
+Semantic labels are deterministic lexical observations with explicit limitations. Empty coverage is `null`, not a synthetic score.
+
+## Run
+
+Requires Node.js 22 or later.
 
 ```bash
 npm ci
 ./ictc.sh start --no-open
 ```
 
-Aprire `http://127.0.0.1:4173`.
+Open `http://127.0.0.1:4173`.
 
-## Provider AI
-
-La configurazione amministrativa definisce endpoint, modello, prompt globali e nome della variabile d'ambiente contenente la chiave. La chiave non viene salvata nel runtime.
-
-```bash
-export ICTC_LLM_API_KEY='...'
-```
-
-Gli endpoint privati richiedono esplicitamente `ICTC_ALLOW_PRIVATE_AI=1`.
-
-## Verifica
+## Verify
 
 ```bash
 npm test
 ```
 
-Il gate `1.5.0-rc.1` verifica:
+Release `1.8.0-rc.1` adds an executable enterprise convergence contract, claim manifest, canonical semantic projection, capability-safe UX and a saturation artifact. The logical saturation model uses 18 threads, freezes primitives at each M and records zero novelty in each independent M+100 tail.
 
-- 18 invarianti di esperienza e 37 criteri Definition of Done;
-- audit onto-epistemico e audit delle due user journey;
-- saturazione astratta `M=88`, con 100 casi indipendenti successivi;
-- saturazione del runtime reale `N=55`, con 50 casi indipendenti successivi;
-- ricevute, idempotenza, conflitti, allegati, privacy, retry AI, versioni e fascicoli collegati;
-- end-to-end HTTP, browser live e launcher.
+## Enterprise boundary
 
-I workflow separano contratto/audit, runtime, browser, launcher, sicurezza e prova post-merge.
-
-## Confini
-
-ICTC non determina applicabilità, conformità, significatività o obblighi di notifica. I risultati AI sono piani, estrazioni, suggerimenti e bozze da adottare o correggere. La catena hash locale dimostra coerenza interna delle registrazioni, ma non equivale a firma qualificata, marcatura temporale certificata o verità sostanziale.
-
-Audit, benchmark e TO-BE sono documentati in `docs/`.
+The runtime can be made **enterprise-certifiable**, but the repository cannot certify a deployment by itself. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`.

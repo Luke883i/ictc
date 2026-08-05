@@ -2,19 +2,10 @@
   "schemaVersion": "1.0.0",
   "release": "1.8.0-rc.1",
   "claims": [
-    {
-      "id": "canonical-monitoring-sot",
-      "status": "implemented",
-      "paths": ["v3/runtime/monitoring.mjs", "v3/runtime/model.mjs"],
-      "checks": ["v3/enterprise-convergence-check.mjs"],
-      "statement": "Monitoring uses the canonical missions model; the experimental monitoringJobs model is not registered."
-    },
-    {
-      "id": "enterprise-deployment-certification",
-      "status": "external-evidence-required",
-      "paths": ["v3/enterprise.mjs", "docs/ENTERPRISE_CONVERGENCE_DOD.md"],
-      "checks": ["v3/enterprise-readiness-check.mjs"],
-      "statement": "Deployment certification requires external identity, TLS, storage, backup, malware scanning, observability and accessibility evidence."
-    }
+    {"id":"canonical-monitoring-sot","status":"implemented","paths":["v3/runtime/monitoring.mjs","v3/runtime/model.mjs"],"checks":["v3/enterprise-convergence-check.mjs"],"statement":"Monitoring uses the canonical missions model; the experimental monitoringJobs model is not registered."},
+    {"id":"canonical-semantic-workbench","status":"implemented","paths":["v3/runtime/workbench-projection.mjs","v3/semantic.mjs","v3/server.mjs"],"checks":["v3/enterprise-convergence-check.mjs"],"statement":"Workbench endpoints are read-only semantic projections of canonical runtime records and do not create a parallel scheduler or data model."},
+    {"id":"capability-driven-experience","status":"implemented","paths":["v3/public/ui/enterprise-ux.js","v3/public/enterprise-compact.css","v3/public/app.js"],"checks":["v3/enterprise-convergence-check.mjs"],"statement":"The rendered experience uses server-issued capabilities for write affordances and provides compact mobile and touch-safe presentation rules."},
+    {"id":"auditor-evidence-authority","status":"implemented","paths":["v3/runtime/evidence.mjs","v3/server.mjs"],"checks":["v3/security-boundary-check.mjs","v3/enterprise-convergence-check.mjs"],"statement":"Auditor access no longer impersonates an administrator when generating evidence; unsupported full incident export fails closed."},
+    {"id":"enterprise-deployment-certification","status":"external-evidence-required","paths":["v3/enterprise.mjs","docs/ENTERPRISE_CONVERGENCE_DOD.md"],"checks":["v3/enterprise-readiness-check.mjs"],"statement":"Deployment certification requires external identity, TLS, storage, backup, malware scanning, observability and accessibility evidence."}
   ]
 }

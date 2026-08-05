@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "release": "1.8.0-rc.1",
+  "method": "bounded singleton-and-pairwise model with frozen primitive set",
+  "threads": 18,
+  "primitiveCount": 5796,
+  "sumM": 820,
+  "validationCases": 1800,
+  "validationPerThread": 100,
+  "centralPrimitiveCount": 1096,
+  "centralM": 138,
+  "centralValidationCases": 100,
+  "noveltyAfterEachM": 0,
+  "centralNoveltyAfterM": 0,
+  "boundary": "Logical saturation of the defined model; runtime, browser, assistive technology and deployment evidence remain independently required."
+}
