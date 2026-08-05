@@ -30,7 +30,7 @@ jobs:
         run: node v3/experience-saturation.mjs
       - name: Security boundaries
         run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
-      - name: Enterprise readiness and M plus 100
+      - name: Honest enterprise posture and M plus 100
         run: node v3/enterprise-readiness-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
@@ -93,12 +93,14 @@ jobs:
           for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
           python v3/browser-check.py
+          python v3/browser-admin-check.py
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ictc-browser-evidence
           path: |
             artifacts/browser-check.json
+            artifacts/browser-admin-check.json
             artifacts/*.png
           if-no-files-found: error
           retention-days: 30

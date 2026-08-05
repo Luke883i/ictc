@@ -2,12 +2,14 @@ import { asString, id, now, uniqueStrings } from '../domain.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
 import { enterpriseReadiness, normalizeGovernance, usageSummary } from '../enterprise.mjs';
 
-export function createAdminHandler({ store, permissions }) {
+function activeAdmins(users){return (users||[]).filter(item=>item.role==='admin'&&item.status==='active');}
+
+export function createAdminHandler({ store, permissions, posture = () => ({ integrity: store.verifyChain() }) }) {
   return async function handle(request, response, pathname, actor) {
     const method = request.method || 'GET';
     if (method === 'GET' && pathname === '/api/admin/readiness') {
       requirePermission(actor, 'manage-enterprise', permissions);
-      json(response, 200, enterpriseReadiness(store.snapshot(), { integrity: store.verifyChain(), safeBinding: true, dependencyAudit: true }));
+      json(response, 200, enterpriseReadiness(store.snapshot(), posture()));
       return true;
     }
     if (method === 'GET' && pathname === '/api/admin/usage') {
@@ -42,8 +44,13 @@ export function createAdminHandler({ store, permissions }) {
       const envelope = await store.mutate(actor, 'admin.user.updated', { type: 'user', id: params.id }, input, draft => {
         const user = (draft.users || []).find(item => item.id === params.id);
         if (!user) throw httpError(404, 'Utente non trovato', 'not-found');
-        if (input.role && ['admin', 'user', 'auditor'].includes(input.role)) user.role = input.role;
-        if (input.status && ['active', 'disabled'].includes(input.status)) user.status = input.status;
+        const nextRole = input.role && ['admin', 'user', 'auditor'].includes(input.role) ? input.role : user.role;
+        const nextStatus = input.status && ['active', 'disabled'].includes(input.status) ? input.status : user.status;
+        if (user.role === 'admin' && user.status === 'active' && (nextRole !== 'admin' || nextStatus !== 'active') && activeAdmins(draft.users).length <= 1) {
+          throw httpError(409, 'Non puoi rimuovere o disabilitare l’ultimo amministratore attivo', 'last-admin-required');
+        }
+        user.role = nextRole;
+        user.status = nextStatus;
         if (input.displayName != null) user.displayName = asString(input.displayName, 300) || user.id;
         if (input.email != null) user.email = asString(input.email, 320);
         user.updatedAt = now();
