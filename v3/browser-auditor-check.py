@@ -1,0 +1,93 @@
+import json
+import os
+import pathlib
+import traceback
+from playwright.sync_api import sync_playwright
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+ART = ROOT / 'artifacts'
+ART.mkdir(exist_ok=True)
+BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
+PHASE = 'initialization'
+
+
+def annotation_escape(value):
+    return str(value).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+
+
+def main():
+    global PHASE
+    with sync_playwright() as p:
+        launch = {'headless': True, 'args': ['--no-sandbox']}
+        chromium = os.environ.get('ICTC_CHROMIUM')
+        if chromium:
+            launch['executable_path'] = chromium
+        browser = p.chromium.launch(**launch)
+        context = browser.new_context(viewport={'width': 1280, 'height': 1000})
+        context.add_init_script("try{localStorage.setItem('ictc-role','auditor')}catch{}")
+        page = context.new_page()
+        page.set_default_timeout(10000)
+        page.set_default_navigation_timeout(15000)
+        errors = []
+        page.on('pageerror', lambda error: errors.append(str(error)))
+
+        PHASE = 'auditor-bootstrap'
+        print(f'browser-auditor-check: {PHASE}', flush=True)
+        with page.expect_response(
+            lambda response: response.url.endswith('/api/bootstrap')
+            and response.request.method == 'GET'
+            and response.request.headers.get('x-ictc-role') == 'auditor'
+            and response.request.headers.get('x-ictc-actor-id') == 'local-auditor'
+        ) as bootstrap:
+            page.goto(f'{BASE}/', wait_until='domcontentloaded')
+        assert bootstrap.value.status == 200
+
+        PHASE = 'auditor-identity'
+        print(f'browser-auditor-check: {PHASE}', flush=True)
+        status = page.locator('#runtimeStatus[data-actor-role="auditor"]')
+        status.wait_for(state='visible')
+        assert 'Auditor' in status.inner_text()
+        assert page.locator('#roleSelect').input_value() == 'auditor'
+        assert page.evaluate("localStorage.getItem('ictc-role')") == 'auditor'
+
+        PHASE = 'auditor-least-privilege'
+        print(f'browser-auditor-check: {PHASE}', flush=True)
+        for selector in ['#openAdminCenter', '#openSettings', '#missionForm', '#openIncident', '#openContribution']:
+            page.locator(selector).wait_for(state='hidden')
+        intro = page.locator('#userMonitoringIntro')
+        intro.wait_for(state='visible')
+        assert 'sola lettura' in intro.inner_text().lower()
+        assert not errors, errors
+
+        checks = [
+            'auditor-bootstrap-identity',
+            'auditor-role-projection',
+            'auditor-admin-controls-hidden',
+            'auditor-write-controls-hidden',
+            'auditor-read-only-copy',
+        ]
+        (ART / 'browser-auditor-check.json').write_text(
+            json.dumps({'ok': True, 'checks': checks}, indent=2),
+            encoding='utf8',
+        )
+        print('browser-auditor-check: evidence complete', flush=True)
+        page.close(run_before_unload=False)
+        context.close()
+        browser.close()
+
+
+try:
+    main()
+except Exception as error:
+    payload = {
+        'ok': False,
+        'phase': PHASE,
+        'type': type(error).__name__,
+        'message': str(error),
+        'traceback': traceback.format_exc(),
+    }
+    (ART / 'browser-auditor-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
+    summary = f'{PHASE}: {type(error).__name__}: {error}'
+    print(f'::error title=browser-auditor-check::{annotation_escape(summary)}', flush=True)
+    traceback.print_exc()
+    raise

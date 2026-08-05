@@ -39,9 +39,7 @@ def main():
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.locator('#openAdminCenter').click()
         page.locator('#adminCenter').wait_for(state='visible')
-        durable_storage = page.locator('#adminReadiness .readiness-row').filter(
-            has_text='Storage durevole'
-        )
+        durable_storage = page.locator('#adminReadiness .readiness-row').filter(has_text='Storage durevole')
         durable_storage.wait_for()
         blocker = durable_storage.locator('.score.warn')
         blocker.wait_for()
@@ -98,56 +96,6 @@ def main():
             'button', name='Riattiva', exact=True
         ).wait_for()
 
-        PHASE = 'auditor-role-change'
-        print(f'browser-admin-check: {PHASE}', flush=True)
-        page.locator('[data-admin-close]').click()
-        with page.expect_response(
-            lambda response: response.url.endswith('/api/bootstrap')
-            and response.request.method == 'GET'
-            and response.request.headers.get('x-ictc-role') == 'auditor'
-            and response.request.headers.get('x-ictc-actor-id') == 'local-auditor'
-        ) as auditor_bootstrap:
-            page.locator('#roleSelect').select_option('auditor')
-        assert auditor_bootstrap.value.status == 200
-
-        PHASE = 'auditor-document'
-        print(f'browser-admin-check: {PHASE}', flush=True)
-        page.wait_for_timeout(1000)
-        closed = page.is_closed()
-        status_count = 0 if closed else page.locator('#runtimeStatus').count()
-        role_count = 0 if closed else page.locator('#roleSelect').count()
-        observed = {
-            'url': page.url if not closed else None,
-            'closed': closed,
-            'statusCount': status_count,
-            'roleSelectCount': role_count,
-            'title': None if closed else page.title(),
-            'pageErrors': list(errors),
-        }
-        if not closed and status_count:
-            status = page.locator('#runtimeStatus')
-            observed.update({
-                'text': status.inner_text(timeout=1000),
-                'actorRole': status.get_attribute('data-actor-role', timeout=1000),
-                'requestedRole': status.get_attribute('data-requested-role', timeout=1000),
-                'selectedRole': page.locator('#roleSelect').input_value(timeout=1000) if role_count else None,
-                'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
-            })
-        else:
-            observed['htmlPrefix'] = None if closed else page.content()[:500]
-        assert not closed and status_count == 1 and role_count == 1, json.dumps(observed, ensure_ascii=False)
-
-        PHASE = 'auditor-identity'
-        print(f'browser-admin-check: {PHASE}', flush=True)
-        assert observed.get('actorRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
-        assert 'Auditor' in observed.get('text', '')
-        assert observed.get('selectedRole') == 'auditor'
-
-        PHASE = 'auditor-controls'
-        print(f'browser-admin-check: {PHASE}', flush=True)
-        page.locator('#openAdminCenter').wait_for(state='hidden')
-        page.locator('#openSettings').wait_for(state='hidden')
-
         PHASE = 'page-errors'
         assert not errors, errors
         checks = [
@@ -155,8 +103,6 @@ def main():
             'governance-write',
             'user-provision-persisted',
             'user-disable',
-            'auditor-server-bootstrap',
-            'auditor-least-privilege',
         ]
         (ART / 'browser-admin-check.json').write_text(
             json.dumps({'ok': True, 'checks': checks}, indent=2),
@@ -178,10 +124,7 @@ except Exception as error:
         'message': str(error),
         'traceback': traceback.format_exc(),
     }
-    (ART / 'browser-admin-error.json').write_text(
-        json.dumps(payload, indent=2),
-        encoding='utf8',
-    )
+    (ART / 'browser-admin-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
     summary = f'{PHASE}: {type(error).__name__}: {error}'
     print(f'::error title=browser-admin-check::{annotation_escape(summary)}', flush=True)
     traceback.print_exc()
