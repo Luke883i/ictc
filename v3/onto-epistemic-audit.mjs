@@ -2,17 +2,18 @@ import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 const root = new URL('./', import.meta.url);
 const read = name => readFile(new URL(name, root), 'utf8');
-const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common] = await Promise.all([
+const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common, enterprise] = await Promise.all([
   read('product-contract.json'), read('experience-invariants.json'), read('question-engine.mjs'),
   read('runtime/monitoring.mjs'), read('runtime/incidents.mjs'), read('runtime/contributions.mjs'),
-  read('runtime/model.mjs'), read('store.mjs'), read('public/ui/common.js')
+  read('runtime/model.mjs'), read('store.mjs'), read('public/ui/common.js'), read('enterprise.mjs')
 ]);
 const contract = JSON.parse(contractText);
 const invariants = JSON.parse(invariantsText);
 const checks = [];
 function check(id, condition, detail) { assert.ok(condition, `${id}: ${detail}`); checks.push({id, detail}); }
-check('two-services', contract.services.map(item=>item.id).join(',') === 'monitoring,incidents', 'only monitoring and incidents');
-check('two-roles', contract.roles.map(item=>item.id).join(',') === 'admin,user', 'only admin and user');
+check('two-services', contract.services.map(item=>item.id).join(',') === 'monitoring,incidents', 'only monitoring and incidents are business services');
+check('control-plane', contract.controlPlane?.id === 'administration', 'administration is a control plane');
+check('three-roles', contract.roles.map(item=>item.id).join(',') === 'admin,user,auditor', 'admin, user and read-only auditor');
 check('invariant-depth', invariants.invariants.length >= 18, `${invariants.invariants.length} explicit invariants`);
 check('monitoring-raw-first', monitoring.indexOf('monitoring.mission.intent.recorded') < monitoring.indexOf('planningEnvelope = await completePlan'), 'objective is persisted before planning AI');
 check('contribution-raw-first', contributions.indexOf('contribution.recorded') < contributions.indexOf('enrichOne(recordedId'), 'material is persisted before enrichment AI');
@@ -25,6 +26,8 @@ check('saved-digest-submit', incidents.includes('formulationSha256') && incident
 check('recoverable-ai', monitoring.includes('needs-plan') && contributions.includes('/api/contributions/:id/enrich') && incidents.includes('/api/incidents/:id/analyze'), 'all AI entry points preserve raw input and expose retry');
 check('reasoned-decisions', monitoring.includes('reason-required') && incidents.includes('closure-note-required'), 'source, pause and close decisions require reasons');
 check('least-privilege', model.includes('visibleContributions') && model.includes('visibleIncidents') && model.includes('prompts: null'), 'user projection excludes unrelated private data and prompts');
+check('enterprise-directory', enterprise.includes('authorizeEnterpriseActor') && enterprise.includes('identity-not-provisioned'), 'trusted identities require directory provisioning');
+check('ai-budget', enterprise.includes('ai-budget-exhausted') && enterprise.includes('ai-model-not-allowed'), 'budget and allowlist fail closed');
 check('observation-history', model.includes('mergeCatalogObservation') && model.includes('observations'), 'rediscovery appends observations');
 check('linked-evidence', store.includes('relatedSha256') && store.includes('eventsSha256') && store.includes('formulations'), 'bundles link related objects, versions and events');
 check('attachment-cleanup', store.includes('deleteAttachments') && contributions.includes('deleteAttachments') && incidents.includes('deleteAttachments'), 'failed raw writes remove unreferenced files');

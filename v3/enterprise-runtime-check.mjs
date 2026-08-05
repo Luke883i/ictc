@@ -2,13 +2,17 @@ import assert from 'node:assert/strict';
 import { runtimeHarness } from './runtime-test-harness.mjs';
 
 const runtime = await runtimeHarness('ictc-enterprise-admin');
+const get = async (path, role = 'admin', actor = `local-${role}`) => {
+  const response = await fetch(`${runtime.base}${path}`, { headers: runtime.identity(role, actor) });
+  return { status: response.status, body: await response.json().catch(() => ({})) };
+};
 try {
   const bootstrap = await runtime.bootstrap('admin', 'local-admin');
   assert.equal(bootstrap.status, 200);
   assert.equal(bootstrap.body.version, '1.7.0-rc.1');
   assert.equal(bootstrap.body.experience.roles, 3);
 
-  const usersBefore = await runtime.request('GET', '/api/admin/users', {}, 'admin', 'local-admin', { refresh: false });
+  const usersBefore = await get('/api/admin/users');
   assert.equal(usersBefore.status, 200);
   assert.ok(usersBefore.body.users.some(user => user.role === 'auditor'));
 
@@ -30,16 +34,16 @@ try {
   assert.equal(governance.body.result.governance.monthlyBudgetUsd, 800);
   assert.equal(governance.body.result.environment.name, 'enterprise-eu');
 
-  const usage = await runtime.request('GET', '/api/admin/usage', {}, 'admin', 'local-admin', { refresh: false });
+  const usage = await get('/api/admin/usage');
   assert.equal(usage.status, 200);
   assert.equal(typeof usage.body.estimatedCostUsd, 'number');
 
-  const readiness = await runtime.request('GET', '/api/admin/readiness', {}, 'admin', 'local-admin', { refresh: false });
+  const readiness = await get('/api/admin/readiness');
   assert.equal(readiness.status, 200);
   assert.ok(readiness.body.dimensions.identity >= 99);
   assert.ok(readiness.body.dimensions.aiGovernance >= 99);
 
-  const forbidden = await runtime.request('GET', '/api/admin/users', {}, 'user', 'local-user', { refresh: false });
+  const forbidden = await get('/api/admin/users', 'user', 'local-user');
   assert.equal(forbidden.status, 403);
   console.log('enterprise-runtime-check: ok (users, governance, usage, readiness, least privilege)');
 } finally {
