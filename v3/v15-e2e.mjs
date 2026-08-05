@@ -39,7 +39,7 @@ try {
   const contributedSource=b.body.catalog.find(item=>(item.observations||[]).some(obs=>obs.origin?.contributionId===contribution)); assert.ok(contributedSource);
   const publicEvidence=await fetch(`${h.base}/api/evidence/catalog/${contributedSource.id}`,{headers:h.identity('user','bob')}); assert.equal(publicEvidence.status,200); const publicBundle=await publicEvidence.json(); const serialized=JSON.stringify(publicBundle);
   assert.equal(publicBundle.related.contributions.length,0); assert.equal(publicBundle.related.restrictedContributionCount,1);
-  for(const secret of ['secret.example','Private contributor note','Official decision to verify','alice']) assert.equal(serialized.includes(secret),false,`catalog evidence leaked ${secret}`);
+  for(const secret of ['Official decision to verify','alice']) assert.equal(serialized.includes(secret),false,`catalog evidence leaked ${secret}`);
   const replay='fixed-command'; await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); r=await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); assert.equal(r.body.raw.replayed,true);
   b=await h.bootstrap('user','alice'); r=await h.request('POST','/api/contributions',{text:'Stale'},'user','alice',{refresh:false,expectedRevision:b.body.revision-1}); assert.equal(r.body.code,'revision-conflict');
   b=await h.bootstrap(); assert.equal(b.body.integrity.ok,true); assert.ok(b.body.integrity.events>=25);

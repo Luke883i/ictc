@@ -20,7 +20,7 @@
 3. vede che l'originale è salvo;
 4. se l'AI fallisce, riprova soltanto l'arricchimento;
 5. scarica il proprio fascicolo con identità coerente;
-6. nei fascicoli pubblici delle fonti non vede materiale, metadati, autore o eventi di contributi altrui.
+6. nei fascicoli pubblici delle fonti non vede testo originale, allegati, autore o eventi di contributi altrui; URL e metadati catalogo restano output derivati e revisionabili.
 
 ## Segnalazione
 
