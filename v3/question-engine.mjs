@@ -1,4 +1,4 @@
-import { asString, uniqueStrings } from './domain.mjs';
+import { asString, uniqueStrings, sha256 } from './domain.mjs';
 
 const definitions = Object.freeze([
   {
@@ -6,28 +6,32 @@ const definitions = Object.freeze([
     label: 'Come descriveresti oggi questo episodio?',
     whyNow: 'Il racconto originale è già al sicuro. Ora serve una classificazione umana distinta dalla proposta AI.',
     evidenceUse: 'Registra la classificazione scelta dalla persona senza modificare il racconto originario.',
-    trigger: incident => !answerPresent(incident, 'classification')
+    trigger: incident => !answerPresent(incident, 'classification'),
+    suggestion: incident => asString(incident.analysis?.proposedKind, 80)
   },
   {
     id: 'affectedServices', phase: 'clarifying', type: 'text', requiredForSubmission: true,
     label: 'Che cosa potrebbe essere coinvolto?',
-    whyNow: 'Nel racconto non è ancora chiaro il perimetro operativo interessato.',
-    evidenceUse: 'Collega i fatti a servizi, sistemi o processi indicati dalla persona.',
-    trigger: incident => !answerPresent(incident, 'affectedServices') && !(incident.analysis?.affectedServices || []).length
+    whyNow: 'L’AI può proporre un perimetro, ma una persona deve confermarlo o correggerlo prima che diventi dato del fascicolo.',
+    evidenceUse: 'Registra servizi, sistemi o processi adottati dalla persona e conserva separatamente la proposta AI.',
+    trigger: incident => !answerPresent(incident, 'affectedServices'),
+    suggestion: incident => uniqueStrings(incident.analysis?.affectedServices || []).join(', ')
   },
   {
     id: 'impact', phase: 'clarifying', type: 'textarea', requiredForSubmission: true,
     label: 'Quali conseguenze sono note o possibili?',
-    whyNow: 'La formulazione deve distinguere ciò che è già accaduto da ciò che potrebbe accadere.',
-    evidenceUse: 'Conserva la valutazione umana dell’impatto senza decidere la significatività normativa.',
-    trigger: incident => !answerPresent(incident, 'impact') && !asString(incident.analysis?.impact)
+    whyNow: 'La proposta AI sull’impatto non può diventare prova senza una conferma o una correzione umana esplicita.',
+    evidenceUse: 'Conserva la valutazione adottata dalla persona senza decidere la significatività normativa.',
+    trigger: incident => !answerPresent(incident, 'impact'),
+    suggestion: incident => asString(incident.analysis?.impact, 10_000)
   },
   {
     id: 'actionsTaken', phase: 'clarifying', type: 'textarea', requiredForSubmission: true,
     label: 'Che cosa è già stato fatto?',
-    whyNow: 'Serve a separare i fatti dalle attività di verifica, contenimento o recupero già avviate.',
-    evidenceUse: 'Costruisce la cronologia delle azioni dichiarate.',
-    trigger: incident => !answerPresent(incident, 'actionsTaken') && !(incident.analysis?.mitigations || []).length
+    whyNow: 'Le mitigazioni estratte dall’AI devono essere confermate o corrette da chi conosce le attività realmente eseguite.',
+    evidenceUse: 'Costruisce la cronologia delle azioni dichiarate e distingue la proposta AI dall’adozione umana.',
+    trigger: incident => !answerPresent(incident, 'actionsTaken'),
+    suggestion: incident => uniqueStrings(incident.analysis?.mitigations || []).join(', ')
   },
   {
     id: 'ongoing', phase: 'clarifying', type: 'select', options: ['yes', 'no', 'unknown'], requiredForSubmission: false,
@@ -71,15 +75,23 @@ function answerPresent(incident, id) {
   return Boolean(answer && (answer.unknown || String(answer.value ?? '').trim()));
 }
 function hasSignal(incident, signal) { return uniqueStrings(incident.analysis?.signals || []).includes(signal); }
+function suggestionValue(definition, incident) {
+  return typeof definition.suggestion === 'function' ? asString(definition.suggestion(incident), 10_000) : '';
+}
+function publicQuestion(definition, incident = null) {
+  const { trigger, suggestion, ...question } = definition;
+  const suggestedValue = incident ? suggestionValue(definition, incident) : '';
+  return suggestedValue ? { ...question, suggestedValue } : question;
+}
 
 export function deriveQuestions(incident) {
   if (!incident?.originalNarrative || !incident?.awarenessAt || ['submitted', 'closed'].includes(incident.state)) return [];
-  return definitions.filter(definition => definition.trigger(incident)).map(({ trigger, ...question }) => question);
+  return definitions.filter(definition => definition.trigger(incident)).map(definition => publicQuestion(definition, incident));
 }
 export function nextQuestion(incident) { return deriveQuestions(incident)[0] || null; }
-export function allQuestionDefinitions() { return definitions.map(({ trigger, ...question }) => question); }
+export function allQuestionDefinitions() { return definitions.map(definition => publicQuestion(definition)); }
 export function applyAnswers(incident, input, actor) {
-  const available = new Map(deriveQuestions(incident).map(item => [item.id, item]));
+  const available = new Map(definitions.filter(item => item.trigger(incident)).map(item => [item.id, item]));
   const updates = Array.isArray(input.answers) ? input.answers : [];
   for (const raw of updates) {
     const id = asString(raw.id, 80);
@@ -89,16 +101,29 @@ export function applyAnswers(incident, input, actor) {
     const value = unknown ? '' : asString(raw.value, 10_000);
     if (!unknown && !value) continue;
     if (definition.type === 'select' && !unknown && !definition.options.includes(value)) continue;
+    const suggestedValue = suggestionValue(definition, incident);
     incident.answers[id] = {
       value, unknown, answeredAt: new Date().toISOString(), answeredBy: actor.id,
-      whyNow: definition.whyNow, evidenceUse: definition.evidenceUse
+      whyNow: definition.whyNow, evidenceUse: definition.evidenceUse,
+      suggestedValue: suggestedValue || null,
+      adoption: unknown ? 'unknown' : suggestedValue && value === suggestedValue ? 'ai-suggestion-confirmed' : 'human-corrected-or-entered'
     };
   }
+  incident.formulationDirty = true;
   return deriveQuestions(incident);
+}
+export function currentFormulation(incident) {
+  return (incident.formulationVersions || []).at(-1) || null;
+}
+export function formulationRecord(text, source, actor, trace = null) {
+  const narrative = asString(text, 50_000);
+  return { id: `form-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, narrative, source, at: new Date().toISOString(), by: actor.id, sha256: sha256(narrative), trace };
 }
 export function submissionReadiness(incident) {
   const required = definitions.filter(item => item.requiredForSubmission);
-  const missing = required.filter(item => item.trigger(incident) && !answerPresent(incident, item.id)).map(item => item.id);
-  return { ready: missing.length === 0 && Boolean(asString(incident.finalNarrative || incident.draft?.narrative)), missing };
+  const missing = required.filter(item => !answerPresent(incident, item.id)).map(item => item.id);
+  const formulation = currentFormulation(incident);
+  if (!formulation || incident.formulationDirty) missing.push('formulation');
+  return { ready: missing.length === 0, missing };
 }
-export const questionInternals = Object.freeze({ definitions, answerPresent, hasSignal });
+export const questionInternals = Object.freeze({ definitions, answerPresent, hasSignal, suggestionValue });

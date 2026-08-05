@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "scope": ["monitoring", "incidents"],
+  "sources": {
+    "standards": ["ISO 37301", "NIST SP 800-61 Rev. 3", "NIST AI RMF", "ISO/IEC 42001", "European Legislation Identifier"],
+    "marketPatterns": ["regulatory intelligence", "GRC change management", "security incident response", "agentic workflow governance"]
+  },
+  "invariants": [
+    {"id":"raw-before-ai","meaning":"The original objective, contribution or incident narrative is persisted before any AI call."},
+    {"id":"proposal-not-decision","meaning":"AI output is labelled and stored as plan, extraction, suggestion or draft, never as a human decision."},
+    {"id":"explicit-human-adoption","meaning":"A suggested value becomes operational data only after a named human confirms or corrects it."},
+    {"id":"source-lineage","meaning":"Every source observation retains origin, time, identifier, URL, model trace and prior observations."},
+    {"id":"one-next-action","meaning":"Each context exposes one primary next action and keeps secondary evidence actions visually subordinate."},
+    {"id":"progressive-intake","meaning":"Initial entry asks only for information needed to preserve the event or define the monitoring objective."},
+    {"id":"why-now-and-use","meaning":"Each adaptive question states why it appears and how the answer will be used as evidence."},
+    {"id":"recoverable-ai","meaning":"AI failure preserves raw input, names the degraded state and exposes a bounded retry."},
+    {"id":"versioned-formulation","meaning":"Incident wording is saved as digest-backed versions before submission."},
+    {"id":"reasoned-decision","meaning":"Source verification, rejection, monitoring suspension and incident closure require a human reason."},
+    {"id":"least-privilege-projection","meaning":"Users receive only their private material and no provider endpoint, prompts or unrelated audit events."},
+    {"id":"write-receipt","meaning":"Every state-changing operation emits actor, revision, input/result digests and hash-chain receipt."},
+    {"id":"linked-evidence-bundle","meaning":"Exported evidence connects subject, related runs/observations/versions, events, manifest hashes and limitations."},
+    {"id":"retry-and-conflict-safe","meaning":"Command replay is idempotent and stale edits fail rather than silently overwrite."},
+    {"id":"no-false-green","meaning":"Missing, unavailable, failed, candidate and verified remain distinct states."},
+    {"id":"ai-governance-trace","meaning":"Every successful AI call records purpose, model, redacted endpoint and prompt/input/output digests."},
+    {"id":"continuity","meaning":"State and integrity survive restart and interrupted journeys resume from the persisted next action."},
+    {"id":"accessible-proof","meaning":"Keyboard, reduced motion, readable labels and protected evidence download are part of the runtime journey."}
+  ]
+}

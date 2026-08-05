@@ -1,0 +1,47 @@
+import { strict as assert } from 'node:assert';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { runtimeHarness } from './runtime-test-harness.mjs';
+const h=await runtimeHarness('ictc-v15-sat'); const MIN=48,WINDOW=24,TAIL=50,known=new Set(),ledger=[]; let last=0,N=null,n=0;
+function scan(v,s=new Set()){if(v==null)return s;if(Array.isArray(v)){if(v.length)s.add('array');for(const x of v.slice(0,4))scan(x,s);return s;}if(typeof v!=='object')return s;if(v.receipt){s.add('receipt');s.add(`action:${v.receipt.action}`);if(v.replayed)s.add('replay');}if(v.warning)s.add('warning');if(v.aiTrace||v.analysisTrace||v.planTrace||v.draftTrace)s.add('ai-trace');if(v.integrity?.ok)s.add('integrity');if(v.manifest?.subjectSha256)s.add('manifest');if(v.nextQuestion?.whyNow&&v.nextQuestion?.evidenceUse)s.add('question-purpose');if(v.formulationVersions?.length)s.add('versions');if(v.observations?.length>1)s.add('lineage');if(v.adoption)s.add(`adoption:${v.adoption}`);if(v.state)s.add(`state:${v.state}`);if(v.code)s.add(`error:${v.code}`);if(v.restrictedContributionCount)s.add('restricted-related-material');for(const x of Object.values(v))scan(x,s);return s;}
+function observe(label,r,target=known){const p=scan(r.body,new Set([`http:${r.status}`,label]));let novelty=0;for(const x of p)if(!target.has(x)){target.add(x);novelty++;}return novelty;}
+async function step(label,fn){const r=await fn();n++;const novelty=observe(label,r);if(novelty)last=n;ledger.push({scenario:n,label,status:r.status,novelty,total:known.size});return r;}
+try{
+  await step('bootstrap-admin',()=>h.bootstrap()); await step('deny-user-settings',()=>h.request('PUT','/api/admin/settings',{},'user','alice'));
+  let r=await step('raw-mission',()=>h.request('POST','/api/missions/draft',{objective:'Official security sources'}));const m=r.body.mission.id;
+  r=await step('raw-contribution',()=>h.request('POST','/api/contributions',{links:['https://secret.example/source'],text:'Source material',note:'Private note'},'user','alice'));const c=r.body.raw.result.id;
+  r=await step('raw-incident',()=>h.request('POST','/api/incidents/intake',{originalNarrative:'Active phishing alert',awarenessAt:new Date().toISOString()},'user','alice'));const i=r.body.incident.id;
+  await step('configure',()=>h.request('PUT','/api/admin/settings',{organization:{name:'Sat',scope:'EU',jurisdictions:['EU']},llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1/chat/completions`,model:'mock',apiKeyEnv:'ICTC_LLM_API_KEY'}}));
+  await step('replan',()=>h.request('POST',`/api/missions/${m}/revise`,{objective:'Official EU security sources'})); await step('activate',()=>h.request('POST',`/api/missions/${m}/activate`,{}));
+  await step('pause-error',()=>h.request('POST',`/api/missions/${m}/pause`,{})); await step('pause',()=>h.request('POST',`/api/missions/${m}/pause`,{reason:'Check'})); await step('resume',()=>h.request('POST',`/api/missions/${m}/resume`,{}));
+  await step('run',()=>h.request('POST',`/api/missions/${m}/run`,{})); await step('rerun',()=>h.request('POST',`/api/missions/${m}/run`,{}));
+  await step('contribution-retry',()=>h.request('POST',`/api/contributions/${c}/enrich`,{},'user','alice')); await step('incident-retry',()=>h.request('POST',`/api/incidents/${i}/analyze`,{},'user','alice'));
+  await step('early-draft',()=>h.request('POST',`/api/incidents/${i}/draft`,{},'user','alice')); await step('private-bob',()=>h.bootstrap('user','bob'));
+  let b=await h.bootstrap();const source=b.body.catalog.find(x=>x.identifier==='CELEX:32022L2555');await step('source-reason-error',()=>h.request('POST',`/api/catalog/${source.id}/decision`,{decision:'verified'}));await step('source-decision',()=>h.request('POST',`/api/catalog/${source.id}/decision`,{decision:'verified',reason:'Official source checked'}));
+  const values={classification:'incident',affectedServices:'Email',impact:'Possible access',actionsTaken:'Account disabled',ongoing:'unknown',personalData:'yes',maliciousActivity:'yes',crossBorder:'unknown',detectedAt:new Date().toISOString()};
+  for(let k=0;k<20;k++){b=await h.bootstrap('user','alice');const x=b.body.incidents.find(v=>v.id===i);if(!x.nextQuestion)break;await step(`answer:${x.nextQuestion.id}`,()=>h.request('POST',`/api/incidents/${i}/answers`,{answers:[{id:x.nextQuestion.id,value:values[x.nextQuestion.id]||'unknown'}]},'user','alice'));}
+  r=await step('draft-version',()=>h.request('POST',`/api/incidents/${i}/draft`,{},'user','alice'));r=await step('human-version',()=>h.request('POST',`/api/incidents/${i}/formulation`,{finalNarrative:`${r.body.result.finalNarrative} Reviewed.`,source:'human-review'},'user','alice'));const sha=r.body.result.formulationVersions.at(-1).sha256;
+  await step('submit-missing-digest',()=>h.request('POST',`/api/incidents/${i}/submit`,{confirmed:true},'user','alice'));await step('submit-conflict',()=>h.request('POST',`/api/incidents/${i}/submit`,{confirmed:true,formulationSha256:'0'.repeat(64)},'user','alice'));await step('submit',()=>h.request('POST',`/api/incidents/${i}/submit`,{confirmed:true,formulationSha256:sha},'user','alice'));
+  await step('close-error',()=>h.request('POST',`/api/incidents/${i}/close`,{}));await step('close',()=>h.request('POST',`/api/incidents/${i}/close`,{note:'Complete'}));
+  await step('evidence',async()=>{const x=await fetch(`${h.base}/api/evidence/incident/${i}`,{headers:h.identity()});return {status:x.status,body:await x.json()};});
+  const replayId='sat-replay';await step('replay-first',()=>h.request('POST','/api/contributions',{text:'Replay material'},'user','alice',{commandId:replayId}));await step('replay-second',()=>h.request('POST','/api/contributions',{text:'Replay material'},'user','alice',{commandId:replayId}));
+  await step('invalid-material',()=>h.request('POST','/api/contributions',{},'user','alice'));
+  b=await h.bootstrap('user','alice');await step('stale-write',()=>h.request('POST','/api/contributions',{text:'Stale'},'user','alice',{refresh:false,expectedRevision:b.body.revision-1}));
+  b=await h.bootstrap();const contributed=b.body.catalog.find(x=>(x.observations||[]).some(obs=>obs.origin?.contributionId===c));assert.ok(contributed);
+  const catalogEvidence=async()=>{const x=await fetch(`${h.base}/api/evidence/catalog/${contributed.id}`,{headers:h.identity('user','bob')});const body=await x.json();assert.equal(body.related.contributions.length,0);assert.equal(body.related.restrictedContributionCount,1);return {status:x.status,body};};
+  let writeSeq=0;
+  const probes=[
+    ['probe-admin',()=>h.bootstrap()],
+    ['probe-alice',()=>h.bootstrap('user','alice')],
+    ['probe-bob',()=>h.bootstrap('user','bob')],
+    ['probe-denied-settings',()=>h.request('PUT','/api/admin/settings',{},'user','alice')],
+    ['probe-write',()=>h.request('POST','/api/contributions',{text:`Saturation write ${++writeSeq}`},'user','alice')],
+    ['probe-invalid-write',()=>h.request('POST','/api/contributions',{},'user','alice')],
+    ['probe-catalog-privacy',catalogEvidence],
+    ['probe-health',async()=>{const x=await fetch(`${h.base}/api/health`);return {status:x.status,body:await x.json()};}],
+    ['probe-incident-evidence',async()=>{const x=await fetch(`${h.base}/api/evidence/incident/${i}`,{headers:h.identity('user','alice')});return {status:x.status,body:await x.json()};}]
+  ];
+  for(let k=0;k<300&&!N;k++){const [label,fn]=probes[k%probes.length];await step(label,fn);if(n>=MIN&&n-last>=WINDOW)N=n;}assert.ok(N);
+  const frozen=new Set(known),validation=[];let after=0;for(let k=0;k<TAIL;k++){const [label,fn]=probes[k%probes.length],r=await fn(),novelty=observe(label,r,frozen);after+=novelty;validation.push({scenario:N+k+1,label,status:r.status,novelty,total:frozen.size});}assert.equal(after,0);assert.ok(known.size>=45);
+  const report={schemaVersion:'1.1.0',method:{minimum:MIN,stabilityWindow:WINDOW,validationTail:TAIL,rule:'N is chosen online from live read, write, error, privacy, replay and evidence outcomes; primitives freeze at N; N+50 repeats the same operational perturbation classes against that snapshot.'},N,NPlus50:N+TAIL,primitiveCount:known.size,lastNovelty:last,noveltyAfterN:after,primitives:[...known].sort(),ledger:[...ledger,...validation]};
+  await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/runtime-journey-saturation.json',import.meta.url),JSON.stringify(report,null,2));console.log(`v15-runtime-saturation: ok (N=${N}, N+50=${N+TAIL}, primitives=${known.size}, last novelty=${last}, validation novelty=${after})`);
+}finally{await h.close();}

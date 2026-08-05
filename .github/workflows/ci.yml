@@ -1,4 +1,4 @@
-name: ictc
+name: ictc-ci
 on:
   pull_request:
   push:
@@ -7,26 +7,56 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: ictc-${{ github.ref }}
+  group: ictc-ci-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  verify:
+  contract-and-audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: npm
+        with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - run: npm test
-      - uses: actions/setup-python@v6
+      - run: npm run test:contract
+      - uses: actions/upload-artifact@v6
+        if: always()
         with:
-          python-version: '3.12'
+          name: ictc-contract-audit
+          path: artifacts/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+  runtime-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: npm run test:runtime
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-runtime-evidence
+          path: artifacts/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+  browser-journeys:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - run: python -m playwright install --with-deps chromium
-      - name: Live browser UX proof
+      - name: Live browser journeys
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -37,40 +67,34 @@ jobs:
           export ICTC_CHROMIUM="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
           node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-mock.log" 2>&1 &
           MOCK_PID=$!
-          for _ in $(seq 1 50); do
-            curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break
-            sleep .1
-          done
-          curl -fsS http://127.0.0.1:4899 >/dev/null
-          cleanup() {
-            ./ictc.sh stop --profile current || true
-            kill "$MOCK_PID" 2>/dev/null || true
-          }
-          trap cleanup EXIT
+          trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
+          for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
-          curl -fsS http://127.0.0.1:4807/api/health
           python v3/browser-check.py
-          ./ictc.sh stop --profile current
-          trap - EXIT
-          kill "$MOCK_PID" 2>/dev/null || true
-      - name: Launcher smoke
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          export ICTC_NO_OPEN=1 ICTC_PORT=4807
-          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-runtime"
-          ./ictc.sh start --profile current --no-open
-          trap './ictc.sh stop --profile current || true' EXIT
-          curl -fsS http://127.0.0.1:4807/api/health
-          ./ictc.sh status --profile current
-          ./ictc.sh stop --profile current
-          trap - EXIT
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: ictc-evidence-ux
+          name: ictc-browser-evidence
           path: |
-            artifacts/*.json
+            artifacts/browser-check.json
             artifacts/*.png
           if-no-files-found: error
           retention-days: 30
+
+  launcher-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Canonical launcher
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4807 ICTC_STATE_DIR="$RUNNER_TEMP/state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime"
+          trap './ictc.sh stop --profile current || true' EXIT
+          ./ictc.sh start --profile current --no-open
+          curl -fsS http://127.0.0.1:4807/api/health
+          ./ictc.sh status --profile current

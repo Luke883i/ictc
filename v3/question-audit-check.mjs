@@ -8,7 +8,7 @@ for (const q of definitions) {
   assert.ok(q.evidenceUse.length >= 35, `${q.id} evidenceUse too weak`);
 }
 assert.deepEqual(deriveQuestions({state:'intake'}), [], 'questions before raw intake');
-const base = {state:'clarifying',originalNarrative:'Accesso anomalo rilevato nei log',awarenessAt:new Date().toISOString(),analysis:{signals:[],affectedServices:[],impact:'',mitigations:[]},answers:{},finalNarrative:''};
+const base = {state:'clarifying',originalNarrative:'Accesso anomalo rilevato nei log',awarenessAt:new Date().toISOString(),analysis:{signals:[],affectedServices:[],impact:'',mitigations:[]},answers:{},finalNarrative:'',formulationVersions:[],formulationDirty:true};
 const initial = deriveQuestions(base);
 assert.ok(initial.some(q=>q.id==='classification'));
 assert.ok(initial.some(q=>q.id==='affectedServices'));
@@ -18,6 +18,8 @@ for (const id of ['personalData','maliciousActivity','detectedAt']) assert.ok(de
 const complete = structuredClone(base);
 complete.answers = {classification:{value:'incident'},affectedServices:{value:'CRM'},impact:{value:'Possibile indisponibilità'},actionsTaken:{value:'Account sospeso'}};
 complete.finalNarrative = 'Formulazione verificata';
+complete.formulationVersions = [{id:'form-test',narrative:complete.finalNarrative,source:'human-test',at:new Date().toISOString(),by:'test-user',sha256:'a'.repeat(64)}];
+complete.formulationDirty = false;
 assert.equal(submissionReadiness(complete).ready, true);
 assert.deepEqual(deriveQuestions({...complete,state:'submitted'}), []);
 console.log(`question-audit-check: ok (${definitions.length} justified adaptive questions)`);
