@@ -118,7 +118,6 @@ jobs:
             local artifact="$3"
             local budget="$4"
             local elapsed=0
-            local teardown_elapsed=0
             local pid state status
 
             rm -f "$artifact"
@@ -127,6 +126,13 @@ jobs:
             pid=$!
 
             while true; do
+              if [[ -s "$artifact" ]]; then
+                echo "$label: asserzioni attestate; process group terminato"
+                terminate_group "$pid"
+                echo "::endgroup::"
+                return 0
+              fi
+
               state="$(ps -o stat= -p "$pid" 2>/dev/null | tr -d ' ' || true)"
               if [[ -z "$state" || "$state" == Z* ]]; then
                 set +e
@@ -137,26 +143,9 @@ jobs:
                   echo "::endgroup::"
                   return "$status"
                 fi
-                if [[ ! -s "$artifact" ]]; then
-                  echo "$label: processo concluso senza artifact $artifact" >&2
-                  echo "::endgroup::"
-                  return 1
-                fi
+                echo "$label: processo concluso senza artifact $artifact" >&2
                 echo "::endgroup::"
-                return 0
-              fi
-
-              if [[ -s "$artifact" ]]; then
-                if (( teardown_elapsed == 0 )); then
-                  echo "$label: asserzioni attestate; teardown con budget 10s"
-                fi
-                teardown_elapsed=$((teardown_elapsed + 1))
-                if (( teardown_elapsed >= 10 )); then
-                  echo "$label: teardown Playwright forzato entro il budget"
-                  terminate_group "$pid"
-                  echo "::endgroup::"
-                  return 0
-                fi
+                return 1
               fi
 
               if (( elapsed >= budget )); then
