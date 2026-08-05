@@ -81,25 +81,21 @@ with sync_playwright() as p:
         'button', name='Riattiva', exact=True
     ).wait_for()
 
-    print('browser-admin-check: auditor least privilege', flush=True)
-    auditor_context = browser.new_context(
-        viewport={'width': 1280, 'height': 1000},
-        storage_state={
-            'cookies': [],
-            'origins': [{
-                'origin': BASE,
-                'localStorage': [{'name': 'ictc-role', 'value': 'auditor'}],
-            }],
-        },
-    )
+    print('browser-admin-check: auditor context', flush=True)
+    auditor_context = browser.new_context(viewport={'width': 1280, 'height': 1000})
+    auditor_context.add_init_script("try{localStorage.setItem('ictc-role','auditor')}catch{}")
     auditor_page = auditor_context.new_page()
     auditor_page.set_default_timeout(10000)
     auditor_page.set_default_navigation_timeout(15000)
     auditor_errors = []
     auditor_page.on('pageerror', lambda error: auditor_errors.append(str(error)))
     auditor_page.goto(f'{BASE}/', wait_until='domcontentloaded')
+
+    print('browser-admin-check: auditor identity', flush=True)
     auditor_page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
     assert auditor_page.locator('#roleSelect').input_value() == 'auditor'
+
+    print('browser-admin-check: auditor controls', flush=True)
     auditor_page.locator('#openAdminCenter').wait_for(state='hidden')
     auditor_page.locator('#openSettings').wait_for(state='hidden')
 
