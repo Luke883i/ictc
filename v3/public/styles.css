@@ -3,3 +3,8 @@
 @import url('./styles-experience.css');
 @import url('./admin-center.css');
 @import url('./enterprise-compact.css');
+@import url('./journey-reborn.css');
+
+/* Final geometry and authority guards. */
+[hidden]{display:none!important}
+.contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3)}

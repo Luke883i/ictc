@@ -2,14 +2,14 @@ export const $ = (selector, root = document) => root.querySelector(selector);
 export const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 export const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export const labels = {
-  candidate:'Da verificare', verified:'Verificata', rejected:'Scartata', superseded:'Superata', planning:'Piano in preparazione', 'needs-plan':'Piano da riprovare', draft:'Piano pronto', active:'Attivo', paused:'In pausa',
-  intake:'Racconto registrato', clarifying:'Da completare', review:'Da confermare', submitted:'Inviata', closed:'Chiusa',
-  event:'Evento', 'near-miss':'Quasi incidente', incident:'Incidente', unknown:'Da definire', yes:'Sì', no:'No'
+  candidate:'Da verificare', verified:'Verificata', rejected:'Esclusa', superseded:'Superata', planning:'Pianificazione in corso', 'needs-plan':'Pianificazione non riuscita', draft:'Da approvare', active:'Attivo', paused:'In pausa',
+  intake:'Registrato', clarifying:'Informazioni richieste', review:'Da approvare', submitted:'Inviato', closed:'Chiuso',
+  event:'Evento', 'near-miss':'Quasi incidente', incident:'Incidente', unknown:'Non determinato', yes:'Sì', no:'No'
 };
 function storageGet(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } }
 export function storageSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
 export const state = {
-  data:null, service:storageGet('ictc-service','monitoring'), role:storageGet('ictc-role','admin'),
+  data:null, service:storageGet('ictc-service','home'), role:storageGet('ictc-role','admin'),
   activeMissionId:null, activeSourceId:null, activeIncidentId:null
 };
 let toastTimer;
@@ -55,7 +55,7 @@ export function showReceipt(value) {
   $('#proofAction').textContent = actionLabel(receipt.action); $('#proofHash').textContent = `r${receipt.revision} · ${receipt.hash.slice(0,18)}`; $('#proofPulse').hidden = false;
 }
 function actionLabel(action) {
-  const map = {'settings.updated':'Configurazione registrata','monitoring.mission.intent.recorded':'Obiettivo preservato','monitoring.mission.planned':'Piano AI registrato','monitoring.mission.revision.requested':'Revisione preservata','monitoring.mission.activated':'Monitoraggio attivato','monitoring.mission.paused':'Monitoraggio sospeso','monitoring.mission.resumed':'Monitoraggio ripreso','monitoring.run.completed':'Run registrato','catalog.source.decided':'Decisione registrata','contribution.recorded':'Materiale preservato','contribution.enriched':'Materiale classificato','incident.intake.recorded':'Racconto preservato','incident.analyzed':'Analisi registrata','incident.answers.recorded':'Risposta registrata','incident.draft.generated':'Formulazione AI registrata','incident.formulation.saved':'Versione formulazione registrata','incident.submitted':'Segnalazione inviata','incident.closed':'Segnalazione chiusa'};
+  const map = {'settings.updated':'Configurazione salvata','monitoring.mission.intent.recorded':'Obiettivo registrato','monitoring.mission.planned':'Piano registrato','monitoring.mission.revision.requested':'Revisione registrata','monitoring.mission.activated':'Monitoraggio attivato','monitoring.mission.paused':'Monitoraggio sospeso','monitoring.mission.resumed':'Monitoraggio ripreso','monitoring.run.completed':'Controllo registrato','catalog.source.decided':'Decisione sulla fonte registrata','contribution.recorded':'Materiale registrato','contribution.enriched':'Materiale arricchito','incident.intake.recorded':'Evento registrato','incident.analyzed':'Analisi registrata','incident.answers.recorded':'Risposta registrata','incident.draft.generated':'Bozza AI registrata','incident.formulation.saved':'Versione registrata','incident.submitted':'Evento inviato','incident.closed':'Evento chiuso'};
   return map[action] || 'Operazione registrata';
 }
 export function splitList(value) { return [...new Set(String(value || '').split(/[\n,]/).map(item => item.trim()).filter(Boolean))]; }

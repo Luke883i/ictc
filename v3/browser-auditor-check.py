@@ -63,7 +63,7 @@ try:
         launch['executable_path'] = chromium
     browser = playwright.chromium.launch(**launch)
     context = browser.new_context(viewport={'width': 1280, 'height': 1000})
-    context.add_init_script("try{localStorage.setItem('ictc-role','auditor')}catch{}")
+    context.add_init_script("try{localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','home')}catch{}")
     page = context.new_page()
     page.set_default_timeout(10000)
     page.set_default_navigation_timeout(15000)
@@ -74,7 +74,7 @@ try:
     page.goto(f'{BASE}/', wait_until='domcontentloaded')
 
     enter_phase('auditor-observed-state')
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(1000)
     closed = page.is_closed()
     status_count = 0 if closed else page.locator('#runtimeStatus').count()
     role_count = 0 if closed else page.locator('#roleSelect').count()
@@ -90,15 +90,16 @@ try:
         observed.update({
             'text': status.inner_text(timeout=1000),
             'actorRole': status.get_attribute('data-actor-role', timeout=1000),
-            'requestedRole': status.get_attribute('data-requested-role', timeout=1000),
             'selectedRole': page.locator('#roleSelect').input_value(timeout=1000) if role_count else None,
             'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
+            'storedService': page.evaluate("localStorage.getItem('ictc-service')"),
         })
     assert not closed and status_count == 1 and role_count == 1, json.dumps(observed, ensure_ascii=False)
     assert observed.get('actorRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
     assert 'Auditor' in observed.get('text', ''), json.dumps(observed, ensure_ascii=False)
     assert observed.get('selectedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
     assert observed.get('storedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
+    assert observed.get('storedService') == 'home', json.dumps(observed, ensure_ascii=False)
 
     enter_phase('auditor-server-identity')
     bootstrap = context.request.get(
@@ -110,19 +111,36 @@ try:
     body = bootstrap.json()
     assert body['actor']['role'] == 'auditor'
 
-    enter_phase('auditor-least-privilege')
-    for selector in ['#openAdminCenter', '#openSettings', '#missionForm', '#openIncident', '#openContribution']:
+    enter_phase('auditor-home-guidance')
+    page.locator('#homeView').wait_for(state='visible')
+    page.locator('#homePrimaryAction').get_by_text('Apri le evidenze', exact=True).wait_for()
+    assert page.locator('#homeJourney .journey-step').count() == 4
+    assert 'sola lettura' in page.locator('#homeSummary').inner_text().lower()
+    for selector in ['#openAdminCenter', '#openSettings']:
+        page.locator(selector).wait_for(state='hidden')
+
+    enter_phase('auditor-monitoring-read-only')
+    page.locator('#homePrimaryAction').click()
+    page.locator('#monitoringView').wait_for(state='visible')
+    for selector in ['#missionForm', '#openContribution']:
         page.locator(selector).wait_for(state='hidden')
     intro = page.locator('#userMonitoringIntro')
     intro.wait_for(state='visible')
     assert 'sola lettura' in intro.inner_text().lower()
+
+    enter_phase('auditor-events-read-only')
+    page.locator('[data-service="incidents"]').click()
+    page.locator('#incidentsView').wait_for(state='visible')
+    page.locator('#openIncident').wait_for(state='hidden')
     assert not errors, errors
 
     checks = [
         'auditor-bootstrap-identity',
-        'auditor-role-projection',
+        'auditor-home-guidance',
+        'auditor-horizontal-journey',
         'auditor-admin-controls-hidden',
-        'auditor-write-controls-hidden',
+        'auditor-monitoring-write-controls-hidden',
+        'auditor-event-write-controls-hidden',
         'auditor-read-only-copy',
     ]
     (ART / 'browser-auditor-check.json').write_text(

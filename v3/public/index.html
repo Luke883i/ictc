@@ -4,67 +4,104 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>ICTC · Fonti normative e segnalazioni</title>
+  <title>ICTC · Governance, monitoraggio ed eventi</title>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Vai al contenuto</a>
 <header class="topbar">
-  <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">I</span><span><b>ICTC</b><small>Compliance evidence workspace</small></span></a>
+  <a class="brand" href="#" data-home-action="home"><span class="brand-mark" aria-hidden="true">I</span><span><b>ICTC</b><small>Governance ed evidenze</small></span></a>
   <div class="top-actions">
-    <button id="openSettings" class="ghost admin-only" type="button">AI</button>
-    <label class="role-control"><span>Modalità locale</span><select id="roleSelect"><option value="admin">Amministratore</option><option value="user">Utente</option><option value="auditor">Auditor</option></select></label>
+    <button id="openSettings" class="ghost admin-only" type="button">Configura AI</button>
+    <label class="role-control"><span>Ambiente locale</span><select id="roleSelect"><option value="admin">Amministratore</option><option value="user">Utente</option><option value="auditor">Auditor</option></select></label>
     <span id="runtimeStatus" class="runtime-status" role="status">Connessione…</span>
   </div>
 </header>
-<nav class="service-nav" aria-label="Servizi ICTC">
-  <button type="button" data-service="monitoring" aria-current="page"><span>01</span> Fonti normative</button>
-  <button type="button" data-service="incidents" aria-current="false"><span>02</span> Segnalazioni</button>
+<nav class="service-nav" aria-label="Aree ICTC">
+  <button type="button" data-service="home" aria-current="page"><span>00</span> Home</button>
+  <button type="button" data-service="monitoring" aria-current="false"><span>01</span> Monitoraggio</button>
+  <button type="button" data-service="incidents" aria-current="false"><span>02</span> Eventi</button>
 </nav>
 <main id="main" tabindex="-1">
-  <section id="monitoringView" class="view">
+  <section id="homeView" class="view home-view">
+    <section class="home-hero" aria-labelledby="homeTitle">
+      <div class="home-intro">
+        <p class="eyebrow">Home</p>
+        <h1 id="homeTitle">Cosa devi fare adesso?</h1>
+        <p id="homeSummary">ICTC sta preparando la guida per il tuo ruolo.</p>
+      </div>
+      <aside class="home-next" aria-labelledby="homeNextTitle">
+        <p id="homeRole" class="eyebrow">Ruolo</p>
+        <h2 id="homeNextTitle">Prossima azione</h2>
+        <p id="homeReason">Attendi il caricamento dello stato.</p>
+        <button id="homePrimaryAction" class="primary" type="button" data-home-action="home">Apri</button>
+        <p id="homeAiNote" class="assist-note">L’AI assiste; le decisioni restano umane.</p>
+      </aside>
+    </section>
+
+    <section class="home-journey-panel" aria-labelledby="journeyTitle">
+      <header class="section-head compact-head"><div><p class="eyebrow">Percorso guidato</p><h2 id="journeyTitle">Quattro passaggi, una responsabilità chiara</h2><p>Segui il percorso da sinistra a destra. ICTC mostra sempre cosa succede dopo.</p></div></header>
+      <ol id="homeJourney" class="journey-strip" aria-label="Percorso operativo"></ol>
+    </section>
+
+    <section class="home-overview-grid">
+      <article class="home-panel">
+        <header><p class="eyebrow">Stato</p><h2>Panoramica operativa</h2></header>
+        <div id="homeMetrics" class="home-metrics"></div>
+      </article>
+      <article class="home-panel">
+        <header><p class="eyebrow">Dove lavorare</p><h2>Due percorsi operativi</h2></header>
+        <div class="home-route-list">
+          <button type="button" data-home-action="monitoring"><span><b>Monitoraggio</b><small>Definisci obiettivi, approva piani e verifica fonti.</small></span><i aria-hidden="true">→</i></button>
+          <button type="button" data-home-action="incidents"><span><b>Eventi</b><small>Registra fatti, completa informazioni e conserva evidenze.</small></span><i aria-hidden="true">→</i></button>
+        </div>
+      </article>
+    </section>
+  </section>
+
+  <section id="monitoringView" class="view" hidden>
     <section class="hero hero-monitoring">
       <div class="hero-copy">
-        <p class="eyebrow">Monitoraggio guidato</p>
-        <h1>Descrivi il risultato.<br><span>L’AI prepara il piano.</span></h1>
-        <p>Parti dall’obiettivo, non dalla tassonomia. Prima dell’attivazione vedrai cosa sarà cercato, incluso ed escluso.</p>
+        <p class="eyebrow">Monitoraggio</p>
+        <h1>Definisci cosa monitorare.</h1>
+        <p>Descrivi il risultato atteso. ICTC propone un piano che l’amministratore verifica prima dell’attivazione.</p>
       </div>
       <form id="missionForm" class="focus-card admin-only">
-        <label class="prompt-field">Che cosa deve sorvegliare ICTC?
-          <textarea name="objective" rows="5" required placeholder="Esempio: ogni fonte ufficiale italiana ed europea sulla sicurezza delle informazioni applicabile al settore sanitario"></textarea>
+        <label class="prompt-field">Obiettivo di monitoraggio
+          <textarea name="objective" rows="4" required placeholder="Esempio: fonti ufficiali italiane ed europee sulla sicurezza delle informazioni nel settore sanitario"></textarea>
         </label>
         <div class="compact-fields">
-          <label>Ritmo<select name="cadence"><option value="168">Settimanale</option><option value="24">Giornaliero</option><option value="720">Mensile</option></select></label>
-          <label>Fonti già note, facoltative<input name="sourceHints" placeholder="ACN, Garante, EUR-Lex"></label>
+          <label>Frequenza<select name="cadence"><option value="168">Settimanale</option><option value="24">Giornaliera</option><option value="720">Mensile</option></select></label>
+          <label>Fonti note (facoltative)<input name="sourceHints" placeholder="ACN, Garante, EUR-Lex"></label>
         </div>
-        <details class="mission-prompt"><summary>Istruzione specifica del monitoraggio</summary><label>Prompt modificabile<textarea name="promptOverride" rows="5" placeholder="Lascia vuoto per usare il prompt globale di ricerca fonti"></textarea></label></details><button class="primary magnetic" type="submit"><span>Prepara il piano</span><i aria-hidden="true">→</i></button>
-        <p class="microcopy">Il piano AI è una proposta modificabile. L’attivazione resta una decisione dell’amministratore.</p>
+        <details class="mission-prompt"><summary>Opzioni avanzate</summary><label>Istruzioni specifiche<textarea name="promptOverride" rows="4" placeholder="Lascia vuoto per usare le istruzioni standard"></textarea></label></details>
+        <button class="primary magnetic" type="submit"><span>Crea piano</span><i aria-hidden="true">→</i></button>
+        <p class="microcopy">ICTC propone il piano; l’amministratore lo verifica e lo attiva.</p>
       </form>
-        <div id="userMonitoringIntro" class="focus-card role-intro" hidden><p class="eyebrow">Vista utente</p><h2>Consulta le fonti.<br>Contribuisci con ciò che conosci.</h2><p>I monitoraggi sono configurati dall’amministratore. Qui trovi gli esiti e puoi aggiungere link, testo o documenti senza classificarli.</p><button class="primary" type="button" data-open-contribution>Aggiungi materiale</button></div>
+      <div id="userMonitoringIntro" class="focus-card role-intro" hidden><p class="eyebrow">Consulta e contribuisci</p><h2>Vedi le fonti disponibili.</h2><p>I monitoraggi sono configurati dall’amministratore. Puoi consultare gli esiti e aggiungere materiale senza classificarlo.</p><button class="primary" type="button" data-open-contribution>Aggiungi materiale</button></div>
     </section>
 
     <section id="aiSetup" class="setup-banner admin-only" hidden>
-      <div><span class="signal-dot"></span><strong>Prima configura il provider AI</strong><p>Endpoint, modello e prompt si propagano ai due servizi; la chiave resta in una variabile d’ambiente.</p></div>
-      <button id="setupNow" type="button">Configura ora</button>
+      <div><span class="signal-dot"></span><strong>Configura l’AI per creare piani e analisi</strong><p>La chiave resta in una variabile d’ambiente. Le decisioni restano umane.</p></div>
+      <button id="setupNow" type="button">Configura AI</button>
     </section>
 
     <section class="section-block">
-      <header class="section-head"><div><p class="eyebrow">Controllo automatico</p><h2>Monitoraggi</h2></div><span id="missionCount" class="counter">0</span></header>
+      <header class="section-head"><div><p class="eyebrow">Attività</p><h2>Piani di monitoraggio</h2></div><span id="missionCount" class="counter">0</span></header>
       <div id="missionsList" class="mission-grid"></div>
     </section>
 
     <section class="section-block split-block">
       <div>
-        <header class="section-head"><div><p class="eyebrow">Catalogo</p><h2>Fonti candidate</h2><p>Ogni elemento mostra perché è entrato, da dove proviene e chi lo ha verificato.</p></div><span id="catalogCount" class="counter">0</span></header>
-        <div class="filter-row"><input id="catalogSearch" type="search" placeholder="Cerca titolo, autorità o identificativo"><select id="catalogState"><option value="">Tutti gli stati</option><option value="candidate">Da verificare</option><option value="verified">Verificate</option><option value="rejected">Scartate</option></select></div>
+        <header class="section-head"><div><p class="eyebrow">Fonti</p><h2>Fonti da verificare</h2><p>Ogni elemento mostra origine, motivazione e decisioni registrate.</p></div><span id="catalogCount" class="counter">0</span></header>
+        <div class="filter-row"><input id="catalogSearch" type="search" placeholder="Cerca titolo, autorità o identificativo"><select id="catalogState"><option value="">Tutti gli stati</option><option value="candidate">Da verificare</option><option value="verified">Verificate</option><option value="rejected">Escluse</option></select></div>
         <div id="catalogList" class="catalog-list"></div>
       </div>
       <aside class="contribute-card">
-        <span class="drop-orbit" aria-hidden="true"></span>
-        <p class="eyebrow">Contributo umano</p>
-        <h2>Hai una fonte?</h2>
-        <p>Incolla un link, scrivi una nota o trascina un documento. Non serve classificarlo: ICTC conserva l’originale e propone i metadati.</p>
+        <p class="eyebrow">Materiale utile</p>
+        <h2>Aggiungi una fonte</h2>
+        <p>Incolla un link, una nota o un documento. ICTC conserva l’originale e può proporre metadati da verificare.</p>
         <button id="openContribution" class="primary" type="button">Aggiungi materiale</button>
         <div id="contributionList" class="contribution-status" aria-live="polite"></div>
       </aside>
@@ -74,18 +111,18 @@
   <section id="incidentsView" class="view" hidden>
     <section class="hero hero-incidents">
       <div class="hero-copy">
-        <p class="eyebrow">Segnalazione progressiva</p>
-        <h1>Racconta i fatti.<br><span>ICTC trova i gap.</span></h1>
-        <p>Il racconto originale viene conservato prima dell’AI. In seguito vedrai una sola domanda alla volta, sempre con il motivo e l’uso probatorio.</p>
+        <p class="eyebrow">Eventi</p>
+        <h1>Descrivi cosa è successo.</h1>
+        <p>ICTC conserva il racconto originale, evidenzia le informazioni mancanti e prepara una formulazione da verificare.</p>
       </div>
       <div class="focus-card incident-entry">
-        <div class="ai-lens-demo" aria-hidden="true"><span>Racconto</span><b>→</b><span>Fatti</span><b>→</b><span>Domande</span><b>→</b><span>Prova</span></div>
-        <button id="openIncident" class="primary magnetic" type="button"><span>Nuova segnalazione</span><i aria-hidden="true">→</i></button>
-        <p class="microcopy">ICTC non decide se l’episodio è notificabile. I promemoria temporali richiedono valutazione competente.</p>
+        <div class="ai-lens-demo" aria-hidden="true"><span>Racconto</span><b>→</b><span>Analisi</span><b>→</b><span>Chiarimenti</span><b>→</b><span>Evidenze</span></div>
+        <button id="openIncident" class="primary magnetic" type="button"><span>Registra evento</span><i aria-hidden="true">→</i></button>
+        <p class="microcopy">ICTC non decide obblighi di notifica. La valutazione resta competente e umana.</p>
       </div>
     </section>
     <section class="section-block">
-      <header class="section-head"><div><p class="eyebrow">Fascicoli</p><h2>Segnalazioni</h2><p>Dal racconto originario alla formulazione confermata, senza perdere la provenienza.</p></div><span id="incidentCount" class="counter">0</span></header>
+      <header class="section-head"><div><p class="eyebrow">Fascicoli</p><h2>Eventi e incidenti</h2><p>Dal racconto originale alla versione confermata, con provenienza e revisioni.</p></div><span id="incidentCount" class="counter">0</span></header>
       <div id="incidentList" class="incident-grid"></div>
     </section>
   </section>
@@ -98,35 +135,35 @@
 
 <dialog id="settingsDialog" class="dialog wide" aria-labelledby="settingsTitle">
   <form id="settingsForm" class="dialog-shell">
-    <header><div><p class="eyebrow">Amministrazione</p><h2 id="settingsTitle">AI globale</h2><p>Una configurazione, due servizi, tracce separate per ogni chiamata.</p></div><button type="button" data-close="settingsDialog" aria-label="Chiudi">×</button></header>
+    <header><div><p class="eyebrow">Amministrazione</p><h2 id="settingsTitle">Configurazione AI</h2><p>Configura provider e istruzioni. ICTC registra ogni chiamata e non delega decisioni.</p></div><button type="button" data-close="settingsDialog" aria-label="Chiudi">×</button></header>
     <div class="dialog-body two-pane-form">
-      <section><h3>Organizzazione</h3><label>Nome<input name="organizationName" required></label><label>Perimetro<textarea name="organizationScope" rows="4" required></textarea></label><label>Giurisdizioni<input name="jurisdictions" placeholder="Italia, Unione europea"></label></section>
-      <section><h3>Provider</h3><label>Endpoint<input name="endpoint" type="url" required></label><label>Modello<input name="model" required></label><label>Variabile chiave API<input name="apiKeyEnv"></label><label>Temperatura<input name="temperature" type="number" min="0" max="2" step="0.1"></label></section>
-      <details class="advanced"><summary>Prompt avanzati</summary><label>Piano monitoraggio<textarea name="monitoringPlan" rows="5"></textarea></label><label>Ricerca fonti<textarea name="complianceDiscovery" rows="5"></textarea></label><label>Arricchimento contributi<textarea name="contributionEnrichment" rows="5"></textarea></label><label>Analisi segnalazione<textarea name="incidentAnalysis" rows="5"></textarea></label><label>Formulazione segnalazione<textarea name="incidentDraft" rows="5"></textarea></label></details>
+      <section><h3>Organizzazione</h3><label>Nome<input name="organizationName" required></label><label>Perimetro<textarea name="organizationScope" rows="3" required></textarea></label><label>Giurisdizioni<input name="jurisdictions" placeholder="Italia, Unione europea"></label></section>
+      <section><h3>Provider AI</h3><label>Endpoint<input name="endpoint" type="url" required></label><label>Modello<input name="model" required></label><label>Variabile d’ambiente della chiave<input name="apiKeyEnv"></label><label>Temperatura<input name="temperature" type="number" min="0" max="2" step="0.1"></label></section>
+      <details class="advanced"><summary>Istruzioni avanzate</summary><label>Piano di monitoraggio<textarea name="monitoringPlan" rows="4"></textarea></label><label>Ricerca fonti<textarea name="complianceDiscovery" rows="4"></textarea></label><label>Arricchimento materiali<textarea name="contributionEnrichment" rows="4"></textarea></label><label>Analisi eventi<textarea name="incidentAnalysis" rows="4"></textarea></label><label>Formulazione eventi<textarea name="incidentDraft" rows="4"></textarea></label></details>
     </div>
     <footer><button type="button" data-close="settingsDialog">Annulla</button><button class="primary" type="submit">Salva configurazione</button></footer>
   </form>
 </dialog>
 
-<dialog id="planDialog" class="dialog full" aria-labelledby="planTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Plan Reveal</p><h2 id="planTitle">Piano proposto</h2><p>Prima di attivarlo, verifica come l’AI ha tradotto il tuo obiettivo.</p></div><button type="button" data-close="planDialog" aria-label="Chiudi">×</button></header><div id="planBody" class="dialog-body"></div><footer id="planActions"></footer></div></dialog>
+<dialog id="planDialog" class="dialog full" aria-labelledby="planTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Verifica piano</p><h2 id="planTitle">Piano proposto</h2><p>Controlla cosa sarà cercato, incluso ed escluso prima dell’attivazione.</p></div><button type="button" data-close="planDialog" aria-label="Chiudi">×</button></header><div id="planBody" class="dialog-body"></div><footer id="planActions"></footer></div></dialog>
 
 <dialog id="contributionDialog" class="dialog" aria-labelledby="contributionTitle">
   <form id="contributionForm" class="dialog-shell">
-    <header><div><p class="eyebrow">Punto unico</p><h2 id="contributionTitle">Aggiungi materiale</h2><p>Il materiale originale viene conservato prima della classificazione AI.</p></div><button type="button" data-close="contributionDialog" aria-label="Chiudi">×</button></header>
-    <div class="dialog-body"><label>Link, uno per riga<textarea name="links" rows="3" placeholder="https://..."></textarea></label><label>Testo<textarea name="text" rows="7" placeholder="Incolla qui il contenuto rilevante"></textarea></label><label class="dropzone">Documenti<input name="files" type="file" multiple><span>Trascina o seleziona fino a 10 file, 5 MB ciascuno</span></label><label>Perché potrebbe essere rilevante? <small>facoltativo</small><textarea name="note" rows="3"></textarea></label></div>
+    <header><div><p class="eyebrow">Nuovo materiale</p><h2 id="contributionTitle">Aggiungi materiale</h2><p>L’originale viene conservato prima di qualsiasi analisi AI.</p></div><button type="button" data-close="contributionDialog" aria-label="Chiudi">×</button></header>
+    <div class="dialog-body"><label>Link, uno per riga<textarea name="links" rows="3" placeholder="https://..."></textarea></label><label>Testo<textarea name="text" rows="6" placeholder="Incolla qui il contenuto rilevante"></textarea></label><label class="dropzone">Documenti<input name="files" type="file" multiple><span>Trascina o seleziona fino a 10 file, 5 MB ciascuno</span></label><label>Perché potrebbe essere rilevante? <small>facoltativo</small><textarea name="note" rows="3"></textarea></label></div>
     <footer><button type="button" data-close="contributionDialog">Annulla</button><button class="primary" type="submit">Conserva e analizza</button></footer>
   </form>
 </dialog>
 
 <dialog id="incidentDialog" class="dialog full" aria-labelledby="incidentTitle">
   <form id="incidentForm" class="dialog-shell">
-    <header><div><p class="eyebrow">Intake minimo</p><h2 id="incidentTitle">Che cosa è successo?</h2><p>Non servono classificazioni iniziali. Conserviamo il racconto prima di interpretarlo.</p></div><button type="button" data-close="incidentDialog" aria-label="Chiudi">×</button></header>
-    <div class="dialog-body intake-layout"><label class="prompt-field">Racconto originale<textarea name="originalNarrative" rows="12" required placeholder="Descrivi liberamente ciò che è stato osservato, chi lo ha segnalato e ciò che è noto in questo momento"></textarea></label><aside><label>Quando ne avete avuto conoscenza?<input name="awarenessAt" type="datetime-local" required></label><label class="dropzone">Elementi disponibili<input name="files" type="file" multiple><span>Log, screenshot, email, documenti</span></label><div class="evidence-note"><b>Prova preservata</b><p>Testo e allegati saranno registrati con data e digest prima della chiamata AI.</p></div></aside></div>
-    <footer><button type="button" data-close="incidentDialog">Annulla</button><button class="primary" type="submit">Registra il racconto</button></footer>
+    <header><div><p class="eyebrow">Nuovo evento</p><h2 id="incidentTitle">Che cosa è successo?</h2><p>Descrivi i fatti disponibili. Non serve una classificazione iniziale.</p></div><button type="button" data-close="incidentDialog" aria-label="Chiudi">×</button></header>
+    <div class="dialog-body intake-layout"><label class="prompt-field">Racconto originale<textarea name="originalNarrative" rows="10" required placeholder="Descrivi ciò che è stato osservato, chi lo ha segnalato e cosa è noto in questo momento"></textarea></label><aside><label>Quando ne avete avuto conoscenza?<input name="awarenessAt" type="datetime-local" required></label><label class="dropzone">Elementi disponibili<input name="files" type="file" multiple><span>Log, screenshot, email, documenti</span></label><div class="evidence-note"><b>Originale preservato</b><p>Testo e allegati sono registrati con data e digest prima della chiamata AI.</p></div></aside></div>
+    <footer><button type="button" data-close="incidentDialog">Annulla</button><button class="primary" type="submit">Registra evento</button></footer>
   </form>
 </dialog>
 
-<dialog id="sourceDialog" class="dialog full" aria-labelledby="sourceTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Provenienza</p><h2 id="sourceTitle"></h2><p id="sourceMeta"></p></div><button type="button" data-close="sourceDialog" aria-label="Chiudi">×</button></header><div id="sourceBody" class="dialog-body"></div><footer id="sourceActions"></footer></div></dialog>
-<dialog id="incidentWorkspace" class="dialog full" aria-labelledby="workspaceTitle"><div class="dialog-shell"><header><div><p id="workspaceMeta" class="eyebrow"></p><h2 id="workspaceTitle"></h2><p>AI Lens, domande motivate e formulazione finale nello stesso fascicolo.</p></div><button type="button" data-close="incidentWorkspace" aria-label="Chiudi">×</button></header><div id="workspaceBody" class="dialog-body"></div><footer id="workspaceActions"></footer></div></dialog>
+<dialog id="sourceDialog" class="dialog full" aria-labelledby="sourceTitle"><div class="dialog-shell"><header><div><p class="eyebrow">Origine e decisioni</p><h2 id="sourceTitle"></h2><p id="sourceMeta"></p></div><button type="button" data-close="sourceDialog" aria-label="Chiudi">×</button></header><div id="sourceBody" class="dialog-body"></div><footer id="sourceActions"></footer></div></dialog>
+<dialog id="incidentWorkspace" class="dialog full" aria-labelledby="workspaceTitle"><div class="dialog-shell"><header><div><p id="workspaceMeta" class="eyebrow"></p><h2 id="workspaceTitle"></h2><p>Analisi AI, chiarimenti, versioni ed evidenze nello stesso fascicolo.</p></div><button type="button" data-close="incidentWorkspace" aria-label="Chiudi">×</button></header><div id="workspaceBody" class="dialog-body"></div><footer id="workspaceActions"></footer></div></dialog>
 </body>
 </html>

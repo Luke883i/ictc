@@ -1,27 +1,122 @@
 import { $, $$, dateLabel, esc, labels, state } from './common.js';
 
-function evidenceButton(url, label = 'Fascicolo') {
+function capability(name) {
+  return Array.isArray(state.data?.capabilities) && state.data.capabilities.includes(name);
+}
+function evidenceButton(url, label = 'Evidenze') {
   return `<button class="secondary" type="button" data-download-evidence="${esc(url)}">${esc(label)}</button>`;
+}
+
+const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
+const roleSummaries = {
+  admin: 'Configura il sistema, approva i piani, verifica le fonti e governa gli eventi.',
+  user: 'Consulta gli esiti, aggiungi materiale e registra ciò che è accaduto.',
+  auditor: 'Consulta provenienza, decisioni ed evidenze in sola lettura.',
+};
+const roleJourneys = {
+  admin: [
+    ['Definisci', 'Indica l’obiettivo o l’evento da gestire.'],
+    ['ICTC propone', 'L’AI prepara un piano o un’analisi da verificare.'],
+    ['Tu approvi', 'Conferma, correggi o escludi prima di procedere.'],
+    ['Conserva evidenze', 'Ogni decisione produce una traccia scaricabile.'],
+  ],
+  user: [
+    ['Consulta', 'Vedi monitoraggi, fonti ed eventi accessibili.'],
+    ['Aggiungi materiale', 'Invia link, testo o documenti senza classificarli.'],
+    ['Registra eventi', 'Descrivi i fatti disponibili nel momento in cui emergono.'],
+    ['Segui lo stato', 'Controlla cosa è stato registrato e cosa manca.'],
+  ],
+  auditor: [
+    ['Consulta', 'Apri monitoraggi, fonti ed eventi disponibili.'],
+    ['Verifica origine', 'Controlla provenienza, versioni e motivazioni.'],
+    ['Scarica evidenze', 'Esporta i fascicoli con l’identità attiva.'],
+    ['Resta in sola lettura', 'Nessuna azione modifica dati o decisioni.'],
+  ],
+};
+
+function homeAction(role, counts, llmReady) {
+  if (role === 'admin') {
+    if (!llmReady) return { title:'Completa la configurazione AI', label:'Configura AI', action:'settings', reason:'Serve per creare piani e analisi. Le decisioni restano comunque umane.' };
+    if (!counts.missions) return { title:'Definisci il primo obiettivo', label:'Crea un monitoraggio', action:'monitoring', reason:'Descrivi cosa sorvegliare; ICTC proporrà un piano da approvare.' };
+    if (counts.candidates) return { title:'Completa le verifiche aperte', label:`Verifica ${counts.candidates} ${counts.candidates === 1 ? 'fonte' : 'fonti'}`, action:'monitoring-catalog', reason:'Le fonti candidate non diventano verificate senza una decisione motivata.' };
+    if (counts.openIncidents) return { title:'Gestisci gli eventi aperti', label:`Apri ${counts.openIncidents} ${counts.openIncidents === 1 ? 'evento' : 'eventi'}`, action:'incidents', reason:'Controlla chiarimenti, formulazioni e prossime decisioni.' };
+    return { title:'Controlla l’attività corrente', label:'Apri il monitoraggio', action:'monitoring', reason:'Verifica stato dei piani, prossime esecuzioni ed evidenze.' };
+  }
+  if (role === 'user') {
+    if (capability('report-incident')) return { title:'Registra ciò che è accaduto', label:'Registra un evento', action:'incident', reason:'Parti dai fatti disponibili. Non serve classificare l’evento.' };
+    return { title:'Aggiungi materiale utile', label:'Aggiungi materiale', action:'contribution', reason:'ICTC conserva l’originale e propone metadati da verificare.' };
+  }
+  return { title:'Consulta le evidenze disponibili', label:'Apri le evidenze', action:'monitoring-catalog', reason:'Controlla fonti, decisioni e provenienza senza modificare il fascicolo.' };
+}
+
+export function renderHome() {
+  const role = state.data.actor.role;
+  const missions = state.data.missions || [];
+  const catalog = state.data.catalog || [];
+  const incidents = state.data.incidents || [];
+  const counts = {
+    missions: missions.length,
+    active: missions.filter(item => item.state === 'active').length,
+    candidates: catalog.filter(item => item.state === 'candidate').length,
+    openIncidents: incidents.filter(item => !['submitted','closed'].includes(item.state)).length,
+  };
+  const llm = state.data.settings.llm;
+  const next = homeAction(role, counts, llm.ready);
+  $('#homeView').dataset.role = role;
+  $('#homeRole').textContent = roleLabels[role] || 'Ruolo';
+  $('#homeSummary').textContent = roleSummaries[role] || 'Consulta lo stato e scegli il prossimo passo.';
+  $('#homeNextTitle').textContent = next.title;
+  $('#homeReason').textContent = next.reason;
+  const primary = $('#homePrimaryAction');
+  primary.textContent = next.label;
+  primary.dataset.homeAction = next.action;
+  $('#homeAiNote').textContent = llm.ready
+    ? 'AI disponibile: può proporre piani e analisi. La conferma umana resta obbligatoria.'
+    : 'AI non configurata: originali ed evidenze restano registrabili; piani e analisi richiedono configurazione.';
+  $('#homeJourney').innerHTML = (roleJourneys[role] || roleJourneys.user).map((step, index) => `
+    <li class="journey-step"><span>${index + 1}</span><div><b>${esc(step[0])}</b><p>${esc(step[1])}</p></div></li>
+  `).join('');
+  const metrics = [
+    [counts.active, 'Monitoraggi attivi', counts.missions ? `${counts.missions} totali` : 'Nessun piano'],
+    [counts.candidates, 'Fonti da verificare', counts.candidates ? 'Decisione richiesta' : 'Nessuna verifica aperta'],
+    [counts.openIncidents, 'Eventi aperti', incidents.length ? `${incidents.length} totali` : 'Nessun evento'],
+    [llm.ready ? 'Pronta' : 'Non configurata', 'AI', llm.ready ? 'Supporto disponibile' : 'Percorsi manuali disponibili'],
+  ];
+  $('#homeMetrics').innerHTML = metrics.map(([value, label, detail]) => `
+    <div class="home-metric"><b>${esc(value)}</b><span>${esc(label)}</span><small>${esc(detail)}</small></div>
+  `).join('');
 }
 
 export function renderIdentity() {
   $('#roleSelect').value = state.role;
-  const ai = state.data.settings.llm.ready ? 'AI pronta' : state.data.settings.llm.configured ? 'AI configurata, chiave assente' : 'AI da configurare';
-  const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
+  const llm = state.data.settings.llm;
+  const ai = llm.ready ? 'AI pronta' : llm.configured ? 'Chiave AI non disponibile' : 'AI non configurata';
   const roleLabel = roleLabels[state.data.actor.role] || 'Ruolo non riconosciuto';
   const status = $('#runtimeStatus');
   status.textContent = `${roleLabel} · ${ai}`;
   status.dataset.actorRole = state.data.actor.role;
+  status.dataset.state = llm.ready ? 'ready' : 'attention';
   $$('.admin-only').forEach(node => { node.hidden = state.data.actor.role !== 'admin'; });
-  $('#aiSetup').hidden = state.data.actor.role !== 'admin' || state.data.settings.llm.ready;
+  $('#aiSetup').hidden = state.data.actor.role !== 'admin' || llm.ready;
   const missionSubmit = $('#missionForm')?.querySelector('button[type="submit"]');
-  if (missionSubmit) missionSubmit.disabled = state.data.actor.role !== 'admin';
+  if (missionSubmit) missionSubmit.disabled = !capability('manage-monitoring');
   const intro = $('#userMonitoringIntro');
-  if (intro) intro.hidden = state.data.actor.role === 'admin';
+  if (intro) {
+    intro.hidden = state.data.actor.role === 'admin';
+    if (state.data.actor.role === 'auditor') {
+      intro.querySelector('.eyebrow').textContent = 'Vista auditor';
+      intro.querySelector('h2').textContent = 'Consulta fonti ed evidenze.';
+      intro.querySelector('p').textContent = 'Questa vista è in sola lettura. Puoi consultare provenienza e decisioni senza aggiungere materiale.';
+      intro.querySelector('button').hidden = true;
+    } else {
+      intro.querySelector('button').hidden = !capability('contribute-source');
+    }
+  }
 }
 
 export function renderNavigation() {
   $$('[data-service]').forEach(button => button.setAttribute('aria-current', button.dataset.service === state.service ? 'page' : 'false'));
+  $('#homeView').hidden = state.service !== 'home';
   $('#monitoringView').hidden = state.service !== 'monitoring';
   $('#incidentsView').hidden = state.service !== 'incidents';
 }
@@ -30,21 +125,21 @@ export function renderMissions() {
   const missions = [...state.data.missions].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   $('#missionCount').textContent = missions.length;
   $('#missionsList').innerHTML = missions.map(item => {
-    let result = 'Obiettivo preservato; piano non ancora disponibile';
+    let result = 'Obiettivo registrato; piano non disponibile';
     if (item.lastRun) result = `${item.lastRun.inserted} nuove · ${item.lastRun.updated} aggiornate`;
-    else if (item.state === 'draft') result = 'Piano da verificare';
+    else if (item.state === 'draft') result = 'Piano da approvare';
     else if (item.state === 'active') result = 'In attesa del prossimo controllo';
-    else if (item.state === 'paused') result = `Sospeso: ${item.pauseReason || 'motivazione registrata nel fascicolo'}`;
-    else if (item.state === 'needs-plan') result = `Obiettivo salvo; AI da riprovare: ${item.aiError || 'provider non disponibile'}`;
+    else if (item.state === 'paused') result = `In pausa: ${item.pauseReason || 'motivazione registrata'}`;
+    else if (item.state === 'needs-plan') result = `Pianificazione non riuscita: ${item.aiError || 'provider non disponibile'}`;
     const actions = [evidenceButton(item.evidenceUrl)];
-    if (state.data.actor.role === 'admin') {
-      actions.push(`<button class="secondary" type="button" data-open-plan="${esc(item.id)}">Apri piano</button>`);
+    if (capability('manage-monitoring')) {
+      actions.push(`<button class="secondary" type="button" data-open-plan="${esc(item.id)}">Rivedi piano</button>`);
       if (item.state === 'active') actions.push(`<button class="secondary" type="button" data-pause-mission="${esc(item.id)}">Sospendi</button><button class="primary" type="button" data-run-mission="${esc(item.id)}">Esegui ora</button>`);
       if (item.state === 'paused') actions.push(`<button class="primary" type="button" data-resume-mission="${esc(item.id)}">Riprendi</button>`);
-      if (item.state === 'needs-plan') actions.push(`<button class="primary" type="button" data-open-plan="${esc(item.id)}">Riprova piano</button>`);
+      if (item.state === 'needs-plan') actions.push(`<button class="primary" type="button" data-open-plan="${esc(item.id)}">Riprova</button>`);
     }
-    return `<article class="mission-card"><div class="card-head"><div><span class="pill ${esc(item.state)}">${esc(labels[item.state] || item.state)}</span><h3>${esc(item.objective)}</h3></div></div><div class="card-meta"><span>${esc(result)}</span><span>v${esc(item.planVersion || 0)}</span><span>Ritmo: ${esc(item.cadenceHours)}h</span><span>Prossimo: ${esc(dateLabel(item.nextRunAt))}</span></div>${item.lastError ? `<p class="boundary">Ultimo run: ${esc(item.lastError)}</p>` : ''}<div class="card-actions">${actions.join('')}</div></article>`;
-  }).join('') || `<div class="empty">${state.data.actor.role === 'admin' ? 'Nessun monitoraggio. Descrivi il risultato da sorvegliare.' : 'Nessun monitoraggio disponibile. Puoi comunque aggiungere materiale.'}</div>`;
+    return `<article class="mission-card"><div class="card-head"><div><span class="pill ${esc(item.state)}">${esc(labels[item.state] || item.state)}</span><h3>${esc(item.objective)}</h3></div></div><div class="card-meta"><span>${esc(result)}</span><span>v${esc(item.planVersion || 0)}</span><span>Ogni ${esc(item.cadenceHours)}h</span><span>Prossimo: ${esc(dateLabel(item.nextRunAt))}</span></div>${item.lastError ? `<p class="boundary">Ultimo controllo: ${esc(item.lastError)}</p>` : ''}<div class="card-actions">${actions.join('')}</div></article>`;
+  }).join('') || `<div class="empty">${capability('manage-monitoring') ? 'Nessun monitoraggio. Crea il primo piano dall’obiettivo.' : 'Nessun monitoraggio disponibile.'}</div>`;
 }
 
 export function renderCatalog() {
@@ -60,23 +155,24 @@ export function renderCatalog() {
 export function renderContributions() {
   const root = $('#contributionList');
   if (!root) return;
-  const items = [...(state.data.contributions || [])].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,5);
-  root.innerHTML = items.length ? `<p class="eyebrow">I tuoi ultimi contributi</p>${items.map(item => `<div class="contribution-row"><div><b>${esc(item.note || item.links?.[0] || item.attachments?.[0]?.name || 'Materiale registrato')}</b><small>${item.state === 'needs-enrichment' ? 'Originale salvo · AI da riprovare' : item.state === 'enriched' ? 'Originale e metadati AI registrati' : 'Originale registrato'}</small></div><div>${evidenceButton(item.evidenceUrl, 'Prova')}${item.state === 'needs-enrichment' ? `<button type="button" data-retry-contribution="${esc(item.id)}">Riprova AI</button>` : ''}</div></div>`).join('')}` : '';
+  const items = [...(state.data.contributions || [])].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,4);
+  root.innerHTML = items.length ? `<p class="eyebrow">Materiali recenti</p>${items.map(item => `<div class="contribution-row"><div><b>${esc(item.note || item.links?.[0] || item.attachments?.[0]?.name || 'Materiale registrato')}</b><small>${item.state === 'needs-enrichment' ? 'Originale registrato · analisi AI non riuscita' : item.state === 'enriched' ? 'Originale e metadati registrati' : 'Originale registrato'}</small></div><div>${evidenceButton(item.evidenceUrl)}${item.state === 'needs-enrichment' ? `<button type="button" data-retry-contribution="${esc(item.id)}">Riprova AI</button>` : ''}</div></div>`).join('')}` : '';
 }
 
 export function renderIncidents() {
   const incidents = [...state.data.incidents].sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
   $('#incidentCount').textContent = incidents.length;
   $('#incidentList').innerHTML = incidents.map(item => {
-    const kind = item.answers?.classification?.unknown ? 'Da definire' : labels[item.answers?.classification?.value || item.analysis?.proposedKind || 'unknown'];
-    let next = item.nextQuestion ? item.nextQuestion.label : item.state === 'review' ? 'Formulazione salvata da confermare' : item.state === 'submitted' ? 'Inviata' : item.state === 'closed' ? 'Chiusa' : 'Pronta per la formulazione';
-    if (item.aiError) next = 'Racconto salvo; analisi AI da riprovare';
+    const kind = item.answers?.classification?.unknown ? 'Non determinato' : labels[item.answers?.classification?.value || item.analysis?.proposedKind || 'unknown'];
+    let next = item.nextQuestion ? item.nextQuestion.label : item.state === 'review' ? 'Versione da approvare' : item.state === 'submitted' ? 'Inviato' : item.state === 'closed' ? 'Chiuso' : 'Pronto per la formulazione';
+    if (item.aiError) next = 'Originale registrato; analisi AI non riuscita';
     return `<article class="incident-card"><div class="card-head"><div><span class="pill ${esc(item.state)}">${esc(labels[item.state] || item.state)}</span><h3>${esc(item.originalNarrative.slice(0,110))}${item.originalNarrative.length > 110 ? '…' : ''}</h3></div></div><div class="card-meta"><span>${esc(kind)}</span><span>Conoscenza: ${esc(dateLabel(item.awarenessAt))}</span><span>${(item.formulationVersions || []).length} versioni</span></div><p>${esc(next)}</p><div class="card-actions">${evidenceButton(item.evidenceUrl)}<button class="primary" type="button" data-open-incident="${esc(item.id)}">Apri</button></div></article>`;
-  }).join('') || '<div class="empty">Nessuna segnalazione. Registra un racconto quando accade qualcosa o quasi accade.</div>';
+  }).join('') || '<div class="empty">Nessun evento registrato.</div>';
 }
 
 export function render() {
   renderIdentity();
+  renderHome();
   renderNavigation();
   renderMissions();
   renderCatalog();

@@ -24,7 +24,7 @@ def main():
             launch['executable_path'] = chromium
         browser = p.chromium.launch(**launch)
         context = browser.new_context(viewport={'width': 1280, 'height': 1000})
-        context.add_init_script("try{localStorage.setItem('ictc-role','admin')}catch{}")
+        context.add_init_script("try{localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')}catch{}")
         page = context.new_page()
         page.set_default_timeout(10000)
         page.set_default_navigation_timeout(15000)
@@ -34,6 +34,7 @@ def main():
         PHASE = 'bootstrap'
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.goto(f'{BASE}/', wait_until='networkidle')
+        page.get_by_role('heading', name='Cosa devi fare adesso?').wait_for()
 
         PHASE = 'readiness'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -57,7 +58,7 @@ def main():
         ) as governance_response:
             governance_form.locator('button[type="submit"]').click()
         assert governance_response.value.status == 200
-        page.get_by_text('Governance registrata', exact=True).wait_for()
+        page.get_by_text('Governance salvata', exact=True).wait_for()
 
         PHASE = 'identity-lifecycle'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -83,6 +84,7 @@ def main():
         row = page.locator('.user-row').filter(has_text='browser-auditor')
         row.wait_for()
         assert 'Auditor Browser' in row.inner_text()
+        assert 'Auditor' in row.inner_text()
 
         PHASE = 'identity-disable'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -99,6 +101,7 @@ def main():
         PHASE = 'page-errors'
         assert not errors, errors
         checks = [
+            'home-admin-entry',
             'honest-blockers',
             'governance-write',
             'user-provision-persisted',

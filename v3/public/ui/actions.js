@@ -20,13 +20,40 @@ async function run(action, success, { refreshState = true } = {}) {
   }
 }
 
+function setService(service, focusSelector = '#main') {
+  state.service = service;
+  storageSet('ictc-service', service);
+  renderNavigation();
+  requestAnimationFrame(() => $(focusSelector)?.focus({ preventScroll: false }));
+}
+
+export function activateHomeAction(action) {
+  if (action === 'settings') {
+    populateSettings();
+    openDialog('settingsDialog');
+    return;
+  }
+  if (action === 'contribution') {
+    $('#contributionForm').reset();
+    openDialog('contributionDialog');
+    return;
+  }
+  if (action === 'incident') {
+    setService('incidents');
+    $('#incidentForm').reset();
+    $('#incidentForm').elements.awarenessAt.value = localDateTimeValue();
+    openDialog('incidentDialog');
+    return;
+  }
+  if (action === 'monitoring-catalog') {
+    setService('monitoring', '#catalogSearch');
+    return;
+  }
+  if (['home','monitoring','incidents'].includes(action)) setService(action);
+}
+
 export function installBindings() {
-  $$('[data-service]').forEach(button => button.addEventListener('click', () => {
-    state.service = button.dataset.service;
-    storageSet('ictc-service', state.service);
-    renderNavigation();
-    $('#main').focus();
-  }));
+  $$('[data-service]').forEach(button => button.addEventListener('click', () => setService(button.dataset.service)));
   $$('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog(button.dataset.close)));
   $('#dismissProof').addEventListener('click', () => { $('#proofPulse').hidden = true; });
   $('#roleSelect').addEventListener('change', async event => {
@@ -46,7 +73,7 @@ export function installBindings() {
   $('#settingsForm').addEventListener('submit', async event => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const result = await run(() => api('/api/admin/settings',{method:'PUT',body:JSON.stringify({organization:{name:form.get('organizationName'),scope:form.get('organizationScope'),jurisdictions:splitList(form.get('jurisdictions'))},llm:{endpoint:form.get('endpoint'),model:form.get('model'),apiKeyEnv:form.get('apiKeyEnv'),temperature:Number(form.get('temperature'))},prompts:Object.fromEntries(['monitoringPlan','complianceDiscovery','contributionEnrichment','incidentAnalysis','incidentDraft'].map(key=>[key,form.get(key)]))})}), 'Configurazione globale registrata');
+    const result = await run(() => api('/api/admin/settings',{method:'PUT',body:JSON.stringify({organization:{name:form.get('organizationName'),scope:form.get('organizationScope'),jurisdictions:splitList(form.get('jurisdictions'))},llm:{endpoint:form.get('endpoint'),model:form.get('model'),apiKeyEnv:form.get('apiKeyEnv'),temperature:Number(form.get('temperature'))},prompts:Object.fromEntries(['monitoringPlan','complianceDiscovery','contributionEnrichment','incidentAnalysis','incidentDraft'].map(key=>[key,form.get(key)]))})}), 'Configurazione AI salvata');
     if (result) closeDialog('settingsDialog');
   });
 
@@ -63,7 +90,7 @@ export function installBindings() {
     renderPlanDialog();
     openDialog('planDialog');
     formElement.reset();
-    notify(result.warning ? `Obiettivo preservato; piano AI da riprovare: ${result.warning}` : 'Piano AI pronto per la verifica');
+    notify(result.warning ? `Obiettivo registrato; pianificazione non riuscita: ${result.warning}` : 'Piano pronto per la verifica');
   });
 
   $('#contributionForm').addEventListener('submit', async event => {
@@ -76,7 +103,7 @@ export function installBindings() {
     button.disabled = false;
     if (!result) return;
     closeDialog('contributionDialog');
-    notify(result.warning ? `Materiale preservato; analisi AI da riprovare: ${result.warning}` : 'Materiale preservato e classificato');
+    notify(result.warning ? `Materiale registrato; analisi AI non riuscita: ${result.warning}` : 'Materiale registrato e arricchito');
   });
 
   $('#incidentForm').addEventListener('submit', async event => {
@@ -92,13 +119,19 @@ export function installBindings() {
     state.activeIncidentId = result.incident.id;
     renderIncidentWorkspace();
     openDialog('incidentWorkspace');
-    notify(result.warning ? `Racconto preservato; analisi AI da riprovare: ${result.warning}` : 'Racconto preservato e analizzato');
+    notify(result.warning ? `Evento registrato; analisi AI non riuscita: ${result.warning}` : 'Evento registrato e analizzato');
   });
 
   document.addEventListener('click', async event => {
+    const homeAction = event.target.closest('[data-home-action]');
+    if (homeAction) {
+      event.preventDefault();
+      activateHomeAction(homeAction.dataset.homeAction);
+      return;
+    }
     const evidence = event.target.closest('[data-download-evidence]');
     if (evidence) {
-      try { await downloadProtected(evidence.dataset.downloadEvidence); notify('Fascicolo scaricato'); }
+      try { await downloadProtected(evidence.dataset.downloadEvidence); notify('Evidenze scaricate'); }
       catch (error) { notify(error.message, true); }
       return;
     }
@@ -111,7 +144,7 @@ export function installBindings() {
     const revise = event.target.closest('[data-revise-mission]');
     if (revise) {
       const result = await run(() => api(`/api/missions/${revise.dataset.reviseMission}/revise`,{method:'POST',body:JSON.stringify({objective:$('#missionObjective')?.value,sourceHints:splitList($('#missionHints')?.value),promptOverride:$('#missionPrompt')?.value})}), null);
-      if (result) { renderPlanDialog(); notify(result.warning ? `Revisione preservata; piano AI da riprovare: ${result.warning}` : 'Piano rigenerato e versione precedente conservata'); }
+      if (result) { renderPlanDialog(); notify(result.warning ? `Revisione registrata; pianificazione non riuscita: ${result.warning}` : 'Piano rigenerato; la versione precedente resta disponibile'); }
       return;
     }
     const pause = event.target.closest('[data-pause-mission]');
@@ -124,9 +157,9 @@ export function installBindings() {
     const resume = event.target.closest('[data-resume-mission]');
     if (resume) { await run(() => api(`/api/missions/${resume.dataset.resumeMission}/resume`,{method:'POST',body:'{}'}), 'Monitoraggio ripreso'); return; }
     const runMission = event.target.closest('[data-run-mission]');
-    if (runMission) { await run(() => api(`/api/missions/${runMission.dataset.runMission}/run`,{method:'POST',body:'{}'}), 'Run completato'); return; }
+    if (runMission) { await run(() => api(`/api/missions/${runMission.dataset.runMission}/run`,{method:'POST',body:'{}'}), 'Controllo completato'); return; }
     const retryContribution = event.target.closest('[data-retry-contribution]');
-    if (retryContribution) { await run(() => api(`/api/contributions/${retryContribution.dataset.retryContribution}/enrich`,{method:'POST',body:'{}'}), 'Contributo arricchito'); return; }
+    if (retryContribution) { await run(() => api(`/api/contributions/${retryContribution.dataset.retryContribution}/enrich`,{method:'POST',body:'{}'}), 'Materiale arricchito'); return; }
     const source = event.target.closest('[data-open-source]');
     if (source) { state.activeSourceId = source.dataset.openSource; renderSourceDialog(); openDialog('sourceDialog'); return; }
     const decision = event.target.closest('[data-source-decision]');
@@ -145,13 +178,13 @@ export function installBindings() {
     if (answer) {
       const value = $('#questionValue')?.value || '';
       if (!value.trim()) return notify('Inserisci una risposta oppure scegli Non disponibile', true);
-      await run(() => api(`/api/incidents/${state.activeIncidentId}/answers`,{method:'POST',body:JSON.stringify({answers:[{id:answer.dataset.answerQuestion,value}]})}), 'Risposta e provenienza registrate');
+      await run(() => api(`/api/incidents/${state.activeIncidentId}/answers`,{method:'POST',body:JSON.stringify({answers:[{id:answer.dataset.answerQuestion,value}]})}), 'Risposta registrata');
       return;
     }
     const unknown = event.target.closest('[data-answer-unknown]');
     if (unknown) { await run(() => api(`/api/incidents/${state.activeIncidentId}/answers`,{method:'POST',body:JSON.stringify({answers:[{id:unknown.dataset.answerUnknown,unknown:true}]})}), 'Dato registrato come non disponibile'); return; }
     const generate = event.target.closest('[data-generate-draft]');
-    if (generate) { await run(() => api(`/api/incidents/${generate.dataset.generateDraft}/draft`,{method:'POST',body:'{}'}), 'Bozza AI salvata come versione'); return; }
+    if (generate) { await run(() => api(`/api/incidents/${generate.dataset.generateDraft}/draft`,{method:'POST',body:'{}'}), 'Bozza AI registrata'); return; }
     const saveManual = event.target.closest('[data-save-manual]');
     if (saveManual) {
       const finalNarrative = $('#manualNarrative')?.value.trim();
@@ -169,14 +202,14 @@ export function installBindings() {
     const submit = event.target.closest('[data-submit-incident]');
     if (submit) {
       if (!$('#confirmIncident')?.checked) return notify('Conferma di aver verificato la versione corrente', true);
-      await run(() => api(`/api/incidents/${submit.dataset.submitIncident}/submit`,{method:'POST',body:JSON.stringify({confirmed:true,formulationSha256:submit.dataset.formulationSha})}), 'Segnalazione inviata');
+      await run(() => api(`/api/incidents/${submit.dataset.submitIncident}/submit`,{method:'POST',body:JSON.stringify({confirmed:true,formulationSha256:submit.dataset.formulationSha})}), 'Evento inviato');
       return;
     }
     const close = event.target.closest('[data-close-incident]');
     if (close) {
       const note = $('#closureNote')?.value.trim();
       if (!note) return notify('Indica il motivo della chiusura', true);
-      await run(() => api(`/api/incidents/${close.dataset.closeIncident}/close`,{method:'POST',body:JSON.stringify({note})}), 'Fascicolo chiuso');
+      await run(() => api(`/api/incidents/${close.dataset.closeIncident}/close`,{method:'POST',body:JSON.stringify({note})}), 'Evento chiuso');
     }
   });
 }
