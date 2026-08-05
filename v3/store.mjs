@@ -45,6 +45,21 @@ function eventHash(event) {
   const { hash, ...unsigned } = event;
   return sha256(canonicalJson(unsigned));
 }
+function contributionOriginIds(subject) {
+  const origins = [...(subject.observations || []).map(item => item.origin), subject.origin].filter(Boolean);
+  return new Set(origins.map(item => item.contributionId).filter(Boolean));
+}
+function redactCatalogContributionOrigins(subject, accessibleIds) {
+  const redactOrigin = origin => {
+    if (!origin?.contributionId || accessibleIds.has(origin.contributionId)) return origin;
+    const redacted = structuredClone(origin);
+    redacted.contributionId = '[restricted]';
+    return redacted;
+  };
+  subject.origin = redactOrigin(subject.origin);
+  subject.observations = (subject.observations || []).map(item => ({ ...item, origin: redactOrigin(item.origin) }));
+  return subject;
+}
 
 export class Store {
   constructor(root) {
@@ -131,7 +146,7 @@ export class Store {
     await rename(tmp, this.statePath);
   }
   async saveAttachments(files = []) {
-    const saved = [];
+    const candidates = [];
     for (const file of files.slice(0, MAX_ATTACHMENTS)) {
       const name = asString(file.name, 240) || 'allegato';
       const mime = asString(file.mime, 160) || 'application/octet-stream';
@@ -141,10 +156,19 @@ export class Store {
       if (buffer.length > MAX_ATTACHMENT_BYTES) throw Object.assign(new Error(`Allegato troppo grande: ${name}`), { status: 413, code: 'attachment-too-large' });
       const attachmentId = id('file');
       const sha = createHash('sha256').update(buffer).digest('hex');
-      await writeFile(path.join(this.attachmentsPath, attachmentId), buffer, { mode: 0o600, flag: 'wx' });
-      saved.push({ id: attachmentId, name, mime, bytes: buffer.length, sha256: sha, storedAt: now() });
+      candidates.push({ metadata: { id: attachmentId, name, mime, bytes: buffer.length, sha256: sha, storedAt: now() }, buffer });
     }
-    return saved;
+    const saved = [];
+    try {
+      for (const candidate of candidates) {
+        await writeFile(path.join(this.attachmentsPath, candidate.metadata.id), candidate.buffer, { mode: 0o600, flag: 'wx' });
+        saved.push(candidate.metadata);
+      }
+      return saved;
+    } catch (error) {
+      await this.deleteAttachments(saved).catch(() => {});
+      throw error;
+    }
   }
   async deleteAttachments(files = []) {
     for (const file of files) {
@@ -185,12 +209,16 @@ export class Store {
       if (subject.origin) origins.push(subject.origin);
       const missionIds = new Set(origins.map(item => item.missionId).filter(Boolean));
       const runIds = new Set(origins.map(item => item.runId).filter(Boolean));
-      const contributionIds = new Set(origins.map(item => item.contributionId).filter(Boolean));
-      for (const value of [...missionIds, ...runIds, ...contributionIds]) relatedIds.add(value);
+      const allContributionIds = contributionOriginIds(subject);
+      const accessibleContributions = state.contributions.filter(item => allContributionIds.has(item.id) && (actor.role === 'admin' || item.createdBy === actor.id));
+      const accessibleContributionIds = new Set(accessibleContributions.map(item => item.id));
+      for (const value of [...missionIds, ...runIds, ...accessibleContributionIds]) relatedIds.add(value);
+      if (actor.role !== 'admin') subject = redactCatalogContributionOrigins(subject, accessibleContributionIds);
       related = {
         missions: state.missions.filter(item => missionIds.has(item.id)),
         runs: state.runs.filter(item => runIds.has(item.id)),
-        contributions: state.contributions.filter(item => contributionIds.has(item.id)).map(item => ({ ...item, text: item.text ? '[preserved in contribution bundle]' : '' }))
+        contributions: accessibleContributions,
+        restrictedContributionCount: allContributionIds.size - accessibleContributionIds.size
       };
     } else if (type === 'contribution') {
       const catalog = state.catalog.filter(item => (item.observations || []).some(obs => obs.origin?.contributionId === subjectId) || item.origin?.contributionId === subjectId);
@@ -210,13 +238,14 @@ export class Store {
       integrityHead: this.verifyChain().head
     };
     return {
-      schemaVersion: '1.1.0', generatedAt: now(), generatedBy: actor.id, type, subject,
+      schemaVersion: '1.2.0', generatedAt: now(), generatedBy: actor.id, type, subject,
       related, events, manifest, integrity: this.verifyChain(),
       limitations: [
         'Il fascicolo dimostra le operazioni registrate dal runtime, non la verità sostanziale del contenuto.',
         'I risultati AI restano proposte o estrazioni e richiedono controllo umano.',
         'La catena hash non equivale a firma qualificata o marcatura temporale certificata.',
-        'La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.'
+        'La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.',
+        'I riferimenti a contributi non accessibili al ruolo corrente sono redatti dal fascicolo.'
       ]
     };
   }

@@ -186,13 +186,15 @@ export function createIncidentHandler({ store, permissions }) {
       requirePermission(actor, 'submit-own-incident', permissions);
       const input = await bodyJson(request);
       if (input.confirmed !== true) throw httpError(400, 'Conferma esplicita richiesta', 'confirmation-required');
-      const envelope = await store.mutate(actor, 'incident.submitted', { type: 'incident', id: params.id }, input, draft => {
+      const formulationSha256 = asString(input.formulationSha256, 64).toLowerCase();
+      if (!/^[a-f0-9]{64}$/.test(formulationSha256)) throw httpError(400, 'Conferma il digest della versione corrente', 'formulation-digest-required');
+      const envelope = await store.mutate(actor, 'incident.submitted', { type: 'incident', id: params.id }, { ...input, formulationSha256 }, draft => {
         const incident = findIncident(draft, params.id);
         ensureIncidentOwner(actor, incident);
         const current = currentFormulation(incident);
         const readiness = submissionReadiness(incident);
         if (!readiness.ready) throw httpError(409, 'Completa e salva la formulazione prima dell’invio', 'incident-not-ready', readiness);
-        if (input.formulationSha256 && input.formulationSha256 !== current.sha256) throw httpError(409, 'La formulazione è cambiata. Rileggi e conferma la versione corrente.', 'formulation-conflict');
+        if (formulationSha256 !== current.sha256) throw httpError(409, 'La formulazione è cambiata. Rileggi e conferma la versione corrente.', 'formulation-conflict');
         incident.finalNarrative = current.narrative;
         incident.state = 'submitted';
         incident.submittedAt = now();

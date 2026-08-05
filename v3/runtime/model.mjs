@@ -1,5 +1,5 @@
 import {
-  CATALOG_STATES, DOCUMENT_TYPES, asString, normalizeUrl, now, publicSettings, uniqueStrings
+  CATALOG_STATES, DOCUMENT_TYPES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings
 } from '../domain.mjs';
 import { deriveQuestions, submissionReadiness } from '../question-engine.mjs';
 import { httpError } from './http.mjs';
@@ -37,7 +37,13 @@ export function ensureContributionOwner(actor, contribution) {
   if (contribution.createdBy !== actor.id) throw httpError(403, 'Puoi elaborare soltanto i contributi che hai creato', 'not-owner');
 }
 export function catalogKey(item) {
-  return `${item.identifier || ''}|${item.sourceUrl || ''}|${item.title || ''}`.toLowerCase();
+  const identifier = asString(item.identifier, 500).toLowerCase();
+  if (identifier) return `id:${identifier}`;
+  const sourceUrl = normalizeUrl(item.sourceUrl).toLowerCase();
+  if (sourceUrl) return `url:${sourceUrl}`;
+  const authority = asString(item.authority, 500).toLowerCase().replace(/\s+/g, ' ');
+  const title = asString(item.title, 1_000).toLowerCase().replace(/\s+/g, ' ');
+  return `title:${authority}|${title}`;
 }
 function observationFrom(item) {
   return {
@@ -85,8 +91,16 @@ export function mergeCatalogObservation(existing, normalized) {
     observations: existing.observations || [],
     createdAt: existing.createdAt
   };
-  Object.assign(existing, normalized, preserved, { updatedAt: now() });
-  existing.observations = [...preserved.observations, observationFrom(normalized)].slice(-250);
+  const observation = observationFrom(normalized);
+  const observationSha256 = sha256(observation);
+  const lastDecision = preserved.decisions.at(-1);
+  const decisionStillApplies = lastDecision?.observationSha256 === observationSha256;
+  Object.assign(existing, normalized, preserved, {
+    state: decisionStillApplies ? preserved.state : 'candidate',
+    reviewReason: decisionStillApplies ? null : 'new-observation',
+    updatedAt: now()
+  });
+  existing.observations = [...preserved.observations, observation].slice(-250);
   return existing;
 }
 export function missionProjection(mission, state) {
@@ -184,8 +198,10 @@ export function validateSettings(input, current) {
 }
 export function applyCatalogDecision(item, decision, reason, actorId) {
   if (!CATALOG_STATES.includes(decision)) throw httpError(400, 'Stato non valido');
+  const observation = item.observations?.at(-1) || observationFrom(item);
   item.state = decision;
+  item.reviewReason = null;
   item.updatedAt = now();
-  item.decisions.push({ decision, reason, at: now(), by: actorId });
+  item.decisions.push({ decision, reason, at: now(), by: actorId, observationSha256: sha256(observation) });
   return item;
 }
