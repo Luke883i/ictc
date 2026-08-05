@@ -7,7 +7,9 @@ function evidenceButton(url, label = 'Fascicolo') {
 export function renderIdentity() {
   $('#roleSelect').value = state.role;
   const ai = state.data.settings.llm.ready ? 'AI pronta' : state.data.settings.llm.configured ? 'AI configurata, chiave assente' : 'AI da configurare';
-  $('#runtimeStatus').textContent = `${state.data.actor.role === 'admin' ? 'Amministratore' : 'Utente'} · ${ai}`;
+  const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
+  const roleLabel = roleLabels[state.data.actor.role] || 'Ruolo non riconosciuto';
+  $('#runtimeStatus').textContent = `${roleLabel} · ${ai}`;
   $$('.admin-only').forEach(node => { node.hidden = state.data.actor.role !== 'admin'; });
   $('#aiSetup').hidden = state.data.actor.role !== 'admin' || state.data.settings.llm.ready;
   const missionSubmit = $('#missionForm')?.querySelector('button[type="submit"]');
