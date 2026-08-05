@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "release": "1.8.0-rc.1",
+  "claims": [
+    {
+      "id": "canonical-monitoring-sot",
+      "status": "implemented",
+      "paths": ["v3/runtime/monitoring.mjs", "v3/runtime/model.mjs"],
+      "checks": ["v3/enterprise-convergence-check.mjs"],
+      "statement": "Monitoring uses the canonical missions model; the experimental monitoringJobs model is not registered."
+    },
+    {
+      "id": "enterprise-deployment-certification",
+      "status": "external-evidence-required",
+      "paths": ["v3/enterprise.mjs", "docs/ENTERPRISE_CONVERGENCE_DOD.md"],
+      "checks": ["v3/enterprise-readiness-check.mjs"],
+      "statement": "Deployment certification requires external identity, TLS, storage, backup, malware scanning, observability and accessibility evidence."
+    }
+  ]
+}
