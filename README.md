@@ -16,6 +16,12 @@ The application opens on one compact, role-aware Home instead of an operational 
 
 The administrator configures and approves, the user contributes and records events, and the auditor remains in a read-only evidence journey. See `docs/USER_JOURNEY_2_DOD.md`.
 
+## Enterprise T assurance
+
+The repository includes an executable enterprise engineering profile across 18 dimensions. Each dimension is saturated over 1,440 declared construction scenarios, frozen at N, challenged with 15 additional stress scenarios, checked against 12 convergent universal invariants and subjected to source probes, selected runtime stress and explicit falsification.
+
+The bundle adapts the rigor and control patterns of recognized enterprise standards without claiming certification or reproducing proprietary standard text. Its visual principle is rich but compact: common enterprise components, restrained hierarchy, progressive disclosure and intentional space rather than oversized heroes or empty vertical bands. See `docs/ENTERPRISE_T_ASSURANCE.md`.
+
 ## Semantic Workbench
 
 The read-only endpoints below project the canonical runtime state; they do not introduce another monitoring model or scheduler:
@@ -45,8 +51,8 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-Release `1.8.0-rc.1` includes executable enterprise and journey contracts, a claim manifest, canonical semantic projection, capability-safe UX and model-bounded saturation artifacts. The User Journey 2.0 model exhaustively enumerates its declared behavioral state space, freezes primitives at M and requires zero novelty in the next 100 scenarios.
+Release `1.8.0-rc.1` includes executable enterprise and journey contracts, a claim manifest, canonical semantic projection, capability-safe UX and model-bounded saturation artifacts. The User Journey 2.0 model exhaustively enumerates its declared behavioral state space. The Enterprise T model separately applies per-dimension N+15 no-novelty validation and preserves all known blockers as explicit findings.
 
 ## Enterprise boundary
 
-The runtime can be made **enterprise-certifiable**, but the repository cannot certify a deployment by itself. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`.
+The runtime can be made **enterprise-certifiable**, but the repository cannot certify a deployment by itself. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md` and `docs/ENTERPRISE_T_ASSURANCE.md`.
