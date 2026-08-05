@@ -32,6 +32,8 @@ jobs:
         run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
       - name: Honest enterprise posture and M plus 100
         run: node v3/enterprise-readiness-check.mjs && node v3/enterprise-convergence-check.mjs
+      - name: Enterprise T assurance
+        run: node v3/enterprise-t-saturation.mjs && node v3/enterprise-invariant-convergence.mjs && node v3/enterprise-t-audit.mjs && node v3/enterprise-falsification-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -58,6 +60,8 @@ jobs:
         run: node v3/v15-e2e.mjs
       - name: Runtime saturation
         run: node v3/v15-runtime-saturation.mjs
+      - name: Enterprise T runtime stress
+        run: node v3/enterprise-t-runtime-stress.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
