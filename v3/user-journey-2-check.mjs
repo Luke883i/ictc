@@ -29,7 +29,7 @@ check('role-guidance', render.includes('renderHome') && render.includes('Amminis
 check('capability-boundary', render.includes("capability('manage-monitoring')") && render.includes("capability('report-incident')"), 'guidance uses server-issued capabilities');
 check('contextual-ai', render.includes('AI disponibile') && render.includes('AI non configurata'), 'AI readiness is explained without claiming authority');
 check('horizontal-journey', html.includes('id="homeJourney"') && css.includes('.journey-strip') && css.includes('grid-auto-flow:column'), 'four-step journey is horizontal');
-check('compact-first-viewport', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0}'), 'density contract is encoded');
+check('compact-first-viewport', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'density contract is encoded');
 check('mobile-journey', css.includes('overflow-x:auto') && css.includes('scroll-snap-type:x proximity'), 'narrow journey remains ordered and scrollable');
 check('home-actions-wired', actions.includes('data-home-action') && actions.includes('activateHomeAction'), 'contextual CTAs are executable');
 check('plain-language-dod', dod.includes('One coherent entry point') && dod.includes('Horizontal guided journey'), 'global DoD is explicit');
@@ -60,7 +60,7 @@ for (const preferred of [
   check(`preferred-${preferred.toLowerCase().replaceAll(' ', '-')}`, experienceText.includes(preferred), `preferred label present: ${preferred}`);
 }
 
-check('human-authority', experienceText.includes('tu approvi') || experienceText.includes('conferma umana'), 'human decision boundary remains visible');
+check('human-authority', experienceText.includes('Tu approvi') || experienceText.includes('conferma umana'), 'human decision boundary remains visible');
 check('no-global-dom-polling', !experienceText.includes('new MutationObserver'), 'journey does not depend on global DOM polling');
 
 await import('node:fs/promises').then(async ({ mkdir, writeFile }) => {

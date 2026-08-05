@@ -35,7 +35,7 @@ check('no-browser-prompts', !actions.includes('prompt(') && !actions.includes('c
 check('monitoring-lifecycle', monitoring.includes('/pause') && monitoring.includes('/resume') && monitoring.includes('/revise'), 'plan can be revised, paused and resumed');
 check('incident-lifecycle', incidents.includes('/formulation') && incidents.includes('/submit') && incidents.includes('/close'), 'wording, submission and closure are distinct writes');
 check('home-plus-two-services', (html.match(/data-service=/g)||[]).length === 3 && contract.services.length === 2, 'home precedes two operational services');
-check('compact-density', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0}'), 'first viewport is compact');
+check('compact-density', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'first viewport is compact');
 check('plain-language', !`${html}\n${render}\n${workspaces}`.includes('Plan Reveal') && !`${html}\n${render}\n${workspaces}`.includes('AI Lens'), 'internal labels are removed');
 await import('node:fs/promises').then(({mkdir,writeFile}) => Promise.all([
   mkdir(new URL('../artifacts/', import.meta.url), {recursive:true}),
