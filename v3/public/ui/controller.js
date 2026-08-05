@@ -9,4 +9,7 @@ export async function refresh({ keepDialog = true } = {}) {
   if (keepDialog && state.activeIncidentId && $('#incidentWorkspace').open) renderIncidentWorkspace();
   if (keepDialog && state.activeSourceId && $('#sourceDialog').open) renderSourceDialog();
   if (keepDialog && state.activeMissionId && $('#planDialog').open) renderPlanDialog();
+  document.dispatchEvent(new CustomEvent('ictc:rendered', {
+    detail: { actorRole: state.data.actor.role },
+  }));
 }

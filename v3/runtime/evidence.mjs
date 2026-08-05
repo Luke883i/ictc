@@ -1,15 +1,14 @@
 import { routeMatch, httpError, requirePermission, sendEvidence } from './http.mjs';
 import { canAccessContribution, canAccessIncident } from './model.mjs';
 import { safeFilename } from '../domain.mjs';
-
 export function createEvidenceHandler({ store, permissions }) {
   return async function handle(request, response, pathname, actor) {
     const method = request.method || 'GET';
     let params = routeMatch(pathname, '/api/evidence/:type/:id');
     if (method === 'GET' && params) {
       requirePermission(actor, 'read', permissions);
-      const evidenceActor = actor.role === 'auditor' ? { ...actor, role: 'admin' } : actor;
-      const bundle = store.evidenceBundle(params.type, params.id, evidenceActor);
+      if (actor.role === 'auditor' && params.type === 'incident') throw httpError(403, 'L’export completo delle segnalazioni richiede un’autorizzazione dedicata', 'evidence-export-forbidden');
+      const bundle = store.evidenceBundle(params.type, params.id, actor);
       if (!bundle) throw httpError(404, 'Fascicolo non disponibile', 'not-found');
       bundle.generatedBy = actor.id;
       bundle.generatedForRole = actor.role;
@@ -26,13 +25,7 @@ export function createEvidenceHandler({ store, permissions }) {
       if (incident && actor.role !== 'auditor' && !canAccessIncident(actor, incident)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
       const contribution = snapshot.contributions.find(entry => (entry.attachments || []).some(file => file.id === params.id));
       if (contribution && !canAccessContribution(actor, contribution)) throw httpError(403, 'Allegato non accessibile', 'forbidden');
-      response.writeHead(200, {
-        'content-type': item.metadata.mime,
-        'content-length': item.buffer.length,
-        'content-disposition': `attachment; filename="${safeFilename(item.metadata.name)}"`,
-        'cache-control': 'no-store',
-        'x-content-type-options': 'nosniff'
-      });
+      response.writeHead(200, {'content-type':item.metadata.mime,'content-length':item.buffer.length,'content-disposition':`attachment; filename="${safeFilename(item.metadata.name)}"`,'cache-control':'no-store','x-content-type-options':'nosniff'});
       response.end(item.buffer);
       return true;
     }

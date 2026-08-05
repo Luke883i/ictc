@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { ROLES } from './domain.mjs';
+import { VERSION } from './version.mjs';
 import { runtimeHarness } from './runtime-test-harness.mjs';
 
 const runtime = await runtimeHarness('ictc-enterprise-admin');
@@ -12,9 +14,9 @@ const get = async (path, role = 'admin', actor = `local-${role}`) => {
 try {
   const bootstrap = await runtime.bootstrap('admin', 'local-admin');
   assert.equal(bootstrap.status, 200);
-  assert.equal(bootstrap.body.version, '1.7.0-rc.1');
-  assert.equal(bootstrap.body.experience.roles, 3);
-  mark('bootstrap', 'runtime 1.7 con tre ruoli');
+  assert.equal(bootstrap.body.version, VERSION);
+  assert.equal(bootstrap.body.experience.roles, ROLES.length);
+  mark('bootstrap', `runtime ${VERSION} con ${ROLES.length} ruoli`);
 
   const usersBefore = await get('/api/admin/users');
   assert.equal(usersBefore.status, 200);

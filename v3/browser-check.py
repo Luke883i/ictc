@@ -2,15 +2,12 @@ import json
 import os
 import pathlib
 import time
-import urllib.error
-import urllib.request
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
-BROWSER_ORIGIN = 'https://ictc.example'
 MOCK = os.environ.get('ICTC_MOCK_URL', 'http://127.0.0.1:4899').rstrip('/')
 
 with sync_playwright() as p:
@@ -25,31 +22,21 @@ with sync_playwright() as p:
     context.add_init_script("""
       try { localStorage.setItem('ictc-role', 'admin'); localStorage.setItem('ictc-service', 'monitoring'); } catch {}
     """)
-
-    def proxy(route):
-        request = route.request
-        target = BASE + request.url.removeprefix(BROWSER_ORIGIN)
-        headers = {key: value for key, value in request.headers.items() if key.lower() not in {'host', 'content-length', 'accept-encoding'}}
-        data = request.post_data_buffer if request.method not in {'GET', 'HEAD'} else None
-        upstream = urllib.request.Request(target, data=data, headers=headers, method=request.method)
-        try:
-            with urllib.request.urlopen(upstream, timeout=60) as response:
-                route.fulfill(status=response.status, headers=dict(response.headers), body=response.read())
-        except urllib.error.HTTPError as error:
-            route.fulfill(status=error.code, headers=dict(error.headers), body=error.read())
-
-    context.route(f'{BROWSER_ORIGIN}/**', proxy)
     page = context.new_page()
+    page.set_default_timeout(15000)
+    page.set_default_navigation_timeout(20000)
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
-    with urllib.request.urlopen(BASE + '/', timeout=30) as response:
-        html = response.read().decode('utf8')
-    html = html.replace('<head>', f'<head><base href="{BROWSER_ORIGIN}/">', 1)
-    page.set_content(html, wait_until='networkidle')
-    page.get_by_role('heading', name='Descrivi il risultato.').wait_for()
+
+    print('browser-check: bootstrap', flush=True)
+    page.goto(f'{BASE}/', wait_until='networkidle')
+    monitoring_heading = page.locator('.hero-monitoring h1')
+    monitoring_heading.wait_for()
+    assert 'Definisci cosa monitorare.' in monitoring_heading.inner_text()
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
 
-    page.get_by_role('button', name='AI').click()
+    print('browser-check: AI configuration', flush=True)
+    page.locator('#openSettings').click()
     form = page.locator('#settingsForm')
     form.locator('input[name="organizationName"]').fill('Azienda Browser')
     form.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
@@ -61,6 +48,7 @@ with sync_playwright() as p:
     page.locator('#settingsDialog').wait_for(state='hidden')
     page.locator('#runtimeStatus').get_by_text('AI pronta', exact=False).wait_for()
 
+    print('browser-check: monitoring journey', flush=True)
     mission = page.locator('#missionForm')
     mission.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni in Italia e UE')
     mission.locator('details').click()
@@ -77,7 +65,7 @@ with sync_playwright() as p:
     page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').wait_for()
 
     first_mission = page.locator('.mission-card').first
-    first_mission.get_by_role('button', name='Apri piano').click()
+    first_mission.locator('[data-open-plan]').click()
     page.locator('#pauseReason').fill('Verifica temporanea del perimetro')
     page.locator('#planActions').get_by_role('button', name='Sospendi').click()
     page.get_by_text('In pausa', exact=True).wait_for()
@@ -99,19 +87,21 @@ with sync_playwright() as p:
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
     page.locator('#contributionDialog').wait_for(state='hidden')
 
+    print('browser-check: user capability projection', flush=True)
     page.locator('#roleSelect').select_option('user')
     page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
     assert page.locator('#missionForm').is_hidden()
     assert page.locator('#userMonitoringIntro').is_visible()
-    assert page.get_by_role('button', name='AI').is_hidden()
+    assert page.locator('#openSettings').is_hidden()
     page.locator('#userMonitoringIntro').get_by_role('button', name='Aggiungi materiale').click()
     page.locator('#contributionForm textarea[name="text"]').fill('Contributo creato dall’utente')
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
     page.locator('#contributionDialog').wait_for(state='hidden')
     page.get_by_text('I tuoi ultimi contributi', exact=True).wait_for()
 
+    print('browser-check: incident journey', flush=True)
     page.locator('[data-service="incidents"]').click()
-    page.get_by_role('button', name='Nuova segnalazione').click()
+    page.locator('#openIncident').click()
     page.locator('#incidentForm textarea[name="originalNarrative"]').fill('Un alert nei log indica un possibile attacco phishing ancora in corso su account email clienti.')
     page.locator('#incidentForm input[name="awarenessAt"]').fill(time.strftime('%Y-%m-%dT%H:%M'))
     page.locator('#incidentForm').get_by_role('button', name='Registra il racconto').click()
@@ -153,7 +143,7 @@ with sync_playwright() as p:
 
     page.locator('#roleSelect').select_option('admin')
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
-    page.locator('.incident-card').first.get_by_role('button', name='Apri').click()
+    page.locator('.incident-card').first.locator('[data-open-incident]').click()
     page.locator('#closureNote').wait_for()
     page.locator('#closureNote').fill('Chiusura amministrativa dopo verifica del fascicolo')
     page.get_by_role('button', name='Chiudi fascicolo').click()
@@ -168,5 +158,8 @@ with sync_playwright() as p:
     ]
     assert not errors, f'page errors: {errors}'
     (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks}, indent=2), encoding='utf8')
-    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct evidence journeys)')
+    print('browser-check: teardown', flush=True)
+    page.close(run_before_unload=False)
+    context.close()
     browser.close()
+    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct evidence journeys, teardown complete)', flush=True)

@@ -1,5 +1,5 @@
 import {
-  CATALOG_STATES, DOCUMENT_TYPES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings
+  CATALOG_STATES, DOCUMENT_TYPES, ROLES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings
 } from '../domain.mjs';
 import { deriveQuestions, submissionReadiness } from '../question-engine.mjs';
 import { httpError } from './http.mjs';
@@ -25,7 +25,7 @@ export function findIncident(state, id) {
   return item;
 }
 export function canAccessIncident(actor, incident) {
-  return actor.role === 'admin' || incident.createdBy === actor.id;
+  return actor.role === 'admin' || actor.role === 'auditor' || incident.createdBy === actor.id;
 }
 export function ensureIncidentOwner(actor, incident) {
   if (incident.createdBy !== actor.id) throw httpError(403, 'Puoi modificare soltanto le segnalazioni che hai creato', 'not-owner');
@@ -157,7 +157,7 @@ export function visibleState(actor, store, version) {
     recentEvents,
     experience: {
       services: 2,
-      roles: 2,
+      roles: ROLES.length,
       maxPrimaryActionsPerContext: 1,
       aiAuthority: 'assist-only',
       evidenceMode: 'receipt-and-bundle'

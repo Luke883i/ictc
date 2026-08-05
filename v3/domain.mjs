@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 
-export const VERSION = '1.7.0-rc.1';
+export { VERSION } from './version.mjs';
 export const ROLES = Object.freeze(['admin', 'user', 'auditor']);
 export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 export const MAX_ATTACHMENTS = 10;

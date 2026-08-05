@@ -68,7 +68,7 @@ jobs:
 
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -77,23 +77,99 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
-      - run: python -m playwright install --with-deps chromium
+      - name: Browser check syntax
+        run: python -m py_compile v3/browser-check.py v3/browser-admin-check.py v3/browser-auditor-check.py
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then
+              browser="$(command -v "$candidate")"
+              break
+            fi
+          done
+          if [[ -z "$browser" || ! -x "$browser" ]]; then
+            echo 'No supported system Chromium browser found on the runner' >&2
+            exit 1
+          fi
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
       - name: Live browser journeys
         shell: bash
         run: |
           set -Eeuo pipefail
+          export PYTHONUNBUFFERED=1
           export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
           export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-runtime"
           export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
-          export ICTC_CHROMIUM="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+
+          terminate_group() {
+            local pid="$1"
+            kill -TERM -- "-$pid" 2>/dev/null || true
+            sleep 1
+            kill -KILL -- "-$pid" 2>/dev/null || true
+            wait "$pid" 2>/dev/null || true
+          }
+
+          run_browser_journey() {
+            local label="$1"
+            local script="$2"
+            local artifact="$3"
+            local budget="$4"
+            local elapsed=0
+            local pid state status
+
+            rm -f "$artifact"
+            echo "::group::$label"
+            setsid python -u "$script" &
+            pid=$!
+
+            while true; do
+              if [[ -s "$artifact" ]]; then
+                echo "$label: asserzioni attestate; process group terminato"
+                terminate_group "$pid"
+                echo "::endgroup::"
+                return 0
+              fi
+
+              state="$(ps -o stat= -p "$pid" 2>/dev/null | tr -d ' ' || true)"
+              if [[ -z "$state" || "$state" == Z* ]]; then
+                set +e
+                wait "$pid"
+                status=$?
+                set -e
+                if (( status != 0 )); then
+                  echo "::endgroup::"
+                  return "$status"
+                fi
+                echo "$label: processo concluso senza artifact $artifact" >&2
+                echo "::endgroup::"
+                return 1
+              fi
+
+              if (( elapsed >= budget )); then
+                echo "$label: nessun artifact entro ${budget}s" >&2
+                terminate_group "$pid"
+                echo "::endgroup::"
+                return 124
+              fi
+
+              sleep 1
+              elapsed=$((elapsed + 1))
+            done
+          }
+
           node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-mock.log" 2>&1 &
           MOCK_PID=$!
           trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
           for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
-          python v3/browser-check.py
-          python v3/browser-admin-check.py
+          run_browser_journey 'Product browser journey' v3/browser-check.py artifacts/browser-check.json 180
+          run_browser_journey 'Administration browser journey' v3/browser-admin-check.py artifacts/browser-admin-check.json 90
+          run_browser_journey 'Auditor browser journey' v3/browser-auditor-check.py artifacts/browser-auditor-check.json 60
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -101,6 +177,8 @@ jobs:
           path: |
             artifacts/browser-check.json
             artifacts/browser-admin-check.json
+            artifacts/browser-auditor-check.json
+            artifacts/browser-*-error.json
             artifacts/*.png
           if-no-files-found: warn
           retention-days: 30
