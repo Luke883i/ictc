@@ -8,7 +8,12 @@ const [contractText, html, render, workspaces, actions, css, monitoring, inciden
 ]);
 const contract = JSON.parse(contractText);
 const checks = [];
-function check(id, condition, outcome) { assert.ok(condition, `${id}: ${outcome}`); checks.push({id,outcome}); }
+function annotation(value) { return String(value).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A'); }
+function check(id, condition, outcome) {
+  if (!condition) console.error(`::error title=user-journey-audit-${annotation(id)}::${annotation(outcome)}`);
+  assert.ok(condition, `${id}: ${outcome}`);
+  checks.push({id,outcome});
+}
 check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Cosa devi fare adesso?'), 'one explanatory home entry');
 check('one-contextual-cta', (html.match(/id="homePrimaryAction"/g)||[]).length === 1 && render.includes('homeAction('), 'one primary action derived from role and state');
 check('horizontal-guidance', html.includes('id="homeJourney"') && css.includes('grid-auto-flow:column'), 'four-step horizontal journey');
