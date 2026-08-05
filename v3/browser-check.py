@@ -46,10 +46,12 @@ with sync_playwright() as p:
         html = response.read().decode('utf8')
     html = html.replace('<head>', f'<head><base href="{BROWSER_ORIGIN}/">', 1)
     page.set_content(html, wait_until='networkidle')
-    page.get_by_role('heading', name='Descrivi il risultato.').wait_for()
+    monitoring_heading = page.locator('.hero-monitoring h1')
+    monitoring_heading.wait_for()
+    assert 'Definisci cosa monitorare.' in monitoring_heading.inner_text()
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
 
-    page.get_by_role('button', name='AI').click()
+    page.locator('#openSettings').click()
     form = page.locator('#settingsForm')
     form.locator('input[name="organizationName"]').fill('Azienda Browser')
     form.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
@@ -77,7 +79,7 @@ with sync_playwright() as p:
     page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').wait_for()
 
     first_mission = page.locator('.mission-card').first
-    first_mission.get_by_role('button', name='Apri piano').click()
+    first_mission.locator('[data-open-plan]').click()
     page.locator('#pauseReason').fill('Verifica temporanea del perimetro')
     page.locator('#planActions').get_by_role('button', name='Sospendi').click()
     page.get_by_text('In pausa', exact=True).wait_for()
@@ -103,7 +105,7 @@ with sync_playwright() as p:
     page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
     assert page.locator('#missionForm').is_hidden()
     assert page.locator('#userMonitoringIntro').is_visible()
-    assert page.get_by_role('button', name='AI').is_hidden()
+    assert page.locator('#openSettings').is_hidden()
     page.locator('#userMonitoringIntro').get_by_role('button', name='Aggiungi materiale').click()
     page.locator('#contributionForm textarea[name="text"]').fill('Contributo creato dall’utente')
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
@@ -111,7 +113,7 @@ with sync_playwright() as p:
     page.get_by_text('I tuoi ultimi contributi', exact=True).wait_for()
 
     page.locator('[data-service="incidents"]').click()
-    page.get_by_role('button', name='Nuova segnalazione').click()
+    page.locator('#openIncident').click()
     page.locator('#incidentForm textarea[name="originalNarrative"]').fill('Un alert nei log indica un possibile attacco phishing ancora in corso su account email clienti.')
     page.locator('#incidentForm input[name="awarenessAt"]').fill(time.strftime('%Y-%m-%dT%H:%M'))
     page.locator('#incidentForm').get_by_role('button', name='Registra il racconto').click()
