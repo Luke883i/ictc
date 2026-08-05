@@ -32,6 +32,7 @@ function projectCapabilities() {
     const ai = llm.ready ? 'AI pronta' : llm.configured ? 'Chiave AI non disponibile' : 'AI non configurata';
     setText(status, `${roleLabel} · ${ai}`);
     status.dataset.actorRole = role || 'unknown';
+    delete status.dataset.requestedRole;
     const statusState = llm.ready ? 'ready' : 'attention';
     if (status.dataset.state !== statusState) status.dataset.state = statusState;
   }
@@ -73,22 +74,15 @@ function normalizeLabels() {
     if (node.textContent.trim() === 'high') setText(node, 'Alta');
   });
 }
+function applyEnterpriseExperience() {
+  replaceExactText();
+  projectCapabilities();
+  normalizeLabels();
+}
 export function installEnterpriseExperience() {
-  const apply = () => {
-    replaceExactText();
-    projectCapabilities();
-    normalizeLabels();
-  };
-  apply();
+  applyEnterpriseExperience();
+  document.addEventListener('ictc:rendered', applyEnterpriseExperience);
   $('#roleSelect')?.addEventListener('change', event => projectPendingRole(event.target.value));
-  let queued = false;
-  const observer = new MutationObserver(() => {
-    if (queued) return;
-    queued = true;
-    queueMicrotask(() => {
-      queued = false;
-      apply();
-    });
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+  $('#openAdminCenter')?.addEventListener('click', () => queueMicrotask(applyEnterpriseExperience));
+  $('#adminCenter')?.addEventListener('submit', () => setTimeout(applyEnterpriseExperience, 0));
 }
