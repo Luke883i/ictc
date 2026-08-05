@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { fetchAiEndpoint, isForbiddenAddress, validateAiEndpoint } from './network-policy.mjs';
 
-const previous = { ...process.env };
+const saved = {
+  allowPrivate: process.env.ICTC_ALLOW_PRIVATE_AI,
+  allowInsecure: process.env.ICTC_ALLOW_INSECURE_AI
+};
+function restore(name, value) { if (value == null) delete process.env[name]; else process.env[name] = value; }
+
 try {
   delete process.env.ICTC_ALLOW_PRIVATE_AI;
   delete process.env.ICTC_ALLOW_INSECURE_AI;
@@ -40,5 +45,6 @@ try {
   );
   console.log('ai-network-policy-check: ok');
 } finally {
-  process.env = previous;
+  restore('ICTC_ALLOW_PRIVATE_AI', saved.allowPrivate);
+  restore('ICTC_ALLOW_INSECURE_AI', saved.allowInsecure);
 }

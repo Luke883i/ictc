@@ -34,14 +34,15 @@ export async function validateAiEndpoint(endpoint, options = {}) {
   const url = new URL(asString(endpoint, 4_000));
   if (!['https:', 'http:'].includes(url.protocol)) throw Object.assign(new Error('Protocollo endpoint AI non consentito'), { status: 400, code: 'ai-endpoint-protocol' });
   if (url.username || url.password) throw Object.assign(new Error('Credenziali nell’URL endpoint AI non consentite'), { status: 400, code: 'ai-endpoint-credentials' });
-  if (url.protocol !== 'https:' && process.env.ICTC_ALLOW_INSECURE_AI !== '1') {
-    throw Object.assign(new Error('Endpoint AI non cifrato non consentito senza ICTC_ALLOW_INSECURE_AI=1'), { status: 400, code: 'insecure-ai-endpoint' });
+  const localDevelopmentOptIn = process.env.ICTC_ALLOW_PRIVATE_AI === '1';
+  if (url.protocol !== 'https:' && process.env.ICTC_ALLOW_INSECURE_AI !== '1' && !localDevelopmentOptIn) {
+    throw Object.assign(new Error('Endpoint AI non cifrato non consentito senza opt-in esplicito'), { status: 400, code: 'insecure-ai-endpoint' });
   }
   const lookup = options.lookup || dnsLookup;
   const records = await lookup(url.hostname, { all: true, verbatim: true });
   if (!records.length) throw Object.assign(new Error('Endpoint AI senza indirizzi risolti'), { status: 400, code: 'ai-endpoint-unresolved' });
   const forbidden = records.filter(record => isForbiddenAddress(record.address));
-  if (forbidden.length && process.env.ICTC_ALLOW_PRIVATE_AI !== '1') {
+  if (forbidden.length && !localDevelopmentOptIn) {
     throw Object.assign(new Error('Endpoint AI risolto verso rete privata o riservata'), {
       status: 400,
       code: 'private-ai-endpoint',

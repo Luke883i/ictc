@@ -5,9 +5,16 @@ const permissions = {
   admin: new Set(['read', 'configure-ai']),
   user: new Set(['read'])
 };
-const previous = { ...process.env };
+const saved = {
+  identityMode: process.env.ICTC_IDENTITY_MODE,
+  allowNetwork: process.env.ICTC_ALLOW_NETWORK_BIND,
+  proxySecret: process.env.ICTC_TRUSTED_PROXY_SECRET
+};
+function restore(name, value) { if (value == null) delete process.env[name]; else process.env[name] = value; }
 function resetEnv() {
-  for (const key of ['ICTC_IDENTITY_MODE', 'ICTC_ALLOW_NETWORK_BIND', 'ICTC_TRUSTED_PROXY_SECRET']) delete process.env[key];
+  delete process.env.ICTC_IDENTITY_MODE;
+  delete process.env.ICTC_ALLOW_NETWORK_BIND;
+  delete process.env.ICTC_TRUSTED_PROXY_SECRET;
 }
 function request(address, headers = {}) { return { socket: { remoteAddress: address }, headers }; }
 
@@ -37,5 +44,7 @@ try {
   });
   console.log('security-boundary-check: ok');
 } finally {
-  process.env = previous;
+  restore('ICTC_IDENTITY_MODE', saved.identityMode);
+  restore('ICTC_ALLOW_NETWORK_BIND', saved.allowNetwork);
+  restore('ICTC_TRUSTED_PROXY_SECRET', saved.proxySecret);
 }
