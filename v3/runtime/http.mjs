@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { ROLES, asString, safeFilename } from '../domain.mjs';
@@ -6,13 +7,49 @@ export function httpError(status, message, code = 'request-failed', details = nu
   return Object.assign(new Error(message), { status, code, details });
 }
 
+export function isLoopbackAddress(value) {
+  const address = asString(value, 200).toLowerCase();
+  return address === '::1' || address === 'localhost' || address === '127.0.0.1' || address.startsWith('127.') || address.startsWith('::ffff:127.');
+}
+
+function secretMatches(received, expected) {
+  const left = Buffer.from(asString(received, 1_000));
+  const right = Buffer.from(asString(expected, 1_000));
+  return left.length === right.length && left.length > 0 && timingSafeEqual(left, right);
+}
+
+export function assertSafeRuntimeBinding(host) {
+  if (isLoopbackAddress(host)) return;
+  const trusted = process.env.ICTC_IDENTITY_MODE === 'trusted-header';
+  const explicitlyAllowed = process.env.ICTC_ALLOW_NETWORK_BIND === '1';
+  const proxySecret = asString(process.env.ICTC_TRUSTED_PROXY_SECRET, 1_000);
+  if (!trusted || !explicitlyAllowed || proxySecret.length < 32) {
+    throw Object.assign(new Error('Binding di rete rifiutato: usa loopback oppure trusted-header con ICTC_ALLOW_NETWORK_BIND=1 e un proxy secret di almeno 32 caratteri'), {
+      code: 'unsafe-network-bind'
+    });
+  }
+}
+
 export function actorFrom(request, permissions) {
   const identityMode = process.env.ICTC_IDENTITY_MODE === 'trusted-header' ? 'trusted-header' : 'local';
+  const remoteAddress = request.socket?.remoteAddress || '';
   const roleHeader = asString(request.headers['x-ictc-role'], 20).toLowerCase();
-  if (identityMode === 'trusted-header' && !roleHeader) throw httpError(401, 'Identità non disponibile', 'identity-required');
-  const role = ROLES.includes(roleHeader) ? roleHeader : 'user';
-  const actorId = asString(request.headers['x-ictc-actor-id'], 160) || `local-${role}`;
-  return { id: actorId, role, identityMode, permissions: [...permissions[role]] };
+
+  if (identityMode === 'local') {
+    if (!isLoopbackAddress(remoteAddress)) throw httpError(403, 'La modalità locale accetta soltanto connessioni loopback', 'local-identity-loopback-only');
+    const role = ROLES.includes(roleHeader) ? roleHeader : 'user';
+    return { id: `local-${role}`, role, identityMode, permissions: [...permissions[role]] };
+  }
+
+  const expectedSecret = asString(process.env.ICTC_TRUSTED_PROXY_SECRET, 1_000);
+  if (expectedSecret.length < 32) throw httpError(503, 'Proxy di identità non configurato', 'trusted-proxy-not-configured');
+  if (!secretMatches(request.headers['x-ictc-proxy-secret'], expectedSecret)) {
+    throw httpError(401, 'Richiesta non proveniente dal proxy attendibile', 'trusted-proxy-required');
+  }
+  if (!ROLES.includes(roleHeader)) throw httpError(401, 'Ruolo identità non disponibile', 'identity-required');
+  const actorId = asString(request.headers['x-ictc-actor-id'], 160);
+  if (!actorId) throw httpError(401, 'Identificativo identità non disponibile', 'identity-required');
+  return { id: actorId, role: roleHeader, identityMode, permissions: [...permissions[roleHeader]] };
 }
 
 export function requirePermission(actor, permission, permissions) {
