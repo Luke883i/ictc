@@ -112,10 +112,19 @@ def main():
 
         PHASE = 'auditor-identity'
         print(f'browser-admin-check: {PHASE}', flush=True)
-        confirmed_status = page.locator('#runtimeStatus[data-actor-role="auditor"]')
-        confirmed_status.wait_for(state='visible')
-        assert 'Auditor' in confirmed_status.inner_text()
-        assert page.locator('#roleSelect').input_value() == 'auditor'
+        page.wait_for_timeout(1000)
+        status = page.locator('#runtimeStatus')
+        observed = {
+            'text': status.inner_text(),
+            'actorRole': status.get_attribute('data-actor-role'),
+            'requestedRole': status.get_attribute('data-requested-role'),
+            'selectedRole': page.locator('#roleSelect').input_value(),
+            'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
+            'pageErrors': list(errors),
+        }
+        assert observed['actorRole'] == 'auditor', json.dumps(observed, ensure_ascii=False)
+        assert 'Auditor' in observed['text']
+        assert observed['selectedRole'] == 'auditor'
 
         PHASE = 'auditor-controls'
         print(f'browser-admin-check: {PHASE}', flush=True)
