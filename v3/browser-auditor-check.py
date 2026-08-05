@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import threading
 import traceback
 from playwright.sync_api import sync_playwright
 
@@ -9,28 +10,52 @@ ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'initialization'
+WATCHDOG = None
 
 
 def annotation_escape(value):
     return str(value).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
 
 
-def fail(error):
+def write_failure(error_type, message, trace=''):
     payload = {
         'ok': False,
         'phase': PHASE,
-        'type': type(error).__name__,
-        'message': str(error),
-        'traceback': traceback.format_exc(),
+        'type': error_type,
+        'message': message,
+        'traceback': trace,
     }
     (ART / 'browser-auditor-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
-    summary = f'{PHASE}: {type(error).__name__}: {error}'
+    summary = f'{PHASE}: {error_type}: {message}'
     print(f'::error title=browser-auditor-check::{annotation_escape(summary)}', flush=True)
+
+
+def watchdog_expired():
+    write_failure('WatchdogTimeout', 'phase exceeded 12 seconds')
+    os._exit(2)
+
+
+def enter_phase(name):
+    global PHASE, WATCHDOG
+    PHASE = name
+    if WATCHDOG:
+        WATCHDOG.cancel()
+    print(f'browser-auditor-check: {PHASE}', flush=True)
+    WATCHDOG = threading.Timer(12, watchdog_expired)
+    WATCHDOG.daemon = True
+    WATCHDOG.start()
+
+
+def fail(error):
+    if WATCHDOG:
+        WATCHDOG.cancel()
+    write_failure(type(error).__name__, str(error), traceback.format_exc())
     traceback.print_exc()
     os._exit(1)
 
 
 try:
+    enter_phase('playwright-start')
     playwright = sync_playwright().start()
     launch = {'headless': True, 'args': ['--no-sandbox']}
     chromium = os.environ.get('ICTC_CHROMIUM')
@@ -45,19 +70,10 @@ try:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
 
-    PHASE = 'auditor-bootstrap'
-    print(f'browser-auditor-check: {PHASE}', flush=True)
-    with page.expect_response(
-        lambda response: response.url.endswith('/api/bootstrap')
-        and response.request.method == 'GET'
-        and response.request.headers.get('x-ictc-role') == 'auditor'
-        and response.request.headers.get('x-ictc-actor-id') == 'local-auditor'
-    ) as bootstrap:
-        page.goto(f'{BASE}/', wait_until='domcontentloaded')
-    assert bootstrap.value.status == 200
+    enter_phase('auditor-bootstrap')
+    page.goto(f'{BASE}/', wait_until='domcontentloaded')
 
-    PHASE = 'auditor-observed-state'
-    print(f'browser-auditor-check: {PHASE}', flush=True)
+    enter_phase('auditor-observed-state')
     page.wait_for_timeout(1500)
     closed = page.is_closed()
     status_count = 0 if closed else page.locator('#runtimeStatus').count()
@@ -84,8 +100,17 @@ try:
     assert observed.get('selectedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
     assert observed.get('storedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
 
-    PHASE = 'auditor-least-privilege'
-    print(f'browser-auditor-check: {PHASE}', flush=True)
+    enter_phase('auditor-server-identity')
+    bootstrap = context.request.get(
+        f'{BASE}/api/bootstrap',
+        headers={'x-ictc-role': 'auditor', 'x-ictc-actor-id': 'local-auditor'},
+        timeout=10000,
+    )
+    assert bootstrap.status == 200
+    body = bootstrap.json()
+    assert body['actor']['role'] == 'auditor'
+
+    enter_phase('auditor-least-privilege')
     for selector in ['#openAdminCenter', '#openSettings', '#missionForm', '#openIncident', '#openContribution']:
         page.locator(selector).wait_for(state='hidden')
     intro = page.locator('#userMonitoringIntro')
@@ -104,6 +129,8 @@ try:
         json.dumps({'ok': True, 'checks': checks}, indent=2),
         encoding='utf8',
     )
+    if WATCHDOG:
+        WATCHDOG.cancel()
     print('browser-auditor-check: evidence complete', flush=True)
     os._exit(0)
 except Exception as error:
