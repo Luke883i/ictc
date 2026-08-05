@@ -37,21 +37,36 @@ with sync_playwright() as p:
     form.locator('input[name="environmentName"]').fill('audit-browser')
     form.locator('input[name="owner"]').fill('Security Operations')
     form.locator('textarea[name="allowedModels"]').fill('mock-browser')
-    form.get_by_role('button',name='Registra governance').click()
+    with page.expect_response(lambda response: response.url.endswith('/api/admin/governance') and response.request.method=='PUT') as governance_response:
+        form.get_by_role('button',name='Registra governance').click()
+    assert governance_response.value.status==200
     page.get_by_text('Governance registrata').wait_for()
     user=page.locator('#userForm')
     user.locator('input[name="id"]').fill('browser-auditor')
     user.locator('input[name="displayName"]').fill('Auditor Browser')
     user.locator('select[name="role"]').select_option('auditor')
-    user.get_by_role('button',name='Provisiona utente').click()
-    page.get_by_text('Auditor Browser').wait_for()
+    with page.expect_response(lambda response: response.url.endswith('/api/admin/users') and response.request.method=='POST') as create_response:
+        user.get_by_role('button',name='Provisiona utente').click()
+    assert create_response.value.status==201
+    created=create_response.value.json()
+    assert created['result']['id']=='browser-auditor'
+    assert created['result']['displayName']=='Auditor Browser'
+    # Reopen the control plane to prove persistence independently from transient DOM timing.
+    page.locator('[data-admin-close]').click()
+    page.get_by_role('button',name='Amministrazione').click()
+    page.locator('#adminCenter').wait_for(state='visible')
     row=page.locator('.user-row').filter(has_text='browser-auditor')
-    row.get_by_role('button',name='Disabilita').click(); row.get_by_role('button',name='Riattiva').wait_for()
+    row.wait_for()
+    assert 'Auditor Browser' in row.inner_text()
+    with page.expect_response(lambda response: response.url.endswith('/api/admin/users/browser-auditor') and response.request.method=='PATCH') as disable_response:
+        row.get_by_role('button',name='Disabilita').click()
+    assert disable_response.value.status==200
+    page.locator('.user-row').filter(has_text='browser-auditor').get_by_role('button',name='Riattiva').wait_for()
     page.locator('[data-admin-close]').click()
     page.locator('#roleSelect').select_option('auditor')
     assert page.get_by_role('button',name='Amministrazione').is_hidden()
     assert page.get_by_role('button',name='AI').is_hidden()
     assert not errors, errors
-    (ART/'browser-admin-check.json').write_text(json.dumps({'ok':True,'checks':['honest-blockers','governance-write','user-provision','user-disable','auditor-least-privilege']},indent=2),encoding='utf8')
+    (ART/'browser-admin-check.json').write_text(json.dumps({'ok':True,'checks':['honest-blockers','governance-write','user-provision-persisted','user-disable','auditor-least-privilege']},indent=2),encoding='utf8')
     print('browser-admin-check: ok (5 live administration checks)')
     browser.close()
