@@ -18,7 +18,20 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - run: npm run test:contract
+      - name: Syntax
+        run: npm run check
+      - name: Product contract
+        run: node v3/product-contract-check.mjs
+      - name: Question and UI contracts
+        run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs
+      - name: Onto-epistemic and journey audits
+        run: node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs
+      - name: Experience saturation
+        run: node v3/experience-saturation.mjs
+      - name: Security boundaries
+        run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
+      - name: Enterprise readiness and M plus 100
+        run: node v3/enterprise-readiness-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -39,6 +52,8 @@ jobs:
         run: node v3/evidence-check.mjs
       - name: Attachment replay safety
         run: node v3/attachment-replay-check.mjs
+      - name: Enterprise administration
+        run: node v3/enterprise-runtime-check.mjs
       - name: End-to-end journeys
         run: node v3/v15-e2e.mjs
       - name: Runtime saturation
