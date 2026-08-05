@@ -72,9 +72,9 @@ with sync_playwright() as p:
     first_mission.locator('[data-open-plan]').click()
     page.locator('#pauseReason').fill('Verifica temporanea del perimetro')
     page.locator('#planActions').get_by_role('button', name='Sospendi').click()
-    page.get_by_text('In pausa', exact=True).wait_for()
+    page.locator('#planBody .fact-box b').get_by_text('In pausa', exact=True).wait_for()
     page.locator('#planActions').get_by_role('button', name='Riprendi monitoraggio').click()
-    page.get_by_text('Attivo', exact=True).wait_for()
+    page.locator('#planBody .fact-box b').get_by_text('Attivo', exact=True).wait_for()
     with page.expect_download() as download_info:
         page.locator('#planActions').get_by_role('button', name='Scarica evidenze').click()
     assert download_info.value.suggested_filename.endswith('.json')
