@@ -68,7 +68,7 @@ jobs:
 
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -82,6 +82,7 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
+          export PYTHONUNBUFFERED=1
           export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
           export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-runtime"
@@ -92,8 +93,12 @@ jobs:
           trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
           for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
-          python v3/browser-check.py
-          python v3/browser-admin-check.py
+          echo '::group::Product browser journey'
+          timeout --signal=TERM --kill-after=10s 300s python -u v3/browser-check.py
+          echo '::endgroup::'
+          echo '::group::Administration browser journey'
+          timeout --signal=TERM --kill-after=10s 180s python -u v3/browser-admin-check.py
+          echo '::endgroup::'
       - uses: actions/upload-artifact@v6
         if: always()
         with:

@@ -170,5 +170,8 @@ with sync_playwright() as p:
     ]
     assert not errors, f'page errors: {errors}'
     (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks}, indent=2), encoding='utf8')
-    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct evidence journeys)')
+    context.unroute(f'{BROWSER_ORIGIN}/**', proxy)
+    page.close(run_before_unload=False)
+    context.close()
     browser.close()
+    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct evidence journeys, teardown complete)', flush=True)
