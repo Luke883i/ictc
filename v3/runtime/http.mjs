@@ -38,7 +38,9 @@ export function actorFrom(request, permissions) {
   if (identityMode === 'local') {
     if (!isLoopbackAddress(remoteAddress)) throw httpError(403, 'La modalità locale accetta soltanto connessioni loopback', 'local-identity-loopback-only');
     const role = ROLES.includes(roleHeader) ? roleHeader : 'user';
-    return { id: `local-${role}`, role, identityMode, permissions: [...permissions[role]] };
+    const actorSwitchEnabled = process.env.ICTC_ALLOW_LOCAL_ACTOR_SWITCH === '1';
+    const requestedActor = actorSwitchEnabled ? asString(request.headers['x-ictc-actor-id'], 160) : '';
+    return { id: requestedActor || `local-${role}`, role, identityMode, permissions: [...permissions[role]] };
   }
 
   const expectedSecret = asString(process.env.ICTC_TRUSTED_PROXY_SECRET, 1_000);

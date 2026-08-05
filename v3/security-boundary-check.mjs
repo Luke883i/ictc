@@ -8,13 +8,15 @@ const permissions = {
 const saved = {
   identityMode: process.env.ICTC_IDENTITY_MODE,
   allowNetwork: process.env.ICTC_ALLOW_NETWORK_BIND,
-  proxySecret: process.env.ICTC_TRUSTED_PROXY_SECRET
+  proxySecret: process.env.ICTC_TRUSTED_PROXY_SECRET,
+  localActorSwitch: process.env.ICTC_ALLOW_LOCAL_ACTOR_SWITCH
 };
 function restore(name, value) { if (value == null) delete process.env[name]; else process.env[name] = value; }
 function resetEnv() {
   delete process.env.ICTC_IDENTITY_MODE;
   delete process.env.ICTC_ALLOW_NETWORK_BIND;
   delete process.env.ICTC_TRUSTED_PROXY_SECRET;
+  delete process.env.ICTC_ALLOW_LOCAL_ACTOR_SWITCH;
 }
 function request(address, headers = {}) { return { socket: { remoteAddress: address }, headers }; }
 
@@ -23,6 +25,10 @@ try {
   const local = actorFrom(request('127.0.0.1', { 'x-ictc-role': 'admin', 'x-ictc-actor-id': 'spoofed' }), permissions);
   assert.equal(local.id, 'local-admin');
   assert.equal(local.role, 'admin');
+  process.env.ICTC_ALLOW_LOCAL_ACTOR_SWITCH = '1';
+  const simulated = actorFrom(request('127.0.0.1', { 'x-ictc-role': 'user', 'x-ictc-actor-id': 'alice' }), permissions);
+  assert.equal(simulated.id, 'alice');
+  delete process.env.ICTC_ALLOW_LOCAL_ACTOR_SWITCH;
   assert.throws(() => actorFrom(request('203.0.113.5', { 'x-ictc-role': 'admin' }), permissions), error => error.code === 'local-identity-loopback-only');
   assert.doesNotThrow(() => assertSafeRuntimeBinding('127.0.0.1'));
   assert.throws(() => assertSafeRuntimeBinding('0.0.0.0'), error => error.code === 'unsafe-network-bind');
@@ -47,4 +53,5 @@ try {
   restore('ICTC_IDENTITY_MODE', saved.identityMode);
   restore('ICTC_ALLOW_NETWORK_BIND', saved.allowNetwork);
   restore('ICTC_TRUSTED_PROXY_SECRET', saved.proxySecret);
+  restore('ICTC_ALLOW_LOCAL_ACTOR_SWITCH', saved.localActorSwitch);
 }
