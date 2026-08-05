@@ -1,74 +1,18 @@
 {
-  "schemaVersion": "2.3.0",
-  "product": "Integrated Compliance Tower Control",
-  "promise": "Trasformare fonti normative e segnalazioni grezze in fascicoli verificabili, senza sostituire la decisione umana.",
-  "services": [
-    {
-      "id": "monitoring",
-      "label": "Fonti normative",
-      "jobToBeDone": "Sapere quali fonti ufficiali possono incidere sul perimetro dichiarato, perché sono state osservate e quale decisione umana è stata presa.",
-      "entry": "Descrivere in linguaggio naturale ciò che deve essere sorvegliato oppure aggiungere materiale.",
-      "exit": "Fonte verificata o scartata con osservazioni versionate, motivazione, ricevute e fascicolo collegato.",
-      "primaryJourney": ["objective-preserved", "ai-plan", "human-revise", "human-activate", "automatic-run", "pause-resume", "candidate-source", "human-decision", "evidence-bundle"]
-    },
-    {
-      "id": "incidents",
-      "label": "Segnalazioni",
-      "jobToBeDone": "Registrare ciò che è accaduto e arrivare a una formulazione amministrativa verificata, versionata e confermata.",
-      "entry": "Raccontare l'accaduto, indicare quando se ne è avuta conoscenza e allegare eventuali prove.",
-      "exit": "Segnalazione inviata o chiusa con originale, allegati, analisi AI, adozioni umane, versioni e ricevute.",
-      "primaryJourney": ["raw-intake", "ai-lens", "gap-question", "human-adopt-or-correct", "formulation-version", "human-confirm", "evidence-bundle"]
-    }
+  "schemaVersion":"3.0.0",
+  "product":"Integrated Compliance Tower Control",
+  "promise":"Trasformare fonti normative e segnalazioni grezze in fascicoli verificabili, governati e misurabili, senza sostituire la decisione umana.",
+  "services":[
+    {"id":"monitoring","label":"Fonti normative","jobToBeDone":"Sapere quali fonti ufficiali possono incidere sul perimetro dichiarato, perché sono state osservate e quale decisione umana è stata presa.","entry":"Descrivere in linguaggio naturale ciò che deve essere sorvegliato oppure aggiungere materiale.","exit":"Fonte verificata o scartata con osservazioni versionate, motivazione, ricevute e fascicolo collegato.","primaryJourney":["objective-preserved","ai-plan","human-revise","human-activate","automatic-run","pause-resume","candidate-source","human-decision","evidence-bundle"]},
+    {"id":"incidents","label":"Segnalazioni","jobToBeDone":"Registrare ciò che è accaduto e arrivare a una formulazione amministrativa verificata, versionata e confermata.","entry":"Raccontare l'accaduto, indicare quando se ne è avuta conoscenza e allegare eventuali prove.","exit":"Segnalazione inviata o chiusa con originale, allegati, analisi AI, adozioni umane, versioni e ricevute.","primaryJourney":["raw-intake","ai-lens","gap-question","human-adopt-or-correct","formulation-version","human-confirm","evidence-bundle"]},
+    {"id":"administration","label":"Amministrazione","jobToBeDone":"Governare identità, ambiente, provider AI, budget, consumo e readiness con modifiche tracciate.","entry":"Aprire il centro amministrazione.","exit":"Configurazione coerente, utenti provisionati, budget attivo e readiness misurata.","primaryJourney":["environment-configure","user-provision","role-review","ai-budget","usage-review","readiness-review"]}
   ],
-  "roles": [
-    {"id":"admin","label":"Amministratore","permissions":["read","configure-ai","manage-monitoring","review-source","contribute-source","report-incident","edit-own-incident","submit-own-incident","read-all-incidents","close-incident","verify-integrity"]},
-    {"id":"user","label":"Utente","permissions":["read","contribute-source","report-incident","edit-own-incident","submit-own-incident"]}
+  "roles":[
+    {"id":"admin","label":"Amministratore","permissions":["read","configure-ai","manage-monitoring","review-source","contribute-source","report-incident","edit-own-incident","submit-own-incident","read-all-incidents","close-incident","verify-integrity","manage-users","manage-enterprise","view-ai-usage"]},
+    {"id":"user","label":"Utente","permissions":["read","contribute-source","report-incident","edit-own-incident","submit-own-incident"]},
+    {"id":"auditor","label":"Auditor","permissions":["read","read-all-incidents","verify-integrity","view-ai-usage"]}
   ],
-  "experiencePrinciples": [
-    "Una sola azione primaria per contesto e nessuna azione amministrativa inattiva nella vista utente.",
-    "Una domanda è ammessa solo se cambia il passo successivo, completa una prova o abilita una decisione.",
-    "Il materiale originale viene preservato prima dell'AI e resta separato da estrazioni, suggerimenti e bozze.",
-    "Ogni valore proposto dall'AI diventa dato soltanto dopo adozione o correzione umana registrata.",
-    "Ogni errore AI produce uno stato degradato comprensibile e un retry delimitato senza perdita dell'originale.",
-    "Ogni scrittura restituisce una ricevuta e ogni fascicolo collega soggetto, versioni, eventi e limiti.",
-    "Missing, unavailable, failed, candidate e verified non sono mai compressi in uno stato positivo implicito."
-  ],
-  "wowMechanisms": [
-    "AI Lens: separa originale, estrazioni, ipotesi, trace e gap senza nascondere la fonte.",
-    "Proof Pulse: mostra revisione e hash dopo ogni scrittura e offre fascicolo protetto per il ruolo corrente.",
-    "Question Compass: una domanda alla volta con motivo, uso probatorio e suggerimento AI modificabile.",
-    "Plan Reveal: conserva l'obiettivo prima dell'AI e rende il piano revisionabile, versionato, sospendibile e riprendibile.",
-    "Origin Diff: confronta originale e formulazione, conservando ogni versione con digest.",
-    "Recovery Rail: rende visibile che l'originale è salvo e consente di riprovare solo la fase AI fallita."
-  ],
-  "boundaries": [
-    "I risultati AI sono piani, candidati, estrazioni, suggerimenti o bozze: non sono decisioni.",
-    "ICTC non determina applicabilità, conformità, significatività o obblighi di notifica.",
-    "Una fonte diventa verificata o scartata soltanto dopo una motivazione umana registrata.",
-    "Una proposta AI entra nella segnalazione soltanto dopo adozione o correzione umana.",
-    "Una segnalazione diventa inviata soltanto dopo salvataggio della versione e conferma esplicita dell'autore.",
-    "La catena hash dimostra coerenza interna, non verità, completezza, firma qualificata o marcatura temporale certificata.",
-    "La modalità locale simula l'identità e non è un confine di sicurezza di produzione."
-  ],
-  "experienceMetrics": {
-    "services": 2,
-    "roles": 2,
-    "monitoringMissionRequiredQuestions": 1,
-    "incidentIntakeRequiredQuestions": 2,
-    "sourceContributionRequiredQuestions": 0,
-    "questionJustificationCoverage": 1,
-    "writeReceiptCoverage": 1,
-    "aiTraceCoverage": 1,
-    "humanAdoptionCoverage": 1,
-    "formulationVersionCoverage": 1,
-    "monitoringLifecycleCoverage": 1,
-    "aiRecoveryCoverage": 1,
-    "reasonedDecisionCoverage": 1,
-    "leastPrivilegeProjectionCoverage": 1,
-    "linkedEvidenceCoverage": 1,
-    "roleLeakage": 0,
-    "maxPrimaryActionsPerContext": 1,
-    "rawInputPreservation": 1,
-    "evidenceExportCoverage": 1
-  }
+  "experiencePrinciples":["Una sola azione primaria per contesto.","Il materiale originale viene preservato prima dell'AI.","Ogni valore AI diventa dato soltanto dopo adozione o correzione umana.","Ogni scrittura restituisce una ricevuta.","Budget, consumo e readiness sono visibili e non impliciti.","Le configurazioni amministrative sono separate dalle journey operative."],
+  "boundaries":["ICTC non determina applicabilità, conformità, significatività o obblighi di notifica.","La readiness riguarda il runtime applicativo e non certifica il deployment.","IdP, TLS, secret manager, backup, malware scanning e osservabilità restano controlli dell'ambiente enterprise."],
+  "experienceMetrics":{"services":3,"roles":3,"writeReceiptCoverage":1,"aiTraceCoverage":1,"humanAdoptionCoverage":1,"linkedEvidenceCoverage":1,"roleLeakage":0,"rawInputPreservation":1,"evidenceExportCoverage":1,"aiBudgetCoverage":1,"userLifecycleCoverage":1,"readinessCoverage":1,"maxPrimaryActionsPerContext":1}
 }
