@@ -11,6 +11,7 @@ import { createContributionHandler } from './runtime/contributions.mjs';
 import { createIncidentHandler } from './runtime/incidents.mjs';
 import { createEvidenceHandler } from './runtime/evidence.mjs';
 import { createAdminHandler } from './runtime/admin.mjs';
+import { createWorkbenchProjection } from './runtime/workbench-projection.mjs';
 import { authorizeEnterpriseActor, ensureEnterpriseState, enterpriseReadiness } from './enterprise.mjs';
 import { configureAiGovernance } from './ai.mjs';
 
@@ -29,22 +30,18 @@ assertSafeRuntimeBinding(host);
 const schedulerMs=Math.max(10000,Number(process.env.ICTC_SCHEDULER_TICK_MS||60000));
 const runningMissions=new Set();
 const monitoring=createMonitoringRuntime({store,permissions,runningMissions});
-const handlers=[monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store,permissions}),createAdminHandler({store,permissions,posture:runtimePosture})];
+const handlers=[createWorkbenchProjection({store,permissions}),monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store,permissions}),createAdminHandler({store,permissions,posture:runtimePosture})];
 
 function runtimePosture(){
   return {
-    integrity:store.verifyChain(),
-    safeBinding:true,
+    integrity:store.verifyChain(),safeBinding:true,
     identityProvider:process.env.ICTC_IDENTITY_MODE==='trusted-header',
-    tls:process.env.ICTC_TLS_ATTESTED==='1',
-    durableStorage:process.env.ICTC_DURABLE_STORAGE==='1',
+    tls:process.env.ICTC_TLS_ATTESTED==='1',durableStorage:process.env.ICTC_DURABLE_STORAGE==='1',
     backupVerified:Boolean(process.env.ICTC_BACKUP_VERIFIED_AT),
     malwareScanning:process.env.ICTC_MALWARE_SCAN_MODE==='external',
     observability:process.env.ICTC_OBSERVABILITY_ATTESTED==='1',
-    dependencyAudit:Boolean(process.env.ICTC_DEPENDENCY_AUDIT_AT),
-    dependencyAuditAt:process.env.ICTC_DEPENDENCY_AUDIT_AT||null,
-    accessibilityAudit:Boolean(process.env.ICTC_ACCESSIBILITY_AUDIT_AT),
-    accessibilityAuditAt:process.env.ICTC_ACCESSIBILITY_AUDIT_AT||null
+    dependencyAudit:Boolean(process.env.ICTC_DEPENDENCY_AUDIT_AT),dependencyAuditAt:process.env.ICTC_DEPENDENCY_AUDIT_AT||null,
+    accessibilityAudit:Boolean(process.env.ICTC_ACCESSIBILITY_AUDIT_AT),accessibilityAuditAt:process.env.ICTC_ACCESSIBILITY_AUDIT_AT||null
   };
 }
 
@@ -56,6 +53,7 @@ async function handleApi(request,response,url,actor){
   }
   if(method==='GET'&&pathname==='/api/bootstrap'){
     const projected=visibleState(actor,store,VERSION);
+    projected.capabilities=[...(actor.permissions||[])];
     projected.experience.roles=ROLES.length;
     projected.experience.controlPlane='administration';
     if(actor.role==='auditor'){
