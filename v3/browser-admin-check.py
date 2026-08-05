@@ -1,15 +1,12 @@
 import json
 import os
 import pathlib
-import urllib.error
-import urllib.request
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
-ORIGIN = 'https://ictc.example'
 
 with sync_playwright() as p:
     launch = {'headless': True, 'args': ['--no-sandbox']}
@@ -19,28 +16,6 @@ with sync_playwright() as p:
     browser = p.chromium.launch(**launch)
     context = browser.new_context(viewport={'width': 1280, 'height': 1000})
     context.add_init_script("try{localStorage.setItem('ictc-role','admin')}catch{}")
-
-    def proxy(route):
-        request = route.request
-        target = BASE + request.url.removeprefix(ORIGIN)
-        headers = {
-            key: value
-            for key, value in request.headers.items()
-            if key.lower() not in {'host', 'content-length', 'accept-encoding'}
-        }
-        data = request.post_data_buffer if request.method not in {'GET', 'HEAD'} else None
-        upstream = urllib.request.Request(target, data=data, headers=headers, method=request.method)
-        try:
-            with urllib.request.urlopen(upstream, timeout=30) as response:
-                route.fulfill(
-                    status=response.status,
-                    headers=dict(response.headers),
-                    body=response.read(),
-                )
-        except urllib.error.HTTPError as error:
-            route.fulfill(status=error.code, headers=dict(error.headers), body=error.read())
-
-    context.route(f'{ORIGIN}/**', proxy)
     page = context.new_page()
     page.set_default_timeout(10000)
     page.set_default_navigation_timeout(15000)
@@ -48,9 +23,7 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
 
     print('browser-admin-check: bootstrap', flush=True)
-    html = urllib.request.urlopen(BASE + '/', timeout=30).read().decode('utf8')
-    html = html.replace('<head>', f'<head><base href="{ORIGIN}/">', 1)
-    page.set_content(html, wait_until='networkidle')
+    page.goto(f'{BASE}/', wait_until='networkidle')
 
     print('browser-admin-check: readiness', flush=True)
     page.locator('#openAdminCenter').click()
@@ -128,12 +101,12 @@ with sync_playwright() as p:
         'user-disable',
         'auditor-least-privilege',
     ]
-    context.unroute(f'{ORIGIN}/**', proxy)
-    page.close(run_before_unload=False)
-    context.close()
-    browser.close()
     (ART / 'browser-admin-check.json').write_text(
         json.dumps({'ok': True, 'checks': checks}, indent=2),
         encoding='utf8',
     )
+    print('browser-admin-check: teardown', flush=True)
+    page.close(run_before_unload=False)
+    context.close()
+    browser.close()
     print('browser-admin-check: ok (5 live administration checks, teardown complete)', flush=True)
