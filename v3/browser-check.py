@@ -115,8 +115,9 @@ with sync_playwright() as p:
     page.locator('#incidentForm textarea[name="originalNarrative"]').fill('Un alert nei log indica un possibile attacco phishing ancora in corso su account email clienti.')
     page.locator('#incidentForm input[name="awarenessAt"]').fill(time.strftime('%Y-%m-%dT%H:%M'))
     page.locator('#incidentForm').get_by_role('button', name='Registra evento').click()
-    page.get_by_text('Analisi AI', exact=True).wait_for()
-    page.get_by_text('Suggerimento AI da verificare', exact=True).wait_for()
+    incident_workspace = page.locator('#incidentWorkspace')
+    incident_workspace.get_by_text('Analisi AI', exact=True).wait_for()
+    incident_workspace.get_by_text('Suggerimento AI da verificare', exact=True).wait_for()
 
     answers = {
         'classification': 'incident', 'affectedServices': 'Posta elettronica e CRM',
@@ -140,10 +141,10 @@ with sync_playwright() as p:
     assert page.locator('[data-answer-question]').count() == 0, 'adaptive questions did not converge'
 
     page.get_by_role('button', name='Genera bozza AI').click()
-    page.get_by_text('Confronto con l’originale', exact=True).wait_for()
+    incident_workspace.get_by_text('Confronto con l’originale', exact=True).wait_for()
     page.locator('#finalNarrative').fill(page.locator('#finalNarrative').input_value() + ' Revisione umana browser.')
     page.get_by_role('button', name='Salva nuova versione').click()
-    page.get_by_text('human-review', exact=True).wait_for()
+    incident_workspace.get_by_text('human-review', exact=True).wait_for()
     page.locator('#confirmIncident').check()
     page.get_by_role('button', name='Invia versione corrente').click()
     page.locator('#workspaceMeta').get_by_text('Inviato', exact=False).wait_for()
