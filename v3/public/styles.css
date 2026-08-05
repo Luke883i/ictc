@@ -5,5 +5,6 @@
 @import url('./enterprise-compact.css');
 @import url('./journey-reborn.css');
 
-/* Final geometry guard: compact cards must remain in normal document flow. */
+/* Final geometry and authority guards. */
+[hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3)}

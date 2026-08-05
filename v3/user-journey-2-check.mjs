@@ -33,6 +33,7 @@ check('contextual-ai', render.includes('AI disponibile') && render.includes('AI 
 check('horizontal-journey', html.includes('id="homeJourney"') && css.includes('.journey-strip') && css.includes('grid-auto-flow:column'), 'four-step journey is horizontal');
 check('compact-first-viewport', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'density contract is encoded');
 check('mobile-journey', css.includes('overflow-x:auto') && css.includes('scroll-snap-type:x proximity'), 'narrow journey remains ordered and scrollable');
+check('authority-hidden-fail-closed', shellCss.includes('[hidden]{display:none!important}'), 'hidden capability controls cannot be re-exposed by component CSS');
 check('section-stacking', css.includes('.contribution-status{position:static;inset:auto;'), 'contribution history remains in normal flow and cannot cover earlier controls');
 check('home-actions-wired', actions.includes('data-home-action') && actions.includes('activateHomeAction'), 'contextual CTAs are executable');
 check('plain-language-dod', dod.includes('One coherent entry point') && dod.includes('Horizontal guided journey'), 'global DoD is explicit');
