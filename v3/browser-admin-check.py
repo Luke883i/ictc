@@ -42,13 +42,17 @@ with sync_playwright() as p:
 
     context.route(f'{ORIGIN}/**', proxy)
     page = context.new_page()
+    page.set_default_timeout(10000)
+    page.set_default_navigation_timeout(15000)
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
 
+    print('browser-admin-check: bootstrap', flush=True)
     html = urllib.request.urlopen(BASE + '/', timeout=30).read().decode('utf8')
     html = html.replace('<head>', f'<head><base href="{ORIGIN}/">', 1)
     page.set_content(html, wait_until='networkidle')
 
+    print('browser-admin-check: readiness', flush=True)
     page.locator('#openAdminCenter').click()
     page.locator('#adminCenter').wait_for(state='visible')
     durable_storage = page.locator('#adminReadiness .readiness-row').filter(
@@ -59,6 +63,7 @@ with sync_playwright() as p:
     blocker.wait_for()
     assert blocker.inner_text().strip() == 'Bloccante'
 
+    print('browser-admin-check: governance', flush=True)
     governance_form = page.locator('#governanceForm')
     governance_form.locator('input[name="environmentName"]').fill('audit-browser')
     governance_form.locator('input[name="owner"]').fill('Security Operations')
@@ -71,6 +76,7 @@ with sync_playwright() as p:
     assert governance_response.value.status == 200
     page.get_by_text('Governance registrata', exact=True).wait_for()
 
+    print('browser-admin-check: identity lifecycle', flush=True)
     user_form = page.locator('#userForm')
     user_form.locator('input[name="id"]').fill('browser-auditor')
     user_form.locator('input[name="displayName"]').fill('Auditor Browser')
@@ -85,7 +91,6 @@ with sync_playwright() as p:
     assert created['result']['id'] == 'browser-auditor'
     assert created['result']['displayName'] == 'Auditor Browser'
 
-    # Reopen the control plane to prove persistence independently from transient DOM timing.
     page.locator('[data-admin-close]').click()
     page.locator('#openAdminCenter').click()
     page.locator('#adminCenter').wait_for(state='visible')
@@ -103,6 +108,7 @@ with sync_playwright() as p:
         'button', name='Riattiva', exact=True
     ).wait_for()
 
+    print('browser-admin-check: auditor least privilege', flush=True)
     page.locator('[data-admin-close]').click()
     with page.expect_response(
         lambda response: response.url.endswith('/api/bootstrap')
@@ -115,21 +121,19 @@ with sync_playwright() as p:
     page.locator('#openSettings').wait_for(state='hidden')
 
     assert not errors, errors
+    checks = [
+        'honest-blockers',
+        'governance-write',
+        'user-provision-persisted',
+        'user-disable',
+        'auditor-least-privilege',
+    ]
+    context.unroute(f'{ORIGIN}/**', proxy)
+    page.close(run_before_unload=False)
+    context.close()
+    browser.close()
     (ART / 'browser-admin-check.json').write_text(
-        json.dumps(
-            {
-                'ok': True,
-                'checks': [
-                    'honest-blockers',
-                    'governance-write',
-                    'user-provision-persisted',
-                    'user-disable',
-                    'auditor-least-privilege',
-                ],
-            },
-            indent=2,
-        ),
+        json.dumps({'ok': True, 'checks': checks}, indent=2),
         encoding='utf8',
     )
-    print('browser-admin-check: ok (5 live administration checks)')
-    browser.close()
+    print('browser-admin-check: ok (5 live administration checks, teardown complete)', flush=True)
