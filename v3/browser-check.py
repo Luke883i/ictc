@@ -20,7 +20,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(**launch_options)
     context = browser.new_context(viewport={'width': 1440, 'height': 1100}, accept_downloads=True)
     context.add_init_script("""
-      try { localStorage.setItem('ictc-role', 'admin'); localStorage.setItem('ictc-service', 'monitoring'); } catch {}
+      try { localStorage.setItem('ictc-role', 'admin'); localStorage.setItem('ictc-service', 'home'); } catch {}
     """)
     page = context.new_page()
     page.set_default_timeout(15000)
@@ -28,15 +28,15 @@ with sync_playwright() as p:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
 
-    print('browser-check: bootstrap', flush=True)
+    print('browser-check: home bootstrap', flush=True)
     page.goto(f'{BASE}/', wait_until='networkidle')
-    monitoring_heading = page.locator('.hero-monitoring h1')
-    monitoring_heading.wait_for()
-    assert 'Definisci cosa monitorare.' in monitoring_heading.inner_text()
+    page.get_by_role('heading', name='Cosa devi fare adesso?').wait_for()
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
+    assert page.locator('#homeJourney .journey-step').count() == 4
+    page.locator('#homePrimaryAction').get_by_text('Configura AI', exact=True).wait_for()
 
-    print('browser-check: AI configuration', flush=True)
-    page.locator('#openSettings').click()
+    print('browser-check: contextual AI configuration', flush=True)
+    page.locator('#homePrimaryAction').click()
     form = page.locator('#settingsForm')
     form.locator('input[name="organizationName"]').fill('Azienda Browser')
     form.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
@@ -47,14 +47,18 @@ with sync_playwright() as p:
     form.get_by_role('button', name='Salva configurazione').click()
     page.locator('#settingsDialog').wait_for(state='hidden')
     page.locator('#runtimeStatus').get_by_text('AI pronta', exact=False).wait_for()
+    page.locator('#homePrimaryAction').get_by_text('Crea un monitoraggio', exact=True).wait_for()
+    page.locator('#homePrimaryAction').click()
+    page.locator('#monitoringView').wait_for(state='visible')
+    page.get_by_role('heading', name='Definisci cosa monitorare.').wait_for()
 
     print('browser-check: monitoring journey', flush=True)
     mission = page.locator('#missionForm')
     mission.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni in Italia e UE')
     mission.locator('details').click()
     mission.locator('textarea[name="promptOverride"]').fill('Privilegia fonti primarie e identificatori ufficiali.')
-    mission.get_by_role('button', name='Prepara il piano').click()
-    page.get_by_text('Cercherò', exact=True).wait_for()
+    mission.get_by_role('button', name='Crea piano').click()
+    page.locator('#planBody').get_by_text('Query e fonti', exact=True).wait_for()
     page.locator('#missionObjective').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
     page.get_by_role('button', name='Rigenera piano').click()
     page.locator('#planBody').get_by_text('v2', exact=True).wait_for()
@@ -72,7 +76,7 @@ with sync_playwright() as p:
     page.locator('#planActions').get_by_role('button', name='Riprendi monitoraggio').click()
     page.get_by_text('Attivo', exact=True).wait_for()
     with page.expect_download() as download_info:
-        page.locator('#planActions').get_by_role('button', name='Scarica fascicolo').click()
+        page.locator('#planActions').get_by_role('button', name='Scarica evidenze').click()
     assert download_info.value.suggested_filename.endswith('.json')
     page.locator('[data-close="planDialog"]').click()
 
@@ -87,26 +91,32 @@ with sync_playwright() as p:
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
     page.locator('#contributionDialog').wait_for(state='hidden')
 
-    print('browser-check: user capability projection', flush=True)
+    print('browser-check: user home and capability projection', flush=True)
     page.locator('#roleSelect').select_option('user')
     page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
     assert page.locator('#missionForm').is_hidden()
-    assert page.locator('#userMonitoringIntro').is_visible()
     assert page.locator('#openSettings').is_hidden()
+    page.locator('[data-service="home"]').click()
+    page.locator('#homeView').wait_for(state='visible')
+    page.locator('#homePrimaryAction').get_by_text('Registra un evento', exact=True).wait_for()
+    assert page.locator('#homeJourney .journey-step').count() == 4
+    page.locator('[data-home-action="monitoring"]').click()
+    page.locator('#userMonitoringIntro').wait_for(state='visible')
     page.locator('#userMonitoringIntro').get_by_role('button', name='Aggiungi materiale').click()
     page.locator('#contributionForm textarea[name="text"]').fill('Contributo creato dall’utente')
     page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
     page.locator('#contributionDialog').wait_for(state='hidden')
-    page.get_by_text('I tuoi ultimi contributi', exact=True).wait_for()
+    page.get_by_text('Materiali recenti', exact=True).wait_for()
 
-    print('browser-check: incident journey', flush=True)
-    page.locator('[data-service="incidents"]').click()
-    page.locator('#openIncident').click()
+    print('browser-check: incident journey from contextual home CTA', flush=True)
+    page.locator('[data-service="home"]').click()
+    page.locator('#homePrimaryAction').click()
+    page.locator('#incidentDialog').wait_for(state='visible')
     page.locator('#incidentForm textarea[name="originalNarrative"]').fill('Un alert nei log indica un possibile attacco phishing ancora in corso su account email clienti.')
     page.locator('#incidentForm input[name="awarenessAt"]').fill(time.strftime('%Y-%m-%dT%H:%M'))
-    page.locator('#incidentForm').get_by_role('button', name='Registra il racconto').click()
-    page.get_by_text('AI Lens', exact=True).wait_for()
-    page.get_by_text('Proposta AI modificabile', exact=True).wait_for()
+    page.locator('#incidentForm').get_by_role('button', name='Registra evento').click()
+    page.get_by_text('Analisi AI', exact=True).wait_for()
+    page.get_by_text('Suggerimento AI da verificare', exact=True).wait_for()
 
     answers = {
         'classification': 'incident', 'affectedServices': 'Posta elettronica e CRM',
@@ -130,31 +140,32 @@ with sync_playwright() as p:
     assert page.locator('[data-answer-question]').count() == 0, 'adaptive questions did not converge'
 
     page.get_by_role('button', name='Genera bozza AI').click()
-    page.get_by_text('Origin Diff', exact=True).wait_for()
+    page.get_by_text('Confronto con l’originale', exact=True).wait_for()
     page.locator('#finalNarrative').fill(page.locator('#finalNarrative').input_value() + ' Revisione umana browser.')
     page.get_by_role('button', name='Salva nuova versione').click()
     page.get_by_text('human-review', exact=True).wait_for()
     page.locator('#confirmIncident').check()
     page.get_by_role('button', name='Invia versione corrente').click()
-    page.locator('#workspaceMeta').get_by_text('Inviata', exact=False).wait_for()
+    page.locator('#workspaceMeta').get_by_text('Inviato', exact=False).wait_for()
     with page.expect_download() as incident_download:
-        page.locator('#workspaceActions').get_by_role('button', name='Scarica fascicolo').click()
+        page.locator('#workspaceActions').get_by_role('button', name='Scarica evidenze').click()
     assert incident_download.value.suggested_filename.endswith('.json')
 
     page.locator('#roleSelect').select_option('admin')
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
     page.locator('.incident-card').first.locator('[data-open-incident]').click()
     page.locator('#closureNote').wait_for()
-    page.locator('#closureNote').fill('Chiusura amministrativa dopo verifica del fascicolo')
-    page.get_by_role('button', name='Chiudi fascicolo').click()
-    page.locator('#workspaceMeta').get_by_text('Chiusa', exact=False).wait_for()
+    page.locator('#closureNote').fill('Chiusura amministrativa dopo verifica delle evidenze')
+    page.get_by_role('button', name='Chiudi evento').click()
+    page.locator('#workspaceMeta').get_by_text('Chiuso', exact=False).wait_for()
     page.screenshot(path=str(ART / 'runtime-journeys.png'), full_page=True)
 
     checks = [
-        'global-ai-config', 'plan-reveal', 'plan-version', 'pause-resume', 'protected-mission-evidence',
-        'source-reason', 'contribution', 'role-correct-user-view', 'ai-lens', 'question-compass',
-        'human-adoption', 'origin-diff', 'formulation-version', 'incident-submit',
-        'protected-incident-evidence', 'reasoned-close', 'proof-pulse'
+        'single-role-aware-home', 'contextual-ai-setup', 'horizontal-admin-journey', 'contextual-monitoring-cta',
+        'plan-review', 'plan-version', 'pause-resume', 'protected-mission-evidence', 'source-reason',
+        'contribution', 'user-home-guidance', 'role-correct-user-view', 'contextual-event-cta',
+        'ai-analysis', 'adaptive-question', 'human-confirmation', 'original-comparison',
+        'formulation-version', 'incident-submit', 'protected-incident-evidence', 'reasoned-close', 'proof-pulse'
     ]
     assert not errors, f'page errors: {errors}'
     (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks}, indent=2), encoding='utf8')
@@ -162,4 +173,4 @@ with sync_playwright() as p:
     page.close(run_before_unload=False)
     context.close()
     browser.close()
-    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct evidence journeys, teardown complete)', flush=True)
+    print(f'browser-check: ok ({len(checks)} live UX checks, role-correct horizontal journeys, teardown complete)', flush=True)
