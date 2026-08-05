@@ -104,6 +104,8 @@ def main():
         with page.expect_response(
             lambda response: response.url.endswith('/api/bootstrap')
             and response.request.method == 'GET'
+            and response.request.headers.get('x-ictc-role') == 'auditor'
+            and response.request.headers.get('x-ictc-actor-id') == 'local-auditor'
         ) as auditor_bootstrap:
             page.locator('#roleSelect').select_option('auditor')
         assert auditor_bootstrap.value.status == 200
