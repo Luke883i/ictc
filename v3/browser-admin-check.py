@@ -37,7 +37,7 @@ def main():
         page.locator('#homeView[data-reborn3="true"]').wait_for(state='visible')
         page.locator('#homeNextTitle').wait_for(state='visible')
         observed_role = page.locator('#homeRole').inner_text().strip()
-        assert observed_role == 'Amministratore', f'expected Amministratore, observed {observed_role!r}'
+        assert observed_role.casefold() == 'amministratore', f'expected administrator role, observed {observed_role!r}'
         assert page.locator('#homePrimaryAction').count() == 1, 'expected exactly one primary Home action'
         for selector in ['#homeReason', '#homeWhyMe', '#homeHow', '#homeOutcome']:
             value = page.locator(selector).inner_text().strip()
@@ -118,6 +118,7 @@ def main():
             'admin-state-independent-decision-capsule',
             'admin-eight-decision-answers',
             'admin-trust-disclosure',
+            'admin-role-label-presentation-independent',
             'honest-blockers',
             'governance-write',
             'user-provision-persisted',
