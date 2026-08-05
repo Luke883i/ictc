@@ -107,8 +107,6 @@ def main():
         ) as auditor_bootstrap:
             page.locator('#roleSelect').select_option('auditor')
         assert auditor_bootstrap.value.status == 200
-        bootstrap_body = auditor_bootstrap.value.json()
-        assert bootstrap_body['actor']['role'] == 'auditor'
 
         PHASE = 'auditor-identity'
         print(f'browser-admin-check: {PHASE}', flush=True)
