@@ -29,12 +29,30 @@ assertSafeRuntimeBinding(host);
 const schedulerMs=Math.max(10000,Number(process.env.ICTC_SCHEDULER_TICK_MS||60000));
 const runningMissions=new Set();
 const monitoring=createMonitoringRuntime({store,permissions,runningMissions});
-const handlers=[monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store,permissions}),createAdminHandler({store,permissions})];
+const handlers=[monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store,permissions}),createAdminHandler({store,permissions,posture:runtimePosture})];
+
+function runtimePosture(){
+  return {
+    integrity:store.verifyChain(),
+    safeBinding:true,
+    identityProvider:process.env.ICTC_IDENTITY_MODE==='trusted-header',
+    tls:process.env.ICTC_TLS_ATTESTED==='1',
+    durableStorage:process.env.ICTC_DURABLE_STORAGE==='1',
+    backupVerified:Boolean(process.env.ICTC_BACKUP_VERIFIED_AT),
+    malwareScanning:process.env.ICTC_MALWARE_SCAN_MODE==='external',
+    observability:process.env.ICTC_OBSERVABILITY_ATTESTED==='1',
+    dependencyAudit:Boolean(process.env.ICTC_DEPENDENCY_AUDIT_AT),
+    dependencyAuditAt:process.env.ICTC_DEPENDENCY_AUDIT_AT||null,
+    accessibilityAudit:Boolean(process.env.ICTC_ACCESSIBILITY_AUDIT_AT),
+    accessibilityAuditAt:process.env.ICTC_ACCESSIBILITY_AUDIT_AT||null
+  };
+}
 
 async function handleApi(request,response,url,actor){
   const pathname=url.pathname,method=request.method||'GET';
   if(method==='GET'&&pathname==='/api/health'){
-    json(response,200,{ok:true,service:'ictc',version:VERSION,readiness:'ready',services:['monitoring','incidents'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise:enterpriseReadiness(store.snapshot(),{integrity:store.verifyChain(),safeBinding:true,dependencyAudit:true})});return;
+    const enterprise=enterpriseReadiness(store.snapshot(),runtimePosture());
+    json(response,200,{ok:true,service:'ictc',version:VERSION,readiness:enterprise.level,services:['monitoring','incidents'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise});return;
   }
   if(method==='GET'&&pathname==='/api/bootstrap'){
     const projected=visibleState(actor,store,VERSION);
