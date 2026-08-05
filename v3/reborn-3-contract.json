@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "3.0.0",
+  "model": "ictc-reborn-3",
+  "intent": "One compact decision capsule answers what, why now, why me, how, outcome, AI role, human checkpoint and evidence without duplicating operational navigation.",
+  "personas": ["admin", "user", "auditor"],
+  "primaryVocabulary": ["Home", "Monitoraggio", "Eventi", "Fonti", "Materiali", "Evidenze", "Configurazione AI", "Amministrazione"],
+  "decisionQuestions": ["what", "why-now", "why-me", "how", "outcome", "ai-role", "human-checkpoint", "evidence"],
+  "findings": [
+    {"id":"distributed-decision-context","severity":"high","observation":"Role, action, journey and metrics require mental recomposition across separate panels.","resolution":"Unify them in one decision capsule plus compact method and state regions."},
+    {"id":"duplicated-operational-routes","severity":"medium","observation":"Monitoring and Events appear in both global navigation and a Home route panel.","resolution":"Keep global navigation as the canonical route selector."},
+    {"id":"passive-ai-boundary","severity":"medium","observation":"The AI note is correct but does not explain inputs, human checkpoint and resulting evidence for the selected action.","resolution":"Project action-specific AI, human and evidence explanations."},
+    {"id":"equal-weight-information","severity":"medium","observation":"Journey, metrics and route cards compete visually with the next action.","resolution":"Give the decision capsule first weight and reduce method and state to editorial strips."},
+    {"id":"non-stateful-method","severity":"low","observation":"Four steps explain the method but are not tied to the selected action.","resolution":"Keep them as a compact role method and bind the decision explanation to runtime state."}
+  ],
+  "metrics": {
+    "primaryActionsPerHome": 1,
+    "decisionQuestionsAnswered": 8,
+    "topLevelHomeRegions": 3,
+    "duplicateOperationalRoutePanels": 0,
+    "roleCoverage": 3,
+    "aiStatesCovered": 3,
+    "failureStatesCovered": 4,
+    "browserRoleJourneys": 3,
+    "writeAuthorityLeakage": 0,
+    "forbiddenLegalClaims": 0,
+    "maxDesktopHeroPx": 360,
+    "maxHomeTitleRem": 3.4,
+    "MPlus100Novelty": 0
+  },
+  "universalInvariants": [
+    "one-primary-action",
+    "role-purpose-visible",
+    "why-now-visible",
+    "why-me-visible",
+    "how-visible",
+    "outcome-visible",
+    "ai-assists-human-decides",
+    "evidence-and-limitations-visible",
+    "server-issued-authority",
+    "semantic-separation-material-source-evidence",
+    "compact-progressive-disclosure",
+    "degraded-path-remains-explicit"
+  ],
+  "candidateSlices": [
+    {"order":1,"id":"contract","goal":"Freeze Reborn 3.0 language, ontology, metrics and saturation model."},
+    {"order":2,"id":"decision-capsule","goal":"Replace the multi-panel Home with one action brief, one role method and one state strip."},
+    {"order":3,"id":"context-projection","goal":"Derive why, how, AI, human and evidence explanations from existing bootstrap state."},
+    {"order":4,"id":"operational-guidance","goal":"Add compact contextual guides to Monitoring and Events without adding navigation surfaces."},
+    {"order":5,"id":"assurance","goal":"Certify static metrics, actor browser journeys and M plus 100 no-novelty."}
+  ]
+}

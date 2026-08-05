@@ -34,7 +34,20 @@ def main():
         PHASE = 'bootstrap'
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.goto(f'{BASE}/', wait_until='networkidle')
-        page.get_by_role('heading', name='Cosa devi fare adesso?').wait_for()
+        page.locator('#homeView[data-reborn3="true"]').wait_for(state='visible')
+        page.locator('#homeNextTitle').wait_for(state='visible')
+        observed_role = page.locator('#homeRole').inner_text().strip()
+        assert observed_role.casefold() == 'amministratore', f'expected administrator role, observed {observed_role!r}'
+        assert page.locator('#homePrimaryAction').count() == 1, 'expected exactly one primary Home action'
+        for selector in ['#homeReason', '#homeWhyMe', '#homeHow', '#homeOutcome']:
+            value = page.locator(selector).inner_text().strip()
+            assert value, f'{selector} is empty'
+        disclosure = page.locator('.trust-brief')
+        if disclosure.get_attribute('open') is None:
+            disclosure.locator('summary').click()
+        for selector in ['#homeAiNote', '#homeHumanGate', '#homeEvidence']:
+            value = page.locator(selector).inner_text().strip()
+            assert value, f'{selector} is empty after opening trust disclosure'
 
         PHASE = 'readiness'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -101,7 +114,11 @@ def main():
         PHASE = 'page-errors'
         assert not errors, errors
         checks = [
-            'home-admin-entry',
+            'reborn-3-admin-entry',
+            'admin-state-independent-decision-capsule',
+            'admin-eight-decision-answers',
+            'admin-trust-disclosure',
+            'admin-role-label-presentation-independent',
             'honest-blockers',
             'governance-write',
             'user-provision-persisted',

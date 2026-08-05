@@ -96,7 +96,7 @@ try:
         })
     assert not closed and status_count == 1 and role_count == 1, json.dumps(observed, ensure_ascii=False)
     assert observed.get('actorRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
-    assert 'Auditor' in observed.get('text', ''), json.dumps(observed, ensure_ascii=False)
+    assert 'auditor' in observed.get('text', '').casefold(), json.dumps(observed, ensure_ascii=False)
     assert observed.get('selectedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
     assert observed.get('storedRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
     assert observed.get('storedService') == 'home', json.dumps(observed, ensure_ascii=False)
@@ -107,15 +107,29 @@ try:
         headers={'x-ictc-role': 'auditor', 'x-ictc-actor-id': 'local-auditor'},
         timeout=10000,
     )
-    assert bootstrap.status == 200
+    assert bootstrap.status == 200, f'bootstrap status {bootstrap.status}'
     body = bootstrap.json()
-    assert body['actor']['role'] == 'auditor'
+    assert body['actor']['role'] == 'auditor', body['actor']
 
     enter_phase('auditor-home-guidance')
     page.locator('#homeView').wait_for(state='visible')
+    page.get_by_role('heading', name='Consulta le evidenze disponibili', exact=True).wait_for()
     page.locator('#homePrimaryAction').get_by_text('Apri le evidenze', exact=True).wait_for()
-    assert page.locator('#homeJourney .journey-step').count() == 4
-    assert 'sola lettura' in page.locator('#homeSummary').inner_text().lower()
+    journey_count = page.locator('#homeJourney .journey-step').count()
+    assert journey_count == 4, f'expected 4 auditor steps, observed {journey_count}'
+    summary = page.locator('#homeSummary').inner_text().casefold()
+    why_me = page.locator('#homeWhyMe').inner_text().casefold()
+    assert 'sola lettura' in summary, f'homeSummary missing read-only boundary: {summary!r}'
+    assert 'auditor' in why_me, f'homeWhyMe missing actor responsibility: {why_me!r}'
+    disclosure = page.locator('.trust-brief')
+    if disclosure.get_attribute('open') is None:
+        disclosure.locator('summary').click()
+    evidence = page.locator('#homeEvidence').inner_text().casefold()
+    human_gate = page.locator('#homeHumanGate').inner_text().casefold()
+    assert 'completezza' in evidence, f'homeEvidence missing completeness limit: {evidence!r}'
+    assert 'verità sostanziale' in evidence, f'homeEvidence missing substantive-truth limit: {evidence!r}'
+    assert 'non ' in evidence, f'homeEvidence does not negate enterprise truth claim: {evidence!r}'
+    assert 'decisioni restano attribuite' in human_gate, f'homeHumanGate missing attribution: {human_gate!r}'
     for selector in ['#openAdminCenter', '#openSettings']:
         page.locator(selector).wait_for(state='hidden')
 
@@ -126,7 +140,8 @@ try:
         page.locator(selector).wait_for(state='hidden')
     intro = page.locator('#userMonitoringIntro')
     intro.wait_for(state='visible')
-    assert 'sola lettura' in intro.inner_text().lower()
+    intro_text = intro.inner_text().casefold()
+    assert 'sola lettura' in intro_text, f'auditor monitoring intro is not read-only: {intro_text!r}'
 
     enter_phase('auditor-events-read-only')
     page.locator('[data-service="incidents"]').click()
@@ -136,8 +151,12 @@ try:
 
     checks = [
         'auditor-bootstrap-identity',
-        'auditor-home-guidance',
-        'auditor-horizontal-journey',
+        'reborn-3-auditor-decision-capsule',
+        'auditor-why-me',
+        'auditor-human-evidence-boundary',
+        'auditor-completeness-limit',
+        'auditor-substantive-truth-limit',
+        'auditor-horizontal-method',
         'auditor-admin-controls-hidden',
         'auditor-monitoring-write-controls-hidden',
         'auditor-event-write-controls-hidden',

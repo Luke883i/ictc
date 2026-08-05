@@ -24,6 +24,8 @@ jobs:
         run: node v3/product-contract-check.mjs
       - name: Question and UI contracts
         run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs && node v3/user-journey-2-check.mjs
+      - name: Reborn 3.0 decision assurance
+        run: node v3/reborn-3-check.mjs && node v3/reborn-3-saturation.mjs
       - name: Onto-epistemic and journey audits
         run: node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs
       - name: Experience saturation
