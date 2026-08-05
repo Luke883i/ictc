@@ -155,7 +155,7 @@ with sync_playwright() as p:
 
     page.locator('#roleSelect').select_option('admin')
     page.locator('#runtimeStatus').get_by_text('Amministratore', exact=False).wait_for()
-    page.locator('.incident-card').first.get_by_role('button', name='Apri').click()
+    page.locator('.incident-card').first.locator('[data-open-incident]').click()
     page.locator('#closureNote').wait_for()
     page.locator('#closureNote').fill('Chiusura amministrativa dopo verifica del fascicolo')
     page.get_by_role('button', name='Chiudi fascicolo').click()

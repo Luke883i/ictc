@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { ROLES, VERSION } from './domain.mjs';
+import { ROLES } from './domain.mjs';
+import { VERSION } from './version.mjs';
 import { runtimeHarness } from './runtime-test-harness.mjs';
 
 const runtime = await runtimeHarness('ictc-enterprise-admin');
