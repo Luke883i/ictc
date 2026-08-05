@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { runtimeHarness } from './runtime-test-harness.mjs';
 const h=await runtimeHarness('ictc-v15-e2e');
 try {
-  let b=await h.bootstrap(); assert.equal(b.body.version,'1.5.0-rc.1');
+  let b=await h.bootstrap(); assert.equal(b.body.version,'1.6.0-rc.1');
   assert.equal((await h.request('PUT','/api/admin/settings',{},'user','alice')).status,403);
   let r=await h.ok('POST','/api/missions/draft',{objective:'Official EU and Italian information-security sources',cadence:168});
   const mission=r.body.mission.id; assert.equal(r.body.mission.state,'needs-plan'); assert.ok(r.body.raw.receipt.hash);

@@ -1,4 +1,5 @@
 import { asString, canonicalJson, now, redactEndpoint, sha256 } from './domain.mjs';
+import { fetchAiEndpoint } from './network-policy.mjs';
 
 function parseJsonContent(content) {
   const text = asString(content, 200_000);
@@ -10,18 +11,10 @@ function parseJsonContent(content) {
     throw new Error('Il provider AI non ha restituito JSON valido');
   }
 }
-function ensureEndpointAllowed(endpoint) {
-  const url = new URL(endpoint);
-  const host = url.hostname.toLowerCase();
-  const privateHost = host === 'localhost' || host === '127.0.0.1' || host === '::1' || /^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(host);
-  if (privateHost && process.env.ICTC_ALLOW_PRIVATE_AI !== '1') {
-    throw Object.assign(new Error('Endpoint AI privato non consentito senza ICTC_ALLOW_PRIVATE_AI=1'), { status: 400, code: 'private-ai-endpoint' });
-  }
-}
+
 export async function callJson(settings, purpose, systemPrompt, payload, options = {}) {
   const endpoint = asString(settings.llm.endpoint, 4_000); const model = asString(settings.llm.model, 500);
   if (!endpoint || !model) throw Object.assign(new Error('Provider AI non configurato'), { status: 409, code: 'ai-not-configured' });
-  ensureEndpointAllowed(endpoint);
   const keyEnv = asString(settings.llm.apiKeyEnv, 200); const key = keyEnv ? process.env[keyEnv] : '';
   if (keyEnv && !key) throw Object.assign(new Error(`Variabile ${keyEnv} non disponibile`), { status: 409, code: 'ai-key-missing' });
   const requestedAt = now(); const prompt = `${systemPrompt}\n\nICTC_PURPOSE_RUNTIME:${purpose}`; const inputJson = canonicalJson(payload);
@@ -32,12 +25,13 @@ export async function callJson(settings, purpose, systemPrompt, payload, options
   const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), Number(options.timeoutMs || 45_000));
   let response; let responseText = '';
   try {
-    response = await fetch(endpoint, {
+    response = await fetchAiEndpoint(endpoint, {
       method: 'POST', headers: { 'content-type': 'application/json', ...(key ? { authorization: `Bearer ${key}` } : {}) },
       body: JSON.stringify(body), signal: controller.signal
     });
     responseText = await response.text();
   } catch (error) {
+    if (error.status) throw error;
     const message = error.name === 'AbortError' ? 'Timeout del provider AI' : `Provider AI non raggiungibile: ${error.message}`;
     throw Object.assign(new Error(message), { status: 502, code: error.name === 'AbortError' ? 'ai-timeout' : 'ai-unavailable' });
   } finally { clearTimeout(timeout); }

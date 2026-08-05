@@ -68,6 +68,7 @@ export function createContributionHandler({ store, permissions }) {
           draft.contributions.push(item);
           return item;
         }, command);
+        if (rawEnvelope.replayed) await store.deleteAttachments(attachments);
       } catch (error) {
         await store.deleteAttachments(attachments);
         throw error;
@@ -88,7 +89,7 @@ export function createContributionHandler({ store, permissions }) {
           return contribution;
         }, derivedCommand(command, 'deferred'));
       }
-      json(response, 201, { raw: rawEnvelope, enrichment: enrichmentEnvelope, warning });
+      json(response, rawEnvelope.replayed ? 200 : 201, { raw: rawEnvelope, enrichment: enrichmentEnvelope, warning });
       return true;
     }
 

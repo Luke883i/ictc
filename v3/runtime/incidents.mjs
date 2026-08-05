@@ -70,6 +70,7 @@ export function createIncidentHandler({ store, permissions }) {
           draft.incidents.push(incident);
           return incident;
         }, command);
+        if (rawEnvelope.replayed) await store.deleteAttachments(attachments);
       } catch (error) {
         await store.deleteAttachments(attachments);
         throw error;
@@ -91,7 +92,7 @@ export function createIncidentHandler({ store, permissions }) {
           return incident;
         }, derivedCommand(command, 'analysis-deferred'));
       }
-      json(response, 201, {
+      json(response, rawEnvelope.replayed ? 200 : 201, {
         raw: rawEnvelope,
         analysis: analysisEnvelope,
         warning,

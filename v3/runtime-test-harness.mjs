@@ -16,6 +16,6 @@ export async function runtimeHarness(prefix='ictc-test') {
   const request=async(method,url,body={},role='admin',actor=`test-${role}`,opts={})=>{if(opts.refresh!==false)await bootstrap(role,actor);const r=await fetch(`${base}${url}`,{method,headers:{'content-type':'application/json',...identity(role,actor),'x-ictc-command-id':opts.commandId||`${prefix}-${++seq}`,'x-ictc-expected-revision':String(opts.expectedRevision??revision)},body:JSON.stringify(body)});return {status:r.status,body:await r.json().catch(()=>({})),headers:r.headers};};
   const ok=async(...args)=>{const r=await request(...args);if(r.status<200||r.status>=300)throw Object.assign(new Error(`${args[0]} ${args[1]}: ${r.body.error}`),r);return r;};
   mock=spawnOne(['v3/mock-ai-provider.mjs'],{MOCK_AI_PORT:String(aiPort)});await wait(`http://127.0.0.1:${aiPort}`);
-  server=spawnOne(['v3/server.mjs'],{PORT:String(apiPort),ICTC_HOST:'127.0.0.1',ICTC_RUNTIME_DIR:dir,ICTC_ALLOW_PRIVATE_AI:'1',ICTC_LLM_API_KEY:'test-key',ICTC_SCHEDULER_TICK_MS:'100000'});await wait(`${base}/api/health`);
+  server=spawnOne(['v3/server.mjs'],{PORT:String(apiPort),ICTC_HOST:'127.0.0.1',ICTC_RUNTIME_DIR:dir,ICTC_ALLOW_LOCAL_ACTOR_SWITCH:'1',ICTC_ALLOW_PRIVATE_AI:'1',ICTC_LLM_API_KEY:'test-key',ICTC_SCHEDULER_TICK_MS:'100000'});await wait(`${base}/api/health`);
   return {base,aiPort,identity,bootstrap,request,ok,close:async()=>{await stop(server);await stop(mock);await rm(dir,{recursive:true,force:true});}};
 }
