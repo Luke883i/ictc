@@ -110,21 +110,38 @@ def main():
             page.locator('#roleSelect').select_option('auditor')
         assert auditor_bootstrap.value.status == 200
 
-        PHASE = 'auditor-identity'
+        PHASE = 'auditor-document'
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.wait_for_timeout(1000)
-        status = page.locator('#runtimeStatus')
+        closed = page.is_closed()
+        status_count = 0 if closed else page.locator('#runtimeStatus').count()
+        role_count = 0 if closed else page.locator('#roleSelect').count()
         observed = {
-            'text': status.inner_text(),
-            'actorRole': status.get_attribute('data-actor-role'),
-            'requestedRole': status.get_attribute('data-requested-role'),
-            'selectedRole': page.locator('#roleSelect').input_value(),
-            'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
+            'url': page.url if not closed else None,
+            'closed': closed,
+            'statusCount': status_count,
+            'roleSelectCount': role_count,
+            'title': None if closed else page.title(),
             'pageErrors': list(errors),
         }
-        assert observed['actorRole'] == 'auditor', json.dumps(observed, ensure_ascii=False)
-        assert 'Auditor' in observed['text']
-        assert observed['selectedRole'] == 'auditor'
+        if not closed and status_count:
+            status = page.locator('#runtimeStatus')
+            observed.update({
+                'text': status.inner_text(timeout=1000),
+                'actorRole': status.get_attribute('data-actor-role', timeout=1000),
+                'requestedRole': status.get_attribute('data-requested-role', timeout=1000),
+                'selectedRole': page.locator('#roleSelect').input_value(timeout=1000) if role_count else None,
+                'storedRole': page.evaluate("localStorage.getItem('ictc-role')"),
+            })
+        else:
+            observed['htmlPrefix'] = None if closed else page.content()[:500]
+        assert not closed and status_count == 1 and role_count == 1, json.dumps(observed, ensure_ascii=False)
+
+        PHASE = 'auditor-identity'
+        print(f'browser-admin-check: {PHASE}', flush=True)
+        assert observed.get('actorRole') == 'auditor', json.dumps(observed, ensure_ascii=False)
+        assert 'Auditor' in observed.get('text', '')
+        assert observed.get('selectedRole') == 'auditor'
 
         PHASE = 'auditor-controls'
         print(f'browser-admin-check: {PHASE}', flush=True)
