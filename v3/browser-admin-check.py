@@ -101,11 +101,20 @@ def main():
         PHASE = 'auditor-role-change'
         print(f'browser-admin-check: {PHASE}', flush=True)
         page.locator('[data-admin-close]').click()
-        page.locator('#roleSelect').select_option('auditor')
+        with page.expect_response(
+            lambda response: response.url.endswith('/api/bootstrap')
+            and response.request.method == 'GET'
+        ) as auditor_bootstrap:
+            page.locator('#roleSelect').select_option('auditor')
+        assert auditor_bootstrap.value.status == 200
+        bootstrap_body = auditor_bootstrap.value.json()
+        assert bootstrap_body['actor']['role'] == 'auditor'
 
         PHASE = 'auditor-identity'
         print(f'browser-admin-check: {PHASE}', flush=True)
-        page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
+        confirmed_status = page.locator('#runtimeStatus[data-actor-role="auditor"]')
+        confirmed_status.wait_for(state='visible')
+        assert 'Auditor' in confirmed_status.inner_text()
         assert page.locator('#roleSelect').input_value() == 'auditor'
 
         PHASE = 'auditor-controls'
@@ -120,6 +129,7 @@ def main():
             'governance-write',
             'user-provision-persisted',
             'user-disable',
+            'auditor-server-bootstrap',
             'auditor-least-privilege',
         ]
         (ART / 'browser-admin-check.json').write_text(
