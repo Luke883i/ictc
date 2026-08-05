@@ -1,0 +1,16 @@
+:root{
+  --font-sans:"Inter Variable","Inter",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --color-bg:#f7f8fb;--color-surface:#ffffff;--color-surface-subtle:#f1f4f8;
+  --color-text:#152033;--color-muted:#5f6f86;--color-border:#d8e0ea;
+  --color-brand:#4657d9;--color-brand-strong:#3042bd;--color-accent:#007f78;
+  --color-success:#087a5b;--color-warning:#9a6500;--color-danger:#a12638;--color-info:#245ba7;
+  --focus-ring:0 0 0 3px rgba(70,87,217,.22);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:20px;--radius-xl:28px;
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.5rem;--space-6:2rem;--space-7:3rem;
+  --shadow-sm:0 6px 18px rgba(22,35,57,.07);--shadow-md:0 18px 48px rgba(22,35,57,.11);
+  --ink:var(--color-text);--muted:var(--color-muted);--line:var(--color-border);--panel:var(--color-surface);--accent:var(--color-brand);--accent2:var(--color-accent);--danger:var(--color-danger);--shadow:var(--shadow-md);
+  font-family:var(--font-sans);
+}
+:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+.hash,code,pre{font-family:var(--font-mono)}
