@@ -9,7 +9,9 @@ export function renderIdentity() {
   const ai = state.data.settings.llm.ready ? 'AI pronta' : state.data.settings.llm.configured ? 'AI configurata, chiave assente' : 'AI da configurare';
   const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
   const roleLabel = roleLabels[state.data.actor.role] || 'Ruolo non riconosciuto';
-  $('#runtimeStatus').textContent = `${roleLabel} · ${ai}`;
+  const status = $('#runtimeStatus');
+  status.textContent = `${roleLabel} · ${ai}`;
+  status.dataset.actorRole = state.data.actor.role;
   $$('.admin-only').forEach(node => { node.hidden = state.data.actor.role !== 'admin'; });
   $('#aiSetup').hidden = state.data.actor.role !== 'admin' || state.data.settings.llm.ready;
   const missionSubmit = $('#missionForm')?.querySelector('button[type="submit"]');
