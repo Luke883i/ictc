@@ -36,10 +36,18 @@ def main():
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-reborn3="true"]').wait_for(state='visible')
         page.locator('#homeNextTitle').wait_for(state='visible')
-        assert page.locator('#homeRole').inner_text().strip() == 'Amministratore'
-        assert page.locator('#homePrimaryAction').count() == 1
-        for selector in ['#homeReason', '#homeWhyMe', '#homeHow', '#homeOutcome', '#homeAiNote', '#homeHumanGate', '#homeEvidence']:
-            assert page.locator(selector).inner_text().strip(), selector
+        observed_role = page.locator('#homeRole').inner_text().strip()
+        assert observed_role == 'Amministratore', f'expected Amministratore, observed {observed_role!r}'
+        assert page.locator('#homePrimaryAction').count() == 1, 'expected exactly one primary Home action'
+        for selector in ['#homeReason', '#homeWhyMe', '#homeHow', '#homeOutcome']:
+            value = page.locator(selector).inner_text().strip()
+            assert value, f'{selector} is empty'
+        disclosure = page.locator('.trust-brief')
+        if disclosure.get_attribute('open') is None:
+            disclosure.locator('summary').click()
+        for selector in ['#homeAiNote', '#homeHumanGate', '#homeEvidence']:
+            value = page.locator(selector).inner_text().strip()
+            assert value, f'{selector} is empty after opening trust disclosure'
 
         PHASE = 'readiness'
         print(f'browser-admin-check: {PHASE}', flush=True)
@@ -109,6 +117,7 @@ def main():
             'reborn-3-admin-entry',
             'admin-state-independent-decision-capsule',
             'admin-eight-decision-answers',
+            'admin-trust-disclosure',
             'honest-blockers',
             'governance-write',
             'user-provision-persisted',
