@@ -97,7 +97,7 @@ with sync_playwright() as p:
     auditor_page.set_default_navigation_timeout(15000)
     auditor_errors = []
     auditor_page.on('pageerror', lambda error: auditor_errors.append(str(error)))
-    auditor_page.goto(f'{BASE}/', wait_until='networkidle')
+    auditor_page.goto(f'{BASE}/', wait_until='domcontentloaded')
     auditor_page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
     assert auditor_page.locator('#roleSelect').input_value() == 'auditor'
     auditor_page.locator('#openAdminCenter').wait_for(state='hidden')
