@@ -2,8 +2,8 @@ import { $, $$, state } from './common.js';
 
 export const ENTERPRISE_PROCESS_CATALOG = Object.freeze({
   monitoring: Object.freeze({ code: 'RN-01', name: 'Monitoraggio normativo' }),
-  incidents: Object.freeze({ code: 'EC-01', name: 'Gestione eventi di conformità' }),
-  evidence: Object.freeze({ code: 'EV-01', name: 'Evidenze e verifiche' }),
+  incidents: Object.freeze({ code: 'EC-01', name: 'Gestione eventi e segnalazioni' }),
+  evidence: Object.freeze({ code: 'EV-01', name: 'Evidenze e controlli' }),
   identity: Object.freeze({ code: 'IA-01', name: 'Identità e accessi' }),
   ai: Object.freeze({ code: 'GA-01', name: 'Governo dei servizi AI' })
 });

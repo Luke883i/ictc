@@ -9,8 +9,8 @@ const docs = await readFile(new URL('../docs/ENTERPRISE_2_PROCESS_CATALOG.md', i
 
 const catalog = {
   'RN-01': 'Monitoraggio normativo',
-  'EC-01': 'Gestione eventi di conformità',
-  'EV-01': 'Evidenze e verifiche',
+  'EC-01': 'Gestione eventi e segnalazioni',
+  'EV-01': 'Evidenze e controlli',
   'IA-01': 'Identità e accessi',
   'GA-01': 'Governo dei servizi AI'
 };
