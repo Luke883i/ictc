@@ -4,6 +4,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const contract = JSON.parse(await read('./reborn-3-contract.json'));
 const app = await read('./public/app.js');
+const standardProofModule = await read('./public/ui/standard-proof-1-6.js');
+const stableModule = await read('./public/ui/stable-1-4-home.js');
 const moduleSource = await read('./public/ui/reborn-3-home.js');
 const css = await read('./public/reborn-3.css');
 const styles = await read('./public/styles.css');
@@ -33,8 +35,10 @@ verify('declared-metrics', () => {
   assert.equal(contract.metrics.duplicateOperationalRoutePanels, 0);
   assert.equal(contract.metrics.MPlus100Novelty, 0);
 });
-verify('runtime-installation', () => {
-  assert.match(app, /install(?:Reborn3|Stable14)Experience/);
+verify('runtime-installation-chain', () => {
+  assert.match(app, /installStandardProof16Experience/);
+  assert.match(standardProofModule, /installStable14Experience\(\)/);
+  assert.match(stableModule, /installReborn3Experience\(\)/);
   assert.match(styles, /reborn-3\.css/);
 });
 verify('decision-answers', () => {
@@ -69,6 +73,7 @@ verify('browser-assurance', () => {
 
 const report = {
   schemaVersion: '3.0.0', model: contract.model, ok: true,
+  activeRelease: '1.6.0',
   metrics: contract.metrics, findings: contract.findings, verified,
   limitations: [
     'Static checks verify repository contracts; browser checks verify rendered geometry and actor journeys.',
@@ -77,4 +82,4 @@ const report = {
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/reborn-3-audit.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`reborn-3-check: ok (${verified.length} contract groups, ${contract.decisionQuestions.length} decision answers)`);
+console.log(`reborn-3-check: ok (${verified.length} regression groups, ${contract.decisionQuestions.length} decision answers)`);

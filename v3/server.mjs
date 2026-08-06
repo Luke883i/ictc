@@ -6,6 +6,7 @@ import { Store } from './store.mjs';
 import { ROLES, now, publicSettings } from './domain.mjs';
 import { VERSION } from './version.mjs';
 import { accessProfileFor } from './access-profile.mjs';
+import { standardProofProjection } from './standard-proof.mjs';
 import { actorFrom, assertSafeRuntimeBinding, bodyJson, commandFrom, httpError, json, requirePermission, serveStatic } from './runtime/http.mjs';
 import { incidentProjection, validateSettings, visibleState } from './runtime/model.mjs';
 import { createMonitoringRuntime } from './runtime/monitoring.mjs';
@@ -47,11 +48,20 @@ function runtimePosture(){
   };
 }
 
+function proofFor(actor){
+  const posture=runtimePosture();
+  return standardProofProjection({
+    actor,version:VERSION,
+    readiness:enterpriseReadiness(store.snapshot(),posture),
+    integrity:posture.integrity
+  });
+}
+
 async function handleApi(request,response,url,actor){
   const pathname=url.pathname,method=request.method||'GET';
   if(method==='GET'&&pathname==='/api/health'){
     const enterprise=enterpriseReadiness(store.snapshot(),runtimePosture());
-    json(response,200,{ok:true,service:'ictc',version:VERSION,readiness:enterprise.level,services:['monitoring','incidents'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise});return;
+    json(response,200,{ok:true,service:'ictc',version:VERSION,readiness:enterprise.level,services:['monitoring','incidents'],supportSurfaces:['standard-proof'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise});return;
   }
   if(method==='GET'&&pathname==='/api/bootstrap'){
     const projected=visibleState(actor,store,VERSION);
@@ -59,12 +69,16 @@ async function handleApi(request,response,url,actor){
     projected.accessProfile=accessProfileFor(actor);
     projected.experience.roles=ROLES.length;
     projected.experience.controlPlane='administration';
-    projected.experience.release='1.4-stable';
+    projected.experience.release='1.6-standard-proof';
     if(actor.role==='auditor'){
       projected.incidents=store.snapshot().incidents.map(incidentProjection);
       projected.recentEvents=store.snapshot().audit.slice(-8).reverse();
     }
     json(response,200,projected);return;
+  }
+  if(method==='GET'&&pathname==='/api/standard-proof'){
+    requirePermission(actor,'read',permissions);
+    json(response,200,proofFor(actor));return;
   }
   if(method==='PUT'&&pathname==='/api/admin/settings'){
     requirePermission(actor,'configure-ai',permissions);const input=await bodyJson(request);const normalized=validateSettings(input,store.snapshot().settings);

@@ -45,7 +45,7 @@ def assert_contains(locator, text):
 
 
 try:
-    enter_phase('playwright-start')
+    enter_phase('admin-first-experience')
     playwright = sync_playwright().start()
     launch = {'headless': True, 'args': ['--no-sandbox']}
     chromium = os.environ.get('ICTC_CHROMIUM')
@@ -60,11 +60,14 @@ try:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
 
-    enter_phase('admin-first-experience')
     page.goto(f'{BASE}/', wait_until='networkidle')
     page.locator('#homeView[data-stable14="true"]').wait_for(state='visible')
-    assert page.title() == 'ICTC 1.4 · Decisioni, fonti ed eventi'
-    assert [item.strip() for item in page.locator('.service-nav button').all_inner_texts()] == ['Home', 'Monitoraggio', 'Eventi']
+    assert page.title() == 'ICTC 1.6 · Standard proof'
+    operational_labels = [item.strip() for item in page.locator('.service-nav [data-service]').all_inner_texts()]
+    all_labels = [item.strip() for item in page.locator('.service-nav button').all_inner_texts()]
+    assert operational_labels == ['Home', 'Monitoraggio', 'Eventi'], operational_labels
+    assert all_labels == ['Home', 'Monitoraggio', 'Eventi', 'Guida e prova'], all_labels
+    assert page.locator('#openStandardProof[data-proof-service="proof"]').count() == 1
     assert page.locator('#homePrimaryAction').count() == 1
     decision_box = page.locator('.reborn-decision').bounding_box()
     assert decision_box and decision_box['height'] <= 330, decision_box
@@ -126,7 +129,8 @@ try:
     checks = [
         'stable-1-4-first-minute-orientation',
         'stable-1-4-compact-decision-height',
-        'stable-1-4-plain-navigation',
+        'stable-1-4-three-operational-services',
+        'stable-1-4-compatible-read-only-support-surface',
         'stable-1-4-admin-authority-map',
         'stable-1-4-user-authority-map',
         'stable-1-4-auditor-authority-map-open',
@@ -134,7 +138,7 @@ try:
         'stable-1-4-auditor-least-privilege',
         'stable-1-4-material-source-evidence-ontology',
     ]
-    (ART / 'browser-stable-1-4-check.json').write_text(json.dumps({'ok': True, 'checks': checks}, indent=2), encoding='utf8')
+    (ART / 'browser-stable-1-4-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.6.0'}, indent=2), encoding='utf8')
     if WATCHDOG:
         WATCHDOG.cancel()
     print('browser-stable-1-4: evidence complete', flush=True)
