@@ -10,6 +10,7 @@ import { installEnterpriseClarity17 } from './ui/clarity-1-7.js';
 import { installEnterpriseWorkbench18 } from './ui/workbench-1-8.js';
 import { installSettings18Structure } from './ui/settings-1-8-fix.js';
 import { installWorkbenchLabels18 } from './ui/labels-1-8-fix.js';
+import { installEnterprise2Candidate } from './ui/enterprise-2.js';
 
 installSurfaceRouter();
 installBindings();
@@ -20,4 +21,5 @@ installEnterpriseClarity17();
 installEnterpriseWorkbench18();
 installSettings18Structure();
 installWorkbenchLabels18();
+installEnterprise2Candidate();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));
