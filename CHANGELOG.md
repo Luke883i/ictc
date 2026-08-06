@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.6.0] - 2026-08-06
+
+### Standard proof scope
+
+- nuova area read-only **Guida e prova**, role-aware e distinta dai due servizi operativi canonici;
+- spiegazione compatta di architettura, journey, ontologia, standard, evidenze e limiti;
+- endpoint `/api/standard-proof` derivato da contratto, attore autorizzato, readiness e integrità;
+- dodici mapping di benchmark con principio, pratica ICTC, evidence path e limitation;
+- glossario canonico di quattordici termini per evitare collisioni semantiche;
+- risoluzione finale degli alias visuali sui design token canonici;
+- focus outline, target da 44 px, forced colors, reduced motion e reflow mobile/zoom;
+- un solo pannello Admin read-only per separare controlli runtime e gap di deployment;
+- saturazione di 787.320 scenari con no-novelty a M+100;
+- compressione da 153 input a 124 primitive canoniche con no-novelty a N+100;
+- gate statici, runtime, browser e security associati alla release 1.6.0.
+
+### Limitations
+
+La release dimostra contratti e journey selezionate del repository. Non certifica WCAG, EN 301 549, EAA, ISO 37301, NIST, AI Act, deployment produttivo o operating effectiveness. Restano necessari test umani e con tecnologie assistive, oltre alle attestazioni di identità, TLS, storage, restore, malware scanning e osservabilità.
+
 ## [1.4.0] - 2026-08-05
 
 ### Stable scope
