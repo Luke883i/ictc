@@ -44,10 +44,10 @@ try:
         settings = page.locator('#settingsForm')
         organization_section = settings.locator('.settings-section-18').nth(0)
         if organization_section.get_attribute('open') is None:
-            organization_section.locator('summary').click()
+            organization_section.locator(':scope > summary').click()
         provider_section = settings.locator('.settings-section-18').nth(1)
         if provider_section.get_attribute('open') is None:
-            provider_section.locator('summary').click()
+            provider_section.locator(':scope > summary').click()
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
