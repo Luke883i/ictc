@@ -11,6 +11,7 @@ import { installEnterpriseWorkbench18 } from './ui/workbench-1-8.js';
 import { installSettings18Structure } from './ui/settings-1-8-fix.js';
 import { installWorkbenchLabels18 } from './ui/labels-1-8-fix.js';
 import { installEnterprise2Candidate } from './ui/enterprise-2.js';
+import { installEnterprise2AdminNavigationFix } from './ui/enterprise-2-admin-nav.js';
 
 installSurfaceRouter();
 installBindings();
@@ -22,4 +23,5 @@ installEnterpriseWorkbench18();
 installSettings18Structure();
 installWorkbenchLabels18();
 installEnterprise2Candidate();
+installEnterprise2AdminNavigationFix();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));
