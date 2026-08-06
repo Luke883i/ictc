@@ -43,11 +43,12 @@ export function normalizeSettings18Structure() {
   const boundary = document.createElement('p');
   boundary.className = 'settings-job-boundary';
   boundary.textContent = 'La configurazione del singolo job — modalità, baseline, giurisdizioni, autorità e tipi di cambiamento — si gestisce in Ricerca normativa.';
+  body.append(boundary);
 
   for (const node of [...form.children]) {
     if (node !== header && node !== footer) node.remove();
   }
-  footer.before(body, boundary);
+  footer.before(body);
 
   const title = document.querySelector('#settingsTitle');
   if (title) title.textContent = 'Connessione e policy del provider';
