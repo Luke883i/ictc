@@ -61,12 +61,17 @@ try:
 
         PHASE = 'S01-home-auditor-summary'
         page.goto(f'{BASE}/', wait_until='networkidle')
-        page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
+        page.locator('html[data-ictc-candidate="2.0.0-enterprise"][data-process-catalog="enterprise-2"]').wait_for(state='attached')
         page.locator('#roleSelect').select_option('auditor')
         page.locator('#homeView').wait_for(state='visible')
         assert page.locator('#workbenchHomeTitle').inner_text() == 'Consulta attività e prove'
         assert page.locator('.home-disclosure[open]').count() == 0
+        assert page.locator('.home-disclosure-stack > details').first.get_attribute('data-home-disclosure') == 'proof'
         assert page.locator('#runtimeStatus').inner_text() == 'Sola lettura'
+        assert page.locator('.process-lane[data-lane="monitoring"] > .eyebrow').inner_text() == 'RN-01 · Monitoraggio normativo'
+        assert page.locator('.process-lane[data-lane="incidents"] > .eyebrow').inner_text() == 'EC-01 · Gestione eventi di conformità'
+        assert page.get_by_text('Processo 1', exact=True).count() == 0
+        assert page.get_by_text('Processo 2', exact=True).count() == 0
         no_overflow(page, 'S01')
         shot(page, 'S01', 'Panoramica auditor sintetica')
 
@@ -86,6 +91,8 @@ try:
         page.locator('#roleSelect').select_option('user')
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringView').wait_for(state='visible')
+        assert page.locator('#monitoringView').get_attribute('data-process-code') == 'RN-01'
+        assert page.locator('#monitoringView .core-title > .eyebrow').inner_text() == 'RN-01 · Monitoraggio normativo'
         assert page.locator('#monitoringView .core-title h1').inner_text() == 'Ricerche normative'
         assert page.get_by_text('Job di ricerca e novelty', exact=True).count() == 0
         assert page.get_by_text('Ricerche disponibili', exact=True).count() == 1
@@ -95,6 +102,8 @@ try:
         PHASE = 'S05-events-user-empty-or-list'
         page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#incidentsView').wait_for(state='visible')
+        assert page.locator('#incidentsView').get_attribute('data-process-code') == 'EC-01'
+        assert page.locator('#incidentsView .core-title > .eyebrow').inner_text() == 'EC-01 · Gestione eventi di conformità'
         assert page.locator('#incidentsView .core-title h1').inner_text() == 'Eventi e incidenti'
         assert page.get_by_text('Eventi registrati', exact=True).count() == 1
         assert page.locator('#openIncident').inner_text() == 'Registra evento'
@@ -104,6 +113,7 @@ try:
         page.locator('[data-proof-service]').click()
         page.locator('#proofView').wait_for(state='visible')
         page.locator('#proofTitle').wait_for(state='visible')
+        assert page.locator('#proofView').get_attribute('data-process-code') == 'EV-01'
         assert page.locator('#proofTitle').inner_text() == 'Guida operativa e prove'
         assert page.locator('#openProofDetails').inner_text() == 'Apri dettagli'
         shot(page, 'S06', 'Guida operativa e prove')
@@ -116,16 +126,17 @@ try:
         page.locator('.admin-section-nav').wait_for(state='visible')
         assert page.locator('#adminCenterTitle').inner_text() == 'Amministrazione ICTC'
         assert page.locator('#adminCenter .admin-panel:visible').count() == 1
+        assert page.locator('.admin-section-nav').get_by_role('button', name='EV-01 · Sintesi').count() == 1
         shot(page, 'S07', 'Amministrazione sintesi')
 
         PHASE = 'S08-admin-controls'
-        page.locator('.admin-section-nav').get_by_role('button', name='Controlli').click()
+        page.locator('.admin-section-nav').get_by_role('button', name='EV-01 · Controlli').click()
         assert page.locator('#adminCenter .admin-panel:visible').count() == 1
         assert page.get_by_text('Stato dei controlli', exact=True).count() >= 1
         shot(page, 'S08', 'Amministrazione controlli')
 
         PHASE = 'S09-admin-ai'
-        page.locator('.admin-section-nav').get_by_role('button', name='Governance AI').click()
+        page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governance AI').click()
         assert page.get_by_text('Classificazione dei dati', exact=False).count() == 1
         classification = page.locator('#governanceForm select[name="classification"]')
         assert 'Uso interno' in classification.locator('option').all_inner_texts()
@@ -133,7 +144,7 @@ try:
 
         PHASE = 'S10-admin-local-users-mobile'
         page.set_viewport_size({'width': 390, 'height': 844})
-        page.locator('.admin-section-nav').get_by_role('button', name='Identità locali').click()
+        page.locator('.admin-section-nav').get_by_role('button', name='IA-01 · Identità locali').click()
         page.get_by_text('Aggiungi identità locale', exact=True).wait_for(state='visible')
         assert page.locator('#userForm').is_hidden()
         no_overflow(page, 'S10')
@@ -178,7 +189,9 @@ try:
             'S04-monitoring-plain-language', 'S05-events-standard-hierarchy', 'S06-proof-operational-title',
             'S07-admin-single-surface', 'S08-admin-controls', 'S09-localized-governance',
             'S10-local-identities-mobile', 'S11-mobile-320', 'zoom-200', 'keyboard-Escape',
-            'focus-return', 'forced-colors', 'reduced-motion', 'unlabeled-controls-zero', 'minimum-targets'
+            'focus-return', 'forced-colors', 'reduced-motion', 'unlabeled-controls-zero', 'minimum-targets',
+            'process-catalog-visible', 'generic-process-labels-zero', 'role-specific-disclosure-order',
+            'RN-01-monitoring', 'EC-01-events', 'EV-01-evidence', 'IA-01-identity', 'GA-01-ai-governance'
         ]
         payload = {'schemaVersion': '2.0.0-candidate', 'ok': True, 'checks': checks, 'screenshots': SCREENSHOTS, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}
         (ART / 'browser-enterprise-2-check.json').write_text(json.dumps(payload, indent=2), encoding='utf8')

@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
+await import('./enterprise-2-process-check.mjs');
 const contract = JSON.parse(await read('./enterprise-2-contract.json'));
 const ui = await read('./public/ui/enterprise-2.js');
+const processUi = await read('./public/ui/enterprise-2-processes.js');
 const css = await read('./public/enterprise-2.css');
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
@@ -18,6 +20,7 @@ const browser = await read('./browser-enterprise-2-check.py');
 const saturation = await read('./enterprise-2-saturation.mjs');
 const compression = await read('./enterprise-2-compression.mjs');
 const docs = await read('../docs/ENTERPRISE_2_CANDIDATE_DOD.md');
+const processDocs = await read('../docs/ENTERPRISE_2_PROCESS_CATALOG.md');
 const packageJson = JSON.parse(await read('../package.json'));
 const workflow = await read('../.github/workflows/ci.yml');
 const verified = [];
@@ -42,18 +45,42 @@ verify('contract-shape', () => {
 verify('terminal-installation', () => {
   assert.match(app, /installEnterprise2Candidate/);
   assert.match(app, /enterprise-2\.js/);
+  assert.match(app, /installEnterprise2ProcessArchitecture/);
+  assert.match(app, /enterprise-2-processes\.js/);
+  assert.doesNotMatch(app, /enterprise-2-admin-nav/);
   assert.match(styles, /enterprise-2\.css/);
   assert.match(ui, /ictcCandidate/);
+  assert.match(processUi, /processCatalog/);
 });
 verify('plain-language-primary-labels', () => {
   for (const label of ['Ricerche normative', 'Ricerche disponibili', 'Eventi registrati', 'Guida operativa e prove', 'Accesso federato', 'Identità locali']) assert.match(ui, new RegExp(label));
   assert.doesNotMatch(ui, /<h1>[^<]*(Job|novelty|baseline)/i);
   assert.match(ui, /Scarica prova/);
 });
+verify('named-process-catalog', () => {
+  const processes = {
+    'RN-01': 'Monitoraggio normativo',
+    'EC-01': 'Gestione eventi di conformità',
+    'EV-01': 'Evidenze e verifiche',
+    'IA-01': 'Identità e accessi',
+    'GA-01': 'Governo dei servizi AI'
+  };
+  for (const [code, name] of Object.entries(processes)) {
+    assert.match(processUi, new RegExp(code));
+    assert.match(processUi, new RegExp(name));
+    assert.match(processDocs, new RegExp(code));
+    assert.match(browser, new RegExp(code));
+  }
+  assert.match(browser, /generic-process-labels-zero/);
+  assert.match(browser, /Processo 1/);
+  assert.match(browser, /Processo 2/);
+});
 verify('progressive-disclosure', () => {
   assert.match(ui, /Come lavorare/);
   assert.match(ui, /Prove e responsabilità/);
   assert.match(ui, /home-disclosure-stack/);
+  assert.match(processUi, /activeRole === 'auditor' \? \[proof, method\]/);
+  assert.match(processUi, /processDisclosureBound/);
   assert.match(css, /home-disclosure-stack/);
   assert.match(css, /maximum|home-disclosure/);
 });
@@ -68,6 +95,9 @@ verify('admin-information-architecture', () => {
   assert.match(ui, /one active|activateAdminSection/);
   assert.match(ui, /Aggiungi identità locale/);
   assert.match(ui, /Classificazione dei dati/);
+  assert.match(processUi, /enforceSingleAdminSurface/);
+  assert.match(processUi, /panel\.parentElement !== grid/);
+  assert.match(processUi, /candidate\.hidden = candidate !== panel/);
   assert.match(css, /admin-panel\[hidden\]/);
 });
 verify('capability-reconciliation', () => {
@@ -82,15 +112,18 @@ verify('capability-reconciliation', () => {
 verify('identity-separation', () => {
   assert.match(ui, /Accesso federato/);
   assert.match(ui, /Identità locali/);
+  assert.match(processUi, /IA-01/);
   assert.match(admin, /\/api\/admin\/identity/);
   assert.match(admin, /\/api\/admin\/users/);
   assert.match(identity, /shibboleth/);
 });
 verify('proof-and-claim-boundary', () => {
   assert.match(ui, /Guida operativa e prove/);
+  assert.match(processUi, /EV-01/);
   assert.match(workbench, /limitations/);
   assert.match(contract.claimBoundary, /does not itself constitute/i);
   assert.match(docs, /non costituisce/i);
+  assert.match(processDocs, /Non costituisce certificazione/i);
 });
 verify('responsive-accessibility', () => {
   for (const token of ['320px', 'forced-colors', 'prefers-reduced-motion']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
@@ -120,20 +153,20 @@ verify('package-and-ci-gates', () => {
 });
 
 const evidenceMap = {
-  'scope-and-claim-boundary': ['enterprise-2-contract.json', 'ENTERPRISE_2_CANDIDATE_DOD.md'],
+  'scope-and-claim-boundary': ['enterprise-2-contract.json', 'ENTERPRISE_2_CANDIDATE_DOD.md', 'ENTERPRISE_2_PROCESS_CATALOG.md'],
   'capability-and-role-enforcement': ['render.js', 'actions.js', 'runtime permission checks', 'browser auditor journey'],
-  'identity-and-access': ['runtime/identity.mjs', 'runtime/admin.mjs', 'admin section navigation'],
-  'human-authority-over-ai': ['monitoring and incident runtime gates', 'proof claim boundary'],
+  'identity-and-access': ['runtime/identity.mjs', 'runtime/admin.mjs', 'IA-01 admin section navigation'],
+  'human-authority-over-ai': ['monitoring and incident runtime gates', 'proof claim boundary', 'GA-01 limit'],
   'record-provenance': ['workspaces.js', 'evidence exports'],
   'version-and-receipt-chain': ['store receipts', 'browser evidence download'],
-  'runtime-controls': ['admin readiness API', 'admin controls view'],
+  'runtime-controls': ['admin readiness API', 'EV-01 controls view'],
   'deployment-gaps': ['standard proof posture', 'admin proof summary'],
-  'semantic-labels': ['enterprise-2.js', 'image evidence matrix'],
-  'progressive-disclosure': ['home disclosure split', 'admin section navigator'],
+  'semantic-labels': ['enterprise-2.js', 'enterprise-2-processes.js', 'process catalog'],
+  'progressive-disclosure': ['role-specific home disclosure order', 'admin section navigator'],
   'responsive-layout': ['enterprise-2.css', '320/390/landscape browser checks'],
   'keyboard-and-focus': ['browser keyboard, Escape and focus-return checks'],
   'forced-colors-and-reduced-motion': ['enterprise-2.css media queries'],
-  'consultant-and-certifier-reading': ['T audience axis', 'certification review journey'],
+  'consultant-and-certifier-reading': ['T audience axis', 'certification review journey', 'stable process identifiers'],
   'public-authority-inspection': ['public authority journey', 'version and limitation checks'],
   'machine-readable-artifacts': ['enterprise-2 assurance, saturation and compression JSON artifacts']
 };
@@ -146,10 +179,11 @@ const report = {
   imageCoverage: { supplied: 11, mapped: contract.imageEvidence.length },
   invariantCount: contract.globalInvariants.length,
   TDimensions: contract.T.length,
+  processCatalog: ['RN-01', 'EC-01', 'EV-01', 'IA-01', 'GA-01'],
   certificationProof: contract.certificationProofDimensions.map(dimension => ({ dimension, status: 'candidate-evidence-present', attestedBy: evidenceMap[dimension] })),
   definitionOfDone: contract.definitionOfDone,
   claimBoundary: contract.claimBoundary
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-certification-proof.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`enterprise-2-check: ok (${verified.length} assurance groups, ${report.certificationProof.length} proof dimensions)`);
+console.log(`enterprise-2-check: ok (${verified.length} assurance groups, ${report.certificationProof.length} proof dimensions, ${report.processCatalog.length} named processes)`);
