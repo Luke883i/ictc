@@ -8,6 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
+MOCK = os.environ.get('ICTC_MOCK_URL', 'http://127.0.0.1:4899').rstrip('/')
 PHASE = 'initialization'
 
 
@@ -52,8 +53,33 @@ try:
         assert page.locator('#homeMonitoringAction').is_visible()
         assert page.locator('#homeIncidentAction').is_visible()
 
+        PHASE = 'provider-and-settings-boundary'
+        setup = page.locator('#homePrimaryAction')
+        assert setup.get_attribute('data-home-action') == 'settings'
+        setup.click()
+        page.locator('#settingsDialog').wait_for(state='visible')
+        sections = page.locator('#settingsForm > .settings-section-18, #settingsForm > .settings-18 > .settings-section-18')
+        assert sections.count() == 3, sections.count()
+        organization = page.locator('#settingsForm [data-settings-section="organization"]')
+        provider = page.locator('#settingsForm [data-settings-section="provider"]')
+        policy = page.locator('#settingsForm [data-settings-section="policy"]')
+        assert organization.count() == provider.count() == policy.count() == 1
+        if organization.get_attribute('open') is None:
+            organization.locator(':scope > summary').click()
+        if provider.get_attribute('open') is None:
+            provider.locator(':scope > summary').click()
+        settings = page.locator('#settingsForm')
+        settings.locator('input[name="organizationName"]').fill('Enterprise Browser')
+        settings.locator('textarea[name="organizationScope"]').fill('Ricerca normativa e incident response in Italia e UE')
+        settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
+        settings.locator('input[name="endpoint"]').fill(f'{MOCK}/v1/chat/completions')
+        settings.locator('input[name="model"]').fill('mock-enterprise-18')
+        settings.locator('input[name="apiKeyEnv"]').fill('ICTC_LLM_API_KEY')
+        settings.get_by_role('button', name='Salva configurazione').click()
+        page.locator('#settingsDialog').wait_for(state='hidden')
+
         PHASE = 'admin-regulatory-job-surface'
-        page.locator('[data-service="monitoring"]').click()
+        page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringView').wait_for(state='visible')
         contains(page.locator('#monitoringView h1'), 'Job di ricerca e novelty')
         assert page.get_by_text('Definisci cosa monitorare.', exact=True).count() == 0
@@ -67,9 +93,9 @@ try:
         PHASE = 'user-single-material-intake'
         page.locator('#roleSelect').select_option('user')
         page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
-        page.locator('[data-service="home"]').click()
+        page.locator('.service-nav [data-service="home"]').click()
         assert page.locator('.process-lane').count() == 2
-        page.locator('[data-service="monitoring"]').click()
+        page.locator('.service-nav [data-service="monitoring"]').click()
         assert page.locator('#openJobConfig').is_hidden()
         assert page.locator('#monitoringContributionAction:visible').count() == 1
         page.locator('#monitoringContributionAction').click()
@@ -81,30 +107,38 @@ try:
         page.locator('[data-close="contributionDialog"]').click()
 
         PHASE = 'compact-events-and-labels'
-        page.locator('[data-service="incidents"]').click()
+        page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#incidentsView').wait_for(state='visible')
         contains(page.locator('#incidentsView h1'), 'Registra e completa i fascicoli')
         hero = page.locator('#incidentsView > .hero').bounding_box()
         queue = page.locator('#incidentList').bounding_box()
         assert hero and hero['height'] <= 280, hero
         assert queue and queue['y'] < 720, queue
-        for card in page.locator('.incident-card').all():
-            assert card.get_by_role('button', name='Apri fascicolo').count() == 1
-            assert card.get_by_role('button', name='Scarica evidenze').count() == 1
+        page.locator('#openIncident').click()
+        incident = page.locator('#incidentForm')
+        incident.locator('textarea[name="originalNarrative"]').fill('Quasi incidente rilevato e contenuto senza impatto confermato')
+        incident.get_by_role('button', name='Registra evento').click()
+        page.locator('#incidentWorkspace').wait_for(state='visible')
+        page.locator('[data-close="incidentWorkspace"]').click()
+        page.locator('.service-nav [data-service="incidents"]').click()
+        card = page.locator('.incident-card').first
+        card.wait_for()
+        assert card.get_by_role('button', name='Apri fascicolo').count() == 1
+        assert card.get_by_role('button', name='Scarica evidenze').count() == 1
         unlabeled = page.locator('button:visible').evaluate_all("els => els.filter(el => !(el.innerText.trim() || el.getAttribute('aria-label') || el.getAttribute('title'))).map(el => el.outerHTML)")
         assert unlabeled == [], unlabeled
 
         PHASE = 'auditor-least-privilege'
         page.locator('#roleSelect').select_option('auditor')
         page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
-        page.locator('[data-service="monitoring"]').click()
+        page.locator('.service-nav [data-service="monitoring"]').click()
         assert page.locator('#openJobConfig').is_hidden()
         assert page.locator('#monitoringContributionAction').is_hidden()
-        page.locator('[data-service="incidents"]').click()
+        page.locator('.service-nav [data-service="incidents"]').click()
         assert page.locator('#openIncident').is_hidden()
 
         PHASE = 'keyboard'
-        page.locator('[data-service="home"]').focus()
+        page.locator('.service-nav [data-service="home"]').focus()
         page.keyboard.press('Enter')
         page.locator('#homeView').wait_for(state='visible')
         page.locator('#homeMonitoringAction').focus()
@@ -113,7 +147,7 @@ try:
 
         PHASE = 'mobile-no-overflow'
         page.set_viewport_size({'width': 390, 'height': 844})
-        page.locator('[data-service="home"]').click()
+        page.locator('.service-nav [data-service="home"]').click()
         page.locator('#homeView').wait_for(state='visible')
         overflow = page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')
         assert overflow <= 1, overflow
@@ -122,7 +156,7 @@ try:
             assert box and box['height'] >= 44, (selector, box)
         assert not errors, errors
 
-        checks = ['balanced-home-two-processes', 'compact-recommendation', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
+        checks = ['balanced-home-two-processes', 'compact-recommendation', 'three-settings-disclosures', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'named-event-actions', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
         (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
         print('browser-enterprise-1-8: evidence complete', flush=True)
 except BaseException as error:

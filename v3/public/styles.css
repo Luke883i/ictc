@@ -10,6 +10,7 @@
 @import url('./enterprise-1-7.css');
 @import url('./enterprise-1-8.css');
 @import url('./settings-1-8-fix.css');
+@import url('./labels-1-8-fix.css');
 
 /* Final fail-closed authority and document-flow guards. */
 [hidden]{display:none!important}

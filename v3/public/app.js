@@ -9,6 +9,7 @@ import { installStandardProof17Experience } from './ui/standard-proof-1-7.js';
 import { installEnterpriseClarity17 } from './ui/clarity-1-7.js';
 import { installEnterpriseWorkbench18 } from './ui/workbench-1-8.js';
 import { installSettings18Structure } from './ui/settings-1-8-fix.js';
+import { installWorkbenchLabels18 } from './ui/labels-1-8-fix.js';
 
 installSurfaceRouter();
 installBindings();
@@ -18,4 +19,5 @@ installStandardProof17Experience();
 installEnterpriseClarity17();
 installEnterpriseWorkbench18();
 installSettings18Structure();
+installWorkbenchLabels18();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));

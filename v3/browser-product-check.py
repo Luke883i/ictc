@@ -42,10 +42,11 @@ try:
         setup.click()
         page.locator('#settingsDialog').wait_for(state='visible')
         settings = page.locator('#settingsForm')
-        organization_section = settings.locator('.settings-section-18').nth(0)
+        organization_section = settings.locator('[data-settings-section="organization"]')
+        provider_section = settings.locator('[data-settings-section="provider"]')
+        assert organization_section.count() == provider_section.count() == 1
         if organization_section.get_attribute('open') is None:
             organization_section.locator(':scope > summary').click()
-        provider_section = settings.locator('.settings-section-18').nth(1)
         if provider_section.get_attribute('open') is None:
             provider_section.locator(':scope > summary').click()
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
@@ -58,7 +59,7 @@ try:
         page.locator('#settingsDialog').wait_for(state='hidden')
 
         PHASE = 'governed-job-lifecycle'
-        page.locator('[data-service="monitoring"]').click()
+        page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#openJobConfig').click()
         job = page.locator('#missionForm')
         job.locator('input[name="jobName"]').fill('Fonti ufficiali cybersecurity UE')
@@ -70,6 +71,7 @@ try:
         page.locator('#jobDialog').wait_for(state='hidden')
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
         card.wait_for()
+        assert card.locator('.mission-objective-18').count() == 1
         card.locator('[data-open-plan]').click()
         page.get_by_role('button', name='Attiva monitoraggio').click()
         page.locator('[data-close="planDialog"]').click()
@@ -85,7 +87,7 @@ try:
         PHASE = 'material-contribution'
         page.locator('#roleSelect').select_option('user')
         page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
-        page.locator('[data-service="monitoring"]').click()
+        page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringContributionAction').click()
         page.locator('#contributionForm input[value="text"]').check()
         page.locator('#contributionForm textarea[name="text"]').fill('Delibera ufficiale da conservare e verificare')
@@ -93,17 +95,17 @@ try:
         page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
         page.locator('#contributionDialog').wait_for(state='hidden')
         page.locator('#materialRecent18').click()
-        page.get_by_text('Delibera ufficiale da conservare e verificare', exact=False).wait_for()
+        page.get_by_text('Materiale osservato nel perimetro UE', exact=False).wait_for()
 
         PHASE = 'event-lifecycle'
-        page.locator('[data-service="incidents"]').click()
+        page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#openIncident').click()
         incident = page.locator('#incidentForm')
-        incident.locator('textarea[name="narrative"]').fill('Quasi incidente: email sospetta ricevuta e bloccata prima dell’apertura')
-        incident.get_by_role('button', name='Registra originale').click()
+        incident.locator('textarea[name="originalNarrative"]').fill('Quasi incidente: email sospetta ricevuta e bloccata prima dell’apertura')
+        incident.get_by_role('button', name='Registra evento').click()
         page.locator('#incidentWorkspace').wait_for(state='visible')
         page.locator('[data-close="incidentWorkspace"]').click()
-        page.locator('[data-service="incidents"]').click()
+        page.locator('.service-nav [data-service="incidents"]').click()
         event_card = page.locator('.incident-card').first
         event_card.get_by_role('button', name='Apri fascicolo').wait_for()
         event_card.get_by_role('button', name='Scarica evidenze').wait_for()
@@ -117,7 +119,7 @@ try:
         assert body['incidents']
         assert not errors, errors
 
-        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
+        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'job-name-and-objective-projected', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
         (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
 except BaseException as error:
