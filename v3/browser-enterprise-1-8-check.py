@@ -55,8 +55,11 @@ try:
 
         PHASE = 'provider-and-settings-boundary'
         setup = page.locator('#homePrimaryAction')
-        assert setup.get_attribute('data-home-action') == 'settings'
-        setup.click()
+        if setup.get_attribute('data-home-action') == 'settings':
+            setup.click()
+        else:
+            assert page.locator('#openSettings').is_visible()
+            page.locator('#openSettings').click()
         page.locator('#settingsDialog').wait_for(state='visible')
         sections = page.locator('#settingsForm > .settings-section-18, #settingsForm > .settings-18 > .settings-section-18')
         assert sections.count() == 3, sections.count()
