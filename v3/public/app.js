@@ -13,6 +13,7 @@ import { installWorkbenchLabels18 } from './ui/labels-1-8-fix.js';
 import { installEnterprise2Candidate } from './ui/enterprise-2.js';
 import { installEnterprise2ProcessArchitecture } from './ui/enterprise-2-processes.js';
 import { installEnterprise2EditorialSystem } from './ui/enterprise-2-editorial.js';
+import { installEnterprise2DesignSystem } from './ui/enterprise-2-design-system.js';
 
 installSurfaceRouter();
 installBindings();
@@ -26,4 +27,5 @@ installWorkbenchLabels18();
 installEnterprise2Candidate();
 installEnterprise2ProcessArchitecture();
 installEnterprise2EditorialSystem();
+installEnterprise2DesignSystem();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));
