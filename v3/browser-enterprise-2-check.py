@@ -61,8 +61,8 @@ try:
 
         PHASE = 'S01-home-auditor-summary'
         page.goto(f'{BASE}/', wait_until='networkidle')
-        page.locator('html[data-ictc-candidate="2.0.0-enterprise"][data-process-catalog="enterprise-2"][data-editorial-system="professional-1"]').wait_for(state='attached')
-        page.locator('#roleSelect').select_option('auditor')
+        page.locator('html[data-ictc-candidate="2.0.0-enterprise"][data-process-catalog="enterprise-2"][data-editorial-system="professional-1"][data-design-system="ictc-aurora-1"]').wait_for(state='attached')
+        page.locator('#roleSelect').select_option('user')
         page.locator('#homeView').wait_for(state='visible')
         assert page.locator('#workbenchHomeTitle').inner_text() == 'Consulta attività ed evidenze'
         assert page.title() == 'ICTC · Attività, evidenze e controlli'
@@ -73,6 +73,9 @@ try:
         assert page.locator('.process-lane[data-lane="incidents"] > .eyebrow').inner_text() == 'EC-01 · Gestione eventi e segnalazioni'
         assert page.get_by_text('Processo 1', exact=True).count() == 0
         assert page.get_by_text('Processo 2', exact=True).count() == 0
+        assert page.locator('html').get_attribute('data-ds-surface') == 'home'
+        assert page.locator('.process-lane[data-lane="monitoring"]').get_attribute('data-ds-card') == 'true'
+        assert page.locator('.home-disclosure .ds-disclosure-mark').count() >= 2
         no_overflow(page, 'S01')
         shot(page, 'S01', 'Panoramica auditor sintetica')
 
@@ -98,6 +101,9 @@ try:
         assert page.get_by_text('Job di ricerca e novelty', exact=True).count() == 0
         assert page.get_by_text('Ricerche disponibili', exact=True).count() == 1
         assert page.locator('#openJobConfig').is_hidden()
+        assert page.locator('html').get_attribute('data-ds-accent') == 'cyan'
+        assert page.locator('#monitoringContributionAction').get_attribute('data-priority') == 'secondary'
+        assert page.locator('#runtimeStatus').get_attribute('data-tone') in ['positive','attention','critical','neutral','informative']
         shot(page, 'S04', 'Monitoraggio normativo utente')
 
         PHASE = 'S05-events-user-empty-or-list'
@@ -108,6 +114,8 @@ try:
         assert page.locator('#incidentsView .core-title h1').inner_text() == 'Eventi e segnalazioni'
         assert page.get_by_text('Eventi registrati', exact=True).count() == 1
         assert page.locator('#openIncident').inner_text() == 'Registra evento'
+        assert page.locator('html').get_attribute('data-ds-accent') == 'amber'
+        assert page.locator('#openIncident').get_attribute('data-priority') == 'primary'
         shot(page, 'S05', 'Registro eventi utente')
 
         PHASE = 'S06-guide-proof'
@@ -117,6 +125,8 @@ try:
         assert page.locator('#proofView').get_attribute('data-process-code') == 'EV-01'
         assert page.locator('#proofTitle').inner_text() == 'Evidenze, controlli e limiti'
         assert page.locator('#openProofDetails').inner_text() == 'Apri dettagli tecnici'
+        assert page.locator('html').get_attribute('data-ds-accent') == 'violet'
+        assert page.locator('#openProofDetails').get_attribute('data-priority') == 'primary'
         shot(page, 'S06', 'Evidenze controlli e limiti')
 
         PHASE = 'S07-admin-overview'
@@ -127,6 +137,7 @@ try:
         page.locator('.admin-section-nav').wait_for(state='visible')
         assert page.locator('#adminCenterTitle').inner_text() == 'Amministrazione'
         assert page.locator('#adminCenter .admin-panel:visible').count() == 1
+        assert page.locator('#adminCenter').get_attribute('data-ds-dialog') == 'true'
         assert page.locator('.admin-section-nav').get_by_role('button', name='EV-01 · Sintesi').count() == 1
         shot(page, 'S07', 'Amministrazione sintesi')
 
@@ -172,8 +183,17 @@ try:
         PHASE = 'assistive-preferences'
         page.emulate_media(reduced_motion='reduce', forced_colors='active')
         assert page.locator('#openIncident').is_visible()
+        transition_duration = page.locator('#openIncident').evaluate("el => getComputedStyle(el).transitionDuration")
+        assert transition_duration in ['0s', '1e-05s', '0.01ms'], transition_duration
         no_overflow(page, 'forced-colors')
         page.emulate_media(reduced_motion='no-preference', forced_colors='none')
+
+        PHASE = 'dark-colour-scheme'
+        page.emulate_media(color_scheme='dark')
+        assert page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--ds-canvas').trim()") == '#0c1320'
+        assert page.locator('#openIncident').is_visible()
+        no_overflow(page, 'dark-colour-scheme')
+        page.emulate_media(color_scheme='light')
 
         PHASE = 'global-control-labels'
         assert page.get_by_text('Verifica fonte', exact=True).count() == 0
@@ -197,7 +217,9 @@ try:
             'process-catalog-visible', 'generic-process-labels-zero', 'role-specific-disclosure-order',
             'RN-01-monitoring', 'EC-01-events', 'EV-01-evidence', 'IA-01-identity', 'GA-01-ai-governance',
             'professional-editorial-system', 'minimal-progressive-density', 'catalog-acceptance-not-verification',
-            'record-secondary-details-disclosed', 'document-title-version-neutral'
+            'record-secondary-details-disclosed', 'document-title-version-neutral',
+            'aurora-design-system-terminal', 'semantic-surface-accents', 'action-priority', 'status-tone-text-redundancy',
+            'dialog-depth', 'dark-colour-scheme', 'bounded-transitions'
         ]
         payload = {'schemaVersion': '2.0.0-candidate', 'ok': True, 'checks': checks, 'screenshots': SCREENSHOTS, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}
         (ART / 'browser-enterprise-2-check.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
