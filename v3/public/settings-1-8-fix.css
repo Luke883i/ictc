@@ -1,0 +1,4 @@
+.settings-section-body>.settings-field-stack{display:grid;gap:12px;}
+.settings-section-body>.settings-field-stack>h3{margin:0 0 2px;font-size:.92rem;}
+.settings-section-body.settings-policy-stack{display:grid;gap:12px;}
+#settingsForm[data-settings-structure18="true"]>.settings-job-boundary{margin:4px 0 0;}
