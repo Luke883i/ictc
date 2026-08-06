@@ -66,7 +66,7 @@ try:
         job.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
         job.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
         job.locator('input[name="authorities"]').fill('EUR-Lex, ACN, Garante')
-        job.locator('textarea[name="sourceHints"]').fill('https://eur-lex.europa.eu')
+        job.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
         job.get_by_role('button', name='Genera piano del job').click()
         page.locator('#jobDialog').wait_for(state='hidden')
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
