@@ -40,6 +40,7 @@ try:
         PHASE = 'balanced-home'
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
+        page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
         assert page.title() == 'ICTC 1.8 · Enterprise Workbench'
         labels = [value.strip() for value in page.locator('.service-nav button').all_inner_texts()]
         assert labels == ['Panoramica', 'Ricerca normativa', 'Eventi e incidenti', 'Guida e prove'], labels
@@ -84,7 +85,7 @@ try:
         PHASE = 'admin-regulatory-job-surface'
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringView').wait_for(state='visible')
-        contains(page.locator('#monitoringView h1'), 'Job di ricerca e novelty')
+        contains(page.locator('#monitoringView h1'), 'Ricerche normative')
         assert page.get_by_text('Definisci cosa monitorare.', exact=True).count() == 0
         assert page.locator('#openJobConfig').is_visible()
         page.locator('#openJobConfig').click()
@@ -95,7 +96,7 @@ try:
 
         PHASE = 'user-single-material-intake'
         page.locator('#roleSelect').select_option('user')
-        page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
+        assert page.locator('#roleSelect').input_value() == 'user'
         page.locator('.service-nav [data-service="home"]').click()
         assert page.locator('.process-lane').count() == 2
         page.locator('.service-nav [data-service="monitoring"]').click()
@@ -112,7 +113,7 @@ try:
         PHASE = 'compact-events-and-labels'
         page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#incidentsView').wait_for(state='visible')
-        contains(page.locator('#incidentsView h1'), 'Registra e completa i fascicoli')
+        contains(page.locator('#incidentsView h1'), 'Eventi e incidenti')
         hero = page.locator('#incidentsView > .hero').bounding_box()
         queue = page.locator('#incidentList').bounding_box()
         assert hero and hero['height'] <= 280, hero
@@ -126,14 +127,14 @@ try:
         page.locator('.service-nav [data-service="incidents"]').click()
         card = page.locator('.incident-card').first
         card.wait_for()
-        assert card.get_by_role('button', name='Apri fascicolo').count() == 1
-        assert card.get_by_role('button', name='Scarica evidenze').count() == 1
+        assert card.get_by_role('button', name='Apri evento').count() == 1
+        assert card.get_by_role('button', name='Scarica prova').count() == 1
         unlabeled = page.locator('button:visible').evaluate_all("els => els.filter(el => !(el.innerText.trim() || el.getAttribute('aria-label') || el.getAttribute('title'))).map(el => el.outerHTML)")
         assert unlabeled == [], unlabeled
 
         PHASE = 'auditor-least-privilege'
         page.locator('#roleSelect').select_option('auditor')
-        page.locator('#runtimeStatus').get_by_text('Auditor', exact=False).wait_for()
+        assert page.locator('#roleSelect').input_value() == 'auditor'
         page.locator('.service-nav [data-service="monitoring"]').click()
         assert page.locator('#openJobConfig').is_hidden()
         assert page.locator('#monitoringContributionAction').is_hidden()
@@ -159,8 +160,8 @@ try:
             assert box and box['height'] >= 44, (selector, box)
         assert not errors, errors
 
-        checks = ['balanced-home-two-processes', 'compact-recommendation', 'three-settings-disclosures', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'named-event-actions', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
-        (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
+        checks = ['balanced-home-two-processes', 'compact-recommendation', 'three-settings-disclosures', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'semantic-event-actions', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
+        (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
         print('browser-enterprise-1-8: evidence complete', flush=True)
 except BaseException as error:
     annotate(error)

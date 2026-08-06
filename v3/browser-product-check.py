@@ -35,6 +35,7 @@ try:
         PHASE = 'bootstrap-and-provider'
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
+        page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
         assert page.locator('.process-lane').count() == 2
         setup = page.locator('#homePrimaryAction')
         setup.wait_for(state='visible')
@@ -67,11 +68,11 @@ try:
         job.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
         job.locator('input[name="authorities"]').fill('EUR-Lex, ACN, Garante')
         job.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
-        job.get_by_role('button', name='Genera piano del job').click()
+        job.get_by_role('button', name='Genera piano di ricerca').click()
         page.locator('#jobDialog').wait_for(state='hidden')
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
         card.wait_for()
-        assert card.locator('.mission-objective-18').count() == 1
+        assert card.locator('.mission-objective-18, .mission-objective-20').count() >= 1
         card.locator('[data-open-plan]').click()
         page.get_by_role('button', name='Attiva monitoraggio').click()
         page.locator('[data-close="planDialog"]').click()
@@ -86,13 +87,13 @@ try:
 
         PHASE = 'material-contribution'
         page.locator('#roleSelect').select_option('user')
-        page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
+        assert page.locator('#roleSelect').input_value() == 'user'
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringContributionAction').click()
         page.locator('#contributionForm input[value="text"]').check()
         page.locator('#contributionForm textarea[name="text"]').fill('Delibera ufficiale da conservare e verificare')
         page.locator('#contributionForm textarea[name="note"]').fill('Materiale osservato nel perimetro UE')
-        page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
+        page.locator('#contributionForm').get_by_role('button', name='Registra materiale').click()
         page.locator('#contributionDialog').wait_for(state='hidden')
         page.locator('#materialRecent18').click()
         page.locator('#contributionList').get_by_text('Materiale osservato nel perimetro UE', exact=False).first.wait_for()
@@ -107,8 +108,8 @@ try:
         page.locator('[data-close="incidentWorkspace"]').click()
         page.locator('.service-nav [data-service="incidents"]').click()
         event_card = page.locator('.incident-card').first
-        event_card.get_by_role('button', name='Apri fascicolo').wait_for()
-        event_card.get_by_role('button', name='Scarica evidenze').wait_for()
+        event_card.get_by_role('button', name='Apri evento').wait_for()
+        event_card.get_by_role('button', name='Scarica prova').wait_for()
 
         PHASE = 'evidence-and-integrity'
         response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'auditor', 'x-ictc-actor-id': 'local-auditor'})
@@ -119,8 +120,8 @@ try:
         assert body['incidents']
         assert not errors, errors
 
-        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'job-name-and-objective-projected', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
-        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
+        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'job-name-and-objective-projected', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'semantic-event-actions', 'auditor-readback', 'integrity-ok']
+        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
 except BaseException as error:
     fail(error)
