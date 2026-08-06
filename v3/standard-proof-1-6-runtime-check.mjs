@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { runtimeHarness } from './runtime-test-harness.mjs';
+
+const runtime = await runtimeHarness('ictc-standard-proof-16');
+const checks = [];
+const verify = (name, assertion) => { assertion(); checks.push(name); };
+
+try {
+  for (const [role, expectedMode] of [['admin', 'read-write'], ['user', 'contribute'], ['auditor', 'read-only']]) {
+    const response = await fetch(`${runtime.base}/api/standard-proof`, { headers: runtime.identity(role, `local-${role}`) });
+    const body = await response.json();
+    verify(`${role}-status`, () => assert.equal(response.status, 200));
+    verify(`${role}-release`, () => assert.equal(body.release, '1.6.0'));
+    verify(`${role}-identity`, () => assert.equal(body.actor.role, role));
+    verify(`${role}-mode`, () => assert.equal(body.actor.mode, expectedMode));
+    verify(`${role}-authority-source`, () => assert.equal(body.actor.authoritySource, 'server-issued'));
+    verify(`${role}-content`, () => {
+      assert.equal(body.architecture.length, 8);
+      assert.equal(body.benchmarkFamilies.length, 12);
+      assert.equal(body.glossary.length, 14);
+      assert.equal(body.proof.rule, 'Ogni promessa deve mostrare pratica, evidenza e limite.');
+      assert.ok(body.proof.posture.runtime.total > 0);
+      assert.ok(body.proof.posture.deployment.total > 0);
+    });
+    verify(`${role}-no-secret-fields`, () => {
+      const serialized = JSON.stringify(body);
+      for (const forbidden of ['apiKeyEnv', 'ICTC_LLM_API_KEY', 'promptOverride', 'commandResults']) assert.doesNotMatch(serialized, new RegExp(forbidden));
+    });
+  }
+
+  const writeAttempt = await runtime.request('POST', '/api/standard-proof', { mutate: true }, 'admin', 'local-admin');
+  verify('read-only-route', () => assert.equal(writeAttempt.status, 404));
+
+  const report = {
+    schemaVersion: '1.6.0',
+    model: 'ictc-standard-proof-1-6-runtime',
+    ok: true,
+    checks,
+    roles: ['admin', 'user', 'auditor'],
+    limitation: 'Selected local runtime assurance; deployment controls remain external.'
+  };
+  await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
+  await writeFile(new URL('../artifacts/standard-proof-1-6-runtime.json', import.meta.url), JSON.stringify(report, null, 2));
+  console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks)`);
+} finally {
+  await runtime.close();
+}
