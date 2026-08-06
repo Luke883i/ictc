@@ -42,6 +42,12 @@ try:
         setup.click()
         page.locator('#settingsDialog').wait_for(state='visible')
         settings = page.locator('#settingsForm')
+        organization_section = settings.locator('.settings-section-18').nth(0)
+        if organization_section.get_attribute('open') is None:
+            organization_section.locator('summary').click()
+        provider_section = settings.locator('.settings-section-18').nth(1)
+        if provider_section.get_attribute('open') is None:
+            provider_section.locator('summary').click()
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
@@ -111,7 +117,7 @@ try:
         assert body['incidents']
         assert not errors, errors
 
-        checks = ['provider-configured-through-contextual-home-action', 'governed-job-created', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
+        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
         (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
 except BaseException as error:
