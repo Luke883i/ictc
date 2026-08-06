@@ -11,11 +11,12 @@ try {
     const response = await fetch(`${runtime.base}/api/standard-proof`, { headers: runtime.identity(role, `local-${role}`) });
     const body = await response.json();
     verify(`${role}-status`, () => assert.equal(response.status, 200));
-    verify(`${role}-release`, () => assert.equal(body.release, '1.6.0'));
+    verify(`${role}-active-release`, () => assert.equal(body.release, '1.7.0'));
     verify(`${role}-identity`, () => assert.equal(body.actor.role, role));
     verify(`${role}-mode`, () => assert.equal(body.actor.mode, expectedMode));
     verify(`${role}-authority-source`, () => assert.equal(body.actor.authoritySource, 'server-issued'));
     verify(`${role}-content`, () => {
+      assert.equal(body.schemaVersion, '1.6.0');
       assert.equal(body.architecture.length, 8);
       assert.equal(body.benchmarkFamilies.length, 12);
       assert.equal(body.glossary.length, 14);
@@ -34,6 +35,7 @@ try {
 
   const report = {
     schemaVersion: '1.6.0',
+    activeRelease: '1.7.0',
     model: 'ictc-standard-proof-1-6-runtime',
     ok: true,
     checks,
@@ -42,7 +44,7 @@ try {
   };
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(new URL('../artifacts/standard-proof-1-6-runtime.json', import.meta.url), JSON.stringify(report, null, 2));
-  console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks)`);
+  console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks, active release 1.7.0)`);
 } finally {
   await runtime.close();
 }

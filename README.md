@@ -7,6 +7,23 @@
 
 The application roles are `admin`, `user` and `auditor`. The server returns explicit capabilities and a canonical access profile; the UI projects available actions, prohibited actions, state effects and evidence from that server-issued authority. AI output remains assistive and never determines applicability, compliance, significance or notification duties.
 
+## ICTC 1.7 Enterprise Clarity
+
+Release `1.7.0` preserves the two operational services and the read-only **Guida e prova** support surface while reducing what competes for attention:
+
+- one deterministic router owns Home, Monitoraggio, Eventi and Guida e prova;
+- every surface has one primary action for the current context;
+- Home shows priority, reason, effect and compact state; method, responsibility and metrics remain available in an internal context dialog;
+- Monitoring and Events keep their core action visible and move explanation to native disclosure or internal dialog;
+- Standard Proof opens summary-first and keeps architecture, journeys, benchmark mappings, glossary and limits in one read-only detail dialog;
+- Administration presents posture first and keeps controls, usage, governance and directory in independent disclosures;
+- canonical labels are already present in HTML before JavaScript enhancement;
+- the post-merge keyboard race is covered by a dedicated browser journey.
+
+The 1.7 model enumerates 87,480 scenarios, freezes after a 128-scenario stability window at `M=87,608`, and requires zero novelty in the following 100 probes. Visual budgets require one primary action per surface, a proof hero at most 320 px, a Home decision at most 340 px, 44 px targets and no document overflow.
+
+See `docs/ENTERPRISE_1_7_VISUAL_AUDIT.md` and `v3/enterprise-1-7-contract.json`.
+
 ## ICTC 1.6 Standard Proof
 
 ICTC keeps the compact role-aware Home introduced in 1.4 and adds one read-only support area: **Guida e prova**. It does not become a third operational service and does not create another domain model.
@@ -32,7 +49,7 @@ See `docs/STANDARD_PROOF_1_6_AUDIT.md` and `v3/standard-proof-1-6-contract.json`
 
 ## Assurance models
 
-The repository retains the 1.4 experience contract and Enterprise T as regression and enterprise assurance layers.
+The repository retains the 1.4 experience contract, 1.6 Standard Proof and Enterprise T as regression and enterprise assurance layers.
 
 The 1.6 Standard Proof model separately provides:
 
@@ -71,8 +88,8 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-Release `1.6.0` includes executable enterprise and journey contracts, server-issued authority, compact onboarding, standard-proof projection, dual saturation artifacts and browser evidence.
+Release `1.7.0` includes executable enterprise and journey contracts, server-issued authority, summary-first onboarding, Standard Proof projection, bounded saturation and browser evidence.
 
 ## Enterprise boundary
 
-Repository checks and browser journeys do not certify a production deployment, standards conformance or legal compliance. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`, `docs/ENTERPRISE_T_ASSURANCE.md`, `docs/STABLE_1_4_AUDIT.md` and `docs/STANDARD_PROOF_1_6_AUDIT.md`.
+Repository checks and browser journeys do not certify a production deployment, standards conformance or legal compliance. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`, `docs/ENTERPRISE_T_ASSURANCE.md`, `docs/STABLE_1_4_AUDIT.md`, `docs/STANDARD_PROOF_1_6_AUDIT.md` and `docs/ENTERPRISE_1_7_VISUAL_AUDIT.md`.

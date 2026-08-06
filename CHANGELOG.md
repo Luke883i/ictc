@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.7.0] - 2026-08-06
+
+### Enterprise clarity
+
+- un solo router deterministico governa le quattro superfici e chiude il race tastiera osservato dopo il merge 1.6;
+- Home summary-first con una sola CTA primaria, segnale di stato compatto e contesto completo in dialog interno;
+- Monitoraggio ed Eventi compressi con spiegazioni secondarie progressive;
+- Standard Proof summary-first con mappa completa in dialog read-only;
+- Admin posture-first con controlli, utilizzo, governance e utenti in disclosure indipendenti;
+- copy canonico 1.7 presente nell'HTML prima del bootstrap JavaScript;
+- superfici allargate e ridotte in altezza, target da 44 px, no overflow desktop/mobile e focus deterministico;
+- contratto visivo e cognitivo con 87.480 scenari, M=87.608 e zero novelty a M+100;
+- gate statici e browser dedicati alla release 1.7.0.
+
+### Limitations
+
+La release dimostra proprietà del repository e del runtime locale entro il modello dichiarato. Non certifica conformità legale, WCAG/EN 301 549, deployment produttivo, operating effectiveness o ogni combinazione browser/tecnologia assistiva.
+
 ## [1.6.0] - 2026-08-06
 
 ### Standard proof scope
