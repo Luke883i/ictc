@@ -1,4 +1,4 @@
-function makeSection(id, title, description, content, open = false) {
+function section(title, description, id, content, open = false) {
   const details = document.createElement('details');
   details.className = 'settings-section-18';
   details.dataset.settingsSection = id;
@@ -9,59 +9,56 @@ function makeSection(id, title, description, content, open = false) {
   return details;
 }
 
-function normalizeAdvanced(advanced) {
-  advanced.className = 'settings-section-18';
-  advanced.dataset.settingsSection = 'policy';
-  advanced.open = false;
-  const summary = advanced.querySelector(':scope > summary');
-  if (summary) summary.innerHTML = '<span><b>Policy globali e prompt tecnici</b><small>Istruzioni predefinite condivise dai processi ICTC.</small></span>';
-  let body = advanced.querySelector(':scope > .settings-section-body');
-  if (!body) {
-    body = document.createElement('div');
-    body.className = 'settings-section-body settings-policy-stack';
-    const movable = [...advanced.children].filter(node => node !== summary);
-    body.append(...movable);
-    advanced.append(body);
+function policySection(form) {
+  const details = document.createElement('details');
+  details.className = 'settings-section-18';
+  details.dataset.settingsSection = 'policy';
+  details.innerHTML = '<summary><span><b>Policy globali e prompt tecnici</b><small>Istruzioni predefinite condivise dai processi ICTC.</small></span></summary><div class="settings-section-body settings-policy-stack"></div>';
+  const body = details.querySelector('.settings-section-body');
+  for (const name of ['monitoringPlan', 'complianceDiscovery', 'contributionEnrichment', 'incidentAnalysis', 'incidentDraft']) {
+    const label = form.elements[name]?.closest('label');
+    if (label) body.append(label);
   }
-  return advanced;
+  return details;
 }
 
 export function normalizeSettings18Structure() {
   const form = document.querySelector('#settingsForm');
   if (!form || form.dataset.settingsStructure18 === 'true') return false;
+
   const organization = form.elements.organizationName?.closest('section');
   const provider = form.elements.endpoint?.closest('section');
-  const advanced = form.elements.monitoringPlan?.closest('details');
-  const legacyBody = organization?.closest('.dialog-body');
-  if (!organization || !provider || !advanced || !legacyBody) return false;
+  const footer = form.querySelector(':scope > footer');
+  const header = form.querySelector(':scope > header');
+  if (!organization || !provider || !footer || !header) return false;
 
-  const enclosing = legacyBody.closest('details.settings-section-18');
-  if (enclosing) {
-    enclosing.before(legacyBody);
-    enclosing.remove();
-  }
-
-  legacyBody.classList.remove('two-pane-form');
-  legacyBody.classList.add('settings-18');
-  legacyBody.replaceChildren(
-    makeSection('organization', 'Organizzazione e perimetro', 'Contesto usato dai processi ICTC.', organization),
-    makeSection('provider', 'Connessione al provider AI', 'Endpoint, modello, chiave e temperatura globali.', provider, true),
-    normalizeAdvanced(advanced)
+  const body = document.createElement('div');
+  body.className = 'dialog-body settings-18';
+  body.append(
+    section('Organizzazione e perimetro', 'Contesto usato dai processi ICTC.', 'organization', organization),
+    section('Connessione al provider AI', 'Endpoint, modello, chiave e temperatura globali.', 'provider', provider, true),
+    policySection(form)
   );
+
+  const boundary = document.createElement('p');
+  boundary.className = 'settings-job-boundary';
+  boundary.textContent = 'La configurazione del singolo job — modalità, baseline, giurisdizioni, autorità e tipi di cambiamento — si gestisce in Ricerca normativa.';
+
+  for (const node of [...form.children]) {
+    if (node !== header && node !== footer) node.remove();
+  }
+  footer.before(body, boundary);
 
   const title = document.querySelector('#settingsTitle');
   if (title) title.textContent = 'Connessione e policy del provider';
   const meta = document.querySelector('#settingsDialog header p:not(.eyebrow)');
   if (meta) meta.textContent = 'Configura il provider globale. Baseline, autorità e tipi di cambiamento appartengono ai singoli job di ricerca.';
 
-  const boundary = form.querySelector('.settings-job-boundary');
-  const footer = form.querySelector(':scope > footer');
-  if (boundary && footer) footer.before(boundary);
   form.dataset.settingsStructure18 = 'true';
   return true;
 }
 
 export function installSettings18Structure() {
-  document.addEventListener('ictc:rendered', normalizeSettings18Structure);
   normalizeSettings18Structure();
+  document.addEventListener('ictc:rendered', normalizeSettings18Structure);
 }
