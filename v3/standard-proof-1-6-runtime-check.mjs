@@ -11,7 +11,7 @@ try {
     const response = await fetch(`${runtime.base}/api/standard-proof`, { headers: runtime.identity(role, `local-${role}`) });
     const body = await response.json();
     verify(`${role}-status`, () => assert.equal(response.status, 200));
-    verify(`${role}-active-release`, () => assert.equal(body.release, '1.7.0'));
+    verify(`${role}-active-release`, () => assert.equal(body.release, '1.8.0'));
     verify(`${role}-identity`, () => assert.equal(body.actor.role, role));
     verify(`${role}-mode`, () => assert.equal(body.actor.mode, expectedMode));
     verify(`${role}-authority-source`, () => assert.equal(body.actor.authoritySource, 'server-issued'));
@@ -29,22 +29,10 @@ try {
       for (const forbidden of ['apiKeyEnv', 'ICTC_LLM_API_KEY', 'promptOverride', 'commandResults']) assert.doesNotMatch(serialized, new RegExp(forbidden));
     });
   }
-
   const writeAttempt = await runtime.request('POST', '/api/standard-proof', { mutate: true }, 'admin', 'local-admin');
   verify('read-only-route', () => assert.equal(writeAttempt.status, 404));
-
-  const report = {
-    schemaVersion: '1.6.0',
-    activeRelease: '1.7.0',
-    model: 'ictc-standard-proof-1-6-runtime',
-    ok: true,
-    checks,
-    roles: ['admin', 'user', 'auditor'],
-    limitation: 'Selected local runtime assurance; deployment controls remain external.'
-  };
+  const report = { schemaVersion: '1.6.0', activeRelease: '1.8.0', model: 'ictc-standard-proof-1-6-runtime', ok: true, checks, roles: ['admin', 'user', 'auditor'], limitation: 'Selected local runtime assurance; deployment controls remain external.' };
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(new URL('../artifacts/standard-proof-1-6-runtime.json', import.meta.url), JSON.stringify(report, null, 2));
-  console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks, active release 1.7.0)`);
-} finally {
-  await runtime.close();
-}
+  console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks, active release 1.8.0)`);
+} finally { await runtime.close(); }
