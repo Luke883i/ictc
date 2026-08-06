@@ -8,7 +8,7 @@ const read = file => readFile(path.join(root, file), 'utf8');
 const manifest = JSON.parse(await read('v3/enterprise-claims.json'));
 
 assert.equal(manifest.schemaVersion, '1.0.0');
-assert.match(manifest.release, /^\d+\.\d+\.\d+-rc\.\d+$/);
+assert.match(manifest.release, /^\d+\.\d+\.\d+(?:-rc\.\d+)?$/);
 assert.ok(Array.isArray(manifest.claims) && manifest.claims.length >= 2);
 
 for (const claim of manifest.claims) {

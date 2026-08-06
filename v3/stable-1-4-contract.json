@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.4.0",
+  "release": "1.4.0",
+  "model": "ictc-stable-1-4-human-authority",
+  "intent": "Rendere immediatamente comprensibili priorità, responsabilità, autorità, effetti, intervento AI, conferma umana ed evidenze, mantenendo la superficie visiva compatta.",
+  "benchmarks": [
+    "NIST CSF 2.0 outcome-oriented governance and risk communication",
+    "NIST SSDF 1.1 secure development and release evidence",
+    "WCAG 2.2 AA-oriented interaction, focus, target and predictable help",
+    "EU human oversight and transparency expectations for AI-assisted workflows"
+  ],
+  "personas": [
+    {"id":"novice","goal":"Capire in meno di un minuto dove si trova, cosa deve fare e cosa succede dopo."},
+    {"id":"operator","goal":"Registrare fatti o materiale senza dover formulare una conclusione giuridica."},
+    {"id":"administrator","goal":"Configurare, approvare e governare cambi di stato con effetti e ricevute espliciti."},
+    {"id":"eu-auditor","goal":"Ricostruire identità, capacità, operazioni, effetti, limiti e prove senza disporre di azioni di scrittura."}
+  ],
+  "auditDimensions": [
+    "first-minute-orientation",
+    "role-and-identity-clarity",
+    "authority-and-least-privilege",
+    "action-effect-transparency",
+    "human-ai-separation",
+    "ontology-and-label-consistency",
+    "information-density",
+    "visual-compression",
+    "accessibility-and-predictability",
+    "evidence-and-provenance",
+    "failure-and-recovery",
+    "enterprise-and-compliance-honesty"
+  ],
+  "universalInvariants": [
+    "one-primary-action-per-home-state",
+    "server-issued-authority-is-canonical",
+    "auditor-is-read-only-in-api-and-ui",
+    "every-visible-write-explains-its-state-effect",
+    "ai-output-never-becomes-human-decision-implicitly",
+    "original-input-remains-distinct-from-analysis-and-evidence",
+    "material-source-and-evidence-remain-distinct-concepts",
+    "every-write-yields-attributable-receipt-or-explicit-failure",
+    "critical-state-is-not-communicated-by-color-alone",
+    "first-time-help-is-contextual-and-does-not-create-a-parallel-workflow",
+    "compact-layout-preserves-keyboard-and-touch-targets",
+    "deployment-and-legal-certification-gaps-remain-explicit"
+  ],
+  "dimensions": {
+    "role": ["admin","user","auditor"],
+    "experience": ["first-run","returning"],
+    "aiState": ["unconfigured","degraded","ready"],
+    "workload": ["empty","normal","backlog","high-volume"],
+    "urgency": ["routine","attention","critical"],
+    "viewport": ["desktop","tablet","mobile"],
+    "inputMode": ["pointer","keyboard"],
+    "network": ["healthy","slow","interrupted"],
+    "evidence": ["complete","partial","external-gap"],
+    "authority": ["allowed","denied"]
+  },
+  "stressScenarios": [
+    "first-run-admin-without-ai",
+    "returning-admin-with-source-backlog",
+    "novice-user-recording-event-on-mobile",
+    "keyboard-only-user-adding-material",
+    "auditor-reconstructing-user-action-and-effect",
+    "auditor-with-external-deployment-gaps",
+    "ai-timeout-during-plan-generation",
+    "network-interruption-during-write",
+    "persistence-failure-before-receipt",
+    "high-volume-source-catalog",
+    "long-italian-and-eu-authority-labels",
+    "role-change-with-stale-view",
+    "evidence-export-with-substantive-truth-limit",
+    "focus-at-200-percent-zoom",
+    "denied-write-without-hidden-side-effect"
+  ],
+  "metrics": {
+    "primaryActionsPerHome": 1,
+    "topLevelHomeRegions": 3,
+    "authorityQuestionsAnswered": 5,
+    "auditorWriteControls": 0,
+    "duplicateOperationalRoutePanels": 0,
+    "maxDesktopDecisionHeightPx": 330,
+    "minimumInteractiveTargetPx": 44,
+    "staleReleaseReferences": 0,
+    "NPlus100Novelty": 0
+  },
+  "saturation": {
+    "declaredScenarioCount": 23328,
+    "stabilityWindow": 64,
+    "N": 23392,
+    "tail": 100,
+    "NPlus100": 23492
+  },
+  "definitionOfDone": [
+    "Home answers what, why now, why me, how, outcome, AI role, human checkpoint and evidence.",
+    "Home also exposes identity, access mode, allowed actions, forbidden actions, state effects and evidence trail from the server-issued profile.",
+    "Auditor sees an open authority map and no write affordance.",
+    "Materiale, Fonte and Evidenza are never used as synonyms.",
+    "Navigation and headings use plain Italian without decorative numbering.",
+    "Decision capsule is at most 330 px high in the reference desktop viewport while retaining 44 px targets.",
+    "Version 1.4.0 is propagated across runtime, package metadata, claims and documentation.",
+    "All contract, runtime, browser and security jobs pass on one exact commit.",
+    "The N+100 tail introduces zero new behavioral primitive in the declared model."
+  ],
+  "claimBoundary": "Repository and selected runtime/browser assurance only. No legal opinion, production deployment certification or complete human accessibility audit is implied."
+}

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Store } from './store.mjs';
 import { ROLES, now, publicSettings } from './domain.mjs';
 import { VERSION } from './version.mjs';
+import { accessProfileFor } from './access-profile.mjs';
 import { actorFrom, assertSafeRuntimeBinding, bodyJson, commandFrom, httpError, json, requirePermission, serveStatic } from './runtime/http.mjs';
 import { incidentProjection, validateSettings, visibleState } from './runtime/model.mjs';
 import { createMonitoringRuntime } from './runtime/monitoring.mjs';
@@ -55,8 +56,10 @@ async function handleApi(request,response,url,actor){
   if(method==='GET'&&pathname==='/api/bootstrap'){
     const projected=visibleState(actor,store,VERSION);
     projected.capabilities=[...(actor.permissions||[])];
+    projected.accessProfile=accessProfileFor(actor);
     projected.experience.roles=ROLES.length;
     projected.experience.controlPlane='administration';
+    projected.experience.release='1.4-stable';
     if(actor.role==='auditor'){
       projected.incidents=store.snapshot().incidents.map(incidentProjection);
       projected.recentEvents=store.snapshot().audit.slice(-8).reverse();

@@ -34,7 +34,7 @@ verify('declared-metrics', () => {
   assert.equal(contract.metrics.MPlus100Novelty, 0);
 });
 verify('runtime-installation', () => {
-  assert.match(app, /installReborn3Experience/);
+  assert.match(app, /install(?:Reborn3|Stable14)Experience/);
   assert.match(styles, /reborn-3\.css/);
 });
 verify('decision-answers', () => {

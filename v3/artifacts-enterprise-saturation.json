@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "release": "1.8.0-rc.1",
+  "release": "1.4.0",
   "method": "bounded singleton-and-pairwise model with frozen primitive set",
   "threads": 18,
   "primitiveCount": 5796,

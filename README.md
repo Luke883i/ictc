@@ -5,22 +5,32 @@
 1. **Regulatory monitoring** — preserve the objective, obtain an AI-proposed plan, review it, activate a canonical monitoring mission, inspect candidate sources and record a reasoned human decision.
 2. **Events and incidents** — preserve the original description and attachments, separate AI extraction from human confirmation, version the final formulation and retain linked evidence.
 
-The application roles are `admin`, `user` and `auditor`. The server returns explicit capabilities and the UI projects available actions from those capabilities. AI output remains assistive and never determines applicability, compliance, significance or notification duties.
+The application roles are `admin`, `user` and `auditor`. The server returns explicit capabilities and a canonical access profile; the UI projects available actions, prohibited actions, state effects and evidence from that server-issued authority. AI output remains assistive and never determines applicability, compliance, significance or notification duties.
 
-## User Journey 2.0
+## ICTC 1.4 stable
 
-The application opens on one compact, role-aware Home instead of an operational form. Home explains the current responsibility, shows one contextual primary action, presents a four-step horizontal journey and links to the two operational areas:
+The application opens on one compact, role-aware Home. It presents one contextual primary action and answers eight decision questions: what, why now, why me, how, expected outcome, AI role, human checkpoint and evidence.
 
-- **Monitoraggio** — define objectives, approve plans and verify sources.
-- **Eventi** — record facts, complete missing information and preserve evidence.
+A progressive **Accesso e responsabilità** disclosure also states:
 
-The administrator configures and approves, the user contributes and records events, and the auditor remains in a read-only evidence journey. See `docs/USER_JOURNEY_2_DOD.md`.
+- the active identity and access mode;
+- what the actor can and cannot do;
+- which state effects are possible;
+- which receipts, versions and traces remain available.
+
+The disclosure is open by default for the auditor. The administrator receives read/write authority, the user receives read/contribute authority and the auditor remains read-only. Material, candidate or verified sources, and evidence remain separate concepts.
+
+The visual system uses common enterprise components with compact geometry, hairline separation and progressive disclosure. Desktop action space is reduced, decision explanations are denser, touch and keyboard targets remain at least 44 px, and decorative route numbering is removed.
+
+See `docs/STABLE_1_4_AUDIT.md` and `v3/stable-1-4-contract.json`.
 
 ## Enterprise T assurance
 
 The repository includes an executable enterprise engineering profile across 18 dimensions. Each dimension is saturated over 1,440 declared construction scenarios, frozen at N, challenged with 15 additional stress scenarios, checked against 12 convergent universal invariants and subjected to source probes, selected runtime stress and explicit falsification.
 
 The bundle adapts the rigor and control patterns of recognized enterprise standards without claiming certification or reproducing proprietary standard text. Its visual principle is rich but compact: common enterprise components, restrained hierarchy, progressive disclosure and intentional space rather than oversized heroes or empty vertical bands. See `docs/ENTERPRISE_T_ASSURANCE.md`.
+
+The ICTC 1.4 experience model separately enumerates 23,328 role, state, viewport, network, evidence and authority scenarios. After a 64-scenario stability window, N is 23,392; the N+100 tail must introduce zero new behavioral primitives.
 
 ## Semantic Workbench
 
@@ -51,8 +61,8 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-Release `1.8.0-rc.1` includes executable enterprise and journey contracts, a claim manifest, canonical semantic projection, capability-safe UX and model-bounded saturation artifacts. The User Journey 2.0 model exhaustively enumerates its declared behavioral state space. The Enterprise T model separately applies per-dimension N+15 no-novelty validation and preserves all known blockers as explicit findings.
+Release `1.4.0` includes executable enterprise and journey contracts, a server-issued authority profile, a compact actor-aware Home, claim manifests, canonical semantic projection and model-bounded saturation artifacts.
 
 ## Enterprise boundary
 
-The runtime can be made **enterprise-certifiable**, but the repository cannot certify a deployment by itself. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md` and `docs/ENTERPRISE_T_ASSURANCE.md`.
+Repository checks and browser journeys do not certify a production deployment or provide a legal opinion. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`, `docs/ENTERPRISE_T_ASSURANCE.md` and `docs/STABLE_1_4_AUDIT.md`.
