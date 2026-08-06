@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 await import('./enterprise-2-design-system-saturation.mjs');
+await import('./enterprise-2-compliance-flow-check.mjs');
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const model = JSON.parse(await read('./enterprise-2-design-system-model.json'));
@@ -45,6 +46,11 @@ verify('terminal-wiring', () => {
   assert.match(styles, /enterprise-2-design-system-refinement\.css/);
   assert.ok(styles.indexOf('enterprise-2-design-system.css') > styles.indexOf('enterprise-2-editorial.css'));
   assert.ok(styles.indexOf('enterprise-2-design-system-refinement.css') > styles.indexOf('enterprise-2-design-system.css'));
+  assert.match(app, /installEnterprise2ComplianceFlow\(\)/);
+  assert.ok(app.indexOf('installEnterprise2ComplianceFlow()') > app.indexOf('installEnterprise2DesignSystem()'));
+  assert.match(styles, /enterprise-2-compliance-flow\.css/);
+  assert.match(styles, /enterprise-2-compliance-configuration\.css/);
+  assert.ok(styles.indexOf('enterprise-2-compliance-configuration.css') > styles.indexOf('enterprise-2-compliance-flow.css'));
 });
 verify('authority-safe-js', () => {
   assert.doesNotMatch(ui, /\bfetch\s*\(/);
@@ -59,7 +65,7 @@ verify('authority-safe-js', () => {
   assert.match(ui, /data\.tone|dataset\.tone/);
 });
 verify('semantic-token-system', () => {
-  for (const token of ['--ds-ink:', '--ds-canvas:', '--ds-accent:', '--ds-shadow-1:', '--ds-radius:', '--ds-ease:']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  for (const token of ['--ds-ink:', '--ds-canvas:', '--ds-accent:', '--ds-shadow-1:', '--ds-radius:', '--ds-ease;']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   for (const accent of ['cyan', 'amber', 'violet']) assert.match(css, new RegExp(`data-ds-accent="${accent}"`));
   assert.doesNotMatch(css, /@import\s+url\(['"]?https?:/i);
   assert.match(css, /font-family:var\(--ds-font\)/);
@@ -130,6 +136,7 @@ const report = {
     noveltyAfterM: saturation.noveltyAfterM,
     contradictionsAfterM: saturation.contradictionsAfterM
   },
+  complianceFlowGate: 'enterprise-2-compliance-flow-check.mjs',
   claimBoundary: model.claimBoundary
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
