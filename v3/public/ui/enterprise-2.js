@@ -202,8 +202,16 @@ function normalizeEvents() {
   text(heading?.parentElement?.querySelector('p:not(.eyebrow)'), 'Apri un evento per vedere originale, informazioni mancanti, versioni, decisioni e prove.');
   for (const card of $$('.incident-card')) {
     card.classList.add('enterprise2-record-card');
-    text(card.querySelector('[data-download-evidence]'), 'Scarica prova');
-    text(card.querySelector('[data-open-incident]'), 'Apri evento');
+    const evidence = card.querySelector('[data-download-evidence]');
+    if (evidence) {
+      text(evidence, 'Scarica prova');
+      evidence.setAttribute('aria-label', 'Scarica prova dell’evento');
+    }
+    const open = card.querySelector('[data-open-incident]');
+    if (open) {
+      text(open, 'Apri evento');
+      open.setAttribute('aria-label', 'Apri evento');
+    }
   }
   const empty = $('#incidentList .empty');
   if (empty) text(empty, capability('report-incident') ? 'Nessun evento registrato. Usa “Registra evento” per iniziare.' : 'Nessun evento disponibile.');
@@ -384,9 +392,5 @@ export function installEnterprise2Candidate() {
       setTimeout(applyEnterprise2, 250);
     }
   }, true);
-  const proof = $('#proofView');
-  if (proof) new MutationObserver(() => normalizeProof()).observe(proof, { subtree: true, childList: true, characterData: true });
-  const admin = $('#adminCenter');
-  if (admin) new MutationObserver(() => { normalizeAdminFields(admin); enhanceAdmin(); }).observe(admin, { subtree: true, childList: true, characterData: true });
   if (state.data?.actor) applyEnterprise2();
 }
