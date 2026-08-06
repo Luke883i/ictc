@@ -83,7 +83,7 @@ verify('label-matrix', () => {
 verify('progressive-detail', () => {
   assert.match(ui, /Perché, metodo, AI, responsabilità ed evidenze/);
   assert.match(ui, /Metodo e confini/);
-  assert.match(settingsFix, /data-settings-section/);
+  assert.match(settingsFix, /dataset\.settingsSection/);
   assert.match(settingsFix, /settingsStructure18/);
   assert.match(settingsFix, /form\.dataset\.enterprise18 = 'true'/);
   assert.match(settingsCss, /#settingsDialog\[open\]/);
