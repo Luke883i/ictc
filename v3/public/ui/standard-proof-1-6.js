@@ -129,7 +129,7 @@ function setProofVisibility(visible, focus = true) {
   if (visible) {
     for (const id of ['homeView', 'monitoringView', 'incidentsView']) $(`#${id}`)?.setAttribute('hidden', '');
     document.querySelectorAll('[data-service]').forEach(button => button.setAttribute('aria-current', 'false'));
-    if (focus) requestAnimationFrame(() => proof.focus({ preventScroll: false }));
+    if (focus) proof.focus({ preventScroll: false });
   }
 }
 
