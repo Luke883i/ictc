@@ -24,8 +24,8 @@ jobs:
         run: node v3/product-contract-check.mjs
       - name: Question and UI contracts
         run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs && node v3/user-journey-2-check.mjs
-      - name: ICTC 1.7 Enterprise Clarity assurance
-        run: node v3/reborn-3-check.mjs && node v3/reborn-3-saturation.mjs && node v3/stable-1-4-check.mjs && node v3/stable-1-4-saturation.mjs && node v3/standard-proof-1-6-check.mjs && node v3/standard-proof-1-6-saturation.mjs && node v3/standard-proof-1-6-compression.mjs && node v3/enterprise-1-7-check.mjs && node v3/enterprise-1-7-saturation.mjs
+      - name: ICTC 1.8 Enterprise Workbench assurance
+        run: node v3/reborn-3-check.mjs && node v3/reborn-3-saturation.mjs && node v3/stable-1-4-check.mjs && node v3/stable-1-4-saturation.mjs && node v3/standard-proof-1-6-check.mjs && node v3/standard-proof-1-6-saturation.mjs && node v3/standard-proof-1-6-compression.mjs && node v3/enterprise-1-7-check.mjs && node v3/enterprise-1-7-saturation.mjs && node v3/enterprise-1-8-check.mjs && node v3/enterprise-1-8-saturation.mjs
       - name: Onto-epistemic and journey audits
         run: node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs
       - name: Experience saturation
@@ -62,6 +62,8 @@ jobs:
         run: node v3/stable-1-4-runtime-check.mjs
       - name: Standard Proof projection
         run: node v3/standard-proof-1-6-runtime-check.mjs
+      - name: Governed regulatory jobs
+        run: node v3/enterprise-1-8-runtime-check.mjs
       - name: End-to-end journeys
         run: node v3/v15-e2e.mjs
       - name: Runtime saturation
@@ -78,7 +80,7 @@ jobs:
 
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -88,7 +90,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-product-check.py v3/browser-check.py v3/browser-admin-check.py v3/browser-auditor-check.py v3/browser-stable-1-4-check.py v3/browser-enterprise-1-7-check.py
+        run: python -m py_compile v3/browser-product-check.py v3/browser-enterprise-1-8-check.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -126,21 +128,15 @@ jobs:
           trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
           for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
-          run_browser_journey 'Product browser journey' v3/browser-product-check.py artifacts/browser-check.json 180
-          run_browser_journey 'Administration browser journey' v3/browser-admin-check.py artifacts/browser-admin-check.json 90
-          run_browser_journey 'Auditor browser journey' v3/browser-auditor-check.py artifacts/browser-auditor-check.json 60
-          run_browser_journey 'ICTC 1.4 stable browser journey' v3/browser-stable-1-4-check.py artifacts/browser-stable-1-4-check.json 60
-          run_browser_journey 'ICTC 1.7 Enterprise Clarity browser journey' v3/browser-enterprise-1-7-check.py artifacts/browser-enterprise-1-7-check.json 120
+          run_browser_journey 'ICTC 1.8 product lifecycle' v3/browser-product-check.py artifacts/browser-check.json 180
+          run_browser_journey 'ICTC 1.8 Enterprise Workbench visual journey' v3/browser-enterprise-1-8-check.py artifacts/browser-enterprise-1-8-check.json 120
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ictc-browser-evidence
           path: |
             artifacts/browser-check.json
-            artifacts/browser-admin-check.json
-            artifacts/browser-auditor-check.json
-            artifacts/browser-stable-1-4-check.json
-            artifacts/browser-enterprise-1-7-check.json
+            artifacts/browser-enterprise-1-8-check.json
             artifacts/browser-*-error.json
             artifacts/*.png
           if-no-files-found: warn

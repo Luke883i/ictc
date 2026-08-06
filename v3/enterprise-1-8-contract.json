@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.8.0",
+  "release": "1.8.0",
+  "model": "ictc-enterprise-workbench-1-8",
+  "intent": "Rendere equivalenti e immediatamente comprensibili i due processi ICTC, configurare la ricerca normativa come job AI governato e preservare completezza informativa mediante progressivita, labeling canonico e superfici compatte.",
+  "evidenceBasis": [
+    "visual-review-of-home-monitoring-events-and-ai-settings",
+    "main-runtime-and-browser-contracts-at-1cca247",
+    "role-aware-mental-simulations",
+    "bounded-multidimensional-saturation"
+  ],
+  "personas": [
+    {"id":"admin","goal":"Configurare job, verificare proposte e governare decisioni senza cercare controlli in viste sovraccariche."},
+    {"id":"user","goal":"Scegliere fra ricerca normativa ed eventi, contribuire materiale o registrare fatti senza classificazioni premature."},
+    {"id":"auditor","goal":"Ricostruire job, osservazioni, decisioni ed effetti in sola lettura."},
+    {"id":"novice","goal":"Capire i due processi, il proprio ruolo e la prossima azione entro il primo viewport."},
+    {"id":"expert","goal":"Accedere a parametri, baseline, trace e prove senza che dominino la vista iniziale."}
+  ],
+  "standardsAndPractices": [
+    {"id":"iso-9241-110-2020","use":"task suitability, self-descriptiveness, conformity with user expectations and controllability","why":"Le superfici devono corrispondere al compito effettivamente autorizzato, non al ruolo amministrativo astratto."},
+    {"id":"wcag-2.2","use":"descriptive headings and labels, visible focus, target size, predictable navigation and reflow","why":"Label, focus, target e ordine devono restare comprensibili su tastiera, zoom e viewport ridotte."},
+    {"id":"nist-ai-rmf","use":"governed AI purpose, human oversight, traceability and bounded claims","why":"Il job AI propone ricerca e novelty; la persona approva piano e decisioni sulle fonti."},
+    {"id":"nist-csf-2.0","use":"governed outcomes, explicit authority, operational state and recoverability","why":"La UI deve collegare responsabilita, stato, azione ed evidenza."},
+    {"id":"govuk-uswds","use":"plain language, summary first, progressive disclosure and resilient native controls","why":"La completezza rimane disponibile senza competere con il compito corrente."},
+    {"id":"sre-human-factors","use":"actionable state, signal over noise, bounded complexity and explicit failure recovery","why":"Vuoti, duplicazioni e segnali non azionabili aumentano errore e tempo di orientamento."}
+  ],
+  "T": [
+    {"id":"T01","name":"home-process-balance","invariants":["both-core-processes-visible","recommendation-does-not-hide-alternative","role-specific-effects-visible"]},
+    {"id":"T02","name":"regulatory-job-configuration","invariants":["job-objective-and-name","cadence-and-scope","job-specific-ai-policy","human-plan-approval"]},
+    {"id":"T03","name":"novelty-mining-baseline","invariants":["baseline-declared","change-types-declared","previous-identifiers-supplied","novelty-is-candidate-not-conclusion"]},
+    {"id":"T04","name":"material-intake-provenance","invariants":["single-canonical-entry","input-mode-explicit","original-preserved","enrichment-separate"]},
+    {"id":"T05","name":"event-intake-and-queue","invariants":["compact-intake","queue-visible","single-open-action","original-before-analysis"]},
+    {"id":"T06","name":"label-title-description-matrix","invariants":["object-state-action-grammar","role-consistent-copy","no-unlabeled-control","canonical-copy-before-js"]},
+    {"id":"T07","name":"progressive-information","invariants":["summary-first","detail-on-demand","no-loss-of-why-how-effect-evidence","internal-dialog-or-native-disclosure"]},
+    {"id":"T08","name":"role-authority-affordance","invariants":["server-issued-authority","zero-auditor-write","no-read-only-message-for-contributor","denied-actions-hidden-or-explained"]},
+    {"id":"T09","name":"ai-human-epistemic-boundary","invariants":["ai-purpose-explicit","human-decision-explicit","facts-inferences-and-unknowns-distinct","no-compliance-overclaim"]},
+    {"id":"T10","name":"state-empty-error-recovery","invariants":["empty-state-actionable","degraded-ai-preserves-manual-path","retry-named","no-blank-space-as-state"]},
+    {"id":"T11","name":"accessibility-reflow-focus","invariants":["targets-at-least-44px","focus-deterministic","no-document-overflow","labels-programmatic-and-visible"]},
+    {"id":"T12","name":"evidence-cross-surface-continuity","invariants":["job-to-run-to-source","event-to-version-to-evidence","material-to-candidate","receipt-and-limit-visible"]}
+  ],
+  "labelMatrix": [
+    {"surface":"home","eyebrow":"Panoramica","title":"Scegli dove lavorare","description":"Ricerca normativa ed eventi restano due processi distinti con pari accesso.","primaryObjects":["Job di ricerca normativa","Fascicolo evento"]},
+    {"surface":"monitoring","eyebrow":"Ricerca normativa","title":"Job di ricerca e novelty","description":"Configura il perimetro, approva il piano AI e verifica le fonti candidate.","primaryObjects":["Job","Esecuzione","Fonte candidata","Materiale"]},
+    {"surface":"events","eyebrow":"Eventi e incidenti","title":"Registra e completa i fascicoli","description":"Conserva il racconto originale, completa i dati e verifica ogni formulazione.","primaryObjects":["Fascicolo","Originale","Chiarimento","Versione"]},
+    {"surface":"settings","eyebrow":"Amministrazione AI","title":"Connessione e policy del provider","description":"Configura il provider globale; i parametri del singolo job restano nel job.","primaryObjects":["Organizzazione","Provider","Policy globale"]}
+  ],
+  "dimensions": {
+    "role": ["admin","user","auditor"],
+    "surface": ["home","monitoring","events","settings"],
+    "workload": ["empty","normal","dense","contradictory"],
+    "ai": ["unconfigured","degraded","ready"],
+    "viewport": ["desktop","tablet","mobile"],
+    "input": ["pointer","keyboard","assistive-technology"],
+    "state": ["initial","active","attention","error"],
+    "urgency": ["routine","attention","critical"]
+  },
+  "visualBudgets": {
+    "coreHeaderMaxPx": 280,
+    "homeChoiceRegionMaxPx": 420,
+    "minimumTargetPx": 44,
+    "primaryActionPerLane": 1,
+    "duplicateMaterialEntryPointsPerSurface": 0,
+    "unlabeledInteractiveControls": 0,
+    "maxAlwaysVisibleExplanatoryParagraphs": 3,
+    "maxParagraphWidthCh": 68
+  },
+  "stressScenarios": [
+    "user-home-no-work-balanced-lanes","user-home-open-event-and-monitoring","admin-home-ai-unconfigured","auditor-home-dense-work","monitoring-admin-first-job","monitoring-user-contribution","monitoring-auditor-read-only","monitoring-no-jobs-no-sources","monitoring-dense-jobs-and-sources","monitoring-ai-timeout","monitoring-baseline-last-run","monitoring-baseline-fixed-date","monitoring-cross-jurisdiction","monitoring-authority-allowlist","monitoring-novelty-no-results","monitoring-novelty-new-observation","monitoring-contribution-link","monitoring-contribution-text","monitoring-contribution-files","monitoring-oversized-file","events-user-first-intake","events-dense-queue","events-ai-degraded","events-unlabeled-action-regression","events-long-narrative","events-submitted-read-only","settings-short-viewport","settings-provider-missing","settings-job-policy-boundary","settings-key-env-missing","keyboard-lane-navigation","keyboard-dialog-return-focus","screen-reader-heading-order","screen-reader-control-names","zoom-200-core-surfaces","mobile-390-core-surfaces","forced-colors-actions","reduced-motion-navigation","slow-bootstrap","interrupted-write","role-change-dialog-open","denied-admin-action","long-italian-labels","long-authority-name","empty-state-actionability","error-state-retry-label","material-source-evidence-distinction","job-plan-run-source-continuity","incident-original-version-evidence-continuity","no-javascript-canonical-labels"
+  ],
+  "saturation": {
+    "perTDeclaredScenarios": 15552,
+    "perTStabilityWindow": 64,
+    "perTM": 15616,
+    "tailPerT": 100,
+    "perTMPlus100": 15716,
+    "TCount": 12,
+    "constructionScenarios": 186624,
+    "tailScenarios": 1200,
+    "totalScenarios": 187824,
+    "expectedNoveltyAfterM": 0
+  },
+  "definitionOfDone": [
+    "release-1-8-propagated",
+    "home-exposes-two-equal-core-process-lanes-for-every-role",
+    "home-recommendation-never-removes-the-other-process",
+    "monitoring-supports-persisted-governed-regulatory-job-configuration",
+    "job-payload-carries-baseline-change-types-scope-and-authorities-to-ai",
+    "monitoring-has-one-canonical-material-entry-point",
+    "material-intake-mode-is-explicit-and-original-is-preserved",
+    "events-intake-and-queue-share-the-first-viewport-on-desktop",
+    "all-event-card-actions-have-visible-and-programmatic-names",
+    "settings-separates-provider-global-policy-from-job-policy",
+    "label-matrix-is-canonical-before-javascript",
+    "auditor-has-zero-write-affordances",
+    "all-secondary-why-how-ai-evidence-detail-remains-reachable",
+    "desktop-mobile-zoom-and-keyboard-browser-journeys-pass",
+    "M-plus-100-zero-novelty-for-every-T",
+    "static-runtime-browser-security-green-on-one-head"
+  ],
+  "claimBoundary": "ICTC 1.8 Enterprise Workbench validates repository and selected local-runtime properties within the declared model. It does not certify legal compliance, standards conformance, production deployment, completeness of regulatory discovery, or every user and assistive-technology context."
+}

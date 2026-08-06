@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.8.0] - 2026-08-06
+
+### Enterprise workbench
+
+- Panoramica riequilibrata con due corsie equivalenti per Ricerca normativa ed Eventi e incidenti;
+- priorità contestuale ridotta a raccomandazione compatta che non nasconde l'altro processo;
+- job di ricerca normativa con nome, obiettivo, frequenza, modalità di mining, baseline, giurisdizioni, autorità, change types e limite candidati;
+- profilo job persistito nella missione canonica e trasmesso sia alla generazione del piano sia alla discovery AI;
+- novelty dichiarata come confronto candidato rispetto alla baseline, non come garanzia di completezza, vigenza o applicabilità;
+- un solo ingresso materiale con modalità Link, Testo e Documento e separazione fra originale, arricchimento e fonte candidata;
+- Eventi e incidenti compatti con intake e coda ravvicinati e azioni esplicite `Apri fascicolo` e `Scarica evidenze`;
+- configurazione AI globale separata dalla policy del singolo job;
+- matrice lossless di labeling `oggetto → stato → azione → effetto`;
+- 12 dimensioni T, 186.624 scenari di costruzione e 1.200 probe M+100 senza novelty attesa;
+- gate statici, runtime e browser dedicati alla release 1.8.0.
+
+### Limitations
+
+La release dimostra proprietà del repository e del runtime locale entro il modello dichiarato. Non certifica completezza della ricerca normativa, conformità legale o normativa, deployment produttivo, operating effectiveness o ogni combinazione browser/tecnologia assistiva.
+
 ## [1.7.0] - 2026-08-06
 
 ### Enterprise clarity

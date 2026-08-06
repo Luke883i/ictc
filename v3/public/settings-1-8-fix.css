@@ -1,0 +1,8 @@
+#settingsDialog[open] #settingsForm{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;}
+#settingsDialog[open] #settingsForm>.settings-18{display:grid!important;visibility:visible!important;opacity:1!important;min-height:0;overflow:auto!important;gap:8px!important;}
+#settingsDialog[open] [data-settings-section]{display:block!important;visibility:visible!important;opacity:1!important;}
+#settingsDialog[open] [data-settings-section]>summary{display:flex!important;visibility:visible!important;opacity:1!important;min-height:48px;}
+.settings-section-body>.settings-field-stack{display:grid;gap:12px;}
+.settings-section-body>.settings-field-stack>h3{margin:0 0 2px;font-size:.92rem;}
+.settings-section-body.settings-policy-stack{display:grid;gap:12px;}
+#settingsForm[data-settings-structure18="true"] .settings-job-boundary{margin:4px 0 0;}

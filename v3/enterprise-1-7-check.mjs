@@ -7,6 +7,7 @@ const app = await read('./public/app.js');
 const router = await read('./public/ui/surface-router.js');
 const proof = await read('./public/ui/standard-proof-1-7.js');
 const clarity = await read('./public/ui/clarity-1-7.js');
+const workbench = await read('./public/ui/workbench-1-8.js');
 const css = await read('./public/enterprise-1-7.css');
 const styles = await read('./public/styles.css');
 const index = await read('./public/index.html');
@@ -46,6 +47,7 @@ verify('single-router', () => {
   assert.match(app, /installSurfaceRouter/);
   assert.match(app, /installStandardProof17Experience/);
   assert.match(app, /installEnterpriseClarity17/);
+  assert.match(app, /installEnterpriseWorkbench18/);
   assert.doesNotMatch(app, /installStandardProof16Experience\(\)/);
   assert.match(router, /const surfaces/);
   assert.match(router, /ictc:surface-changed/);
@@ -66,6 +68,7 @@ verify('summary-first-home-and-core-pages', () => {
   assert.match(clarity, /eventsContextAction/);
   assert.match(clarity, /ai-lens-demo/);
   assert.match(clarity, /admin-disclosure/);
+  assert.match(workbench, /process-lanes/);
 });
 verify('proof-progressive-detail', () => {
   assert.match(proof, /openProofDetails/);
@@ -84,6 +87,7 @@ verify('visual-budgets', () => {
   assert.match(css, /prefers-reduced-motion:reduce/);
   assert.match(css, /forced-colors:active/);
   assert.match(styles, /@import url\('\.\/enterprise-1-7\.css'\)/);
+  assert.match(styles, /@import url\('\.\/enterprise-1-8\.css'\)/);
 });
 verify('browser-assurance', () => {
   for (const phrase of ['post-merge-keyboard-race-closed', 'home-summary-first', 'monitoring-primary-task', 'proof-detail-dialog', 'admin-progressive-disclosures', 'auditor-zero-write-affordances']) assert.match(browser, new RegExp(phrase));
@@ -92,15 +96,16 @@ verify('browser-assurance', () => {
   assert.match(browser, /document\.documentElement\.scrollWidth/);
 });
 verify('release-identity', () => {
-  assert.match(version, /'1\.7\.0'/);
-  assert.equal(pkg.version, '1.7.0');
-  assert.equal(lock.version, '1.7.0');
-  assert.equal(lock.packages[''].version, '1.7.0');
-  assert.equal(claims.release, '1.7.0');
+  assert.match(version, /'1\.8\.0'/);
+  assert.equal(pkg.version, '1.8.0');
+  assert.equal(lock.version, '1.8.0');
+  assert.equal(lock.packages[''].version, '1.8.0');
+  assert.equal(claims.release, '1.8.0');
   assert.ok(claims.claims.some(item => item.id === 'enterprise-1-7-clarity'));
+  assert.ok(claims.claims.some(item => item.id === 'enterprise-1-8-workbench'));
 });
 
-const report = { schemaVersion: contract.schemaVersion, model: contract.model, ok: true, verified, metrics: contract.visualBudgets, saturation: contract.saturation, limitation: contract.claimBoundary };
+const report = { schemaVersion: contract.schemaVersion, model: contract.model, activeRelease: '1.8.0', ok: true, verified, metrics: contract.visualBudgets, saturation: contract.saturation, limitation: contract.claimBoundary };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-1-7-audit.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`enterprise-1-7-check: ok (${verified.length} contract groups)`);
+console.log(`enterprise-1-7-check: ok (${verified.length} regression groups, active release 1.8.0)`);

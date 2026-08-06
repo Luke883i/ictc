@@ -2,10 +2,27 @@
 
 **Integrated Compliance Tower Control** is an evidence-first workspace for two governed processes:
 
-1. **Regulatory monitoring** — preserve the objective, obtain an AI-proposed plan, review it, activate a canonical monitoring mission, inspect candidate sources and record a reasoned human decision.
+1. **Regulatory monitoring** — preserve the objective, configure a governed research job, obtain an AI-proposed plan, review it, activate the canonical mission, inspect candidate sources and record a reasoned human decision.
 2. **Events and incidents** — preserve the original description and attachments, separate AI extraction from human confirmation, version the final formulation and retain linked evidence.
 
 The application roles are `admin`, `user` and `auditor`. The server returns explicit capabilities and a canonical access profile; the UI projects available actions, prohibited actions, state effects and evidence from that server-issued authority. AI output remains assistive and never determines applicability, compliance, significance or notification duties.
+
+## ICTC 1.8 Enterprise Workbench
+
+Release `1.8.0` makes the two core processes equally visible and turns regulatory monitoring into an explicit governed job:
+
+- **Panoramica** presents equal Research and Events lanes for every role; a recommendation can signal urgency but never hides the other process;
+- **Ricerca normativa** supports job name, objective, cadence, mining mode, novelty baseline, fixed baseline date, jurisdictions, authority allowlist, change types and bounded result limit;
+- the job profile is persisted with the canonical mission and sent to both AI plan generation and discovery;
+- novelty remains a candidate comparison against the declared baseline, never a claim of complete discovery, applicability or legal effect;
+- material intake has one canonical entry point and explicit Link, Text and Document modes while preserving the original separately from enrichment;
+- **Eventi e incidenti** keeps intake and queue compact, with named `Apri fascicolo` and `Scarica evidenze` actions;
+- the global AI dialog separates organization, provider connection and global policy, while job-specific policy remains in Regulatory Research;
+- labels follow a lossless `object → state → action → effect` matrix and secondary why/how/AI/evidence detail remains progressively available.
+
+The 1.8 model defines 12 T dimensions. Each T enumerates 15,552 multidimensional scenarios, freezes after a 64-case stability window at `M=15,616`, and requires zero novelty in the following 100 probes. Across all T dimensions this is 186,624 construction cases plus 1,200 tail cases, 187,824 total.
+
+See `docs/ENTERPRISE_1_8_WORKBENCH_AUDIT.md` and `v3/enterprise-1-8-contract.json`.
 
 ## ICTC 1.7 Enterprise Clarity
 
@@ -49,7 +66,7 @@ See `docs/STANDARD_PROOF_1_6_AUDIT.md` and `v3/standard-proof-1-6-contract.json`
 
 ## Assurance models
 
-The repository retains the 1.4 experience contract, 1.6 Standard Proof and Enterprise T as regression and enterprise assurance layers.
+The repository retains the 1.4 experience contract, 1.6 Standard Proof, 1.7 Enterprise Clarity and Enterprise T as regression and assurance layers.
 
 The 1.6 Standard Proof model separately provides:
 
@@ -88,8 +105,8 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-Release `1.7.0` includes executable enterprise and journey contracts, server-issued authority, summary-first onboarding, Standard Proof projection, bounded saturation and browser evidence.
+Release `1.8.0` includes executable enterprise and journey contracts, governed regulatory jobs, server-issued authority, progressive detail, bounded saturation and browser evidence.
 
 ## Enterprise boundary
 
-Repository checks and browser journeys do not certify a production deployment, standards conformance or legal compliance. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`, `docs/ENTERPRISE_T_ASSURANCE.md`, `docs/STABLE_1_4_AUDIT.md`, `docs/STANDARD_PROOF_1_6_AUDIT.md` and `docs/ENTERPRISE_1_7_VISUAL_AUDIT.md`.
+Repository checks and browser journeys do not certify a production deployment, standards conformance, legal compliance or complete regulatory discovery. `enterprise-ready` remains blocked until explicit external evidence exists for trusted identity, TLS, durable storage, backup restore, malware scanning, observability, dependency review and human accessibility validation. See `docs/ENTERPRISE_CONVERGENCE_DOD.md`, `docs/ENTERPRISE_T_ASSURANCE.md`, `docs/STABLE_1_4_AUDIT.md`, `docs/STANDARD_PROOF_1_6_AUDIT.md`, `docs/ENTERPRISE_1_7_VISUAL_AUDIT.md` and `docs/ENTERPRISE_1_8_WORKBENCH_AUDIT.md`.
