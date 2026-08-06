@@ -4,7 +4,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const contract = JSON.parse(await read('./enterprise-1-8-contract.json'));
 const ui = await read('./public/ui/workbench-1-8.js');
+const settingsFix = await read('./public/ui/settings-1-8-fix.js');
+const labelsFix = await read('./public/ui/labels-1-8-fix.js');
 const css = await read('./public/enterprise-1-8.css');
+const settingsCss = await read('./public/settings-1-8-fix.css');
+const labelsCss = await read('./public/labels-1-8-fix.css');
 const app = await read('./public/app.js');
 const server = await read('./server.mjs');
 const jobs = await read('./runtime/monitoring-jobs.mjs');
@@ -71,12 +75,18 @@ verify('event-clarity', () => {
 verify('label-matrix', () => {
   for (const label of ['Panoramica','Ricerca normativa','Eventi e incidenti','Guida e prove']) assert.match(ui, new RegExp(label));
   assert.doesNotMatch(ui, /Definisci cosa monitorare/);
+  assert.match(labelsFix, /mission\.jobName \|\| mission\.objective/);
+  assert.match(labelsFix, /mission-objective-18/);
+  assert.match(labelsCss, /mission-objective-18/);
   assert.match(docs, /oggetto → stato → azione → effetto/);
 });
 verify('progressive-detail', () => {
   assert.match(ui, /Perché, metodo, AI, responsabilità ed evidenze/);
   assert.match(ui, /Metodo e confini/);
-  assert.match(ui, /settings-section-18/);
+  assert.match(settingsFix, /data-settings-section/);
+  assert.match(settingsFix, /settingsStructure18/);
+  assert.match(settingsFix, /form\.dataset\.enterprise18 = 'true'/);
+  assert.match(settingsCss, /#settingsDialog\[open\]/);
   assert.match(css, /home-context-18/);
 });
 verify('accessibility-budgets', () => {
@@ -88,6 +98,8 @@ verify('accessibility-budgets', () => {
 });
 verify('runtime-chain', () => {
   assert.match(app, /installEnterpriseWorkbench18/);
+  assert.match(app, /installSettings18Structure/);
+  assert.match(app, /installWorkbenchLabels18/);
   assert.match(server, /1\.8-enterprise-workbench/);
   assert.match(workflow, /ICTC 1\.8 Enterprise Workbench/);
   assert.match(workflow, /browser-enterprise-1-8-check\.py/);
