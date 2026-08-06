@@ -7,7 +7,7 @@ await import('./enterprise-2-design-system-saturation.mjs');
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const model = JSON.parse(await read('./enterprise-2-design-system-model.json'));
 const ui = await read('./public/ui/enterprise-2-design-system.js');
-const css = await read('./public/enterprise-2-design-system.css');
+const css = `${await read('./public/enterprise-2-design-system.css')}\n${await read('./public/enterprise-2-design-system-refinement.css')}`;
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
 const browser = await read('./browser-enterprise-2-check.py');
@@ -42,7 +42,9 @@ verify('terminal-wiring', () => {
   assert.match(app, /installEnterprise2DesignSystem\(\)/);
   assert.ok(app.indexOf('installEnterprise2DesignSystem()') > app.indexOf('installEnterprise2EditorialSystem()'));
   assert.match(styles, /enterprise-2-design-system\.css/);
+  assert.match(styles, /enterprise-2-design-system-refinement\.css/);
   assert.ok(styles.indexOf('enterprise-2-design-system.css') > styles.indexOf('enterprise-2-editorial.css'));
+  assert.ok(styles.indexOf('enterprise-2-design-system-refinement.css') > styles.indexOf('enterprise-2-design-system.css'));
 });
 verify('authority-safe-js', () => {
   assert.doesNotMatch(ui, /\bfetch\s*\(/);
@@ -85,6 +87,9 @@ verify('preference-and-accessibility-guards', () => {
   assert.match(css, /HighlightText/);
   assert.match(css, /outline:3px solid/);
   assert.match(css, /@media\(max-width:420px\)/);
+  assert.match(css, /service-nav\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /proof-standard>summary>span:not\(\.ds-disclosure-mark\)/);
+  assert.match(css, /home-recommendation>button\{align-self:center/);
   assert.match(css, /@media\(max-width:760px\)/);
 });
 verify('browser-evidence', () => {
