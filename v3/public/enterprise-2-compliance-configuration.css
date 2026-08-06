@@ -56,10 +56,10 @@ html[data-compliance-flow="compliance-guided-1"] .job-configuration-overview but
 html[data-compliance-flow="compliance-guided-1"] .job-configuration-overview button>b{min-width:0;font-size:.72rem;overflow-wrap:anywhere}
 html[data-compliance-flow="compliance-guided-1"] .job-configuration-overview button[aria-current="step"]{border-color:var(--ds-accent,#4657d8);background:var(--ds-accent-soft,#eef0ff);color:var(--ds-accent-strong,#3443b8)}
 html[data-compliance-flow="compliance-guided-1"] .job-config-group{margin:0;border:1px solid var(--cf-line);border-radius:12px;background:var(--ds-surface,#fff);overflow:clip}
-html[data-compliance-flow="compliance-guided-1"] .job-configuroup>summary{min-height:48px;padding:7px 10px}
-html[data-compliance-flow="compliance-guided-1"] .job-configuroup>summary span{display:grid;gap:1px}
+html[data-compliance-flow="compliance-guided-1"] .job-config-group>summary{min-height:48px;padding:7px 10px}
+html[data-compliance-flow="compliance-guided-1"] .job-config-group>summary span{display:grid;gap:1px}
 html[data-compliance-flow="compliance-guided-1"] .job-config-group>summary b{font-size:.8rem}
-html[data-compliance-flow="compliance-guided-1"] .job-configuroup>summary small{font-size:.66rem;color:var(--ds-muted,#64748b)}
+html[data-compliance-flow="compliance-guided-1"] .job-config-group>summary small{font-size:.66rem;color:var(--ds-muted,#64748b)}
 html[data-compliance-flow="compliance-guided-1"] .job-config-group-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:9px 10px 10px;border-top:1px solid var(--cf-line)}
 html[data-compliance-flow="compliance-guided-1"] .job-config-group-body>:is(label,fieldset){min-width:0;max-width:100%}
 html[data-compliance-flow="compliance-guided-1"] .job-config-group-body>label:has(textarea),html[data-compliance-flow="compliance-guided-1"] .job-config-group-body>fieldset{grid-column:1/-1}
@@ -70,11 +70,11 @@ html[data-compliance-flow="compliance-guided-1"] .settings-section-body>.setting
 
 html[data-compliance-flow="compliance-guided-1"] #settingsDialog,html[data-compliance-flow="compliance-guided-1"] #settingsDialog .dialog-shell,html[data-compliance-flow="compliance-guided-1"] #settingsDialog .dialog-body,html[data-compliance-flow="compliance-guided-1"] #settingsDialog .settings-section-body,html[data-compliance-flow="compliance-guided-1"] #settingsDialog label{min-width:0;max-width:100%}
 html[data-compliance-flow="compliance-guided-1"] #settingsDialog :is(input,select,textarea){min-width:0;max-width:100%;width:100%}
-html[data-compliance-flow="compliance-guided-1"] #settingsDialog :is(h2,p,b,small,.field-label){overflow-wrap:anywhere}
+html[data-compliance-flow="compliance-guided-1"] #settingsDialog :is(h2,p,b,small,.field-label,.field-hint){overflow-wrap:anywhere}
 
 @media(max-width:760px){
   html[data-compliance-flow="compliance-guided-1"] .settings-section-body,html[data-compliance-flow="compliance-guided-1"] .admin-config-group-body,html[data-compliance-flow="compliance-guided-1"] .job-config-group-body,html[data-compliance-flow="compliance-guided-1"] .settings-section-body>.settings-field-stack{grid-template-columns:1fr}
-  html[data-compliance-flow="compliance-guided-1"] .settings-section-body>*,html[data-compliance-flow="compliance-guided-1"] .job-configuroup-body>*,html[data-compliance-flow="compliance-guided-1"] .settings-section-body>.settings-field-stack>*{grid-column:1}
+  html[data-compliance-flow="compliance-guided-1"] .settings-section-body>*,html[data-compliance-flow="compliance-guided-1"] .job-config-group-body>*,html[data-compliance-flow="compliance-guided-1"] .settings-section-body>.settings-field-stack>*{grid-column:1}
 }
 @media(max-width:480px){
   html[data-compliance-flow="compliance-guided-1"] .configuration-overview-head{align-items:start;flex-direction:column}
@@ -88,9 +88,9 @@ html[data-compliance-flow="compliance-guided-1"] #settingsDialog :is(h2,p,b,smal
   html[data-compliance-flow="compliance-guided-1"] #missionForm[data-job-configuration-pattern="essential-first"]>button[type="submit"]{width:100%;min-width:0}
 }
 @media(prefers-reduced-motion:reduce){
-  html[data-compliance-flow="compliance-guided-1"] textarea[data-compact-input="true"],html[data-compliance-flow="compliance-guided-1"] .settings-section-18,html[data-compliance-flow="compliance-guided-1"] .admin-config-group,html[data-compliance-flow="compliance-guided-1"] .job-configuroup{scroll-behavior:auto;transition-duration:.01ms!important;animation-duration:.01ms!important}
+  html[data-compliance-flow="compliance-guided-1"] textarea[data-compact-input="true"],html[data-compliance-flow="compliance-guided-1"] .settings-section-18,html[data-compliance-flow="compliance-guided-1"] .admin-config-group,html[data-compliance-flow="compliance-guided-1"] .job-config-group{scroll-behavior:auto;transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
 @media(forced-colors:active){
-  html[data-compliance-flow="compliance-guided-1"] .configuration-overview,html[data-compliance-flow="compliance-guided-1"] .settings-section-18,html[data-compliance-flow="compliance-guided-1"] .admin-config-group,html[data-compliance-flow="compliance-guided-1"] .job-configuroup{background:Canvas;border-color:CanvasText;box-shadow:none}
+  html[data-compliance-flow="compliance-guided-1"] .configuration-overview,html[data-compliance-flow="compliance-guided-1"] .settings-section-18,html[data-compliance-flow="compliance-guided-1"] .admin-config-group,html[data-compliance-flow="compliance-guided-1"] .job-config-group{background:Canvas;border-color:CanvasText;box-shadow:none}
   html[data-compliance-flow="compliance-guided-1"] [aria-current="step"]{outline:2px solid Highlight;outline-offset:-2px}
 }

@@ -71,6 +71,7 @@ verify('monitoring-configuration-flow', () => {
   assert.match(ui, /Una persona verifica il piano prima dell’attivazione/);
   assert.match(css, /job-configuration-overview/);
   assert.match(css, /job-config-group/);
+  assert.doesNotMatch(css, /job-configuroup/);
 });
 
 verify('admin-progressive-groups', () => {
