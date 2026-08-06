@@ -12,6 +12,7 @@
 @import url('./settings-1-8-fix.css');
 @import url('./labels-1-8-fix.css');
 @import url('./enterprise-2.css');
+@import url('./enterprise-2-editorial.css');
 
 /* Final fail-closed authority and document-flow guards. */
 [hidden]{display:none!important}

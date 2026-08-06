@@ -1,0 +1,466 @@
+/* ICTC Enterprise 2 editorial terminal layer: professional vocabulary, minimal-first density and progressive disclosure. */
+:root{
+  --e2e-page-max:1180px;
+  --e2e-copy-max:66ch;
+  --e2e-space-page:12px;
+  --e2e-space-section:12px;
+  --e2e-space-card:10px;
+  --e2e-control-min:44px;
+  --e2e-rule:var(--color-border);
+  --e2e-soft:color-mix(in srgb,var(--color-surface-subtle) 92%,white);
+}
+html[data-editorial-system="professional-1"] main{
+  width:min(var(--e2e-page-max),calc(100% - 24px));
+}
+html[data-editorial-system="professional-1"] .topbar,
+html[data-editorial-system="professional-1"] .service-nav{
+  padding-inline:max(12px,calc((100vw - var(--e2e-page-max))/2));
+}
+html[data-editorial-system="professional-1"] .topbar{
+  min-height:56px;
+  padding-block:6px;
+}
+html[data-editorial-system="professional-1"] .service-nav{
+  min-height:44px;
+  padding-block:4px;
+}
+html[data-editorial-system="professional-1"] .service-nav button{
+  min-height:36px;
+  padding:.35rem .72rem;
+  font-size:.86rem;
+}
+html[data-editorial-system="professional-1"] .brand small{
+  max-width:30ch;
+  font-size:.72rem;
+}
+html[data-editorial-system="professional-1"] .runtime-status{
+  min-height:34px;
+  padding:.35rem .65rem;
+  font-size:.76rem;
+}
+html[data-editorial-system="professional-1"] :where(p,li,dd){
+  line-height:1.42;
+}
+html[data-editorial-system="professional-1"] :where(.core-title>p:not(.eyebrow),.workbench-home-head>div>p:last-child,.proof-hero-copy>p){
+  max-width:var(--e2e-copy-max);
+}
+
+/* Panoramica: titolo, due aree, priorità e disclosure. */
+html[data-editorial-system="professional-1"] .workbench-home{
+  gap:8px;
+  padding:12px 0 16px;
+}
+html[data-editorial-system="professional-1"] .workbench-home-head{
+  gap:16px;
+  padding-bottom:8px;
+}
+html[data-editorial-system="professional-1"] .workbench-home-head h1{
+  max-width:22ch;
+  margin:.1rem 0 .25rem;
+  font-size:clamp(1.75rem,3vw,2.55rem);
+  letter-spacing:-.035em;
+  line-height:1.05;
+}
+html[data-editorial-system="professional-1"] .workbench-home-rule{
+  max-width:34ch!important;
+  font-size:.72rem!important;
+}
+html[data-editorial-system="professional-1"] .process-lanes{
+  gap:8px;
+}
+html[data-editorial-system="professional-1"] .process-lane{
+  grid-template-rows:auto auto auto auto auto;
+  min-height:0;
+  padding:12px;
+}
+html[data-editorial-system="professional-1"] .process-lane h2{
+  margin:.2rem 0;
+  font-size:1.22rem;
+}
+html[data-editorial-system="professional-1"] .process-lane>p:not(.eyebrow){
+  min-height:0;
+  margin:0 0 6px;
+  font-size:.8rem;
+}
+html[data-editorial-system="professional-1"] .lane-status{
+  padding:5px 0;
+}
+html[data-editorial-system="professional-1"] .process-lane button{
+  margin-top:6px;
+}
+html[data-editorial-system="professional-1"] .home-recommendation{
+  min-height:56px;
+  padding:8px 10px;
+}
+html[data-editorial-system="professional-1"] .home-recommendation h2{
+  font-size:.96rem;
+}
+html[data-editorial-system="professional-1"] .home-recommendation p{
+  font-size:.72rem;
+}
+html[data-editorial-system="professional-1"] .home-disclosure-stack{
+  gap:4px;
+}
+html[data-editorial-system="professional-1"] .home-disclosure>summary,
+html[data-editorial-system="professional-1"] .local-user-disclosure>summary{
+  min-height:42px;
+  padding:6px 10px;
+}
+html[data-editorial-system="professional-1"] .home-disclosure-body{
+  padding:8px 10px;
+}
+html[data-editorial-system="professional-1"] .home-disclosure .home-context-grid{
+  gap:4px;
+}
+html[data-editorial-system="professional-1"] .home-disclosure .home-context-grid section{
+  padding:7px 8px;
+}
+html[data-editorial-system="professional-1"] .home-disclosure .journey-strip,
+html[data-editorial-system="professional-1"] .home-disclosure .home-metrics,
+html[data-editorial-system="professional-1"] .home-disclosure .authority-brief{
+  margin-top:6px;
+}
+
+/* Superfici operative: una prima viewport densa ma leggibile. */
+html[data-editorial-system="professional-1"] #monitoringView>.hero,
+html[data-editorial-system="professional-1"] #incidentsView>.hero{
+  grid-template-columns:minmax(0,1fr) minmax(180px,230px)!important;
+  gap:18px!important;
+  padding:14px 0 10px!important;
+}
+html[data-editorial-system="professional-1"] .core-title h1{
+  max-width:24ch!important;
+  margin:.1rem 0 .35rem!important;
+  font-size:clamp(1.75rem,3vw,2.55rem)!important;
+  letter-spacing:-.035em!important;
+  line-height:1.05!important;
+}
+html[data-editorial-system="professional-1"] .core-title>p:not(.eyebrow){
+  font-size:.9rem;
+}
+html[data-editorial-system="professional-1"] .core-actions{
+  gap:6px;
+}
+html[data-editorial-system="professional-1"] .core-actions button{
+  min-height:42px;
+  padding:.55rem .8rem;
+}
+html[data-editorial-system="professional-1"] #monitoringView .section-block,
+html[data-editorial-system="professional-1"] #incidentsView .section-block{
+  padding:10px 0 14px;
+}
+html[data-editorial-system="professional-1"] #monitoringView .section-head,
+html[data-editorial-system="professional-1"] #incidentsView .section-head{
+  margin-bottom:6px;
+}
+html[data-editorial-system="professional-1"] #monitoringView .section-head h2,
+html[data-editorial-system="professional-1"] #incidentsView .section-head h2{
+  font-size:1.28rem;
+}
+html[data-editorial-system="professional-1"] .mission-grid,
+html[data-editorial-system="professional-1"] .incident-grid{
+  gap:6px;
+}
+html[data-editorial-system="professional-1"] .mission-card,
+html[data-editorial-system="professional-1"] .incident-card,
+html[data-editorial-system="professional-1"] .enterprise2-record-card{
+  grid-template-columns:minmax(0,1fr) minmax(210px,auto);
+  grid-template-areas:"head actions" "objective actions" "details actions";
+  gap:5px 14px;
+  padding:10px 12px!important;
+}
+html[data-editorial-system="professional-1"] .mission-card h3,
+html[data-editorial-system="professional-1"] .incident-card h3{
+  margin:.15rem 0 0;
+  font-size:.96rem;
+}
+html[data-editorial-system="professional-1"] .mission-card .card-actions,
+html[data-editorial-system="professional-1"] .incident-card .card-actions{
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-content:start;
+  justify-content:flex-end;
+  gap:5px;
+  min-width:210px;
+}
+html[data-editorial-system="professional-1"] .mission-card .card-actions button,
+html[data-editorial-system="professional-1"] .incident-card .card-actions button{
+  width:auto;
+  min-height:40px;
+  padding:.45rem .65rem;
+  font-size:.76rem;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details{
+  grid-area:details;
+  margin-top:2px;
+  border-top:1px solid var(--e2e-rule);
+}
+html[data-editorial-system="professional-1"] .editorial-record-details>summary{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:4px 0;
+  cursor:pointer;
+  list-style:none;
+  font-size:.74rem;
+  font-weight:750;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details>summary::-webkit-details-marker{
+  display:none;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details>summary small{
+  color:var(--color-muted);
+  font-size:.68rem;
+  font-weight:500;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details-body{
+  padding:4px 0 6px;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details .card-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 12px;
+}
+html[data-editorial-system="professional-1"] .editorial-record-details .card-meta span{
+  font-size:.7rem;
+}
+html[data-editorial-system="professional-1"] #missionsList .empty,
+html[data-editorial-system="professional-1"] #incidentList .empty,
+html[data-editorial-system="professional-1"] #catalogList .empty{
+  min-height:64px;
+  padding:14px;
+}
+html[data-editorial-system="professional-1"] .catalog-card{
+  padding:10px 12px;
+}
+html[data-editorial-system="professional-1"] .catalog-card p{
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  font-size:.78rem;
+}
+html[data-editorial-system="professional-1"] .origin-row{
+  gap:4px;
+}
+html[data-editorial-system="professional-1"] .origin-tag{
+  padding:.2rem .45rem;
+  font-size:.68rem;
+}
+
+/* Prova: sintesi visibile, dettaglio tecnico su richiesta. */
+html[data-editorial-system="professional-1"] .proof-view-17{
+  padding-top:10px;
+}
+html[data-editorial-system="professional-1"] .proof-hero-17{
+  grid-template-columns:minmax(0,1fr) minmax(360px,.82fr);
+}
+html[data-editorial-system="professional-1"] .proof-hero-17 .proof-hero-copy{
+  padding:14px;
+}
+html[data-editorial-system="professional-1"] .proof-hero-17 .proof-hero-copy h1{
+  max-width:22ch;
+  margin:.1rem 0 .4rem;
+  font-size:clamp(1.75rem,3vw,2.5rem);
+  letter-spacing:-.035em;
+}
+html[data-editorial-system="professional-1"] .proof-hero-17 .proof-verdict>div{
+  min-height:56px;
+  padding:9px 10px;
+}
+html[data-editorial-system="professional-1"] .proof-start-17{
+  padding:10px 12px;
+}
+html[data-editorial-system="professional-1"] .proof-start-17 .proof-answer-grid article{
+  padding:8px 10px;
+}
+html[data-editorial-system="professional-1"] .proof-standard:not([open]) .proof-standard-body{
+  display:none;
+}
+html[data-editorial-system="professional-1"] .editorial-standard-summary{
+  margin:0;
+  color:var(--color-text);
+  font-size:.82rem;
+}
+
+/* Amministrazione: un pannello, etichette di ambito e moduli compatti. */
+html[data-editorial-system="professional-1"] .admin-center{
+  width:min(1160px,96vw);
+  max-height:92vh;
+}
+html[data-editorial-system="professional-1"] .admin-shell{
+  min-height:min(680px,92vh);
+}
+html[data-editorial-system="professional-1"] .admin-head{
+  padding:12px 16px;
+}
+html[data-editorial-system="professional-1"] .admin-head h2{
+  font-size:1.3rem;
+}
+html[data-editorial-system="professional-1"] .admin-head p{
+  font-size:.76rem;
+}
+html[data-editorial-system="professional-1"] .admin-section-nav{
+  padding:6px 10px;
+}
+html[data-editorial-system="professional-1"] .admin-section-nav button{
+  min-height:38px;
+  padding:0 10px;
+  font-size:.74rem;
+}
+html[data-editorial-system="professional-1"] .admin-grid{
+  padding:10px 12px 14px;
+}
+html[data-editorial-system="professional-1"] .admin-proof-panel{
+  padding:11px;
+}
+html[data-editorial-system="professional-1"] .admin-disclosure>summary{
+  min-height:42px;
+  padding:9px 11px;
+}
+html[data-editorial-system="professional-1"] .admin-disclosure-body{
+  padding:9px 11px;
+}
+html[data-editorial-system="professional-1"] .readiness-row,
+html[data-editorial-system="professional-1"] .user-row{
+  padding:7px 8px;
+}
+html[data-editorial-system="professional-1"] .admin-form{
+  gap:8px;
+}
+html[data-editorial-system="professional-1"] .admin-form .row{
+  gap:8px;
+}
+
+/* Dialoghi: contesto e azioni stabili; dettaglio secondario nativo. */
+html[data-editorial-system="professional-1"] .enterprise2-dialog .dialog-shell>header,
+html[data-editorial-system="professional-1"] .enterprise2-dialog .dialog-head{
+  padding:12px 14px;
+}
+html[data-editorial-system="professional-1"] .enterprise2-dialog .dialog-body{
+  padding:12px 14px;
+}
+html[data-editorial-system="professional-1"] .enterprise2-dialog .dialog-shell>footer{
+  padding:10px 14px;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure{
+  grid-column:1/-1;
+  border:1px solid var(--e2e-rule);
+  border-radius:var(--radius-sm);
+  background:var(--color-surface);
+  overflow:clip;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure>summary{
+  display:flex;
+  min-height:42px;
+  align-items:center;
+  padding:7px 10px;
+  cursor:pointer;
+  list-style:none;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure>summary::-webkit-details-marker{
+  display:none;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure>summary span{
+  display:grid;
+  gap:1px;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure>summary b{
+  font-size:.8rem;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-disclosure>summary small{
+  color:var(--color-muted);
+  font-size:.68rem;
+}
+html[data-editorial-system="professional-1"] .editorial-secondary-body{
+  padding:9px 10px;
+  border-top:1px solid var(--e2e-rule);
+}
+html[data-editorial-system="professional-1"] :where(input,select,textarea,button){
+  scroll-margin-block:70px;
+}
+
+@media(max-width:900px){
+  html[data-editorial-system="professional-1"] .proof-hero-17{
+    grid-template-columns:1fr;
+  }
+  html[data-editorial-system="professional-1"] .mission-card,
+  html[data-editorial-system="professional-1"] .incident-card,
+  html[data-editorial-system="professional-1"] .enterprise2-record-card{
+    grid-template-columns:1fr;
+    grid-template-areas:"head" "objective" "details" "actions";
+  }
+  html[data-editorial-system="professional-1"] .mission-card .card-actions,
+  html[data-editorial-system="professional-1"] .incident-card .card-actions{
+    justify-content:flex-start;
+    min-width:0;
+  }
+}
+@media(max-width:760px){
+  html[data-editorial-system="professional-1"] main{
+    width:calc(100% - 18px);
+  }
+  html[data-editorial-system="professional-1"] #monitoringView>.hero,
+  html[data-editorial-system="professional-1"] #incidentsView>.hero{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  html[data-editorial-system="professional-1"] .core-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  html[data-editorial-system="professional-1"] .admin-center{
+    width:100vw;
+    height:100dvh;
+    max-height:100dvh;
+  }
+}
+@media(max-width:480px){
+  html[data-editorial-system="professional-1"] .workbench-home-head h1,
+  html[data-editorial-system="professional-1"] .core-title h1,
+  html[data-editorial-system="professional-1"] .proof-hero-17 .proof-hero-copy h1{
+    font-size:1.75rem!important;
+  }
+  html[data-editorial-system="professional-1"] .core-actions{
+    grid-template-columns:1fr;
+  }
+  html[data-editorial-system="professional-1"] .mission-card .card-actions button,
+  html[data-editorial-system="professional-1"] .incident-card .card-actions button{
+    flex:1 1 130px;
+  }
+  html[data-editorial-system="professional-1"] .editorial-record-details>summary{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:1px;
+  }
+}
+@media(max-width:340px){
+  html[data-editorial-system="professional-1"] main{
+    width:calc(100% - 12px);
+  }
+  html[data-editorial-system="professional-1"] .service-nav{
+    padding-inline:6px;
+  }
+  html[data-editorial-system="professional-1"] .service-nav button{
+    padding-inline:.5rem;
+    font-size:.78rem;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-editorial-system="professional-1"] *,
+  html[data-editorial-system="professional-1"] *::before,
+  html[data-editorial-system="professional-1"] *::after{
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
+@media(forced-colors:active){
+  html[data-editorial-system="professional-1"] .editorial-record-details,
+  html[data-editorial-system="professional-1"] .editorial-secondary-disclosure{
+    border-color:CanvasText;
+  }
+}
