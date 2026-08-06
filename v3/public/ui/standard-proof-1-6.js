@@ -121,6 +121,11 @@ function ensureSurface() {
   if (adminGrid && !$('#adminProofPanel')) adminGrid.insertAdjacentHTML('afterbegin', adminProofMarkup());
 }
 
+function focusProof(proof) {
+  if (!proof || proof.hidden) return;
+  proof.focus({ preventScroll: false });
+}
+
 function setProofVisibility(visible, focus = true) {
   const proof = $('#proofView');
   if (!proof) return;
@@ -129,7 +134,10 @@ function setProofVisibility(visible, focus = true) {
   if (visible) {
     for (const id of ['homeView', 'monitoringView', 'incidentsView']) $(`#${id}`)?.setAttribute('hidden', '');
     document.querySelectorAll('[data-service]').forEach(button => button.setAttribute('aria-current', 'false'));
-    if (focus) proof.focus({ preventScroll: false });
+    if (focus) {
+      focusProof(proof);
+      requestAnimationFrame(() => focusProof(proof));
+    }
   }
 }
 
@@ -213,7 +221,13 @@ async function loadProof(force = false) {
 }
 
 function bindSurface() {
-  $('#openStandardProof')?.addEventListener('click', navigateToProof);
+  const proofTrigger = $('#openStandardProof');
+  proofTrigger?.addEventListener('click', () => navigateToProof());
+  proofTrigger?.addEventListener('keydown', event => {
+    if (!['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    navigateToProof();
+  });
   $('#retryProof')?.addEventListener('click', () => loadProof(true).catch(() => {}));
   $('#openProofFromAdmin')?.addEventListener('click', () => {
     if ($('#adminCenter')?.open) $('#adminCenter').close();
