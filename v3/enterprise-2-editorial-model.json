@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "2.0.0-editorial-candidate",
+  "claimBoundary": "This model governs interface wording, information density and disclosure. It does not establish legal compliance, accessibility conformance, certification or production readiness.",
+  "canonicalVocabulary": {
+    "RN-01": "Monitoraggio normativo",
+    "EC-01": "Gestione eventi e segnalazioni",
+    "EV-01": "Evidenze e controlli",
+    "IA-01": "Identità e accessi",
+    "GA-01": "Governo dei servizi AI"
+  },
+  "sourceStateVocabulary": {
+    "candidate": "Da valutare",
+    "verified": "Accettata nel catalogo",
+    "rejected": "Esclusa dal catalogo",
+    "boundary": "Acceptance records a scoped catalog decision; it does not establish validity, applicability or legal effect."
+  },
+  "surfaces": [
+    {"id":"shell","title":"Attività, evidenze e controlli","complexity":"low","initialBlocks":2,"primaryActionsMax":1,"secondaryDisclosure":"navigation"},
+    {"id":"home-admin","title":"Governa attività e controlli","complexity":"medium","initialBlocks":4,"primaryActionsMax":3,"secondaryDisclosure":"method-and-evidence"},
+    {"id":"home-user","title":"Continua le attività","complexity":"low","initialBlocks":4,"primaryActionsMax":3,"secondaryDisclosure":"method-and-evidence"},
+    {"id":"home-auditor","title":"Consulta attività ed evidenze","complexity":"medium","initialBlocks":4,"primaryActionsMax":3,"secondaryDisclosure":"evidence-first"},
+    {"id":"monitoring","title":"Monitoraggio normativo","complexity":"medium","initialBlocks":3,"primaryActionsMax":3,"secondaryDisclosure":"record-details"},
+    {"id":"source-catalog","title":"Fonti da valutare","complexity":"medium","initialBlocks":2,"primaryActionsMax":1,"secondaryDisclosure":"source-detail"},
+    {"id":"source-detail","title":"Fonte osservata","complexity":"high","initialBlocks":3,"primaryActionsMax":3,"secondaryDisclosure":"history-decisions-model-trace"},
+    {"id":"event-register","title":"Eventi e segnalazioni","complexity":"low","initialBlocks":3,"primaryActionsMax":2,"secondaryDisclosure":"record-details"},
+    {"id":"event-intake","title":"Registra un evento","complexity":"medium","initialBlocks":2,"primaryActionsMax":2,"secondaryDisclosure":"none"},
+    {"id":"event-workspace","title":"Dettaglio evento","complexity":"high","initialBlocks":3,"primaryActionsMax":4,"secondaryDisclosure":"analysis-history-timeline-reminders"},
+    {"id":"evidence-summary","title":"Evidenze, controlli e limiti","complexity":"medium","initialBlocks":3,"primaryActionsMax":1,"secondaryDisclosure":"technical-map"},
+    {"id":"evidence-map","title":"Dettagli tecnici","complexity":"high","initialBlocks":5,"primaryActionsMax":0,"secondaryDisclosure":"standards"},
+    {"id":"administration","title":"Amministrazione","complexity":"high","initialBlocks":2,"primaryActionsMax":1,"secondaryDisclosure":"single-active-section"},
+    {"id":"ai-settings","title":"Provider AI e istruzioni globali","complexity":"high","initialBlocks":3,"primaryActionsMax":2,"secondaryDisclosure":"settings-sections"},
+    {"id":"identity","title":"Identità e accessi","complexity":"high","initialBlocks":3,"primaryActionsMax":2,"secondaryDisclosure":"ordered-steps"}
+  ],
+  "complexityBudget": {
+    "maxInitialBlocks": 5,
+    "maxPrimaryActionsPerDecisionContext": 1,
+    "maxPageTitleWords": 6,
+    "maxLeadCharacters": 180,
+    "maxReadableLineCharacters": 66,
+    "minimumInteractiveTargetPx": 44,
+    "desktopPageMaxPx": 1180,
+    "mobileAssurancePx": [320, 390],
+    "zoomAssurancePercent": 200
+  },
+  "antiOverclaim": [
+    "Do not label a catalog decision as legal verification.",
+    "Do not describe repository evidence as certification.",
+    "Do not describe application controls as deployment readiness without scope.",
+    "Do not present model scores as factual confidence.",
+    "Do not classify an event before a person records or adopts the classification.",
+    "Do not collapse evidence, truth, applicability and compliance into synonyms."
+  ],
+  "progressiveDisclosure": [
+    "Home shows role, two areas and one priority before method or evidence detail.",
+    "Record cards show state, title and actions before metadata.",
+    "Source detail shows identity and scoped assessment before history, decisions and model trace.",
+    "Event detail shows the current task before analysis, history, timeline and reminders.",
+    "Evidence summary shows scope and limits before the technical map.",
+    "Administration shows exactly one section at a time.",
+    "Standards are closed until explicitly opened."
+  ]
+}

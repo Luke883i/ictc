@@ -3,9 +3,15 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 await import('./enterprise-2-process-check.mjs');
+await import('./enterprise-2-editorial-check.mjs');
+await import('./enterprise-2-editorial-saturation.mjs');
 const contract = JSON.parse(await read('./enterprise-2-contract.json'));
 const ui = await read('./public/ui/enterprise-2.js');
 const processUi = await read('./public/ui/enterprise-2-processes.js');
+const editorialUi = await read('./public/ui/enterprise-2-editorial.js');
+const editorialCss = await read('./public/enterprise-2-editorial.css');
+const editorialModel = JSON.parse(await read('./enterprise-2-editorial-model.json'));
+const editorialDocs = await read('../docs/ENTERPRISE_2_EDITORIAL_REVIEW.md');
 const css = await read('./public/enterprise-2.css');
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
@@ -51,6 +57,9 @@ verify('terminal-installation', () => {
   assert.match(styles, /enterprise-2\.css/);
   assert.match(ui, /ictcCandidate/);
   assert.match(processUi, /processCatalog/);
+  assert.match(app, /installEnterprise2EditorialSystem/);
+  assert.match(styles, /enterprise-2-editorial\.css/);
+  assert.match(editorialUi, /editorialSystem = 'professional-1'/);
 });
 verify('plain-language-primary-labels', () => {
   for (const label of ['Ricerche normative', 'Ricerche disponibili', 'Eventi registrati', 'Guida operativa e prove', 'Accesso federato', 'Identità locali']) assert.match(ui, new RegExp(label));
@@ -60,14 +69,14 @@ verify('plain-language-primary-labels', () => {
 verify('named-process-catalog', () => {
   const processes = {
     'RN-01': 'Monitoraggio normativo',
-    'EC-01': 'Gestione eventi di conformità',
-    'EV-01': 'Evidenze e verifiche',
+    'EC-01': 'Gestione eventi e segnalazioni',
+    'EV-01': 'Evidenze e controlli',
     'IA-01': 'Identità e accessi',
     'GA-01': 'Governo dei servizi AI'
   };
   for (const [code, name] of Object.entries(processes)) {
     assert.match(processUi, new RegExp(code));
-    assert.match(processUi, new RegExp(name));
+    assert.match(`${processUi}\n${editorialUi}`, new RegExp(name));
     assert.match(processDocs, new RegExp(code));
     assert.match(browser, new RegExp(code));
   }
@@ -124,10 +133,13 @@ verify('proof-and-claim-boundary', () => {
   assert.match(contract.claimBoundary, /does not itself constitute/i);
   assert.match(docs, /non costituisce/i);
   assert.match(processDocs, /Non costituisce certificazione/i);
+  assert.match(editorialDocs, /non certifica/i);
+  assert.match(editorialUi, /Accettata nel catalogo/);
+  assert.match(editorialUi, /Punteggio indicativo del modello/);
 });
 verify('responsive-accessibility', () => {
-  for (const token of ['320px', 'forced-colors', 'prefers-reduced-motion']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(css, /min-height:var\(--e2-control\)/);
+  for (const token of ['320px', 'forced-colors', 'prefers-reduced-motion']) assert.match(`${css}\n${editorialCss}`, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(`${css}\n${editorialCss}`, /min-height:var\(--e2-control\)|--e2e-control-min:44px/);
   assert.match(browser, /200% zoom|zoom-200/);
   assert.match(browser, /Escape/);
   assert.match(browser, /focus-return/);
@@ -143,6 +155,9 @@ verify('saturation-and-compression', () => {
   assert.match(saturation, /enterprise-consultant/);
   assert.match(saturation, /iso-certifier/);
   assert.match(saturation, /garante-or-acn/);
+  assert.equal(editorialModel.surfaces.length, 15);
+  assert.match(editorialUi, /minimal-progressive/);
+  assert.match(editorialCss, /--e2e-page-max:1180px/);
   assert.match(compression, /irreducibleWitnesses/);
 });
 verify('package-and-ci-gates', () => {
@@ -161,7 +176,7 @@ const evidenceMap = {
   'version-and-receipt-chain': ['store receipts', 'browser evidence download'],
   'runtime-controls': ['admin readiness API', 'EV-01 controls view'],
   'deployment-gaps': ['standard proof posture', 'admin proof summary'],
-  'semantic-labels': ['enterprise-2.js', 'enterprise-2-processes.js', 'process catalog'],
+  'semantic-labels': ['enterprise-2.js', 'enterprise-2-processes.js', 'enterprise-2-editorial.js', 'process catalog'],
   'progressive-disclosure': ['role-specific home disclosure order', 'admin section navigator'],
   'responsive-layout': ['enterprise-2.css', '320/390/landscape browser checks'],
   'keyboard-and-focus': ['browser keyboard, Escape and focus-return checks'],
@@ -180,6 +195,7 @@ const report = {
   invariantCount: contract.globalInvariants.length,
   TDimensions: contract.T.length,
   processCatalog: ['RN-01', 'EC-01', 'EV-01', 'IA-01', 'GA-01'],
+  editorialSystem: { id: 'professional-1', surfaces: editorialModel.surfaces.length, density: 'minimal-progressive' },
   certificationProof: contract.certificationProofDimensions.map(dimension => ({ dimension, status: 'candidate-evidence-present', attestedBy: evidenceMap[dimension] })),
   definitionOfDone: contract.definitionOfDone,
   claimBoundary: contract.claimBoundary
