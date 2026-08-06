@@ -81,7 +81,7 @@ try:
         page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').click()
         page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo ufficiale verificati.')
         page.get_by_role('button', name='Verifica fonte').click()
-        page.locator('#sourceBody').get_by_text('Verificata', exact=False).wait_for()
+        page.locator('#sourceBody').get_by_text('Verificata', exact=False).first.wait_for()
         page.locator('[data-close="sourceDialog"]').click()
 
         PHASE = 'material-contribution'
