@@ -11,6 +11,7 @@ const version = await read('./version.mjs');
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
 const stableModule = await read('./public/ui/stable-1-4-home.js');
+const standardProofModule = await read('./public/ui/standard-proof-1-6.js');
 const stableCss = await read('./public/stable-1-4.css');
 const server = await read('./server.mjs');
 const accessProfile = await read('./access-profile.mjs');
@@ -38,21 +39,24 @@ verify('contract-shape', () => {
   assert.equal(contract.stressScenarios.length, 15);
   assert.equal(contract.saturation.tail, 100);
 });
-verify('release-identity', () => {
-  assert.equal(packageJson.version, '1.4.0');
-  assert.equal(packageLock.version, '1.4.0');
-  assert.equal(packageLock.packages[''].version, '1.4.0');
-  assert.equal(claims.release, '1.4.0');
-  assert.equal(saturationArtifact.release, '1.4.0');
-  assert.match(version, /VERSION = '1\.4\.0'/);
-  assert.match(readme, /Release `1\.4\.0`/);
+verify('active-release-identity', () => {
+  assert.equal(packageJson.version, '1.6.0');
+  assert.equal(packageLock.version, '1.6.0');
+  assert.equal(packageLock.packages[''].version, '1.6.0');
+  assert.equal(claims.release, '1.6.0');
+  assert.equal(saturationArtifact.release, '1.6.0');
+  assert.match(version, /VERSION = '1\.6\.0'/);
+  assert.match(readme, /Release `1\.6\.0`/);
 });
-verify('runtime-installation', () => {
-  assert.match(app, /installStable14Experience/);
+verify('regression-installation-chain', () => {
+  assert.match(app, /installStandardProof16Experience/);
+  assert.match(standardProofModule, /import \{ installStable14Experience \}/);
+  assert.match(standardProofModule, /installStable14Experience\(\)/);
   assert.match(styles, /stable-1-4\.css/);
+  assert.match(styles, /standard-proof-1-6\.css/);
   assert.match(server, /accessProfileFor\(actor\)/);
   assert.match(server, /projected\.accessProfile/);
-  assert.match(server, /1\.4-stable/);
+  assert.match(server, /1\.6-standard-proof/);
 });
 verify('server-issued-authority', () => {
   for (const role of ['admin', 'user', 'auditor']) assert.match(accessProfile, new RegExp(`${role}: Object\\.freeze`));
@@ -99,6 +103,7 @@ verify('honest-boundary', () => {
 const report = {
   schemaVersion: '1.4.0',
   release: '1.4.0',
+  activeRelease: '1.6.0',
   model: contract.model,
   ok: true,
   metrics: contract.metrics,
@@ -108,4 +113,4 @@ const report = {
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/stable-1-4-audit.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`stable-1-4-check: ok (${verified.length} contract groups)`);
+console.log(`stable-1-4-check: ok (${verified.length} regression groups, active release ${report.activeRelease})`);
