@@ -95,7 +95,7 @@ try:
         page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
         page.locator('#contributionDialog').wait_for(state='hidden')
         page.locator('#materialRecent18').click()
-        page.get_by_text('Materiale osservato nel perimetro UE', exact=False).wait_for()
+        page.locator('#contributionList').get_by_text('Materiale osservato nel perimetro UE', exact=False).first.wait_for()
 
         PHASE = 'event-lifecycle'
         page.locator('.service-nav [data-service="incidents"]').click()
