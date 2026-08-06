@@ -8,6 +8,12 @@
 @import url('./stable-1-4.css');
 @import url('./standard-proof-1-6.css');
 
-/* Final geometry and authority guards. */
+/* Final Standard Proof compactness and authority guards. */
+.proof-hero{padding:var(--space-3) 0 var(--space-2)}
+.proof-hero-copy{padding:20px 24px}
+.proof-hero-copy h1{max-width:21ch;margin:.1rem 0 .45rem;font-size:clamp(1.9rem,3.4vw,3rem);line-height:1.02}
+.proof-hero-copy>p{margin:.22rem 0;font-size:.86rem;line-height:1.38}
+.proof-role-intro{margin-top:.45rem;padding-top:.45rem}
+.proof-verdict>div{min-height:72px;padding:var(--space-2) var(--space-3)}
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3)}
