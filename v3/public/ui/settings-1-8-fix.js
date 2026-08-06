@@ -55,6 +55,7 @@ export function normalizeSettings18Structure() {
   const meta = document.querySelector('#settingsDialog header p:not(.eyebrow)');
   if (meta) meta.textContent = 'Configura il provider globale. Baseline, autorità e tipi di cambiamento appartengono ai singoli job di ricerca.';
 
+  form.dataset.enterprise18 = 'true';
   form.dataset.settingsStructure18 = 'true';
   return true;
 }
