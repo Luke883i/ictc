@@ -107,7 +107,7 @@ try:
         page.locator('#contributionForm input[value="document"]').check()
         assert page.locator('#contributionForm input[name="files"]').is_visible()
         assert page.locator('#contributionForm input[name="links"]').is_hidden()
-        page.locator('[data-close="contributionDialog"]').click()
+        page.locator('#contributionForm').get_by_role('button', name='Annulla').click()
 
         PHASE = 'compact-events-and-labels'
         page.locator('.service-nav [data-service="incidents"]').click()
