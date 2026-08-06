@@ -36,7 +36,11 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
         assert page.locator('.process-lane').count() == 2
-        page.locator('#openSettings').click()
+        setup = page.locator('#homePrimaryAction')
+        setup.wait_for(state='visible')
+        assert setup.get_attribute('data-home-action') == 'settings'
+        setup.click()
+        page.locator('#settingsDialog').wait_for(state='visible')
         settings = page.locator('#settingsForm')
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
@@ -107,7 +111,7 @@ try:
         assert body['incidents']
         assert not errors, errors
 
-        checks = ['provider-configured', 'governed-job-created', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
+        checks = ['provider-configured-through-contextual-home-action', 'governed-job-created', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
         (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
 except BaseException as error:
