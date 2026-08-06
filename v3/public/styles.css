@@ -8,7 +8,7 @@
 @import url('./stable-1-4.css');
 @import url('./standard-proof-1-6.css');
 @import url('./enterprise-1-7.css');
-@import url('./enterprise-1-7-proof-budget.css');
+@import url('./enterprise-1-8.css');
 
 /* Final fail-closed authority and document-flow guards. */
 [hidden]{display:none!important}
