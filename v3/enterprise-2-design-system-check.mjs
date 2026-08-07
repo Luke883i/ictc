@@ -65,7 +65,7 @@ verify('authority-safe-js', () => {
   assert.match(ui, /data\.tone|dataset\.tone/);
 });
 verify('semantic-token-system', () => {
-  for (const token of ['--ds-ink:', '--ds-canvas:', '--ds-accent:', '--ds-shadow-1:', '--ds-radius:', '--ds-ease;']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  for (const token of ['--ds-ink:', '--ds-canvas:', '--ds-accent:', '--ds-shadow-1:', '--ds-radius:', '--ds-ease:']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   for (const accent of ['cyan', 'amber', 'violet']) assert.match(css, new RegExp(`data-ds-accent="${accent}"`));
   assert.doesNotMatch(css, /@import\s+url\(['"]?https?:/i);
   assert.match(css, /font-family:var\(--ds-font\)/);
