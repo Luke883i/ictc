@@ -1,0 +1,34 @@
+name: ictc-governance-free-private
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: ictc-governance-free-private-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  governance-free-private:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22'}
+      - name: Governance contract self-test
+        run: node v3/governance-free-private-check.mjs --self-test
+      - name: Validate PR or main-push provenance
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node v3/governance-free-private-check.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-gov-01f-governance
+          path: artifacts/gov-01f-governance.json
+          if-no-files-found: error
+          retention-days: 30
