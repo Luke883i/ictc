@@ -143,6 +143,4 @@ export function installFi01Reference() {
     syncVisibility();
     requestAnimationFrame(decorateInternalReference);
   });
-  const sourceBody = $('#sourceBody');
-  if (sourceBody) new MutationObserver(() => requestAnimationFrame(decorateInternalReference)).observe(sourceBody, { childList: true, subtree: true });
 }
