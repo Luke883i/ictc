@@ -46,7 +46,7 @@ verify('server-issued-authority-visibility', () => {
   assert.match(ui, /reconcileServerIssuedAdminVisibility/);
   assert.match(ui, /state\.data\?\.actor\?\.role/);
   assert.match(ui, /settings\.hidden = role !== 'admin'/);
-  assert.ok(baseModel.standardObligations.some(item => item.id === 'ICTC-L11'));
+  assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L11'));
 });
 verify('server-backed-runtime-findings', () => {
   assert.equal(runtimeFindings.observedFailures.length, 4);

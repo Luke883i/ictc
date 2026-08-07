@@ -3,16 +3,24 @@
   "baseStandard": "ictc-surface-standard-1",
   "evidenceSource": "server-backed-browser",
   "layoutRules": [
+    "server-issued-admin-visibility-final",
     "terminal-mobile-action-bar-cascade-final",
     "stable-admin-owner-after-delayed-legacy-pass",
     "intrinsic-zoom-reflow-grid"
   ],
   "contradictionPrimitives": [
+    "server-admin-action-hidden-by-legacy-layer",
     "legacy-progressive-footer-exceeds-mobile-height-budget",
     "legacy-delayed-admin-activation-hides-owner-panel",
     "200-percent-text-expansion-overflows-global-nav"
   ],
   "standardObligations": [
+    {
+      "id": "ICTC-L11",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["interactive"],
+      "witness": ["server actor role remains the visibility source of truth", "terminal admin settings reconciliation", "server-backed browser assertion"]
+    },
     {
       "id": "ICTC-L12",
       "source": "ICTC Surface Standard 1",
@@ -33,6 +41,7 @@
     }
   ],
   "definitionOfDone": [
+    "Server-issued actor authority remains the final source of visibility for administration actions after legacy presentation layers run.",
     "The mobile progressive-dialog action bar remains at or below 72px after the complete legacy and terminal CSS cascade.",
     "Administration panel ownership remains stable after the bounded delayed Enterprise 2 reconciliation pass.",
     "Topbar, role controls and service navigation intrinsically reflow at 200% text enlargement without reducing text size or hiding content."
