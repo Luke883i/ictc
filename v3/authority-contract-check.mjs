@@ -73,6 +73,12 @@ for (const requiredImport of ["'./store.mjs'", "'./domain.mjs'", "'./runtime/htt
 const store = await readFile(path.join(root, 'v3', 'store.mjs'), 'utf8');
 if (!store.includes("path.join(root, 'state.json')")) errors.push('v3/store.mjs state.json SOT boundary not detected');
 if (!store.includes('verifyChain()')) errors.push('v3/store.mjs verifyChain boundary not detected');
+const integrityBinding = await readFile(path.join(root, 'v3', 'integrity-binding.mjs'), 'utf8');
+const currentStateBinding = store.includes('stateSha256: canonicalStateSha256(candidate)') &&
+  store.includes('verifyStateIntegrity(persisted)') &&
+  integrityBinding.includes("reason: 'state-head-mismatch'") &&
+  integrityBinding.includes('current-canonical-state-bound-to-audit-head');
+if (!currentStateBinding) errors.push('v3 runtime current-state to audit-head binding not detected');
 
 const agents = await readFile(path.join(root, 'AGENTS.md'), 'utf8');
 const architecture = await readFile(path.join(root, 'docs', '11_ARCHITECTURE.md'), 'utf8');
@@ -94,7 +100,9 @@ const result = {
     stateModel: 'mutable-state-json-with-hash-linked-audit',
     canonicalStateAppendOnly: false,
     canonicalStateReconstructibleFromAudit: false,
-    canonicalStateBoundToAuditChain: false
+    canonicalStateBoundToAuditChain: currentStateBinding,
+    canonicalStateBindingMode: 'current-head-forward-plus-legacy-checkpoint',
+    canonicalStateBindingExcludes: ['audit', 'commandResults']
   },
   errors
 };

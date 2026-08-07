@@ -5,10 +5,13 @@ import {
   DEFAULT_PROMPTS, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS, asString, canonicalJson,
   id, now, sha256
 } from './domain.mjs';
+import {
+  appendStateBindingEvent, canonicalStateSha256, verifyReceiptAgainstState, verifyStateIntegrity
+} from './integrity-binding.mjs';
 
 function initialState() {
   return {
-    schemaVersion: '2.1.0', revision: 0,
+    schemaVersion: '2.2.0', revision: 0,
     settings: {
       organization: {
         name: 'Organizzazione',
@@ -68,26 +71,37 @@ export class Store {
     this.attachmentsPath = path.join(root, 'attachments');
     this.queue = Promise.resolve();
     this.state = initialState();
+    this.initialized = false;
   }
   async init() {
     await mkdir(this.attachmentsPath, { recursive: true, mode: 0o700 });
+    let stateExisted = true;
     try { this.state = mergeState(JSON.parse(await readFile(this.statePath, 'utf8'))); }
-    catch (error) { if (error.code !== 'ENOENT') throw error; await this.persist(); }
-    const integrity = this.verifyChain();
-    if (!integrity.ok) throw new Error(`Audit chain non valida alla revisione ${integrity.atRevision}`);
+    catch (error) { if (error.code !== 'ENOENT') throw error; stateExisted = false; await this.persist(); }
+    let integrity = this.verifyChain();
+    if (!integrity.chainOk || (!integrity.ok && integrity.reason !== 'state-head-mismatch')) {
+      throw new Error(`Audit chain non valida alla revisione ${integrity.atRevision ?? this.state.revision}`);
+    }
+    if (integrity.reason === 'state-head-mismatch') {
+      throw Object.assign(new Error('Lo stato canonico non coincide con il digest registrato nell’HEAD audit'), {
+        status: 500, code: 'state-head-mismatch', details: integrity
+      });
+    }
+    if ((this.state.audit.length && !integrity.stateBound && integrity.bindingMode === 'legacy-unbound') ||
+        (stateExisted && !this.state.audit.length && this.state.revision === 0)) {
+      const reason = this.state.audit.length ? 'legacy-head-migration' : 'legacy-genesis-migration';
+      const binding = appendStateBindingEvent(this.state, { reason });
+      this.state = await this.persist(binding.draft);
+      integrity = this.verifyChain();
+      if (!integrity.ok || !integrity.stateBound) throw new Error('Migrazione binding stato/audit non verificata');
+    }
+    this.initialized = true;
     return this;
   }
   snapshot() { return structuredClone(this.state); }
-  verifyChain() {
-    let previousHash = 'GENESIS'; let expectedRevision = 1;
-    for (const event of this.state.audit) {
-      if (event.revision !== expectedRevision || event.previousHash !== previousHash || event.hash !== eventHash(event)) {
-        return { ok: false, atRevision: event.revision, expectedRevision, expectedPreviousHash: previousHash };
-      }
-      previousHash = event.hash; expectedRevision += 1;
-    }
-    return { ok: true, events: this.state.audit.length, head: previousHash, revision: this.state.revision };
-  }
+  canonicalStateSha256() { return canonicalStateSha256(this.state); }
+  verifyChain() { return verifyStateIntegrity(this.state); }
+  verifyReceipt(receipt) { return verifyReceiptAgainstState(this.state, receipt); }
   async mutate(actor, action, subject, input, change, command = {}) {
     let envelope;
     const operation = this.queue.catch(() => {}).then(async () => {
@@ -109,28 +123,36 @@ export class Store {
       const draft = structuredClone(this.state);
       const result = await change(draft);
       draft.revision += 1;
-      const previousHash = draft.audit.at(-1)?.hash || 'GENESIS';
+      const candidate = mergeState(draft);
+      const previousHash = candidate.audit.at(-1)?.hash || 'GENESIS';
       const event = {
-        id: id('event'), revision: draft.revision, at: now(), actorId: actor.id, role: actor.role, action,
+        id: id('event'), revision: candidate.revision, at: now(), actorId: actor.id, role: actor.role, action,
         subject: subject ? { type: asString(subject.type, 80), id: asString(subject.id, 200) } : null,
-        inputSha256: sha256(input ?? null), resultSha256: sha256(result ?? null), previousHash,
+        inputSha256: sha256(input ?? null), resultSha256: sha256(result ?? null),
+        stateSha256: canonicalStateSha256(candidate), previousHash,
         metadata: structuredClone(command.metadata || {})
       };
       event.hash = eventHash(event);
-      draft.audit.push(event);
-      if (draft.audit.length > 10_000) throw Object.assign(new Error('Limite audit raggiunto'), { status: 507, code: 'audit-capacity' });
+      candidate.audit.push(event);
+      if (candidate.audit.length > 10_000) throw Object.assign(new Error('Limite audit raggiunto'), { status: 507, code: 'audit-capacity' });
       const receipt = {
         eventId: event.id, revision: event.revision, at: event.at, action: event.action, subject: event.subject,
         actorId: event.actorId, previousHash: event.previousHash, hash: event.hash,
-        inputSha256: event.inputSha256, resultSha256: event.resultSha256
+        inputSha256: event.inputSha256, resultSha256: event.resultSha256, stateSha256: event.stateSha256
       };
       envelope = { result: structuredClone(result), receipt, replayed: false };
       if (commandId) {
-        draft.commandResults[commandId] = { actorId: actor.id, action, envelope: structuredClone(envelope), storedAt: now() };
-        const keys = Object.keys(draft.commandResults);
-        if (keys.length > 500) for (const key of keys.slice(0, keys.length - 500)) delete draft.commandResults[key];
+        candidate.commandResults[commandId] = { actorId: actor.id, action, envelope: structuredClone(envelope), storedAt: now() };
+        const keys = Object.keys(candidate.commandResults);
+        if (keys.length > 500) for (const key of keys.slice(0, keys.length - 500)) delete candidate.commandResults[key];
       }
-      const persisted = await this.persist(draft);
+      const persisted = await this.persist(candidate);
+      const persistedIntegrity = verifyStateIntegrity(persisted);
+      if (!persistedIntegrity.ok || !persistedIntegrity.stateBound) {
+        throw Object.assign(new Error('La mutazione persistita non è legata all’HEAD audit'), {
+          status: 500, code: 'persist-integrity-mismatch', details: persistedIntegrity
+        });
+      }
       this.state = persisted;
     });
     this.queue = operation.catch(() => {});
@@ -138,9 +160,22 @@ export class Store {
     return envelope;
   }
   async persist(state = this.state) {
+    const directStatePersist = this.initialized && state === this.state;
+    let candidate = state;
+    if (directStatePersist) {
+      const integrity = verifyStateIntegrity(state);
+      if (!integrity.chainOk) {
+        throw Object.assign(new Error('Persist diretto rifiutato: audit chain non valida'), {
+          status: 500, code: 'integrity-chain-invalid', details: integrity
+        });
+      }
+      if (!integrity.stateBound) {
+        candidate = appendStateBindingEvent(state, { reason: 'direct-state-persist' }).draft;
+      }
+    }
     await mkdir(this.root, { recursive: true, mode: 0o700 });
     const tmp = `${this.statePath}.${process.pid}.tmp`;
-    const payload = JSON.stringify(state, null, 2);
+    const payload = JSON.stringify(candidate, null, 2);
     try {
       const handle = await open(tmp, 'w', 0o600);
       try { await handle.writeFile(payload); await handle.sync(); }
@@ -157,7 +192,17 @@ export class Store {
         details: { expectedSha256: sha256(payload), actualSha256: sha256(persistedText) }
       });
     }
-    return mergeState(JSON.parse(persistedText));
+    const persisted = mergeState(JSON.parse(persistedText));
+    if (directStatePersist) {
+      const integrity = verifyStateIntegrity(persisted);
+      if (!integrity.ok || !integrity.stateBound) {
+        throw Object.assign(new Error('Persist diretto non legato all’HEAD audit'), {
+          status: 500, code: 'persist-integrity-mismatch', details: integrity
+        });
+      }
+      this.state = persisted;
+    }
+    return persisted;
   }
   async saveAttachments(files = []) {
     const candidates = [];
@@ -245,19 +290,25 @@ export class Store {
       };
     }
     const events = state.audit.filter(event => event.subject && relatedIds.has(event.subject.id));
+    const integrity = this.verifyChain();
     const manifest = {
       subjectSha256: sha256(subject),
       relatedSha256: sha256(related),
       eventsSha256: sha256(events),
-      integrityHead: this.verifyChain().head
+      integrityHead: integrity.head,
+      canonicalStateSha256: integrity.canonicalStateSha256,
+      auditHeadStateSha256: integrity.headStateSha256,
+      stateBoundToAuditHead: integrity.stateBound
     };
     return {
       schemaVersion: '1.2.0', generatedAt: now(), generatedBy: actor.id, type, subject,
-      related, events, manifest, integrity: this.verifyChain(),
+      related, events, manifest, integrity,
       limitations: [
         'Il fascicolo dimostra le operazioni registrate dal runtime, non la verità sostanziale del contenuto.',
         'I risultati AI restano proposte o estrazioni e richiedono controllo umano.',
-        'La catena hash non equivale a firma qualificata o marcatura temporale certificata.',
+        'Il digest dello stato canonico corrente è legato all’evento HEAD; le revisioni storiche non sono ricostruibili dalla sola audit chain.',
+        'Il binding esclude audit e commandResults per evitare dipendenze circolari; gli allegati sono rappresentati dai metadati e digest registrati nello stato.',
+        'La catena hash non equivale a firma qualificata, marcatura temporale certificata o non-ripudio.',
         'La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.',
         'I riferimenti a contributi non accessibili al ruolo corrente sono redatti dal fascicolo.'
       ]
