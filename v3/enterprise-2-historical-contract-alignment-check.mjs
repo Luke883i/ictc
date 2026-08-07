@@ -6,6 +6,7 @@ const model = JSON.parse(await read('./enterprise-2-historical-contract-alignmen
 const designCheck = await read('./enterprise-2-design-system-check.mjs');
 const browser = await read('./browser-product-check.py');
 const enterprise18Browser = await read('./browser-enterprise-1-8-check.py');
+const enterprise2Browser = await read('./browser-enterprise-2-check.py');
 const actions = await read('./public/ui/actions.js');
 const verified = [];
 
@@ -27,13 +28,21 @@ function ordered(text, tokens) {
   }
 }
 
+function phase(text, start, end) {
+  const from = text.indexOf(start);
+  const to = text.indexOf(end, from + start.length);
+  assert.ok(from >= 0, `missing phase ${start}`);
+  assert.ok(to > from, `missing phase boundary ${end}`);
+  return text.slice(from, to);
+}
+
 verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
   assert.equal(model.runtimeMutation, true);
-  assert.equal(model.invariants.length, 9);
-  assert.equal(model.observedFailures.length, 5);
-  assert.equal(model.preventiveAlignments.length, 3);
+  assert.equal(model.invariants.length, 10);
+  assert.equal(model.observedFailures.length, 6);
+  assert.equal(model.preventiveAlignments.length, 4);
   assert.match(model.claimBoundary, /does not establish/i);
 });
 
@@ -105,7 +114,7 @@ verify('canonical-terminal-vocabulary', () => {
 });
 
 verify('enterprise-1-8-terminal-consumer', () => {
-  assert.ok(enterprise18Browser.includes("from playwright.sync_api import expect, sync_playwright"));
+  assert.ok(enterprise18Browser.includes('from playwright.sync_api import expect, sync_playwright'));
   for (const token of [
     "page.title() == 'ICTC · Attività, evidenze e controlli'",
     "['Panoramica', 'Monitoraggio normativo', 'Eventi e segnalazioni', 'Evidenze e controlli']",
@@ -117,12 +126,18 @@ verify('enterprise-1-8-terminal-consumer', () => {
   ]) assert.ok(enterprise18Browser.includes(token), token);
   assert.ok(enterprise18Browser.includes("expect(settings.locator('[data-settings-section][open]')).to_have_count(1)"));
   assert.ok(enterprise18Browser.includes("get_by_role('button', name='Salva configurazione AI')"));
-  for (const stale of ['ICTC 1.8 · Enterprise Workbench', "'Ricerca normativa'", "'Eventi e incidenti'", "'Guida e prove'", "name='Scarica prova'"]) {
-    assert.ok(!enterprise18Browser.includes(stale), stale);
-  }
-  for (const budget of ["home['height'] <= 760", "recommendation['height'] <= 150", "hero['height'] <= 280", "queue['y'] < 720", "overflow <= 1", "box['height'] >= 44"]) {
-    assert.ok(enterprise18Browser.includes(budget), budget);
-  }
+  for (const stale of ['ICTC 1.8 · Enterprise Workbench', "'Ricerca normativa'", "'Eventi e incidenti'", "'Guida e prove'", "name='Scarica prova'"]) assert.ok(!enterprise18Browser.includes(stale), stale);
+  for (const budget of ["home['height'] <= 760", "recommendation['height'] <= 150", "hero['height'] <= 280", "queue['y'] < 720", "overflow <= 1", "box['height'] >= 44"]) assert.ok(enterprise18Browser.includes(budget), budget);
+});
+
+verify('enterprise-2-s01-actor-consistency', () => {
+  assert.ok(enterprise2Browser.includes("localStorage.setItem('ictc-role','auditor')"));
+  const s01 = phase(enterprise2Browser, "PHASE = 'S01-home-auditor-summary'", "PHASE = 'S02-home-auditor-method'");
+  assert.ok(!s01.includes("select_option('user')"), 'S01 auditor scenario cannot switch to user');
+  assert.ok(s01.includes("'Consulta attività ed evidenze'"));
+  assert.ok(s01.includes("'Sola lettura'"));
+  const s04 = phase(enterprise2Browser, "PHASE = 'S04-monitoring-user'", "PHASE = 'S05-events-user-empty-or-list'");
+  assert.ok(s04.includes("page.locator('#roleSelect').select_option('user')"), 'S04 must be the explicit user transition');
 });
 
 const report = {
