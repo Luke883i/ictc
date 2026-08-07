@@ -59,7 +59,9 @@ try:
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2
         page.locator('#roleSelect').select_option('user')
+        page.locator('#openSettings').wait_for(state='hidden')
         page.locator('#roleSelect').select_option('admin')
+        page.locator('#openSettings').wait_for(state='visible')
         page.locator('#homeView').wait_for(state='visible')
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2, 'metric pair reconciliation after rerender'
