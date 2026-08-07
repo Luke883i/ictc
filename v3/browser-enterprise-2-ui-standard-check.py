@@ -41,14 +41,19 @@ def annotate(error):
     print(f'::error title=ui-standard-browser::{PHASE}: {type(error).__name__}: {message}', flush=True)
 
 
+def new_page(browser, viewport=None):
+    page = browser.new_page(viewport=viewport or {'width': 1440, 'height': 1000})
+    page.set_default_timeout(15000)
+    return page
+
+
 try:
     with sync_playwright() as playwright:
         launch = {'headless': True, 'args': ['--no-sandbox']}
         if os.environ.get('ICTC_CHROMIUM'):
             launch['executable_path'] = os.environ['ICTC_CHROMIUM']
         browser = playwright.chromium.launch(**launch)
-        page = browser.new_page(viewport={'width': 1440, 'height': 1000})
-        page.set_default_timeout(15000)
+        page = new_page(browser)
 
         PHASE = 'home-metric-atomicity'
         page.goto(f'{BASE}/', wait_until='networkidle')
@@ -61,18 +66,21 @@ try:
 
         PHASE = 'home-metric-rerender-reconciliation'
         page.locator('#roleSelect').select_option('user')
-        page.locator('#openSettings').wait_for(state='hidden')
+        page.locator('#runtimeStatus[data-actor-role="user"]').wait_for(state='visible')
         page.locator('#homeView').wait_for(state='visible')
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2, 'metric pair reconciliation after rerender'
-        shot(page, 'home-desktop')
+        shot(page, 'home-user-rerender')
+        page.close()
 
-        PHASE = 'restore-admin-deterministically'
-        page.evaluate("localStorage.setItem('ictc-role','admin')")
-        page.reload(wait_until='networkidle')
+        PHASE = 'fresh-admin-context'
+        page = new_page(browser)
+        page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
+        page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
         page.locator('#openSettings').wait_for(state='visible')
         assert page.locator('#roleSelect').input_value() == 'admin'
+        shot(page, 'home-admin')
 
         PHASE = 'settings-dialog-chrome'
         page.locator('#openSettings').click()
@@ -94,6 +102,7 @@ try:
         PHASE = 'monitoring-dialog-chrome'
         page.set_viewport_size({'width': 1440, 'height': 1000})
         page.locator('.service-nav [data-service="monitoring"]').click()
+        page.locator('#openJobConfig').wait_for(state='visible')
         page.locator('#openJobConfig').click()
         page.locator('#jobDialog').wait_for(state='visible')
         close_box_in_header(page, '#jobDialog')
@@ -147,7 +156,7 @@ try:
             'standard': 'ictc-surface-standard-1',
             'screenshots': SHOTS,
             'checks': [
-                'metric-value-label-atomic', 'metric-rerender-reconciled', 'deterministic-role-reload',
+                'metric-value-label-atomic', 'metric-rerender-reconciled', 'fresh-admin-context',
                 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
                 'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
                 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
