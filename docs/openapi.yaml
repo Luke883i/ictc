@@ -107,3 +107,31 @@ paths:
           schema: {type: string}
       responses:
         '201': {description: Human review receipt}
+  /api/internal-sources/reference:
+    post:
+      summary: Register a governed reference to a version held by an external internal-document master
+      description: Records master system, master ID, master version and externally supplied SHA-256 as a catalog candidate. ICTC does not become the document authority and no AI is used during this intake.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, masterSystem, masterId, masterVersion, contentSha256, referenceUrl]
+              properties:
+                title: {type: string, maxLength: 1000}
+                documentType: {type: string}
+                authority: {type: string, maxLength: 500}
+                jurisdiction: {type: string, maxLength: 500}
+                identifier: {type: string, maxLength: 500}
+                publicSourceUrl: {type: string, format: uri}
+                masterSystem: {type: string, maxLength: 300}
+                masterId: {type: string, maxLength: 500}
+                masterVersion: {type: string, maxLength: 300}
+                contentSha256: {type: string, pattern: '^[0-9a-fA-F]{64}$'}
+                referenceUrl: {type: string, format: uri}
+                note: {type: string, maxLength: 3000}
+      responses:
+        '201': {description: Internal master reference registered as a catalog candidate with a state-bound receipt}
+        '403': {description: Role cannot contribute source material}
+        '409': {description: The same master-system/master-ID/version is already registered}
