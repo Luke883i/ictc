@@ -119,6 +119,7 @@ try:
         page.locator('#openAdminCenter').click()
         page.locator('#adminCenter').wait_for(state='visible')
         page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governo AI').click()
+        page.wait_for_timeout(360)
         visible_admin_panels = page.locator('#adminCenter .admin-grid > .admin-panel:visible').count()
         assert visible_admin_panels == 1, f'visible direct admin panels={visible_admin_panels}'
         classification = page.locator('#governanceForm select[name="classification"]')

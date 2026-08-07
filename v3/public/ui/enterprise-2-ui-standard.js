@@ -184,6 +184,11 @@ export function installEnterprise2UiStandard() {
       requestAnimationFrame(applyUiStandard);
       setTimeout(applyUiStandard, 160);
     }
+    if (event.target.closest('#openAdminCenter,#adminCenter .admin-section-nav [data-admin-target]')) {
+      // Enterprise 2 still has a bounded 250 ms legacy reconciliation pass.
+      // Re-apply the terminal standard once after that pass so owner-panel visibility remains canonical.
+      setTimeout(applyUiStandard, 320);
+    }
   }, true);
   applyUiStandard();
 }
