@@ -1,6 +1,7 @@
 import { enrichContribution } from '../ai.mjs';
 import { asString, id, normalizeUrl, now, uniqueStrings } from '../domain.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
+import { recordInternalSourceReference } from './internal-source-reference.mjs';
 import {
   catalogKey, ensureContributionOwner, findContribution, mergeCatalogObservation, normalizeCatalogItem
 } from './model.mjs';
@@ -43,6 +44,15 @@ export function createContributionHandler({ store, permissions }) {
 
   return async function handle(request, response, pathname, actor) {
     const method = request.method || 'GET';
+
+    if (method === 'POST' && pathname === '/api/internal-sources/reference') {
+      requirePermission(actor, 'contribute-source', permissions);
+      const input = await bodyJson(request);
+      const envelope = await recordInternalSourceReference(store, actor, input, commandFrom(request));
+      json(response, envelope.replayed ? 200 : 201, envelope);
+      return true;
+    }
+
     if (method === 'POST' && pathname === '/api/contributions') {
       requirePermission(actor, 'contribute-source', permissions);
       const input = await bodyJson(request);

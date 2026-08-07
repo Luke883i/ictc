@@ -16,6 +16,7 @@ import { installEnterprise2EditorialSystem } from './ui/enterprise-2-editorial.j
 import { installEnterprise2DesignSystem } from './ui/enterprise-2-design-system.js';
 import { installEnterprise2ComplianceFlow } from './ui/enterprise-2-compliance-flow.js';
 import { installEnterprise2UiStandard } from './ui/enterprise-2-ui-standard.js';
+import { installFi01Reference } from './ui/fi01-reference.js';
 
 installSurfaceRouter();
 installBindings();
@@ -32,4 +33,5 @@ installEnterprise2EditorialSystem();
 installEnterprise2DesignSystem();
 installEnterprise2ComplianceFlow();
 installEnterprise2UiStandard();
+installFi01Reference();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));
