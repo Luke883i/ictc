@@ -130,20 +130,34 @@ export class Store {
         const keys = Object.keys(draft.commandResults);
         if (keys.length > 500) for (const key of keys.slice(0, keys.length - 500)) delete draft.commandResults[key];
       }
-      this.state = draft;
-      await this.persist();
+      const persisted = await this.persist(draft);
+      this.state = persisted;
     });
     this.queue = operation.catch(() => {});
     await operation;
     return envelope;
   }
-  async persist() {
+  async persist(state = this.state) {
     await mkdir(this.root, { recursive: true, mode: 0o700 });
     const tmp = `${this.statePath}.${process.pid}.tmp`;
-    const handle = await open(tmp, 'w', 0o600);
-    try { await handle.writeFile(JSON.stringify(this.state, null, 2)); await handle.sync(); }
-    finally { await handle.close(); }
-    await rename(tmp, this.statePath);
+    const payload = JSON.stringify(state, null, 2);
+    try {
+      const handle = await open(tmp, 'w', 0o600);
+      try { await handle.writeFile(payload); await handle.sync(); }
+      finally { await handle.close(); }
+      await rename(tmp, this.statePath);
+    } catch (error) {
+      await unlink(tmp).catch(cleanupError => { if (cleanupError.code !== 'ENOENT') throw cleanupError; });
+      throw error;
+    }
+    const persistedText = await readFile(this.statePath, 'utf8');
+    if (persistedText !== payload) {
+      throw Object.assign(new Error('La rilettura dello stato persistito non coincide con la mutazione candidata'), {
+        status: 500, code: 'persist-readback-mismatch',
+        details: { expectedSha256: sha256(payload), actualSha256: sha256(persistedText) }
+      });
+    }
+    return mergeState(JSON.parse(persistedText));
   }
   async saveAttachments(files = []) {
     const candidates = [];
