@@ -123,7 +123,7 @@ try {
   assert.equal(store.snapshot().catalog.find(item => item.id === v2Response.result.body.result.id).state, 'candidate');
   record('FI01-06', 'A new master version becomes a new candidate without silently invalidating the previous human decision.');
 
-  const repoRoot = new URL('../', import.meta.url);
+  const repoRoot = new URL('./', import.meta.url);
   const [app, ui, contributions, openapi, product] = await Promise.all([
     readFile(new URL('public/app.js', repoRoot), 'utf8'),
     readFile(new URL('public/ui/fi01-reference.js', repoRoot), 'utf8'),
