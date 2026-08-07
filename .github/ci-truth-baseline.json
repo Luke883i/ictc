@@ -14,7 +14,6 @@
     {"id":"A04","severity":"high","remediation":"GOV-SUPPLY","reason":"CI action references are not pinned to immutable SHAs."},
     {"id":"A07","severity":"high","remediation":"W0-HARDENING","reason":"Retained as a bootstrap allowance if the current audit still reports the centralized CSP gap."},
     {"id":"A08","severity":"high","remediation":"W0-HARDENING","reason":"Application request-rate / abuse budgets remain open."},
-    {"id":"A09","severity":"high","remediation":"W0-AI-SCHEMA","reason":"AI output lacks strict runtime schema validation."},
     {"id":"A13","severity":"critical","remediation":"DR-CONTROL","reason":"Backup, restore, RTO and RPO remain external blockers."},
     {"id":"A14","severity":"high","remediation":"ACCESSIBILITY-EVIDENCE","reason":"Human assistive-technology evidence remains external."}
   ],

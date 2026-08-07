@@ -1,6 +1,7 @@
 import { asString, canonicalJson, now, redactEndpoint, sha256 } from './domain.mjs';
 import { fetchAiEndpoint } from './network-policy.mjs';
 import { assertAiBudget } from './enterprise.mjs';
+import { validateSchema } from './ai-output-schema.mjs';
 
 let stateProvider = null;
 export function configureAiGovernance(provider) { stateProvider = typeof provider === 'function' ? provider : null; }
@@ -71,7 +72,8 @@ export async function callJson(settings, purpose, systemPrompt, payload, options
   try { envelope = JSON.parse(responseText); }
   catch { throw Object.assign(new Error('Risposta del provider AI non valida'), { status: 502, code: 'ai-response-invalid' }); }
   const content = envelope.choices?.[0]?.message?.content ?? envelope.output_text ?? envelope.content;
-  const output = typeof content === 'object' ? content : parseJsonContent(content);
+  const parsedOutput = typeof content === 'object' ? content : parseJsonContent(content);
+  const output = validateSchema(purpose, parsedOutput);
   const usage = estimateUsage(envelope, prompt, inputJson, output, settings);
   return {
     output,
@@ -86,7 +88,7 @@ export async function callJson(settings, purpose, systemPrompt, payload, options
       outputSha256: sha256(output),
       providerRequestId: asString(response.headers.get('x-request-id') || envelope.id, 500),
       usage,
-      limitations: ['Output generato da AI e non verificato automaticamente.', 'Costi stimati quando il provider non restituisce usage.']
+      limitations: ['Output generato da AI e validato solo rispetto al contratto strutturale runtime; contenuto e conclusioni restano da verificare umanamente.', 'Costi stimati quando il provider non restituisce usage.']
     }
   };
 }
