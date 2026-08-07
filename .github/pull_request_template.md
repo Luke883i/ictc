@@ -14,11 +14,13 @@ What can a person understand, decide or complete after this change?
 - Non-goals:
 
 ## Validation
+- [ ] `npm run check`
+- [ ] `node v3/authority-contract-check.mjs`
+- [ ] `node v3/docs-command-contract-check.mjs`
 - [ ] `npm test`
-- [ ] `npm run visual` and visual attestation inspected
-- [ ] `npm run git:handshake`
-- [ ] `npm run release:manifest`
-- [ ] keyboard/reduced-motion path reviewed
+- [ ] `npm run release:check` when this PR is a release candidate
+- [ ] relevant browser/UI GitHub checks inspected on the exact PR HEAD when UI is affected
+- [ ] keyboard/reduced-motion path reviewed when UI is affected
 - [ ] no new visible control without wiring manifest entry
 - [ ] no AI path can mint human-reviewed, human-owned or verified state
 

@@ -1,0 +1,101 @@
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const root = path.dirname(here);
+const normativeFiles = [
+  'README.md',
+  'docs/DEVELOPMENT.md',
+  'docs/TESTING.md',
+  '.github/pull_request_template.md'
+];
+const launcherCommands = new Set(['start', 'stop', 'restart', 'status', 'logs', 'doctor', 'test', 'audit', 'help']);
+
+function isDocumentedCommand(text) {
+  return /^(npm\s+(?:ci|test|run\s+\S+)|\.\/ictc\.sh\s+\S+|node\s+v3\/\S+)/.test(text.trim());
+}
+
+function collectCommands(text) {
+  const commands = [];
+  let fenced = false;
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (/^```/.test(trimmed)) { fenced = !fenced; continue; }
+    if (fenced && isDocumentedCommand(trimmed)) commands.push(trimmed);
+    if (!fenced) {
+      for (const match of line.matchAll(/`([^`\n]+)`/g)) {
+        const candidate = match[1].trim();
+        if (isDocumentedCommand(candidate)) commands.push(candidate);
+      }
+    }
+  }
+  return [...new Set(commands)];
+}
+
+async function exists(rel) {
+  try { await stat(path.join(root, rel)); return true; }
+  catch { return false; }
+}
+
+function validateNpm(command, scripts) {
+  if (/^npm\s+ci$/.test(command)) return null;
+  if (/^npm\s+test$/.test(command)) return scripts.test ? null : 'npm test documented but package script test is missing';
+  const run = command.match(/^npm\s+run\s+([A-Za-z0-9:_-]+)$/);
+  if (!run) return `unsupported npm command shape: ${command}`;
+  return Object.hasOwn(scripts, run[1]) ? null : `documented npm script does not exist: ${run[1]}`;
+}
+
+function validateLauncher(command) {
+  const tokens = command.split(/\s+/);
+  const subcommand = tokens[1];
+  if (!launcherCommands.has(subcommand)) return `unsupported ictc.sh command: ${subcommand || 'missing'}`;
+  for (let i = 2; i < tokens.length; i += 1) {
+    const token = tokens[i];
+    if (token === '--no-open' && subcommand === 'start') continue;
+    if (token === '--profile') {
+      const profile = tokens[++i];
+      if (profile === 'current' || profile === 'v3') continue;
+      return `unsupported ictc.sh profile: ${profile || 'missing'}`;
+    }
+    return `unsupported ictc.sh option for ${subcommand}: ${token}`;
+  }
+  return null;
+}
+
+async function validateNode(command) {
+  const match = command.match(/^node\s+(v3\/[A-Za-z0-9_./-]+\.(?:mjs|js))(?:\s+(--self-test))?$/);
+  if (!match) return `unsupported node command shape: ${command}`;
+  if (match[2] && match[1] !== 'v3/governance-free-private-check.mjs') return `--self-test not contracted for ${match[1]}`;
+  return (await exists(match[1])) ? null : `documented node target does not exist: ${match[1]}`;
+}
+
+const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+const errors = [];
+const observations = [];
+for (const rel of normativeFiles) {
+  const text = await readFile(path.join(root, rel), 'utf8');
+  const commands = collectCommands(text);
+  observations.push({ file: rel, commands });
+  for (const command of commands) {
+    let error = null;
+    if (command.startsWith('npm ')) error = validateNpm(command, pkg.scripts || {});
+    else if (command.startsWith('./ictc.sh ')) error = validateLauncher(command);
+    else if (command.startsWith('node ')) error = await validateNode(command);
+    if (error) errors.push({ file: rel, command, error });
+  }
+}
+
+const result = {
+  schemaVersion: 1,
+  check: 'docs-command-contract',
+  ok: errors.length === 0,
+  normativeFiles,
+  observations,
+  errors,
+  boundary: 'Validates that normative npm/ictc.sh/node commands documented in selected operational surfaces exist and use supported shapes; it does not prove the behavioral correctness of those commands.'
+};
+await mkdir(path.join(root, 'artifacts'), { recursive: true });
+await writeFile(path.join(root, 'artifacts', 'docs-command-contract.json'), JSON.stringify(result, null, 2) + '\n');
+console.log(JSON.stringify(result, null, 2));
+if (!result.ok) process.exit(1);

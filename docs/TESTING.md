@@ -1,28 +1,29 @@
 # Strategia di test e audit
 
-## Comando unico
+## Comando completo
 
 ```bash
-./ictc.sh audit
+npm test
 ```
 
-Equivale a installazione deterministica, suite funzionale e tre audit separati.
+`npm test` concatena i tre livelli canonici `test:contract`, `test:runtime` e `test:enterprise-t`. `./ictc.sh audit` delega a `npm run audit`, che oggi delega allo stesso `npm test`.
 
-## Livelli
+## Comandi canonici
 
 | Livello | Scopo | Comando |
 |---|---|---|
-| Repository contract | File, script e superfici obbligatorie | `npm run contract` |
-| Schema | Contratti JSON Schema | `npm run schema:check` |
-| Linguaggio | Label anti-overclaim | `npm run labels:check` |
-| Epistemico | Invarianti degli envelope | `npm run epistemic:check` |
-| Wiring | Controlli UI collegati al runtime | `npm run wiring:check` |
-| Dominio | Regole e proiezioni | `npm run verify` |
-| E2E | API e percorsi principali su runtime isolato | `npm run e2e` |
-| Runtime audit | Scritture, readback, receipt, restart e security headers | `npm run audit:runtime` |
-| Accessibilità | Struttura, nomi, focus, motion, target e contrasto | `npm run audit:a11y` |
-| Documentazione | Link, comandi e runbook | `npm run audit:docs` |
-| Visuale | Render reale quando disponibile, fallback dichiarato | `npm run visual` |
+| Sintassi | Parsing dei moduli runtime/UI/check | `npm run check` |
+| Contratto | Contratti prodotto, journey, epistemica, security e assurance | `npm run test:contract` |
+| Runtime | Evidenza, replay, persistenza, journey E2E e runtime saturation | `npm run test:runtime` |
+| Enterprise T | Saturation, convergence, audit e falsification | `npm run test:enterprise-t` |
+| Suite completa | Contratto + runtime + Enterprise T | `npm test` |
+| Audit completo | Alias operativo della suite completa | `npm run audit` |
+| Release candidate | Gate locale di release attualmente equivalente alla suite completa | `npm run release:check` |
+| Authority | Coerenza tra authority matrix e runtime eseguibile | `node v3/authority-contract-check.mjs` |
+| Documentazione comandi | Ogni comando normativo documentato deve esistere | `node v3/docs-command-contract-check.mjs` |
+| GOV-01F self-test | Provenienza PR/main e direct-push detector | `node v3/governance-free-private-check.mjs --self-test` |
+
+Gli script specializzati presenti in `package.json` possono essere usati per regressioni mirate; la tabella sopra è la superficie normativa minima. Nessun documento deve prescrivere un nuovo script npm prima che lo script esista realmente in `package.json`.
 
 ## Journey critiche
 
@@ -49,9 +50,9 @@ Una UI non è considerata funzionante se:
 
 ## Browser e tecnologie assistive
 
-Il validator automatico non sostituisce test con screen reader. Prima di una release destinata a utenti reali eseguire almeno:
+I workflow `browser` e `browser-journeys` forniscono evidenza browser automatizzata sul commit osservato; non sostituiscono test umani con tecnologie assistive. Prima di una release destinata a utenti reali restano necessari, quando applicabili:
 
-- tastiera completa su Chromium, Firefox e Safari;
+- tastiera completa sui browser target;
 - VoiceOver su macOS/iOS;
 - NVDA su Windows;
 - zoom 200% e reflow a 320 CSS pixel;
