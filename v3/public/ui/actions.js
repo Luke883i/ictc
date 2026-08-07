@@ -167,7 +167,10 @@ export function installBindings() {
       const reason = $('#sourceDecisionReason')?.value.trim();
       if (!reason) return notify('Motiva la decisione sulla fonte', true);
       const result = await run(() => api(`/api/catalog/${state.activeSourceId}/decision`,{method:'POST',body:JSON.stringify({decision:decision.dataset.sourceDecision,reason})}), 'Decisione sulla fonte registrata');
-      if (result) renderSourceDialog();
+      if (result) {
+        renderSourceDialog();
+        document.dispatchEvent(new CustomEvent('ictc:surface-changed', { detail: { surface: 'source-dialog', reason: 'source-decision' } }));
+      }
       return;
     }
     const openIncident = event.target.closest('[data-open-incident]');
