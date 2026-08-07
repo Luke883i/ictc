@@ -17,6 +17,7 @@
 @import url('./enterprise-2-design-system-refinement.css');
 @import url('./enterprise-2-compliance-flow.css');
 @import url('./enterprise-2-compliance-configuration.css');
+@import url('./enterprise-2-ui-standard.css');
 
 /* Final fail-closed authority and document-flow guards. */
 [hidden]{display:none!important}

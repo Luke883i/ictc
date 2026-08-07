@@ -15,6 +15,7 @@ import { installEnterprise2ProcessArchitecture } from './ui/enterprise-2-process
 import { installEnterprise2EditorialSystem } from './ui/enterprise-2-editorial.js';
 import { installEnterprise2DesignSystem } from './ui/enterprise-2-design-system.js';
 import { installEnterprise2ComplianceFlow } from './ui/enterprise-2-compliance-flow.js';
+import { installEnterprise2UiStandard } from './ui/enterprise-2-ui-standard.js';
 
 installSurfaceRouter();
 installBindings();
@@ -30,4 +31,5 @@ installEnterprise2ProcessArchitecture();
 installEnterprise2EditorialSystem();
 installEnterprise2DesignSystem();
 installEnterprise2ComplianceFlow();
+installEnterprise2UiStandard();
 refresh({ keepDialog: false }).catch(error => notify(error.message, true));
