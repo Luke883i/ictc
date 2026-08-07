@@ -1,13 +1,19 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "controlId": "GOV-01F",
   "mode": "FREE_PRIVATE_COMPENSATING",
   "defaultBranch": "main",
   "serverSidePrevention": false,
-  "allowedBranchPrefixes": ["agent/", "feat/", "fix/", "docs/"],
+  "allowedBranchPrefixes": [
+    "agent/",
+    "feat/",
+    "fix/",
+    "docs/"
+  ],
   "requiredPreMergeChecks": [
     "governance-free-private",
     "authority-contract",
+    "docs-command-contract",
     "contract-and-audit",
     "runtime-e2e",
     "browser-journeys",
@@ -19,6 +25,7 @@
   "requiredPostMergeChecks": [
     "governance-free-private",
     "authority-contract",
+    "docs-command-contract",
     "contract-and-audit",
     "runtime-e2e",
     "browser-journeys",
@@ -26,7 +33,9 @@
     "dependency-audit",
     "evidence"
   ],
-  "excludedUntilAvailable": ["codeql"],
+  "excludedUntilAvailable": [
+    "codeql"
+  ],
   "limitations": [
     "GitHub Free on a private repository does not enforce branch protection or required status checks server-side.",
     "GOV-01F detects governance breaches and blocks AI-assisted promotion by convention; it cannot physically prevent an owner direct-push to main.",
