@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "id": "ictc-historical-contract-alignment-1",
   "parentStandard": "ictc-surface-standard-1",
   "evidenceParentHead": "5656a20348060692fa00e601215518a550e9bb78",
@@ -50,6 +50,11 @@
       "id": "HCA-06",
       "name": "same-head-evidence",
       "rule": "Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI must execute against the same PR head before the slice is considered mature."
+    },
+    {
+      "id": "HCA-07",
+      "name": "stable-post-toggle-observation",
+      "rule": "Single-open browser assertions must observe the stable state after the details toggle reconciliation closes the previous sibling; tests must use bounded condition waiting rather than instantaneous counts or arbitrary sleeps."
     }
   ],
   "observedFailures": [
@@ -66,6 +71,13 @@
       "class": "stale-progressive-disclosure-order",
       "observation": "browser-product-check opened provider after organization and then attempted to fill organizationName after single-open behavior had hidden that section.",
       "resolutionClass": "sequence-interactions-by-open-owner"
+    },
+    {
+      "runId": 31166235807,
+      "job": "browser-journeys",
+      "class": "single-open-toggle-observation-race",
+      "observation": "The revised journey asserted an instantaneous open-section count while the details toggle reconciliation was still closing the previous sibling.",
+      "resolutionClass": "condition-wait-for-stable-single-open"
     }
   ],
   "preventiveAlignments": [
@@ -82,6 +94,7 @@
     "The semantic-token historical check passes without changing the design-system CSS token declaration.",
     "The product browser journey completes settings configuration through the single-open progressive disclosure contract.",
     "The product browser journey completes job configuration by explicitly opening each required disclosure owner.",
+    "Single-open assertions wait for the stable post-toggle state using Playwright condition assertions rather than arbitrary sleeps.",
     "Source decision and event evidence assertions use canonical terminal labels.",
     "No production UI, API, permission, capability or backend authority code is changed by this alignment slice.",
     "Surface Standard assurance and its server-backed browser remain green on the final slice head.",

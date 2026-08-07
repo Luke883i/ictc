@@ -29,8 +29,8 @@ verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
   assert.equal(model.runtimeMutation, false);
-  assert.equal(model.invariants.length, 6);
-  assert.equal(model.observedFailures.length, 2);
+  assert.equal(model.invariants.length, 7);
+  assert.equal(model.observedFailures.length, 3);
   assert.equal(model.preventiveAlignments.length, 2);
   assert.match(model.claimBoundary, /does not establish/i);
 });
@@ -57,7 +57,6 @@ verify('progressive-settings-sequencing', () => {
     'settings.locator(\'input[name="apiKeyEnv"]\').fill',
     "settings.get_by_role('button', name='Salva configurazione AI').click()"
   ]);
-  assert.ok(browser.includes("assert settings.locator('[data-settings-section][open]').count() == 1"));
 });
 
 verify('progressive-job-sequencing', () => {
@@ -72,7 +71,16 @@ verify('progressive-job-sequencing', () => {
     'job.locator(\'input[name="sourceHints"]\').fill',
     "job.get_by_role('button', name='Genera piano').click()"
   ]);
-  assert.ok(browser.includes("assert job.locator(':scope > .job-config-group[open]').count() == 1"));
+});
+
+verify('stable-toggle-observation', () => {
+  assert.ok(browser.includes('from playwright.sync_api import expect, sync_playwright'));
+  assert.ok(browser.includes("expect(section).to_have_attribute('open', '')"));
+  assert.ok(browser.includes("expect(settings.locator('[data-settings-section][open]')).to_have_count(1)"));
+  assert.ok(browser.includes("expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)"));
+  assert.ok(!browser.includes("assert settings.locator('[data-settings-section][open]').count() == 1"));
+  assert.ok(!browser.includes("assert job.locator(':scope > .job-config-group[open]').count() == 1"));
+  assert.ok(!browser.includes('time.sleep('));
 });
 
 verify('canonical-terminal-vocabulary', () => {
