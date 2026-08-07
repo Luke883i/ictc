@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import traceback
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -22,7 +22,7 @@ def fail(error):
 def open_disclosure(section):
     if section.get_attribute('open') is None:
         section.locator(':scope > summary').click()
-    assert section.get_attribute('open') is not None
+    expect(section).to_have_attribute('open', '')
 
 
 try:
@@ -54,13 +54,13 @@ try:
         assert organization_section.count() == provider_section.count() == 1
 
         open_disclosure(organization_section)
-        assert settings.locator('[data-settings-section][open]').count() == 1
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
 
         open_disclosure(provider_section)
-        assert settings.locator('[data-settings-section][open]').count() == 1
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="endpoint"]').fill(f'{MOCK}/v1/chat/completions')
         settings.locator('input[name="model"]').fill('mock-browser')
         settings.locator('input[name="apiKeyEnv"]').fill('ICTC_LLM_API_KEY')
@@ -77,17 +77,17 @@ try:
         assert scope_section.count() == criteria_section.count() == schedule_section.count() == 1
 
         open_disclosure(scope_section)
-        assert job.locator(':scope > .job-config-group[open]').count() == 1
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="jobName"]').fill('Fonti ufficiali cybersecurity UE')
         job.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
         job.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
 
         open_disclosure(criteria_section)
-        assert job.locator(':scope > .job-config-group[open]').count() == 1
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="authorities"]').fill('EUR-Lex, ACN, Garante')
 
         open_disclosure(schedule_section)
-        assert job.locator(':scope > .job-config-group[open]').count() == 1
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
         job.get_by_role('button', name='Genera piano').click()
         page.locator('#jobDialog').wait_for(state='hidden')
@@ -143,9 +143,9 @@ try:
 
         checks = [
             'provider-configured-through-progressive-home-action',
-            'settings-single-open-sequenced',
+            'settings-single-open-stable-observation',
             'governed-job-created',
-            'job-progressive-groups-sequenced',
+            'job-progressive-groups-stable-observation',
             'job-name-and-objective-projected',
             'plan-approved',
             'job-executed',
