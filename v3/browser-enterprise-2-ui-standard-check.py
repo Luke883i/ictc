@@ -37,6 +37,8 @@ def close_box_in_header(page, dialog_selector):
 def annotate(error):
     payload = {'ok': False, 'phase': PHASE, 'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
     (ART / 'browser-enterprise-2-ui-standard-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
+    message = str(error).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+    print(f'::error title=ui-standard-browser::{PHASE}: {type(error).__name__}: {message}', flush=True)
 
 
 try:
