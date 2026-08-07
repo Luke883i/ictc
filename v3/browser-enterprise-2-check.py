@@ -164,12 +164,14 @@ try:
 
         PHASE = 'S08-admin-controls'
         page.locator('.admin-section-nav').get_by_role('button', name='EV-01 · Controlli applicativi').click()
+        page.wait_for_timeout(360)
         assert page.locator('#adminCenter .admin-panel:visible').count() == 1
         assert page.get_by_text('Controlli applicativi', exact=True).count() >= 1
         shot(page, 'S08', 'Amministrazione controlli')
 
         PHASE = 'S09-admin-ai'
         page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governo AI').click()
+        page.wait_for_timeout(360)
         assert page.get_by_text('Classificazione dei dati', exact=False).count() == 1
         classification = page.locator('#governanceForm select[name="classification"]')
         assert 'Uso interno' in classification.locator('option').all_inner_texts()
@@ -178,6 +180,7 @@ try:
         PHASE = 'S10-admin-local-users-mobile'
         page.set_viewport_size({'width': 390, 'height': 844})
         page.locator('.admin-section-nav').get_by_role('button', name='IA-01 · Identità locali').click()
+        page.wait_for_timeout(360)
         page.get_by_text('Aggiungi identità locale', exact=True).wait_for(state='visible')
         assert page.locator('#userForm').is_hidden()
         no_overflow(page, 'S10')

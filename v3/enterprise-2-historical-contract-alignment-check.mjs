@@ -131,6 +131,15 @@ verify('enterprise-2-semantic-process-copy', () => {
   assert.ok(!s04.includes("#monitoringView .core-title > .eyebrow').inner_text()"));
   assert.ok(!s05.includes("#incidentsView .core-title > .eyebrow').inner_text()"));
 });
+verify('enterprise-2-stable-admin-observation', () => {
+  const s08 = phase(enterprise2Browser, "PHASE = 'S08-admin-controls'", "PHASE = 'S09-admin-ai'");
+  const s09 = phase(enterprise2Browser, "PHASE = 'S09-admin-ai'", "PHASE = 'S10-admin-local-users-mobile'");
+  const s10 = phase(enterprise2Browser, "PHASE = 'S10-admin-local-users-mobile'", "PHASE = 'keyboard-escape-focus-return'");
+  for (const [name, block] of [['S08', s08], ['S09', s09], ['S10', s10]]) {
+    assert.ok(block.includes('wait_for_timeout(360)'), `${name} must observe after the documented 320ms terminal reconciliation`);
+  }
+  assert.ok(s08.includes("#adminCenter .admin-panel:visible').count() == 1"));
+});
 
 const report = {schemaVersion:model.schemaVersion, alignment:model.id, ok:true, verified, observedFailures:model.observedFailures, preventiveAlignments:model.preventiveAlignments, saturationImpact:model.saturationImpact, runtimeMutation:model.runtimeMutation, claimBoundary:model.claimBoundary};
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
