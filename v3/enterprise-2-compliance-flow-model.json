@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "2.0.0-candidate",
+  "id": "compliance-guided-1",
+  "claimBoundary": "The flow is contextual guidance over existing runtime state. It does not determine legal applicability, notification duties, certification, or organizational adequacy.",
+  "stages": [
+    {
+      "id": "frame",
+      "index": 1,
+      "label": "Inquadra",
+      "purpose": "Chiarire obiettivo, responsabilità e decisione attesa."
+    },
+    {
+      "id": "scope",
+      "index": 2,
+      "label": "Delimita",
+      "purpose": "Definire ambito, riferimenti, criteri e limiti."
+    },
+    {
+      "id": "collect",
+      "index": 3,
+      "label": "Raccogli",
+      "purpose": "Registrare fonti, fatti e originali."
+    },
+    {
+      "id": "assess",
+      "index": 4,
+      "label": "Valuta",
+      "purpose": "Separare fatti, ipotesi, lacune e proposte assistite."
+    },
+    {
+      "id": "decide",
+      "index": 5,
+      "label": "Decidi e attua",
+      "purpose": "Registrare decisione, motivazione, responsabilità e azione."
+    },
+    {
+      "id": "review",
+      "index": 6,
+      "label": "Riesamina",
+      "purpose": "Conservare evidenze, versioni, limiti e riesame."
+    }
+  ],
+  "configurationSteps": [
+    {
+      "id": "organization",
+      "label": "Contesto organizzativo",
+      "essential": true
+    },
+    {
+      "id": "provider",
+      "label": "Connessione AI",
+      "essential": true
+    },
+    {
+      "id": "policy",
+      "label": "Istruzioni assistite",
+      "essential": false
+    }
+  ],
+  "surfaces": [
+    "home",
+    "monitoring",
+    "incidents",
+    "proof",
+    "settings",
+    "admin-overview",
+    "admin-governance",
+    "identity-federated",
+    "identity-local",
+    "monitoring-config",
+    "source-detail",
+    "incident-workspace",
+    "contribution",
+    "incident-intake"
+  ],
+  "dimensions": {
+    "role": [
+      "admin",
+      "user",
+      "auditor"
+    ],
+    "surface": [
+      "home",
+      "monitoring",
+      "incidents",
+      "proof",
+      "settings",
+      "admin-overview",
+      "admin-governance",
+      "identity-federated",
+      "identity-local",
+      "monitoring-config",
+      "source-detail",
+      "incident-workspace",
+      "contribution",
+      "incident-intake"
+    ],
+    "dataState": [
+      "empty",
+      "single",
+      "mixed",
+      "dense",
+      "error"
+    ],
+    "aiState": [
+      "unconfigured",
+      "available",
+      "degraded"
+    ],
+    "viewport": [
+      "1440",
+      "900",
+      "390",
+      "320",
+      "zoom-200"
+    ],
+    "disclosure": [
+      "closed",
+      "current-open",
+      "secondary-open"
+    ],
+    "inputMode": [
+      "keyboard",
+      "pointer"
+    ],
+    "network": [
+      "online",
+      "slow",
+      "offline"
+    ],
+    "authority": [
+      "allowed",
+      "read-only"
+    ],
+    "language": [
+      "plain-it",
+      "technical-it",
+      "mixed-external"
+    ]
+  },
+  "lexicon": [
+    {
+      "canonical": "Contesto organizzativo",
+      "avoid": [
+        "Organizzazione e perimetro",
+        "Scope"
+      ],
+      "reason": "Indica cosa configurare senza gergo tecnico."
+    },
+    {
+      "canonical": "Connessione AI",
+      "avoid": [
+        "Provider AI",
+        "Connessione al provider"
+      ],
+      "reason": "Rende evidente l’oggetto senza attribuire autorità al modello."
+    },
+    {
+      "canonical": "Istruzioni assistite",
+      "avoid": [
+        "Policy globali e prompt tecnici"
+      ],
+      "reason": "Distingue istruzioni applicative da policy organizzative formali."
+    },
+    {
+      "canonical": "Ambito operativo",
+      "avoid": [
+        "Perimetro",
+        "Scope"
+      ],
+      "reason": "Termine leggibile e circoscritto."
+    },
+    {
+      "canonical": "Ambiti territoriali",
+      "avoid": [
+        "Giurisdizioni"
+      ],
+      "reason": "La UI raccoglie territori; non decide la giurisdizione applicabile."
+    },
+    {
+      "canonical": "Indirizzo del servizio",
+      "avoid": [
+        "Endpoint"
+      ],
+      "reason": "Etichetta primaria leggibile; il dettaglio tecnico resta nel suggerimento."
+    },
+    {
+      "canonical": "Modello autorizzato",
+      "avoid": [
+        "Modello"
+      ],
+      "reason": "Esplicita che la scelta deriva da governo umano."
+    },
+    {
+      "canonical": "Nome della variabile segreta",
+      "avoid": [
+        "API key env"
+      ],
+      "reason": "Chiarisce che il segreto non è inserito nella UI."
+    },
+    {
+      "canonical": "Variabilità della risposta",
+      "avoid": [
+        "Temperatura"
+      ],
+      "reason": "Descrive l’effetto; il termine tecnico può restare nella documentazione."
+    },
+    {
+      "canonical": "Salva governo AI",
+      "avoid": [
+        "Salva governance"
+      ],
+      "reason": "Italiano coerente con il catalogo GA-01."
+    },
+    {
+      "canonical": "Regole di accesso",
+      "avoid": [
+        "Policy identità"
+      ],
+      "reason": "Descrive l’oggetto configurato senza sovrapporlo a una policy formale."
+    },
+    {
+      "canonical": "Fase consigliata",
+      "avoid": [
+        "Stato di conformità",
+        "Compliance score"
+      ],
+      "reason": "Evita di trasformare una guida in una valutazione sostanziale."
+    }
+  ],
+  "definitionOfDone": [
+    "The six-stage flow is rendered as guidance and never as an automatic legal conclusion.",
+    "Only one recommended stage is prominent on each operational surface.",
+    "The complete six-stage path is available through progressive disclosure.",
+    "Settings show exactly three configuration steps and at most one open step.",
+    "Context and connection are presented before optional assisted instructions.",
+    "Required settings fields are visually distinguished without relying on colour alone.",
+    "Long prompt fields are collapsed behind the optional third step.",
+    "Governance configuration separates service context from limits and models.",
+    "Local identity creation is collapsed by default.",
+    "Monitoring configuration is split into objective, criteria, and scheduling groups with one group open at a time.",
+    "Existing form names, API endpoints and submit handlers are preserved.",
+    "The terminal module performs no fetch and grants no capability.",
+    "The settings dialog reflows without horizontal overflow at 320 and 390 CSS pixels.",
+    "The interface remains usable at 200 percent zoom.",
+    "Focus order follows visual order after DOM regrouping.",
+    "Every disclosure has a programmatic summary and visible focus.",
+    "Reduced-motion and forced-colour preferences are respected.",
+    "Primary labels avoid unscoped certification, verification and readiness claims.",
+    "The browser fixture covers admin, user and auditor projections.",
+    "Saturation reaches M and the following 100 scenarios add no novelty.",
+    "No new contradiction is detected in the M+100 confirmation tail.",
+    "The PR remains draft until the server-backed CI journey passes on the same head."
+  ],
+  "standards": [
+    "WCAG 2.2 — 1.3.1, 1.4.10, 2.4.3, 2.4.6, 2.5.8, 3.2.4, 3.3.2",
+    "WAI-ARIA Authoring Practices — Accordion and Dialog patterns",
+    "HTML Living Standard — details/summary, dialog and form semantics",
+    "GOV.UK Design System — progressive disclosure and question-page form guidance"
+  ]
+}

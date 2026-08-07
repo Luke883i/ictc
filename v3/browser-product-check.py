@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import traceback
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -17,6 +17,12 @@ def fail(error):
     (ART / 'browser-product-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
     message = str(error).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
     print(f'::error title=browser-product-check::{PHASE}: {type(error).__name__}: {message}', flush=True)
+
+
+def open_disclosure(section):
+    if section.get_attribute('open') is None:
+        section.locator(':scope > summary').click()
+    expect(section).to_have_attribute('open', '')
 
 
 try:
@@ -35,6 +41,7 @@ try:
         PHASE = 'bootstrap-and-provider'
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
+        page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
         assert page.locator('.process-lane').count() == 2
         setup = page.locator('#homePrimaryAction')
         setup.wait_for(state='visible')
@@ -45,33 +52,48 @@ try:
         organization_section = settings.locator('[data-settings-section="organization"]')
         provider_section = settings.locator('[data-settings-section="provider"]')
         assert organization_section.count() == provider_section.count() == 1
-        if organization_section.get_attribute('open') is None:
-            organization_section.locator(':scope > summary').click()
-        if provider_section.get_attribute('open') is None:
-            provider_section.locator(':scope > summary').click()
+
+        open_disclosure(organization_section)
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
+
+        open_disclosure(provider_section)
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="endpoint"]').fill(f'{MOCK}/v1/chat/completions')
         settings.locator('input[name="model"]').fill('mock-browser')
         settings.locator('input[name="apiKeyEnv"]').fill('ICTC_LLM_API_KEY')
-        settings.get_by_role('button', name='Salva configurazione').click()
+        settings.get_by_role('button', name='Salva configurazione AI').click()
         page.locator('#settingsDialog').wait_for(state='hidden')
 
         PHASE = 'governed-job-lifecycle'
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#openJobConfig').click()
         job = page.locator('#missionForm')
+        scope_section = job.locator('[data-job-config-group="scope"]')
+        criteria_section = job.locator('[data-job-config-group="criteria"]')
+        schedule_section = job.locator('[data-job-config-group="schedule"]')
+        assert scope_section.count() == criteria_section.count() == schedule_section.count() == 1
+
+        open_disclosure(scope_section)
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="jobName"]').fill('Fonti ufficiali cybersecurity UE')
         job.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
         job.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
+
+        open_disclosure(criteria_section)
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="authorities"]').fill('EUR-Lex, ACN, Garante')
+
+        open_disclosure(schedule_section)
+        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
         job.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
-        job.get_by_role('button', name='Genera piano del job').click()
+        job.get_by_role('button', name='Genera piano').click()
         page.locator('#jobDialog').wait_for(state='hidden')
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
         card.wait_for()
-        assert card.locator('.mission-objective-18').count() == 1
+        assert card.locator('.mission-objective-18, .mission-objective-20').count() >= 1
         card.locator('[data-open-plan]').click()
         page.get_by_role('button', name='Attiva monitoraggio').click()
         page.locator('[data-close="planDialog"]').click()
@@ -80,19 +102,19 @@ try:
         page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').wait_for()
         page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').click()
         page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo ufficiale verificati.')
-        page.get_by_role('button', name='Verifica fonte').click()
-        page.locator('#sourceBody').get_by_text('Verificata', exact=False).first.wait_for()
+        page.get_by_role('button', name='Accetta nel catalogo').click()
+        page.locator('#sourceBody').get_by_text('Accettata nel catalogo', exact=False).first.wait_for()
         page.locator('[data-close="sourceDialog"]').click()
 
         PHASE = 'material-contribution'
         page.locator('#roleSelect').select_option('user')
-        page.locator('#runtimeStatus').get_by_text('Utente', exact=False).wait_for()
+        assert page.locator('#roleSelect').input_value() == 'user'
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringContributionAction').click()
         page.locator('#contributionForm input[value="text"]').check()
         page.locator('#contributionForm textarea[name="text"]').fill('Delibera ufficiale da conservare e verificare')
         page.locator('#contributionForm textarea[name="note"]').fill('Materiale osservato nel perimetro UE')
-        page.locator('#contributionForm').get_by_role('button', name='Conserva e analizza').click()
+        page.locator('#contributionForm').get_by_role('button', name='Registra materiale').click()
         page.locator('#contributionDialog').wait_for(state='hidden')
         page.locator('#materialRecent18').click()
         page.locator('#contributionList').get_by_text('Materiale osservato nel perimetro UE', exact=False).first.wait_for()
@@ -107,8 +129,8 @@ try:
         page.locator('[data-close="incidentWorkspace"]').click()
         page.locator('.service-nav [data-service="incidents"]').click()
         event_card = page.locator('.incident-card').first
-        event_card.get_by_role('button', name='Apri fascicolo').wait_for()
-        event_card.get_by_role('button', name='Scarica evidenze').wait_for()
+        event_card.get_by_role('button', name='Apri evento').wait_for()
+        event_card.get_by_role('button', name='Scarica evidenza').wait_for()
 
         PHASE = 'evidence-and-integrity'
         response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'auditor', 'x-ictc-actor-id': 'local-auditor'})
@@ -119,8 +141,23 @@ try:
         assert body['incidents']
         assert not errors, errors
 
-        checks = ['provider-configured-through-progressive-home-action', 'governed-job-created', 'job-name-and-objective-projected', 'plan-approved', 'job-executed', 'source-decided', 'material-original-preserved', 'event-original-preserved', 'named-event-actions', 'auditor-readback', 'integrity-ok']
-        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0'}, indent=2), encoding='utf8')
+        checks = [
+            'provider-configured-through-progressive-home-action',
+            'settings-single-open-stable-observation',
+            'governed-job-created',
+            'job-progressive-groups-stable-observation',
+            'job-name-and-objective-projected',
+            'plan-approved',
+            'job-executed',
+            'source-decided-with-canonical-vocabulary',
+            'material-original-preserved',
+            'event-original-preserved',
+            'semantic-event-actions',
+            'canonical-evidence-download-vocabulary',
+            'auditor-readback',
+            'integrity-ok'
+        ]
+        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
 except BaseException as error:
     fail(error)

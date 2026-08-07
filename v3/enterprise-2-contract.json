@@ -1,0 +1,198 @@
+{
+  "schemaVersion": "2.0.0-candidate",
+  "name": "ICTC Enterprise Candidate UI/UX and Certification-Evidence Contract",
+  "claimBoundary": "This package is executable product evidence for an enterprise candidate. It does not itself constitute ISO certification, legal conformity, accessibility certification, ministry approval, or endorsement by Garante or ACN.",
+  "model": "task-first surfaces; plain-language labels; capability-driven actions; evidence and technical detail disclosed on demand",
+  "imageEvidence": [
+    {
+      "id": "S01-home-auditor-summary",
+      "file": "image(20260806-122338).png",
+      "surface": "home",
+      "role": "auditor",
+      "observations": ["oversized title", "duplicate orientation copy", "process cards consume a full viewport", "next action is partially below the fold", "job and fascicolo appear before plain-language concepts"],
+      "requiredFixes": ["bounded heading", "compact process lanes", "plain-language counters", "next action visible in first viewport", "details closed by default"]
+    },
+    {
+      "id": "S02-home-auditor-method",
+      "file": "image(20260806-122348).png",
+      "surface": "home-detail",
+      "role": "auditor",
+      "observations": ["single disclosure expands into unrelated topics", "very low information density", "labels and explanations form an unstable two-column matrix", "method and evidence compete visually", "automatic expansion overloads read-only users"],
+      "requiredFixes": ["split method from proof", "two-stage progressive disclosure", "compact definition grid", "preserve user-controlled open state"]
+    },
+    {
+      "id": "S03-home-auditor-authority",
+      "file": "image(20260806-122353).png",
+      "surface": "home-authority",
+      "role": "auditor",
+      "observations": ["status tiles and authority table are disconnected", "raw identity string dominates", "large empty horizontal fields", "read-only constraints are repeated in several places"],
+      "requiredFixes": ["authority nested under proof", "compact identity presentation", "deduplicate read-only copy", "wrap long evidence identifiers"]
+    },
+    {
+      "id": "S04-monitoring-user",
+      "file": "image(20260806-122400).png",
+      "surface": "monitoring",
+      "role": "user",
+      "observations": ["job, novelty and baseline are internal terms", "primary title does not match the user task", "single record card is much taller than its information", "failure is repeated as badge and sentence", "evidence action is detached from record meaning"],
+      "requiredFixes": ["Ricerche normative title", "Ricerche disponibili heading", "compact record row", "one status statement", "open detail and download proof actions"]
+    },
+    {
+      "id": "S05-events-user-empty",
+      "file": "image(20260806-122407).png",
+      "surface": "incidents",
+      "role": "user",
+      "observations": ["complete implies work that may not exist", "fascicolo is introduced before evento", "empty state consumes excessive height", "counter is visually detached", "secondary method action competes with the primary action"],
+      "requiredFixes": ["Eventi e incidenti title", "Eventi registrati heading", "actionable compact empty state", "counter aligned with section heading", "primary action first"]
+    },
+    {
+      "id": "S06-guide-proof",
+      "file": "image(20260806-122413).png",
+      "surface": "proof",
+      "role": "user",
+      "observations": ["hero title is clipped by navigation", "marketing-style title hides the task", "mixed metrics have no common scale", "release and runtime posture compete with guidance", "large panels delay the useful content"],
+      "requiredFixes": ["Guida operativa e prove title", "smaller bounded hero", "explicit metric labels", "details on request", "first useful content above fold"]
+    },
+    {
+      "id": "S07-admin-overview",
+      "file": "image(20260806-122418).png",
+      "surface": "administration-overview",
+      "role": "admin",
+      "observations": ["two-column accordion creates empty quadrants", "overview and operational controls are mixed", "open labels do not identify destinations", "dialog behaves as a long page without section navigation"],
+      "requiredFixes": ["section navigation", "one active work surface", "short administration header", "state preserved between sections"]
+    },
+    {
+      "id": "S08-admin-controls",
+      "file": "image(20260806-122423).png",
+      "surface": "administration-controls",
+      "role": "admin",
+      "observations": ["status text is clipped", "raw digest is unbounded", "control list has no filtering or grouping", "large empty right column persists", "verified and blocking states rely heavily on color"],
+      "requiredFixes": ["single-column control surface", "wrap identifiers", "textual state labels", "bounded rows", "section navigation"]
+    },
+    {
+      "id": "S09-admin-ai",
+      "file": "image(20260806-122430).png",
+      "surface": "administration-ai",
+      "role": "admin",
+      "observations": ["empty usage panel occupies half the workspace", "Ambiente and Classificazione are ambiguous", "classification values are English", "save action is distant from section context"],
+      "requiredFixes": ["one active AI section", "plain field labels", "localized option labels", "sticky or local save action", "compact empty usage state"]
+    },
+    {
+      "id": "S10-admin-users-mobile",
+      "file": "image(20260806-122435).png",
+      "surface": "administration-users",
+      "role": "admin",
+      "observations": ["create form precedes the current directory", "local and federated authority are not visually separated", "form consumes nearly the whole viewport", "no progressive disclosure for infrequent creation"],
+      "requiredFixes": ["directory before create form", "local identity label", "collapsed add-identity form", "separate federated access section"]
+    },
+    {
+      "id": "S11-events-user-repeat",
+      "file": "image(20260806-122443).png",
+      "surface": "incidents",
+      "role": "user",
+      "observations": ["same hierarchy failure persists at another viewport", "empty-state height is invariantly excessive", "primary action width is disproportionate", "fascicolo remains the primary abstraction"],
+      "requiredFixes": ["same fixes as S05 across viewport classes", "mobile and desktop invariant checks"]
+    }
+  ],
+  "globalInvariants": [
+    {"id": "I01", "name": "one-primary-intent", "statement": "Every operational surface exposes one primary intent in the first viewport."},
+    {"id": "I02", "name": "plain-language-first", "statement": "Primary titles and actions use common Italian; internal terms are deferred to detail."},
+    {"id": "I03", "name": "capability-truth", "statement": "Visible actions correspond to server-issued capabilities and read-only roles expose zero write controls."},
+    {"id": "I04", "name": "state-action-effect", "statement": "Every record exposes current state, next available action and expected effect without duplicate status copy."},
+    {"id": "I05", "name": "bounded-first-viewport", "statement": "Orientation, current state and primary action fit within a bounded first viewport at supported desktop sizes."},
+    {"id": "I06", "name": "progressive-disclosure", "statement": "Method, proof, technical configuration and historical detail are separated and disclosed independently."},
+    {"id": "I07", "name": "information-density", "statement": "Empty states and low-cardinality lists do not reserve dashboard-sized space."},
+    {"id": "I08", "name": "standard-action-placement", "statement": "Primary actions are placed before secondary explanation and remain adjacent to their object."},
+    {"id": "I09", "name": "evidence-boundary", "statement": "Proof, audit trail and AI traces are represented as evidence of recorded operations, not truth or certification."},
+    {"id": "I10", "name": "responsive-and-zoom", "statement": "The UI remains operable at 320px, 390px, landscape mobile and 200 percent zoom without horizontal loss."},
+    {"id": "I11", "name": "keyboard-and-focus", "statement": "Navigation, dialogs and disclosures support logical keyboard order, Escape close and focus restoration."},
+    {"id": "I12", "name": "audience-composition", "statement": "Consultants, auditors, certifiers and public authorities can find system text, evidence composition, limits and standard mappings without exposing operational writes."},
+    {"id": "I13", "name": "human-authority", "statement": "AI assistance is visibly subordinate to human approval, verification, submission and closure."},
+    {"id": "I14", "name": "identity-separation", "statement": "Federated access policy and local identity lifecycle are represented as distinct administrative concepts."},
+    {"id": "I15", "name": "minimal-certification-view", "statement": "A certification reviewer can traverse summary, control, evidence, limitation and machine-readable artifact with no decorative duplication."}
+  ],
+  "journeys": [
+    {"id": "J01", "role": "admin", "process": "regulatory-research", "steps": ["orient", "create-research", "review-plan", "activate", "run", "verify-source", "export-proof"]},
+    {"id": "J02", "role": "user", "process": "regulatory-contribution", "steps": ["orient", "open-research", "add-original-material", "confirm-recording", "track-status", "download-proof"]},
+    {"id": "J03", "role": "auditor", "process": "regulatory-audit", "steps": ["orient", "open-research", "inspect-plan-and-runs", "inspect-source-decisions", "inspect-ai-trace", "export-proof"]},
+    {"id": "J04", "role": "user", "process": "event-reporting", "steps": ["orient", "register-event", "preserve-original", "answer-missing-information", "review-version", "submit", "download-proof"]},
+    {"id": "J05", "role": "admin", "process": "event-governance", "steps": ["open-register", "inspect-original-and-versions", "review-submission", "close-with-reason", "export-proof"]},
+    {"id": "J06", "role": "admin", "process": "enterprise-administration", "steps": ["open-administration", "select-section", "inspect-current-state", "change-configuration", "test-policy", "save", "inspect-receipt"]},
+    {"id": "J07", "role": "certifier", "process": "certification-review", "steps": ["read-claim-boundary", "inspect-controls", "inspect-evidence-chain", "inspect-standard-mappings", "inspect-open-gaps", "download-machine-evidence"]},
+    {"id": "J08", "role": "public-authority", "process": "regulatory-inspection", "steps": ["identify-scope", "locate-original-text", "trace-human-decisions", "trace-version-history", "inspect-limitations", "export-protected-evidence"]}
+  ],
+  "T": [
+    {"name": "surface", "values": ["home", "monitoring", "events", "proof", "admin-controls", "admin-ai", "admin-identity", "dialogs"]},
+    {"name": "role", "values": ["admin", "user", "auditor"]},
+    {"name": "audience", "values": ["employee", "enterprise-consultant", "internal-auditor", "iso-certifier", "ministry-or-regulator", "garante-or-acn"]},
+    {"name": "intent", "values": ["orient", "create", "review", "decide", "trace", "export"]},
+    {"name": "recordState", "values": ["empty", "draft", "active", "attention", "review", "submitted", "closed", "failed"]},
+    {"name": "dataVolume", "values": ["zero", "one", "ten", "hundred", "long-history"]},
+    {"name": "viewport", "values": ["320x568", "390x844", "768x1024", "1280x720", "1440x1000", "1920x1080", "mobile-landscape"]},
+    {"name": "zoom", "values": ["100", "125", "200", "400"]},
+    {"name": "textExpansion", "values": ["short", "normal", "long-italian", "unbroken-identifier", "translated-30-percent"]},
+    {"name": "inputMode", "values": ["mouse", "keyboard", "touch", "screen-reader"]},
+    {"name": "assistivePreference", "values": ["default", "reduced-motion", "forced-colors", "large-text", "high-contrast"]},
+    {"name": "aiState", "values": ["ready", "not-configured", "key-missing", "provider-failed"]},
+    {"name": "identityMode", "values": ["local", "legacy-trusted-header", "shibboleth", "unmapped"]},
+    {"name": "networkState", "values": ["normal", "slow", "offline", "revision-conflict"]},
+    {"name": "disclosureDepth", "values": ["summary", "method", "proof", "technical"]},
+    {"name": "evidenceState", "values": ["none", "receipt", "version-chain", "integrity-warning", "deployment-gap"]},
+    {"name": "documentComposition", "values": ["executive-summary", "operational-record", "standard-mapping", "claim-boundary", "machine-readable-proof"]},
+    {"name": "terminology", "values": ["plain-language", "domain-term", "legal-reference", "standard-reference", "state-action-effect"]},
+    {"name": "cognitiveLoad", "values": ["single-task", "interrupted", "novice", "expert", "time-pressure"]},
+    {"name": "sensitivity", "values": ["internal", "confidential", "restricted", "mixed"]}
+  ],
+  "visualBudgets": {
+    "desktopFirstViewportHeightPx": 760,
+    "operationalHeroMaxPx": 260,
+    "emptyStateMaxPx": 120,
+    "minimumTargetPx": 44,
+    "minimumBodyTextRem": 0.75,
+    "maximumPrimaryActionsPerSurface": 1,
+    "maximumExpandedTopLevelDisclosures": 1,
+    "unlabeledInteractiveControls": 0,
+    "horizontalOverflowPx": 1
+  },
+  "certificationProofDimensions": [
+    "scope-and-claim-boundary",
+    "capability-and-role-enforcement",
+    "identity-and-access",
+    "human-authority-over-ai",
+    "record-provenance",
+    "version-and-receipt-chain",
+    "runtime-controls",
+    "deployment-gaps",
+    "semantic-labels",
+    "progressive-disclosure",
+    "responsive-layout",
+    "keyboard-and-focus",
+    "forced-colors-and-reduced-motion",
+    "consultant-and-certifier-reading",
+    "public-authority-inspection",
+    "machine-readable-artifacts"
+  ],
+  "definitionOfDone": [
+    "All 11 supplied image surfaces are mapped to code, backend capability and a verified UI change.",
+    "The terminal UI module is installed after the 1.8 compatibility layers and is reversible as one slice.",
+    "Primary labels contain no unexplained job, novelty or baseline terminology.",
+    "Home separates method from proof and does not auto-expand either group for auditors.",
+    "Monitoring and event records expose object, state, next action and proof in a compact row.",
+    "Administration uses a section navigator and renders one active work surface at a time.",
+    "Federated access and local identity lifecycle are separate administration sections.",
+    "Proof view uses an operational title, explicit metric labels and a visible claim boundary.",
+    "All visible write controls are derived from server-issued capabilities.",
+    "Auditor browser journeys find zero write controls in operational and administration surfaces.",
+    "Eleven deterministic screenshots are produced by the browser assurance journey.",
+    "Desktop, 320px, 390px, mobile landscape and 200 percent zoom show no material horizontal overflow.",
+    "Keyboard tests cover navigation, disclosure, dialog open, Escape close and focus return.",
+    "Long Italian copy and unbroken identifiers do not clip status or evidence content.",
+    "Reduced motion and forced colors retain state and focus information.",
+    "Saturation executes the declared T dimensions, reaches M and confirms no new risk primitive at M+100.",
+    "Compression supplies one distinguishing witness for every retained global invariant.",
+    "Certification proof artifacts are generated for every certificationProofDimension.",
+    "The proof package states that external certification and authority approval remain external activities.",
+    "Existing 1.4, 1.6, 1.7, 1.8, identity, runtime and security contracts remain green.",
+    "No backend endpoint, permission or evidence claim is invented by the UI slice.",
+    "The branch remains separate from main and is identified as a pre-PR candidate until all remote gates are green."
+  ]
+}

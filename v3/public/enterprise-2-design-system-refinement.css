@@ -1,0 +1,13 @@
+/* Visual refinement after rendered-surface review: preserve readable grouping and keep all services discoverable. */
+html[data-design-system="ictc-aurora-1"] .home-disclosure>summary>span:not(.ds-disclosure-mark){display:grid;gap:2px;min-width:0}
+html[data-design-system="ictc-aurora-1"] .home-disclosure>summary>span:not(.ds-disclosure-mark)>small{display:block;color:var(--ds-muted);line-height:1.35}
+html[data-design-system="ictc-aurora-1"] .proof-standard>summary>span:not(.ds-disclosure-mark){display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;column-gap:7px;min-width:0}
+html[data-design-system="ictc-aurora-1"] .proof-standard>summary>span:not(.ds-disclosure-mark)>small{color:var(--ds-muted)}
+html[data-design-system="ictc-aurora-1"] .home-recommendation{align-items:center}
+html[data-design-system="ictc-aurora-1"] .home-recommendation>button{align-self:center;justify-self:end;height:auto;min-height:44px}
+@media(max-width:420px){
+  html[data-design-system="ictc-aurora-1"] .service-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:4px;padding-block:6px}
+  html[data-design-system="ictc-aurora-1"] .service-nav button{width:100%;min-width:0;min-height:44px;white-space:normal;line-height:1.2;text-align:center}
+  html[data-design-system="ictc-aurora-1"] .home-recommendation{grid-template-columns:1fr}
+  html[data-design-system="ictc-aurora-1"] .home-recommendation>button{justify-self:stretch;width:100%}
+}

@@ -11,7 +11,14 @@
 @import url('./enterprise-1-8.css');
 @import url('./settings-1-8-fix.css');
 @import url('./labels-1-8-fix.css');
+@import url('./enterprise-2.css');
+@import url('./enterprise-2-editorial.css');
+@import url('./enterprise-2-design-system.css');
+@import url('./enterprise-2-design-system-refinement.css');
+@import url('./enterprise-2-compliance-flow.css');
+@import url('./enterprise-2-compliance-configuration.css');
+@import url('./enterprise-2-ui-standard.css');
+@import url('./enterprise-2-ui-standard-runtime-refinement.css');
 
-/* Final fail-closed authority and document-flow guards. */
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3)}
