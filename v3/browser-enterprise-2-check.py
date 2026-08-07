@@ -181,7 +181,14 @@ try:
         page.set_viewport_size({'width': 390, 'height': 844})
         page.locator('.admin-section-nav').get_by_role('button', name='IA-01 · Identità locali').click()
         page.wait_for_timeout(360)
-        page.get_by_text('Aggiungi identità locale', exact=True).wait_for(state='visible')
+        local_panel = page.locator('#adminCenter .admin-grid > .admin-panel[data-enterprise2-local-users]:visible')
+        assert local_panel.count() == 1, f'visible local identity owner panels={local_panel.count()}'
+        disclosure = local_panel.locator('.local-user-disclosure')
+        assert disclosure.count() == 1, f'local identity disclosures={disclosure.count()}'
+        summary = disclosure.locator(':scope > summary')
+        summary.wait_for(state='visible')
+        assert summary.locator('b').text_content().strip() == 'Aggiungi identità locale'
+        assert disclosure.get_attribute('open') is None, 'local identity creation disclosure should remain closed by default'
         assert page.locator('#userForm').is_hidden()
         no_overflow(page, 'S10')
         assert_targets(page, ['.admin-section-nav button[aria-current="page"]', '[data-admin-close]'])
