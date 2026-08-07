@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "controlId": "GOV-01F",
   "mode": "FREE_PRIVATE_COMPENSATING",
   "defaultBranch": "main",
@@ -16,6 +16,7 @@
     "docs-command-contract",
     "contract-and-audit",
     "store-durability",
+    "integrity-binding",
     "ci-truth",
     "runtime-e2e",
     "browser-journeys",
@@ -30,6 +31,7 @@
     "docs-command-contract",
     "contract-and-audit",
     "store-durability",
+    "integrity-binding",
     "ci-truth",
     "runtime-e2e",
     "browser-journeys",
