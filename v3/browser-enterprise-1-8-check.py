@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import traceback
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -24,6 +24,12 @@ def contains(locator, value):
     assert value.casefold() in observed, f'expected {value!r} in {observed!r}'
 
 
+def open_disclosure(section):
+    if section.get_attribute('open') is None:
+        section.locator(':scope > summary').click()
+    expect(section).to_have_attribute('open', '')
+
+
 try:
     with sync_playwright() as playwright:
         launch = {'headless': True, 'args': ['--no-sandbox']}
@@ -41,12 +47,12 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
         page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
-        assert page.title() == 'ICTC 1.8 · Enterprise Workbench'
+        assert page.title() == 'ICTC · Attività, evidenze e controlli'
         labels = [value.strip() for value in page.locator('.service-nav button').all_inner_texts()]
-        assert labels == ['Panoramica', 'Ricerca normativa', 'Eventi e incidenti', 'Guida e prove'], labels
+        assert labels == ['Panoramica', 'Monitoraggio normativo', 'Eventi e segnalazioni', 'Evidenze e controlli'], labels
         assert page.locator('.process-lane').count() == 2
-        contains(page.locator('[data-lane="monitoring"]'), 'Ricerca normativa')
-        contains(page.locator('[data-lane="incidents"]'), 'Eventi e incidenti')
+        contains(page.locator('[data-lane="monitoring"]'), 'Monitoraggio normativo')
+        contains(page.locator('[data-lane="incidents"]'), 'Eventi e segnalazioni')
         home = page.locator('.workbench-home').bounding_box()
         recommendation = page.locator('.home-recommendation').bounding_box()
         assert home and home['height'] <= 760, home
@@ -68,31 +74,34 @@ try:
         provider = page.locator('#settingsForm [data-settings-section="provider"]')
         policy = page.locator('#settingsForm [data-settings-section="policy"]')
         assert organization.count() == provider.count() == policy.count() == 1
-        if organization.get_attribute('open') is None:
-            organization.locator(':scope > summary').click()
-        if provider.get_attribute('open') is None:
-            provider.locator(':scope > summary').click()
         settings = page.locator('#settingsForm')
+
+        open_disclosure(organization)
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="organizationName"]').fill('Enterprise Browser')
-        settings.locator('textarea[name="organizationScope"]').fill('Ricerca normativa e incident response in Italia e UE')
+        settings.locator('textarea[name="organizationScope"]').fill('Monitoraggio normativo e gestione eventi in Italia e UE')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
+
+        open_disclosure(provider)
+        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
         settings.locator('input[name="endpoint"]').fill(f'{MOCK}/v1/chat/completions')
         settings.locator('input[name="model"]').fill('mock-enterprise-18')
         settings.locator('input[name="apiKeyEnv"]').fill('ICTC_LLM_API_KEY')
-        settings.get_by_role('button', name='Salva configurazione').click()
+        settings.get_by_role('button', name='Salva configurazione AI').click()
         page.locator('#settingsDialog').wait_for(state='hidden')
 
         PHASE = 'admin-regulatory-job-surface'
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringView').wait_for(state='visible')
-        contains(page.locator('#monitoringView h1'), 'Ricerche normative')
+        contains(page.locator('#monitoringView h1'), 'Monitoraggio normativo')
         assert page.get_by_text('Definisci cosa monitorare.', exact=True).count() == 0
         assert page.locator('#openJobConfig').is_visible()
         page.locator('#openJobConfig').click()
         page.locator('#jobDialog').wait_for(state='visible')
         for field in ['jobName', 'miningMode', 'noveltyBaseline', 'jurisdictions', 'authorities', 'resultLimit']:
             assert page.locator(f'#missionForm [name="{field}"]').count() == 1, field
-        page.locator('[data-workbench-close="jobDialog"]').click()
+        page.keyboard.press('Escape')
+        page.locator('#jobDialog').wait_for(state='hidden')
 
         PHASE = 'user-single-material-intake'
         page.locator('#roleSelect').select_option('user')
@@ -113,7 +122,7 @@ try:
         PHASE = 'compact-events-and-labels'
         page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#incidentsView').wait_for(state='visible')
-        contains(page.locator('#incidentsView h1'), 'Eventi e incidenti')
+        contains(page.locator('#incidentsView h1'), 'Eventi e segnalazioni')
         hero = page.locator('#incidentsView > .hero').bounding_box()
         queue = page.locator('#incidentList').bounding_box()
         assert hero and hero['height'] <= 280, hero
@@ -128,7 +137,7 @@ try:
         card = page.locator('.incident-card').first
         card.wait_for()
         assert card.get_by_role('button', name='Apri evento').count() == 1
-        assert card.get_by_role('button', name='Scarica prova').count() == 1
+        assert card.get_by_role('button', name='Scarica evidenza').count() == 1
         unlabeled = page.locator('button:visible').evaluate_all("els => els.filter(el => !(el.innerText.trim() || el.getAttribute('aria-label') || el.getAttribute('title'))).map(el => el.outerHTML)")
         assert unlabeled == [], unlabeled
 
@@ -160,8 +169,8 @@ try:
             assert box and box['height'] >= 44, (selector, box)
         assert not errors, errors
 
-        checks = ['balanced-home-two-processes', 'compact-recommendation', 'three-settings-disclosures', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'semantic-event-actions', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
-        (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
+        checks = ['balanced-home-two-processes', 'terminal-shell-vocabulary', 'compact-recommendation', 'three-settings-disclosures', 'settings-single-open', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'semantic-event-actions', 'canonical-evidence-vocabulary', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
+        (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0-regression-on-2.0-candidate', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
         print('browser-enterprise-1-8: evidence complete', flush=True)
 except BaseException as error:
     annotate(error)
