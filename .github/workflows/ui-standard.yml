@@ -16,8 +16,10 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Surface standard and triple saturation
-        run: node v3/enterprise-2-ui-standard-check.mjs
+      - name: Surface standard, triple saturation and historical contracts
+        run: |
+          node v3/enterprise-2-ui-standard-check.mjs
+          node v3/enterprise-2-historical-contract-alignment-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
