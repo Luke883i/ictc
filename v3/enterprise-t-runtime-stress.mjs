@@ -7,6 +7,7 @@ import { MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS } from './domain.mjs';
 import { authorizeEnterpriseActor } from './enterprise.mjs';
 import { assertSafeRuntimeBinding } from './runtime/http.mjs';
 import { fetchAiEndpoint, validateAiEndpoint } from './network-policy.mjs';
+import { validateSchema } from './ai-output-schema.mjs';
 import { VERSION } from './version.mjs';
 
 const report = [];
@@ -130,7 +131,14 @@ try {
     timeoutClassified = error.name === 'AbortError';
   }
   assert.equal(timeoutClassified, true);
-  record('S06', 'ai-timeout-and-malformed-output', 'partial', 'Abort propagation is deterministic; strict AI output schema validation remains a separate open control.', ['T06', 'T13']);
+  assert.throws(
+    () => validateSchema('incident-analysis', {
+      proposedKind: 'incident', kindConfidence: 0.8, extractedFacts: [], assumptions: [], signals: ['invented-signal'],
+      timeline: [], affectedServices: [], impact: '', mitigations: [], indicators: [], suggestedQuestions: []
+    }),
+    error => error.code === 'ai-output-schema-invalid'
+  );
+  record('S06', 'ai-timeout-and-malformed-output', 'passed', 'Abort propagation is deterministic and malformed purpose-specific AI output is rejected before domain use.', ['T06', 'T13']);
 
   await assert.rejects(
     validateAiEndpoint('https://private.test/v1', { lookup: async () => [{ address: '127.0.0.1', family: 4 }] }),

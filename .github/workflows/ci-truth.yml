@@ -21,6 +21,8 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v6
         with: {node-version: '22'}
+      - name: Enforce AI output schemas
+        run: node v3/ai-output-schema-check.mjs
       - name: Produce enterprise assurance evidence
         run: node v3/enterprise-t-saturation.mjs && node v3/enterprise-invariant-convergence.mjs && node v3/enterprise-t-audit.mjs && node v3/enterprise-t-runtime-stress.mjs
       - name: Enforce non-expanding critical/high debt
