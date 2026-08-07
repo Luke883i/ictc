@@ -33,9 +33,18 @@ function normalizeDialogChrome(root = document) {
 
 function wrapMetricPairs(root = document) {
   for (const host of $$('.lane-status', root)) {
-    if (host.dataset.metricPairs === 'true') continue;
     const children = [...host.children];
-    if (children.length < 4 || children.length % 2 !== 0) continue;
+    const existingPairs = children.filter(node => node.classList.contains('ui-metric-pair'));
+    if (existingPairs.length === children.length && existingPairs.length > 0) {
+      host.dataset.metricPairs = 'true';
+      host.setAttribute('role', 'list');
+      for (const pair of existingPairs) pair.setAttribute('role', 'listitem');
+      continue;
+    }
+    if (children.length < 4 || children.length % 2 !== 0) {
+      delete host.dataset.metricPairs;
+      continue;
+    }
     const pairs = [];
     let valid = true;
     for (let index = 0; index < children.length; index += 2) {
@@ -45,16 +54,19 @@ function wrapMetricPairs(root = document) {
       }
       pairs.push([children[index], children[index + 1]]);
     }
-    if (!valid) continue;
+    if (!valid) {
+      delete host.dataset.metricPairs;
+      continue;
+    }
     for (const [value, label] of pairs) {
       const pair = document.createElement('span');
       pair.className = 'ui-metric-pair';
+      pair.setAttribute('role', 'listitem');
       pair.append(value, label);
       host.append(pair);
     }
     host.dataset.metricPairs = 'true';
     host.setAttribute('role', 'list');
-    for (const pair of host.querySelectorAll('.ui-metric-pair')) pair.setAttribute('role', 'listitem');
   }
 }
 

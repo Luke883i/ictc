@@ -43,6 +43,8 @@ verify('dialog-standard', () => {
 });
 verify('metric-atomicity', () => {
   assert.match(ui, /ui-metric-pair/);
+  assert.match(ui, /existingPairs/);
+  assert.doesNotMatch(ui, /dataset\.metricPairs === 'true'\) continue/);
   assert.match(ui, /role', 'listitem'/);
   assert.match(css, /\.ui-metric-pair/);
 });
