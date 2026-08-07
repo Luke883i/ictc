@@ -116,11 +116,20 @@ verify('enterprise-2-s01-actor-consistency', () => {
 });
 verify('enterprise-2-semantic-process-copy', () => {
   const s01 = phase(enterprise2Browser, "PHASE = 'S01-home-auditor-summary'", "PHASE = 'S02-home-auditor-method'");
-  assert.ok(s01.includes(".text_content().strip()"), 'S01 process vocabulary must read DOM text content');
-  assert.ok(s01.includes("'RN-01 · Monitoraggio normativo'"));
-  assert.ok(s01.includes("'EC-01 · Gestione eventi e segnalazioni'"));
+  const s04 = phase(enterprise2Browser, "PHASE = 'S04-monitoring-user'", "PHASE = 'S05-events-user-empty-or-list'");
+  const s05 = phase(enterprise2Browser, "PHASE = 'S05-events-user-empty-or-list'", "PHASE = 'S06-guide-proof'");
+  for (const [name, block, expected] of [
+    ['S01', s01, ['RN-01 · Monitoraggio normativo', 'EC-01 · Gestione eventi e segnalazioni']],
+    ['S04', s04, ['RN-01 · Monitoraggio normativo']],
+    ['S05', s05, ['EC-01 · Gestione eventi e segnalazioni']]
+  ]) {
+    assert.ok(block.includes('.text_content().strip()'), `${name} process vocabulary must read DOM text content`);
+    for (const token of expected) assert.ok(block.includes(`'${token}'`), `${name}:${token}`);
+  }
   assert.ok(!s01.includes(".process-lane[data-lane=\"monitoring\"] > .eyebrow').inner_text()"));
   assert.ok(!s01.includes(".process-lane[data-lane=\"incidents\"] > .eyebrow').inner_text()"));
+  assert.ok(!s04.includes("#monitoringView .core-title > .eyebrow').inner_text()"));
+  assert.ok(!s05.includes("#incidentsView .core-title > .eyebrow').inner_text()"));
 });
 
 const report = {schemaVersion:model.schemaVersion, alignment:model.id, ok:true, verified, observedFailures:model.observedFailures, preventiveAlignments:model.preventiveAlignments, saturationImpact:model.saturationImpact, runtimeMutation:model.runtimeMutation, claimBoundary:model.claimBoundary};

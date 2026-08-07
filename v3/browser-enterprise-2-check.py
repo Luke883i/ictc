@@ -108,22 +108,30 @@ try:
         page.locator('#roleSelect').select_option('user')
         page.locator('.service-nav [data-service="monitoring"]').click()
         page.locator('#monitoringView').wait_for(state='visible')
-        assert page.locator('#monitoringView').get_attribute('data-process-code') == 'RN-01'
-        assert page.locator('#monitoringView .core-title > .eyebrow').inner_text() == 'RN-01 · Monitoraggio normativo'
-        assert page.locator('#monitoringView .core-title h1').inner_text() == 'Monitoraggio normativo'
-        assert page.get_by_text('Job di ricerca e novelty', exact=True).count() == 0
-        assert page.get_by_text('Ricerche disponibili', exact=True).count() == 1
-        assert page.locator('#openJobConfig').is_hidden()
-        assert page.locator('html').get_attribute('data-ds-accent') == 'cyan'
-        assert page.locator('#monitoringContributionAction').get_attribute('data-priority') == 'secondary'
-        assert page.locator('#runtimeStatus').get_attribute('data-tone') in ['positive','attention','critical','neutral','informative']
+        s04_code = page.locator('#monitoringView').get_attribute('data-process-code')
+        s04_eyebrow = page.locator('#monitoringView .core-title > .eyebrow').text_content().strip()
+        s04_title = page.locator('#monitoringView .core-title h1').inner_text()
+        s04_available = page.get_by_text('Ricerche disponibili', exact=True).count()
+        s04_job_hidden = page.locator('#openJobConfig').is_hidden()
+        s04_accent = page.locator('html').get_attribute('data-ds-accent')
+        s04_priority = page.locator('#monitoringContributionAction').get_attribute('data-priority')
+        s04_tone = page.locator('#runtimeStatus').get_attribute('data-tone')
+        assert s04_code == 'RN-01', f'processCode={s04_code!r}'
+        assert s04_eyebrow == 'RN-01 · Monitoraggio normativo', f'monitoringEyebrow={s04_eyebrow!r}'
+        assert s04_title == 'Monitoraggio normativo', f'monitoringTitle={s04_title!r}'
+        assert page.get_by_text('Job di ricerca e novelty', exact=True).count() == 0, 'legacy job label visible'
+        assert s04_available == 1, f'researchAvailableCount={s04_available}'
+        assert s04_job_hidden, 'openJobConfig visible for user'
+        assert s04_accent == 'cyan', f'dsAccent={s04_accent!r}'
+        assert s04_priority == 'secondary', f'contributionPriority={s04_priority!r}'
+        assert s04_tone in ['positive','attention','critical','neutral','informative'], f'runtimeTone={s04_tone!r}'
         shot(page, 'S04', 'Monitoraggio normativo utente')
 
         PHASE = 'S05-events-user-empty-or-list'
         page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#incidentsView').wait_for(state='visible')
         assert page.locator('#incidentsView').get_attribute('data-process-code') == 'EC-01'
-        assert page.locator('#incidentsView .core-title > .eyebrow').inner_text() == 'EC-01 · Gestione eventi e segnalazioni'
+        assert page.locator('#incidentsView .core-title > .eyebrow').text_content().strip() == 'EC-01 · Gestione eventi e segnalazioni'
         assert page.locator('#incidentsView .core-title h1').inner_text() == 'Eventi e segnalazioni'
         assert page.get_by_text('Eventi registrati', exact=True).count() == 1
         assert page.locator('#openIncident').inner_text() == 'Registra evento'
