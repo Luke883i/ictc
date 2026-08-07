@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "baseStandard": "ictc-surface-standard-1",
+  "evidenceSource": "server-backed-browser",
+  "layoutRules": [
+    "terminal-mobile-action-bar-cascade-final",
+    "stable-admin-owner-after-delayed-legacy-pass",
+    "intrinsic-zoom-reflow-grid"
+  ],
+  "contradictionPrimitives": [
+    "legacy-progressive-footer-exceeds-mobile-height-budget",
+    "legacy-delayed-admin-activation-hides-owner-panel",
+    "200-percent-text-expansion-overflows-global-nav"
+  ],
+  "standardObligations": [
+    {
+      "id": "ICTC-L12",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["dialogs", "forms"],
+      "witness": ["terminal mobile action-bar cascade", "server-backed settings footer <= 72px at 320px"]
+    },
+    {
+      "id": "ICTC-L13",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["admin"],
+      "witness": ["terminal owner-panel reconciliation after bounded legacy pass", "server-backed 360ms stable-state assertion", "exactly one direct admin panel visible"]
+    },
+    {
+      "id": "ICTC-L14",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["navigation", "interactive"],
+      "witness": ["intrinsic rem-based navigation reflow", "topbar box-sizing constraints", "server-backed 200% zoom no-overflow assertion"]
+    }
+  ],
+  "definitionOfDone": [
+    "The mobile progressive-dialog action bar remains at or below 72px after the complete legacy and terminal CSS cascade.",
+    "Administration panel ownership remains stable after the bounded delayed Enterprise 2 reconciliation pass.",
+    "Topbar, role controls and service navigation intrinsically reflow at 200% text enlargement without reducing text size or hiding content."
+  ],
+  "observedFailures": [
+    {"class": "authority-layering", "observation": "legacy presentation hid Configura AI after server-issued admin visibility", "resolution": "server actor role is final visibility source", "standard": "ICTC-L11"},
+    {"class": "mobile-action-bar-cascade", "observation": "settings footer measured 161.375px at 320px", "resolution": "terminal two-column 44px action bar with <=72px budget", "standard": "ICTC-L12"},
+    {"class": "delayed-admin-owner", "observation": "zero direct admin panels remained after delayed legacy reactivation", "resolution": "terminal owner reconciliation after bounded legacy pass", "standard": "ICTC-L13"},
+    {"class": "text-zoom-reflow", "observation": "200% text enlargement produced 29px then 2px horizontal overflow", "resolution": "intrinsic rem grid plus bounded topbar/control sizing", "standard": "ICTC-L14"}
+  ]
+}

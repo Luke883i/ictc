@@ -2,7 +2,15 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
-const model = JSON.parse(await read('./enterprise-2-ui-standard-model.json'));
+const baseModel = JSON.parse(await read('./enterprise-2-ui-standard-model.json'));
+const runtimeFindings = JSON.parse(await read('./enterprise-2-ui-standard-runtime-findings.json'));
+const model = {
+  ...baseModel,
+  layoutRules: [...baseModel.layoutRules, ...runtimeFindings.layoutRules],
+  contradictionPrimitives: [...baseModel.contradictionPrimitives, ...runtimeFindings.contradictionPrimitives],
+  standardObligations: [...baseModel.standardObligations, ...runtimeFindings.standardObligations],
+  definitionOfDone: [...baseModel.definitionOfDone, ...runtimeFindings.definitionOfDone]
+};
 const tail = 100;
 const surfaces = model.surfaces.map(item => item.id);
 const modes = ['desktop', 'mobile-390', 'mobile-320', 'zoom-200', 'forced-colors', 'reduced-motion'];
@@ -42,9 +50,9 @@ const Z = model.standardObligations.length;
 const standardScenarios = standardCoverage.map((item, i) => ({ index: i + 1, axis: 'standard', standard: item.id, surfaces: item.surfaces, witnesses: item.witnesses, novelty: [], contradictions: [], uncoveredStandards: item.surfaces.length && item.witnesses.length ? [] : [item.id] }));
 for (let i = 1; i <= tail; i += 1) standardScenarios.push(confirmationScenario(Z + i, 'standard'));
 
-assert.equal(M, 102);
-assert.equal(N, 50);
-assert.equal(Z, 26);
+assert.equal(M, 106);
+assert.equal(N, 54);
+assert.equal(Z, 30);
 assert.equal(noveltyScenarios.slice(M).flatMap(item => item.novelty).length, 0);
 assert.equal(contradictionScenarios.slice(N).flatMap(item => item.contradictions).length, 0);
 assert.equal(uncovered.length, 0);
@@ -54,12 +62,14 @@ for (const surface of model.surfaces) assert.ok(coverage[surface.id]?.length, `s
 const report = {
   schemaVersion: model.schemaVersion,
   standard: model.id,
+  effectiveModel: { base: 'enterprise-2-ui-standard-model.json', runtimeFindings: 'enterprise-2-ui-standard-runtime-findings.json' },
+  runtimeFindingCount: runtimeFindings.observedFailures.length,
   surfaceCount: surfaces.length,
   M, MPlus100: M + tail, noveltyAfterM: noveltyScenarios.slice(M).flatMap(item => item.novelty).length,
   N, NPlus100: N + tail, contradictionsAfterN: contradictionScenarios.slice(N).flatMap(item => item.contradictions).length,
   Z, ZPlus100: Z + tail, uncoveredStandardsAtZ: uncovered.length, uncoveredStandardsAfterZ: standardScenarios.slice(Z).flatMap(item => item.uncoveredStandards).length,
-  coverage, standardCoverage, noveltyScenarios, contradictionScenarios, standardScenarios, claimBoundary: model.claimBoundary
+  coverage, standardCoverage, noveltyScenarios, contradictionScenarios, standardScenarios, runtimeFindings: runtimeFindings.observedFailures, claimBoundary: model.claimBoundary
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-ui-standard-saturation.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`enterprise-2-ui-standard-saturation: M=${M}/${M + tail} novelty=0; N=${N}/${N + tail} contradictions=0; Z=${Z}/${Z + tail} uncovered=0`);
+console.log(`enterprise-2-ui-standard-saturation: M=${M}/${M + tail} novelty=0; N=${N}/${N + tail} contradictions=0; Z=${Z}/${Z + tail} uncovered=0; runtime-findings=${runtimeFindings.observedFailures.length}`);
