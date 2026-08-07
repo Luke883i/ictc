@@ -23,3 +23,9 @@ Never turn an observation, extraction, score, AI proposal or computed state into
 - Incident work: `docs/09_INCIDENT_JOURNEYS.md`
 - AI work: `docs/10_LOCAL_AI_CONTRACT.md`
 - Delivery work: `docs/13_DEVOPS_AND_CI_CD.md`, `docs/14_ITERATION_DOD.md`
+
+## Free/private repository governance
+
+9. While GitHub server-side branch protection is unavailable, `GOV-01F` is a compensating control only. Never describe `main` as protected unless GitHub itself reports active protection/enforcement.
+10. Before proposing a merge, observe the exact PR HEAD and require all checks declared in `.github/gov-01f-policy.json` for that HEAD. After merge, observe the new `main` SHA and the declared post-merge checks.
+11. A direct push to `main` detected by `GOV-01F` is a governance breach: freeze runtime expansion, reconcile the diff/evidence, and do not erase history automatically.
