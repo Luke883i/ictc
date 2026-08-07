@@ -1,4 +1,4 @@
-import { $, $$ } from './common.js';
+import { $, $$, state } from './common.js';
 
 const UI_STANDARD_ID = 'ictc-surface-standard-1';
 const PLACEHOLDER_COPY = new Set(['descrizione.', 'tbd', 'todo', 'placeholder']);
@@ -145,6 +145,15 @@ function normalizeMobileBrand() {
   if (brand) brand.dataset.uiBrand = 'true';
 }
 
+function reconcileServerIssuedAdminVisibility() {
+  const role = state.data?.actor?.role;
+  if (!role) return;
+  const settings = $('#openSettings');
+  if (!settings) return;
+  settings.hidden = role !== 'admin';
+  settings.dataset.uiAuthoritySource = 'server-actor-role';
+}
+
 let scheduled = false;
 function applyUiStandard() {
   if (scheduled) return;
@@ -159,6 +168,7 @@ function applyUiStandard() {
     localizeControlledVocabulary();
     enforceAdminIsolation();
     normalizeMobileBrand();
+    reconcileServerIssuedAdminVisibility();
     document.dispatchEvent(new CustomEvent('ictc:ui-standard-ready', { detail: { id: UI_STANDARD_ID } }));
   });
 }
