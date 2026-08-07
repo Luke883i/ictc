@@ -5,6 +5,7 @@ const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const model = JSON.parse(await read('./enterprise-2-historical-contract-alignment.json'));
 const designCheck = await read('./enterprise-2-design-system-check.mjs');
 const browser = await read('./browser-product-check.py');
+const actions = await read('./public/ui/actions.js');
 const verified = [];
 
 function verify(name, assertion) {
@@ -28,18 +29,18 @@ function ordered(text, tokens) {
 verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
-  assert.equal(model.runtimeMutation, false);
-  assert.equal(model.invariants.length, 7);
-  assert.equal(model.observedFailures.length, 3);
+  assert.equal(model.runtimeMutation, true);
+  assert.equal(model.invariants.length, 8);
+  assert.equal(model.observedFailures.length, 4);
   assert.equal(model.preventiveAlignments.length, 2);
   assert.match(model.claimBoundary, /does not establish/i);
 });
 
-verify('saturation-preserved', () => {
-  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [106, 206, 0]);
-  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [54, 154, 0]);
-  assert.deepEqual([model.saturationImpact.Z, model.saturationImpact.ZPlus100, model.saturationImpact.uncoveredStandardsAfterZ], [30, 130, 0]);
-  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [0, 0, 0]);
+verify('saturation-escalated', () => {
+  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [107, 207, 0]);
+  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [55, 155, 0]);
+  assert.deepEqual([model.saturationImpact.Z, model.saturationImpact.ZPlus100, model.saturationImpact.uncoveredStandardsAfterZ], [31, 131, 0]);
+  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [1, 1, 1]);
 });
 
 verify('semantic-token-consumer', () => {
@@ -83,6 +84,14 @@ verify('stable-toggle-observation', () => {
   assert.ok(!browser.includes('time.sleep('));
 });
 
+verify('post-decision-terminal-reconciliation', () => {
+  assert.match(actions, /renderSourceDialog\(\);\s*document\.dispatchEvent\(new CustomEvent\('ictc:surface-changed'/s);
+  assert.match(actions, /surface:\s*'source-dialog'/);
+  assert.match(actions, /reason:\s*'source-decision'/);
+  assert.ok(browser.includes("get_by_role('button', name='Accetta nel catalogo')"));
+  assert.ok(browser.includes("get_by_text('Accettata nel catalogo', exact=False)"));
+});
+
 verify('canonical-terminal-vocabulary', () => {
   for (const token of [
     "get_by_role('button', name='Accetta nel catalogo')",
@@ -109,4 +118,4 @@ const report = {
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-ui-standard-historical-contract-alignment.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 0/0/0)`);
+console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 1/1/1)`);

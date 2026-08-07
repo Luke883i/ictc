@@ -1,104 +1,54 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "id": "ictc-historical-contract-alignment-1",
   "parentStandard": "ictc-surface-standard-1",
   "evidenceParentHead": "5656a20348060692fa00e601215518a550e9bb78",
-  "purpose": "Align historical static and browser contracts with the already-canonical Surface Standard runtime without weakening assertions or changing backend/runtime authority.",
-  "runtimeMutation": false,
+  "purpose": "Align historical static and browser contracts with the canonical Surface Standard runtime, and escalate any falsified runtime assumption into the effective standard rather than masking it in evidence consumers.",
+  "runtimeMutation": true,
   "saturationImpact": {
-    "M": 106,
-    "MPlus100": 206,
+    "M": 107,
+    "MPlus100": 207,
     "noveltyAfterM": 0,
-    "N": 54,
-    "NPlus100": 154,
+    "N": 55,
+    "NPlus100": 155,
     "contradictionsAfterN": 0,
-    "Z": 30,
-    "ZPlus100": 130,
+    "Z": 31,
+    "ZPlus100": 131,
     "uncoveredStandardsAfterZ": 0,
-    "deltaM": 0,
-    "deltaN": 0,
-    "deltaZ": 0,
-    "reason": "This slice changes evidence consumers only; it introduces no new runtime layout, lexical, authority or standards primitive."
+    "deltaM": 1,
+    "deltaN": 1,
+    "deltaZ": 1,
+    "reason": "Historical alignment exposed a stable post-decision runtime rerender that lost terminal vocabulary; the finding adds one lexical primitive, one contradiction primitive and ICTC-L15."
   },
   "invariants": [
-    {
-      "id": "HCA-01",
-      "name": "semantic-token-declaration",
-      "rule": "Historical design-system assurance must validate the declared CSS custom-property syntax --ds-ease:, not the invalid literal --ds-ease;."
-    },
-    {
-      "id": "HCA-02",
-      "name": "progressive-settings-sequencing",
-      "rule": "The browser journey must fill organization fields while the organization disclosure is open, then open the provider disclosure and fill provider fields."
-    },
-    {
-      "id": "HCA-03",
-      "name": "progressive-job-sequencing",
-      "rule": "The browser journey must open the criteria and schedule job groups before interacting with controls moved into those groups."
-    },
-    {
-      "id": "HCA-04",
-      "name": "canonical-terminal-vocabulary",
-      "rule": "Historical browser assertions must consume the terminal labels Accetta nel catalogo, Accettata nel catalogo and Scarica evidenza."
-    },
-    {
-      "id": "HCA-05",
-      "name": "no-runtime-bypass",
-      "rule": "Alignment must not force hidden controls, disable single-open behavior, modify server authority, or reintroduce legacy labels in production code."
-    },
-    {
-      "id": "HCA-06",
-      "name": "same-head-evidence",
-      "rule": "Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI must execute against the same PR head before the slice is considered mature."
-    },
-    {
-      "id": "HCA-07",
-      "name": "stable-post-toggle-observation",
-      "rule": "Single-open browser assertions must observe the stable state after the details toggle reconciliation closes the previous sibling; tests must use bounded condition waiting rather than instantaneous counts or arbitrary sleeps."
-    }
+    {"id":"HCA-01","name":"semantic-token-declaration","rule":"Historical design-system assurance must validate the declared CSS custom-property syntax --ds-ease:, not the invalid literal --ds-ease;."},
+    {"id":"HCA-02","name":"progressive-settings-sequencing","rule":"The browser journey must fill organization fields while the organization disclosure is open, then open the provider disclosure and fill provider fields."},
+    {"id":"HCA-03","name":"progressive-job-sequencing","rule":"The browser journey must open the criteria and schedule job groups before interacting with controls moved into those groups."},
+    {"id":"HCA-04","name":"canonical-terminal-vocabulary","rule":"Historical browser assertions must consume the terminal labels Accetta nel catalogo, Accettata nel catalogo and Scarica evidenza."},
+    {"id":"HCA-05","name":"no-runtime-bypass","rule":"Alignment must not force hidden controls, disable single-open behavior, modify server authority, or reintroduce legacy labels in production code."},
+    {"id":"HCA-06","name":"same-head-evidence","rule":"Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI must execute against the same PR head before the slice is considered mature."},
+    {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open browser assertions must observe the stable state after details toggle reconciliation closes the previous sibling; tests use bounded condition waiting rather than instantaneous counts or arbitrary sleeps."},
+    {"id":"HCA-08","name":"direct-rerender-terminal-reconciliation","rule":"When a human source decision directly reconstructs the source dialog after refresh, the runtime must emit ictc:surface-changed after reconstruction so terminal lexical and visual layers reconcile the stable DOM."}
   ],
   "observedFailures": [
-    {
-      "runId": 31163931816,
-      "job": "contract-and-audit",
-      "class": "stale-static-token-literal",
-      "observation": "enterprise-2-design-system-check expected --ds-ease; while the runtime declares --ds-ease:cubic-bezier(...).",
-      "resolutionClass": "correct-test-literal"
-    },
-    {
-      "runId": 31163931816,
-      "job": "browser-journeys",
-      "class": "stale-progressive-disclosure-order",
-      "observation": "browser-product-check opened provider after organization and then attempted to fill organizationName after single-open behavior had hidden that section.",
-      "resolutionClass": "sequence-interactions-by-open-owner"
-    },
-    {
-      "runId": 31166235807,
-      "job": "browser-journeys",
-      "class": "single-open-toggle-observation-race",
-      "observation": "The revised journey asserted an instantaneous open-section count while the details toggle reconciliation was still closing the previous sibling.",
-      "resolutionClass": "condition-wait-for-stable-single-open"
-    }
+    {"runId":31163931816,"job":"contract-and-audit","class":"stale-static-token-literal","observation":"enterprise-2-design-system-check expected --ds-ease; while the runtime declares --ds-ease:cubic-bezier(...).","resolutionClass":"correct-test-literal"},
+    {"runId":31163931816,"job":"browser-journeys","class":"stale-progressive-disclosure-order","observation":"browser-product-check opened provider after organization and then attempted to fill organizationName after single-open behavior had hidden that section.","resolutionClass":"sequence-interactions-by-open-owner"},
+    {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","observation":"The revised journey asserted an instantaneous open-section count while details toggle reconciliation was still closing the previous sibling.","resolutionClass":"condition-wait-for-stable-single-open"},
+    {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","observation":"The canonical decision action completed, but renderSourceDialog rebuilt base Verificata/Stato umano copy after the refresh-time terminal pass; Accettata nel catalogo never appeared in the stable source body.","resolutionClass":"semantic-surface-change-after-direct-rerender"}
   ],
   "preventiveAlignments": [
-    {
-      "class": "job-progressive-disclosure",
-      "reason": "authorities and sourceHints are now owned by closed criteria/schedule groups and must be opened before interaction."
-    },
-    {
-      "class": "terminal-vocabulary",
-      "reason": "source acceptance/status and evidence-download assertions must use the canonical terminal vocabulary already rendered by the runtime."
-    }
+    {"class":"job-progressive-disclosure","reason":"authorities and sourceHints are owned by closed criteria/schedule groups and must be opened before interaction."},
+    {"class":"terminal-vocabulary","reason":"source acceptance/status and evidence-download assertions consume canonical terminal vocabulary and therefore expose any runtime regression back to legacy copy."}
   ],
   "acceptance": [
     "The semantic-token historical check passes without changing the design-system CSS token declaration.",
     "The product browser journey completes settings configuration through the single-open progressive disclosure contract.",
     "The product browser journey completes job configuration by explicitly opening each required disclosure owner.",
     "Single-open assertions wait for the stable post-toggle state using Playwright condition assertions rather than arbitrary sleeps.",
+    "After a human source decision, the direct source-dialog rerender emits ictc:surface-changed and stable post-decision copy remains canonical.",
     "Source decision and event evidence assertions use canonical terminal labels.",
-    "No production UI, API, permission, capability or backend authority code is changed by this alignment slice.",
-    "Surface Standard assurance and its server-backed browser remain green on the final slice head.",
-    "General CI is re-evaluated on the final slice head; any newly exposed failure becomes the next falsifiable finding rather than being masked."
+    "No API permission, capability or backend authority is weakened by this slice.",
+    "Surface Standard assurance, server-backed UI-standard browser, historical browser journeys, contract audit, runtime E2E and security are re-evaluated on the same final PR head."
   ],
-  "claimBoundary": "This model demonstrates alignment of historical evidence consumers with the declared runtime contract. It does not establish universal regression freedom, accessibility conformance, legal compliance, certification or production readiness."
+  "claimBoundary": "This model demonstrates historical-contract alignment and the runtime correction falsified by that alignment. It does not establish universal regression freedom, accessibility conformance, legal compliance, certification or production readiness."
 }

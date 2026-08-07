@@ -8,6 +8,7 @@ const baseModel = JSON.parse(await read('./enterprise-2-ui-standard-model.json')
 const runtimeFindings = JSON.parse(await read('./enterprise-2-ui-standard-runtime-findings.json'));
 const model = {
   ...baseModel,
+  lexicalRules: [...baseModel.lexicalRules, ...(runtimeFindings.lexicalRules || [])],
   layoutRules: [...baseModel.layoutRules, ...runtimeFindings.layoutRules],
   contradictionPrimitives: [...baseModel.contradictionPrimitives, ...runtimeFindings.contradictionPrimitives],
   standardObligations: [...baseModel.standardObligations, ...runtimeFindings.standardObligations],
@@ -17,17 +18,20 @@ const saturation = JSON.parse(await read('../artifacts/enterprise-2-ui-standard-
 const ui = await read('./public/ui/enterprise-2-ui-standard.js');
 const runtimeCss = await read('./public/enterprise-2-ui-standard-runtime-refinement.css');
 const css = `${await read('./public/enterprise-2-ui-standard.css')}\n${runtimeCss}`;
+const actions = await read('./public/ui/actions.js');
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
 const docs = await read('../docs/ENTERPRISE_2_UI_STANDARD.md');
 const convergenceDocs = await read('../docs/ENTERPRISE_2_UI_STANDARD_RUNTIME_CONVERGENCE.md');
 const browser = await read('./browser-enterprise-2-ui-standard-check.py');
+const productBrowser = await read('./browser-product-check.py');
 const verified = [];
 
 function verify(name, assertion) { assertion(); verified.push(name); }
 
 verify('javascript-syntax', () => {
   execFileSync(process.execPath, ['--check', new URL('./public/ui/enterprise-2-ui-standard.js', import.meta.url).pathname], { stdio: 'pipe' });
+  execFileSync(process.execPath, ['--check', new URL('./public/ui/actions.js', import.meta.url).pathname], { stdio: 'pipe' });
 });
 verify('terminal-wiring', () => {
   assert.match(app, /installEnterprise2UiStandard/);
@@ -49,14 +53,19 @@ verify('server-issued-authority-visibility', () => {
   assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L11'));
 });
 verify('server-backed-runtime-findings', () => {
-  assert.equal(runtimeFindings.observedFailures.length, 4);
+  assert.equal(runtimeFindings.observedFailures.length, 5);
   for (const rule of ['terminal-mobile-action-bar-cascade-final','stable-admin-owner-after-delayed-legacy-pass','intrinsic-zoom-reflow-grid']) assert.ok(model.layoutRules.includes(rule));
-  for (const contradiction of ['legacy-progressive-footer-exceeds-mobile-height-budget','legacy-delayed-admin-activation-hides-owner-panel','200-percent-text-expansion-overflows-global-nav']) assert.ok(model.contradictionPrimitives.includes(contradiction));
-  for (const id of ['ICTC-L12','ICTC-L13','ICTC-L14']) assert.ok(model.standardObligations.some(item => item.id === id));
+  assert.ok(model.lexicalRules.includes('direct-workspace-rerender-reconciles-terminal-vocabulary'));
+  for (const contradiction of ['legacy-progressive-footer-exceeds-mobile-height-budget','legacy-delayed-admin-activation-hides-owner-panel','200-percent-text-expansion-overflows-global-nav','source-decision-rerender-reverts-to-legacy-vocabulary']) assert.ok(model.contradictionPrimitives.includes(contradiction));
+  for (const id of ['ICTC-L12','ICTC-L13','ICTC-L14','ICTC-L15']) assert.ok(model.standardObligations.some(item => item.id === id));
   assert.match(ui, /setTimeout\(applyUiStandard, 320\)/);
   assert.match(runtimeCss, /max-height:72px!important/);
   assert.match(runtimeCss, /repeat\(auto-fit,minmax\(min\(100%,9rem\),1fr\)\)/);
   assert.match(runtimeCss, /#roleSelect/);
+  assert.match(actions, /renderSourceDialog\(\);\s*document\.dispatchEvent\(new CustomEvent\('ictc:surface-changed'/s);
+  assert.match(actions, /surface:\s*'source-dialog'/);
+  assert.match(actions, /reason:\s*'source-decision'/);
+  assert.match(productBrowser, /Accettata nel catalogo/);
 });
 verify('dialog-standard', () => {
   assert.match(ui, /ui-dialog-close/);
@@ -98,14 +107,15 @@ verify('surface-coverage', () => {
   assert.equal(saturation.standardCoverage.length, model.standardObligations.length);
 });
 verify('triple-saturation', () => {
-  assert.equal(saturation.M, 106); assert.equal(saturation.MPlus100, 206); assert.equal(saturation.noveltyAfterM, 0);
-  assert.equal(saturation.N, 54); assert.equal(saturation.NPlus100, 154); assert.equal(saturation.contradictionsAfterN, 0);
-  assert.equal(saturation.Z, 30); assert.equal(saturation.ZPlus100, 130); assert.equal(saturation.uncoveredStandardsAtZ, 0); assert.equal(saturation.uncoveredStandardsAfterZ, 0);
+  assert.equal(saturation.M, 107); assert.equal(saturation.MPlus100, 207); assert.equal(saturation.noveltyAfterM, 0);
+  assert.equal(saturation.N, 55); assert.equal(saturation.NPlus100, 155); assert.equal(saturation.contradictionsAfterN, 0);
+  assert.equal(saturation.Z, 31); assert.equal(saturation.ZPlus100, 131); assert.equal(saturation.uncoveredStandardsAtZ, 0); assert.equal(saturation.uncoveredStandardsAfterZ, 0);
 });
 verify('documented-dod', () => {
-  assert.equal(model.definitionOfDone.length, 23);
+  assert.equal(model.definitionOfDone.length, 24);
   assert.match(docs, /non dichiara conformità WCAG/i);
-  assert.match(convergenceDocs, /M = 106/); assert.match(convergenceDocs, /N = 54/); assert.match(convergenceDocs, /Z = 30/);
+  assert.match(convergenceDocs, /M = 107/); assert.match(convergenceDocs, /N = 55/); assert.match(convergenceDocs, /Z = 31/);
+  assert.match(convergenceDocs, /post-decision/i);
   assert.match(convergenceDocs, /supersede/i);
 });
 

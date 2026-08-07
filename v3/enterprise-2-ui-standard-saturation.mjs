@@ -6,6 +6,7 @@ const baseModel = JSON.parse(await read('./enterprise-2-ui-standard-model.json')
 const runtimeFindings = JSON.parse(await read('./enterprise-2-ui-standard-runtime-findings.json'));
 const model = {
   ...baseModel,
+  lexicalRules: [...baseModel.lexicalRules, ...(runtimeFindings.lexicalRules || [])],
   layoutRules: [...baseModel.layoutRules, ...runtimeFindings.layoutRules],
   contradictionPrimitives: [...baseModel.contradictionPrimitives, ...runtimeFindings.contradictionPrimitives],
   standardObligations: [...baseModel.standardObligations, ...runtimeFindings.standardObligations],
@@ -50,9 +51,9 @@ const Z = model.standardObligations.length;
 const standardScenarios = standardCoverage.map((item, i) => ({ index: i + 1, axis: 'standard', standard: item.id, surfaces: item.surfaces, witnesses: item.witnesses, novelty: [], contradictions: [], uncoveredStandards: item.surfaces.length && item.witnesses.length ? [] : [item.id] }));
 for (let i = 1; i <= tail; i += 1) standardScenarios.push(confirmationScenario(Z + i, 'standard'));
 
-assert.equal(M, 106);
-assert.equal(N, 54);
-assert.equal(Z, 30);
+assert.equal(M, 107);
+assert.equal(N, 55);
+assert.equal(Z, 31);
 assert.equal(noveltyScenarios.slice(M).flatMap(item => item.novelty).length, 0);
 assert.equal(contradictionScenarios.slice(N).flatMap(item => item.contradictions).length, 0);
 assert.equal(uncovered.length, 0);
