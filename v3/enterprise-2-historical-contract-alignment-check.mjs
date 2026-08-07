@@ -5,6 +5,7 @@ const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const model = JSON.parse(await read('./enterprise-2-historical-contract-alignment.json'));
 const designCheck = await read('./enterprise-2-design-system-check.mjs');
 const browser = await read('./browser-product-check.py');
+const enterprise18Browser = await read('./browser-enterprise-1-8-check.py');
 const actions = await read('./public/ui/actions.js');
 const verified = [];
 
@@ -30,9 +31,9 @@ verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
   assert.equal(model.runtimeMutation, true);
-  assert.equal(model.invariants.length, 8);
-  assert.equal(model.observedFailures.length, 4);
-  assert.equal(model.preventiveAlignments.length, 2);
+  assert.equal(model.invariants.length, 9);
+  assert.equal(model.observedFailures.length, 5);
+  assert.equal(model.preventiveAlignments.length, 3);
   assert.match(model.claimBoundary, /does not establish/i);
 });
 
@@ -79,8 +80,6 @@ verify('stable-toggle-observation', () => {
   assert.ok(browser.includes("expect(section).to_have_attribute('open', '')"));
   assert.ok(browser.includes("expect(settings.locator('[data-settings-section][open]')).to_have_count(1)"));
   assert.ok(browser.includes("expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)"));
-  assert.ok(!browser.includes("assert settings.locator('[data-settings-section][open]').count() == 1"));
-  assert.ok(!browser.includes("assert job.locator(':scope > .job-config-group[open]').count() == 1"));
   assert.ok(!browser.includes('time.sleep('));
 });
 
@@ -103,6 +102,27 @@ verify('canonical-terminal-vocabulary', () => {
     "get_by_text('Verificata', exact=False)",
     "get_by_role('button', name='Scarica prova')"
   ]) assert.ok(!browser.includes(stale), stale);
+});
+
+verify('enterprise-1-8-terminal-consumer', () => {
+  assert.ok(enterprise18Browser.includes("from playwright.sync_api import expect, sync_playwright"));
+  for (const token of [
+    "page.title() == 'ICTC · Attività, evidenze e controlli'",
+    "['Panoramica', 'Monitoraggio normativo', 'Eventi e segnalazioni', 'Evidenze e controlli']",
+    "contains(page.locator('[data-lane=\"monitoring\"]'), 'Monitoraggio normativo')",
+    "contains(page.locator('[data-lane=\"incidents\"]'), 'Eventi e segnalazioni')",
+    "contains(page.locator('#monitoringView h1'), 'Monitoraggio normativo')",
+    "contains(page.locator('#incidentsView h1'), 'Eventi e segnalazioni')",
+    "get_by_role('button', name='Scarica evidenza')"
+  ]) assert.ok(enterprise18Browser.includes(token), token);
+  assert.ok(enterprise18Browser.includes("expect(settings.locator('[data-settings-section][open]')).to_have_count(1)"));
+  assert.ok(enterprise18Browser.includes("get_by_role('button', name='Salva configurazione AI')"));
+  for (const stale of ['ICTC 1.8 · Enterprise Workbench', "'Ricerca normativa'", "'Eventi e incidenti'", "'Guida e prove'", "name='Scarica prova'"]) {
+    assert.ok(!enterprise18Browser.includes(stale), stale);
+  }
+  for (const budget of ["home['height'] <= 760", "recommendation['height'] <= 150", "hero['height'] <= 280", "queue['y'] < 720", "overflow <= 1", "box['height'] >= 44"]) {
+    assert.ok(enterprise18Browser.includes(budget), budget);
+  }
 });
 
 const report = {

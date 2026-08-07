@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "id": "ictc-historical-contract-alignment-1",
   "parentStandard": "ictc-surface-standard-1",
   "evidenceParentHead": "5656a20348060692fa00e601215518a550e9bb78",
@@ -18,37 +18,40 @@
     "deltaM": 1,
     "deltaN": 1,
     "deltaZ": 1,
-    "reason": "Historical alignment exposed a stable post-decision runtime rerender that lost terminal vocabulary; the finding adds one lexical primitive, one contradiction primitive and ICTC-L15."
+    "reason": "Historical alignment exposed one stable post-decision runtime vocabulary regression; later Enterprise 1.8 browser failures are stale evidence consumers and do not add runtime primitives."
   },
   "invariants": [
-    {"id":"HCA-01","name":"semantic-token-declaration","rule":"Historical design-system assurance must validate the declared CSS custom-property syntax --ds-ease:, not the invalid literal --ds-ease;."},
-    {"id":"HCA-02","name":"progressive-settings-sequencing","rule":"The browser journey must fill organization fields while the organization disclosure is open, then open the provider disclosure and fill provider fields."},
-    {"id":"HCA-03","name":"progressive-job-sequencing","rule":"The browser journey must open the criteria and schedule job groups before interacting with controls moved into those groups."},
-    {"id":"HCA-04","name":"canonical-terminal-vocabulary","rule":"Historical browser assertions must consume the terminal labels Accetta nel catalogo, Accettata nel catalogo and Scarica evidenza."},
-    {"id":"HCA-05","name":"no-runtime-bypass","rule":"Alignment must not force hidden controls, disable single-open behavior, modify server authority, or reintroduce legacy labels in production code."},
-    {"id":"HCA-06","name":"same-head-evidence","rule":"Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI must execute against the same PR head before the slice is considered mature."},
-    {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open browser assertions must observe the stable state after details toggle reconciliation closes the previous sibling; tests use bounded condition waiting rather than instantaneous counts or arbitrary sleeps."},
-    {"id":"HCA-08","name":"direct-rerender-terminal-reconciliation","rule":"When a human source decision directly reconstructs the source dialog after refresh, the runtime must emit ictc:surface-changed after reconstruction so terminal lexical and visual layers reconcile the stable DOM."}
+    {"id":"HCA-01","name":"semantic-token-declaration","rule":"Historical design-system assurance validates the declared CSS custom-property syntax --ds-ease:, not the invalid literal --ds-ease;."},
+    {"id":"HCA-02","name":"progressive-settings-sequencing","rule":"Browser journeys fill organization fields while the organization disclosure is open, then open provider and fill provider fields."},
+    {"id":"HCA-03","name":"progressive-job-sequencing","rule":"Browser journeys open criteria and schedule job groups before interacting with controls moved into those groups."},
+    {"id":"HCA-04","name":"canonical-terminal-vocabulary","rule":"Historical browser assertions consume Accetta nel catalogo, Accettata nel catalogo and Scarica evidenza."},
+    {"id":"HCA-05","name":"no-runtime-bypass","rule":"Alignment does not force hidden controls, disable single-open behavior, modify server authority, or reintroduce legacy labels in production code."},
+    {"id":"HCA-06","name":"same-head-evidence","rule":"Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI execute against the same PR head before maturity."},
+    {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open browser assertions observe stable state after details toggle reconciliation using bounded condition waiting, not instantaneous counts or arbitrary sleeps."},
+    {"id":"HCA-08","name":"direct-rerender-terminal-reconciliation","rule":"A human source decision that directly reconstructs source dialog emits ictc:surface-changed after reconstruction so terminal layers reconcile stable DOM."},
+    {"id":"HCA-09","name":"legacy-visual-journey-terminal-shell","rule":"The retained Enterprise 1.8 visual regression journey executes against the candidate runtime and therefore asserts current terminal shell vocabulary and progressive disclosure while preserving its geometry, role, keyboard and overflow budgets."}
   ],
   "observedFailures": [
-    {"runId":31163931816,"job":"contract-and-audit","class":"stale-static-token-literal","observation":"enterprise-2-design-system-check expected --ds-ease; while the runtime declares --ds-ease:cubic-bezier(...).","resolutionClass":"correct-test-literal"},
-    {"runId":31163931816,"job":"browser-journeys","class":"stale-progressive-disclosure-order","observation":"browser-product-check opened provider after organization and then attempted to fill organizationName after single-open behavior had hidden that section.","resolutionClass":"sequence-interactions-by-open-owner"},
-    {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","observation":"The revised journey asserted an instantaneous open-section count while details toggle reconciliation was still closing the previous sibling.","resolutionClass":"condition-wait-for-stable-single-open"},
-    {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","observation":"The canonical decision action completed, but renderSourceDialog rebuilt base Verificata/Stato umano copy after the refresh-time terminal pass; Accettata nel catalogo never appeared in the stable source body.","resolutionClass":"semantic-surface-change-after-direct-rerender"}
+    {"runId":31163931816,"job":"contract-and-audit","class":"stale-static-token-literal","observation":"enterprise-2-design-system-check expected --ds-ease; while runtime declares --ds-ease:cubic-bezier(...).","resolutionClass":"correct-test-literal"},
+    {"runId":31163931816,"job":"browser-journeys","class":"stale-progressive-disclosure-order","observation":"browser-product-check opened provider after organization and then attempted to fill organizationName after single-open behavior hid that section.","resolutionClass":"sequence-interactions-by-open-owner"},
+    {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","observation":"The revised journey asserted instantaneous open-section count while details toggle reconciliation was closing the previous sibling.","resolutionClass":"condition-wait-for-stable-single-open"},
+    {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","observation":"The canonical decision completed, but renderSourceDialog rebuilt base Verificata/Stato umano after refresh-time terminal pass.","resolutionClass":"semantic-surface-change-after-direct-rerender"},
+    {"runId":31167413169,"job":"browser-journeys","class":"enterprise-1-8-terminal-shell-stale","observation":"The retained 1.8 visual journey still asserted the pre-candidate document title and navigation vocabulary while running against the current 2.0 terminal candidate, and repeated old settings disclosure ordering.","resolutionClass":"preserve-visual-budgets-align-terminal-consumer"}
   ],
   "preventiveAlignments": [
     {"class":"job-progressive-disclosure","reason":"authorities and sourceHints are owned by closed criteria/schedule groups and must be opened before interaction."},
-    {"class":"terminal-vocabulary","reason":"source acceptance/status and evidence-download assertions consume canonical terminal vocabulary and therefore expose any runtime regression back to legacy copy."}
+    {"class":"terminal-vocabulary","reason":"historical journeys consume canonical terminal vocabulary so stable regressions back to legacy copy remain observable."},
+    {"class":"retained-version-regression","reason":"older-version visual journeys preserve geometry, accessibility, role and interaction invariants while consuming the current candidate shell when they are executed inside that candidate."}
   ],
   "acceptance": [
     "The semantic-token historical check passes without changing the design-system CSS token declaration.",
-    "The product browser journey completes settings configuration through the single-open progressive disclosure contract.",
-    "The product browser journey completes job configuration by explicitly opening each required disclosure owner.",
-    "Single-open assertions wait for the stable post-toggle state using Playwright condition assertions rather than arbitrary sleeps.",
-    "After a human source decision, the direct source-dialog rerender emits ictc:surface-changed and stable post-decision copy remains canonical.",
-    "Source decision and event evidence assertions use canonical terminal labels.",
+    "Product and retained Enterprise 1.8 browser journeys complete settings through single-open progressive disclosure.",
+    "The product journey completes job configuration by opening each required disclosure owner.",
+    "Single-open assertions use Playwright condition assertions rather than arbitrary sleeps.",
+    "After a human source decision, direct source-dialog rerender emits ictc:surface-changed and stable post-decision copy remains canonical.",
+    "The retained Enterprise 1.8 journey asserts current terminal title/navigation/content vocabulary while keeping its original home-height, recommendation-height, event-queue, role, keyboard, overflow and minimum-target budgets.",
     "No API permission, capability or backend authority is weakened by this slice.",
-    "Surface Standard assurance, server-backed UI-standard browser, historical browser journeys, contract audit, runtime E2E and security are re-evaluated on the same final PR head."
+    "Surface Standard assurance, server-backed UI-standard browser, all historical browser journeys, contract audit, runtime E2E and security are re-evaluated on the same final PR head."
   ],
-  "claimBoundary": "This model demonstrates historical-contract alignment and the runtime correction falsified by that alignment. It does not establish universal regression freedom, accessibility conformance, legal compliance, certification or production readiness."
+  "claimBoundary": "This model demonstrates historical-contract alignment and runtime corrections falsified by that alignment. It does not establish universal regression freedom, accessibility conformance, legal compliance, certification or production readiness."
 }
