@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "controlId": "GOV-01F",
   "mode": "FREE_PRIVATE_COMPENSATING",
   "defaultBranch": "main",
@@ -7,6 +7,7 @@
   "allowedBranchPrefixes": ["agent/", "feat/", "fix/", "docs/"],
   "requiredPreMergeChecks": [
     "governance-free-private",
+    "authority-contract",
     "contract-and-audit",
     "runtime-e2e",
     "browser-journeys",
@@ -17,6 +18,7 @@
   ],
   "requiredPostMergeChecks": [
     "governance-free-private",
+    "authority-contract",
     "contract-and-audit",
     "runtime-e2e",
     "browser-journeys",
