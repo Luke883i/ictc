@@ -11,6 +11,31 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'initialization'
 SHOTS = []
 
+OPEN_SETTINGS_TRACE = r"""
+(() => {
+  const descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden');
+  if (!descriptor || !descriptor.get || !descriptor.set) return;
+  const trace = [];
+  globalThis.__ictcOpenSettingsTrace = trace;
+  Object.defineProperty(HTMLElement.prototype, 'hidden', {
+    configurable: descriptor.configurable,
+    enumerable: descriptor.enumerable,
+    get: descriptor.get,
+    set(value) {
+      if (this.id === 'openSettings') {
+        trace.push({
+          value: Boolean(value),
+          storedRole: localStorage.getItem('ictc-role'),
+          runtimeRole: document.querySelector('#runtimeStatus')?.dataset?.actorRole || null,
+          stack: new Error('openSettings.hidden mutation').stack
+        });
+      }
+      return descriptor.set.call(this, value);
+    }
+  });
+})();
+"""
+
 
 def shot(page, name):
     path = ART / f'ui-standard-{name}.png'
@@ -43,10 +68,18 @@ def annotate(error):
 
 def actor_context(browser, role, viewport=None):
     context = browser.new_context(viewport=viewport or {'width': 1440, 'height': 1000})
+    context.add_init_script(OPEN_SETTINGS_TRACE)
     context.add_init_script(f"localStorage.setItem('ictc-role',{json.dumps(role)});localStorage.setItem('ictc-service','home')")
     page = context.new_page()
     page.set_default_timeout(15000)
     return context, page
+
+
+def assert_admin_settings_visible(page):
+    control = page.locator('#openSettings')
+    if control.is_hidden():
+        trace = page.evaluate('globalThis.__ictcOpenSettingsTrace || []')
+        raise AssertionError('openSettings hidden for server-issued admin: ' + json.dumps(trace, ensure_ascii=False))
 
 
 try:
@@ -78,7 +111,7 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
         page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
-        page.locator('#openSettings').wait_for(state='visible')
+        assert_admin_settings_visible(page)
         assert page.locator('#roleSelect').input_value() == 'admin'
         shot(page, 'home-admin')
 
@@ -151,19 +184,7 @@ try:
         context.close()
         browser.close()
 
-        report = {
-            'schemaVersion': '2.0.0-candidate',
-            'ok': True,
-            'standard': 'ictc-surface-standard-1',
-            'screenshots': SHOTS,
-            'checks': [
-                'metric-value-label-atomic', 'metric-rerender-reconciled', 'explicit-actor-contexts',
-                'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
-                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
-                'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
-                '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
-            ]
-        }
+        report = {'schemaVersion':'2.0.0-candidate','ok':True,'standard':'ictc-surface-standard-1','screenshots':SHOTS,'checks':['metric-value-label-atomic','metric-rerender-reconciled','explicit-actor-contexts','dialog-close-in-header','dialog-single-scroll-body','compact-mobile-footer','settings-three-column-mobile-stepper','monitoring-single-open','admin-single-direct-panel','classification-localized','placeholder-copy-zero','proof-standard-contained','mobile-brand-compact','320-reflow','390-reflow','zoom-200','reduced-motion','forced-colors']}
         (ART / 'browser-enterprise-2-ui-standard-check.json').write_text(json.dumps(report, indent=2), encoding='utf8')
         print('browser-enterprise-2-ui-standard: complete', flush=True)
 except BaseException as error:
