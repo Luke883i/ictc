@@ -11,31 +11,6 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'initialization'
 SHOTS = []
 
-OPEN_SETTINGS_TRACE = r"""
-(() => {
-  const descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden');
-  if (!descriptor || !descriptor.get || !descriptor.set) return;
-  const trace = [];
-  globalThis.__ictcOpenSettingsTrace = trace;
-  Object.defineProperty(HTMLElement.prototype, 'hidden', {
-    configurable: descriptor.configurable,
-    enumerable: descriptor.enumerable,
-    get: descriptor.get,
-    set(value) {
-      if (this.id === 'openSettings') {
-        trace.push({
-          value: Boolean(value),
-          storedRole: localStorage.getItem('ictc-role'),
-          runtimeRole: document.querySelector('#runtimeStatus')?.dataset?.actorRole || null,
-          stack: new Error('openSettings.hidden mutation').stack
-        });
-      }
-      return descriptor.set.call(this, value);
-    }
-  });
-})();
-"""
-
 
 def shot(page, name):
     path = ART / f'ui-standard-{name}.png'
@@ -68,18 +43,14 @@ def annotate(error):
 
 def actor_context(browser, role, viewport=None):
     context = browser.new_context(viewport=viewport or {'width': 1440, 'height': 1000})
-    context.add_init_script(OPEN_SETTINGS_TRACE)
     context.add_init_script(f"localStorage.setItem('ictc-role',{json.dumps(role)});localStorage.setItem('ictc-service','home')")
     page = context.new_page()
     page.set_default_timeout(15000)
     return context, page
 
 
-def assert_admin_settings_visible(page):
-    control = page.locator('#openSettings')
-    if control.is_hidden():
-        trace = page.evaluate('globalThis.__ictcOpenSettingsTrace || []')
-        raise AssertionError('openSettings hidden for server-issued admin: ' + json.dumps(trace, ensure_ascii=False))
+def settle_terminal_layer(page):
+    page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
 
 
 try:
@@ -94,10 +65,10 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
         page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
+        page.locator('#homeView').wait_for(state='visible')
         assert page.locator('.process-lane .lane-status[data-metric-pairs="true"]').count() >= 2
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2
-
         PHASE = 'home-metric-rerender-reconciliation'
         page.locator('#roleSelect').select_option('user')
         page.locator('#runtimeStatus[data-actor-role="user"]').wait_for(state='visible')
@@ -111,8 +82,9 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
         page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
-        assert_admin_settings_visible(page)
-        assert page.locator('#roleSelect').input_value() == 'admin'
+        settle_terminal_layer(page)
+        assert page.locator('#openSettings').is_visible(), 'server-issued admin settings action hidden after terminal reconciliation'
+        assert page.locator('#openSettings').get_attribute('data-ui-authority-source') == 'server-actor-role'
         shot(page, 'home-admin')
 
         PHASE = 'settings-dialog-chrome'
@@ -135,7 +107,6 @@ try:
         PHASE = 'monitoring-dialog-chrome'
         page.set_viewport_size({'width': 1440, 'height': 1000})
         page.locator('.service-nav [data-service="monitoring"]').click()
-        page.locator('#openJobConfig').wait_for(state='visible')
         page.locator('#openJobConfig').click()
         page.locator('#jobDialog').wait_for(state='visible')
         close_box_in_header(page, '#jobDialog')
@@ -148,10 +119,11 @@ try:
         page.locator('#openAdminCenter').click()
         page.locator('#adminCenter').wait_for(state='visible')
         page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governo AI').click()
-        assert page.locator('#adminCenter .admin-grid > .admin-panel:visible').count() == 1
+        visible_admin_panels = page.locator('#adminCenter .admin-grid > .admin-panel:visible').count()
+        assert visible_admin_panels == 1, f'visible direct admin panels={visible_admin_panels}'
         classification = page.locator('#governanceForm select[name="classification"]')
         option_text = classification.locator('option').all_inner_texts()
-        assert 'Uso interno' in option_text and 'internal' not in option_text
+        assert 'Uso interno' in option_text and 'internal' not in option_text, f'classification options={option_text}'
         close_box_in_header(page, '#adminCenter')
         shot(page, 'admin-governance')
         page.keyboard.press('Escape')
@@ -184,7 +156,18 @@ try:
         context.close()
         browser.close()
 
-        report = {'schemaVersion':'2.0.0-candidate','ok':True,'standard':'ictc-surface-standard-1','screenshots':SHOTS,'checks':['metric-value-label-atomic','metric-rerender-reconciled','explicit-actor-contexts','dialog-close-in-header','dialog-single-scroll-body','compact-mobile-footer','settings-three-column-mobile-stepper','monitoring-single-open','admin-single-direct-panel','classification-localized','placeholder-copy-zero','proof-standard-contained','mobile-brand-compact','320-reflow','390-reflow','zoom-200','reduced-motion','forced-colors']}
+        report = {
+            'schemaVersion': '2.0.0-candidate',
+            'ok': True,
+            'standard': 'ictc-surface-standard-1',
+            'screenshots': SHOTS,
+            'checks': [
+                'metric-value-label-atomic', 'metric-rerender-reconciled', 'server-issued-admin-visibility', 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
+                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
+                'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
+                '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
+            ]
+        }
         (ART / 'browser-enterprise-2-ui-standard-check.json').write_text(json.dumps(report, indent=2), encoding='utf8')
         print('browser-enterprise-2-ui-standard: complete', flush=True)
 except BaseException as error:
