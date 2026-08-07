@@ -62,7 +62,6 @@ try:
         PHASE = 'S01-home-auditor-summary'
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ictc-candidate="2.0.0-enterprise"][data-process-catalog="enterprise-2"][data-editorial-system="professional-1"][data-design-system="ictc-aurora-1"]').wait_for(state='attached')
-        page.locator('#roleSelect').select_option('user')
         page.locator('#homeView').wait_for(state='visible')
         assert page.locator('#workbenchHomeTitle').inner_text() == 'Consulta attività ed evidenze'
         assert page.title() == 'ICTC · Attività, evidenze e controlli'
