@@ -20,7 +20,26 @@ def shot(page, name):
 
 def no_overflow(page, label, selector='html'):
     delta = page.locator(selector).evaluate('el => el.scrollWidth - el.clientWidth')
-    assert delta <= 1, f'{label}: horizontal overflow {delta}px'
+    if delta > 1:
+        offenders = page.evaluate("""() => {
+          const width = document.documentElement.clientWidth;
+          return [...document.querySelectorAll('body *')].map(el => {
+            const rect = el.getBoundingClientRect();
+            return {
+              tag: el.tagName.toLowerCase(),
+              id: el.id || '',
+              cls: typeof el.className === 'string' ? el.className : '',
+              left: Math.round(rect.left),
+              right: Math.round(rect.right),
+              width: Math.round(rect.width),
+              scrollWidth: el.scrollWidth,
+              clientWidth: el.clientWidth
+            };
+          }).filter(item => item.right > width + 1 || item.left < -1 || item.scrollWidth > item.clientWidth + 1)
+            .sort((a, b) => Math.max(b.right - width, b.scrollWidth - b.clientWidth) - Math.max(a.right - width, a.scrollWidth - a.clientWidth))
+            .slice(0, 12);
+        }""")
+        raise AssertionError(f'{label}: horizontal overflow {delta}px; offenders={offenders}')
 
 
 def close_box_in_header(page, dialog_selector):
