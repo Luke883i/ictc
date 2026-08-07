@@ -60,6 +60,26 @@ def assert_min_target(page, selector, label):
     assert box and box['width'] >= 44 and box['height'] >= 44, f'{label}: {box}'
 
 
+def assert_pointer_target(target, label):
+    target.wait_for(state='visible')
+    hit = target.evaluate("""el => {
+      const rect = el.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const top = document.elementFromPoint(x, y);
+      return {
+        same: top === el || el.contains(top),
+        x, y,
+        targetText: el.textContent.trim(),
+        topTag: top?.tagName || null,
+        topId: top?.id || null,
+        topClass: typeof top?.className === 'string' ? top.className : '',
+        topText: top?.textContent?.trim()?.slice(0, 120) || ''
+      };
+    }""")
+    assert hit['same'], f'{label}: pointer center intercepted: {hit}'
+
+
 def annotate(error):
     payload = {'ok': False, 'phase': PHASE, 'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
     (ART / 'browser-enterprise-2-ui-standard-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
@@ -144,8 +164,17 @@ try:
         PHASE = 'admin-isolation-and-vocabulary'
         page.locator('#openAdminCenter').click()
         page.locator('#adminCenter').wait_for(state='visible')
-        page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governo AI').click()
+        controls = page.locator('.admin-section-nav').get_by_role('button', name='EV-01 · Controlli')
+        controls.click()
         page.wait_for_timeout(360)
+        assert controls.get_attribute('aria-current') == 'page'
+        assert page.locator('#adminCenter .admin-grid > .admin-panel:visible').count() == 1
+        governance = page.locator('.admin-section-nav').get_by_role('button', name='GA-01 · Governo AI')
+        PHASE = 'admin-nav-sequential-hit-test'
+        assert_pointer_target(governance, 'admin-nav-sequential-hit-test')
+        governance.click()
+        page.wait_for_timeout(360)
+        assert governance.get_attribute('aria-current') == 'page'
         visible_admin_panels = page.locator('#adminCenter .admin-grid > .admin-panel:visible').count()
         assert visible_admin_panels == 1, f'visible direct admin panels={visible_admin_panels}'
         classification = page.locator('#governanceForm select[name="classification"]')
@@ -154,6 +183,7 @@ try:
         page.set_viewport_size({'width': 390, 'height': 844})
         page.wait_for_timeout(360)
         assert_min_target(page, '#adminCenter .admin-section-nav button[aria-current="page"]', 'admin-nav-min-target')
+        assert_pointer_target(page.locator('#adminCenter .admin-section-nav button[aria-current="page"]').first, 'admin-nav-mobile-hit-target')
         no_overflow(page, 'admin-390', '#adminCenter')
         close_box_in_header(page, '#adminCenter')
         shot(page, 'admin-governance')
@@ -194,7 +224,7 @@ try:
             'screenshots': SHOTS,
             'checks': [
                 'metric-value-label-atomic', 'metric-rerender-reconciled', 'server-issued-admin-visibility', 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
-                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel', 'admin-nav-min-target',
+                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel', 'admin-nav-min-target', 'admin-nav-sequential-hit-test',
                 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
                 '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
             ]

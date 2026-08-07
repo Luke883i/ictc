@@ -40,16 +40,16 @@ verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
   assert.equal(model.runtimeMutation, true);
-  assert.equal(model.invariants.length, 12);
-  assert.equal(model.observedFailures.length, 8);
-  assert.equal(model.preventiveAlignments.length, 6);
+  assert.equal(model.invariants.length, 13);
+  assert.equal(model.observedFailures.length, 9);
+  assert.equal(model.preventiveAlignments.length, 7);
   assert.match(model.claimBoundary, /does not establish/i);
 });
 verify('saturation-escalated', () => {
-  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [108, 208, 0]);
-  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [56, 156, 0]);
-  assert.deepEqual([model.saturationImpact.Z, model.saturationImpact.ZPlus100, model.saturationImpact.uncoveredStandardsAfterZ], [31, 131, 0]);
-  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [2, 2, 1]);
+  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [109, 209, 0]);
+  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [57, 157, 0]);
+  assert.deepEqual([model.saturationImpact.Z, model.saturationImpact.ZPlus100, model.saturationImpact.uncoveredStandardsAfterZ], [32, 132, 0]);
+  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [3, 3, 2]);
 });
 verify('semantic-token-consumer', () => {
   assert.ok(designCheck.includes("'--ds-ease:'"));
@@ -142,8 +142,17 @@ verify('admin-navigation-target-budget', () => {
   const s10 = phase(enterprise2Browser, "PHASE = 'S10-admin-local-users-mobile'", "PHASE = 'keyboard-escape-focus-return'");
   assert.ok(s10.includes("assert_targets(page, ['.admin-section-nav button[aria-current=\"page\"]', '[data-admin-close]'])"));
 });
+verify('admin-navigation-hit-testing', () => {
+  assert.match(standardCss, /#adminCenter \.admin-shell\{[^}]*grid-template-rows:auto auto minmax\(0,1fr\)!important/);
+  assert.match(standardCss, /#adminCenter \.admin-grid\{[^}]*min-height:0!important/);
+  assert.ok(standardBrowser.includes('def assert_pointer_target'));
+  assert.ok(standardBrowser.includes("name='EV-01 · Controlli'"));
+  assert.ok(standardBrowser.includes("name='GA-01 · Governo AI'"));
+  assert.ok(standardBrowser.includes("PHASE = 'admin-nav-sequential-hit-test'"));
+  assert.ok(!standardBrowser.includes('force=True'));
+});
 
 const report = {schemaVersion:model.schemaVersion, alignment:model.id, ok:true, verified, observedFailures:model.observedFailures, preventiveAlignments:model.preventiveAlignments, saturationImpact:model.saturationImpact, runtimeMutation:model.runtimeMutation, claimBoundary:model.claimBoundary};
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-ui-standard-historical-contract-alignment.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 2/2/1)`);
+console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 3/3/2)`);

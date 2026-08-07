@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "baseStandard": "ictc-surface-standard-1",
   "evidenceSource": "server-backed-browser",
   "lexicalRules": [
@@ -10,7 +10,8 @@
     "terminal-mobile-action-bar-cascade-final",
     "stable-admin-owner-after-delayed-legacy-pass",
     "intrinsic-zoom-reflow-grid",
-    "admin-navigation-target-min-44-terminal"
+    "admin-navigation-target-min-44-terminal",
+    "admin-navigation-row-ownership-and-hit-testing"
   ],
   "contradictionPrimitives": [
     "server-admin-action-hidden-by-legacy-layer",
@@ -18,7 +19,8 @@
     "legacy-delayed-admin-activation-hides-owner-panel",
     "200-percent-text-expansion-overflows-global-nav",
     "source-decision-rerender-reverts-to-legacy-vocabulary",
-    "admin-navigation-target-below-control-budget"
+    "admin-navigation-target-below-control-budget",
+    "admin-navigation-hit-target-occluded-after-section-transition"
   ],
   "standardObligations": [
     {
@@ -50,6 +52,12 @@
       "source": "ICTC Surface Standard 1",
       "tags": ["dialogs", "interactive"],
       "witness": ["source-decision direct rerender emits ictc:surface-changed after DOM reconstruction", "terminal editorial reconciliation restores canonical decision vocabulary", "server-backed product journey observes Accettata nel catalogo after decision"]
+    },
+    {
+      "id": "ICTC-L16",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["admin", "navigation", "interactive"],
+      "witness": ["admin shell owns explicit header/navigation/body grid rows", "elementFromPoint at the next administration tab center resolves to that tab after a stable section transition", "real pointer click changes aria-current while one direct owner panel remains visible"]
     }
   ],
   "definitionOfDone": [
@@ -58,14 +66,16 @@
     "Administration panel ownership remains stable after the bounded delayed Enterprise 2 reconciliation pass.",
     "Topbar, role controls and service navigation intrinsically reflow at 200% text enlargement without reducing text size or hiding content.",
     "A direct source-workspace rerender after a human catalog decision emits the semantic surface-change event and the stable dialog retains canonical terminal vocabulary.",
-    "Administration section navigation preserves the declared 44px minimum target on the 390px mobile surface after the full CSS cascade."
+    "Administration section navigation preserves the declared 44px minimum target on the 390px mobile surface after the full CSS cascade.",
+    "Administration section navigation owns a dedicated layout row and remains pointer-operable across consecutive stable section transitions without force-click or hit-testing bypasses."
   ],
   "observedFailures": [
     {"class": "authority-layering", "observation": "legacy presentation hid Configura AI after server-issued admin visibility", "resolution": "server actor role is final visibility source", "standard": "ICTC-L11"},
-    {"class": "mobile-action-bar-cascade", "observation": "settings footer measured 161.375px at 320px", "resolution": "terminal two-column 44px action bar with <=72px budget", "standard": "ICTC-L12"},
+    {"class": "mobile-action-bar-cascade", "observation": "settings footer measured 161.375 px at 320 px", "resolution": "terminal two-column 44px action bar with <=72px budget", "standard": "ICTC-L12"},
     {"class": "delayed-admin-owner", "observation": "zero direct admin panels remained after delayed legacy reactivation", "resolution": "terminal owner reconciliation after bounded legacy pass", "standard": "ICTC-L13"},
     {"class": "text-zoom-reflow", "observation": "200% text enlargement produced 29px then 2px horizontal overflow", "resolution": "intrinsic rem grid plus bounded topbar/control sizing", "standard": "ICTC-L14"},
     {"class": "post-decision-terminal-vocabulary", "observation": "after Accetta nel catalogo, refresh was terminal-normalized before renderSourceDialog rebuilt legacy Verificata/Stato umano copy, so stable post-decision DOM lost canonical vocabulary", "resolution": "emit ictc:surface-changed immediately after direct source-dialog reconstruction so terminal layers reconcile the stable DOM", "standard": "ICTC-L15"},
-    {"class": "admin-navigation-target-budget", "observation": "at 390px the active administration navigation button measured 137.03125 x 38 CSS px, below the declared 44px control target", "resolution": "terminal Surface Standard enforces min-height: var(--uis-control) on administration navigation buttons and authoritative browser measures the stable mobile target", "standard": "WCAG-2.5.8 / ICTC controlMinPx=44"}
+    {"class": "admin-navigation-target-budget", "observation": "at 390px the active administration navigation button measured 137.03125 x 38 CSS px, below the declared 44px control target", "resolution": "terminal Surface Standard enforces min-height: var(--uis-control) on administration navigation buttons and authoritative browser measures the stable mobile target", "standard": "WCAG-2.5.8 / ICTC controlMinPx=44"},
+    {"class": "admin-navigation-hit-testing", "observation": "after the stable Controlli section transition, the subsequent GA-01 Governo AI button was visible and enabled but its click center was repeatedly intercepted by admin header/body descendants", "resolution": "give #adminCenter .admin-shell explicit header/navigation/body rows and keep the body min-height zero so the navigation row remains geometrically owned and pointer-operable", "standard": "ICTC-L16"}
   ]
 }
