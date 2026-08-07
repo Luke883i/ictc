@@ -62,6 +62,7 @@ def assert_min_target(page, selector, label):
 
 def assert_pointer_target(target, label):
     target.wait_for(state='visible')
+    target.scroll_into_view_if_needed()
     hit = target.evaluate("""el => {
       const rect = el.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
