@@ -63,18 +63,32 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ictc-candidate="2.0.0-enterprise"][data-process-catalog="enterprise-2"][data-editorial-system="professional-1"][data-design-system="ictc-aurora-1"]').wait_for(state='attached')
         page.locator('#homeView').wait_for(state='visible')
-        assert page.locator('#workbenchHomeTitle').inner_text() == 'Consulta attività ed evidenze'
-        assert page.title() == 'ICTC · Attività, evidenze e controlli'
-        assert page.locator('.home-disclosure[open]').count() == 0
-        assert page.locator('.home-disclosure-stack > details').first.get_attribute('data-home-disclosure') == 'proof'
-        assert page.locator('#runtimeStatus').inner_text() == 'Sola lettura'
-        assert page.locator('.process-lane[data-lane="monitoring"] > .eyebrow').inner_text() == 'RN-01 · Monitoraggio normativo'
-        assert page.locator('.process-lane[data-lane="incidents"] > .eyebrow').inner_text() == 'EC-01 · Gestione eventi e segnalazioni'
-        assert page.get_by_text('Processo 1', exact=True).count() == 0
-        assert page.get_by_text('Processo 2', exact=True).count() == 0
-        assert page.locator('html').get_attribute('data-ds-surface') == 'home'
-        assert page.locator('.process-lane[data-lane="monitoring"]').get_attribute('data-ds-card') == 'true'
-        assert page.locator('.home-disclosure .ds-disclosure-mark').count() >= 2
+        s01_role = page.locator('#roleSelect').input_value()
+        s01_actor = page.locator('#runtimeStatus').get_attribute('data-actor-role')
+        s01_title = page.locator('#workbenchHomeTitle').inner_text()
+        s01_doc_title = page.title()
+        s01_open = page.locator('.home-disclosure[open]').count()
+        s01_first_disclosure = page.locator('.home-disclosure-stack > details').first.get_attribute('data-home-disclosure')
+        s01_status = page.locator('#runtimeStatus').inner_text()
+        s01_monitoring = page.locator('.process-lane[data-lane="monitoring"] > .eyebrow').inner_text()
+        s01_incidents = page.locator('.process-lane[data-lane="incidents"] > .eyebrow').inner_text()
+        s01_surface = page.locator('html').get_attribute('data-ds-surface')
+        s01_card = page.locator('.process-lane[data-lane="monitoring"]').get_attribute('data-ds-card')
+        s01_marks = page.locator('.home-disclosure .ds-disclosure-mark').count()
+        assert s01_role == 'auditor', f'roleSelect={s01_role!r}; actorRole={s01_actor!r}'
+        assert s01_actor == 'auditor', f'actorRole={s01_actor!r}; roleSelect={s01_role!r}'
+        assert s01_title == 'Consulta attività ed evidenze', f'homeTitle={s01_title!r}; role={s01_role!r}; actor={s01_actor!r}'
+        assert s01_doc_title == 'ICTC · Attività, evidenze e controlli', f'documentTitle={s01_doc_title!r}'
+        assert s01_open == 0, f'openHomeDisclosures={s01_open}'
+        assert s01_first_disclosure == 'proof', f'firstHomeDisclosure={s01_first_disclosure!r}'
+        assert s01_status == 'Sola lettura', f'runtimeStatus={s01_status!r}; actor={s01_actor!r}'
+        assert s01_monitoring == 'RN-01 · Monitoraggio normativo', f'monitoringEyebrow={s01_monitoring!r}'
+        assert s01_incidents == 'EC-01 · Gestione eventi e segnalazioni', f'incidentsEyebrow={s01_incidents!r}'
+        assert page.get_by_text('Processo 1', exact=True).count() == 0, 'legacy Processo 1 visible'
+        assert page.get_by_text('Processo 2', exact=True).count() == 0, 'legacy Processo 2 visible'
+        assert s01_surface == 'home', f'dsSurface={s01_surface!r}'
+        assert s01_card == 'true', f'monitoringDsCard={s01_card!r}'
+        assert s01_marks >= 2, f'disclosureMarks={s01_marks}'
         no_overflow(page, 'S01')
         shot(page, 'S01', 'Panoramica auditor sintetica')
 
