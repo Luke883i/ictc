@@ -1,4 +1,6 @@
 import { lookup as dnsLookup } from 'node:dns/promises';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 import net from 'node:net';
 import { asString } from './domain.mjs';
 
@@ -30,7 +32,7 @@ export function isForbiddenAddress(address) {
   return true;
 }
 
-export async function validateAiEndpoint(endpoint, options = {}) {
+async function resolveAiEndpoint(endpoint, options = {}) {
   const url = new URL(asString(endpoint, 4_000));
   if (!['https:', 'http:'].includes(url.protocol)) throw Object.assign(new Error('Protocollo endpoint AI non consentito'), { status: 400, code: 'ai-endpoint-protocol' });
   if (url.username || url.password) throw Object.assign(new Error('Credenziali nell’URL endpoint AI non consentite'), { status: 400, code: 'ai-endpoint-credentials' });
@@ -49,20 +51,95 @@ export async function validateAiEndpoint(endpoint, options = {}) {
       details: { addresses: forbidden.map(record => record.address) }
     });
   }
-  return url;
+  return { url, records };
 }
 
-export async function fetchAiEndpoint(endpoint, init, options = {}) {
-  const fetchImpl = options.fetchImpl || fetch;
-  let current = endpoint;
+export async function validateAiEndpoint(endpoint, options = {}) {
+  return (await resolveAiEndpoint(endpoint, options)).url;
+}
+
+function pinnedLookup(target) {
+  return (_hostname, options, callback) => {
+    if (options?.all) return callback(null, [{ address: target.address, family: target.family }]);
+    return callback(null, target.address, target.family);
+  };
+}
+
+function responseHeaders(raw = {}) {
+  const headers = new Headers();
+  for (const [name, value] of Object.entries(raw)) {
+    if (Array.isArray(value)) for (const item of value) headers.append(name, String(item));
+    else if (value != null) headers.set(name, String(value));
+  }
+  return headers;
+}
+
+async function pinnedFetch(urlValue, init = {}, target) {
+  const url = new URL(urlValue);
+  const requestImpl = url.protocol === 'https:' ? httpsRequest : httpRequest;
+  return new Promise((resolve, reject) => {
+    const request = requestImpl(url, {
+      method: init.method || 'GET',
+      headers: init.headers,
+      signal: init.signal,
+      lookup: pinnedLookup(target)
+    }, response => {
+      const chunks = [];
+      response.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      response.on('error', reject);
+      response.on('end', () => {
+        const status = Number(response.statusCode || 502);
+        resolve(new Response(Buffer.concat(chunks), {
+          status,
+          statusText: response.statusMessage || '',
+          headers: responseHeaders(response.headers)
+        }));
+      });
+    });
+    request.on('error', reject);
+    if (init.body != null) {
+      if (typeof init.body === 'string' || Buffer.isBuffer(init.body) || init.body instanceof Uint8Array) request.write(init.body);
+      else {
+        request.destroy();
+        reject(Object.assign(new Error('Body richiesta AI non supportato dal transport pinning'), { status: 500, code: 'ai-request-body-unsupported' }));
+        return;
+      }
+    }
+    request.end();
+  });
+}
+
+function sanitizedCrossOriginInit(init = {}) {
+  const headers = new Headers(init.headers || {});
+  for (const name of ['authorization', 'proxy-authorization', 'cookie']) headers.delete(name);
+  return { ...init, headers };
+}
+
+function hasReplayableBody(init = {}) {
+  const method = String(init.method || 'GET').toUpperCase();
+  return init.body != null && !['GET', 'HEAD'].includes(method);
+}
+
+export async function fetchAiEndpoint(endpoint, init = {}, options = {}) {
+  const fetchImpl = options.fetchImpl || pinnedFetch;
+  let current = asString(endpoint, 4_000);
+  let currentInit = { ...init };
   for (let redirect = 0; redirect <= 3; redirect += 1) {
-    await validateAiEndpoint(current, options);
-    const response = await fetchImpl(current, { ...init, redirect: 'manual' });
+    const resolved = await resolveAiEndpoint(current, options);
+    const target = resolved.records[0];
+    const response = await fetchImpl(resolved.url.toString(), { ...currentInit, redirect: 'manual' }, target);
     if (![301, 302, 303, 307, 308].includes(response.status)) return response;
     const location = response.headers.get('location');
     if (!location) throw Object.assign(new Error('Redirect AI senza destinazione'), { status: 502, code: 'ai-redirect-invalid' });
     if (redirect === 3) throw Object.assign(new Error('Troppi redirect dal provider AI'), { status: 502, code: 'ai-redirect-limit' });
-    current = new URL(location, current).toString();
+    const next = new URL(location, resolved.url);
+    if (next.origin !== resolved.url.origin) {
+      if (hasReplayableBody(currentInit)) {
+        throw Object.assign(new Error('Redirect AI cross-origin con body non consentito'), { status: 502, code: 'ai-redirect-cross-origin-body' });
+      }
+      currentInit = sanitizedCrossOriginInit(currentInit);
+    }
+    current = next.toString();
   }
   throw Object.assign(new Error('Redirect AI non valido'), { status: 502, code: 'ai-redirect-invalid' });
 }
