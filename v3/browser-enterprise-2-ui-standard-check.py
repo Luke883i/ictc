@@ -58,14 +58,21 @@ try:
         assert page.locator('.process-lane .lane-status[data-metric-pairs="true"]').count() >= 2
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2
+
+        PHASE = 'home-metric-rerender-reconciliation'
         page.locator('#roleSelect').select_option('user')
         page.locator('#openSettings').wait_for(state='hidden')
-        page.locator('#roleSelect').select_option('admin')
-        page.locator('#openSettings').wait_for(state='visible')
         page.locator('#homeView').wait_for(state='visible')
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2, 'metric pair reconciliation after rerender'
         shot(page, 'home-desktop')
+
+        PHASE = 'restore-admin-deterministically'
+        page.evaluate("localStorage.setItem('ictc-role','admin')")
+        page.reload(wait_until='networkidle')
+        page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
+        page.locator('#openSettings').wait_for(state='visible')
+        assert page.locator('#roleSelect').input_value() == 'admin'
 
         PHASE = 'settings-dialog-chrome'
         page.locator('#openSettings').click()
@@ -140,7 +147,8 @@ try:
             'standard': 'ictc-surface-standard-1',
             'screenshots': SHOTS,
             'checks': [
-                'metric-value-label-atomic', 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
+                'metric-value-label-atomic', 'metric-rerender-reconciled', 'deterministic-role-reload',
+                'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
                 'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
                 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
                 '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
