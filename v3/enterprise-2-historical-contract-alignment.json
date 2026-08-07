@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "id": "ictc-historical-contract-alignment-1",
   "parentStandard": "ictc-surface-standard-1",
   "evidenceParentHead": "5656a20348060692fa00e601215518a550e9bb78",
@@ -10,7 +10,7 @@
     "N": 55, "NPlus100": 155, "contradictionsAfterN": 0,
     "Z": 31, "ZPlus100": 131, "uncoveredStandardsAfterZ": 0,
     "deltaM": 1, "deltaN": 1, "deltaZ": 1,
-    "reason": "Historical alignment exposed one stable post-decision runtime vocabulary regression; later retained-browser failures are stale or internally contradictory evidence consumers and do not add runtime primitives."
+    "reason": "Historical alignment exposed one stable post-decision runtime vocabulary regression; later retained-browser failures are stale, internally contradictory, or presentation-vs-semantic evidence consumers and do not add runtime primitives."
   },
   "invariants": [
     {"id":"HCA-01","name":"semantic-token-declaration","rule":"Historical design-system assurance validates --ds-ease: rather than the invalid --ds-ease;."},
@@ -22,7 +22,8 @@
     {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open assertions observe stable post-toggle state with bounded condition waiting, not instantaneous counts or arbitrary sleeps."},
     {"id":"HCA-08","name":"direct-rerender-terminal-reconciliation","rule":"A source decision direct rerender emits ictc:surface-changed after DOM reconstruction so terminal layers reconcile stable DOM."},
     {"id":"HCA-09","name":"legacy-visual-journey-terminal-shell","rule":"The retained Enterprise 1.8 visual journey asserts the current candidate terminal shell while preserving geometry, role, keyboard and overflow budgets."},
-    {"id":"HCA-10","name":"scenario-actor-consistency","rule":"A named role scenario must retain that actor until the scenario ends; the S01 auditor scenario cannot switch to user before asserting auditor title, status and disclosure order."
+    {"id":"HCA-10","name":"scenario-actor-consistency","rule":"A named role scenario retains that actor until the scenario ends; S01 auditor cannot switch to user before auditor title, status and disclosure assertions."},
+    {"id":"HCA-11","name":"semantic-copy-vs-presentational-case","rule":"Canonical process vocabulary is asserted from DOM text content; CSS text-transform may visually uppercase eyebrow labels without changing the semantic process name or code."
     }
   ],
   "observedFailures": [
@@ -31,13 +32,15 @@
     {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","observation":"journey asserted instantaneous open count while toggle reconciliation was still closing a sibling.","resolutionClass":"condition-wait-for-stable-single-open"},
     {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","observation":"renderSourceDialog rebuilt base vocabulary after refresh-time terminal reconciliation.","resolutionClass":"semantic-surface-change-after-direct-rerender"},
     {"runId":31167413169,"job":"browser-journeys","class":"enterprise-1-8-terminal-shell-stale","observation":"retained 1.8 journey asserted pre-candidate shell vocabulary and repeated old settings ordering.","resolutionClass":"preserve-visual-budgets-align-terminal-consumer"},
-    {"runId":31167750367,"job":"browser-journeys","class":"enterprise-2-s01-actor-contradiction","observation":"S01 was initialized as auditor, immediately selected user, then asserted auditor title and Sola lettura state.","resolutionClass":"preserve-auditor-until-s04-user-transition"}
+    {"runId":31167750367,"job":"browser-journeys","class":"enterprise-2-s01-actor-contradiction","observation":"S01 was initialized as auditor, immediately selected user, then asserted auditor title and Sola lettura state.","resolutionClass":"preserve-auditor-until-s04-user-transition"},
+    {"runId":31168798940,"job":"browser-journeys","class":"enterprise-2-eyebrow-presentational-case","observation":"Playwright inner_text returned RN-01 · MONITORAGGIO NORMATIVO because the eyebrow is visually uppercased by CSS, while the canonical DOM text remains RN-01 · Monitoraggio normativo.","resolutionClass":"assert-semantic-dom-copy-not-css-text-transform"}
   ],
   "preventiveAlignments": [
     {"class":"job-progressive-disclosure","reason":"controls are interacted with through their current disclosure owner."},
     {"class":"terminal-vocabulary","reason":"historical journeys consume canonical terminal copy so stable legacy regressions remain observable."},
     {"class":"retained-version-regression","reason":"older-version visual journeys preserve invariant budgets while consuming current candidate shell."},
-    {"class":"scenario-role","reason":"role-labelled browser phases cannot mutate actor before role-specific assertions complete."}
+    {"class":"scenario-role","reason":"role-labelled browser phases cannot mutate actor before role-specific assertions complete."},
+    {"class":"semantic-vs-presentation","reason":"process codes/names are checked from DOM content while screenshots and CSS remain free to apply intentional uppercase eyebrow presentation."}
   ],
   "acceptance": [
     "Static token and historical contract checks pass without weakening production design tokens.",
@@ -45,6 +48,7 @@
     "The product journey completes progressive job flow and stable source decision vocabulary.",
     "The retained Enterprise 1.8 journey keeps its geometry, least-privilege, keyboard, overflow and target-size budgets while consuming current shell copy.",
     "S01 of the Enterprise 2 browser remains auditor from initialization through auditor-specific assertions; the first user transition occurs in S04.",
+    "Enterprise 2 process eyebrow semantics are asserted from text_content while visual uppercase remains covered by screenshots rather than treated as a lexical contradiction.",
     "No API permission, capability or backend authority is weakened.",
     "Surface Standard assurance, server-backed UI-standard browser, all historical browser journeys, contract audit, runtime E2E and security are re-evaluated on the same final PR head."
   ],
