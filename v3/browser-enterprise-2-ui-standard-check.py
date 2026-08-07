@@ -41,10 +41,12 @@ def annotate(error):
     print(f'::error title=ui-standard-browser::{PHASE}: {type(error).__name__}: {message}', flush=True)
 
 
-def new_page(browser, viewport=None):
-    page = browser.new_page(viewport=viewport or {'width': 1440, 'height': 1000})
+def actor_context(browser, role, viewport=None):
+    context = browser.new_context(viewport=viewport or {'width': 1440, 'height': 1000})
+    context.add_init_script(f"localStorage.setItem('ictc-role',{json.dumps(role)});localStorage.setItem('ictc-service','home')")
+    page = context.new_page()
     page.set_default_timeout(15000)
-    return page
+    return context, page
 
 
 try:
@@ -53,13 +55,12 @@ try:
         if os.environ.get('ICTC_CHROMIUM'):
             launch['executable_path'] = os.environ['ICTC_CHROMIUM']
         browser = playwright.chromium.launch(**launch)
-        page = new_page(browser)
+        context, page = actor_context(browser, 'admin')
 
         PHASE = 'home-metric-atomicity'
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
-        page.locator('#roleSelect').select_option('admin')
-        page.locator('#homeView').wait_for(state='visible')
+        page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
         assert page.locator('.process-lane .lane-status[data-metric-pairs="true"]').count() >= 2
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2
@@ -67,14 +68,13 @@ try:
         PHASE = 'home-metric-rerender-reconciliation'
         page.locator('#roleSelect').select_option('user')
         page.locator('#runtimeStatus[data-actor-role="user"]').wait_for(state='visible')
-        page.locator('#homeView').wait_for(state='visible')
         for host in page.locator('.process-lane .lane-status[data-metric-pairs="true"]').all():
             assert host.locator(':scope > .ui-metric-pair').count() == 2, 'metric pair reconciliation after rerender'
         shot(page, 'home-user-rerender')
-        page.close()
+        context.close()
 
         PHASE = 'fresh-admin-context'
-        page = new_page(browser)
+        context, page = actor_context(browser, 'admin')
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('html[data-ui-standard="ictc-surface-standard-1"]').wait_for(state='attached')
         page.locator('#runtimeStatus[data-actor-role="admin"]').wait_for(state='visible')
@@ -148,6 +148,7 @@ try:
         page.emulate_media(reduced_motion='reduce', forced_colors='active')
         assert page.locator('button:visible').evaluate_all("els => els.every(el => el.innerText.trim() || el.getAttribute('aria-label') || el.getAttribute('title'))")
         no_overflow(page, 'forced-colors')
+        context.close()
         browser.close()
 
         report = {
@@ -156,7 +157,7 @@ try:
             'standard': 'ictc-surface-standard-1',
             'screenshots': SHOTS,
             'checks': [
-                'metric-value-label-atomic', 'metric-rerender-reconciled', 'fresh-admin-context',
+                'metric-value-label-atomic', 'metric-rerender-reconciled', 'explicit-actor-contexts',
                 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
                 'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
                 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
