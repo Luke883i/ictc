@@ -53,15 +53,17 @@ verify('server-issued-authority-visibility', () => {
   assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L11'));
 });
 verify('server-backed-runtime-findings', () => {
-  assert.equal(runtimeFindings.observedFailures.length, 5);
-  for (const rule of ['terminal-mobile-action-bar-cascade-final','stable-admin-owner-after-delayed-legacy-pass','intrinsic-zoom-reflow-grid']) assert.ok(model.layoutRules.includes(rule));
+  assert.equal(runtimeFindings.observedFailures.length, 6);
+  for (const rule of ['terminal-mobile-action-bar-cascade-final','stable-admin-owner-after-delayed-legacy-pass','intrinsic-zoom-reflow-grid','admin-navigation-target-min-44-terminal']) assert.ok(model.layoutRules.includes(rule));
   assert.ok(model.lexicalRules.includes('direct-workspace-rerender-reconciles-terminal-vocabulary'));
-  for (const contradiction of ['legacy-progressive-footer-exceeds-mobile-height-budget','legacy-delayed-admin-activation-hides-owner-panel','200-percent-text-expansion-overflows-global-nav','source-decision-rerender-reverts-to-legacy-vocabulary']) assert.ok(model.contradictionPrimitives.includes(contradiction));
+  for (const contradiction of ['legacy-progressive-footer-exceeds-mobile-height-budget','legacy-delayed-admin-activation-hides-owner-panel','200-percent-text-expansion-overflows-global-nav','source-decision-rerender-reverts-to-legacy-vocabulary','admin-navigation-target-below-control-budget']) assert.ok(model.contradictionPrimitives.includes(contradiction));
   for (const id of ['ICTC-L12','ICTC-L13','ICTC-L14','ICTC-L15']) assert.ok(model.standardObligations.some(item => item.id === id));
   assert.match(ui, /setTimeout\(applyUiStandard, 320\)/);
   assert.match(runtimeCss, /max-height:72px!important/);
   assert.match(runtimeCss, /repeat\(auto-fit,minmax\(min\(100%,9rem\),1fr\)\)/);
   assert.match(runtimeCss, /#roleSelect/);
+  assert.match(css, /#adminCenter \.admin-section-nav button\{[^}]*min-height:var\(--uis-control\)!important/);
+  assert.match(browser, /admin-nav-min-target/);
   assert.match(actions, /renderSourceDialog\(\);\s*document\.dispatchEvent\(new CustomEvent\('ictc:surface-changed'/s);
   assert.match(actions, /surface:\s*'source-dialog'/);
   assert.match(actions, /reason:\s*'source-decision'/);
@@ -107,14 +109,15 @@ verify('surface-coverage', () => {
   assert.equal(saturation.standardCoverage.length, model.standardObligations.length);
 });
 verify('triple-saturation', () => {
-  assert.equal(saturation.M, 107); assert.equal(saturation.MPlus100, 207); assert.equal(saturation.noveltyAfterM, 0);
-  assert.equal(saturation.N, 55); assert.equal(saturation.NPlus100, 155); assert.equal(saturation.contradictionsAfterN, 0);
+  assert.equal(saturation.M, 108); assert.equal(saturation.MPlus100, 208); assert.equal(saturation.noveltyAfterM, 0);
+  assert.equal(saturation.N, 56); assert.equal(saturation.NPlus100, 156); assert.equal(saturation.contradictionsAfterN, 0);
   assert.equal(saturation.Z, 31); assert.equal(saturation.ZPlus100, 131); assert.equal(saturation.uncoveredStandardsAtZ, 0); assert.equal(saturation.uncoveredStandardsAfterZ, 0);
 });
 verify('documented-dod', () => {
-  assert.equal(model.definitionOfDone.length, 24);
+  assert.equal(model.definitionOfDone.length, 25);
   assert.match(docs, /non dichiara conformità WCAG/i);
-  assert.match(convergenceDocs, /M = 107/); assert.match(convergenceDocs, /N = 55/); assert.match(convergenceDocs, /Z = 31/);
+  assert.match(convergenceDocs, /M = 108/); assert.match(convergenceDocs, /N = 56/); assert.match(convergenceDocs, /Z = 31/);
+  assert.match(convergenceDocs, /38/);
   assert.match(convergenceDocs, /post-decision/i);
   assert.match(convergenceDocs, /supersede/i);
 });

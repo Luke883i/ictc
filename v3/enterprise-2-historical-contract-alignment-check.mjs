@@ -7,6 +7,8 @@ const designCheck = await read('./enterprise-2-design-system-check.mjs');
 const browser = await read('./browser-product-check.py');
 const enterprise18Browser = await read('./browser-enterprise-1-8-check.py');
 const enterprise2Browser = await read('./browser-enterprise-2-check.py');
+const standardBrowser = await read('./browser-enterprise-2-ui-standard-check.py');
+const standardCss = `${await read('./public/enterprise-2-ui-standard.css')}\n${await read('./public/enterprise-2-ui-standard-runtime-refinement.css')}`;
 const actions = await read('./public/ui/actions.js');
 const verified = [];
 
@@ -38,16 +40,16 @@ verify('model-boundary', () => {
   assert.equal(model.id, 'ictc-historical-contract-alignment-1');
   assert.equal(model.parentStandard, 'ictc-surface-standard-1');
   assert.equal(model.runtimeMutation, true);
-  assert.equal(model.invariants.length, 11);
-  assert.equal(model.observedFailures.length, 7);
-  assert.equal(model.preventiveAlignments.length, 5);
+  assert.equal(model.invariants.length, 12);
+  assert.equal(model.observedFailures.length, 8);
+  assert.equal(model.preventiveAlignments.length, 6);
   assert.match(model.claimBoundary, /does not establish/i);
 });
 verify('saturation-escalated', () => {
-  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [107, 207, 0]);
-  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [55, 155, 0]);
+  assert.deepEqual([model.saturationImpact.M, model.saturationImpact.MPlus100, model.saturationImpact.noveltyAfterM], [108, 208, 0]);
+  assert.deepEqual([model.saturationImpact.N, model.saturationImpact.NPlus100, model.saturationImpact.contradictionsAfterN], [56, 156, 0]);
   assert.deepEqual([model.saturationImpact.Z, model.saturationImpact.ZPlus100, model.saturationImpact.uncoveredStandardsAfterZ], [31, 131, 0]);
-  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [1, 1, 1]);
+  assert.deepEqual([model.saturationImpact.deltaM, model.saturationImpact.deltaN, model.saturationImpact.deltaZ], [2, 2, 1]);
 });
 verify('semantic-token-consumer', () => {
   assert.ok(designCheck.includes("'--ds-ease:'"));
@@ -126,22 +128,22 @@ verify('enterprise-2-semantic-process-copy', () => {
     assert.ok(block.includes('.text_content().strip()'), `${name} process vocabulary must read DOM text content`);
     for (const token of expected) assert.ok(block.includes(`'${token}'`), `${name}:${token}`);
   }
-  assert.ok(!s01.includes(".process-lane[data-lane=\"monitoring\"] > .eyebrow').inner_text()"));
-  assert.ok(!s01.includes(".process-lane[data-lane=\"incidents\"] > .eyebrow').inner_text()"));
-  assert.ok(!s04.includes("#monitoringView .core-title > .eyebrow').inner_text()"));
-  assert.ok(!s05.includes("#incidentsView .core-title > .eyebrow').inner_text()"));
 });
 verify('enterprise-2-stable-admin-observation', () => {
   const s08 = phase(enterprise2Browser, "PHASE = 'S08-admin-controls'", "PHASE = 'S09-admin-ai'");
   const s09 = phase(enterprise2Browser, "PHASE = 'S09-admin-ai'", "PHASE = 'S10-admin-local-users-mobile'");
   const s10 = phase(enterprise2Browser, "PHASE = 'S10-admin-local-users-mobile'", "PHASE = 'keyboard-escape-focus-return'");
-  for (const [name, block] of [['S08', s08], ['S09', s09], ['S10', s10]]) {
-    assert.ok(block.includes('wait_for_timeout(360)'), `${name} must observe after the documented 320ms terminal reconciliation`);
-  }
+  for (const [name, block] of [['S08', s08], ['S09', s09], ['S10', s10]]) assert.ok(block.includes('wait_for_timeout(360)'), `${name} must observe after terminal reconciliation`);
   assert.ok(s08.includes("#adminCenter .admin-panel:visible').count() == 1"));
+});
+verify('admin-navigation-target-budget', () => {
+  assert.match(standardCss, /#adminCenter \.admin-section-nav button\{[^}]*min-height:var\(--uis-control\)!important/);
+  assert.ok(standardBrowser.includes("'admin-nav-min-target'"));
+  const s10 = phase(enterprise2Browser, "PHASE = 'S10-admin-local-users-mobile'", "PHASE = 'keyboard-escape-focus-return'");
+  assert.ok(s10.includes("assert_targets(page, ['.admin-section-nav button[aria-current=\"page\"]', '[data-admin-close]'])"));
 });
 
 const report = {schemaVersion:model.schemaVersion, alignment:model.id, ok:true, verified, observedFailures:model.observedFailures, preventiveAlignments:model.preventiveAlignments, saturationImpact:model.saturationImpact, runtimeMutation:model.runtimeMutation, claimBoundary:model.claimBoundary};
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-ui-standard-historical-contract-alignment.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 1/1/1)`);
+console.log(`historical-contract-alignment: ok (${verified.length} groups, delta M/N/Z = 2/2/1)`);

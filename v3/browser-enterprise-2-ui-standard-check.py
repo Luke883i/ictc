@@ -53,6 +53,13 @@ def close_box_in_header(page, dialog_selector):
     assert cb['y'] <= hb['y'] + 20, (hb, cb)
 
 
+def assert_min_target(page, selector, label):
+    target = page.locator(selector).first
+    target.wait_for(state='visible')
+    box = target.bounding_box()
+    assert box and box['width'] >= 44 and box['height'] >= 44, f'{label}: {box}'
+
+
 def annotate(error):
     payload = {'ok': False, 'phase': PHASE, 'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
     (ART / 'browser-enterprise-2-ui-standard-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
@@ -144,6 +151,10 @@ try:
         classification = page.locator('#governanceForm select[name="classification"]')
         option_text = classification.locator('option').all_inner_texts()
         assert 'Uso interno' in option_text and 'internal' not in option_text, f'classification options={option_text}'
+        page.set_viewport_size({'width': 390, 'height': 844})
+        page.wait_for_timeout(360)
+        assert_min_target(page, '#adminCenter .admin-section-nav button[aria-current="page"]', 'admin-nav-min-target')
+        no_overflow(page, 'admin-390', '#adminCenter')
         close_box_in_header(page, '#adminCenter')
         shot(page, 'admin-governance')
         page.keyboard.press('Escape')
@@ -183,7 +194,7 @@ try:
             'screenshots': SHOTS,
             'checks': [
                 'metric-value-label-atomic', 'metric-rerender-reconciled', 'server-issued-admin-visibility', 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
-                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel',
+                'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel', 'admin-nav-min-target',
                 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
                 '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
             ]

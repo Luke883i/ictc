@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "baseStandard": "ictc-surface-standard-1",
   "evidenceSource": "server-backed-browser",
   "lexicalRules": [
@@ -9,14 +9,16 @@
     "server-issued-admin-visibility-final",
     "terminal-mobile-action-bar-cascade-final",
     "stable-admin-owner-after-delayed-legacy-pass",
-    "intrinsic-zoom-reflow-grid"
+    "intrinsic-zoom-reflow-grid",
+    "admin-navigation-target-min-44-terminal"
   ],
   "contradictionPrimitives": [
     "server-admin-action-hidden-by-legacy-layer",
     "legacy-progressive-footer-exceeds-mobile-height-budget",
     "legacy-delayed-admin-activation-hides-owner-panel",
     "200-percent-text-expansion-overflows-global-nav",
-    "source-decision-rerender-reverts-to-legacy-vocabulary"
+    "source-decision-rerender-reverts-to-legacy-vocabulary",
+    "admin-navigation-target-below-control-budget"
   ],
   "standardObligations": [
     {
@@ -55,13 +57,15 @@
     "The mobile progressive-dialog action bar remains at or below 72px after the complete legacy and terminal CSS cascade.",
     "Administration panel ownership remains stable after the bounded delayed Enterprise 2 reconciliation pass.",
     "Topbar, role controls and service navigation intrinsically reflow at 200% text enlargement without reducing text size or hiding content.",
-    "A direct source-workspace rerender after a human catalog decision emits the semantic surface-change event and the stable dialog retains canonical terminal vocabulary."
+    "A direct source-workspace rerender after a human catalog decision emits the semantic surface-change event and the stable dialog retains canonical terminal vocabulary.",
+    "Administration section navigation preserves the declared 44px minimum target on the 390px mobile surface after the full CSS cascade."
   ],
   "observedFailures": [
     {"class": "authority-layering", "observation": "legacy presentation hid Configura AI after server-issued admin visibility", "resolution": "server actor role is final visibility source", "standard": "ICTC-L11"},
     {"class": "mobile-action-bar-cascade", "observation": "settings footer measured 161.375px at 320px", "resolution": "terminal two-column 44px action bar with <=72px budget", "standard": "ICTC-L12"},
     {"class": "delayed-admin-owner", "observation": "zero direct admin panels remained after delayed legacy reactivation", "resolution": "terminal owner reconciliation after bounded legacy pass", "standard": "ICTC-L13"},
     {"class": "text-zoom-reflow", "observation": "200% text enlargement produced 29px then 2px horizontal overflow", "resolution": "intrinsic rem grid plus bounded topbar/control sizing", "standard": "ICTC-L14"},
-    {"class": "post-decision-terminal-vocabulary", "observation": "after Accetta nel catalogo, refresh was terminal-normalized before renderSourceDialog rebuilt legacy Verificata/Stato umano copy, so stable post-decision DOM lost canonical vocabulary", "resolution": "emit ictc:surface-changed immediately after direct source-dialog reconstruction so terminal layers reconcile the stable DOM", "standard": "ICTC-L15"}
+    {"class": "post-decision-terminal-vocabulary", "observation": "after Accetta nel catalogo, refresh was terminal-normalized before renderSourceDialog rebuilt legacy Verificata/Stato umano copy, so stable post-decision DOM lost canonical vocabulary", "resolution": "emit ictc:surface-changed immediately after direct source-dialog reconstruction so terminal layers reconcile the stable DOM", "standard": "ICTC-L15"},
+    {"class": "admin-navigation-target-budget", "observation": "at 390px the active administration navigation button measured 137.03125 x 38 CSS px, below the declared 44px control target", "resolution": "terminal Surface Standard enforces min-height: var(--uis-control) on administration navigation buttons and authoritative browser measures the stable mobile target", "standard": "WCAG-2.5.8 / ICTC controlMinPx=44"}
   ]
 }

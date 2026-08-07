@@ -1,16 +1,16 @@
 {
-  "schemaVersion": "1.5.0",
+  "schemaVersion": "1.6.0",
   "id": "ictc-historical-contract-alignment-1",
   "parentStandard": "ictc-surface-standard-1",
   "evidenceParentHead": "5656a20348060692fa00e601215518a550e9bb78",
-  "purpose": "Align historical static and browser contracts with the canonical Surface Standard runtime, and escalate any falsified runtime assumption into the effective standard rather than masking it in evidence consumers.",
+  "purpose": "Align historical static and browser contracts with the canonical Surface Standard runtime, and escalate falsified runtime assumptions into the effective standard rather than masking them in evidence consumers.",
   "runtimeMutation": true,
   "saturationImpact": {
-    "M": 107, "MPlus100": 207, "noveltyAfterM": 0,
-    "N": 55, "NPlus100": 155, "contradictionsAfterN": 0,
+    "M": 108, "MPlus100": 208, "noveltyAfterM": 0,
+    "N": 56, "NPlus100": 156, "contradictionsAfterN": 0,
     "Z": 31, "ZPlus100": 131, "uncoveredStandardsAfterZ": 0,
-    "deltaM": 1, "deltaN": 1, "deltaZ": 1,
-    "reason": "Historical alignment exposed one stable post-decision runtime vocabulary regression; later retained-browser failures are stale, internally contradictory, or presentation-vs-semantic evidence consumers and do not add runtime primitives."
+    "deltaM": 2, "deltaN": 2, "deltaZ": 1,
+    "reason": "The slice exposed two runtime findings: post-decision vocabulary loss and an administration navigation target below the already-declared 44px budget. The second finding adds M/N but no new Z obligation."
   },
   "invariants": [
     {"id":"HCA-01","name":"semantic-token-declaration","rule":"Historical design-system assurance validates --ds-ease: rather than the invalid --ds-ease;."},
@@ -19,36 +19,37 @@
     {"id":"HCA-04","name":"canonical-terminal-vocabulary","rule":"Historical browser assertions consume Accetta nel catalogo, Accettata nel catalogo and Scarica evidenza."},
     {"id":"HCA-05","name":"no-runtime-bypass","rule":"Alignment does not force hidden controls, disable single-open behavior, modify server authority, or reintroduce legacy labels."},
     {"id":"HCA-06","name":"same-head-evidence","rule":"Historical-contract assurance, Surface Standard assurance, server-backed browser and general CI execute against the same PR head before maturity."},
-    {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open assertions observe stable post-toggle state with bounded condition waiting, not instantaneous counts or arbitrary sleeps."},
+    {"id":"HCA-07","name":"stable-post-toggle-observation","rule":"Single-open assertions observe stable post-toggle state with bounded condition waiting."},
     {"id":"HCA-08","name":"direct-rerender-terminal-reconciliation","rule":"A source decision direct rerender emits ictc:surface-changed after DOM reconstruction so terminal layers reconcile stable DOM."},
     {"id":"HCA-09","name":"legacy-visual-journey-terminal-shell","rule":"The retained Enterprise 1.8 visual journey asserts the current candidate terminal shell while preserving geometry, role, keyboard and overflow budgets."},
-    {"id":"HCA-10","name":"scenario-actor-consistency","rule":"A named role scenario retains that actor until the scenario ends; S01 auditor cannot switch to user before auditor title, status and disclosure assertions."},
-    {"id":"HCA-11","name":"semantic-copy-vs-presentational-case","rule":"Canonical process vocabulary is asserted from DOM text content; CSS text-transform may visually uppercase eyebrow labels without changing the semantic process name or code."
-    }
+    {"id":"HCA-10","name":"scenario-actor-consistency","rule":"A named role scenario retains that actor until the scenario ends."},
+    {"id":"HCA-11","name":"semantic-copy-vs-presentational-case","rule":"Canonical process vocabulary is asserted from DOM text content; CSS text-transform may visually uppercase eyebrow labels."},
+    {"id":"HCA-12","name":"admin-navigation-target-budget","rule":"Every visible administration section navigation button is at least 44x44 CSS px on the stable 390px mobile surface after the full terminal cascade."}
   ],
   "observedFailures": [
-    {"runId":31163931816,"job":"contract-and-audit","class":"stale-static-token-literal","observation":"design-system check expected --ds-ease; while runtime declares --ds-ease:...","resolutionClass":"correct-test-literal"},
-    {"runId":31163931816,"job":"browser-journeys","class":"stale-progressive-disclosure-order","observation":"product journey hid organization by opening provider before filling organization fields.","resolutionClass":"sequence-interactions-by-open-owner"},
-    {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","observation":"journey asserted instantaneous open count while toggle reconciliation was still closing a sibling.","resolutionClass":"condition-wait-for-stable-single-open"},
-    {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","observation":"renderSourceDialog rebuilt base vocabulary after refresh-time terminal reconciliation.","resolutionClass":"semantic-surface-change-after-direct-rerender"},
-    {"runId":31167413169,"job":"browser-journeys","class":"enterprise-1-8-terminal-shell-stale","observation":"retained 1.8 journey asserted pre-candidate shell vocabulary and repeated old settings ordering.","resolutionClass":"preserve-visual-budgets-align-terminal-consumer"},
-    {"runId":31167750367,"job":"browser-journeys","class":"enterprise-2-s01-actor-contradiction","observation":"S01 was initialized as auditor, immediately selected user, then asserted auditor title and Sola lettura state.","resolutionClass":"preserve-auditor-until-s04-user-transition"},
-    {"runId":31168798940,"job":"browser-journeys","class":"enterprise-2-eyebrow-presentational-case","observation":"Playwright inner_text returned RN-01 · MONITORAGGIO NORMATIVO because the eyebrow is visually uppercased by CSS, while the canonical DOM text remains RN-01 · Monitoraggio normativo.","resolutionClass":"assert-semantic-dom-copy-not-css-text-transform"}
+    {"runId":31163931816,"job":"contract-and-audit","class":"stale-static-token-literal","resolutionClass":"correct-test-literal"},
+    {"runId":31163931816,"job":"browser-journeys","class":"stale-progressive-disclosure-order","resolutionClass":"sequence-interactions-by-open-owner"},
+    {"runId":31166235807,"job":"browser-journeys","class":"single-open-toggle-observation-race","resolutionClass":"condition-wait-for-stable-single-open"},
+    {"runId":31166610831,"job":"browser-journeys","class":"post-decision-terminal-vocabulary-loss","resolutionClass":"semantic-surface-change-after-direct-rerender"},
+    {"runId":31167413169,"job":"browser-journeys","class":"enterprise-1-8-terminal-shell-stale","resolutionClass":"preserve-visual-budgets-align-terminal-consumer"},
+    {"runId":31167750367,"job":"browser-journeys","class":"enterprise-2-s01-actor-contradiction","resolutionClass":"preserve-auditor-until-s04-user-transition"},
+    {"runId":31168798940,"job":"browser-journeys","class":"enterprise-2-eyebrow-presentational-case","resolutionClass":"assert-semantic-dom-copy-not-css-text-transform"},
+    {"runId":31170345562,"job":"browser-journeys","class":"enterprise-2-admin-navigation-target-below-budget","observation":"At 390px the active administration section button measured 137.03125 x 38 CSS px.","resolutionClass":"enforce-terminal-44px-admin-nav-target"}
   ],
   "preventiveAlignments": [
     {"class":"job-progressive-disclosure","reason":"controls are interacted with through their current disclosure owner."},
-    {"class":"terminal-vocabulary","reason":"historical journeys consume canonical terminal copy so stable legacy regressions remain observable."},
+    {"class":"terminal-vocabulary","reason":"historical journeys consume canonical terminal copy."},
     {"class":"retained-version-regression","reason":"older-version visual journeys preserve invariant budgets while consuming current candidate shell."},
     {"class":"scenario-role","reason":"role-labelled browser phases cannot mutate actor before role-specific assertions complete."},
-    {"class":"semantic-vs-presentation","reason":"process codes/names are checked from DOM content while screenshots and CSS remain free to apply intentional uppercase eyebrow presentation."}
+    {"class":"semantic-vs-presentation","reason":"process codes/names are checked from DOM content while screenshots cover intentional casing."},
+    {"class":"mobile-control-target","reason":"retained and authoritative browsers measure the active administration target against the existing 44px budget after stable reconciliation."}
   ],
   "acceptance": [
     "Static token and historical contract checks pass without weakening production design tokens.",
-    "Product and retained Enterprise 1.8 journeys complete progressive settings flow.",
-    "The product journey completes progressive job flow and stable source decision vocabulary.",
-    "The retained Enterprise 1.8 journey keeps its geometry, least-privilege, keyboard, overflow and target-size budgets while consuming current shell copy.",
-    "S01 of the Enterprise 2 browser remains auditor from initialization through auditor-specific assertions; the first user transition occurs in S04.",
-    "Enterprise 2 process eyebrow semantics are asserted from text_content while visual uppercase remains covered by screenshots rather than treated as a lexical contradiction.",
+    "Product and retained browser journeys consume progressive disclosure and canonical vocabulary.",
+    "After a human source decision, stable post-decision copy remains canonical.",
+    "Enterprise 2 role scenarios retain actor consistency and distinguish DOM semantics from visual casing.",
+    "Administration section navigation measures at least 44x44 CSS px at 390px after terminal reconciliation.",
     "No API permission, capability or backend authority is weakened.",
     "Surface Standard assurance, server-backed UI-standard browser, all historical browser journeys, contract audit, runtime E2E and security are re-evaluated on the same final PR head."
   ],

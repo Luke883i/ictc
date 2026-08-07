@@ -51,8 +51,8 @@ const Z = model.standardObligations.length;
 const standardScenarios = standardCoverage.map((item, i) => ({ index: i + 1, axis: 'standard', standard: item.id, surfaces: item.surfaces, witnesses: item.witnesses, novelty: [], contradictions: [], uncoveredStandards: item.surfaces.length && item.witnesses.length ? [] : [item.id] }));
 for (let i = 1; i <= tail; i += 1) standardScenarios.push(confirmationScenario(Z + i, 'standard'));
 
-assert.equal(M, 107);
-assert.equal(N, 55);
+assert.equal(M, 108);
+assert.equal(N, 56);
 assert.equal(Z, 31);
 assert.equal(noveltyScenarios.slice(M).flatMap(item => item.novelty).length, 0);
 assert.equal(contradictionScenarios.slice(N).flatMap(item => item.contradictions).length, 0);
