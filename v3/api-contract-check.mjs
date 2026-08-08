@@ -84,7 +84,7 @@ export function compareRouteSets(runtimeRoutes, openApiRoutes, openapiText = '')
 
 async function collectRuntimeRoutes() {
   const serverSource = await readFile(serverPath, 'utf8');
-  const files = [{ path: serverPath, source: serverSource }, ...await Promise.all(extractMountedRuntimeImports(serverSource).map(async relative => ({ path: path.join(repoRoot, relative), source: await readFile(path.join(repoRoot, relative), 'utf8') }))];
+  const files = [{ path: serverPath, source: serverSource }, ...await Promise.all(extractMountedRuntimeImports(serverSource).map(async relative => ({ path: path.join(repoRoot, relative), source: await readFile(path.join(repoRoot, relative), 'utf8') })))];
   const combined = new Map();
   for (const file of files) {
     const relative = path.relative(repoRoot, file.path);
