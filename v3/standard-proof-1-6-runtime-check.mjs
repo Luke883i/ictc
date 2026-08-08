@@ -21,17 +21,27 @@ try {
       assert.equal(body.benchmarkFamilies.length, 12);
       assert.equal(body.glossary.length, 14);
       assert.equal(body.proof.rule, 'Ogni promessa deve mostrare pratica, evidenza e limite.');
+      assert.equal(body.proof.complianceSemantics.model, 'selected-practice-evidence-v1');
+      assert.equal(body.proof.complianceSemantics.standardConclusion, 'not-assessed');
+      for (const item of body.benchmarkFamilies) {
+        assert.equal(item.complianceClaim.scope, 'selected-practice');
+        assert.equal(item.complianceClaim.standardConclusion, 'not-assessed');
+        assert.equal(item.complianceClaim.externalAssessmentRequired, true);
+        assert.deepEqual(item.complianceClaim.evidenceRefs, item.evidence);
+        assert.ok(item.complianceClaim.limitation.length >= 20);
+      }
       assert.ok(body.proof.posture.runtime.total > 0);
       assert.ok(body.proof.posture.deployment.total > 0);
     });
     verify(`${role}-no-secret-fields`, () => {
       const serialized = JSON.stringify(body);
       for (const forbidden of ['apiKeyEnv', 'ICTC_LLM_API_KEY', 'promptOverride', 'commandResults']) assert.doesNotMatch(serialized, new RegExp(forbidden));
+      assert.doesNotMatch(serialized, /"standardConclusion":"(?:certified|compliant|conformant)"/i);
     });
   }
   const writeAttempt = await runtime.request('POST', '/api/standard-proof', { mutate: true }, 'admin', 'local-admin');
   verify('read-only-route', () => assert.equal(writeAttempt.status, 404));
-  const report = { schemaVersion: '1.6.0', activeRelease: '1.8.0', model: 'ictc-standard-proof-1-6-runtime', ok: true, checks, roles: ['admin', 'user', 'auditor'], limitation: 'Selected local runtime assurance; deployment controls remain external.' };
+  const report = { schemaVersion: '1.6.0', activeRelease: '1.8.0', model: 'ictc-standard-proof-1-6-runtime', ok: true, checks, roles: ['admin', 'user', 'auditor'], complianceSemantics: 'selected-practice-evidence-v1', limitation: 'Selected local runtime assurance; standard-wide conformity, certification and deployment controls remain external or not assessed.' };
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(new URL('../artifacts/standard-proof-1-6-runtime.json', import.meta.url), JSON.stringify(report, null, 2));
   console.log(`standard-proof-1-6-runtime-check: ok (${checks.length} checks, active release 1.8.0)`);
