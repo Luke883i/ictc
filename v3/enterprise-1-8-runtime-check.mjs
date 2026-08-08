@@ -1,10 +1,66 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { runtimeHarness } from './runtime-test-harness.mjs';
+import { canonicalProcedureHub } from './runtime/workbench-projection.mjs';
 
-const runtime = await runtimeHarness('ictc-enterprise-18');
 const checks = [];
 const verify = (name, assertion) => { assertion(); checks.push(name); };
+
+const pureState = {
+  missions: [
+    { id: 'm-active', state: 'active' },
+    { id: 'm-needs-plan', state: 'needs-plan' }
+  ],
+  catalog: [{ id: 's1', state: 'candidate' }],
+  contributions: [
+    { id: 'c-own', createdBy: 'alice', state: 'needs-enrichment' },
+    { id: 'c-foreign', createdBy: 'bob', state: 'needs-enrichment' }
+  ],
+  incidents: [
+    { id: 'i-own', createdBy: 'alice', state: 'clarifying' },
+    { id: 'i-foreign', createdBy: 'bob', state: 'review' }
+  ],
+  users: [
+    { id: 'a', status: 'active' }, { id: 'u', status: 'active' }, { id: 'x', status: 'disabled' }
+  ]
+};
+const pureReadiness = {
+  verified: 1,
+  total: 3,
+  controls: [
+    { id: 'human-authority', status: 'verified', scope: 'runtime' },
+    { id: 'ai-provider', status: 'blocker', scope: 'runtime' },
+    { id: 'tls', status: 'blocker', scope: 'deployment' }
+  ]
+};
+const pureAdmin = canonicalProcedureHub(pureState, { id: 'admin', role: 'admin', permissions: ['read','manage-enterprise'] }, { readiness: pureReadiness });
+const pureUser = canonicalProcedureHub(pureState, { id: 'alice', role: 'user', permissions: ['read','report-incident','contribute-source'] }, { readiness: pureReadiness });
+const pureAuditor = canonicalProcedureHub(pureState, { id: 'audit', role: 'auditor', permissions: ['read'] }, { readiness: pureReadiness });
+verify('procedure-hub-pure-roles', () => {
+  assert.deepEqual(pureAdmin.map(item => item.id), ['monitoring','incidents','evidence','administration']);
+  assert.deepEqual(pureUser.map(item => item.id), ['monitoring','incidents','evidence']);
+  assert.deepEqual(pureAuditor.map(item => item.id), ['monitoring','incidents','evidence']);
+  assert.equal(pureAdmin.find(item => item.id === 'monitoring').attentionCount, 2);
+  assert.equal(pureUser.find(item => item.id === 'monitoring').attentionCount, 1);
+  assert.equal(pureUser.find(item => item.id === 'incidents').metrics[1].value, 1);
+  assert.equal(pureAuditor.find(item => item.id === 'incidents').metrics[1].value, 2);
+  assert.equal(pureAuditor.find(item => item.id === 'monitoring').readOnly, true);
+  assert.equal(pureAuditor.find(item => item.id === 'evidence').readOnly, true);
+  assert.equal(pureAdmin.find(item => item.id === 'administration').attentionCount, 1);
+});
+verify('procedure-hub-no-read-no-surface', () => {
+  assert.deepEqual(canonicalProcedureHub(pureState, { id: 'none', role: 'user', permissions: [] }, { readiness: pureReadiness }), []);
+});
+const processUi = await readFile(new URL('./public/ui/enterprise-2-processes.js', import.meta.url), 'utf8');
+verify('procedure-hub-ui-wiring', () => {
+  assert.match(processUi, /state\.data\?\.procedures/);
+  assert.match(processUi, /data-procedure-id/);
+  assert.match(processUi, /data-procedure-hub|procedureHub/);
+  assert.match(processUi, /data-procedure-admin/);
+  assert.match(processUi, /server-derived/);
+});
+
+const runtime = await runtimeHarness('ictc-enterprise-18');
 
 try {
   await runtime.ok('PUT', '/api/admin/settings', {
@@ -48,6 +104,30 @@ try {
     assert.equal(projected.changeTypes.length, 5);
     assert.equal(projected.evidenceUrl, `/api/evidence/mission/${mission.id}`);
   });
+  verify('bootstrap-projects-admin-procedure-hub', () => {
+    assert.deepEqual(bootstrap.body.procedures.map(item => item.id), ['monitoring','incidents','evidence','administration']);
+    const monitoring = bootstrap.body.procedures.find(item => item.id === 'monitoring');
+    const evidence = bootstrap.body.procedures.find(item => item.id === 'evidence');
+    const administration = bootstrap.body.procedures.find(item => item.id === 'administration');
+    assert.equal(monitoring.code, 'RN-01');
+    assert.equal(monitoring.service, 'monitoring');
+    assert.equal(evidence.code, 'EV-01');
+    assert.equal(evidence.service, 'proof');
+    assert.equal(evidence.readOnly, true);
+    assert.equal(administration.kind, 'control-plane');
+    assert.equal(administration.action, 'open-administration');
+  });
+  const userBootstrap = await runtime.bootstrap('user', 'local-user');
+  const auditorBootstrap = await runtime.bootstrap('auditor', 'local-auditor');
+  verify('procedure-hub-least-privilege-projection', () => {
+    assert.deepEqual(userBootstrap.body.procedures.map(item => item.id), ['monitoring','incidents','evidence']);
+    assert.deepEqual(auditorBootstrap.body.procedures.map(item => item.id), ['monitoring','incidents','evidence']);
+    assert.equal(userBootstrap.body.procedures.some(item => item.id === 'administration'), false);
+    assert.equal(auditorBootstrap.body.procedures.some(item => item.id === 'administration'), false);
+    assert.equal(userBootstrap.body.procedures.find(item => item.id === 'monitoring').readOnly, false);
+    assert.equal(auditorBootstrap.body.procedures.find(item => item.id === 'monitoring').readOnly, true);
+    assert.equal(auditorBootstrap.body.procedures.find(item => item.id === 'incidents').readOnly, true);
+  });
 
   const revised = await runtime.ok('PUT', `/api/monitoring-jobs/${mission.id}/profile`, {
     noveltyBaseline: 'fixed-date',
@@ -80,6 +160,7 @@ try {
     model: 'ictc-enterprise-workbench-1-8-runtime',
     ok: true,
     checks,
+    procedureHub: { model: 'server-derived-v1', admin: 4, user: 3, auditor: 3 },
     limitation: 'Selected local runtime assurance; discovery completeness and deployment controls remain external.'
   };
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });

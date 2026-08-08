@@ -21,6 +21,71 @@ function byOldestActionable(items) {
 function nextAction({ kind, title, label, reason, action, service, targetType = null, targetId = null, readOnly = false }) {
   return { schemaVersion: '1.0.0', kind, title, label, reason, action, service, targetType, targetId, readOnly };
 }
+function procedure({ id, code = null, kind = 'service', label, description, action, actionLabel, service = null, readOnly = false, attentionCount = 0, metrics = [] }) {
+  return {
+    schemaVersion: '1.0.0', id, code, kind, label, description, action, actionLabel, service, readOnly,
+    state: Number(attentionCount || 0) > 0 ? 'attention' : 'ready',
+    attentionCount: Math.max(0, Number(attentionCount || 0)),
+    metrics: metrics.slice(0, 2).map(item => ({ value: item.value, label: String(item.label || '').slice(0, 120) }))
+  };
+}
+function blockerCount(readiness, predicate = () => true) {
+  return (readiness?.controls || []).filter(item => item.status !== 'verified' && predicate(item)).length;
+}
+export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
+  const permissions = new Set(actor.permissions || []);
+  if (!permissions.has('read')) return [];
+  const missions = state.missions || [];
+  const catalog = state.catalog || [];
+  const contributions = state.contributions || [];
+  const visibleIncidents = (state.incidents || []).filter(item => canReadPrivate(actor, { ...item, kind: 'incident' }));
+  const activeMissions = missions.filter(item => item.state === 'active').length;
+  const missionExceptions = missions.filter(item => item.state === 'needs-plan' || item.lastError || item.aiError).length;
+  const candidates = catalog.filter(item => item.state === 'candidate').length;
+  const ownContributionExceptions = contributions.filter(item => item.createdBy === actor.id && item.state === 'needs-enrichment').length;
+  const openIncidents = visibleIncidents.filter(item => !['submitted', 'closed'].includes(item.state)).length;
+  const runtimeBlockers = blockerCount(readiness, item => item.scope !== 'deployment');
+  const allBlockers = blockerCount(readiness);
+  const activeUsers = (state.users || []).filter(item => item.status === 'active').length;
+
+  const procedures = [procedure({
+    id: 'monitoring', code: 'RN-01', label: 'Monitoraggio normativo', service: 'monitoring', action: 'open-service',
+    actionLabel: actor.role === 'auditor' ? 'Consulta monitoraggio' : actor.role === 'admin' ? 'Apri monitoraggio' : 'Consulta e contribuisci',
+    description: actor.role === 'auditor'
+      ? 'Ricostruisci ricerche, fonti, decisioni ed evidenze in sola lettura.'
+      : actor.role === 'admin'
+        ? 'Configura ricerche, approva piani e governa le fonti da verificare.'
+        : 'Consulta le ricerche disponibili e aggiungi materiale originale senza classificarlo.',
+    readOnly: actor.role === 'auditor',
+    attentionCount: actor.role === 'user' ? ownContributionExceptions : missionExceptions + candidates,
+    metrics: [{ value: activeMissions, label: 'ricerche attive' }, { value: candidates, label: 'fonti da verificare' }]
+  }), procedure({
+    id: 'incidents', code: 'EC-01', label: 'Eventi e segnalazioni', service: 'incidents', action: 'open-service',
+    actionLabel: actor.role === 'auditor' ? 'Consulta eventi' : actor.role === 'admin' ? 'Apri eventi' : 'Registra o continua',
+    description: actor.role === 'auditor'
+      ? 'Ricostruisci originali, versioni, decisioni e prove senza modificare i fascicoli.'
+      : actor.role === 'admin'
+        ? 'Governa gli eventi aperti, le versioni, gli invii e le chiusure.'
+        : 'Registra i fatti disponibili o continua un evento già aperto.',
+    readOnly: actor.role === 'auditor', attentionCount: openIncidents,
+    metrics: [{ value: openIncidents, label: 'eventi aperti' }, { value: visibleIncidents.length, label: 'eventi visibili' }]
+  }), procedure({
+    id: 'evidence', code: 'EV-01', kind: 'assurance', label: 'Evidenze e controlli', service: 'proof', action: 'open-service',
+    actionLabel: 'Apri evidenze',
+    description: 'Consulta controlli, evidenze disponibili, limiti e requisiti che restano da attestare esternamente.',
+    readOnly: true, attentionCount: allBlockers,
+    metrics: [{ value: Number(readiness?.verified || 0), label: 'controlli verificati' }, { value: allBlockers, label: 'controlli non verificati' }]
+  })];
+
+  if (actor.role === 'admin' && permissions.has('manage-enterprise')) procedures.push(procedure({
+    id: 'administration', kind: 'control-plane', label: 'Amministrazione', action: 'open-administration', actionLabel: 'Apri amministrazione',
+    description: 'Governa identità, AI, budget, ambiente e readiness senza mescolare configurazione e lavoro operativo.',
+    attentionCount: runtimeBlockers,
+    metrics: [{ value: activeUsers, label: 'identità attive' }, { value: runtimeBlockers, label: 'controlli runtime aperti' }]
+  }));
+
+  return procedures;
+}
 export function canonicalHomeNextAction(state, actor, { llmReady = false } = {}) {
   const permissions = new Set(actor.permissions || []);
   const candidates = byOldestActionable((state.catalog || []).filter(item => item.state === 'candidate')).sort((a, b) => Number(Boolean(b.internalReference)) - Number(Boolean(a.internalReference)) || String(a.updatedAt || a.createdAt || '').localeCompare(String(b.updatedAt || b.createdAt || '')) || String(a.id || '').localeCompare(String(b.id || '')));
