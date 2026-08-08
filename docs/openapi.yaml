@@ -3,218 +3,277 @@ info:
   title: ICTC API
   version: 1.8.0
   description: >
-    API contrattuale del runtime ICTC. L'AI assiste la preparazione; le decisioni
-    restano umane. Le risposte di scrittura restituiscono ricevute verificabili.
+    API contrattuale del runtime ICTC Control Tower Experimental. L'AI assiste
+    la preparazione e l'interpretazione; routing finale, decisioni, rating,
+    approvazioni e validazioni restano umani.
 servers:
   - url: http://127.0.0.1:4173
 paths:
   /api/health:
     get:
       summary: Stato runtime e readiness
-      responses:
-        '200': { description: Runtime disponibile }
+      responses: { '200': { description: Runtime disponibile } }
   /api/bootstrap:
     get:
       summary: Vista iniziale filtrata per ruolo
-      responses:
-        '200': { description: Projection applicativa least-privilege }
+      responses: { '200': { description: Projection applicativa least-privilege } }
+  /api/work:
+    get:
+      summary: Coda di lavoro cross-process e indice procedure
+      responses: { '200': { description: Work orchestration deterministica role-scoped } }
+  /api/work/route:
+    post:
+      summary: Propone procedure candidate senza avvio automatico
+      responses: { '200': { description: Routing deterministico con selezione umana obbligatoria } }
+  /api/work/procedures/{id}:
+    get:
+      summary: Proietta la guida della procedura dal ProcessDefinition
+      responses: { '200': { description: Entry, step, checkpoint, evidence ed exit della procedura } }
+  /api/work/traces:
+    get:
+      summary: Proietta le tracce procedurali accessibili al ruolo
+      responses: { '200': { description: Originale, assist, decisioni, epistemica, audit ed evidence } }
+  /api/work/traces/{type}/{id}:
+    get:
+      summary: Ricostruisce una traccia procedurale specifica
+      responses: { '200': { description: Traccia role-scoped dello specifico soggetto } }
+  /api/insights:
+    get:
+      summary: KPI deterministici e proposte narrative separate
+      responses: { '200': { description: Base hashata, segnali e proposte AI con eventuale validazione umana } }
+  /api/insights/propose:
+    post:
+      summary: Genera una lettura AI sulla sola base KPI deterministica
+      responses: { '201': { description: AssistEnvelope proposal-only con receipt } }
+  /api/insights/{id}/validate:
+    post:
+      summary: Valida umanamente una lettura AI se la base KPI non è cambiata
+      responses: { '200': { description: Adozione umana motivata con receipt } }
   /api/workbench/meta:
     get:
       summary: Guida applicativa e loop universale
-      responses:
-        '200': { description: Metadati del workbench }
+      responses: { '200': { description: Metadati del workbench } }
   /api/workbench/graph:
     get:
       summary: Grafo semantico derivato dalla projection autorizzata
-      responses:
-        '200': { description: Nodi e relazioni visibili al ruolo corrente }
+      responses: { '200': { description: Nodi e relazioni visibili al ruolo corrente } }
   /api/workbench/metrics:
     get:
       summary: Metriche descrittive del workbench
-      responses:
-        '200': { description: Conteggi osservabili senza record sintetici }
+      responses: { '200': { description: Conteggi osservabili senza record sintetici } }
+  /api/grc:
+    get:
+      summary: Projection GRC consolidata role-scoped
+      responses: { '200': { description: Inventario, copertura, azioni, rischi e assurance } }
+  /api/grc/dashboard:
+    get:
+      summary: KPI e to-do GRC consolidati
+      responses: { '200': { description: Dashboard bounded e next work } }
+  /api/grc/objects:
+    post:
+      summary: Registra un oggetto candidato nel working registry
+      responses: { '201': { description: Oggetto candidato con receipt } }
+  /api/grc/objects/{id}/review:
+    post:
+      summary: Registra review umana dell'oggetto
+      responses: { '200': { description: Decisione object-review con receipt } }
+  /api/grc/objects/{id}/relations:
+    post:
+      summary: Registra una relazione tipizzata tra oggetti
+      responses: { '200': { description: Relazione registrata con receipt } }
+  /api/grc/mappings:
+    post:
+      summary: Registra elemento del declared universe e mapping proposto
+      responses: { '201': { description: Mapping proposto con receipt } }
+  /api/grc/mappings/propose:
+    post:
+      summary: Genera mapping candidate con AI senza adozione automatica
+      responses: { '201': { description: Proposta AI tracciata con receipt } }
+  /api/grc/mappings/{id}/decision:
+    post:
+      summary: Valida mapping, gap, not-applicable o reject
+      responses: { '200': { description: Decisione umana con receipt } }
+  /api/grc/actions:
+    post:
+      summary: Crea una action persistente
+      responses: { '201': { description: Action proposta con receipt } }
+  /api/grc/actions/{id}/prioritize:
+    post:
+      summary: Genera priorità AI proposta
+      responses: { '200': { description: Priorità proposta, non adottata } }
+  /api/grc/actions/{id}/adopt:
+    post:
+      summary: Adotta priorità, owner e scadenza con decisione umana
+      responses: { '200': { description: Action operativa con receipt } }
+  /api/grc/actions/{id}/progress:
+    post:
+      summary: Aggiorna stato di una action autorizzata
+      responses: { '200': { description: Avanzamento persistito con receipt } }
+  /api/grc/risks:
+    post:
+      summary: Crea scenario di rischio proposto
+      responses: { '201': { description: Scenario con receipt } }
+  /api/grc/risks/propose:
+    post:
+      summary: Genera scenario e rating AI proposti
+      responses: { '201': { description: Proposta AI esclusa dalla heatmap finché non validata } }
+  /api/grc/risks/{id}/review:
+    post:
+      summary: Registra rating umano 1..5 x 1..5
+      responses: { '200': { description: Rating human-reviewed con receipt } }
+  /api/grc/assurance:
+    post:
+      summary: Preserva una richiesta di assurance
+      responses: { '201': { description: Originale preservato con receipt } }
+  /api/grc/assurance/{id}/propose:
+    post:
+      summary: Decompone la richiesta e genera draft AI bounded
+      responses: { '200': { description: Draft AI tracciato e non approvato } }
+  /api/grc/assurance/{id}/approve:
+    post:
+      summary: Approva umanamente le risposte e le evidenze citate
+      responses: { '200': { description: Risposte approvate con receipt } }
   /api/monitoring-jobs/draft:
     post:
       summary: Crea un job di monitoraggio in stato bozza e tenta la pianificazione AI
-      responses:
-        '201': { description: Intento registrato, con eventuale piano e receipt }
+      responses: { '201': { description: Intento registrato con eventuale piano e receipt } }
   /api/monitoring-jobs/{id}/profile:
     put:
       summary: Aggiorna il profilo di un job governato e rigenera il piano
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Profilo aggiornato con receipt }
+      responses: { '200': { description: Profilo aggiornato con receipt } }
   /api/standard-proof:
     get:
       summary: Projection read-only di capacità, prove e limiti standard-facing
-      responses:
-        '200': { description: Documento di proof bounded }
+      responses: { '200': { description: Documento proof bounded } }
   /api/export/current.json:
     get:
       summary: Esporta la vista corrente entro lo stesso perimetro di lettura
-      responses:
-        '200': { description: Projection JSON role-scoped con manifest e digest }
+      responses: { '200': { description: Projection JSON role-scoped } }
   /api/export/current.csv:
     get:
       summary: Esporta la vista corrente in CSV entro lo stesso perimetro di lettura
-      responses:
-        '200': { description: CSV role-scoped della vista autorizzata }
+      responses: { '200': { description: CSV role-scoped } }
   /api/admin/settings:
     put:
       summary: Aggiorna configurazione organizzativa e AI
-      responses:
-        '200': { description: Configurazione aggiornata con receipt }
+      responses: { '200': { description: Configurazione aggiornata con receipt } }
   /api/missions/draft:
     post:
       summary: Crea un piano di monitoraggio in bozza
-      responses:
-        '200': { description: Piano creato con receipt }
+      responses: { '200': { description: Piano creato con receipt } }
   /api/missions/{id}/revise:
     post:
       summary: Crea una nuova versione del piano
-      responses:
-        '200': { description: Piano revisionato con receipt }
+      responses: { '200': { description: Piano revisionato con receipt } }
   /api/missions/{id}/activate:
     post:
       summary: Approva e attiva il piano
-      responses:
-        '200': { description: Piano attivato con receipt }
+      responses: { '200': { description: Piano attivato con receipt } }
   /api/missions/{id}/pause:
     post:
       summary: Sospende il monitoraggio con motivazione
-      responses:
-        '200': { description: Monitoraggio sospeso con receipt }
+      responses: { '200': { description: Monitoraggio sospeso con receipt } }
   /api/missions/{id}/resume:
     post:
       summary: Riprende il monitoraggio sospeso
-      responses:
-        '200': { description: Monitoraggio ripreso con receipt }
+      responses: { '200': { description: Monitoraggio ripreso con receipt } }
   /api/missions/{id}/run:
     post:
       summary: Esegue un controllo del monitoraggio
-      responses:
-        '200': { description: Run registrata con receipt }
+      responses: { '200': { description: Run registrata con receipt } }
   /api/catalog/{id}/decision:
     post:
       summary: Registra una decisione umana sulla fonte
-      responses:
-        '200': { description: Decisione registrata con receipt }
+      responses: { '200': { description: Decisione registrata con receipt } }
   /api/contributions:
     post:
       summary: Registra materiale originale e tenta l'arricchimento AI
-      responses:
-        '200': { description: Materiale registrato con receipt }
+      responses: { '200': { description: Materiale registrato con receipt } }
   /api/internal-sources/reference:
     post:
       summary: Registra una versione di fonte interna governata da un sistema master esterno
-      responses:
-        '201': { description: Riferimento candidato con master ID, versione e digest }
+      responses: { '201': { description: Riferimento candidato con master ID, versione e digest } }
   /api/contributions/{id}/enrich:
     post:
       summary: Ritenta l'arricchimento AI del materiale
-      responses:
-        '200': { description: Arricchimento registrato con receipt }
+      responses: { '200': { description: Arricchimento registrato con receipt } }
   /api/incidents/intake:
     post:
       summary: Registra il racconto originale e gli allegati
-      responses:
-        '200': { description: Evento registrato con receipt }
+      responses: { '200': { description: Evento registrato con receipt } }
   /api/incidents/{id}/analyze:
     post:
       summary: Ritenta l'analisi AI di un evento
-      responses:
-        '200': { description: Analisi registrata con receipt }
+      responses: { '200': { description: Analisi registrata con receipt } }
   /api/incidents/{id}/answers:
     post:
       summary: Registra adozione, correzione o dato non disponibile
-      responses:
-        '200': { description: Risposta registrata con receipt }
+      responses: { '200': { description: Risposta registrata con receipt } }
   /api/incidents/{id}/draft:
     post:
       summary: Genera una bozza AI senza adozione automatica
-      responses:
-        '200': { description: Bozza registrata con receipt }
+      responses: { '200': { description: Bozza registrata con receipt } }
   /api/incidents/{id}/formulation:
     post:
       summary: Salva una nuova versione della formulazione umana
-      responses:
-        '200': { description: Versione registrata con receipt }
+      responses: { '200': { description: Versione registrata con receipt } }
     put:
       summary: Salva una nuova versione della formulazione umana
-      responses:
-        '200': { description: Versione registrata con receipt }
+      responses: { '200': { description: Versione registrata con receipt } }
   /api/incidents/{id}/submit:
     post:
       summary: Conferma e invia la versione corrente
-      responses:
-        '200': { description: Invio registrato con receipt }
+      responses: { '200': { description: Invio registrato con receipt } }
   /api/incidents/{id}/close:
     post:
       summary: Chiude un evento con motivazione
-      responses:
-        '200': { description: Chiusura registrata con receipt }
+      responses: { '200': { description: Chiusura registrata con receipt } }
   /api/evidence/{type}/{id}:
     get:
       summary: Esporta un fascicolo JSON filtrato per autorizzazione
-      responses:
-        '200': { description: Fascicolo con manifest e limiti }
+      responses: { '200': { description: Fascicolo con manifest e limiti } }
   /api/evidence/{type}/{id}.zip:
     get:
       summary: Esporta il dossier evidenze bounded in formato ZIP
-      responses:
-        '200': { description: ZIP con manifest, grafo, decisioni, claim, receipts, limiti e checksum }
+      responses: { '200': { description: ZIP con manifest, grafo, decisioni, claim, receipts, limiti e checksum } }
   /api/attachments/{id}:
     get:
       summary: Scarica un allegato autorizzato
-      responses:
-        '200': { description: Contenuto allegato }
+      responses: { '200': { description: Contenuto allegato } }
   /api/admin/readiness:
     get:
       summary: Legge i controlli di readiness
-      responses:
-        '200': { description: Readiness runtime e deployment }
+      responses: { '200': { description: Readiness runtime e deployment } }
   /api/admin/usage:
     get:
       summary: Legge consumo e costo AI osservati
-      responses:
-        '200': { description: Uso AI aggregato }
+      responses: { '200': { description: Uso AI aggregato } }
   /api/admin/governance:
     put:
       summary: Aggiorna budget, modelli ammessi e ambiente
-      responses:
-        '200': { description: Governance aggiornata con receipt }
+      responses: { '200': { description: Governance aggiornata con receipt } }
   /api/admin/users:
     get:
       summary: Elenca gli utenti amministrati
-      responses:
-        '200': { description: Elenco utenti }
+      responses: { '200': { description: Elenco utenti } }
     post:
       summary: Crea un utente amministrato
-      responses:
-        '201': { description: Utente creato con receipt }
+      responses: { '201': { description: Utente creato con receipt } }
   /api/admin/users/{id}:
     patch:
       summary: Modifica stato, ruolo o profilo utente
-      responses:
-        '200': { description: Utente aggiornato con receipt }
+      responses: { '200': { description: Utente aggiornato con receipt } }
   /api/admin/identity:
     get:
       summary: Legge la configurazione identità e la proiezione runtime
-      responses:
-        '200': { description: Configurazione Shibboleth/LDAP senza segreti e stato del deployment }
+      responses: { '200': { description: Configurazione identità senza segreti } }
     put:
       summary: Aggiorna strategia identità, header e regole di mapping
-      responses:
-        '200': { description: Policy identità aggiornata con receipt }
+      responses: { '200': { description: Policy identità aggiornata con receipt } }
   /api/admin/identity/test:
     post:
       summary: Prova una policy identità su attributi campione senza salvarla
-      responses:
-        '200': { description: Decisione di accesso simulata con ruolo, regola e motivazione }
+      responses: { '200': { description: Decisione di accesso simulata } }
 components:
   schemas:
     Receipt:

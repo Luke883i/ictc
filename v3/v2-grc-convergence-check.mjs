@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { processDefinitions, surfaceProcessDefinitions, assertRelation } from './runtime/process-kernel.mjs';
+import { grcProjection, grcNextAction } from './runtime/grc-projection.mjs';
+import { canonicalDecisionProjection } from './runtime/decision-projection.mjs';
+import { canonicalEpistemicProjection } from './runtime/epistemic-projection.mjs';
+const contract=JSON.parse(await readFile(new URL('./product-contract.json',import.meta.url),'utf8'));
+const server=await readFile(new URL('./server.mjs',import.meta.url),'utf8');
+const activeUi=await readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8').catch(()=>'');
+const ids=['objects','coverage','actions','risks','assurance'];
+assert.ok(['V2 Experimental','V3 Experimental'].includes(contract.productEdition),'V2 capability rail must survive successor editions');
+for(const id of ids){assert.ok(processDefinitions().some(x=>x.id===id));assert.ok(surfaceProcessDefinitions().some(x=>x.id===id));}
+for(const rel of['object-related-to-object','mapping-links-object','gap-generates-action','risk-affects-object','risk-mitigated-by-control','assurance-supported-by-evidence'])assert.equal(assertRelation(rel),rel);
+const state={missions:[],catalog:[],contributions:[],incidents:[],grcObjects:[],grcMappings:[],grcActions:[],grcRisks:[],grcAssurance:[]},admin={id:'admin',role:'admin',permissions:['read','manage-grc','contribute-grc']},p=grcProjection(state,admin);
+assert.equal(p.authority,'runtime-grc-projection');
+assert.equal(p.dashboard.nextTodo.processId,'objects');
+assert.equal(grcNextAction(state,admin).service,'grc');
+assert.equal(canonicalDecisionProjection(state,admin).authority,'human-decision-projection');
+assert.equal(canonicalEpistemicProjection(state,admin).authority,'runtime-epistemic-projection');
+assert.match(server,/createGrcRuntime/);assert.match(server,/createGrcEvidenceStore/);
+if(activeUi)assert.doesNotMatch(activeUi,/data-service="objects"|data-service="coverage"|data-service="actions"|data-service="risks"|data-service="assurance"/);
+console.log(`v2-grc-convergence-check: ok (V2 capabilities preserved under ${contract.productEdition}; 5 processes, one GRC runtime, canonical authority weld)`);

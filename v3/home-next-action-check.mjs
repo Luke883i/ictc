@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { canonicalHomeNextAction } from './runtime/workbench-projection.mjs';
+import { canonicalWorkQueue } from './runtime/work-orchestration.mjs';
 
-const base = { catalog: [], incidents: [], missions: [] };
-const admin = { id: 'admin-test', role: 'admin', permissions: ['read','configure-ai','manage-monitoring'] };
-const user = { id: 'alice', role: 'user', permissions: ['read','report-incident','contribute-source'] };
+const base = { catalog: [], incidents: [], missions: [], grcObjects: [], grcMappings: [], grcActions: [], grcRisks: [], grcAssurance: [] };
+const admin = { id: 'admin-test', role: 'admin', permissions: ['read','configure-ai','manage-monitoring','manage-grc','contribute-grc'] };
+const user = { id: 'alice', role: 'user', permissions: ['read','report-incident','contribute-source','contribute-grc'] };
 const auditor = { id: 'audit-test', role: 'auditor', permissions: ['read'] };
 
+// Preserve the V1/V2 procedure-local semantics: the canonical legacy projector remains valid and testable.
 const setup = canonicalHomeNextAction(base, admin, { llmReady: false });
 assert.equal(setup.kind, 'configure-ai');
 assert.equal(setup.targetId, null);
@@ -41,11 +43,22 @@ assert.equal(userForeignOnly.targetId, null);
 const userClosed = canonicalHomeNextAction({ ...base, incidents: [{ id: 'closed-own', state: 'closed', createdBy: 'alice' }] }, user);
 assert.equal(userClosed.kind, 'record-incident');
 
+// V3 composes all process-local work into one deterministic cross-process queue.
+const emptyQueue = canonicalWorkQueue(base, admin, { llmReady: false });
+assert.equal(emptyQueue.authority, 'runtime-work-queue');
+assert.equal(emptyQueue.nextAction.kind, 'configure-ai');
+const queueWithSource = canonicalWorkQueue(sourceState, admin, { llmReady: false });
+assert.equal(queueWithSource.nextAction.kind, 'verify-internal-source');
+assert.equal(queueWithSource.nextAction.processId, 'monitoring');
+assert.equal(queueWithSource.nextAction.targetId, 'source-internal');
+const auditorQueue = canonicalWorkQueue(sourceState, auditor, { llmReady: true });
+assert.equal(auditorQueue.items.every(item => item.readOnly), true);
+
 const server = await readFile(new URL('./server.mjs', import.meta.url), 'utf8');
 const render = await readFile(new URL('./public/ui/render.js', import.meta.url), 'utf8');
 const actions = await readFile(new URL('./public/ui/actions.js', import.meta.url), 'utf8');
-assert.match(server, /canonicalHomeNextAction/);
-assert.match(server, /projected\.homeNextAction\s*=\s*canonicalHomeNextAction/);
+assert.match(server, /workProjection\(snapshot,actor/);
+assert.match(server, /projected\.homeNextAction=projected\.work\.queue\.nextAction/);
 assert.match(render, /state\.data\.homeNextAction/);
 assert.doesNotMatch(render, /function homeAction\(/);
 assert.match(render, /homeTargetType/);
@@ -56,4 +69,4 @@ assert.match(actions, /state\.activeSourceId\s*=\s*next\.targetId/);
 assert.match(actions, /state\.activeIncidentId\s*=\s*next\.targetId/);
 assert.match(actions, /announceTargetSurface\('source-dialog'\)/);
 assert.match(actions, /announceTargetSurface\('incident-workspace'\)/);
-console.log('home-next-action-check: ok (server authority, RBAC targets, deterministic FI-01 priority, UI wiring, terminal surface propagation)');
+console.log('home-next-action-check: ok (V3 unified queue + V1/V2 RBAC/FI-01 fallthrough + UI terminal propagation)');

@@ -2,28 +2,35 @@ import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 const root = new URL('./', import.meta.url);
 const read = name => readFile(new URL(name, root), 'utf8');
-const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common, enterprise] = await Promise.all([
+const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common, enterprise, kernelText, grcRuntime, grcProjection] = await Promise.all([
   read('product-contract.json'), read('experience-invariants.json'), read('question-engine.mjs'),
   read('runtime/monitoring.mjs'), read('runtime/incidents.mjs'), read('runtime/contributions.mjs'),
-  read('runtime/model.mjs'), read('store.mjs'), read('public/ui/common.js'), read('enterprise.mjs')
+  read('runtime/model.mjs'), read('store.mjs'), read('public/ui/common.js'), read('enterprise.mjs'),
+  read('process-kernel.json'), read('runtime/grc-runtime.mjs'), read('runtime/grc-projection.mjs')
 ]);
 const contract = JSON.parse(contractText);
 const invariants = JSON.parse(invariantsText);
+const kernel = JSON.parse(kernelText);
 const checks = [];
 function check(id, condition, detail) { assert.ok(condition, `${id}: ${detail}`); checks.push({id, detail}); }
-check('two-services', contract.services.map(item=>item.id).join(',') === 'monitoring,incidents', 'only monitoring and incidents are business services');
-check('control-plane', contract.controlPlane?.id === 'administration', 'administration is a control plane');
+const expectedServices = ['monitoring','incidents','objects','coverage','actions','risks','assurance'];
+check('seven-services-one-contract', JSON.stringify(contract.services.map(item=>item.id)) === JSON.stringify(expectedServices), 'seven business services are declared by one product contract');
+check('one-process-authority', kernel.authority === 'runtime' && expectedServices.every(id => kernel.processes.some(item => item.id === id)), 'all services derive from the runtime ProcessDefinition registry');
+check('control-plane', contract.controlPlane?.id === 'administration', 'administration is a control plane, not a business service');
 check('three-roles', contract.roles.map(item=>item.id).join(',') === 'admin,user,auditor', 'admin, user and read-only auditor');
 check('invariant-depth', invariants.invariants.length >= 18, `${invariants.invariants.length} explicit invariants`);
 check('monitoring-raw-first', monitoring.indexOf('monitoring.mission.intent.recorded') < monitoring.indexOf('planningEnvelope = await completePlan'), 'objective is persisted before planning AI');
 check('contribution-raw-first', contributions.indexOf('contribution.recorded') < contributions.indexOf('enrichOne(recordedId'), 'material is persisted before enrichment AI');
 check('incident-raw-first', incidents.indexOf('incident.intake.recorded') < incidents.indexOf('analyzeOne(recordedId'), 'narrative is persisted before analysis AI');
 check('human-adoption', questions.includes('ai-suggestion-confirmed') && questions.includes('human-corrected-or-entered'), 'AI suggestions require a recorded human relation');
-check('question-purpose', questions.includes('whyNow') && questions.includes('evidenceUse'), 'every adaptive question explains purpose and evidence use');
+check('question-purpose', questions.includes('whyNow') && questions.includes('evidenceUse'), 'adaptive questions explain purpose and evidence use');
 check('draft-gate', incidents.includes("'questions-open'") && incidents.indexOf("'questions-open'") < incidents.indexOf('const ai = await draftIncident'), 'draft is blocked while gaps remain');
 check('versioned-formulation', incidents.includes('formulationVersions') && incidents.includes('incident.formulation.saved'), 'wording is versioned before submission');
 check('saved-digest-submit', incidents.includes('formulationSha256') && incidents.includes('formulation-conflict'), 'submission binds the confirmed version digest');
-check('recoverable-ai', monitoring.includes('needs-plan') && contributions.includes('/api/contributions/:id/enrich') && incidents.includes('/api/incidents/:id/analyze'), 'all AI entry points preserve raw input and expose retry');
+check('recoverable-ai', monitoring.includes('needs-plan') && contributions.includes('/api/contributions/:id/enrich') && incidents.includes('/api/incidents/:id/analyze'), 'V1 AI entry points preserve raw input and expose retry');
+check('grc-ai-proposal-only', grcRuntime.includes('grc.mapping.ai.proposed') && grcRuntime.includes('grc.action.ai.prioritized') && grcRuntime.includes('grc.risk.ai.proposed') && grcRuntime.includes('grc.assurance.ai.proposed'), 'GRC AI outputs are explicit proposal events');
+check('grc-human-checkpoints', grcRuntime.includes('grc.object.reviewed') && grcRuntime.includes('grc.mapping.decided') && grcRuntime.includes('grc.action.adopted') && grcRuntime.includes('grc.risk.reviewed') && grcRuntime.includes('grc.assurance.approved'), 'GRC authority changes are separate human writes');
+check('human-heatmap', grcProjection.includes('La heatmap usa soltanto rating umani'), 'consolidated risk posture excludes unreviewed AI ratings');
 check('reasoned-decisions', monitoring.includes('reason-required') && incidents.includes('closure-note-required'), 'source, pause and close decisions require reasons');
 check('least-privilege', model.includes('visibleContributions') && model.includes('visibleIncidents') && model.includes('prompts: null'), 'user projection excludes unrelated private data and prompts');
 check('enterprise-directory', enterprise.includes('authorizeEnterpriseActor') && enterprise.includes('identity-not-provisioned'), 'trusted identities require directory provisioning');

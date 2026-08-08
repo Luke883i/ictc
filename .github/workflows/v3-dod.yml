@@ -1,0 +1,119 @@
+name: v3-dod
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v3-dod-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-dod:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Syntax
+        run: npm run check
+      - name: V1/V2 capability regression
+        run: node v3/product-contract-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/v2-ux-saturation.mjs && node v3/v2-global-dod-check.mjs
+      - name: V3 orchestration and UX · semantic ratchet
+        run: node v3/semantic-api-contract-check.mjs
+      - name: V3 work queue and intent routing
+        run: node v3/work-orchestration-check.mjs
+      - name: V3 procedure guide
+        run: node v3/procedure-guide-check.mjs
+      - name: V3 assist envelope
+        run: node v3/assist-envelope-check.mjs
+      - name: V3 human review inbox
+        run: node v3/review-inbox-check.mjs
+      - name: V3 deterministic insight projection
+        run: node v3/insight-projection-check.mjs
+      - name: V3 procedure trace
+        run: node v3/procedure-trace-check.mjs
+      - name: V3 UX cutover
+        run: node v3/v3-ux-cutover-check.mjs
+      - name: V3 global DoD
+        run: node v3/v3-global-dod-check.mjs
+      - name: V3 100k saturation
+        run: node v3/v3-saturation-100k.mjs
+      - name: Canonical authority and evidence
+        run: node v3/decision-binding-check.mjs && node v3/epistemic-projection-check.mjs && node v3/evidence-export-check.mjs && node v3/onto-epistemic-audit.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: v3-semantic-dod
+          path: artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  runtime-dod:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: V2 capability runtime regression
+        run: node v3/v2-grc-runtime-check.mjs
+      - name: V3 work orchestration runtime
+        run: node v3/work-orchestration-runtime-check.mjs
+      - name: V3 deterministic insight runtime
+        run: node v3/insight-runtime-check.mjs
+      - name: Evidence authorization
+        run: node v3/evidence-check.mjs && node v3/evidence-export-auth-check.mjs
+
+  browser-dod:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Browser syntax
+        run: python -m py_compile v3/browser-v3-all-service.py v3/browser-product-check.py
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Canonical V3 guided all-service journey
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
+          export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v3-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v3-browser-runtime"
+          export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
+          node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-v3-mock.log" 2>&1 &
+          MOCK_PID=$!
+          trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
+          for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
+          ./ictc.sh start --profile current --no-open
+          python -u v3/browser-v3-all-service.py
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: v3-browser-dod
+          path: |
+            artifacts/browser-v3.json
+            artifacts/browser-v3-error.json
+            artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 30

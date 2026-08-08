@@ -2,9 +2,9 @@ import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 const root = new URL('./', import.meta.url);
 const read = name => readFile(new URL(name, root), 'utf8');
-const [contractText, html, render, workspaces, actions, css, monitoring, incidents] = await Promise.all([
+const [contractText, html, render, workspaces, actions, css, monitoring, incidents, grcWorkspace] = await Promise.all([
   read('product-contract.json'), read('public/index.html'), read('public/ui/render.js'), read('public/ui/workspaces.js'),
-  read('public/ui/actions.js'), read('public/journey-reborn.css'), read('runtime/monitoring.mjs'), read('runtime/incidents.mjs')
+  read('public/ui/actions.js'), read('public/journey-reborn.css'), read('runtime/monitoring.mjs'), read('runtime/incidents.mjs'), read('public/ui/grc-workspace.js')
 ]);
 const contract = JSON.parse(contractText);
 const checks = [];
@@ -31,12 +31,13 @@ check('protected-evidence', render.includes('data-download-evidence') && workspa
 check('receipt-feedback', html.includes('proofPulse') && actions.includes('showReceipt'), 'successful writes surface a receipt');
 check('role-leakage-zero', render.includes("capability('manage-monitoring')") && actions.includes('activateHomeAction'), 'write paths are capability-aware');
 check('reduced-motion', css.includes('prefers-reduced-motion'), 'motion has an accessibility fallback');
-check('no-browser-prompts', !actions.includes('prompt(') && !actions.includes('confirm('), 'decisions use explicit in-context controls');
+check('no-browser-prompts', !actions.includes('prompt(') && !actions.includes('confirm(') && !grcWorkspace.includes('prompt(') && !grcWorkspace.includes('confirm('), 'decisions use explicit in-context controls');
 check('monitoring-lifecycle', monitoring.includes('/pause') && monitoring.includes('/resume') && monitoring.includes('/revise'), 'plan can be revised, paused and resumed');
 check('incident-lifecycle', incidents.includes('/formulation') && incidents.includes('/submit') && incidents.includes('/close'), 'wording, submission and closure are distinct writes');
-check('home-plus-two-services', (html.match(/data-service=/g)||[]).length === 3 && contract.services.length === 2, 'home precedes two operational services');
+check('three-item-shell-seven-services', (html.match(/data-service=/g)||[]).length === 3 && contract.services.length === 7, 'three permanent navigation items expose seven business services through Processi');
+check('one-grc-workspace', (grcWorkspace.match(/grcWorkspace/g)||[]).length > 0 && grcWorkspace.includes('data-grc-process'), 'AO/MC/AP/RC/AR share one contextual workspace rather than permanent navigation');
 check('compact-density', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'first viewport is compact');
-check('plain-language', !`${html}\n${render}\n${workspaces}`.includes('Plan Reveal') && !`${html}\n${render}\n${workspaces}`.includes('AI Lens'), 'internal labels are removed');
+check('plain-language', !`${html}\n${render}\n${workspaces}\n${grcWorkspace}`.includes('Plan Reveal') && !`${html}\n${render}\n${workspaces}\n${grcWorkspace}`.includes('AI Lens'), 'internal labels are removed from primary UI');
 await import('node:fs/promises').then(({mkdir,writeFile}) => Promise.all([
   mkdir(new URL('../artifacts/', import.meta.url), {recursive:true}),
   writeFile(new URL('../artifacts/user-journey-audit.json', import.meta.url), JSON.stringify({ok:true,checks}, null, 2))
