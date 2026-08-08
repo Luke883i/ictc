@@ -3,8 +3,9 @@ info:
   title: ICTC API
   version: 1.8.0
   description: >
-    API contrattuale del runtime ICTC Control Tower V2 Experimental. L'AI assiste
-    la preparazione; le decisioni, i rating e le approvazioni restano umani.
+    API contrattuale del runtime ICTC Control Tower Experimental. L'AI assiste
+    la preparazione e l'interpretazione; routing finale, decisioni, rating,
+    approvazioni e validazioni restano umani.
 servers:
   - url: http://127.0.0.1:4173
 paths:
@@ -16,6 +17,38 @@ paths:
     get:
       summary: Vista iniziale filtrata per ruolo
       responses: { '200': { description: Projection applicativa least-privilege } }
+  /api/work:
+    get:
+      summary: Coda di lavoro cross-process e indice procedure
+      responses: { '200': { description: Work orchestration deterministica role-scoped } }
+  /api/work/route:
+    post:
+      summary: Propone procedure candidate senza avvio automatico
+      responses: { '200': { description: Routing deterministico con selezione umana obbligatoria } }
+  /api/work/procedures/{id}:
+    get:
+      summary: Proietta la guida della procedura dal ProcessDefinition
+      responses: { '200': { description: Entry, step, checkpoint, evidence ed exit della procedura } }
+  /api/work/traces:
+    get:
+      summary: Proietta le tracce procedurali accessibili al ruolo
+      responses: { '200': { description: Originale, assist, decisioni, epistemica, audit ed evidence } }
+  /api/work/traces/{type}/{id}:
+    get:
+      summary: Ricostruisce una traccia procedurale specifica
+      responses: { '200': { description: Traccia role-scoped dello specifico soggetto } }
+  /api/insights:
+    get:
+      summary: KPI deterministici e proposte narrative separate
+      responses: { '200': { description: Base hashata, segnali e proposte AI con eventuale validazione umana } }
+  /api/insights/propose:
+    post:
+      summary: Genera una lettura AI sulla sola base KPI deterministica
+      responses: { '201': { description: AssistEnvelope proposal-only con receipt } }
+  /api/insights/{id}/validate:
+    post:
+      summary: Valida umanamente una lettura AI se la base KPI non è cambiata
+      responses: { '200': { description: Adozione umana motivata con receipt } }
   /api/workbench/meta:
     get:
       summary: Guida applicativa e loop universale
