@@ -52,10 +52,10 @@ export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
     id: 'monitoring', code: 'RN-01', label: 'Monitoraggio normativo', service: 'monitoring', action: 'open-service',
     actionLabel: actor.role === 'auditor' ? 'Consulta monitoraggio' : actor.role === 'admin' ? 'Apri monitoraggio' : 'Consulta e contribuisci',
     description: actor.role === 'auditor'
-      ? 'Ricostruisci ricerche, fonti, decisioni ed evidenze in sola lettura.'
+      ? 'Ricostruisci ricerche, fonti e decisioni in sola lettura.'
       : actor.role === 'admin'
-        ? 'Configura ricerche, approva piani e governa le fonti da verificare.'
-        : 'Consulta le ricerche disponibili e aggiungi materiale originale senza classificarlo.',
+        ? 'Approva piani e verifica le fonti candidate.'
+        : 'Consulta le ricerche e aggiungi materiale originale.',
     readOnly: actor.role === 'auditor',
     attentionCount: actor.role === 'user' ? ownContributionExceptions : missionExceptions + candidates,
     metrics: [{ value: activeMissions, label: 'ricerche attive' }, { value: candidates, label: 'fonti da verificare' }]
@@ -63,23 +63,23 @@ export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
     id: 'incidents', code: 'EC-01', label: 'Eventi e segnalazioni', service: 'incidents', action: 'open-service',
     actionLabel: actor.role === 'auditor' ? 'Consulta eventi' : actor.role === 'admin' ? 'Apri eventi' : 'Registra o continua',
     description: actor.role === 'auditor'
-      ? 'Ricostruisci originali, versioni, decisioni e prove senza modificare i fascicoli.'
+      ? 'Ricostruisci originali, versioni e decisioni in sola lettura.'
       : actor.role === 'admin'
-        ? 'Governa gli eventi aperti, le versioni, gli invii e le chiusure.'
-        : 'Registra i fatti disponibili o continua un evento già aperto.',
+        ? 'Gestisci eventi aperti, invii e chiusure.'
+        : 'Registra i fatti o continua un evento aperto.',
     readOnly: actor.role === 'auditor', attentionCount: openIncidents,
     metrics: [{ value: openIncidents, label: 'eventi aperti' }, { value: visibleIncidents.length, label: 'eventi visibili' }]
   }), procedure({
     id: 'evidence', code: 'EV-01', kind: 'assurance', label: 'Evidenze e controlli', service: 'proof', action: 'open-service',
     actionLabel: 'Apri evidenze',
-    description: 'Consulta controlli, evidenze disponibili, limiti e requisiti che restano da attestare esternamente.',
+    description: 'Consulta controlli, prove, limiti e attestazioni esterne richieste.',
     readOnly: true, attentionCount: allBlockers,
     metrics: [{ value: Number(readiness?.verified || 0), label: 'controlli verificati' }, { value: allBlockers, label: 'controlli non verificati' }]
   })];
 
   if (actor.role === 'admin' && permissions.has('manage-enterprise')) procedures.push(procedure({
     id: 'administration', kind: 'control-plane', label: 'Amministrazione', action: 'open-administration', actionLabel: 'Apri amministrazione',
-    description: 'Governa identità, AI, budget, ambiente e readiness senza mescolare configurazione e lavoro operativo.',
+    description: 'Governa identità, AI e readiness del sistema.',
     attentionCount: runtimeBlockers,
     metrics: [{ value: activeUsers, label: 'identità attive' }, { value: runtimeBlockers, label: 'controlli runtime aperti' }]
   }));
