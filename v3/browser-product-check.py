@@ -42,7 +42,15 @@ try:
         page.goto(f'{BASE}/', wait_until='networkidle')
         page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
         page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
-        assert page.locator('.process-lane').count() == 2
+        procedure_host = page.locator('.process-lanes[data-procedure-hub="server-derived"]')
+        procedure_host.wait_for(state='visible')
+        procedures = procedure_host.locator('[data-procedure-id]')
+        assert procedures.count() == 4
+        assert procedures.evaluate_all("els => els.map(el => el.dataset.procedureId)") == ['monitoring', 'incidents', 'evidence', 'administration']
+        assert procedure_host.locator('[data-procedure-id="monitoring"][data-process-code="RN-01"]').count() == 1
+        assert procedure_host.locator('[data-procedure-id="incidents"][data-process-code="EC-01"]').count() == 1
+        assert procedure_host.locator('[data-procedure-id="evidence"][data-process-code="EV-01"][data-read-only="true"]').count() == 1
+        assert procedure_host.locator('[data-procedure-id="administration"] [data-procedure-admin="true"]').count() == 1
         setup = page.locator('#homePrimaryAction')
         setup.wait_for(state='visible')
         assert setup.get_attribute('data-home-action') == 'settings'
@@ -165,6 +173,7 @@ try:
         assert not errors, errors
 
         checks = [
+            'server-derived-procedure-hub-admin-four-procedures',
             'provider-configured-through-progressive-home-action',
             'settings-single-open-stable-observation',
             'governed-job-created',

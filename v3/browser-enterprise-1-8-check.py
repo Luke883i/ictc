@@ -50,9 +50,14 @@ try:
         assert page.title() == 'ICTC · Attività, evidenze e controlli'
         labels = [value.strip() for value in page.locator('.service-nav button').all_inner_texts()]
         assert labels == ['Panoramica', 'Monitoraggio normativo', 'Eventi e segnalazioni', 'Evidenze e controlli'], labels
-        assert page.locator('.process-lane').count() == 2
+        admin_hub = page.locator('.process-lanes[data-procedure-hub="server-derived"]')
+        admin_hub.wait_for(state='visible')
+        assert admin_hub.locator('[data-procedure-id]').count() == 4
+        assert admin_hub.locator('[data-procedure-id]').evaluate_all("els => els.map(el => el.dataset.procedureId)") == ['monitoring', 'incidents', 'evidence', 'administration']
         contains(page.locator('[data-lane="monitoring"]'), 'Monitoraggio normativo')
         contains(page.locator('[data-lane="incidents"]'), 'Eventi e segnalazioni')
+        contains(page.locator('[data-procedure-id="evidence"]'), 'Evidenze e controlli')
+        contains(page.locator('[data-procedure-id="administration"]'), 'Amministrazione')
         home = page.locator('.workbench-home').bounding_box()
         recommendation = page.locator('.home-recommendation').bounding_box()
         assert home and home['height'] <= 760, home
@@ -107,7 +112,10 @@ try:
         page.locator('#roleSelect').select_option('user')
         assert page.locator('#roleSelect').input_value() == 'user'
         page.locator('.service-nav [data-service="home"]').click()
-        assert page.locator('.process-lane').count() == 2
+        user_hub = page.locator('.process-lanes[data-procedure-hub="server-derived"]')
+        assert user_hub.locator('[data-procedure-id]').count() == 3
+        assert user_hub.locator('[data-procedure-id="administration"]').count() == 0
+        assert user_hub.locator('[data-procedure-id="evidence"][data-read-only="true"]').count() == 1
         page.locator('.service-nav [data-service="monitoring"]').click()
         assert page.locator('#openJobConfig').is_hidden()
         assert page.locator('#monitoringContributionAction:visible').count() == 1
@@ -144,6 +152,10 @@ try:
         PHASE = 'auditor-least-privilege'
         page.locator('#roleSelect').select_option('auditor')
         assert page.locator('#roleSelect').input_value() == 'auditor'
+        page.locator('.service-nav [data-service="home"]').click()
+        auditor_hub = page.locator('.process-lanes[data-procedure-hub="server-derived"]')
+        assert auditor_hub.locator('[data-procedure-id]').count() == 3
+        assert auditor_hub.locator('[data-procedure-id][data-read-only="false"]').count() == 0
         page.locator('.service-nav [data-service="monitoring"]').click()
         assert page.locator('#openJobConfig').is_hidden()
         assert page.locator('#monitoringContributionAction').is_hidden()
@@ -169,7 +181,7 @@ try:
             assert box and box['height'] >= 44, (selector, box)
         assert not errors, errors
 
-        checks = ['balanced-home-two-processes', 'terminal-shell-vocabulary', 'compact-recommendation', 'three-settings-disclosures', 'settings-single-open', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'semantic-event-actions', 'canonical-evidence-vocabulary', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
+        checks = ['server-derived-procedure-hub', 'terminal-shell-vocabulary', 'compact-recommendation', 'three-settings-disclosures', 'settings-single-open', 'provider-job-boundary', 'governed-job-fields', 'single-material-entry', 'explicit-material-mode', 'compact-event-queue', 'semantic-event-actions', 'canonical-evidence-vocabulary', 'unlabeled-controls-zero', 'auditor-zero-write', 'keyboard-navigation', 'mobile-no-overflow', 'minimum-targets']
         (ART / 'browser-enterprise-1-8-check.json').write_text(json.dumps({'schemaVersion': '1.8.0-regression-on-2.0-candidate', 'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
         print('browser-enterprise-1-8: evidence complete', flush=True)
 except BaseException as error:

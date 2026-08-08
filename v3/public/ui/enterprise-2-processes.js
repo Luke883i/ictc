@@ -1,4 +1,4 @@
-import { $, $$, state } from './common.js';
+import { $, $$, esc, state } from './common.js';
 
 export const ENTERPRISE_PROCESS_CATALOG = Object.freeze({
   monitoring: Object.freeze({ code: 'RN-01', name: 'Monitoraggio normativo' }),
@@ -51,24 +51,70 @@ function markSurface(root, process) {
   root.dataset.processName = process.name;
 }
 
+function legacyProcedureIds(id) {
+  if (id === 'monitoring') return { title: 'homeMonitoringTitle', copy: 'homeMonitoringCopy', status: 'homeMonitoringStatus', action: 'homeMonitoringAction' };
+  if (id === 'incidents') return { title: 'homeIncidentTitle', copy: 'homeIncidentCopy', status: 'homeIncidentStatus', action: 'homeIncidentAction' };
+  return { title: '', copy: '', status: '', action: '' };
+}
+
+function procedureMetrics(item) {
+  const values = Array.isArray(item.metrics) ? item.metrics.slice(0, 2) : [];
+  if (!values.length) values.push({ value: item.attentionCount || 0, label: 'elementi da approfondire' });
+  return values.map(metric => `<b>${esc(metric.value)}</b><span>${esc(metric.label)}</span>`).join('');
+}
+
+function procedureAction(item, ids) {
+  const common = `class="secondary" type="button"${ids.action ? ` id="${ids.action}"` : ''}`;
+  if (item.action === 'open-administration') return `<button ${common} data-procedure-admin="true">${esc(item.actionLabel)}</button>`;
+  return `<button ${common} data-service="${esc(item.service || 'home')}">${esc(item.actionLabel)}</button>`;
+}
+
+function procedureCard(item) {
+  const ids = legacyProcedureIds(item.id);
+  const code = item.code ? `${esc(item.code)} · ` : '';
+  return `<article class="process-lane" data-lane="${esc(item.id)}" data-procedure-id="${esc(item.id)}" data-procedure-state="${esc(item.state)}" data-read-only="${item.readOnly ? 'true' : 'false'}"${item.code ? ` data-process-code="${esc(item.code)}"` : ''} data-process-name="${esc(item.label)}">
+    <p class="eyebrow">${code}${esc(item.label)}</p>
+    <h2${ids.title ? ` id="${ids.title}"` : ''}>${esc(item.label)}</h2>
+    <p${ids.copy ? ` id="${ids.copy}"` : ''}>${esc(item.description)}</p>
+    <div class="lane-status"${ids.status ? ` id="${ids.status}"` : ''}>${procedureMetrics(item)}</div>
+    ${procedureAction(item, ids)}
+  </article>`;
+}
+
+function renderProcedureHub() {
+  const host = $('.process-lanes');
+  const procedures = state.data?.procedures;
+  if (!host || !Array.isArray(procedures) || !procedures.length) return false;
+  const signature = JSON.stringify(procedures.map(item => [item.id, item.state, item.attentionCount, item.metrics, item.actionLabel, item.description]));
+  if (host.dataset.procedureSignature !== signature) {
+    host.innerHTML = procedures.map(procedureCard).join('');
+    host.dataset.procedureSignature = signature;
+  }
+  host.dataset.procedureHub = 'server-derived';
+  host.setAttribute('aria-label', 'Procedure ICTC disponibili');
+  setText($('.workbench-home-rule'), 'Le procedure disponibili derivano dal ruolo e dallo stato corrente. La priorità suggerita resta una sola.');
+  return true;
+}
+
 function normalizeHomeProcesses() {
+  const projected = renderProcedureHub();
   const monitoring = $('.process-lane[data-lane="monitoring"]');
   const incidents = $('.process-lane[data-lane="incidents"]');
   const monitoringProcess = ENTERPRISE_PROCESS_CATALOG.monitoring;
   const incidentProcess = ENTERPRISE_PROCESS_CATALOG.incidents;
 
-  if (monitoring) {
+  if (!projected && monitoring) {
     monitoring.dataset.processCode = monitoringProcess.code;
     monitoring.dataset.processName = monitoringProcess.name;
     setText(monitoring.querySelector(':scope > .eyebrow'), label(monitoringProcess));
-    monitoring.setAttribute('aria-label', `${label(monitoringProcess)}. ${monitoring.querySelector('h2')?.textContent || 'Area operativa'}`);
   }
-  if (incidents) {
+  if (!projected && incidents) {
     incidents.dataset.processCode = incidentProcess.code;
     incidents.dataset.processName = incidentProcess.name;
     setText(incidents.querySelector(':scope > .eyebrow'), label(incidentProcess));
-    incidents.setAttribute('aria-label', `${label(incidentProcess)}. ${incidents.querySelector('h2')?.textContent || 'Area operativa'}`);
   }
+  if (monitoring) monitoring.setAttribute('aria-label', `${monitoring.dataset.processCode || monitoringProcess.code} · ${monitoring.dataset.processName || monitoringProcess.name}. ${monitoring.querySelector('h2')?.textContent || 'Area operativa'}`);
+  if (incidents) incidents.setAttribute('aria-label', `${incidents.dataset.processCode || incidentProcess.code} · ${incidents.dataset.processName || incidentProcess.name}. ${incidents.querySelector('h2')?.textContent || 'Area operativa'}`);
 
   const stack = $('.home-disclosure-stack');
   if (!stack) return;
@@ -168,6 +214,14 @@ export function installEnterprise2ProcessArchitecture() {
   document.addEventListener('ictc:rendered', applyProcessArchitecture);
   document.addEventListener('ictc:surface-changed', applyProcessArchitecture);
   document.addEventListener('click', event => {
+    const adminProcedure = event.target.closest('[data-procedure-admin]');
+    if (adminProcedure) {
+      event.preventDefault();
+      $('#openAdminCenter')?.click();
+      setTimeout(applyProcessArchitecture, 0);
+      setTimeout(applyProcessArchitecture, 300);
+      return;
+    }
     const adminTarget = event.target.closest('#adminCenter .admin-section-nav [data-admin-target]');
     if (adminTarget) {
       const dialog = adminTarget.closest('#adminCenter');
