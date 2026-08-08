@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import { procedureTraceGraph } from './runtime/procedure-trace.mjs';
+const state={catalog:[{id:'s1',title:'Fonte',state:'candidate',sourceUrl:'https://example.org',decisions:[]}],incidents:[{id:'i1',createdBy:'alice',originalNarrative:'Evento',state:'review',attachments:[],formulationVersions:[]}],grcObjects:[],grcMappings:[],grcActions:[],grcRisks:[],grcAssurance:[],audit:[{id:'e1',revision:1,action:'catalog.observed',subject:{type:'catalog',id:'s1'},at:'2026-08-08T10:00:00Z',actorId:'admin',inputSha256:'a'.repeat(64),resultSha256:'b'.repeat(64),stateSha256:'c'.repeat(64),hash:'d'.repeat(64)}]};
+const admin=procedureTraceGraph(state,{id:'admin',role:'admin',permissions:['read']});assert.equal(admin.authority,'runtime-procedure-trace');assert.ok(admin.traces.some(x=>x.subject.id==='s1'&&x.processId==='monitoring'));assert.ok(admin.traces.some(x=>x.subject.id==='i1'&&x.processId==='incidents'));assert.equal(admin.traces.find(x=>x.subject.id==='s1').auditEvents.length,1);assert.equal(admin.traces.find(x=>x.subject.id==='s1').relationGrammar,'runtime-process-kernel');
+const other=procedureTraceGraph(state,{id:'bob',role:'user',permissions:['read']});assert.equal(other.traces.some(x=>x.subject.id==='i1'),false,'private incident trace must not leak');
+const owner=procedureTraceGraph(state,{id:'alice',role:'user',permissions:['read']});assert.equal(owner.traces.some(x=>x.subject.id==='i1'),true);
+console.log(`procedure-trace-check: ok (subjects=${admin.counts.subjects})`);
