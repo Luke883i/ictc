@@ -3,6 +3,7 @@ const port = Number(process.env.MOCK_AI_PORT || 4899);
 function responseFor(system, user) {
   const purpose = (system.match(/ICTC_PURPOSE_RUNTIME:([a-z-]+)/) || [])[1] || (system.match(/ICTC_PURPOSE:([a-z-]+)/) || [])[1];
   let input = {}; try { input = JSON.parse(user); } catch {}
+  if (purpose === 'v3-dashboard-insight') { const metrics=input.basis?.metrics||[]; const attention=metrics.filter(item=>Number(item.value)>0).slice(0,3); return {summary:'Lettura AI della base KPI deterministica: verificare prima le aree con lavoro o review aperta.',observations:attention.map((item,index)=>({id:`focus-${index+1}`,title:`Verifica ${item.label}`,rationale:`Il KPI ${item.id} ha valore ${item.value} nella base deterministica fornita; la priorità operativa resta quella del runtime.`,processId:item.processId,sourceMetricIds:[item.id]}))}; }
   if (purpose === 'grc-mapping-proposal') return {targetIds: input.candidates?.[0]?.id ? [input.candidates[0].id] : [], rationale:'Corrispondenza candidata basata sul contesto fornito; richiede validazione umana.', confidence:.84};
   if (purpose === 'grc-action-priority') return {priority:4, rationale:'Priorità proposta in base a gap, criticità e stato disponibili; richiede adozione umana.', confidence:.81};
   if (purpose === 'grc-risk-proposal') return {likelihood:5, impact:4, rationale:'Scenario proposto sulla base del contesto fornito; rating da validare dal risk owner.', confidence:.79};
