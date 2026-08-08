@@ -5,6 +5,7 @@ import { renderIncidentWorkspace, renderPlanDialog, renderSourceDialog } from '.
 export async function refresh({ keepDialog = true } = {}) {
   state.data = await api('/api/bootstrap');
   state.role = state.data.actor.role;
+  document.title=`ICTC ${state.data.version} · Enterprise Workbench`;
   render();
   if (keepDialog && state.activeIncidentId && $('#incidentWorkspace').open) renderIncidentWorkspace();
   if (keepDialog && state.activeSourceId && $('#sourceDialog').open) renderSourceDialog();
