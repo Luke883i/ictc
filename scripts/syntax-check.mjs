@@ -13,11 +13,16 @@ function walk(root) {
     else if (/\.(?:mjs|js)$/.test(name)) files.push(file);
   }
 }
+function annotationText(value) {
+  return String(value || '').replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+}
 for (const root of roots) walk(root);
 for (const file of files.sort()) {
   const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
   if (result.status !== 0) {
-    process.stderr.write(result.stderr || result.stdout || `syntax failure: ${file}\n`);
+    const detail = result.stderr || result.stdout || `syntax failure: ${file}`;
+    process.stderr.write(`::error file=${file},title=JavaScript syntax failure::${annotationText(detail)}\n`);
+    process.stderr.write(detail.endsWith('\n') ? detail : `${detail}\n`);
     process.exit(result.status || 1);
   }
 }

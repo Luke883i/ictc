@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0.0",
+  "authority": {"mapping": "runtime", "standardLevelConclusion": "external-assessor"},
+  "packs": [
+    {
+      "id": "wcag-22", "framework": "WCAG", "edition": "2.2", "officialUrl": "https://www.w3.org/TR/WCAG22/", "status": "official-reference",
+      "mappings": [
+        {"id":"wcag-active-experience","mappingKind":"informative-practice-reference","sourceRef":"experience:active-1","externalRef":"WCAG 2.2","evidenceKinds":["canonical-browser-journey","active-ui-composition-audit","accessibility-audit-when-attested"],"limitation":"Repository and browser evidence can support accessibility review but cannot establish WCAG conformance without the required scoped human and assistive-technology evaluation.","standardConclusion":"not-assessed","externalAssessmentRequired":true}
+      ]
+    },
+    {
+      "id": "nist-csf-20", "framework": "NIST CSF", "edition": "2.0 (2024)", "officialUrl": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20", "status": "official-reference",
+      "mappings": [
+        {"id":"nist-govern","mappingKind":"informative-practice-reference","sourceRef":"process:GA-01","externalRef":"GOVERN","evidenceKinds":["process-definition","human-decision-record","runtime-readiness"],"limitation":"The mapping identifies ICTC governance practices relevant to the CSF GOVERN function; it is not an organizational CSF Profile, Tier determination or assessment.","standardConclusion":"not-assessed","externalAssessmentRequired":true},
+        {"id":"nist-detect","mappingKind":"informative-practice-reference","sourceRef":"process:RN-01","externalRef":"DETECT","evidenceKinds":["monitoring-receipts","source-lineage","evidence-dossier"],"limitation":"Regulatory monitoring and source review are only selected ICTC practices and do not demonstrate coverage of the NIST CSF DETECT function as a whole.","standardConclusion":"not-assessed","externalAssessmentRequired":true},
+        {"id":"nist-respond","mappingKind":"informative-practice-reference","sourceRef":"process:EC-01","externalRef":"RESPOND","evidenceKinds":["preserved-original","decision-record","incident-receipts"],"limitation":"The event workflow supports selected response-oriented practices; it does not assess organizational response capability or NIST CSF outcomes.","standardConclusion":"not-assessed","externalAssessmentRequired":true}
+      ]
+    },
+    {
+      "id": "iso-37301", "framework": "ISO 37301", "edition": "2021 + Amd 1:2024", "officialUrl": "https://www.iso.org/standard/75080.html", "status": "official-reference-with-amendment",
+      "mappings": [
+        {"id":"iso37301-monitor","mappingKind":"informative-practice-reference","sourceRef":"process:RN-01","externalRef":"compliance-monitoring-practice","evidenceKinds":["process-definition","source-decisions","evidence-dossier"],"limitation":"ICTC monitoring can support a compliance-management practice, but this mapping does not establish implementation or conformity of an ISO 37301 compliance management system.","standardConclusion":"not-assessed","externalAssessmentRequired":true},
+        {"id":"iso37301-evidence","mappingKind":"informative-practice-reference","sourceRef":"process:EV-01","externalRef":"documented-evidence-practice","evidenceKinds":["claim-evidence-graph","receipts","integrity-head"],"limitation":"ICTC evidence traceability covers selected runtime records only; certification and system-level conformity remain outside ICTC authority and require external assessment.","standardConclusion":"not-assessed","externalAssessmentRequired":true}
+      ]
+    },
+    {
+      "id": "eu-ai-act", "framework": "EU AI Act", "edition": "Regulation (EU) 2024/1689", "officialUrl": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj", "status": "official-legal-reference",
+      "mappings": [
+        {"id":"aiact-governance","mappingKind":"context-and-practice-reference","sourceRef":"process:GA-01","externalRef":"human-oversight-and-traceability-context","evidenceKinds":["ai-trace","human-decision-record","authority-topology"],"limitation":"The mapping documents ICTC design practices around AI assistance, human authority and traceability; ICTC does not determine system classification, legal role, applicability or compliance under Regulation (EU) 2024/1689.","standardConclusion":"not-assessed","externalAssessmentRequired":true}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion":"1.0.0",
+  "edition":"V1 Experimental",
+  "authorities":[
+    {"id":"ontology","expected":"runtimeOntologyProjection"},
+    {"id":"relations","expected":"process-kernel relation grammar"},
+    {"id":"authority-topology","expected":"ProcessDefinition.authority"},
+    {"id":"decisions","expected":"canonicalDecisionProjection / human authority"},
+    {"id":"epistemic","expected":"canonicalEpistemicProjection"},
+    {"id":"evidence","expected":"Store.evidenceBundle -> canonicalEvidenceGraph"},
+    {"id":"ui","expected":"installActiveExperience"}
+  ],
+  "permanentShell":["home","processes","proof"],
+  "internalWorkspaces":["monitoring","incidents"],
+  "controlPlane":"administration",
+  "experimentalDoD":["single-semantic-derivation","process-kernel-scalability","human-version-bound-decisions","bounded-epistemic-grammar","claim-evidence-reverse-traversal","same-as-read-exports","bounded-translation-packs","single-ui-composition","role-scoped-search","canonical-browser-journey","clean-runtime-start","integrity-bound-receipts","degraded-ai-paths"],
+  "readinessDebt":["branch-protection","supply-chain-pinning","production-observability","hardening-and-rate-budgets","durable-store-evolution","disaster-recovery","accessibility-evidence"],
+  "claimBoundary":"V1 Experimental is a coherent end-to-end experimental product baseline. It is not a statement of production readiness, legal compliance, certification, high availability or external assessment."
+}
