@@ -21,6 +21,8 @@ import { grcProjection, enhanceGrcProcedures } from './runtime/grc-projection.mj
 import { createWorkOrchestration, workProjection } from './runtime/work-orchestration.mjs';
 import { canonicalReviewInbox } from './runtime/review-inbox.mjs';
 import { createInsightRuntime, insightProjection } from './runtime/insights.mjs';
+import { createProcessLandscapeHandler } from './runtime/process-landscape-handler.mjs';
+import { processLandscapeProjection } from './runtime/process-landscape.mjs';
 import { runtimeOntologyProjection } from './runtime/ontology.mjs';
 import { canonicalDecisionProjection } from './runtime/decision-projection.mjs';
 import { canonicalEpistemicProjection } from './runtime/epistemic-projection.mjs';
@@ -47,7 +49,7 @@ const schedulerMs=Math.max(10000,Number(process.env.ICTC_SCHEDULER_TICK_MS||6000
 const runningMissions=new Set();
 const monitoring=createMonitoringRuntime({store,permissions,runningMissions});
 function runtimePosture(){const state=store.snapshot();return{integrity:store.verifyChain(),safeBinding:true,identityProvider:process.env.ICTC_IDENTITY_MODE==='trusted-header',identityStrategy:state.settings.identity?.strategy||'legacy-role-header',tls:process.env.ICTC_TLS_ATTESTED==='1',durableStorage:process.env.ICTC_DURABLE_STORAGE==='1',backupVerified:Boolean(process.env.ICTC_BACKUP_VERIFIED_AT),malwareScanning:process.env.ICTC_MALWARE_SCAN_MODE==='external',observability:process.env.ICTC_OBSERVABILITY_ATTESTED==='1',dependencyAudit:Boolean(process.env.ICTC_DEPENDENCY_AUDIT_AT),dependencyAuditAt:process.env.ICTC_DEPENDENCY_AUDIT_AT||null,accessibilityAudit:Boolean(process.env.ICTC_ACCESSIBILITY_AUDIT_AT),accessibilityAuditAt:process.env.ICTC_ACCESSIBILITY_AUDIT_AT||null};}
-const handlers=[createWorkOrchestration({store,permissions}),createInsightRuntime({store,permissions}),createWorkbenchProjection({store,permissions}),createGrcRuntime({store,permissions}),createMonitoringJobHandler({store,permissions}),monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store:evidenceStore,permissions}),createAdminHandler({store,permissions,posture:runtimePosture})];
+const handlers=[createWorkOrchestration({store,permissions}),createProcessLandscapeHandler({store,permissions}),createInsightRuntime({store,permissions}),createWorkbenchProjection({store,permissions}),createGrcRuntime({store,permissions}),createMonitoringJobHandler({store,permissions}),monitoring.handle,createContributionHandler({store,permissions}),createIncidentHandler({store,permissions}),createEvidenceHandler({store:evidenceStore,permissions}),createAdminHandler({store,permissions,posture:runtimePosture})];
 function proofFor(actor){const posture=runtimePosture();return standardProofProjection({actor,version:VERSION,readiness:enterpriseReadiness(store.snapshot(),posture),integrity:posture.integrity});}
 async function handleApi(request,response,url,actor){
   const pathname=url.pathname,method=request.method||'GET';
@@ -73,6 +75,7 @@ async function handleApi(request,response,url,actor){
     projected.insights=insightProjection(snapshot,actor);
     projected.homeNextAction=projected.work.queue.nextAction;
     projected.procedures=enhanceGrcProcedures(canonicalProcedureHub(snapshot,actor,{readiness}),grc);
+    projected.processLandscape=processLandscapeProjection({procedures:projected.procedures,work:projected.work,reviewInbox:projected.reviewInbox});
     projected.decisions=canonicalDecisionProjection(snapshot,actor);
     projected.epistemic=canonicalEpistemicProjection(snapshot,actor);
     projected.translationPacks=translationPackProjection();
