@@ -124,14 +124,16 @@ try {
   record('FI01-06', 'A new master version becomes a new candidate without silently invalidating the previous human decision.');
 
   const repoRoot = new URL('./', import.meta.url);
-  const [app, ui, contributions, openapi, product] = await Promise.all([
+  const [app, activeExperience, ui, contributions, openapi, product] = await Promise.all([
     readFile(new URL('public/app.js', repoRoot), 'utf8'),
+    readFile(new URL('public/ui/active-experience.js', repoRoot), 'utf8'),
     readFile(new URL('public/ui/fi01-reference.js', repoRoot), 'utf8'),
     readFile(new URL('runtime/contributions.mjs', repoRoot), 'utf8'),
     readFile(new URL('../docs/openapi.yaml', repoRoot), 'utf8'),
     readFile(new URL('product-contract.json', repoRoot), 'utf8')
   ]);
-  assert.ok(app.includes("installFi01Reference"));
+  assert.ok(app.includes('installActiveExperience'));
+  assert.ok(activeExperience.includes('installFi01Reference'));
   assert.ok(ui.includes('/api/internal-sources/reference'));
   assert.ok(ui.includes('Sistema master'));
   assert.ok(contributions.includes("pathname === '/api/internal-sources/reference'"));
@@ -139,7 +141,7 @@ try {
   const contract = JSON.parse(product);
   assert.equal(contract.experienceMetrics.internalMasterReferenceCoverage, 1);
   assert.ok(contract.services.find(item => item.id === 'monitoring').primaryJourney.includes('internal-master-reference'));
-  record('FI01-07', 'UI wiring, runtime route, OpenAPI declaration and product contract converge on the same FI-01 reference capability.');
+  record('FI01-07', 'Canonical composition wiring, runtime route, OpenAPI declaration and product contract converge on the same FI-01 reference capability.');
 
   const report = {
     schemaVersion: '1.0.0',
