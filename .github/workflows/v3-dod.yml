@@ -22,8 +22,24 @@ jobs:
         run: npm run check
       - name: V1/V2 capability regression
         run: node v3/product-contract-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/v2-ux-saturation.mjs && node v3/v2-global-dod-check.mjs
-      - name: V3 orchestration and UX
-        run: node v3/semantic-api-contract-check.mjs && node v3/work-orchestration-check.mjs && node v3/procedure-guide-check.mjs && node v3/assist-envelope-check.mjs && node v3/review-inbox-check.mjs && node v3/insight-projection-check.mjs && node v3/procedure-trace-check.mjs && node v3/v3-ux-cutover-check.mjs && node v3/v3-global-dod-check.mjs
+      - name: V3 orchestration and UX · semantic ratchet
+        run: node v3/semantic-api-contract-check.mjs
+      - name: V3 work queue and intent routing
+        run: node v3/work-orchestration-check.mjs
+      - name: V3 procedure guide
+        run: node v3/procedure-guide-check.mjs
+      - name: V3 assist envelope
+        run: node v3/assist-envelope-check.mjs
+      - name: V3 human review inbox
+        run: node v3/review-inbox-check.mjs
+      - name: V3 deterministic insight projection
+        run: node v3/insight-projection-check.mjs
+      - name: V3 procedure trace
+        run: node v3/procedure-trace-check.mjs
+      - name: V3 UX cutover
+        run: node v3/v3-ux-cutover-check.mjs
+      - name: V3 global DoD
+        run: node v3/v3-global-dod-check.mjs
       - name: V3 100k saturation
         run: node v3/v3-saturation-100k.mjs
       - name: Canonical authority and evidence
