@@ -1,0 +1,7 @@
+import { $, esc, state } from './common.js';
+let installed=false;
+function landscapeItem(id){for(const phase of state.data?.processLandscape?.phases||[])for(const item of phase.items||[])if(item.processId===id)return item;return null;}
+function strip(item){if(!item)return'';return`<section class="v4-process-context" data-v4-process-context><div><small>Perché serve</small><b>${esc(item.purpose)}</b></div><div><small>Cosa succede dopo</small><b>${esc(item.checkpoint?`Decisione umana · ${item.checkpoint}`:'Consultazione e prova')}</b></div><div><small>Prova che resta</small><b>${esc(item.proofHint)}</b></div><div><small>AI</small><b>${item.aiOptional?'Opzionale · proposta soltanto':'Non necessaria'}</b></div></section>`;}
+function place(view,id,anchorSelector){if(!view)return;view.querySelector('[data-v4-process-context]')?.remove();const item=landscapeItem(id);if(!item)return;const anchor=anchorSelector?view.querySelector(anchorSelector):null;if(anchor)anchor.insertAdjacentHTML('afterend',strip(item));else view.insertAdjacentHTML('afterbegin',strip(item));}
+function enhance(){if(!state.data)return;place($('#monitoringView'),'monitoring','[data-workspace-return]');place($('#incidentsView'),'incidents','[data-workspace-return]');const grc=$('#grcWorkspace');if(grc&&state.activeProcessId)place(grc,state.activeProcessId,'.grc-head');}
+export function installExperiencePolish(){if(installed)return;installed=true;document.addEventListener('ictc:rendered',enhance);document.addEventListener('ictc:surface-changed',()=>queueMicrotask(enhance));enhance();}

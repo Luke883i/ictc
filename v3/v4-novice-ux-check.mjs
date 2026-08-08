@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [active,nexus,novice,bridge,global,common,polish,manualMonitoring,manualIncident,css,work]=await Promise.all(['./public/ui/active-experience.js','./public/ui/business-nexus.js','./public/ui/novice-entry.js','./public/ui/ai-mode-bridge.js','./public/ui/global-tools.js','./public/ui/common.js','./public/ui/experience-polish.js','./runtime/manual-monitoring.mjs','./runtime/manual-incident.mjs','./public/enterprise-nexus.css','./runtime/work-orchestration.mjs'].map(read));
+for(const token of ['installBusinessNexus','installNoviceEntry','installAiModeBridge','installExperiencePolish','enterprise-nexus-1'])assert.ok(active.includes(token),token);
+for(const token of ['I processi di compliance gestiti da ICTC','Il tuo profilo','AI assistita · ON','AI assistita · OFF','data-v3-guide'])assert.ok(nexus.includes(token),token);
+for(const type of ['routeUrl','routeText','routeFile','routeInternalReference'])assert.ok(novice.includes(type),type);
+for(const family of ['grc-object','mapping','action','risk','assurance-case'])assert.ok(global.includes(family),family);
+for(const action of ['catalog.source.impact.assessed','grc.action.verified','grc.risk.treatment.decided','grc.assurance.human.drafted'])assert.ok(common.includes(action),action);
+assert.ok(bridge.includes('/api/missions/manual-draft'));assert.ok(bridge.includes('/api/incidents/manual-intake'));
+assert.ok(manualMonitoring.includes("state:'needs-plan'"));assert.ok(manualMonitoring.includes("executionMode:'manual'"));assert.ok(manualIncident.includes("analysisMode:'manual'"));
+for(const label of ['Perché serve','Cosa succede dopo','Prova che resta'])assert.ok(polish.includes(label),label);
+assert.ok(css.includes('@media(max-width:620px)'));assert.ok(work.includes('input.internalReference'));
+assert.ok(!`${active}\n${nexus}\n${novice}\n${bridge}\n${global}\n${polish}`.includes('MutationObserver'));
+console.log('v4-novice-ux-check: ok (business nexus, role profile, real inputs, true AI-off entry, global search, receipts, contextual guidance)');
