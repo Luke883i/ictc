@@ -3,22 +3,7 @@
 @import url('./styles-experience.css');
 @import url('./admin-center.css');
 @import url('./enterprise-compact.css');
-@import url('./journey-reborn.css');
-@import url('./reborn-3.css');
-@import url('./stable-1-4.css');
-@import url('./standard-proof-1-6.css');
-@import url('./enterprise-1-7.css');
-@import url('./enterprise-1-8.css');
-@import url('./settings-1-8-fix.css');
-@import url('./labels-1-8-fix.css');
-@import url('./enterprise-2.css');
-@import url('./enterprise-2-editorial.css');
-@import url('./enterprise-2-design-system.css');
-@import url('./enterprise-2-design-system-refinement.css');
-@import url('./enterprise-2-compliance-flow.css');
-@import url('./enterprise-2-compliance-configuration.css');
-@import url('./enterprise-2-ui-standard.css');
-@import url('./enterprise-2-ui-standard-runtime-refinement.css');
+@import url('./active-experience.css');
 
 [hidden]{display:none!important}
-.contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3)}
+.contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
