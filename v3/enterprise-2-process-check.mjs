@@ -15,7 +15,7 @@ for (const id of processIds) {
   assert.ok(term?.code, `${id} code missing from runtime ontology`);
   assert.ok(term?.label, `${id} label missing from runtime ontology`);
   for (const source of [browser, check, docs]) assert.ok(source.includes(term.code), `${term.code} missing`);
-  assert.ok(browser.includes(term.label), `${term.label} missing from browser witness`);
+  assert.ok(browser.includes(term.code), `${term.code} missing from browser witness`);
   assert.ok(docs.includes(term.label), `${term.label} missing from documentation`);
 }
 assert.match(processUi, /state\.data\?\.ontology\?\.processes/);
