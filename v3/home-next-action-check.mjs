@@ -54,4 +54,6 @@ assert.match(actions, /next\.targetType === 'catalog'/);
 assert.match(actions, /next\.targetType === 'incident'/);
 assert.match(actions, /state\.activeSourceId = next\.targetId/);
 assert.match(actions, /state\.activeIncidentId = next\.targetId/);
-console.log('home-next-action-check: ok (server authority, RBAC targets, deterministic FI-01 priority, UI wiring)');
+assert.match(actions, /announceTargetSurface\('source-dialog'\)/);
+assert.match(actions, /announceTargetSurface\('incident-workspace'\)/);
+console.log('home-next-action-check: ok (server authority, RBAC targets, deterministic FI-01 priority, UI wiring, terminal surface propagation)');

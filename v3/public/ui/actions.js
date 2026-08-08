@@ -26,6 +26,9 @@ function setService(service, focusSelector = '#main') {
   renderNavigation();
   requestAnimationFrame(() => $(focusSelector)?.focus({ preventScroll: false }));
 }
+function announceTargetSurface(surface) {
+  document.dispatchEvent(new CustomEvent('ictc:surface-changed', { detail: { surface, reason: 'home-next-action' } }));
+}
 
 export function activateHomeAction(action) {
   const next = state.data?.homeNextAction || {};
@@ -52,6 +55,7 @@ export function activateHomeAction(action) {
       state.activeSourceId = next.targetId;
       renderSourceDialog();
       openDialog('sourceDialog');
+      announceTargetSurface('source-dialog');
     }
     return;
   }
@@ -61,6 +65,7 @@ export function activateHomeAction(action) {
       state.activeIncidentId = next.targetId;
       renderIncidentWorkspace();
       openDialog('incidentWorkspace');
+      announceTargetSurface('incident-workspace');
     }
     return;
   }
