@@ -99,8 +99,30 @@ try:
         page.locator('[data-close="planDialog"]').click()
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
         card.get_by_role('button', name='Esegui ora').click()
-        page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').wait_for()
-        page.get_by_text('Direttiva (UE) 2022/2555 — NIS2').click()
+        page.locator('[data-open-source]').first.wait_for()
+
+        admin_response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'admin', 'x-ictc-actor-id': 'local-admin'})
+        assert admin_response.status == 200
+        admin_body = admin_response.json()
+        next_action = admin_body['homeNextAction']
+        assert next_action['action'] == 'monitoring-catalog'
+        assert next_action['targetType'] == 'catalog'
+        source_id = next_action['targetId']
+        assert source_id
+        target_source = next(item for item in admin_body['catalog'] if item['id'] == source_id)
+        assert target_source['state'] == 'candidate'
+        source_title = target_source['title']
+
+        PHASE = 'server-derived-home-next-action'
+        page.locator('.service-nav [data-service="home"]').click()
+        primary = page.locator('#homePrimaryAction')
+        expect(primary).to_have_attribute('data-home-action', 'monitoring-catalog')
+        expect(primary).to_have_attribute('data-home-target-type', 'catalog')
+        expect(primary).to_have_attribute('data-home-target-id', source_id)
+        expect(page.locator('#homeNextTitle')).to_contain_text('Verifica')
+        primary.click()
+        page.locator('#sourceDialog').wait_for(state='visible')
+        expect(page.locator('#sourceTitle')).to_have_text(source_title)
         page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo ufficiale verificati.')
         page.get_by_role('button', name='Accetta nel catalogo').click()
         page.locator('#sourceBody').get_by_text('Accettata nel catalogo', exact=False).first.wait_for()
@@ -139,6 +161,7 @@ try:
         assert body['integrity']['ok'] is True
         assert any(item.get('jobName') == 'Fonti ufficiali cybersecurity UE' for item in body['missions'])
         assert body['incidents']
+        assert body['homeNextAction']['readOnly'] is True
         assert not errors, errors
 
         checks = [
@@ -149,12 +172,15 @@ try:
             'job-name-and-objective-projected',
             'plan-approved',
             'job-executed',
+            'server-derived-targeted-home-action',
+            'home-target-opens-canonical-source',
             'source-decided-with-canonical-vocabulary',
             'material-original-preserved',
             'event-original-preserved',
             'semantic-event-actions',
             'canonical-evidence-download-vocabulary',
             'auditor-readback',
+            'auditor-home-action-read-only',
             'integrity-ok'
         ]
         (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')

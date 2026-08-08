@@ -123,7 +123,9 @@ verify('capability-reconciliation', () => {
   assert.match(ui, /capability\('manage-monitoring'\)/);
   assert.match(ui, /capability\('report-incident'\)/);
   assert.match(render, /capability\('manage-monitoring'\)/);
-  assert.match(render, /capability\('report-incident'\)/);
+  assert.match(render, /state\.data\.homeNextAction/);
+  assert.doesNotMatch(render, /function homeAction\(/);
+  assert.match(actions, /state\.data\?\.homeNextAction/);
   assert.match(actions, /\/api\/monitoring-jobs|\/api\/missions/);
   assert.match(jobs, /requirePermission\(actor, 'manage-monitoring'/);
   assert.match(incidents, /requirePermission\(actor, 'report-incident'/);

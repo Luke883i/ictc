@@ -34,21 +34,6 @@ const roleJourneys = {
   ],
 };
 
-function homeAction(role, counts, llmReady) {
-  if (role === 'admin') {
-    if (!llmReady) return { title:'Completa la configurazione AI', label:'Configura AI', action:'settings', reason:'Serve per creare piani e analisi. Le decisioni restano comunque umane.' };
-    if (!counts.missions) return { title:'Definisci il primo obiettivo', label:'Crea un monitoraggio', action:'monitoring', reason:'Descrivi cosa sorvegliare; ICTC proporrà un piano da approvare.' };
-    if (counts.candidates) return { title:'Completa le verifiche aperte', label:`Verifica ${counts.candidates} ${counts.candidates === 1 ? 'fonte' : 'fonti'}`, action:'monitoring-catalog', reason:'Le fonti candidate non diventano verificate senza una decisione motivata.' };
-    if (counts.openIncidents) return { title:'Gestisci gli eventi aperti', label:`Apri ${counts.openIncidents} ${counts.openIncidents === 1 ? 'evento' : 'eventi'}`, action:'incidents', reason:'Controlla chiarimenti, formulazioni e prossime decisioni.' };
-    return { title:'Controlla l’attività corrente', label:'Apri il monitoraggio', action:'monitoring', reason:'Verifica stato dei piani, prossime esecuzioni ed evidenze.' };
-  }
-  if (role === 'user') {
-    if (capability('report-incident')) return { title:'Registra ciò che è accaduto', label:'Registra un evento', action:'incident', reason:'Parti dai fatti disponibili. Non serve classificare l’evento.' };
-    return { title:'Aggiungi materiale utile', label:'Aggiungi materiale', action:'contribution', reason:'ICTC conserva l’originale e propone metadati da verificare.' };
-  }
-  return { title:'Consulta le evidenze disponibili', label:'Apri le evidenze', action:'monitoring-catalog', reason:'Controlla fonti, decisioni e provenienza senza modificare il fascicolo.' };
-}
-
 export function renderHome() {
   const role = state.data.actor.role;
   const missions = state.data.missions || [];
@@ -61,7 +46,10 @@ export function renderHome() {
     openIncidents: incidents.filter(item => !['submitted','closed'].includes(item.state)).length,
   };
   const llm = state.data.settings.llm;
-  const next = homeAction(role, counts, llm.ready);
+  const next = state.data.homeNextAction || {
+    title: 'Consulta lo stato corrente', label: 'Resta in panoramica', action: 'home',
+    reason: 'La priorità operativa server non è disponibile per questa proiezione.', targetType: null, targetId: null
+  };
   $('#homeView').dataset.role = role;
   $('#homeRole').textContent = roleLabels[role] || 'Ruolo';
   $('#homeSummary').textContent = roleSummaries[role] || 'Consulta lo stato e scegli il prossimo passo.';
@@ -70,6 +58,13 @@ export function renderHome() {
   const primary = $('#homePrimaryAction');
   primary.textContent = next.label;
   primary.dataset.homeAction = next.action;
+  if (next.targetType && next.targetId) {
+    primary.dataset.homeTargetType = next.targetType;
+    primary.dataset.homeTargetId = next.targetId;
+  } else {
+    delete primary.dataset.homeTargetType;
+    delete primary.dataset.homeTargetId;
+  }
   $('#homeAiNote').textContent = llm.ready
     ? 'AI disponibile: può proporre piani e analisi. La conferma umana resta obbligatoria.'
     : 'AI non configurata: originali ed evidenze restano registrabili; piani e analisi richiedono configurazione.';

@@ -4,6 +4,7 @@ import os from 'node:os'; import path from 'node:path';
 import { Store } from './store.mjs';
 import { applyCatalogDecision, catalogKey, mergeCatalogObservation, normalizeCatalogItem } from './runtime/model.mjs';
 await import('./fi01-reference-check.mjs');
+await import('./home-next-action-check.mjs');
 const root=await mkdtemp(path.join(os.tmpdir(),'ictc-evidence-')); const store=await new Store(root).init(); const actor={id:'admin-test',role:'admin'};
 try{
   const first=await store.mutate(actor,'test.created',{type:'mission',id:'m1'},{secret:'x'},draft=>{draft.missions.push({id:'m1'});return {id:'m1'};},{id:'cmd-1',expectedRevision:0});
@@ -42,5 +43,5 @@ try{
 
   assert.equal(store.verifyChain().ok,true); const bundle=store.evidenceBundle('mission','m1',actor); assert.equal(bundle.integrity.ok,true); assert.equal(bundle.events.length,1);
   const restarted=await new Store(root).init(); assert.equal(restarted.verifyChain().head,store.verifyChain().head);
-  console.log('evidence-check: ok (receipt, idempotency, conflict, atomic attachments, stable identity, private bundle, restart, FI-01 reference)');
+  console.log('evidence-check: ok (receipt, idempotency, conflict, atomic attachments, stable identity, private bundle, restart, FI-01 reference, home next action)');
 }finally{await rm(root,{recursive:true,force:true});}

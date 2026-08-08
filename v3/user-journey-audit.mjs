@@ -15,7 +15,7 @@ function check(id, condition, outcome) {
   checks.push({id,outcome});
 }
 check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Cosa devi fare adesso?'), 'one explanatory home entry');
-check('one-contextual-cta', (html.match(/id="homePrimaryAction"/g)||[]).length === 1 && render.includes('homeAction('), 'one primary action derived from role and state');
+check('one-contextual-cta', (html.match(/id="homePrimaryAction"/g)||[]).length === 1 && render.includes('state.data.homeNextAction') && !render.includes('function homeAction('), 'one primary action projected from server-derived role and state');
 check('horizontal-guidance', html.includes('id="homeJourney"') && css.includes('grid-auto-flow:column'), 'four-step horizontal journey');
 check('minimal-monitoring-entry', (html.match(/name="objective"[^>]*required/g)||[]).length === 1, 'one mandatory monitoring question');
 check('minimal-incident-entry', (html.match(/name="originalNarrative"[^>]*required/g)||[]).length === 1 && (html.match(/name="awarenessAt"[^>]*required/g)||[]).length === 1, 'narrative and awareness time only');
