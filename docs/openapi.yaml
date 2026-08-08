@@ -1,254 +1,328 @@
-openapi: 3.1.1
+openapi: 3.0.3
 info:
-  title: ICTC runtime API
-  version: 2.0.0-beta.3
-  description: >-
-    Executable method/path contract for v3/server.mjs and the mounted v3/runtime handlers.
-    ICTC persists current canonical state in its runtime store and binds the current state digest to the audit HEAD;
-    this API description does not claim event-sourced historical reconstruction, legal conclusions, or certification.
-x-ictc-contract-scope: method-path-surface
-x-ictc-runtime-authority:
-  - v3/server.mjs
-  - v3/runtime/*.mjs
+  title: ICTC API
+  version: 1.8.0
+  description: >
+    API contrattuale del runtime ICTC. L'AI assiste la preparazione; le decisioni
+    restano umane. Le risposte di scrittura restituiscono ricevute verificabili.
 servers:
   - url: http://127.0.0.1:4173
 paths:
   /api/health:
     get:
-      summary: Return runtime health, version, readiness and integrity posture
+      summary: Stato runtime e readiness
       responses:
-        '200': {description: Runtime health}
+        '200':
+          description: Runtime disponibile
   /api/bootstrap:
     get:
-      summary: Return the current role-filtered canonical projection
+      summary: Vista iniziale filtrata per ruolo
       responses:
-        '200': {description: Current visible state projection}
-  /api/standard-proof:
-    get:
-      summary: Return the read-only Standard Proof projection for the current actor
-      responses:
-        '200': {description: Standard Proof projection}
+        '200':
+          description: Projection applicativa least-privilege
   /api/workbench/meta:
     get:
-      summary: Return the workbench application guide
+      summary: Guida applicativa e loop universale
       responses:
-        '200': {description: Workbench metadata}
+        '200':
+          description: Metadati del workbench
   /api/workbench/graph:
     get:
-      summary: Return the role-filtered canonical workbench graph
+      summary: Grafo semantico derivato dalla projection autorizzata
       responses:
-        '200': {description: Workbench graph}
+        '200':
+          description: Nodi e relazioni visibili al ruolo corrente
   /api/workbench/metrics:
     get:
-      summary: Return metrics derived from the role-filtered workbench graph
+      summary: Metriche descrittive del workbench
       responses:
-        '200': {description: Workbench metrics}
-  /api/monitoring-jobs/draft:
+        '200':
+          description: Conteggi osservabili senza record sintetici
+  /api/monitoring-jobs:
     post:
-      summary: Record a governed monitoring-job intent and attempt AI plan generation
+      summary: Crea un job di monitoraggio in stato bozza
       responses:
-        '201': {description: Monitoring job recorded}
-  /api/monitoring-jobs/{id}/profile:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    put:
-      summary: Update a paused or draft monitoring-job profile and re-plan it
-      responses:
-        '200': {description: Monitoring job profile updated}
-  /api/missions/draft:
-    post:
-      summary: Record a monitoring mission intent and attempt AI plan generation
-      responses:
-        '201': {description: Monitoring mission recorded}
-  /api/missions/{id}/revise:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Revise a draft, paused or plan-deferred monitoring mission
-      responses:
-        '200': {description: Monitoring mission revised}
-  /api/missions/{id}/activate:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Activate a planned monitoring mission
-      responses:
-        '200': {description: Monitoring mission activated}
-  /api/missions/{id}/pause:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Pause an active monitoring mission with a reason
-      responses:
-        '200': {description: Monitoring mission paused}
-  /api/missions/{id}/resume:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Resume a paused monitoring mission
-      responses:
-        '200': {description: Monitoring mission resumed}
-  /api/missions/{id}/run:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Run an active monitoring mission
-      responses:
-        '200': {description: Monitoring run result}
-  /api/catalog/{id}/decision:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Record a human verified or rejected decision for a catalog source
-      responses:
-        '200': {description: Catalog decision receipt}
-  /api/internal-sources/reference:
-    post:
-      summary: Register a governed reference to a version held by an external internal-document master
-      description: >-
-        Records master system, master ID, master version and externally supplied SHA-256 as a catalog candidate.
-        ICTC does not become the document authority and no AI is used during this intake.
-      responses:
-        '201': {description: Internal master reference registered as a catalog candidate with a state-bound receipt}
-        '403': {description: Role cannot contribute source material}
-        '409': {description: The same master-system/master-ID/version is already registered}
-  /api/contributions:
-    post:
-      summary: Preserve contributed source material and attempt bounded AI metadata enrichment
-      responses:
-        '201': {description: Contribution recorded}
-  /api/contributions/{id}/enrich:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Retry AI enrichment for a contribution that needs enrichment
-      responses:
-        '200': {description: Contribution enrichment result}
-  /api/incidents/intake:
-    post:
-      summary: Preserve an original incident narrative and attachments before AI analysis
-      responses:
-        '201': {description: Incident recorded}
-  /api/incidents/{id}/analyze:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Retry AI analysis for an incident with a deferred AI error
-      responses:
-        '200': {description: Incident analysis result}
-  /api/incidents/{id}/answers:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Record human answers to motivated incident questions
-      responses:
-        '200': {description: Incident answers recorded}
-  /api/incidents/{id}/draft:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Generate a bounded AI formulation after motivated questions are complete
-      responses:
-        '200': {description: Draft formulation generated}
-  /api/incidents/{id}/formulation:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Save a human-reviewed incident formulation
-      responses:
-        '200': {description: Formulation saved}
-    put:
-      summary: Replace the current human-reviewed incident formulation
-      responses:
-        '200': {description: Formulation saved}
-  /api/incidents/{id}/submit:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Submit an incident after explicit confirmation of the current formulation digest
-      responses:
-        '200': {description: Incident submitted}
-  /api/incidents/{id}/close:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    post:
-      summary: Close a submitted incident with an explicit closure note
-      responses:
-        '200': {description: Incident closed}
-  /api/evidence/{type}/{id}:
-    parameters:
-      - $ref: '#/components/parameters/EvidenceType'
-      - $ref: '#/components/parameters/Id'
+        '201': { description: Job creato con receipt }
+  /api/monitoring-jobs/{id}:
     get:
-      summary: Export an authorized evidence bundle for a canonical object
+      summary: Legge un job governato e le sue run
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
       responses:
-        '200': {description: Evidence bundle}
-  /api/attachments/{id}:
-    parameters:
-      - $ref: '#/components/parameters/Id'
+        '200': { description: Job e run collegate }
+    put:
+      summary: Aggiorna un job lasciandolo in stato bozza
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Job aggiornato con receipt }
+  /api/monitoring-jobs/{id}/activate:
+    post:
+      summary: Attiva un job dopo approvazione umana esplicita
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Job attivato con receipt }
+  /api/monitoring-jobs/{id}/pause:
+    post:
+      summary: Sospende il job
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Job sospeso con receipt }
+  /api/monitoring-jobs/{id}/resume:
+    post:
+      summary: Riprende un job sospeso
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Job ripreso con receipt }
+  /api/monitoring-jobs/{id}/run:
+    post:
+      summary: Esegue manualmente un job attivo
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Run acquisita con receipt }
+  /api/monitoring-jobs/{id}/runs/{runId}/retry:
+    post:
+      summary: Ritenta una run fallita
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: runId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Nuova run collegata al retry con receipt }
+  /api/standard-proof:
     get:
-      summary: Download an authorized stored attachment
+      summary: Projection read-only di capacità, prove e limiti standard-facing
       responses:
-        '200': {description: Attachment bytes}
+        '200':
+          description: Documento di proof con mapping NIST CSF, ISO 27001, ISO 37301, GDPR, NIS2, DORA, SOC 2, ISO 42001 ed EU AI Act
+  /api/export/current.json:
+    get:
+      summary: Esporta la vista corrente entro lo stesso perimetro di lettura
+      responses:
+        '200':
+          description: Projection JSON role-scoped con manifest e digest
+  /api/export/current.csv:
+    get:
+      summary: Esporta la vista corrente in CSV entro lo stesso perimetro di lettura
+      responses:
+        '200':
+          description: CSV role-scoped della vista autorizzata
   /api/admin/settings:
     put:
-      summary: Update governed AI settings
+      summary: Aggiorna configurazione organizzativa e AI
       responses:
-        '200': {description: Settings update receipt}
+        '200': { description: Configurazione aggiornata con receipt }
+  /api/missions/draft:
+    post:
+      summary: Crea un piano di monitoraggio in bozza
+      responses:
+        '200': { description: Piano creato con receipt }
+  /api/missions/{id}/revise:
+    post:
+      summary: Crea una nuova versione del piano
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Piano revisionato con receipt }
+  /api/missions/{id}/activate:
+    post:
+      summary: Approva e attiva il piano
+      responses:
+        '200': { description: Piano attivato con receipt }
+  /api/missions/{id}/pause:
+    post:
+      summary: Sospende il monitoraggio con motivazione
+      responses:
+        '200': { description: Monitoraggio sospeso con receipt }
+  /api/missions/{id}/resume:
+    post:
+      summary: Riprende il monitoraggio sospeso
+      responses:
+        '200': { description: Monitoraggio ripreso con receipt }
+  /api/missions/{id}/run:
+    post:
+      summary: Esegue un controllo del monitoraggio
+      responses:
+        '200': { description: Run registrata con receipt }
+  /api/catalog/{id}/decision:
+    post:
+      summary: Registra una decisione umana sulla fonte
+      responses:
+        '200': { description: Decisione registrata con receipt }
+  /api/contributions:
+    post:
+      summary: Registra materiale originale e tenta l'arricchimento AI
+      responses:
+        '200': { description: Materiale registrato con receipt }
+  /api/internal-sources/reference:
+    post:
+      summary: Registra una versione di fonte interna governata da un sistema master esterno
+      responses:
+        '201': { description: Riferimento interno candidato registrato con master ID, versione e digest; nessuna copia documentale viene governata da ICTC }
+  /api/contributions/{id}/enrich:
+    post:
+      summary: Ritenta l'arricchimento AI del materiale
+      responses:
+        '200': { description: Arricchimento registrato con receipt }
+  /api/incidents/intake:
+    post:
+      summary: Registra il racconto originale e gli allegati
+      responses:
+        '200': { description: Evento registrato con receipt }
+  /api/incidents/{id}/analyze:
+    post:
+      summary: Ritenta l'analisi AI di un evento
+      responses:
+        '200': { description: Analisi registrata con receipt }
+  /api/incidents/{id}/answers:
+    post:
+      summary: Registra adozione, correzione o dato non disponibile
+      responses:
+        '200': { description: Risposta registrata con receipt }
+  /api/incidents/{id}/draft:
+    post:
+      summary: Genera una bozza AI senza adozione automatica
+      responses:
+        '200': { description: Bozza registrata con receipt }
+  /api/incidents/{id}/formulation:
+    post:
+      summary: Salva una nuova versione della formulazione umana
+      responses:
+        '200': { description: Versione registrata con receipt }
+  /api/incidents/{id}/submit:
+    post:
+      summary: Conferma e invia la versione corrente
+      responses:
+        '200': { description: Invio registrato con receipt }
+  /api/incidents/{id}/close:
+    post:
+      summary: Chiude un evento con motivazione
+      responses:
+        '200': { description: Chiusura registrata con receipt }
+  /api/evidence/{type}/{id}:
+    get:
+      summary: Esporta un fascicolo JSON filtrato per autorizzazione
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Fascicolo con manifest e limiti }
+  /api/evidence/{type}/{id}.zip:
+    get:
+      summary: Esporta il dossier evidenze bounded in formato ZIP
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: ZIP con manifest, grafo, decisioni, claim, receipts, limiti e checksum }
+  /api/attachments/{id}:
+    get:
+      summary: Scarica un allegato autorizzato
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Contenuto allegato }
   /api/admin/readiness:
     get:
-      summary: Return enterprise readiness posture
+      summary: Legge i controlli di readiness
       responses:
-        '200': {description: Enterprise readiness posture}
+        '200': { description: Readiness runtime e deployment }
   /api/admin/usage:
     get:
-      summary: Return bounded AI usage summary
+      summary: Legge consumo e costo AI osservati
       responses:
-        '200': {description: AI usage summary}
-  /api/admin/identity:
-    get:
-      summary: Return identity configuration and runtime projection
-      responses:
-        '200': {description: Identity configuration}
-    put:
-      summary: Update the governed identity policy with anti-lockout validation
-      responses:
-        '200': {description: Identity update receipt}
-  /api/admin/identity/test:
-    post:
-      summary: Simulate identity claims against a candidate or current identity policy
-      responses:
-        '200': {description: Identity evaluation}
-  /api/admin/users:
-    get:
-      summary: List locally governed users
-      responses:
-        '200': {description: User list}
-    post:
-      summary: Create a locally governed user
-      responses:
-        '201': {description: User creation receipt}
-  /api/admin/users/{id}:
-    parameters:
-      - $ref: '#/components/parameters/Id'
-    patch:
-      summary: Update a locally governed user while preserving the last active administrator
-      responses:
-        '200': {description: User update receipt}
+        '200': { description: Uso AI aggregato }
   /api/admin/governance:
     put:
-      summary: Update enterprise governance and environment metadata
+      summary: Aggiorna budget, modelli ammessi e ambiente
       responses:
-        '200': {description: Governance update receipt}
+        '200': { description: Governance aggiornata con receipt }
+  /api/admin/users:
+    get:
+      summary: Elenca gli utenti amministrati
+      responses:
+        '200': { description: Elenco utenti }
+    post:
+      summary: Crea un utente amministrato
+      responses:
+        '201': { description: Utente creato con receipt }
+  /api/admin/users/{id}:
+    put:
+      summary: Modifica stato, ruolo o profilo utente
+      responses:
+        '200': { description: Utente aggiornato con receipt }
+  /api/admin/identity:
+    get:
+      summary: Legge la configurazione identità e la proiezione runtime
+      responses:
+        '200': { description: Configurazione Shibboleth/LDAP senza segreti e stato del deployment }
+    put:
+      summary: Aggiorna strategia identità, header e regole di mapping
+      responses:
+        '200': { description: Policy identità aggiornata con receipt }
+  /api/admin/identity/test:
+    post:
+      summary: Prova una policy identità su attributi campione senza salvarla
+      responses:
+        '200': { description: Decisione di accesso simulata con ruolo, regola e motivazione }
 components:
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      schema: {type: string, minLength: 1}
-    EvidenceType:
-      name: type
-      in: path
-      required: true
-      schema: {type: string, minLength: 1}
+  schemas:
+    Receipt:
+      type: object
+      required: [eventId, revision, at, action, actorId, previousHash, hash, inputSha256, resultSha256, stateSha256]
+      properties:
+        eventId: { type: string }
+        revision: { type: integer }
+        at: { type: string, format: date-time }
+        action: { type: string }
+        actorId: { type: string }
+        previousHash: { type: string }
+        hash: { type: string }
+        inputSha256: { type: string }
+        resultSha256: { type: string }
+        stateSha256: { type: string }

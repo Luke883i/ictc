@@ -50,8 +50,14 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
+      - name: FI-01 reference binding
+        run: node v3/fi01-reference-check.mjs
+      - name: Home next action binding
+        run: node v3/home-next-action-check.mjs
       - name: Evidence and persistence
         run: node v3/evidence-check.mjs
+      - name: Evidence export authorization
+        run: node v3/evidence-export-auth-check.mjs
       - name: Attachment replay safety
         run: node v3/attachment-replay-check.mjs
       - name: Enterprise administration
