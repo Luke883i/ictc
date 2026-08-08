@@ -114,7 +114,7 @@ try:
         expect(page.locator('#homeNextTitle')).to_contain_text('Verifica')
         primary.click()
         page.locator('#sourceDialog').wait_for(state='visible')
-        expect(page.locator('#sourceBody')).to_contain_text(source_title)
+        expect(page.locator('#sourceTitle')).to_have_text(source_title)
         page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo ufficiale verificati.')
         page.get_by_role('button', name='Accetta nel catalogo').click()
         page.locator('#sourceBody').get_by_text('Accettata nel catalogo', exact=False).first.wait_for()
