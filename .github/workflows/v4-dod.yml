@@ -1,0 +1,41 @@
+name: v4-dod
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v4-dod-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-saturation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Slice contracts
+        run: |
+          node v3/v4-plan-check.mjs
+          node v3/process-landscape-check.mjs
+          node v3/ai-optionality-check.mjs
+          node v3/process-handoff-check.mjs
+          node v3/risk-action-fidelity-check.mjs
+          node v3/trace-explorer-check.mjs
+          node v3/v4-novice-ux-check.mjs
+      - name: Heterogeneous user profiles
+        run: node v3/v4-profile-saturation.mjs
+      - name: Adversarial language routing
+        run: node v3/v4-routing-saturation.mjs
+      - name: V4 state-space saturation
+        run: node v3/v4-state-saturation.mjs
+      - name: Preserve prior 100k saturation rail
+        run: node v3/v3-saturation-100k.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: v4-dod-saturation
+          path: artifacts/v4-*.json
+          if-no-files-found: warn
