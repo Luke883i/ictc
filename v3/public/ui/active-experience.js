@@ -9,6 +9,7 @@ import { installGrcWorkspace } from './grc-workspace.js';
 import { installSurfaceRouter } from './surface-router.js';
 import { installV3EntryPoint } from './operational-entry.js';
 import { installProcessLandscape } from './process-landscape.js';
+import { installAiOptionalControls } from './ai-optional-controls.js';
 
 let installed=false;
 function ensureMarketShell(){
@@ -61,6 +62,6 @@ function renderCanonicalExperience(){document.documentElement.dataset.ictcExperi
 export function installActiveExperience(){
   if(installed)return;installed=true;
   ensureMarketShell();ensureProgressiveSettings();
-  installProofSurface();installGrcWorkspace();installSurfaceRouter();installBindings();installAdminCenter();installEnterpriseExperience();installFi01Reference();installGlobalTools();installV3EntryPoint();installProcessLandscape();bindAdminShortcut();
+  installProofSurface();installAiOptionalControls();installGrcWorkspace();installSurfaceRouter();installBindings();installAdminCenter();installEnterpriseExperience();installFi01Reference();installGlobalTools();installV3EntryPoint();installProcessLandscape();bindAdminShortcut();
   document.addEventListener('ictc:rendered',renderCanonicalExperience);renderCanonicalExperience();
 }

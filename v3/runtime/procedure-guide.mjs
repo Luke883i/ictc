@@ -3,28 +3,28 @@ import { processDefinition, surfaceProcessDefinitions } from './process-kernel.m
 const ARCHETYPE_STEPS=Object.freeze({
   'monitor-review':[
     ['preserve','Conserva l’obiettivo o la fonte originale','Nessuna inferenza sostituisce l’input originale.'],
-    ['assist','Ottieni una proposta AI','Piano, metadati o rilevanza sono proposte da verificare.'],
+    ['assist','Struttura il piano; AI facoltativa','Puoi definire il piano manualmente. Se usi l’AI, il risultato resta una proposta da verificare.'],
     ['review','Verifica contesto e provenienza','Controlla fonte, versione, perimetro e limiti.'],
-    ['decide','Registra la decisione umana','La decisione resta distinta dalla proposta AI.'],
+    ['decide','Registra la decisione umana','La decisione resta distinta da qualsiasi assistenza AI.'],
     ['evidence','Conserva ricevuta e dossier','Decisione e versione diventano ricostruibili.']
   ],
   'case-workflow':[
     ['preserve','Registra i fatti disponibili','L’originale viene preservato prima dell’assistenza.'],
-    ['assist','Usa l’AI per strutturare','L’AI evidenzia elementi, gap o priorità senza decidere.'],
-    ['review','Completa ciò che manca','Un umano corregge, completa o rifiuta la proposta.'],
+    ['assist','Struttura il lavoro; AI facoltativa','Puoi procedere manualmente. L’AI può evidenziare elementi, gap o priorità senza decidere.'],
+    ['review','Completa ciò che manca','Un umano corregge, completa o rifiuta qualsiasi proposta.'],
     ['decide','Conferma lo stato operativo','La transizione di autorità richiede un’azione umana.'],
     ['evidence','Produci traccia e prossimo lavoro','Receipt, decisione ed evidenze alimentano la coda.']
   ],
   'assurance-view':[
     ['scope','Dichiara il perimetro','Il denominatore e le fonti della vista restano espliciti.'],
-    ['assist','Genera una proposta bounded','L’AI può mappare o redigere, non attestare.'],
+    ['assist','Prepara la bozza; AI facoltativa','Puoi redigere o mappare manualmente. L’AI, se usata, non attesta.'],
     ['review','Verifica evidenze e limiti','Distingui coperto, gap, N.A., indisponibile e non valutato.'],
     ['decide','Approva solo ciò che compete all’umano','La conclusione registrata è version-bound.'],
     ['evidence','Esporta la vista autorizzata','Il dossier mantiene gli stessi limiti della lettura.']
   ],
   'registry-extension':[
     ['preserve','Registra l’oggetto e la sua fonte','ICTC conserva identità e riferimento senza diventare master esterno.'],
-    ['assist','Arricchisci senza attivare','L’AI può suggerire classificazioni o collegamenti.'],
+    ['assist','Arricchisci se utile; AI facoltativa','La classificazione manuale è sempre disponibile; l’AI può solo suggerire collegamenti.'],
     ['review','Verifica owner, criticità e relazioni','I dati governati richiedono controllo umano.'],
     ['decide','Attiva o escludi l’oggetto','La review umana separa candidato e registro attivo.'],
     ['evidence','Collega versione, receipt e dossier','Ogni oggetto resta tracciabile nel grafo.']
@@ -41,5 +41,5 @@ const OVERRIDES=Object.freeze({
   evidence:{entry:'Apri una prova o un dossier accessibile al ruolo.',exit:'Provenienza, decisioni e limiti ricostruiti in sola lettura.',checkpoint:null}
 });
 function genericOverride(def){return{entry:`Avvia ${def.label} con un input previsto dal ProcessDefinition.`,exit:'Completa il ciclo con stato, limiti e prova disponibili.',checkpoint:def.decision?.checkpoint||null};}
-export function procedureGuide(id){const def=processDefinition(id),specific=OVERRIDES[id]||genericOverride(def),steps=(ARCHETYPE_STEPS[def.archetype]||ARCHETYPE_STEPS['case-workflow']).map(([id,label,boundary],index)=>({index:index+1,id,label,boundary,aiRole:id==='assist'?'proposal-only':'none',humanRequired:id==='review'||id==='decide'}));return{schemaVersion:'3.0.0',authority:'runtime-procedure-guide',process:{id:def.id,code:def.code,label:def.label,archetype:def.archetype,service:def.service,kind:def.kind},entry:specific.entry,inputs:def.inputs||[],steps,checkpoint:specific.checkpoint,evidence:{receiptOnWrite:Boolean(def.evidence?.receiptRequiredOnWrite),bundle:Boolean(def.evidence?.bundle)},exit:specific.exit,claimBoundary:def.claimBoundary,authorityTopology:def.authority,limitations:['La guida descrive la procedura ICTC; non determina applicabilità legale, conformità o competenza esterna.','Le fasi AI sono assistive e non sostituiscono i checkpoint umani.']};}
-export function procedureGuideIndex(actor){return surfaceProcessDefinitions().filter(def=>def.id!=='administration'||actor.role==='admin').map(def=>{const guide=procedureGuide(def.id);return{processId:def.id,processCode:def.code,label:def.label,entry:guide.entry,checkpoint:guide.checkpoint,stepCount:guide.steps.length,readOnly:def.roleModes?.[actor.role]?.mode==='read-only'};});}
+export function procedureGuide(id){const def=processDefinition(id),specific=OVERRIDES[id]||genericOverride(def),steps=(ARCHETYPE_STEPS[def.archetype]||ARCHETYPE_STEPS['case-workflow']).map(([id,label,boundary],index)=>({index:index+1,id,label,boundary,aiRole:id==='assist'?'proposal-only':'none',optional:id==='assist',humanRequired:id==='review'||id==='decide'}));return{schemaVersion:'4.0.0',authority:'runtime-procedure-guide',process:{id:def.id,code:def.code,label:def.label,archetype:def.archetype,service:def.service,kind:def.kind},entry:specific.entry,inputs:def.inputs||[],steps,checkpoint:specific.checkpoint,evidence:{receiptOnWrite:Boolean(def.evidence?.receiptRequiredOnWrite),bundle:Boolean(def.evidence?.bundle)},exit:specific.exit,claimBoundary:def.claimBoundary,authorityTopology:def.authority,limitations:['La guida descrive la procedura ICTC; non determina applicabilità legale, conformità o competenza esterna.','Le fasi AI sono facoltative, assistive e non sostituiscono i checkpoint umani.']};}
+export function procedureGuideIndex(actor){return surfaceProcessDefinitions().filter(def=>def.id!=='administration'||actor.role==='admin').map(def=>{const guide=procedureGuide(def.id);return{processId:def.id,processCode:def.code,label:def.label,entry:guide.entry,checkpoint:guide.checkpoint,stepCount:guide.steps.length,aiOptional:guide.steps.some(step=>step.id==='assist'&&step.optional),readOnly:def.roleModes?.[actor.role]?.mode==='read-only'};});}

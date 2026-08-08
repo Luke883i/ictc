@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { humanPlan } from './runtime/manual-monitoring.mjs';
+import { normalizeAssuranceCase, attachAssuranceHumanDraft, approveAssurance, currentAssuranceDraft } from './runtime/grc-assurance.mjs';
+const mission={objective:'Monitorare fonti NIS2',state:'needs-plan'};
+const plan=humanPlan({rationale:'Piano umano',queries:['NIS2 ACN'],preferredSources:['ACN']},mission);
+assert.equal(plan.authority,'human');assert.ok(plan.queries.length);assert.ok(!('trace' in plan));
+const actor={id:'admin',role:'admin'},item=normalizeAssuranceCase({title:'Cliente',requestText:'Descrivere MFA'},actor,{idFactory:()=> 'a1'});
+attachAssuranceHumanDraft(item,{summary:'Compilazione manuale',questions:[{id:'q1',question:'MFA?',draftAnswer:'Sì, secondo evidenza E1',evidenceRefs:['E1']}]},actor);
+assert.equal(item.aiProposal,null);assert.equal(currentAssuranceDraft(item).authority,'human');
+approveAssurance(item,{answers:[{questionId:'q1',answer:'Sì',evidenceRefs:['E1']}],reason:'Verificato su E1'},actor);
+assert.equal(item.state,'approved');assert.equal(item.approvals[0].draftAuthority,'human');assert.equal(item.approvals[0].proposalSha256,null);assert.ok(item.approvals[0].draftSha256);assert.ok(item.approvals[0].answersSha256);
+console.log('ai-optionality-check: ok');
