@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const source = JSON.parse(await readFile(new URL('../process-kernel.json', import.meta.url), 'utf8'));
 const ROLE_IDS = new Set(['admin', 'user', 'auditor']);
-const ARCHETYPES = new Set(['monitor-review', 'case-workflow', 'assurance-view', 'governance']);
+const ARCHETYPES = new Set(['monitor-review', 'case-workflow', 'assurance-view', 'governance', 'registry-extension']);
 
 function clone(value) { return structuredClone(value); }
 function fail(message, code = 'process-kernel-invalid') {
