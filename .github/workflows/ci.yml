@@ -50,8 +50,24 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Runtime contracts and journeys
-        run: npm run test:runtime
+      - name: Evidence and persistence
+        run: node v3/evidence-check.mjs
+      - name: Attachment replay safety
+        run: node v3/attachment-replay-check.mjs
+      - name: Enterprise administration
+        run: node v3/enterprise-runtime-check.mjs
+      - name: Stable authority projection
+        run: node v3/stable-1-4-runtime-check.mjs
+      - name: Standard Proof projection
+        run: node v3/standard-proof-1-6-runtime-check.mjs
+      - name: Governed regulatory jobs
+        run: node v3/enterprise-1-8-runtime-check.mjs
+      - name: End-to-end journeys
+        run: node v3/v15-e2e.mjs
+      - name: Runtime saturation
+        run: node v3/v15-runtime-saturation.mjs
+      - name: Identity bridge runtime
+        run: node v3/identity-bridge-runtime-check.mjs
       - name: Enterprise T runtime stress
         run: node v3/enterprise-t-runtime-stress.mjs
       - uses: actions/upload-artifact@v6
