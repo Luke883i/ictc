@@ -252,7 +252,7 @@ export class Store {
     else if (type === 'incident') subject = state.incidents.find(item => item.id === subjectId);
     else if (type === 'contribution') subject = state.contributions.find(item => item.id === subjectId);
     if (!subject) return null;
-    if (type === 'incident' && actor.role !== 'admin' && subject.createdBy !== actor.id) return null;
+    if (type === 'incident' && actor.role !== 'admin' && actor.role !== 'auditor' && subject.createdBy !== actor.id) return null;
     if (type === 'contribution' && actor.role !== 'admin' && subject.createdBy !== actor.id) return null;
 
     const relatedIds = new Set([subjectId]);
