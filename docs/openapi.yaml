@@ -139,6 +139,10 @@ paths:
       responses:
         '200': { description: Bozza registrata con receipt }
   /api/incidents/{id}/formulation:
+    post:
+      summary: Salva una nuova versione della formulazione umana
+      responses:
+        '200': { description: Versione registrata con receipt }
     put:
       summary: Salva una nuova versione della formulazione umana
       responses:
