@@ -134,6 +134,12 @@ async function runContractCheck() {
   await mkdir(path.dirname(artifactPath), { recursive: true });
   await writeFile(artifactPath, JSON.stringify(report, null, 2));
   if (report.result !== 'passed') {
+    const diagnostic = [
+      report.missingFromOpenApi.length ? `missing=${report.missingFromOpenApi.join(',')}` : '',
+      report.extraInOpenApi.length ? `extra=${report.extraInOpenApi.join(',')}` : '',
+      report.staleClaims.length ? `stale=${report.staleClaims.join(',')}` : ''
+    ].filter(Boolean).join(' | ');
+    console.error(`::error title=API contract drift::${diagnostic}`);
     console.error(JSON.stringify(report, null, 2));
     process.exitCode = 1;
     return;
