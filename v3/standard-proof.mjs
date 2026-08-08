@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { accessProfileFor } from './access-profile.mjs';
+import { COMPLIANCE_SEMANTICS, projectBenchmarkFamily } from './compliance-claims.mjs';
 
 const contract = JSON.parse(await readFile(new URL('./standard-proof-1-6-contract.json', import.meta.url), 'utf8'));
 const publicContract = Object.freeze({
@@ -9,7 +10,7 @@ const publicContract = Object.freeze({
   intent: contract.intent,
   personas: contract.personas,
   auditDimensions: contract.auditDimensions,
-  benchmarkFamilies: contract.benchmarkFamilies,
+  benchmarkFamilies: contract.benchmarkFamilies.map(projectBenchmarkFamily),
   architecture: contract.architecture,
   journeys: contract.journeys,
   glossary: contract.glossary,
@@ -64,6 +65,7 @@ export function standardProofProjection({ actor, version, readiness, integrity }
         events: Number(integrity?.events || 0),
         head: integrity?.head || null
       },
+      complianceSemantics: structuredClone(COMPLIANCE_SEMANTICS),
       evidenceKinds: [
         'Contratti e controlli statici',
         'Journey runtime e browser',
