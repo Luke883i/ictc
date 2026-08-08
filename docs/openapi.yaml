@@ -1,137 +1,254 @@
 openapi: 3.1.1
 info:
-  title: ICTC v2 Local API
+  title: ICTC runtime API
   version: 2.0.0-beta.3
-  description: Local proof-oriented API. AI responses and source metadata are proposals, not legal conclusions.
+  description: >-
+    Executable method/path contract for v3/server.mjs and the mounted v3/runtime handlers.
+    ICTC persists current canonical state in its runtime store and binds the current state digest to the audit HEAD;
+    this API description does not claim event-sourced historical reconstruction, legal conclusions, or certification.
+x-ictc-contract-scope: method-path-surface
+x-ictc-runtime-authority:
+  - v3/server.mjs
+  - v3/runtime/*.mjs
 servers:
   - url: http://127.0.0.1:4173
 paths:
+  /api/health:
+    get:
+      summary: Return runtime health, version, readiness and integrity posture
+      responses:
+        '200': {description: Runtime health}
   /api/bootstrap:
     get:
-      summary: Rebuild domain state and typed outcome views from seed and append-only events
+      summary: Return the current role-filtered canonical projection
       responses:
-        '200': {description: Current local projection}
-  /api/sources:
-    post:
-      summary: Persist a manually proposed source and an AI metadata proposal
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title: {type: string}
-                url: {type: string, format: uri}
-                notes: {type: string}
-                contentBase64: {type: string}
-      responses:
-        '201': {description: Candidate source persisted and read back}
-  /api/sources/{sourceId}/review:
-    post:
-      summary: Record a human acceptance or rejection
-      parameters:
-        - in: path
-          name: sourceId
-          required: true
-          schema: {type: string}
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [outcome]
-              properties:
-                outcome: {enum: [accepted, rejected]}
-                note: {type: string}
-      responses:
-        '201': {description: Human review receipt}
-  /api/scout-jobs/{jobId}/run:
-    post:
-      summary: Execute a controlled local scouting simulation
-      parameters:
-        - in: path
-          name: jobId
-          required: true
-          schema: {type: string}
-      responses:
-        '201': {description: Deterministic observation and optional AI proposal persisted}
-  /api/matters:
-    post:
-      summary: Persist an original narrative and create a proposed workflow projection
-      responses:
-        '201': {description: Matter persisted and read back}
-  /api/matters/{matterId}/confirm-owner:
-    post:
-      summary: Record the human confirmation of owner and RACI
-      parameters:
-        - in: path
-          name: matterId
-          required: true
-          schema: {type: string}
-      responses:
-        '201': {description: Human decision receipt}
-  /api/session:
-    post:
-      summary: Create a single-session, read-only AI context
-      responses:
-        '201': {description: Session created with no write authority}
-  /api/assistant:
-    post:
-      summary: Ask a question over the deterministic capsule selected by the UI
-      responses:
-        '200': {description: AI proposal with cited outcome IDs and limitations}
-  /api/runtime/info:
+        '200': {description: Current visible state projection}
+  /api/standard-proof:
     get:
-      summary: Return local runtime mode, isolation and operational limits
+      summary: Return the read-only Standard Proof projection for the current actor
       responses:
-        '200': {description: Runtime information without exposing filesystem paths}
-  /api/runtime/integrity:
+        '200': {description: Standard Proof projection}
+  /api/workbench/meta:
     get:
-      summary: Verify the local SHA-256 append-only chain
+      summary: Return the workbench application guide
       responses:
-        '200': {description: Integrity result}
-  /api/traces:
+        '200': {description: Workbench metadata}
+  /api/workbench/graph:
     get:
-      summary: Return deterministic runtime traces rendered by the ASCII workbench
+      summary: Return the role-filtered canonical workbench graph
       responses:
-        '200': {description: Runtime trace projections}
-  /api/findings/{findingId}/review:
+        '200': {description: Workbench graph}
+  /api/workbench/metrics:
+    get:
+      summary: Return metrics derived from the role-filtered workbench graph
+      responses:
+        '200': {description: Workbench metrics}
+  /api/monitoring-jobs/draft:
     post:
-      summary: Record a human relevance review for a finding
-      parameters:
-        - in: path
-          name: findingId
-          required: true
-          schema: {type: string}
+      summary: Record a governed monitoring-job intent and attempt AI plan generation
       responses:
-        '201': {description: Human review receipt}
+        '201': {description: Monitoring job recorded}
+  /api/monitoring-jobs/{id}/profile:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      summary: Update a paused or draft monitoring-job profile and re-plan it
+      responses:
+        '200': {description: Monitoring job profile updated}
+  /api/missions/draft:
+    post:
+      summary: Record a monitoring mission intent and attempt AI plan generation
+      responses:
+        '201': {description: Monitoring mission recorded}
+  /api/missions/{id}/revise:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Revise a draft, paused or plan-deferred monitoring mission
+      responses:
+        '200': {description: Monitoring mission revised}
+  /api/missions/{id}/activate:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Activate a planned monitoring mission
+      responses:
+        '200': {description: Monitoring mission activated}
+  /api/missions/{id}/pause:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Pause an active monitoring mission with a reason
+      responses:
+        '200': {description: Monitoring mission paused}
+  /api/missions/{id}/resume:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Resume a paused monitoring mission
+      responses:
+        '200': {description: Monitoring mission resumed}
+  /api/missions/{id}/run:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Run an active monitoring mission
+      responses:
+        '200': {description: Monitoring run result}
+  /api/catalog/{id}/decision:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Record a human verified or rejected decision for a catalog source
+      responses:
+        '200': {description: Catalog decision receipt}
   /api/internal-sources/reference:
     post:
       summary: Register a governed reference to a version held by an external internal-document master
-      description: Records master system, master ID, master version and externally supplied SHA-256 as a catalog candidate. ICTC does not become the document authority and no AI is used during this intake.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [title, masterSystem, masterId, masterVersion, contentSha256, referenceUrl]
-              properties:
-                title: {type: string, maxLength: 1000}
-                documentType: {type: string}
-                authority: {type: string, maxLength: 500}
-                jurisdiction: {type: string, maxLength: 500}
-                identifier: {type: string, maxLength: 500}
-                publicSourceUrl: {type: string, format: uri}
-                masterSystem: {type: string, maxLength: 300}
-                masterId: {type: string, maxLength: 500}
-                masterVersion: {type: string, maxLength: 300}
-                contentSha256: {type: string, pattern: '^[0-9a-fA-F]{64}$'}
-                referenceUrl: {type: string, format: uri}
-                note: {type: string, maxLength: 3000}
+      description: >-
+        Records master system, master ID, master version and externally supplied SHA-256 as a catalog candidate.
+        ICTC does not become the document authority and no AI is used during this intake.
       responses:
         '201': {description: Internal master reference registered as a catalog candidate with a state-bound receipt}
         '403': {description: Role cannot contribute source material}
         '409': {description: The same master-system/master-ID/version is already registered}
+  /api/contributions:
+    post:
+      summary: Preserve contributed source material and attempt bounded AI metadata enrichment
+      responses:
+        '201': {description: Contribution recorded}
+  /api/contributions/{id}/enrich:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Retry AI enrichment for a contribution that needs enrichment
+      responses:
+        '200': {description: Contribution enrichment result}
+  /api/incidents/intake:
+    post:
+      summary: Preserve an original incident narrative and attachments before AI analysis
+      responses:
+        '201': {description: Incident recorded}
+  /api/incidents/{id}/analyze:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Retry AI analysis for an incident with a deferred AI error
+      responses:
+        '200': {description: Incident analysis result}
+  /api/incidents/{id}/answers:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Record human answers to motivated incident questions
+      responses:
+        '200': {description: Incident answers recorded}
+  /api/incidents/{id}/draft:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Generate a bounded AI formulation after motivated questions are complete
+      responses:
+        '200': {description: Draft formulation generated}
+  /api/incidents/{id}/formulation:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Save a human-reviewed incident formulation
+      responses:
+        '200': {description: Formulation saved}
+    put:
+      summary: Replace the current human-reviewed incident formulation
+      responses:
+        '200': {description: Formulation saved}
+  /api/incidents/{id}/submit:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Submit an incident after explicit confirmation of the current formulation digest
+      responses:
+        '200': {description: Incident submitted}
+  /api/incidents/{id}/close:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      summary: Close a submitted incident with an explicit closure note
+      responses:
+        '200': {description: Incident closed}
+  /api/evidence/{type}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/EvidenceType'
+      - $ref: '#/components/parameters/Id'
+    get:
+      summary: Export an authorized evidence bundle for a canonical object
+      responses:
+        '200': {description: Evidence bundle}
+  /api/attachments/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      summary: Download an authorized stored attachment
+      responses:
+        '200': {description: Attachment bytes}
+  /api/admin/settings:
+    put:
+      summary: Update governed AI settings
+      responses:
+        '200': {description: Settings update receipt}
+  /api/admin/readiness:
+    get:
+      summary: Return enterprise readiness posture
+      responses:
+        '200': {description: Enterprise readiness posture}
+  /api/admin/usage:
+    get:
+      summary: Return bounded AI usage summary
+      responses:
+        '200': {description: AI usage summary}
+  /api/admin/identity:
+    get:
+      summary: Return identity configuration and runtime projection
+      responses:
+        '200': {description: Identity configuration}
+    put:
+      summary: Update the governed identity policy with anti-lockout validation
+      responses:
+        '200': {description: Identity update receipt}
+  /api/admin/identity/test:
+    post:
+      summary: Simulate identity claims against a candidate or current identity policy
+      responses:
+        '200': {description: Identity evaluation}
+  /api/admin/users:
+    get:
+      summary: List locally governed users
+      responses:
+        '200': {description: User list}
+    post:
+      summary: Create a locally governed user
+      responses:
+        '201': {description: User creation receipt}
+  /api/admin/users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      summary: Update a locally governed user while preserving the last active administrator
+      responses:
+        '200': {description: User update receipt}
+  /api/admin/governance:
+    put:
+      summary: Update enterprise governance and environment metadata
+      responses:
+        '200': {description: Governance update receipt}
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: {type: string, minLength: 1}
+    EvidenceType:
+      name: type
+      in: path
+      required: true
+      schema: {type: string, minLength: 1}

@@ -1,5 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
+await import('./api-contract-check.mjs');
 const root = new URL('./', import.meta.url);
 const contract = JSON.parse(await readFile(new URL('product-contract.json', root), 'utf8'));
 const dod = JSON.parse(await readFile(new URL('product-dod.json', root), 'utf8'));
