@@ -99,11 +99,19 @@ try:
         page.locator('[data-close="planDialog"]').click()
         card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
         card.get_by_role('button', name='Esegui ora').click()
-        source_title = 'Direttiva (UE) 2022/2555 — NIS2'
-        source_card = page.locator('[data-open-source]').filter(has_text=source_title).first
-        source_card.wait_for()
-        source_id = source_card.get_attribute('data-open-source')
+        page.locator('[data-open-source]').first.wait_for()
+
+        admin_response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'admin', 'x-ictc-actor-id': 'local-admin'})
+        assert admin_response.status == 200
+        admin_body = admin_response.json()
+        next_action = admin_body['homeNextAction']
+        assert next_action['action'] == 'monitoring-catalog'
+        assert next_action['targetType'] == 'catalog'
+        source_id = next_action['targetId']
         assert source_id
+        target_source = next(item for item in admin_body['catalog'] if item['id'] == source_id)
+        assert target_source['state'] == 'candidate'
+        source_title = target_source['title']
 
         PHASE = 'server-derived-home-next-action'
         page.locator('.service-nav [data-service="home"]').click()
