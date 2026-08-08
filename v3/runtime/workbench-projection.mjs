@@ -1,5 +1,6 @@
 import { applicationGuide, detectSemanticLabels } from '../semantic.mjs';
 import { json, requirePermission } from './http.mjs';
+import { processTerm, procedureActionLabel } from './ontology.mjs';
 
 function canReadPrivate(actor, item) {
   if (actor.role === 'admin') return true;
@@ -21,9 +22,11 @@ function byOldestActionable(items) {
 function nextAction({ kind, title, label, reason, action, service, targetType = null, targetId = null, readOnly = false }) {
   return { schemaVersion: '1.0.0', kind, title, label, reason, action, service, targetType, targetId, readOnly };
 }
-function procedure({ id, code = null, kind = 'service', label, description, action, actionLabel, service = null, readOnly = false, attentionCount = 0, metrics = [] }) {
+function procedure({ id, role, description, action, readOnly = false, attentionCount = 0, metrics = [] }) {
+  const term = processTerm(id);
   return {
-    schemaVersion: '1.0.0', id, code, kind, label, description, action, actionLabel, service, readOnly,
+    schemaVersion: '1.0.0', id, code: term.code, kind: term.kind, label: term.label, description, action,
+    actionLabel: procedureActionLabel(id, role), service: term.service, readOnly,
     state: Number(attentionCount || 0) > 0 ? 'attention' : 'ready',
     attentionCount: Math.max(0, Number(attentionCount || 0)),
     metrics: metrics.slice(0, 2).map(item => ({ value: item.value, label: String(item.label || '').slice(0, 120) }))
@@ -49,8 +52,7 @@ export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
   const activeUsers = (state.users || []).filter(item => item.status === 'active').length;
 
   const procedures = [procedure({
-    id: 'monitoring', code: 'RN-01', label: 'Monitoraggio normativo', service: 'monitoring', action: 'open-service',
-    actionLabel: actor.role === 'auditor' ? 'Consulta monitoraggio' : actor.role === 'admin' ? 'Apri monitoraggio' : 'Consulta e contribuisci',
+    id: 'monitoring', role: actor.role, action: 'open-service',
     description: actor.role === 'auditor'
       ? 'Ricostruisci ricerche, fonti e decisioni.'
       : actor.role === 'admin'
@@ -60,8 +62,7 @@ export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
     attentionCount: actor.role === 'user' ? ownContributionExceptions : missionExceptions + candidates,
     metrics: [{ value: activeMissions, label: 'ricerche attive' }, { value: candidates, label: 'fonti da verificare' }]
   }), procedure({
-    id: 'incidents', code: 'EC-01', label: 'Eventi e segnalazioni', service: 'incidents', action: 'open-service',
-    actionLabel: actor.role === 'auditor' ? 'Consulta eventi' : actor.role === 'admin' ? 'Apri eventi' : 'Registra o continua',
+    id: 'incidents', role: actor.role, action: 'open-service',
     description: actor.role === 'auditor'
       ? 'Ricostruisci originali, versioni e decisioni.'
       : actor.role === 'admin'
@@ -70,15 +71,14 @@ export function canonicalProcedureHub(state, actor, { readiness = null } = {}) {
     readOnly: actor.role === 'auditor', attentionCount: openIncidents,
     metrics: [{ value: openIncidents, label: 'eventi aperti' }, { value: visibleIncidents.length, label: 'eventi visibili' }]
   }), procedure({
-    id: 'evidence', code: 'EV-01', kind: 'assurance', label: 'Evidenze e controlli', service: 'proof', action: 'open-service',
-    actionLabel: 'Apri evidenze',
+    id: 'evidence', role: actor.role, action: 'open-service',
     description: 'Consulta controlli, prove e attestazioni esterne.',
     readOnly: true, attentionCount: allBlockers,
     metrics: [{ value: Number(readiness?.verified || 0), label: 'controlli verificati' }, { value: allBlockers, label: 'controlli non verificati' }]
   })];
 
   if (actor.role === 'admin' && permissions.has('manage-enterprise')) procedures.push(procedure({
-    id: 'administration', kind: 'control-plane', label: 'Amministrazione', action: 'open-administration', actionLabel: 'Apri amministrazione',
+    id: 'administration', role: actor.role, action: 'open-administration',
     description: 'Governa identità, AI e readiness.',
     attentionCount: runtimeBlockers,
     metrics: [{ value: activeUsers, label: 'identità attive' }, { value: runtimeBlockers, label: 'controlli runtime aperti' }]

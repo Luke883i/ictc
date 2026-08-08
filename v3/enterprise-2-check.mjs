@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { runtimeOntologyProjection } from './runtime/ontology.mjs';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
+await import('./runtime-ontology-check.mjs');
 await import('./enterprise-2-process-check.mjs');
 await import('./enterprise-2-editorial-check.mjs');
 await import('./enterprise-2-editorial-saturation.mjs');
 await import('./enterprise-2-design-system-check.mjs');
+const runtimeOntology = runtimeOntologyProjection();
 const contract = JSON.parse(await read('./enterprise-2-contract.json'));
 const ui = await read('./public/ui/enterprise-2.js');
 const processUi = await read('./public/ui/enterprise-2-processes.js');
@@ -63,6 +66,7 @@ verify('terminal-installation', () => {
   assert.match(styles, /enterprise-2\.css/);
   assert.match(ui, /ictcCandidate/);
   assert.match(processUi, /processCatalog/);
+  assert.match(processUi, /ontologyAuthority/);
   assert.match(app, /installEnterprise2EditorialSystem/);
   assert.match(styles, /enterprise-2-editorial\.css/);
   assert.match(editorialUi, /editorialSystem = 'professional-1'/);
@@ -77,19 +81,16 @@ verify('plain-language-primary-labels', () => {
   assert.match(ui, /Scarica prova/);
 });
 verify('named-process-catalog', () => {
-  const processes = {
-    'RN-01': 'Monitoraggio normativo',
-    'EC-01': 'Gestione eventi e segnalazioni',
-    'EV-01': 'Evidenze e controlli',
-    'IA-01': 'Identità e accessi',
-    'GA-01': 'Governo dei servizi AI'
-  };
-  for (const [code, name] of Object.entries(processes)) {
-    assert.match(processUi, new RegExp(code));
-    assert.match(`${processUi}\n${editorialUi}`, new RegExp(name));
-    assert.match(processDocs, new RegExp(code));
-    assert.match(browser, new RegExp(code));
+  const ids = ['monitoring','incidents','evidence','identity','ai'];
+  for (const id of ids) {
+    const term = runtimeOntology.processes[id];
+    assert.ok(term?.code && term?.label, id);
+    assert.match(`${editorialUi}\n${processDocs}`, new RegExp(term.label));
+    assert.match(processDocs, new RegExp(term.code));
+    assert.match(browser, new RegExp(term.code));
   }
+  assert.match(processUi, /state\.data\?\.ontology\?\.processes/);
+  assert.doesNotMatch(processUi, /ENTERPRISE_PROCESS_CATALOG/);
   assert.match(browser, /generic-process-labels-zero/);
   assert.match(browser, /Processo 1/);
   assert.match(browser, /Processo 2/);
@@ -133,14 +134,14 @@ verify('capability-reconciliation', () => {
 verify('identity-separation', () => {
   assert.match(ui, /Accesso federato/);
   assert.match(ui, /Identità locali/);
-  assert.match(processUi, /IA-01/);
+  assert.equal(runtimeOntology.processes.identity.code, 'IA-01');
   assert.match(admin, /\/api\/admin\/identity/);
   assert.match(admin, /\/api\/admin\/users/);
   assert.match(identity, /shibboleth/);
 });
 verify('proof-and-claim-boundary', () => {
   assert.match(ui, /Guida operativa e prove/);
-  assert.match(processUi, /EV-01/);
+  assert.equal(runtimeOntology.processes.evidence.code, 'EV-01');
   assert.match(workbench, /limitations/);
   assert.match(contract.claimBoundary, /does not itself constitute/i);
   assert.match(docs, /non costituisce/i);
@@ -195,7 +196,7 @@ const evidenceMap = {
   'version-and-receipt-chain': ['store receipts', 'browser evidence download'],
   'runtime-controls': ['admin readiness API', 'EV-01 controls view'],
   'deployment-gaps': ['standard proof posture', 'admin proof summary'],
-  'semantic-labels': ['enterprise-2.js', 'enterprise-2-processes.js', 'enterprise-2-editorial.js', 'process catalog'],
+  'semantic-labels': ['runtime/ontology.mjs', 'enterprise-2-processes.js', 'enterprise-2-editorial.js', 'process catalog'],
   'progressive-disclosure': ['role-specific home disclosure order', 'admin section navigator', 'Aurora native disclosure choreography'],
   'responsive-layout': ['enterprise-2.css', 'enterprise-2-design-system.css', '320/390/landscape browser checks'],
   'keyboard-and-focus': ['browser keyboard, Escape and focus-return checks'],
