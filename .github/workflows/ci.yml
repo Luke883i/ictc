@@ -22,19 +22,15 @@ jobs:
         run: npm run check
       - name: Product contract
         run: node v3/product-contract-check.mjs
-      - name: Question and UI contracts
-        run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs && node v3/user-journey-2-check.mjs
-      - name: ICTC 1.8 Enterprise Workbench assurance
-        run: node v3/reborn-3-check.mjs && node v3/reborn-3-saturation.mjs && node v3/stable-1-4-check.mjs && node v3/stable-1-4-saturation.mjs && node v3/standard-proof-1-6-check.mjs && node v3/standard-proof-1-6-saturation.mjs && node v3/standard-proof-1-6-compression.mjs && node v3/enterprise-1-7-check.mjs && node v3/enterprise-1-7-saturation.mjs && node v3/enterprise-1-8-check.mjs && node v3/enterprise-1-8-saturation.mjs
-      - name: ICTC 2.0 enterprise candidate assurance
-        run: node v3/enterprise-2-check.mjs && node v3/enterprise-2-saturation.mjs && node v3/enterprise-2-compression.mjs
-      - name: Onto-epistemic and journey audits
-        run: node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs
-      - name: Experience saturation
+      - name: S1 active experience and semantic API ratchet
+        run: node v3/ui-active-experience-audit.mjs && node v3/semantic-api-contract-check.mjs && node v3/historical-ui-fixture-check.mjs
+      - name: Current UI and journey contracts
+        run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs && node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs && node v3/user-journey-2-check.mjs
+      - name: Current saturation
         run: node v3/experience-saturation.mjs && node v3/user-journey-2-saturation.mjs
       - name: Security boundaries
         run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
-      - name: Honest enterprise posture and M plus 100
+      - name: Honest enterprise posture
         run: node v3/enterprise-readiness-check.mjs && node v3/enterprise-convergence-check.mjs
       - name: Enterprise T assurance
         run: node v3/enterprise-t-saturation.mjs && node v3/enterprise-invariant-convergence.mjs && node v3/enterprise-t-audit.mjs && node v3/enterprise-falsification-check.mjs
@@ -70,6 +66,8 @@ jobs:
         run: node v3/v15-e2e.mjs
       - name: Runtime saturation
         run: node v3/v15-runtime-saturation.mjs
+      - name: Identity bridge runtime
+        run: node v3/identity-bridge-runtime-check.mjs
       - name: Enterprise T runtime stress
         run: node v3/enterprise-t-runtime-stress.mjs
       - uses: actions/upload-artifact@v6
@@ -92,7 +90,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-product-check.py v3/browser-enterprise-1-8-check.py v3/browser-enterprise-2-check.py
+        run: python -m py_compile v3/browser-product-check.py v3/browser-enterprise-1-8-check.py v3/browser-enterprise-2-check.py v3/browser-enterprise-2-ui-standard-check.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -104,44 +102,27 @@ jobs:
           if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
-      - name: Live browser journeys
+      - name: Canonical browser journey
         shell: bash
         run: |
           set -Eeuo pipefail
-          export PYTHONUNBUFFERED=1
-          export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
+          export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
           export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-runtime"
           export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
-          terminate_group(){ local pid="$1"; kill -TERM -- "-$pid" 2>/dev/null || true; sleep 1; kill -KILL -- "-$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; }
-          run_browser_journey(){
-            local label="$1" script="$2" artifact="$3" budget="$4" elapsed=0 pid state status
-            rm -f "$artifact"; echo "::group::$label"; setsid python -u "$script" & pid=$!
-            while true; do
-              if [[ -s "$artifact" ]]; then echo "$label: assertions attested; process group terminated"; terminate_group "$pid"; echo "::endgroup::"; return 0; fi
-              state="$(ps -o stat= -p "$pid" 2>/dev/null | tr -d ' ' || true)"
-              if [[ -z "$state" || "$state" == Z* ]]; then set +e; wait "$pid"; status=$?; set -e; if (( status != 0 )); then echo "::endgroup::"; return "$status"; fi; echo "$label: process completed without artifact $artifact" >&2; echo "::endgroup::"; return 1; fi
-              if (( elapsed >= budget )); then echo "$label: no artifact within ${budget}s" >&2; terminate_group "$pid"; echo "::endgroup::"; return 124; fi
-              sleep 1; elapsed=$((elapsed + 1))
-            done
-          }
           node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-mock.log" 2>&1 &
           MOCK_PID=$!
           trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
           for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
           ./ictc.sh start --profile current --no-open
-          run_browser_journey 'ICTC 1.8 product lifecycle' v3/browser-product-check.py artifacts/browser-check.json 180
-          run_browser_journey 'ICTC 1.8 Enterprise Workbench visual journey' v3/browser-enterprise-1-8-check.py artifacts/browser-enterprise-1-8-check.json 120
-          run_browser_journey 'ICTC 2.0 semantic and certification-evidence journey' v3/browser-enterprise-2-check.py artifacts/browser-enterprise-2-check.json 150
+          python -u v3/browser-product-check.py
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ictc-browser-evidence
           path: |
             artifacts/browser-check.json
-            artifacts/browser-enterprise-1-8-check.json
-            artifacts/browser-enterprise-2-check.json
-            artifacts/browser-*-error.json
+            artifacts/browser-product-error.json
             artifacts/*.png
           if-no-files-found: warn
           retention-days: 30

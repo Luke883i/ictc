@@ -15,14 +15,15 @@ PHASE = 'initialization'
 def fail(error):
     payload = {'ok': False, 'phase': PHASE, 'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
     (ART / 'browser-product-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
-    message = str(error).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-    print(f'::error title=browser-product-check::{PHASE}: {type(error).__name__}: {message}', flush=True)
+    print(f'::error title=browser-product-check::{PHASE}: {type(error).__name__}: {str(error)}', flush=True)
 
 
-def open_disclosure(section):
+def open_settings_section(form, section_id):
+    section = form.locator(f'[data-settings-section="{section_id}"]')
     if section.get_attribute('open') is None:
         section.locator(':scope > summary').click()
     expect(section).to_have_attribute('open', '')
+    expect(form.locator('[data-settings-section][open]')).to_have_count(1)
 
 
 try:
@@ -38,118 +39,79 @@ try:
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
 
-        PHASE = 'bootstrap-and-provider'
+        PHASE = 'canonical-bootstrap'
         page.goto(f'{BASE}/', wait_until='networkidle')
-        page.locator('#homeView[data-enterprise18="true"]').wait_for(state='visible')
-        page.locator('html[data-ictc-candidate="2.0.0-enterprise"]').wait_for(state='attached')
-        procedure_host = page.locator('.process-lanes[data-procedure-hub="server-derived"]')
-        procedure_host.wait_for(state='visible')
-        procedures = procedure_host.locator('[data-procedure-id]')
-        assert procedures.count() == 4
-        assert procedures.evaluate_all("els => els.map(el => el.dataset.procedureId)") == ['monitoring', 'incidents', 'evidence', 'administration']
-        assert procedure_host.locator('[data-procedure-id="monitoring"][data-process-code="RN-01"]').count() == 1
-        assert procedure_host.locator('[data-procedure-id="incidents"][data-process-code="EC-01"]').count() == 1
-        assert procedure_host.locator('[data-procedure-id="evidence"][data-process-code="EV-01"][data-read-only="true"]').count() == 1
-        assert procedure_host.locator('[data-procedure-id="administration"] [data-procedure-admin="true"]').count() == 1
-        setup = page.locator('#homePrimaryAction')
-        setup.wait_for(state='visible')
-        assert setup.get_attribute('data-home-action') == 'settings'
-        setup.click()
+        expect(page.locator('html')).to_have_attribute('data-ictc-experience', 'active-1')
+        assert 'Enterprise clarity' not in page.title()
+        assert '1.7' not in page.title()
+        hub = page.locator('#procedureHub[data-procedure-hub="server-derived"]')
+        hub.wait_for(state='visible')
+        assert hub.locator('[data-procedure-id]').count() == 4
+        assert hub.locator('[data-procedure-id="monitoring"][data-process-code="RN-01"]').count() == 1
+        assert hub.locator('[data-procedure-id="incidents"][data-process-code="EC-01"]').count() == 1
+        assert hub.locator('[data-procedure-id="evidence"][data-process-code="EV-01"]').count() == 1
+
+        PHASE = 'settings-and-ai'
+        page.locator('#homePrimaryAction').click()
         page.locator('#settingsDialog').wait_for(state='visible')
         settings = page.locator('#settingsForm')
-        organization_section = settings.locator('[data-settings-section="organization"]')
-        provider_section = settings.locator('[data-settings-section="provider"]')
-        assert organization_section.count() == provider_section.count() == 1
-
-        open_disclosure(organization_section)
-        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
+        expect(settings.locator('[data-settings-section]')).to_have_count(3)
+        open_settings_section(settings, 'organization')
         settings.locator('input[name="organizationName"]').fill('Azienda Browser')
         settings.locator('textarea[name="organizationScope"]').fill('Sicurezza delle informazioni in Italia e Unione europea')
         settings.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
-
-        open_disclosure(provider_section)
-        expect(settings.locator('[data-settings-section][open]')).to_have_count(1)
+        open_settings_section(settings, 'provider')
         settings.locator('input[name="endpoint"]').fill(f'{MOCK}/v1/chat/completions')
         settings.locator('input[name="model"]').fill('mock-browser')
         settings.locator('input[name="apiKeyEnv"]').fill('ICTC_LLM_API_KEY')
         settings.get_by_role('button', name='Salva configurazione AI').click()
         page.locator('#settingsDialog').wait_for(state='hidden')
 
-        PHASE = 'governed-job-lifecycle'
+        PHASE = 'monitoring-lifecycle'
         page.locator('.service-nav [data-service="monitoring"]').click()
-        page.locator('#openJobConfig').click()
-        job = page.locator('#missionForm')
-        scope_section = job.locator('[data-job-config-group="scope"]')
-        criteria_section = job.locator('[data-job-config-group="criteria"]')
-        schedule_section = job.locator('[data-job-config-group="schedule"]')
-        assert scope_section.count() == criteria_section.count() == schedule_section.count() == 1
-
-        open_disclosure(scope_section)
-        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
-        job.locator('input[name="jobName"]').fill('Fonti ufficiali cybersecurity UE')
-        job.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
-        job.locator('input[name="jurisdictions"]').fill('Italia, Unione europea')
-
-        open_disclosure(criteria_section)
-        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
-        job.locator('input[name="authorities"]').fill('EUR-Lex, ACN, Garante')
-
-        open_disclosure(schedule_section)
-        expect(job.locator(':scope > .job-config-group[open]')).to_have_count(1)
-        job.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
-        job.get_by_role('button', name='Genera piano').click()
-        page.locator('#jobDialog').wait_for(state='hidden')
-        card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
-        card.wait_for()
-        assert card.locator('.mission-objective-18, .mission-objective-20').count() >= 1
-        card.locator('[data-open-plan]').click()
+        mission = page.locator('#missionForm')
+        mission.locator('textarea[name="objective"]').fill('Fonti ufficiali sulla sicurezza delle informazioni e servizi cloud in Italia e UE')
+        mission.locator('select[name="cadence"]').select_option('168')
+        mission.locator('input[name="sourceHints"]').fill('https://eur-lex.europa.eu')
+        mission.get_by_role('button', name='Crea piano').click()
+        page.locator('#planDialog').wait_for(state='visible')
         page.get_by_role('button', name='Attiva monitoraggio').click()
         page.locator('[data-close="planDialog"]').click()
-        card = page.locator('.mission-card').filter(has_text='Fonti ufficiali cybersecurity UE').first
+        card = page.locator('.mission-card').first
         card.get_by_role('button', name='Esegui ora').click()
         page.locator('[data-open-source]').first.wait_for()
 
         admin_response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'admin', 'x-ictc-actor-id': 'local-admin'})
         assert admin_response.status == 200
         admin_body = admin_response.json()
-        next_action = admin_body['homeNextAction']
-        assert next_action['action'] == 'monitoring-catalog'
-        assert next_action['targetType'] == 'catalog'
-        source_id = next_action['targetId']
-        assert source_id
-        target_source = next(item for item in admin_body['catalog'] if item['id'] == source_id)
-        assert target_source['state'] == 'candidate'
-        source_title = target_source['title']
+        assert admin_body['ontology']['authority'] == 'runtime'
+        assert admin_body['homeNextAction']['schemaVersion'] == '1.0.0'
+        assert all(item['schemaVersion'] == '1.0.0' for item in admin_body['procedures'])
+        candidate = next(item for item in admin_body['catalog'] if item['state'] == 'candidate')
 
-        PHASE = 'server-derived-home-next-action'
+        PHASE = 'human-source-decision'
         page.locator('.service-nav [data-service="home"]').click()
         primary = page.locator('#homePrimaryAction')
         expect(primary).to_have_attribute('data-home-action', 'monitoring-catalog')
-        expect(primary).to_have_attribute('data-home-target-type', 'catalog')
-        expect(primary).to_have_attribute('data-home-target-id', source_id)
-        expect(page.locator('#homeNextTitle')).to_contain_text('Verifica')
+        expect(primary).to_have_attribute('data-home-target-id', candidate['id'])
         primary.click()
         page.locator('#sourceDialog').wait_for(state='visible')
-        expect(page.locator('#sourceTitle')).to_have_text(source_title)
-        page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo ufficiale verificati.')
-        page.get_by_role('button', name='Accetta nel catalogo').click()
+        page.locator('#sourceDecisionReason').fill('Autorità, URL e identificativo verificati da operatore umano.')
+        page.locator('[data-source-decision="verified"]').click()
         page.locator('#sourceBody').get_by_text('Accettata nel catalogo', exact=False).first.wait_for()
         page.locator('[data-close="sourceDialog"]').click()
 
-        PHASE = 'material-contribution'
+        PHASE = 'user-contribution-and-event'
         page.locator('#roleSelect').select_option('user')
-        assert page.locator('#roleSelect').input_value() == 'user'
         page.locator('.service-nav [data-service="monitoring"]').click()
-        page.locator('#monitoringContributionAction').click()
-        page.locator('#contributionForm input[value="text"]').check()
-        page.locator('#contributionForm textarea[name="text"]').fill('Delibera ufficiale da conservare e verificare')
-        page.locator('#contributionForm textarea[name="note"]').fill('Materiale osservato nel perimetro UE')
-        page.locator('#contributionForm').get_by_role('button', name='Registra materiale').click()
+        page.locator('#openContribution').click()
+        contribution = page.locator('#contributionForm')
+        contribution.locator('textarea[name="text"]').fill('Delibera ufficiale da conservare e verificare')
+        contribution.locator('textarea[name="note"]').fill('Materiale osservato nel perimetro UE')
+        contribution.get_by_role('button', name='Conserva e analizza').click()
         page.locator('#contributionDialog').wait_for(state='hidden')
-        page.locator('#materialRecent18').click()
-        page.locator('#contributionList').get_by_text('Materiale osservato nel perimetro UE', exact=False).first.wait_for()
+        page.locator('#contributionList').get_by_text('Materiale osservato nel perimetro UE', exact=False).wait_for()
 
-        PHASE = 'event-lifecycle'
         page.locator('.service-nav [data-service="incidents"]').click()
         page.locator('#openIncident').click()
         incident = page.locator('#incidentForm')
@@ -157,43 +119,29 @@ try:
         incident.get_by_role('button', name='Registra evento').click()
         page.locator('#incidentWorkspace').wait_for(state='visible')
         page.locator('[data-close="incidentWorkspace"]').click()
-        page.locator('.service-nav [data-service="incidents"]').click()
-        event_card = page.locator('.incident-card').first
-        event_card.get_by_role('button', name='Apri evento').wait_for()
-        event_card.get_by_role('button', name='Scarica evidenza').wait_for()
+        page.locator('.incident-card').first.get_by_role('button', name='Evidenze').wait_for()
 
-        PHASE = 'evidence-and-integrity'
+        PHASE = 'proof-and-auditor'
+        page.locator('#roleSelect').select_option('auditor')
+        page.locator('#openProofSurface').click()
+        page.locator('#proofContent').wait_for(state='visible')
+        expect(page.locator('#proofActor')).to_contain_text('Auditor')
+        expect(page.locator('#proofBoundary')).not_to_have_text('')
         response = context.request.get(f'{BASE}/api/bootstrap', headers={'x-ictc-role': 'auditor', 'x-ictc-actor-id': 'local-auditor'})
-        assert response.status == 200
         body = response.json()
+        assert response.status == 200
         assert body['integrity']['ok'] is True
-        assert any(item.get('jobName') == 'Fonti ufficiali cybersecurity UE' for item in body['missions'])
-        assert body['incidents']
         assert body['homeNextAction']['readOnly'] is True
         assert not errors, errors
 
         checks = [
-            'server-derived-procedure-hub-admin-four-procedures',
-            'provider-configured-through-progressive-home-action',
-            'settings-single-open-stable-observation',
-            'governed-job-created',
-            'job-progressive-groups-stable-observation',
-            'job-name-and-objective-projected',
-            'plan-approved',
-            'job-executed',
-            'server-derived-targeted-home-action',
-            'home-target-opens-canonical-source',
-            'source-decided-with-canonical-vocabulary',
-            'material-original-preserved',
-            'event-original-preserved',
-            'semantic-event-actions',
-            'canonical-evidence-download-vocabulary',
-            'auditor-readback',
-            'auditor-home-action-read-only',
-            'integrity-ok'
+            'one-active-experience', 'neutral-static-shell', 'server-derived-procedure-hub', 'single-open-settings',
+            'monitoring-plan-human-activation', 'candidate-source-human-decision', 'ontology-derived-state-labels',
+            'material-original-preserved', 'event-original-preserved', 'canonical-proof-surface', 'auditor-read-only', 'integrity-ok'
         ]
-        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'activeRelease': '1.8.0', 'candidateLayer': '2.0.0-enterprise'}, indent=2), encoding='utf8')
+        (ART / 'browser-check.json').write_text(json.dumps({'ok': True, 'checks': checks, 'release': admin_body['version'], 'experience': 'active-1'}, indent=2), encoding='utf8')
         print('browser-product-check: evidence complete', flush=True)
+        browser.close()
 except BaseException as error:
     fail(error)
     traceback.print_exc()

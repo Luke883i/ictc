@@ -1,17 +1,28 @@
 export const $ = (selector, root = document) => root.querySelector(selector);
 export const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 export const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-export const labels = {
-  candidate:'Da verificare', verified:'Verificata', rejected:'Esclusa', superseded:'Superata', planning:'Pianificazione in corso', 'needs-plan':'Pianificazione non riuscita', draft:'Da approvare', active:'Attivo', paused:'In pausa',
-  intake:'Registrato', clarifying:'Informazioni richieste', review:'Da approvare', submitted:'Inviato', closed:'Chiuso',
+const presentationLabels = Object.freeze({
   event:'Evento', 'near-miss':'Quasi incidente', incident:'Incidente', unknown:'Non determinato', yes:'Sì', no:'No'
-};
+});
 function storageGet(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } }
 export function storageSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
 export const state = {
   data:null, service:storageGet('ictc-service','home'), role:storageGet('ictc-role','admin'),
   activeMissionId:null, activeSourceId:null, activeIncidentId:null
 };
+export function stateLabel(family, value) {
+  if (value == null) return 'Non disponibile';
+  return state.data?.ontology?.states?.[family]?.[value] || 'Non disponibile';
+}
+export function presentationLabel(value) {
+  if (value == null) return 'Non disponibile';
+  return presentationLabels[value] || String(value);
+}
+function ontologyLabel(value) {
+  for (const family of Object.values(state.data?.ontology?.states || {})) if (family?.[value]) return family[value];
+  return presentationLabel(value);
+}
+export const labels = new Proxy(presentationLabels, { get(target, key) { return ontologyLabel(key) || target[key] || String(key); } });
 let toastTimer;
 
 function commandId() {
@@ -41,7 +52,7 @@ export async function api(path, options = {}) {
   return body;
 }
 export function notify(message, error = false) {
-  const toast = $('#toast'); toast.textContent = `${error ? 'Errore · ' : ''}${message}`; toast.dataset.visible = 'true'; toast.style.background = error ? '#991b1b' : '#172033';
+  const toast = $('#toast'); if (!toast) return; toast.textContent = `${error ? 'Errore · ' : ''}${message}`; toast.dataset.visible = 'true'; toast.style.background = error ? '#991b1b' : '#172033';
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.dataset.visible = 'false'; }, 4500);
 }
 function receiptsFrom(value, out = []) {
@@ -68,8 +79,8 @@ export async function filesPayload(input) {
     const reader = new FileReader(); reader.onload = () => resolve({name:file.name,mime:file.type || 'application/octet-stream',dataBase64:String(reader.result).split(',').pop()}); reader.onerror = () => reject(reader.error); reader.readAsDataURL(file);
   })));
 }
-export function openDialog(id) { const dialog = $(`#${id}`); if (!dialog.open) dialog.showModal(); }
-export function closeDialog(id) { const dialog = $(`#${id}`); if (dialog.open) dialog.close(); }
+export function openDialog(id) { const dialog = $(`#${id}`); if (dialog && !dialog.open) dialog.showModal(); }
+export function closeDialog(id) { const dialog = $(`#${id}`); if (dialog?.open) dialog.close(); }
 
 export async function downloadProtected(path, fallbackName = 'ictc-evidence.json') {
   const response = await fetch(path, {headers: headers(false)});
