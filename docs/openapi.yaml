@@ -12,128 +12,57 @@ paths:
     get:
       summary: Stato runtime e readiness
       responses:
-        '200':
-          description: Runtime disponibile
+        '200': { description: Runtime disponibile }
   /api/bootstrap:
     get:
       summary: Vista iniziale filtrata per ruolo
       responses:
-        '200':
-          description: Projection applicativa least-privilege
+        '200': { description: Projection applicativa least-privilege }
   /api/workbench/meta:
     get:
       summary: Guida applicativa e loop universale
       responses:
-        '200':
-          description: Metadati del workbench
+        '200': { description: Metadati del workbench }
   /api/workbench/graph:
     get:
       summary: Grafo semantico derivato dalla projection autorizzata
       responses:
-        '200':
-          description: Nodi e relazioni visibili al ruolo corrente
+        '200': { description: Nodi e relazioni visibili al ruolo corrente }
   /api/workbench/metrics:
     get:
       summary: Metriche descrittive del workbench
       responses:
-        '200':
-          description: Conteggi osservabili senza record sintetici
-  /api/monitoring-jobs:
+        '200': { description: Conteggi osservabili senza record sintetici }
+  /api/monitoring-jobs/draft:
     post:
-      summary: Crea un job di monitoraggio in stato bozza
+      summary: Crea un job di monitoraggio in stato bozza e tenta la pianificazione AI
       responses:
-        '201': { description: Job creato con receipt }
-  /api/monitoring-jobs/{id}:
-    get:
-      summary: Legge un job governato e le sue run
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Job e run collegate }
+        '201': { description: Intento registrato, con eventuale piano e receipt }
+  /api/monitoring-jobs/{id}/profile:
     put:
-      summary: Aggiorna un job lasciandolo in stato bozza
+      summary: Aggiorna il profilo di un job governato e rigenera il piano
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: string }
       responses:
-        '200': { description: Job aggiornato con receipt }
-  /api/monitoring-jobs/{id}/activate:
-    post:
-      summary: Attiva un job dopo approvazione umana esplicita
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Job attivato con receipt }
-  /api/monitoring-jobs/{id}/pause:
-    post:
-      summary: Sospende il job
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Job sospeso con receipt }
-  /api/monitoring-jobs/{id}/resume:
-    post:
-      summary: Riprende un job sospeso
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Job ripreso con receipt }
-  /api/monitoring-jobs/{id}/run:
-    post:
-      summary: Esegue manualmente un job attivo
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Run acquisita con receipt }
-  /api/monitoring-jobs/{id}/runs/{runId}/retry:
-    post:
-      summary: Ritenta una run fallita
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-        - in: path
-          name: runId
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Nuova run collegata al retry con receipt }
+        '200': { description: Profilo aggiornato con receipt }
   /api/standard-proof:
     get:
       summary: Projection read-only di capacità, prove e limiti standard-facing
       responses:
-        '200':
-          description: Documento di proof con mapping NIST CSF, ISO 27001, ISO 37301, GDPR, NIS2, DORA, SOC 2, ISO 42001 ed EU AI Act
+        '200': { description: Documento di proof bounded }
   /api/export/current.json:
     get:
       summary: Esporta la vista corrente entro lo stesso perimetro di lettura
       responses:
-        '200':
-          description: Projection JSON role-scoped con manifest e digest
+        '200': { description: Projection JSON role-scoped con manifest e digest }
   /api/export/current.csv:
     get:
       summary: Esporta la vista corrente in CSV entro lo stesso perimetro di lettura
       responses:
-        '200':
-          description: CSV role-scoped della vista autorizzata
+        '200': { description: CSV role-scoped della vista autorizzata }
   /api/admin/settings:
     put:
       summary: Aggiorna configurazione organizzativa e AI
@@ -147,11 +76,6 @@ paths:
   /api/missions/{id}/revise:
     post:
       summary: Crea una nuova versione del piano
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
       responses:
         '200': { description: Piano revisionato con receipt }
   /api/missions/{id}/activate:
@@ -188,7 +112,7 @@ paths:
     post:
       summary: Registra una versione di fonte interna governata da un sistema master esterno
       responses:
-        '201': { description: Riferimento interno candidato registrato con master ID, versione e digest; nessuna copia documentale viene governata da ICTC }
+        '201': { description: Riferimento candidato con master ID, versione e digest }
   /api/contributions/{id}/enrich:
     post:
       summary: Ritenta l'arricchimento AI del materiale
@@ -215,7 +139,7 @@ paths:
       responses:
         '200': { description: Bozza registrata con receipt }
   /api/incidents/{id}/formulation:
-    post:
+    put:
       summary: Salva una nuova versione della formulazione umana
       responses:
         '200': { description: Versione registrata con receipt }
@@ -232,39 +156,16 @@ paths:
   /api/evidence/{type}/{id}:
     get:
       summary: Esporta un fascicolo JSON filtrato per autorizzazione
-      parameters:
-        - in: path
-          name: type
-          required: true
-          schema: { type: string }
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
       responses:
         '200': { description: Fascicolo con manifest e limiti }
   /api/evidence/{type}/{id}.zip:
     get:
       summary: Esporta il dossier evidenze bounded in formato ZIP
-      parameters:
-        - in: path
-          name: type
-          required: true
-          schema: { type: string }
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
       responses:
         '200': { description: ZIP con manifest, grafo, decisioni, claim, receipts, limiti e checksum }
   /api/attachments/{id}:
     get:
       summary: Scarica un allegato autorizzato
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
       responses:
         '200': { description: Contenuto allegato }
   /api/admin/readiness:
@@ -292,7 +193,7 @@ paths:
       responses:
         '201': { description: Utente creato con receipt }
   /api/admin/users/{id}:
-    put:
+    patch:
       summary: Modifica stato, ruolo o profilo utente
       responses:
         '200': { description: Utente aggiornato con receipt }
