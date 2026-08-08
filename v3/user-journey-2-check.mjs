@@ -28,7 +28,7 @@ check('three-routes', (html.match(/data-service=/g) || []).length === 3, 'home p
 check('two-operational-services', html.includes('data-service="monitoring"') && html.includes('data-service="incidents"'), 'monitoring and events remain distinct');
 check('one-primary-home-action', (html.match(/id="homePrimaryAction"/g) || []).length === 1, 'one contextual primary CTA');
 check('role-guidance', render.includes('renderHome') && render.includes('Amministratore') && render.includes('Utente') && render.includes('Auditor'), 'home guidance is role-aware');
-check('capability-boundary', render.includes("capability('manage-monitoring')") && render.includes("capability('report-incident')"), 'guidance uses server-issued capabilities');
+check('capability-boundary', render.includes("capability('manage-monitoring')") && render.includes('state.data.homeNextAction') && actions.includes('state.data?.homeNextAction') && !render.includes('function homeAction('), 'mutation controls use server-issued capabilities while home priority is server-derived');
 check('contextual-ai', render.includes('AI disponibile') && render.includes('AI non configurata'), 'AI readiness is explained without claiming authority');
 check('horizontal-journey', html.includes('id="homeJourney"') && css.includes('.journey-strip') && css.includes('grid-auto-flow:column'), 'four-step journey is horizontal');
 check('compact-first-viewport', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'density contract is encoded');
