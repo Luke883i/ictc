@@ -28,6 +28,7 @@ function setService(service, focusSelector = '#main') {
 }
 
 export function activateHomeAction(action) {
+  const next = state.data?.homeNextAction || {};
   if (action === 'settings') {
     populateSettings();
     openDialog('settingsDialog');
@@ -47,9 +48,23 @@ export function activateHomeAction(action) {
   }
   if (action === 'monitoring-catalog') {
     setService('monitoring', '#catalogSearch');
+    if (next.targetType === 'catalog' && next.targetId) {
+      state.activeSourceId = next.targetId;
+      renderSourceDialog();
+      openDialog('sourceDialog');
+    }
     return;
   }
-  if (['home','monitoring','incidents'].includes(action)) setService(action);
+  if (action === 'incidents') {
+    setService('incidents');
+    if (next.targetType === 'incident' && next.targetId) {
+      state.activeIncidentId = next.targetId;
+      renderIncidentWorkspace();
+      openDialog('incidentWorkspace');
+    }
+    return;
+  }
+  if (['home','monitoring'].includes(action)) setService(action);
 }
 
 export function installBindings() {
