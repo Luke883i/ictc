@@ -100,7 +100,8 @@ verify('runtime-chain', () => {
   assert.match(app, /installEnterpriseWorkbench18/);
   assert.match(app, /installSettings18Structure/);
   assert.match(app, /installWorkbenchLabels18/);
-  assert.match(server, /1\.8-enterprise-workbench/);
+  assert.match(server, /import \{ VERSION \} from '\.\/version\.mjs'/);
+  assert.match(server, /projected\.experience\.release=VERSION/);
   assert.match(workflow, /ICTC 1\.8 Enterprise Workbench/);
   assert.match(workflow, /browser-enterprise-1-8-check\.py/);
 });
