@@ -11,7 +11,8 @@ assert.match(active,/installGrcWorkspace\(\);installSurfaceRouter\(\);/,'GRC cap
 assert.match(router,/grc:'#grcView'/);
 assert.equal((router.match(/grc:'#grcView'/g)||[]).length,1);
 assert.doesNotMatch(active,/data-service="objects"|data-service="coverage"|data-service="actions"|data-service="risks"|data-service="assurance"/,'GRC processes must not become permanent surfaces');
-for(const id of ['objects','coverage','actions','risks','assurance']) assert.match(grc,new RegExp(`${id}:\\{code:`),`missing UX meta ${id}`);
+const codes={objects:'AO-01',coverage:'MC-01',actions:'AP-01',risks:'RC-01',assurance:'AR-01'};
+for(const [id,code] of Object.entries(codes)) assert.match(grc,new RegExp(`${id}:\\s*\\[\\s*['\"]${code}['\"]`),`missing UX meta ${id}/${code}`);
 assert.match(grc,/data-grc-primary-disclosure/);
 assert.match(grc,/Proposta AI · richiede validazione|Proposta AI · da validare/);
 assert.match(grc,/Heatmap validata/);
@@ -19,6 +20,8 @@ assert.match(grc,/Solo rating umani/);
 assert.match(grc,/showReceipt\(result\)/);
 assert.match(grc,/data-grc-evidence/);
 assert.match(grc,/dashboard-next/);
+assert.match(grc,/grcDecisionDialog/);
+assert.doesNotMatch(grc,/\bprompt\s*\(|\bconfirm\s*\(/);
 assert.match(styles,/grc-v2\.css/);
 assert.match(css,/@media\(max-width:720px\)/);
 assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
@@ -26,4 +29,4 @@ for(const term of ['GrcObject','runtime-grc-projection','human-decision-projecti
 const roles=['admin','user','auditor'],processes=['objects','coverage','actions','risks','assurance'],states=['empty','attention','ready','review'];let scenarios=0;
 for(let i=0;i<10100;i++){const role=roles[i%roles.length],process=processes[Math.floor(i/roles.length)%processes.length],stateName=states[Math.floor(i/(roles.length*processes.length))%states.length];assert.ok(role&&process&&stateName);if(role==='auditor') assert.match(grc,/state\.role!==['"]auditor['"]/);scenarios++;}
 assert.equal(scenarios,10100);
-console.log('v2-ux-saturation: ok (one GRC surface, progressive disclosure, human AI boundary, 10100 navigation scenarios)');
+console.log('v2-ux-saturation: ok (one GRC surface, reusable decision dialog, progressive disclosure, human AI boundary, 10100 navigation scenarios)');

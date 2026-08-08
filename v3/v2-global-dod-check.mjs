@@ -14,11 +14,12 @@ for(const id of required) assert.ok(surfaceProcessDefinitions().some(x=>x.id===i
 for(const id of ['internal-sources','identity','ai']) assert.ok(processDefinitions().some(x=>x.id===id),`subprocess missing: ${id}`);
 assert.equal((server.match(/createGrcRuntime\(\{store,permissions\}\)/g)||[]).length,1,'exactly one GRC runtime mount');
 assert.equal((active.match(/installGrcWorkspace\(\)/g)||[]).length,1,'exactly one GRC workspace install');
-assert.equal((grc.match(/id='grcView'|id=\"grcView\"/g)||[]).length,1,'one GRC surface constructor');
+assert.equal((grc.match(/\.id\s*=\s*['"]grcView['"]/g)||[]).length,1,'one GRC surface constructor');
 for(const test of ['v2-grc-convergence-check.mjs','v2-grc-saturation.mjs','v2-ux-saturation.mjs','v2-grc-runtime-check.mjs']) assert.ok(pkg.scripts['test:contract'].includes(test)||pkg.scripts['test:runtime'].includes(test),`test not wired: ${test}`);
 for(const heading of ['## Global DoD','### V2-S1','### V2-S2','### V2-S3','### V2-S4','### V2-S5','### V2-S6','### V2-S7','## Weld DoD','## UX / terminology / visual-load audit']) assert.ok(dod.includes(heading),`DoD section missing: ${heading}`);
 assert.ok(contract.boundaries.some(x=>x.includes('heatmap')));
 assert.ok(contract.boundaries.some(x=>x.includes('declared universe')));
 assert.equal(contract.experienceMetrics.activeUiCompositions,1);
 assert.equal(contract.experienceMetrics.roleLeakage,0);
+assert.equal(contract.experienceMetrics.internalMasterReferenceCoverage,1);
 console.log('v2-global-dod-check: structural DoD green; exact-head CI remains external merge gate');
