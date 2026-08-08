@@ -1,11 +1,10 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(process.env.ICTC_API_CONTRACT_ROOT || path.join(here, '..'));
 const openapiPath = path.join(repoRoot, 'docs', 'openapi.yaml');
-const runtimeDir = path.join(repoRoot, 'v3', 'runtime');
 const serverPath = path.join(repoRoot, 'v3', 'server.mjs');
 const artifactPath = path.join(repoRoot, 'artifacts', 'api-contract.json');
 
@@ -17,6 +16,14 @@ function methodsFrom(text) {
   return [...text.matchAll(/\bmethod\s*===\s*['"]([A-Z]+)['"]/g)]
     .map(match => match[1])
     .filter(method => HTTP_METHODS.has(method));
+}
+
+export function extractMountedRuntimeImports(serverSource) {
+  const imports = new Set();
+  for (const match of serverSource.matchAll(/from\s+['"]\.\/runtime\/([^'"]+\.mjs)['"]/g)) {
+    imports.add(`v3/runtime/${match[1]}`);
+  }
+  return [...imports].sort();
 }
 
 export function extractRuntimeRoutes(source, file = 'runtime') {
@@ -86,20 +93,23 @@ export function compareRouteSets(runtimeRoutes, openApiRoutes, openapiText = '')
 }
 
 async function collectRuntimeRoutes() {
-  const files = [serverPath];
-  for (const entry of await readdir(runtimeDir, { withFileTypes: true })) {
-    if (entry.isFile() && entry.name.endsWith('.mjs')) files.push(path.join(runtimeDir, entry.name));
-  }
+  const serverSource = await readFile(serverPath, 'utf8');
+  const files = [
+    { path: serverPath, source: serverSource },
+    ...await Promise.all(extractMountedRuntimeImports(serverSource).map(async relative => ({
+      path: path.join(repoRoot, relative),
+      source: await readFile(path.join(repoRoot, relative), 'utf8')
+    })))
+  ];
   const combined = new Map();
-  for (const file of files.sort()) {
-    const source = await readFile(file, 'utf8');
-    const relative = path.relative(repoRoot, file);
-    for (const [key, route] of extractRuntimeRoutes(source, relative)) {
+  for (const file of files) {
+    const relative = path.relative(repoRoot, file.path);
+    for (const [key, route] of extractRuntimeRoutes(file.source, relative)) {
       if (!combined.has(key)) combined.set(key, { ...route, evidence: [] });
       combined.get(key).evidence.push(...route.evidence);
     }
   }
-  return combined;
+  return { routes: combined, mountedFiles: files.map(file => path.relative(repoRoot, file.path)).sort() };
 }
 
 async function runSelfTest() {
@@ -109,27 +119,31 @@ async function runSelfTest() {
   if (!routed.has('POST /api/incidents/{id}/formulation') || !routed.has('PUT /api/incidents/{id}/formulation')) throw new Error('self-test routeMatch extraction failed');
   const guarded = extractRuntimeRoutes("if((request.method||'GET')!=='GET')return false;if(pathname==='/api/workbench/meta'){}", 'guarded.mjs');
   if (!guarded.has('GET /api/workbench/meta')) throw new Error('self-test guarded GET extraction failed');
+  const mounted = extractMountedRuntimeImports("import { createA } from './runtime/a.mjs'; import { helper } from './runtime/http.mjs'; const handlers=[createA()];");
+  if (mounted.join(',') !== 'v3/runtime/a.mjs,v3/runtime/http.mjs') throw new Error('self-test mounted import extraction failed');
+  if (mounted.includes('v3/runtime/unmounted.mjs')) throw new Error('self-test unmounted runtime file leaked into authority');
   const openapi = extractOpenApiRoutes("paths:\n  /api/health:\n    get:\n      responses: {}\n  /api/items/{id}:\n    post:\n      responses: {}\n");
   if (!openapi.has('GET /api/health') || !openapi.has('POST /api/items/{id}')) throw new Error('self-test OpenAPI extraction failed');
   const mismatch = compareRouteSets(direct, openapi, 'append-only events');
   if (!mismatch.extraInOpenApi.length || mismatch.staleClaims.length !== 1) throw new Error('self-test mismatch detection failed');
-  console.log('api-contract-check: self-test ok (direct, routeMatch, guarded GET, OpenAPI, mismatch)');
+  console.log('api-contract-check: self-test ok (mounted authority, direct, routeMatch, guarded GET, OpenAPI, mismatch)');
 }
 
 async function runContractCheck() {
   const openapiText = await readFile(openapiPath, 'utf8');
-  const runtimeRoutes = await collectRuntimeRoutes();
+  const runtime = await collectRuntimeRoutes();
   const openApiRoutes = extractOpenApiRoutes(openapiText);
-  const comparison = compareRouteSets(runtimeRoutes, openApiRoutes, openapiText);
+  const comparison = compareRouteSets(runtime.routes, openApiRoutes, openapiText);
   const report = {
     schemaVersion: '1.0.0',
     result: comparison.missingFromOpenApi.length || comparison.extraInOpenApi.length || comparison.staleClaims.length ? 'failed' : 'passed',
-    runtimeRouteCount: runtimeRoutes.size,
+    runtimeRouteCount: runtime.routes.size,
     openApiRouteCount: openApiRoutes.size,
-    runtimeRoutes: [...runtimeRoutes.keys()].sort(),
+    mountedRuntimeFiles: runtime.mountedFiles,
+    runtimeRoutes: [...runtime.routes.keys()].sort(),
     openApiRoutes: [...openApiRoutes.keys()].sort(),
     ...comparison,
-    boundary: 'Executable check binds the current method/path surface and rejects known stale canonical-state claims. It does not prove full request/response schema equivalence, authorization correctness, or semantic compatibility of payload fields.'
+    boundary: 'Executable check binds the method/path surface mounted by v3/server.mjs and its direct runtime imports, and rejects known stale canonical-state claims. Unmounted legacy runtime modules are not API authority. The check does not prove full request/response schema equivalence, authorization correctness, or semantic compatibility of payload fields.'
   };
   await mkdir(path.dirname(artifactPath), { recursive: true });
   await writeFile(artifactPath, JSON.stringify(report, null, 2));
@@ -144,7 +158,7 @@ async function runContractCheck() {
     process.exitCode = 1;
     return;
   }
-  console.log(`api-contract-check: ok (runtime=${runtimeRoutes.size}, openapi=${openApiRoutes.size}, exact method/path surface)`);
+  console.log(`api-contract-check: ok (runtime=${runtime.routes.size}, openapi=${openApiRoutes.size}, exact mounted method/path surface)`);
 }
 
 if (process.argv.includes('--self-test')) await runSelfTest();
