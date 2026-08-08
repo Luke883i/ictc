@@ -1,13 +1,5 @@
 import { $, $$, esc, state } from './common.js';
 
-export const ENTERPRISE_PROCESS_CATALOG = Object.freeze({
-  monitoring: Object.freeze({ code: 'RN-01', name: 'Monitoraggio normativo' }),
-  incidents: Object.freeze({ code: 'EC-01', name: 'Gestione eventi e segnalazioni' }),
-  evidence: Object.freeze({ code: 'EV-01', name: 'Evidenze e controlli' }),
-  identity: Object.freeze({ code: 'IA-01', name: 'Identità e accessi' }),
-  ai: Object.freeze({ code: 'GA-01', name: 'Governo dei servizi AI' })
-});
-
 const DISCLOSURE_COPY = Object.freeze({
   admin: Object.freeze({
     method: 'Passaggi, checkpoint e responsabilità operative',
@@ -37,18 +29,26 @@ function role() {
   return state.data?.actor?.role || state.role || 'user';
 }
 
+function processCatalog() {
+  return state.data?.ontology?.processes || {};
+}
+
+function processTerm(id) {
+  return processCatalog()[id] || null;
+}
+
 function label(process) {
-  return `${process.code} · ${process.name}`;
+  return process?.code ? `${process.code} · ${process.label}` : process?.label || '';
 }
 
 function setText(node, value) {
-  if (node && node.textContent !== value) node.textContent = value;
+  if (node && value && node.textContent !== value) node.textContent = value;
 }
 
 function markSurface(root, process) {
-  if (!root) return;
-  root.dataset.processCode = process.code;
-  root.dataset.processName = process.name;
+  if (!root || !process) return;
+  if (process.code) root.dataset.processCode = process.code;
+  root.dataset.processName = process.label;
 }
 
 function legacyProcedureIds(id) {
@@ -100,21 +100,21 @@ function normalizeHomeProcesses() {
   const projected = renderProcedureHub();
   const monitoring = $('.process-lane[data-lane="monitoring"]');
   const incidents = $('.process-lane[data-lane="incidents"]');
-  const monitoringProcess = ENTERPRISE_PROCESS_CATALOG.monitoring;
-  const incidentProcess = ENTERPRISE_PROCESS_CATALOG.incidents;
+  const monitoringProcess = processTerm('monitoring');
+  const incidentProcess = processTerm('incidents');
 
-  if (!projected && monitoring) {
+  if (!projected && monitoring && monitoringProcess) {
     monitoring.dataset.processCode = monitoringProcess.code;
-    monitoring.dataset.processName = monitoringProcess.name;
+    monitoring.dataset.processName = monitoringProcess.label;
     setText(monitoring.querySelector(':scope > .eyebrow'), label(monitoringProcess));
   }
-  if (!projected && incidents) {
+  if (!projected && incidents && incidentProcess) {
     incidents.dataset.processCode = incidentProcess.code;
-    incidents.dataset.processName = incidentProcess.name;
+    incidents.dataset.processName = incidentProcess.label;
     setText(incidents.querySelector(':scope > .eyebrow'), label(incidentProcess));
   }
-  if (monitoring) monitoring.setAttribute('aria-label', `${monitoring.dataset.processCode || monitoringProcess.code} · ${monitoring.dataset.processName || monitoringProcess.name}. ${monitoring.querySelector('h2')?.textContent || 'Area operativa'}`);
-  if (incidents) incidents.setAttribute('aria-label', `${incidents.dataset.processCode || incidentProcess.code} · ${incidents.dataset.processName || incidentProcess.name}. ${incidents.querySelector('h2')?.textContent || 'Area operativa'}`);
+  if (monitoring && monitoringProcess) monitoring.setAttribute('aria-label', `${monitoring.dataset.processCode || monitoringProcess.code} · ${monitoring.dataset.processName || monitoringProcess.label}. ${monitoring.querySelector('h2')?.textContent || 'Area operativa'}`);
+  if (incidents && incidentProcess) incidents.setAttribute('aria-label', `${incidents.dataset.processCode || incidentProcess.code} · ${incidents.dataset.processName || incidentProcess.label}. ${incidents.querySelector('h2')?.textContent || 'Area operativa'}`);
 
   const stack = $('.home-disclosure-stack');
   if (!stack) return;
@@ -143,12 +143,15 @@ function normalizeOperationalSurfaces() {
   const monitoring = $('#monitoringView');
   const incidents = $('#incidentsView');
   const proof = $('#proofView');
-  markSurface(monitoring, ENTERPRISE_PROCESS_CATALOG.monitoring);
-  markSurface(incidents, ENTERPRISE_PROCESS_CATALOG.incidents);
-  markSurface(proof, ENTERPRISE_PROCESS_CATALOG.evidence);
-  setText(monitoring?.querySelector('.core-title > .eyebrow'), label(ENTERPRISE_PROCESS_CATALOG.monitoring));
-  setText(incidents?.querySelector('.core-title > .eyebrow'), label(ENTERPRISE_PROCESS_CATALOG.incidents));
-  setText(proof?.querySelector('.proof-shell .eyebrow, .proof-hero .eyebrow, :scope > .eyebrow'), label(ENTERPRISE_PROCESS_CATALOG.evidence));
+  const monitoringProcess = processTerm('monitoring');
+  const incidentProcess = processTerm('incidents');
+  const evidenceProcess = processTerm('evidence');
+  markSurface(monitoring, monitoringProcess);
+  markSurface(incidents, incidentProcess);
+  markSurface(proof, evidenceProcess);
+  setText(monitoring?.querySelector('.core-title > .eyebrow'), label(monitoringProcess));
+  setText(incidents?.querySelector('.core-title > .eyebrow'), label(incidentProcess));
+  setText(proof?.querySelector('.proof-shell .eyebrow, .proof-hero .eyebrow, :scope > .eyebrow'), label(evidenceProcess));
 }
 
 function directAdminPanels(grid) {
@@ -180,17 +183,17 @@ function normalizeAdminProcesses() {
   for (const button of $$('.admin-section-nav [data-admin-target]', dialog)) {
     const selector = button.dataset.adminTarget;
     const processKey = ADMIN_PROCESS[selector];
-    const process = ENTERPRISE_PROCESS_CATALOG[processKey];
+    const process = processTerm(processKey);
     if (!process) continue;
     const base = button.textContent.replace(/^[A-Z]{2}-\d{2}\s*[·-]\s*/, '').trim();
     setText(button, `${process.code} · ${base}`);
     button.dataset.processCode = process.code;
     button.setAttribute('aria-label', `${process.code} · ${base}`);
-    button.title = `${process.code} · ${process.name}`;
+    button.title = `${process.code} · ${process.label}`;
     const { panel } = ownerPanel(dialog, selector);
     if (panel) {
       panel.dataset.processCode = process.code;
-      panel.dataset.processName = process.name;
+      panel.dataset.processName = process.label;
     }
   }
   const current = dialog.querySelector('.admin-section-nav [aria-current="page"][data-admin-target]');
@@ -199,7 +202,7 @@ function normalizeAdminProcesses() {
 
 let scheduled = false;
 function applyProcessArchitecture() {
-  if (!state.data?.actor || scheduled) return;
+  if (!state.data?.actor || !state.data?.ontology || scheduled) return;
   scheduled = true;
   queueMicrotask(() => {
     scheduled = false;
@@ -207,6 +210,7 @@ function applyProcessArchitecture() {
     normalizeOperationalSurfaces();
     normalizeAdminProcesses();
     document.documentElement.dataset.processCatalog = 'enterprise-2';
+    document.documentElement.dataset.ontologyAuthority = state.data.ontology.authority || 'runtime';
   });
 }
 
