@@ -14,7 +14,7 @@ const processTerms = Object.fromEntries(kernel.processes.map(item => [item.id, {
 const ctas = Object.fromEntries(kernel.processes.map(item => [item.id, Object.fromEntries(Object.entries(item.roleModes || {}).map(([role, mode]) => [role, mode.actionLabel]))]));
 
 const ONTOLOGY = frozen({
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.2.0',
   locale: 'it',
   authority: 'runtime',
   archetypes: kernel.archetypes,

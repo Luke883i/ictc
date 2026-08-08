@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "id": "bootstrap-semantic-ratchet",
   "surface": "GET /api/bootstrap",
   "authority": "server-runtime",
@@ -7,9 +7,10 @@
     "capabilities": {"authority": "actor.permissions", "type": "array", "items": "permission-id"},
     "accessProfile": {"authority": "accessProfileFor(actor)", "type": "object"},
     "experience.release": {"authority": "VERSION", "type": "semver"},
-    "ontology": {"authority": "runtimeOntologyProjection", "schemaVersion": "1.1.0", "kernelAuthority": "process-kernel.json via runtime/process-kernel.mjs", "required": ["archetypes", "processes", "relations", "objects", "states", "ctas"]},
+    "ontology": {"authority": "runtimeOntologyProjection", "schemaVersion": "1.2.0", "kernelAuthority": "process-kernel.json via runtime/process-kernel.mjs", "required": ["archetypes", "processes", "relations", "objects", "states", "ctas"]},
     "homeNextAction": {"authority": "canonicalHomeNextAction", "schemaVersion": "1.0.0", "required": ["kind", "title", "label", "reason", "action", "service", "targetType", "targetId", "readOnly"]},
-    "procedures": {"authority": "canonicalProcedureHub <- ProcessDefinition registry", "itemSchemaVersion": "1.1.0", "required": ["id", "code", "kind", "archetype", "label", "description", "action", "actionLabel", "service", "readOnly", "state", "attentionCount", "metrics", "claimBoundary"]}
+    "procedures": {"authority": "canonicalProcedureHub <- ProcessDefinition registry", "itemSchemaVersion": "1.1.0", "required": ["id", "code", "kind", "archetype", "label", "description", "action", "actionLabel", "service", "readOnly", "state", "attentionCount", "metrics", "claimBoundary"]},
+    "decisions": {"authority": "canonicalDecisionProjection", "schemaVersion": "1.0.0", "required": ["id", "kind", "checkpoint", "outcome", "reason", "at", "actor", "authority", "subject", "subjectVersion", "proposalSha256", "legacyProjection"]}
   },
   "ratchetRule": "Later semantic slices extend this contract; they do not create a competing bootstrap semantic authority, local relation vocabulary, browser process catalog, decision authority or evidence authority.",
   "limitations": [

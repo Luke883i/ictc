@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "authority": "runtime",
   "archetypes": {
     "monitor-review": {"label": "Monitoraggio e revisione"},
@@ -11,7 +11,12 @@
     "object-has-label": {"from": ["source", "knowledge", "incident", "monitoring-job"], "to": ["label"], "semantics": "L'oggetto è associato a un'etichetta derivata o selezionata."},
     "monitoring-includes-label": {"from": ["monitoring-job"], "to": ["label"], "semantics": "Il monitoraggio include l'etichetta tra i propri criteri."},
     "monitoring-observed-source": {"from": ["monitoring", "monitoring-job"], "to": ["source"], "semantics": "Una esecuzione o missione di monitoraggio ha osservato la fonte."},
-    "material-enriched-into-source": {"from": ["knowledge"], "to": ["source"], "semantics": "Materiale preservato è stato usato come origine per una fonte candidata."}
+    "material-enriched-into-source": {"from": ["knowledge"], "to": ["source"], "semantics": "Materiale preservato è stato usato come origine per una fonte candidata."},
+    "object-has-version": {"from": ["source", "incident"], "to": ["source-version", "formulation-version", "answer-version"], "semantics": "L'oggetto espone una versione identificata da digest."},
+    "object-has-decision": {"from": ["source", "incident"], "to": ["decision"], "semantics": "L'oggetto è soggetto di una decisione umana registrata."},
+    "decision-binds-version": {"from": ["decision"], "to": ["source-version", "formulation-version", "answer-version"], "semantics": "La decisione è vincolata a una specifica versione del soggetto."},
+    "human-made-decision": {"from": ["identity"], "to": ["decision"], "semantics": "Una identità umana è l'autore della decisione."},
+    "version-supersedes-version": {"from": ["source-version", "formulation-version"], "to": ["source-version", "formulation-version"], "semantics": "Una versione successiva rende precedente una versione dello stesso oggetto senza cancellarla."}
   },
   "processes": [
     {

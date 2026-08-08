@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { VERSION } from './version.mjs';
 import { runtimeOntologyProjection } from './runtime/ontology.mjs';
 import { processKernelProjection } from './runtime/process-kernel.mjs';
+import { canonicalDecisionProjection } from './runtime/decision-projection.mjs';
 import { canonicalHomeNextAction, canonicalProcedureHub } from './runtime/workbench-projection.mjs';
 
 const root = new URL('./', import.meta.url);
@@ -11,7 +12,7 @@ const product = JSON.parse(await readFile(new URL('product-contract.json', root)
 const packageManifest = JSON.parse(await readFile(new URL('../package.json', root), 'utf8'));
 const server = await readFile(new URL('server.mjs', root), 'utf8');
 
-assert.equal(contract.schemaVersion, '1.1.0');
+assert.equal(contract.schemaVersion, '1.2.0');
 assert.equal(contract.surface, 'GET /api/bootstrap');
 assert.equal(contract.authority, 'server-runtime');
 assert.equal(packageManifest.version, VERSION);
@@ -22,9 +23,7 @@ const kernel = processKernelProjection();
 assert.equal(ontology.schemaVersion, contract.fields.ontology.schemaVersion);
 assert.equal(ontology.authority, 'runtime');
 for (const field of contract.fields.ontology.required) assert.ok(Object.hasOwn(ontology, field), `ontology missing ${field}`);
-assert.deepEqual(Object.fromEntries(['monitoring','incidents','evidence','identity','ai'].map(id => [id, ontology.processes[id].code])), {
-  monitoring: 'RN-01', incidents: 'EC-01', evidence: 'EV-01', identity: 'IA-01', ai: 'GA-01'
-});
+assert.deepEqual(Object.fromEntries(['monitoring','incidents','evidence','identity','ai'].map(id => [id, ontology.processes[id].code])), { monitoring: 'RN-01', incidents: 'EC-01', evidence: 'EV-01', identity: 'IA-01', ai: 'GA-01' });
 assert.deepEqual(Object.keys(ontology.relations).sort(), Object.keys(kernel.relations).sort());
 assert.deepEqual(Object.keys(ontology.archetypes).sort(), Object.keys(kernel.archetypes).sort());
 assert.deepEqual(Object.keys(ontology.processes).sort(), kernel.processes.map(item => item.id).sort());
@@ -35,7 +34,8 @@ for (const binding of [
   /projected\.experience\.release=VERSION/,
   /projected\.ontology=runtimeOntologyProjection\(\)/,
   /projected\.homeNextAction=canonicalHomeNextAction\(/,
-  /projected\.procedures=canonicalProcedureHub\(/
+  /projected\.procedures=canonicalProcedureHub\(/,
+  /projected\.decisions=canonicalDecisionProjection\(/
 ]) assert.match(server, binding, `bootstrap derivation binding missing: ${binding}`);
 
 const emptyState = { missions: [], catalog: [], contributions: [], incidents: [], users: [] };
@@ -59,6 +59,10 @@ for (const roleId of ['admin','user','auditor']) {
     assert.equal(item.label, process.label); assert.equal(item.code, process.code); assert.equal(item.archetype, process.archetype);
   }
   assert.equal(procedures.some(item => item.id === 'administration'), roleId === 'admin');
+  const decisions = canonicalDecisionProjection(emptyState, actor);
+  assert.equal(decisions.schemaVersion, contract.fields.decisions.schemaVersion);
+  assert.equal(decisions.authority, 'human-decision-projection');
+  assert.ok(Array.isArray(decisions.records));
 }
 assert.ok(contract.limitations.length >= 2);
 assert.match(contract.ratchetRule, /extend/i);
