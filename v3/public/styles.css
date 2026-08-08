@@ -4,6 +4,7 @@
 @import url('./admin-center.css');
 @import url('./enterprise-compact.css');
 @import url('./active-experience.css');
+@import url('./grc-v2.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}

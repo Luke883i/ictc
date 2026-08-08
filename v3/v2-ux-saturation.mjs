@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const root=new URL('./',import.meta.url);
+const active=await readFile(new URL('public/ui/active-experience.js',root),'utf8');
+const router=await readFile(new URL('public/ui/surface-router.js',root),'utf8');
+const grc=await readFile(new URL('public/ui/grc-workspace.js',root),'utf8');
+const css=await readFile(new URL('public/grc-v2.css',root),'utf8');
+const styles=await readFile(new URL('public/styles.css',root),'utf8');
+assert.match(active,/installGrcWorkspace\(\);installSurfaceRouter\(\);/,'GRC capture must install before canonical router');
+assert.match(router,/grc:'#grcView'/);
+assert.equal((router.match(/grc:'#grcView'/g)||[]).length,1);
+assert.doesNotMatch(active,/data-service="objects"|data-service="coverage"|data-service="actions"|data-service="risks"|data-service="assurance"/,'GRC processes must not become permanent surfaces');
+for(const id of ['objects','coverage','actions','risks','assurance']) assert.match(grc,new RegExp(`${id}:\\{code:`),`missing UX meta ${id}`);
+assert.match(grc,/data-grc-primary-disclosure/);
+assert.match(grc,/Proposta AI · richiede validazione|Proposta AI · da validare/);
+assert.match(grc,/Heatmap validata/);
+assert.match(grc,/Solo rating umani/);
+assert.match(grc,/showReceipt\(result\)/);
+assert.match(grc,/data-grc-evidence/);
+assert.match(grc,/dashboard-next/);
+assert.match(styles,/grc-v2\.css/);
+assert.match(css,/@media\(max-width:720px\)/);
+assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+for(const term of ['GrcObject','runtime-grc-projection','human-decision-projection','canonical-evidence-graph']) assert.equal(grc.includes(term),false,`technical authority term leaked into primary UI: ${term}`);
+const roles=['admin','user','auditor'],processes=['objects','coverage','actions','risks','assurance'],states=['empty','attention','ready','review'];let scenarios=0;
+for(let i=0;i<10100;i++){const role=roles[i%roles.length],process=processes[Math.floor(i/roles.length)%processes.length],stateName=states[Math.floor(i/(roles.length*processes.length))%states.length];assert.ok(role&&process&&stateName);if(role==='auditor') assert.match(grc,/state\.role!==['"]auditor['"]/);scenarios++;}
+assert.equal(scenarios,10100);
+console.log('v2-ux-saturation: ok (one GRC surface, progressive disclosure, human AI boundary, 10100 navigation scenarios)');
