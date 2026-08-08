@@ -29,6 +29,7 @@ import { canonicalProcedureHub, createWorkbenchProjection } from './runtime/work
 import { authorizeEnterpriseActor, ensureEnterpriseState, enterpriseReadiness } from './enterprise.mjs';
 import { configureAiGovernance } from './ai.mjs';
 
+const PRODUCT_EDITION='V3 Experimental';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const publicRoot=path.join(here,'public');
 const contract=JSON.parse(await readFile(path.join(here,'product-contract.json'),'utf8'));
@@ -52,7 +53,7 @@ async function handleApi(request,response,url,actor){
   const pathname=url.pathname,method=request.method||'GET';
   if(method==='GET'&&pathname==='/api/health'){
     const enterprise=enterpriseReadiness(store.snapshot(),runtimePosture());
-    json(response,200,{ok:true,service:'ictc',version:VERSION,productEdition:'V2 Experimental',readiness:enterprise.level,services:['monitoring','incidents','objects','coverage','actions','risks','assurance'],supportSurfaces:['standard-proof'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise});return;
+    json(response,200,{ok:true,service:'ictc',version:VERSION,productEdition:PRODUCT_EDITION,readiness:enterprise.level,services:['monitoring','incidents','objects','coverage','actions','risks','assurance'],supportSurfaces:['standard-proof'],controlPlane:'administration',roles:ROLES,integrity:store.verifyChain(),enterprise});return;
   }
   if(method==='GET'&&pathname==='/api/bootstrap'){
     const snapshot=store.snapshot(),projected=visibleState(actor,store,VERSION),readiness=enterpriseReadiness(snapshot,runtimePosture()),grc=grcProjection(snapshot,actor);
@@ -63,7 +64,7 @@ async function handleApi(request,response,url,actor){
     projected.experience.controlPlane='administration';
     projected.experience.release=VERSION;
     projected.experience.product='ICTC Control Tower';
-    projected.experience.productEdition='V2 Experimental';
+    projected.experience.productEdition=PRODUCT_EDITION;
     projected.experience.shell=['home','processes','proof'];
     projected.ontology=runtimeOntologyProjection();
     projected.grc=grc;
