@@ -1,15 +1,19 @@
 import { procedureContractProjection } from './procedure-contracts.mjs';
 const projection = procedureContractProjection();
 function asCanonical(item) {
+  const transitionSpecs = structuredClone(item.transitionSpecs || []);
+  const metricSpecs = structuredClone(item.metricSpecs || []);
   return Object.freeze({
     ...structuredClone(item),
     states: [...new Set(Object.values(item.stateModel || {}).flat())],
-    transitionIds: (item.transitions || []).map(t => t.id),
-    transitionSpecs: structuredClone(item.transitions || []),
-    access: structuredClone(item.accessPolicy || {}),
-    evidence: structuredClone(item.evidencePolicy || []),
-    metricSpecs: structuredClone(item.metrics || []),
-    metricIds: (item.metrics || []).map(m => m.id)
+    transitions: transitionSpecs,
+    transitionIds: transitionSpecs.map(t => t.id),
+    transitionSpecs,
+    access: structuredClone(item.accessPolicy || item.access || {}),
+    evidence: structuredClone(item.evidencePolicy || item.evidence || []),
+    metrics: metricSpecs,
+    metricSpecs,
+    metricIds: metricSpecs.map(m => m.id)
   });
 }
 const procedures = Object.freeze((projection.procedures || []).map(asCanonical));
