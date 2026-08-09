@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0.0",
+  "oracleSeparation": "declarative-e2",
+  "invariants": [
+    {
+      "id": "O01",
+      "kind": "decision",
+      "when": {
+        "role": "auditor",
+        "operation": "write"
+      },
+      "expect": {
+        "decision": "DENY_WRITE"
+      }
+    },
+    {
+      "id": "O02",
+      "kind": "decision",
+      "when": {
+        "role": "auditor",
+        "operation": "assist"
+      },
+      "expect": {
+        "decision": "DENY_ASSIST"
+      }
+    },
+    {
+      "id": "O03",
+      "kind": "decision",
+      "when": {
+        "operation": "assist",
+        "role": [
+          "admin",
+          "user"
+        ],
+        "aiPolicy": "disabled"
+      },
+      "expect": {
+        "decision": "DENY_AI_POLICY"
+      }
+    },
+    {
+      "id": "O04",
+      "kind": "decision",
+      "when": {
+        "operation": "assist",
+        "role": [
+          "admin",
+          "user"
+        ],
+        "aiPolicy": "enabled",
+        "assistPreference": "off"
+      },
+      "expect": {
+        "decision": "USE_MANUAL_PATH"
+      }
+    },
+    {
+      "id": "O05",
+      "kind": "evidence",
+      "when": {
+        "claim": "human-comprehension"
+      },
+      "expect": {
+        "contains": "E4-human"
+      }
+    },
+    {
+      "id": "O06",
+      "kind": "evidence",
+      "when": {
+        "claim": "enterprise-readiness"
+      },
+      "expect": {
+        "contains": "bound-deployment-evidence"
+      }
+    },
+    {
+      "id": "O07",
+      "kind": "process-identity",
+      "when": {},
+      "expect": {
+        "source": "process"
+      }
+    },
+    {
+      "id": "O08",
+      "kind": "entry-identity",
+      "when": {},
+      "expect": {
+        "source": "entry"
+      }
+    },
+    {
+      "id": "O09",
+      "kind": "control",
+      "when": {},
+      "expect": {
+        "contains": "human-decision-authority"
+      }
+    },
+    {
+      "id": "O10",
+      "kind": "control",
+      "when": {},
+      "expect": {
+        "contains": "claim-boundary"
+      }
+    },
+    {
+      "id": "O11",
+      "kind": "metric-separation",
+      "when": {},
+      "expect": {
+        "behavioralUniqueLessThanSemanticStimuli": true
+      }
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 
 The candidate is globally done only when all four semantic slices are complete on the same exact PR HEAD and no slice weakens a predecessor falsifier.
 
-1. **Assurance truth** — release evidence reports semantic uniqueness, dimension influence, pairwise/critical-triple coverage, frozen holdouts, mutation score and evidence grade. Raw loop counts cannot close a finding.
+1. **Assurance truth** — release evidence separates declared semantic stimulus geometry from behaviorally distinct outcomes, reports dimension influence, pairwise/critical-triple coverage and frozen holdouts, and carries a separate E2E mutation report with concrete witnesses. Raw loop counts and raw scenario identity cannot close a finding.
 2. **Governance enforcement** — AI policy is enforced server-side; deployment readiness controls require bound, time-valid evidence and never become verified from boolean environment flags alone.
 3. **Persistence & intake integrity** — no 10k audit ceiling; audit journal is not rewritten inside the mutable snapshot; legacy JSON is migration input only; attachment aggregate limits match transport; novice routing makes no false preservation promise.
 4. **Native active experience** — Oggi/Processi/Prove exists in source HTML before JavaScript executes; active-experience does not create/remove permanent shell navigation; README/product/server/DOM release identity agree.
@@ -18,11 +18,12 @@ The candidate is globally done only when all four semantic slices are complete o
 
 ## S1 — Assurance Truth & Stable Contract
 
-### Task S1.1 — Replace cardinality assurance
-- **DoD:** counted scenarios are semantically unique; all declared axes have measurable influence; pairwise and declared critical triples are complete; frozen holdouts pass; mutation score is 100%; report says E2, not E3/E4.
-- **Subtask S1.1.a:** derive scenario count from active axes, never target a headline number. **DoD:** duplicate semantic signatures = 0.
-- **Subtask S1.1.b:** measure influence. **DoD:** every active axis exceeds the declared minimum.
-- **Subtask S1.1.c:** frozen holdout + mutation discrimination. **DoD:** every holdout passes and every declared assurance mutant is killed.
+### Task S1.1 — Replace cardinality assurance with semantic stimulus + behavioral evidence
+- **DoD:** the rail reports declared semantic stimuli and behaviorally distinct outcomes as separate measures; raw scenario identity is forbidden from the behavioral signature; all declared axes have measurable behavioral influence somewhere; pairwise and declared critical triples are complete; frozen holdouts pass; the independent declarative E2 oracle kills every declared E2E mutant; reports remain E2, not E3/E4.
+- **Subtask S1.1.a — Semantic stimulus geometry:** derive scenario inputs from active axes, never from a headline target. **DoD:** semantic-stimulus signatures are canonicalized from actor/target/governance/entry/request state; duplicate semantic-stimulus signatures = 0.
+- **Subtask S1.1.b — Behavioral separation:** compute behavior signatures only from path/decision/control/evidence/forbidden-claim outcomes. **DoD:** behavioral uniqueness does not include the raw scenario object; behaviorally distinct outcomes are reported separately from scenario inputs; the `raw-scenario-identity-as-behavior` mutant is killed.
+- **Subtask S1.1.c — Influence and tuples:** measure behavioral influence, pairwise coverage and declared critical triples. **DoD:** every active axis exceeds the declared influence minimum; pairwise and critical-triple coverage = 1.0.
+- **Subtask S1.1.d — Frozen oracle and E2E mutation:** holdott classification is separated from the scenario generator; scenario invariants live in a declarative oracle; mutants are declared separately from both. **DoD:** all frozen holdouts pass; at least 10 E2E mutants exist; mutation score = 1.0; every mutant changes at least one observable behavioral signature and violates its declared target oracle with a concrete witness.
 
 ### Task S1.2 — Stabilize claim semantics
 - **DoD:** stable release claim explicitly excludes production/legal/universal-human claims.

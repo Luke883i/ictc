@@ -18,6 +18,8 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Real semantic saturation
         run: node v3/v4-stable-real-saturation.mjs
+      - name: E2E assurance mutation
+        run: node v3/v4-stable-e2e-mutation-check.mjs
       - name: Governance enforcement
         run: node v3/v4-stable-governance-check.mjs
       - name: SQLite persistence capacity

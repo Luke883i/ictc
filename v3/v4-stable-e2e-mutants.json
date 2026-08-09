@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0.0",
+  "mutants": [
+    {
+      "id": "M01-auditor-write-bypass",
+      "patch": {
+        "allowAuditorWrite": true
+      },
+      "targetOracleIds": [
+        "O01"
+      ]
+    },
+    {
+      "id": "M02-auditor-assist-bypass",
+      "patch": {
+        "allowAuditorAssist": true
+      },
+      "targetOracleIds": [
+        "O02"
+      ]
+    },
+    {
+      "id": "M03-org-ai-policy-bypass",
+      "patch": {
+        "enforceOrganizationAiPolicy": false
+      },
+      "targetOracleIds": [
+        "O03"
+      ]
+    },
+    {
+      "id": "M04-ignore-personal-ai-off",
+      "patch": {
+        "honorAssistPreference": false
+      },
+      "targetOracleIds": [
+        "O04"
+      ]
+    },
+    {
+      "id": "M05-browser-human-overclaim",
+      "patch": {
+        "requireHumanE4": false
+      },
+      "targetOracleIds": [
+        "O05"
+      ]
+    },
+    {
+      "id": "M06-tests-enterprise-overclaim",
+      "patch": {
+        "requireEnterpriseBoundEvidence": false
+      },
+      "targetOracleIds": [
+        "O06"
+      ]
+    },
+    {
+      "id": "M07-collapse-process-identity",
+      "patch": {
+        "preserveProcessIdentity": false
+      },
+      "targetOracleIds": [
+        "O07"
+      ]
+    },
+    {
+      "id": "M08-collapse-entry-path",
+      "patch": {
+        "preserveEntryPath": false
+      },
+      "targetOracleIds": [
+        "O08"
+      ]
+    },
+    {
+      "id": "M09-drop-human-authority",
+      "patch": {
+        "preserveHumanDecisionAuthority": false
+      },
+      "targetOracleIds": [
+        "O09"
+      ]
+    },
+    {
+      "id": "M10-drop-claim-boundary",
+      "patch": {
+        "preserveClaimBoundary": false
+      },
+      "targetOracleIds": [
+        "O10"
+      ]
+    },
+    {
+      "id": "M11-raw-scenario-identity-as-behavior",
+      "metricPatch": {
+        "includeRawScenarioIdentity": true
+      },
+      "targetOracleIds": [
+        "O11"
+      ]
+    }
+  ]
+}
