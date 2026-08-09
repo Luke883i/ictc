@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.1.0",
+  "releaseProfile": "1.1_stable",
+  "experience": "stable-2",
+  "productName": "Integrated Compliance Tower Control",
+  "shortName": "ICTC",
+  "brand": {"officialMark":"/assets/ictc-mark.png","headerName":"ICTC","expandedName":"Integrated Compliance Tower Control"},
+  "permanentShell": [{"id":"home","label":"Oggi"},{"id":"processes","label":"Processi"},{"id":"proof","label":"Evidenze"}],
+  "businessProcesses": ["RN-01","EC-01","AO-01","MC-01","AP-01","RC-01","AR-01"],
+  "processCardinality": 7,
+  "processPresentation": "standalone-peers",
+  "home": {"job":"Orientare sullo stato complessivo di ICTC e portare alla prossima azione utile senza duplicare il catalogo processi.","primaryActions":1,"maxPriorityRows":3,"fullCatalogCopies":1,"requiredSignals":["enabled-processes","attention","healthy","human-decisions"]},
+  "evidence": {"label":"Evidenze","heading":"Evidenze e tracciabilità","firstDisclosure":["human-decisions","business-dossiers","evidence-context"],"advancedDisclosure":["runtime-posture","deployment-gaps","translation-mappings","exports"],"claimBoundary":"Risoluzione, integrità e provenienza non equivalgono a sufficienza sostanziale o conformità."},
+  "procedurePolicy": {"authority":"server-runtime","adminFeatureFlagPerProcedure":true,"minimumEnabled":1,"disabledBehavior":["hide-from-operational-catalog","exclude-from-routing-and-work-queue","block-new-writes","retain-history-and-evidence","allow-reenable"],"userScopes":{"monitoring":"organization","incidents":"created-by","objects":"organization","coverage":"organization","actions":"assigned-or-created","risks":"organization","assurance":"created-by"}},
+  "progressiveDisclosure": {"maxLevels":5,"levels":["orientation","process-workspace","record","decision-evidence","technical-trace"]},
+  "globalDoD": ["brand-identity","ictc-wide-home","three-surface-information-architecture","seven-standalone-processes","business-first-evidence","single-scroll-dialogs","server-enforced-procedure-flags","explicit-row-scope","semantic-saturation-m-plus-1000","browser-desktop-mobile-evidence","runtime-regression-green","bounded-release-contract"],
+  "evidenceGrade": "E2-model-and-browser-assisted",
+  "limitations": ["La comprensione umana indipendente resta non valutata finché non esiste evidenza E4.","La release non certifica conformità, applicabilità, sicurezza di un deployment specifico o adeguatezza legale.","Le procedure condividono infrastruttura, non uno stesso lifecycle o una stessa policy di visibilità."]
+}

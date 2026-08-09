@@ -12,24 +12,24 @@ concurrency:
 jobs:
   contract-and-audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: Syntax
-        run: npm run check
-      - name: Stable and runtime contracts
-        run: node v3/v1-stable-release-contract-check.mjs && node v3/product-contract-check.mjs
+        run: npm run check && python3 -m py_compile v3/browser-v1-1-enterprise.py
+      - name: Current product and runtime contracts
+        run: node v3/v1-1-enterprise-experience-check.mjs && node v3/product-contract-check.mjs && node v3/procedure-policy-check.mjs
       - name: Semantic authority ratchet
         run: node v3/ui-active-experience-audit.mjs && node v3/semantic-api-contract-check.mjs && node v3/historical-ui-fixture-check.mjs
       - name: Process kernel and GRC capability regression
         run: node v3/process-kernel-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/grc-object-check.mjs && node v3/grc-mapping-check.mjs && node v3/grc-action-check.mjs && node v3/grc-risk-check.mjs && node v3/grc-assurance-check.mjs
-      - name: Current stable UI and process contracts
-        run: node v3/v1-stable-ui-contract-check.mjs && node v3/v1-stable-process-hardening-check.mjs && node v3/onto-epistemic-audit.mjs
-      - name: Current stable saturation
-        run: node v3/v1-stable-experience-saturation.mjs && node v3/v4-stable-real-saturation.mjs
+      - name: Current process semantic hardening
+        run: node v3/v1-stable-process-hardening-check.mjs && node v3/reference-contract-check.mjs && node v3/reference-integration-check.mjs && node v3/ao-reattestation-check.mjs && node v3/rn-requirement-identity-check.mjs && node v3/dependency-review-check.mjs && node v3/onto-epistemic-audit.mjs
+      - name: Current semantic convergence
+        run: node v3/v1-1-enterprise-saturation.mjs && node v3/v4-stable-real-saturation.mjs
       - name: Security boundaries
         run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
       - name: Honest enterprise posture
@@ -52,6 +52,8 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
+      - name: Procedure policy
+        run: node v3/procedure-policy-check.mjs
       - name: FI-01 reference binding
         run: node v3/fi01-reference-check.mjs
       - name: Home next action binding
@@ -68,7 +70,7 @@ jobs:
         run: node v3/stable-1-4-runtime-check.mjs && node v3/standard-proof-1-6-runtime-check.mjs && node v3/enterprise-1-8-runtime-check.mjs && node v3/v15-e2e.mjs && node v3/v15-runtime-saturation.mjs
       - name: Enterprise T runtime stress
         run: node v3/enterprise-t-runtime-stress.mjs
-      - name: PR49 persistence and governance
+      - name: Persistence and governance
         run: node v3/v4-stable-governance-check.mjs && node v3/v4-stable-persistence-check.mjs && node v3/store-durability-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
@@ -80,7 +82,7 @@ jobs:
 
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 16
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -90,7 +92,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-v1-stable-check.py
+        run: python -m py_compile v3/browser-v1-1-enterprise.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -102,7 +104,7 @@ jobs:
           if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
-      - name: Canonical stable journey
+      - name: Canonical 1.1 enterprise journey
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -112,12 +114,14 @@ jobs:
           export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-v1-stable-check.py
+          python -u v3/browser-v1-1-enterprise.py
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ictc-browser-evidence
-          path: artifacts/browser-v1-stable*.json
+          path: |
+            artifacts/browser-v1-1*.json
+            artifacts/ux-v11-*.png
           if-no-files-found: warn
           retention-days: 30
 
