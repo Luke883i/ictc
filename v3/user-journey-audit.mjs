@@ -11,7 +11,7 @@ const checks = [];
 function annotation(value) { return String(value).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A'); }
 function check(id, condition, outcome) { if (!condition) console.error(`::error title=user-journey-audit-${annotation(id)}::${annotation(outcome)}`); assert.ok(condition, `${id}: ${outcome}`); checks.push({id,outcome}); }
 const nav=html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';
-check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Cosa devi fare adesso?'), 'one explanatory home entry');
+check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Gestisci la compliance operativa') && html.includes('Non sai da dove iniziare?'), 'one explanatory home entry');
 check('one-contextual-cta', (html.match(/id="homePrimaryAction"/g)||[]).length === 1 && render.includes('state.data.homeNextAction') && !render.includes('function homeAction('), 'one primary action projected from server-derived role and state');
 check('horizontal-guidance', html.includes('id="homeJourney"') && css.includes('grid-auto-flow:column'), 'four-step horizontal journey');
 check('minimal-monitoring-entry', (html.match(/name="objective"[^>]*required/g)||[]).length === 1, 'one mandatory monitoring question');
