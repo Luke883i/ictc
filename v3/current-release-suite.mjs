@@ -25,6 +25,7 @@ export const CURRENT_SEMANTIC = Object.freeze([
   'v3/incident-contract-check.mjs',
   'v3/object-identity-check.mjs',
   'v3/procedure-summary-check.mjs',
+  'v3/subject-version-retention-check.mjs',
   'v3/v1-stable-process-hardening-check.mjs',
   'v3/reference-contract-check.mjs',
   'v3/reference-integration-check.mjs',
@@ -73,21 +74,6 @@ export const CURRENT_RUNTIME = Object.freeze([
   'v3/store-durability-check.mjs'
 ]);
 
-function run(file) {
-  const child = spawnSync(process.execPath, [file], { stdio: 'inherit', env: process.env });
-  if (child.error) throw child.error;
-  if (child.status !== 0) process.exit(child.status ?? 1);
-}
-
-export function runCurrentReleaseSuite(mode = 'all') {
-  const selected = mode === 'semantic' ? CURRENT_SEMANTIC : mode === 'runtime' ? CURRENT_RUNTIME : mode === 'all' ? [...CURRENT_SEMANTIC, ...CURRENT_RUNTIME] : null;
-  if (!selected) throw Object.assign(new Error(`Unknown current release suite: ${mode}`), { code: 'current-suite-unknown' });
-  for (const file of selected) run(file);
-  return { ok: true, suite: mode, checks: selected.length, releaseProfile: '1.2_market_candidate' };
-}
-
-const invoked = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
-if (invoked) {
-  try { console.log(JSON.stringify(runCurrentReleaseSuite(process.argv[2] || 'all'))); }
-  catch (error) { console.error(error.message); process.exit(2); }
-}
+function run(file) {const child=spawnSync(process.execPath,[file],{stdio:'inherit',env:process.env});if(child.error)throw child.error;if(child.status!==0)process.exit(child.status??1);}
+export function runCurrentReleaseSuite(mode='all'){const selected=mode==='semantic'?CURRENT_SEMANTIC:mode==='runtime'?CURRENT_RUNTIME:mode==='all'?[...CURRENT_SEMANTIC,...CURRENT_RUNTIME]:null;if(!selected)throw Object.assign(new Error(`Unknown current release suite: ${mode}`),{code:'current-suite-unknown'});for(const file of selected)run(file);return{ok:true,suite:mode,checks:selected.length,releaseProfile:'1.2_market_candidate'};}
+const invoked=process.argv[1]&&path.resolve(process.argv[1])===path.resolve(fileURLToPath(import.meta.url));if(invoked){try{console.log(JSON.stringify(runCurrentReleaseSuite(process.argv[2]||'all')));}catch(error){console.error(error.message);process.exit(2);}}
