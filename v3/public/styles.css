@@ -6,6 +6,7 @@
 @import url('./active-experience.css');
 @import url('./grc-workspace.css');
 @import url('./operational-entry.css');
+@import url('./market-shell.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
