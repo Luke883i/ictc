@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import * as base from './standard-library.mjs';
+import * as base from './standard-library-base.mjs';
 const index=JSON.parse(await readFile(new URL('../standards/standard-node-index-1-2.json',import.meta.url),'utf8'));
 const clean=v=>String(v??'').trim();
 function overlayNodes(framework){const refs=index.indexes?.[framework?.id];if(!Array.isArray(refs))return framework;const publicContent=framework.contentPolicy==='public-machine-readable-pack';const kind=framework.id==='nist-csf-2'?'category':framework.id.startsWith('iso-')?'control-or-clause-reference':'requirement';return{...framework,nodes:refs.map(ref=>({id:`${framework.id}:${ref}`,ref,kind,contentMode:publicContent?'public-reference':'licensed-external'}))};}
