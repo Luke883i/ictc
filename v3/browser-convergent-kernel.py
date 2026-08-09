@@ -8,7 +8,7 @@ def fail(e):
 def api(page,role,path,method='GET',body=None):
  return page.evaluate("""async ({role,path,method,body})=>{const headers={'content-type':'application/json','x-ictc-role':role};const r=await fetch(path,{method,headers,body:body==null?undefined:JSON.stringify(body)});let data=null;try{data=await r.json()}catch{}return {status:r.status,body:data};}""",{'role':role,'path':path,'method':method,'body':body})
 def open_process(page,code):
- page.locator('[data-service="processes"]').first.click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator('.primary').click();page.wait_for_timeout(120)
+ page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator('.primary').click();page.wait_for_timeout(120)
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
@@ -25,6 +25,6 @@ try:
   ct=api(page,'admin','/api/control-tests','POST',{'controlId':control_id,'outcome':'pass','method':'Verifica configurazione bounded','evidenceRefs':[f'ictc:grc-object:{control_id}'],'reason':'Test runtime'});assert ct['status']==201,ct;assert ct['body']['result']['outcome']=='pass';assert 'does not establish' in ct['body']['result']['claimBoundary']
   PHASE='subject-version-materialization';b2=api(page,'admin','/api/bootstrap');assert b2['status']==200;assert b2['body']['subjectVersions']['count']>0;assert b2['body']['controlTests']['counts']['pass']>=1;assert b2['body']['grc']['coverage']['notApplicable']>=1
   PHASE='rn-ai-off-manual-parity';draft=api(page,'user','/api/missions/manual-draft','POST',{'objective':'Monitoraggio manuale senza AI','cadence':168,'sourceHints':['Fonte ufficiale']});assert draft['status']==201,draft;mission_id=draft['body']['result']['id'];plan=api(page,'user',f'/api/missions/{mission_id}/manual-plan','POST',{'rationale':'Piano manuale owner scoped','queries':['aggiornamenti normativi'],'preferredSources':['Fonte ufficiale']});assert plan['status']==200,plan;assert plan['body']['result']['planSource']=='human'
-  PHASE='evidence-surface';page.locator('[data-service="proof"]').first.click();expect(page.locator('#stableProofView')).to_be_visible();page.screenshot(path=str(ART/'ux-v12-convergent-evidence.png'),full_page=True)
+  PHASE='evidence-surface';proof_nav=page.locator('.service-nav [data-service="proof"]');expect(proof_nav).to_have_count(1);proof_nav.click();expect(page.locator('#stableProofView')).to_be_visible();page.screenshot(path=str(ART/'ux-v12-convergent-evidence.png'),full_page=True)
   report={'ok':True,'releaseProfile':'1.2_market_candidate','commonAnatomy':seen,'projectionContext':True,'sameAsReadActionScope':True,'requirementScopeSeparate':True,'controlTestSeparate':True,'subjectVersionMaterialized':True,'rnManualParity':True,'epistemicFamilies':['observed','derived','proposed','decided','attested'],'evidenceClass':'E2-browser-not-independent-human-research'};(ART/'browser-convergent-kernel.json').write_text(json.dumps(report,indent=2),encoding='utf8');print('browser-convergent-kernel: complete',flush=True);ctx.close();browser.close()
 except BaseException as e: fail(e);traceback.print_exc();raise
