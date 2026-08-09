@@ -16,13 +16,16 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: 1.2 market candidate authority
-        run: |
-          node v3/v1-2-market-candidate-check.mjs
-          node v3/product-contract-check.mjs
-          node v3/semantic-api-contract-check.mjs
-          node v3/procedure-contracts-check.mjs
-          node v3/procedure-policy-check.mjs
+      - name: 1.2 market profile
+        run: node v3/v1-2-market-candidate-check.mjs
+      - name: Product contract authority
+        run: node v3/product-contract-check.mjs
+      - name: Semantic API authority
+        run: node v3/semantic-api-contract-check.mjs
+      - name: Procedure contracts
+        run: node v3/procedure-contracts-check.mjs
+      - name: Procedure feature policy
+        run: node v3/procedure-policy-check.mjs
       - name: Process-specific primitives
         run: |
           node v3/standard-library-check.mjs
