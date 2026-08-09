@@ -1,0 +1,5 @@
+export function canCreateMonitoring(actor){return actor?.role==='admin'||actor?.permissions?.includes?.('manage-own-monitoring')||actor?.permissions?.has?.('manage-own-monitoring');}
+export function canManageMission(actor,mission){if(actor?.role==='admin')return true;return Boolean(actor?.id&&mission?.createdBy===actor.id&&(actor?.permissions?.includes?.('manage-own-monitoring')||actor?.permissions?.has?.('manage-own-monitoring')));}
+export function assertCanCreateMonitoring(actor){if(!canCreateMonitoring(actor))throw Object.assign(new Error('Non puoi creare monitoraggi periodici'),{status:403,code:'monitoring-create-forbidden'});return true;}
+export function assertCanManageMission(actor,mission){if(!canManageMission(actor,mission))throw Object.assign(new Error('Puoi gestire soltanto i monitoraggi che hai creato'),{status:403,code:'monitoring-not-owner'});return true;}
+export function visibleMissions(state,actor){const all=state?.missions||[];if(actor?.role==='admin'||actor?.role==='auditor')return all;return all.filter(item=>item.createdBy===actor?.id);}

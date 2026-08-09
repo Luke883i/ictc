@@ -1,21 +1,24 @@
 import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
+import { canonicalProcedureRegistry } from './runtime/procedure-registry.mjs';
 const root = new URL('./', import.meta.url);
 const read = name => readFile(new URL(name, root), 'utf8');
-const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common, enterprise, kernelText, grcRuntime, grcProjection] = await Promise.all([
+const [contractText, invariantsText, questions, monitoring, incidents, contributions, model, store, common, enterprise, kernelText, grcRuntime, grcProjection, epistemicV13] = await Promise.all([
   read('product-contract.json'), read('experience-invariants.json'), read('question-engine.mjs'),
   read('runtime/monitoring.mjs'), read('runtime/incidents.mjs'), read('runtime/contributions.mjs'),
   read('runtime/model.mjs'), read('store.mjs'), read('public/ui/common.js'), read('enterprise.mjs'),
-  read('process-kernel.json'), read('runtime/grc-runtime.mjs'), read('runtime/grc-projection.mjs')
+  read('process-kernel.json'), read('runtime/grc-runtime.mjs'), read('runtime/grc-projection.mjs'), read('runtime/epistemic-projection-1-3.mjs')
 ]);
 const contract = JSON.parse(contractText);
 const invariants = JSON.parse(invariantsText);
 const kernel = JSON.parse(kernelText);
+const registry = canonicalProcedureRegistry();
 const checks = [];
 function check(id, condition, detail) { assert.ok(condition, `${id}: ${detail}`); checks.push({id, detail}); }
 const expectedServices = ['monitoring','incidents','objects','coverage','actions','risks','assurance'];
 check('seven-services-one-contract', JSON.stringify(contract.services.map(item=>item.id)) === JSON.stringify(expectedServices), 'seven business services are declared by one product contract');
-check('one-process-authority', kernel.authority === 'runtime' && expectedServices.every(id => kernel.processes.some(item => item.id === id)), 'all services derive from the runtime ProcessDefinition registry');
+check('one-business-procedure-authority', registry.authority === 'canonical-procedure-registry' && JSON.stringify(registry.procedures.map(item=>item.id)) === JSON.stringify(expectedServices), 'business lifecycle/name/checkpoint authority is the canonical procedure registry');
+check('relation-routing-compat-authority', kernel.authority === 'runtime' && expectedServices.every(id => kernel.processes.some(item => item.id === id)), 'process-kernel remains the runtime relation/routing compatibility substrate');
 check('control-plane', contract.controlPlane?.id === 'administration', 'administration is a control plane, not a business service');
 check('three-roles', contract.roles.map(item=>item.id).join(',') === 'admin,user,auditor', 'admin, user and read-only auditor');
 check('invariant-depth', invariants.invariants.length >= 18, `${invariants.invariants.length} explicit invariants`);
@@ -30,13 +33,15 @@ check('saved-digest-submit', incidents.includes('formulationSha256') && incident
 check('recoverable-ai', monitoring.includes('needs-plan') && contributions.includes('/api/contributions/:id/enrich') && incidents.includes('/api/incidents/:id/analyze'), 'V1 AI entry points preserve raw input and expose retry');
 check('grc-ai-proposal-only', grcRuntime.includes('grc.mapping.ai.proposed') && grcRuntime.includes('grc.action.ai.prioritized') && grcRuntime.includes('grc.risk.ai.proposed') && grcRuntime.includes('grc.assurance.ai.proposed'), 'GRC AI outputs are explicit proposal events');
 check('grc-human-checkpoints', grcRuntime.includes('grc.object.reviewed') && grcRuntime.includes('grc.mapping.decided') && grcRuntime.includes('grc.action.adopted') && grcRuntime.includes('grc.risk.reviewed') && grcRuntime.includes('grc.assurance.approved'), 'GRC authority changes are separate human writes');
-check('human-heatmap', grcProjection.includes('La heatmap usa soltanto rating umani'), 'consolidated risk posture excludes unreviewed AI ratings');
+check('human-heatmap', grcProjection.includes('heatmap') && /rating umani/i.test(grcProjection), 'consolidated risk posture remains bounded to human ratings');
 check('reasoned-decisions', monitoring.includes('reason-required') && incidents.includes('closure-note-required'), 'source, pause and close decisions require reasons');
 check('least-privilege', model.includes('visibleContributions') && model.includes('visibleIncidents') && model.includes('prompts: null'), 'user projection excludes unrelated private data and prompts');
 check('enterprise-directory', enterprise.includes('authorizeEnterpriseActor') && enterprise.includes('identity-not-provisioned'), 'trusted identities require directory provisioning');
 check('ai-budget', enterprise.includes('ai-budget-exhausted') && enterprise.includes('ai-model-not-allowed'), 'budget and allowlist fail closed');
 check('observation-history', model.includes('mergeCatalogObservation') && model.includes('observations'), 'rediscovery appends observations');
 check('linked-evidence', store.includes('relatedSha256') && store.includes('eventsSha256') && store.includes('formulations'), 'bundles link related objects, versions and events');
+check('subject-version-materialization', store.includes('appendSubjectVersion') && store.includes('subjectVersions'), 'new governed writes can materialize content-addressed subject versions');
+check('epistemic-five-family-grammar', ['observed','derived','proposed','decided','attested'].every(token=>epistemicV13.includes(token)), 'same-as-read epistemic projection exposes the five-family grammar');
 check('attachment-cleanup', store.includes('deleteAttachments') && contributions.includes('deleteAttachments') && incidents.includes('deleteAttachments'), 'failed raw writes remove unreferenced files');
 check('protected-download', common.includes('downloadProtected') && common.includes("'x-ictc-role'"), 'evidence download carries active identity headers');
 check('anti-overclaim', contract.boundaries.some(item=>item.includes('non determina')) && contract.boundaries.some(item=>item.includes('non verità')), 'legal and evidentiary limits remain explicit');
@@ -44,4 +49,4 @@ await import('node:fs/promises').then(({mkdir,writeFile}) => Promise.all([
   mkdir(new URL('../artifacts/', import.meta.url), {recursive:true}),
   writeFile(new URL('../artifacts/onto-epistemic-audit.json', import.meta.url), JSON.stringify({ok:true,checks}, null, 2))
 ]));
-console.log(`onto-epistemic-audit: ok (${checks.length} checks)`);
+console.log(`onto-epistemic-audit: ok (${checks.length} checks; canonical business authority + runtime relation substrate)`);

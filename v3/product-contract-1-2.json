@@ -1,0 +1,28 @@
+{
+  "schemaVersion":"9.0.0",
+  "product":"Integrated Compliance Tower Control",
+  "productEdition":"1.2 Market Candidate",
+  "stabilityProfile":"1.2_market_candidate",
+  "promise":"Gestire sette procedure aziendali di compliance distinte con entrypoint semplici, conoscenza condivisa versionata, decisioni umane esplicite, standard e controlli integrati, evidenze bounded e consuntivazione globale deterministica.",
+  "permanentShell":["home","processes","proof"],
+  "surfaceLabels":{"home":"Oggi","processes":"Processi","proof":"Evidenze"},
+  "services":[
+    {"id":"monitoring","processCode":"RN-01","label":"Monitoraggio normativo e fonti","jobToBeDone":"Acquisire materiale e sorvegliare periodicamente fonti/cambiamenti.","userScope":"own-monitors-plus-organization-sources","entry":["document","url","text","monitoring-objective"]},
+    {"id":"incidents","processCode":"EC-01","label":"Incidenti e quasi incidenti","jobToBeDone":"Preservare fatti, chiarire evento/quasi incidente, confermare una versione e governare follow-up.","userScope":"created-by"},
+    {"id":"objects","processCode":"AO-01","label":"Inventario di sistemi e oggetti","jobToBeDone":"Mantenere un working registry governato, versionato e riattestato.","userScope":"organization"},
+    {"id":"coverage","processCode":"MC-01","label":"Standard e Controlli","jobToBeDone":"Governare standard in perimetro, requisiti, controlli, mapping, gap e visioni inter-compliance.","userScope":"organization"},
+    {"id":"actions","processCode":"AP-01","label":"Azioni correttive","jobToBeDone":"Portare remediation da proposta a chiusura verificata.","userScope":"assigned-or-created"},
+    {"id":"risks","processCode":"RC-01","label":"Rischi di compliance","jobToBeDone":"Governare scenari, rating, trattamento e riesame.","userScope":"organization"},
+    {"id":"assurance","processCode":"AR-01","label":"Questionari e verifiche","jobToBeDone":"Produrre e approvare response set completi e versionati.","userScope":"created-by"}
+  ],
+  "roles":[
+    {"id":"admin","label":"Amministratore","permissions":["read","configure-ai","manage-monitoring","manage-own-monitoring","review-source","contribute-source","report-incident","edit-own-incident","submit-own-incident","read-all-incidents","close-incident","verify-integrity","manage-users","manage-enterprise","view-ai-usage","manage-grc","contribute-grc"]},
+    {"id":"user","label":"Utente","permissions":["read","manage-own-monitoring","contribute-source","report-incident","edit-own-incident","submit-own-incident","contribute-grc"]},
+    {"id":"auditor","label":"Auditor","permissions":["read","read-all-incidents","verify-integrity","view-ai-usage"]}
+  ],
+  "standardLibrary":{"process":"coverage","label":"Standard e Controlli","scopeDecision":"human","builtInPolicy":"public-reference-index-plus-proprietary-metadata","authorizedPackImport":true,"crosswalkKinds":["shared-control-objective","exact","partial","supportive","related"],"equivalenceInference":false,"controlEffectivenessInference":false},
+  "orchestration":{"globalRollup":"runtime-procedure-summary","syntheticComplianceScore":false,"reviewNeeded":"runtime-derived-never-auto-decision","aiAuthority":"assist-search-proposal-only"},
+  "experiencePrinciples":["Un solo entrypoint primario per intento; le alternative sono secondarie e contestuali.","Ogni processo mostra al massimo quattro metriche locali e nessuna media cross-process inventata.","Business state precede record detail, decision/evidence e technical trace.","I sette processi restano peer standalone anche quando condividono runtime.","Disabilitare una procedura blocca nuovo lavoro ma conserva storia ed evidenze.","La biblioteca Standard e Controlli distingue reference index, contenuto autorizzato, scope umano, mapping e crosswalk."],
+  "boundaries":["ICTC non determina applicabilità legale, conformità, certificazione o obblighi di notifica.","Crosswalk e obiettivi condivisi non implicano equivalenza tra standard o soddisfazione ereditata.","Testo normativo o di standard proprietario è importato solo quando il soggetto dichiara un diritto appropriato.","Il roll-up globale segnala lavoro e stato procedurale, non produce un compliance score."],
+  "assurance":{"authoritativeCurrentRail":"v1-2-market-candidate-procedures","evidenceGrade":"E2","semanticConvergence":"M-plus-1000","humanComprehension":"not-assessed","marketReadiness":"candidate-not-certified"}
+}

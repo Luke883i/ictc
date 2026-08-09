@@ -121,20 +121,21 @@ try {
   assert.equal(bundle.manifest.stateBoundToAuditHead, true);
   assert.equal(bundle.manifest.canonicalStateSha256, store.canonicalStateSha256());
   assert.equal(bundle.manifest.auditHeadStateSha256, store.verifyChain().headStateSha256);
-  assert.ok(bundle.limitations.some(item => item.includes('revisioni storiche')));
+  assert.ok(bundle.limitations.some(item => /revisioni storiche|record legacy/i.test(item)));
   record('I06', 'passed', 'Evidence bundles expose the current state-to-audit-head binding and its historical limitation.');
 
   assert.equal(canonicalJson(store.snapshot()).length > 0, true);
   const report = {
-    schemaVersion: '2.0.0',
+    schemaVersion: '2.1.0',
     control: 'W0-INTEGRITY',
-    backend: 'sqlite-snapshot-plus-audit-ledger',
+    backend: 'sqlite-snapshot-plus-subject-version-plus-audit-ledger',
     invariant: 'current-canonical-state-bound-to-audit-head',
     result: 'passed',
     caseCount: cases.length,
     cases,
     limitations: [
-      'The audit chain does not reconstruct historical canonical states.',
+      'The audit chain does not reconstruct historical canonical states that predate SubjectVersion materialization.',
+      'New governed business mutations can materialize content-addressed SubjectVersion snapshots; this does not retroactively reconstruct legacy history.',
       'The binding is an application integrity control, not a qualified signature, trusted timestamp or non-repudiation mechanism.',
       'The canonical state digest excludes audit and commandResults; attachment bytes are represented through metadata digests stored in canonical state.',
       'Actors or code with authority to rewrite both snapshot and audit ledger and recompute the entire chain remain outside this local control boundary.'

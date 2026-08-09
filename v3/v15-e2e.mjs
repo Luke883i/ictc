@@ -30,7 +30,8 @@ try {
   assert.equal((await h.request('POST',`/api/incidents/${incident}/submit`,{confirmed:true,formulationSha256:'0'.repeat(64)},'user','alice')).body.code,'formulation-conflict');
   await h.ok('POST',`/api/incidents/${incident}/submit`,{confirmed:true,formulationSha256:sha},'user','alice');
   assert.equal((await h.request('POST',`/api/incidents/${incident}/close`,{},'admin','test-admin')).status,400);
-  await h.ok('POST',`/api/incidents/${incident}/close`,{note:'Administrative verification complete'},'admin','test-admin');
+  assert.equal((await h.request('POST',`/api/incidents/${incident}/close`,{note:'Administrative verification complete'},'admin','test-admin')).body.code,'incident-closure-disposition-required');
+  await h.ok('POST',`/api/incidents/${incident}/close`,{note:'Administrative verification complete',disposition:'resolved'},'admin','test-admin');
   b=await h.bootstrap(); const source=b.body.catalog.find(item=>item.identifier==='CELEX:32022L2555'); assert.ok(source.observations.length>=2);
   assert.equal((await h.request('POST',`/api/catalog/${source.id}/decision`,{decision:'verified'},'admin','test-admin')).status,400);
   await h.ok('POST',`/api/catalog/${source.id}/decision`,{decision:'verified',reason:'Official identifier, authority and URL checked'},'admin','test-admin');
@@ -44,5 +45,5 @@ try {
   const replay='fixed-command'; await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); r=await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); assert.equal(r.body.raw.replayed,true);
   b=await h.bootstrap('user','alice'); r=await h.request('POST','/api/contributions',{text:'Stale'},'user','alice',{refresh:false,expectedRevision:b.body.revision-1}); assert.equal(r.body.code,'revision-conflict');
   b=await h.bootstrap(); assert.equal(b.body.integrity.ok,true); assert.ok(b.body.integrity.events>=25);
-  console.log(`v15-e2e: ok (${b.body.integrity.events} audited writes, recovery, authority, privacy, versions, evidence)`);
+  console.log(`v15-e2e: ok (${b.body.integrity.events} audited writes, recovery, authority, privacy, versions, evidence, reasoned closure)`);
 } finally { await h.close(); }
