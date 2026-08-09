@@ -9,6 +9,7 @@ const GRC_LABELS=Object.freeze({
   risks:{code:'RC-01',label:'Rischi di compliance',description:'Governa scenari, rating umani, trattamento e collegamenti a oggetti, controlli e remediation.'},
   assurance:{code:'AR-01',label:'Questionari e verifiche',description:'Preserva la richiesta, prepara un response set manuale o assistito e approva una versione completa e tracciata.'}
 });
+const HOME_SUMMARIES=Object.freeze({admin:'Una vista unica su priorità, processi, decisioni ed evidenze. L’amministrazione resta separata dal lavoro operativo.',user:'Continua il lavoro pertinente al tuo ruolo, consulta lo stato dei processi e registra conoscenza ed evidenze nel contesto corretto.',auditor:'Ricostruisci processi, decisioni ed evidenze nel perimetro accessibile, senza modificare lo stato operativo.'});
 let installed=false;
 function canonicalServices(){const nav=$('.service-nav');return nav?[...nav.querySelectorAll(':scope > [data-service]')].map(node=>node.dataset.service):[];}
 function installHeader(){
@@ -29,6 +30,7 @@ function ensureHomeStructure(){
 function processTrigger(item){const label=esc(item.label||item.code||item.id);if(item.service==='grc')return `<button type="button" data-service="grc" data-grc-process="${esc(item.id)}"><span>${label}</span><strong>${Number(item.attentionCount||0)} da vedere</strong><i aria-hidden="true">→</i></button>`;return `<button type="button" data-service="${esc(item.service||item.id)}"><span>${label}</span><strong>${Number(item.attentionCount||0)} da vedere</strong><i aria-hidden="true">→</i></button>`;}
 function renderHomePulse(){
   const pulse=$('#homePulse'),priorities=$('#homePriorities');if(!pulse||!priorities||!state.data)return;
+  const summary=$('#homeSummary');if(summary)summary.textContent=HOME_SUMMARIES[state.role]||'Orientati sul lavoro aperto, entra nel processo giusto e conserva decisioni ed evidenze nello stesso contesto.';
   const procedures=(state.data.procedures||[]).filter(item=>item.code&&item.id!=='evidence'),enabled=Number(state.data.experience?.procedurePolicy?.enabled?.length??procedures.length),attention=procedures.reduce((sum,item)=>sum+Number(item.attentionCount||0),0),healthy=procedures.filter(item=>Number(item.attentionCount||0)===0).length,decisions=Number(state.data.decisions?.records?.length||0);
   pulse.innerHTML=`<div><b>${enabled}</b><span>processi attivi</span></div><div><b>${attention}</b><span>elementi da vedere</span></div><div><b>${healthy}</b><span>processi in ordine</span></div><div><b>${decisions}</b><span>decisioni umane</span></div>`;
   const top=[...procedures].filter(item=>Number(item.attentionCount||0)>0).sort((a,b)=>Number(b.attentionCount||0)-Number(a.attentionCount||0)||String(a.code).localeCompare(String(b.code))).slice(0,3);
