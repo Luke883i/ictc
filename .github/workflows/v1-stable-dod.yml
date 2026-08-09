@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Syntax
-        run: npm run check
+      - name: Stable release contract
+        run: node v3/v1-stable-release-contract-check.mjs
       - name: Stable UI contract
         run: node v3/v1-stable-ui-contract-check.mjs
       - name: Stable process hardening
