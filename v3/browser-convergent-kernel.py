@@ -2,12 +2,13 @@ import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
+PROCESS_IDS={'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 def fail(e):
  p={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()};(ART/'browser-convergent-kernel-error.json').write_text(json.dumps(p,indent=2),encoding='utf8');print(f'::error title=browser-convergent-kernel::{PHASE}: {e}',flush=True)
 def api(page,role,path,method='GET',body=None):
  return page.evaluate("""async ({role,path,method,body})=>{const headers={'content-type':'application/json','x-ictc-role':role};const r=await fetch(path,{method,headers,body:body==null?undefined:JSON.stringify(body)});let data=null;try{data=await r.json()}catch{}return {status:r.status,body:data};}""",{'role':role,'path':path,'method':method,'body':body})
 def open_process(page,code):
- page.locator('[data-service="processes"]').first.click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator('.primary').click();page.wait_for_timeout(100)
+ page.locator('[data-service="processes"]').first.click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator('.primary').click();page.wait_for_timeout(120)
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
@@ -15,9 +16,9 @@ try:
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1365,'height':900});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/',wait_until='networkidle')
   PHASE='bootstrap-kernel';b=api(page,'admin','/api/bootstrap');assert b['status']==200,b;data=b['body'];assert data['projectionContext']['scope']=='actor-visible';assert data['projectionContext']['asOf'];assert data['procedureRegistry']['authority']=='canonical-procedure-registry';assert len(data['procedureRegistry']['procedures'])==7;assert data['metricCatalog']['authority']=='canonical-procedure-registry.metricSpecs';assert all(x.get('drilldown') for x in data['metricCatalog']['metrics']);assert data['subjectVersions']['authority']=='subject-version-index';assert data['epistemic']['metaGrammar']['families']==['observed','derived','proposed','decided','attested']
-  PHASE='common-anatomy';codes=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'];seen=[]
+  codes=list(PROCESS_IDS);seen=[]
   for code in codes:
-   open_process(page,code);box=page.locator('[data-procedure-anatomy]').first;expect(box).to_be_visible();assert box.get_attribute('open') is None;box.locator('summary').click();expect(box.locator('.procedure-anatomy-epistemic span')).to_have_count(5);text=box.inner_text();assert 'Contesto e tracciabilità' in text;assert not re.search(r'\b[a-f0-9]{64}\b',text,re.I);assert 'Apri Evidenze' in text;seen.append(code)
+   PHASE=f'common-anatomy:{code}';open_process(page,code);pid=PROCESS_IDS[code];box=page.locator(f'[data-procedure-anatomy="{pid}"]');expect(box).to_have_count(1);expect(box).to_be_visible();assert box.get_attribute('open') is None;box.locator('summary').click();expect(box.locator('.procedure-anatomy-epistemic span')).to_have_count(5);text=box.inner_text();assert 'Contesto e tracciabilità' in text;assert not re.search(r'\b[a-f0-9]{64}\b',text,re.I);assert 'Apri Evidenze' in text;seen.append(code)
   PHASE='assigned-or-created';act=api(page,'admin','/api/grc/actions','POST',{'title':'Azione non assegnata kernel test','description':'scope test'});assert act['status']==201,act;action_id=act['body']['result']['id'];ub=api(page,'user','/api/bootstrap');assert ub['status']==200;visible=[x['id'] for x in ub['body']['grc']['actions']['actions']];assert action_id not in visible,(action_id,visible)
   PHASE='requirement-scope-and-control-test';obj=api(page,'admin','/api/grc/objects','POST',{'type':'control','name':'Control kernel test','sourceAuthority':'ICTC test','externalReference':'CTRL-KERNEL-1'});assert obj['status']==201,obj;control_id=obj['body']['result']['id'];rev=api(page,'admin',f'/api/grc/objects/{control_id}/review','POST',{'decision':'active','reason':'Attivo per test bounded'});assert rev['status']==200,rev
   mapping=api(page,'admin','/api/grc/mappings','POST',{'requirementRef':'std:eu-gdpr-2016-679:art-32','targetIds':[control_id],'rationale':'Test separazione scope/mapping'});assert mapping['status']==201,mapping;mapping_id=mapping['body']['result']['id'];na=api(page,'admin',f'/api/grc/mappings/{mapping_id}/decision','POST',{'decision':'not-applicable','reason':'Fuori perimetro nel caso di test'});assert na['status']==200,na;assert na['body']['result']['requirementScope']['decision']=='not-applicable';assert na['body']['result']['mapping']['scopeDisposition']=='not-applicable'
