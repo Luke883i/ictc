@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "frozen": true,
+  "cases": [
+    {"id":"H01","situation":"A 100000-loop rail repeats a small semantic state space.","expected":"REJECT_COUNT_AS_COVERAGE","control":"semantic-uniqueness"},
+    {"id":"H02","situation":"Profession, experience or urgency labels do not change stimulus, path or oracle.","expected":"REJECT_INERT_AXIS","control":"dimension-influence"},
+    {"id":"H03","situation":"A browser journey renders the right labels and the release wants to claim novice comprehension.","expected":"REQUIRE_E4_HUMAN","control":"human-evidence-boundary"},
+    {"id":"H04","situation":"AI OFF is stored in browser localStorage but direct AI endpoints still accept calls.","expected":"REQUIRE_SERVER_POLICY","control":"ai-policy-boundary"},
+    {"id":"H05","situation":"The UI promises ten files of 5 MiB each over an 8 MB JSON transport.","expected":"REJECT_TRANSPORT_MISMATCH","control":"attachment-budget"},
+    {"id":"H06","situation":"Novice routing says the selected file is preserved but only filename is routed.","expected":"REJECT_FALSE_PRESERVATION","control":"intake-truth"},
+    {"id":"H07","situation":"Static HTML exposes legacy Home Monitoring Events and JavaScript rewrites it to V4.","expected":"REQUIRE_NATIVE_SHELL","control":"native-ui-authority"},
+    {"id":"H08","situation":"TLS backup durable storage and accessibility are marked verified only because environment flags are set.","expected":"REQUIRE_BOUND_EVIDENCE","control":"deployment-evidence-binding"},
+    {"id":"H09","situation":"The store hard-stops after ten thousand audit events.","expected":"REJECT_AUDIT_CEILING","control":"persistence-capacity"},
+    {"id":"H10","situation":"Each mutation rewrites a state snapshot containing the entire growing audit history.","expected":"REQUIRE_SEPARATE_LEDGER","control":"persistence-journal"},
+    {"id":"H11","situation":"README describes two governed processes while runtime contract exposes seven.","expected":"REQUIRE_CURRENT_SOT","control":"documentation-authority"},
+    {"id":"H12","situation":"A security workflow is skipped while other checks pass.","expected":"DO_NOT_COUNT_SKIPPED","control":"check-conclusion-fidelity"},
+    {"id":"H13","situation":"The builder authored generator oracle and release attestation for a high-risk runtime change.","expected":"REQUIRE_E3_RUNTIME","control":"evidence-independence"},
+    {"id":"H14","situation":"The product is internally stable but no real-user comprehension study exists.","expected":"BOUND_STABLE_CLAIM","control":"experimental-stable-boundary"}
+  ]
+}

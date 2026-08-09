@@ -1,4 +1,4 @@
-version: 2
+version: 3
 surfaces:
   product_intent:
     authority: docs/00_PROMPT_CLARIFICATION.md
@@ -22,6 +22,8 @@ surfaces:
     authority: v3/domain.mjs
   runtime_state:
     authority: v3/store.mjs
+  runtime_persistence:
+    authority: v3/sqlite-state-persistence.mjs
   runtime_handlers:
     authority: v3/runtime/
   runtime_enterprise:
@@ -42,5 +44,6 @@ rules:
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
   - package.json scripts.start and ictc.sh must resolve to runtime_entrypoint
-  - runtime documentation must not claim append-only canonical state unless executable proof establishes it
+  - mutable canonical state and append-only audit ledger are separate authorities
+  - runtime documentation must not claim append-only canonical state or historical reconstructibility unless executable proof establishes it
   - a change to a declared runtime authority requires authority-contract evidence on the same commit

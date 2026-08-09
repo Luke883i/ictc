@@ -3,6 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 export { VERSION } from './version.mjs';
 export const ROLES = Object.freeze(['admin', 'user', 'auditor']);
 export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+export const MAX_ATTACHMENT_TOTAL_BYTES = 5 * 1024 * 1024;
 export const MAX_ATTACHMENTS = 10;
 export const DOCUMENT_TYPES = Object.freeze(['constitution','treaty','regulation','directive','decision','law','legislative-decree','decree','authority-decision','guideline','circular','standard','case-law','other']);
 export const CATALOG_STATES = Object.freeze(['candidate', 'verified', 'rejected', 'superseded']);

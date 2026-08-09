@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { DatabaseSync } from 'node:sqlite';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -13,6 +14,7 @@ import { VERSION } from './version.mjs';
 const report = [];
 const record = (id, profile, status, evidence, dimensions) => report.push({ id, profile, status, evidence, dimensions });
 const root = await mkdtemp(path.join(tmpdir(), 'ictc-enterprise-t-'));
+const tamperRoot = await mkdtemp(path.join(tmpdir(), 'ictc-enterprise-t-tamper-'));
 const actor = { id: 'local-admin', role: 'admin', identityMode: 'local', permissions: [] };
 
 try {
@@ -110,13 +112,25 @@ try {
   assert.equal(store.verifyChain().ok, false);
   store.state = clean;
   assert.equal(store.verifyChain().ok, true);
-  const statePath = path.join(root, 'state.json');
-  const diskState = JSON.parse(await readFile(statePath, 'utf8'));
-  if (diskState.audit.length) diskState.audit[0].action = 'tampered-on-disk';
-  await writeFile(statePath, JSON.stringify(diskState));
-  await assert.rejects(new Store(root).init(), /Audit chain non valida/);
-  await store.persist();
-  record('S05', 'corrupted-state-and-audit-chain', 'passed', 'In-memory and restart-time audit corruption is detected.', ['T05', 'T08', 'T18']);
+
+  const tamperStore = await new Store(tamperRoot).init();
+  await tamperStore.mutate(actor, 'stress.tamper-baseline', { type: 'stress', id: 'tamper' }, {}, draft => {
+    draft.settings.organization.name = 'Tamper baseline';
+    return { changed: true };
+  }, { id: 'stress-tamper-baseline' });
+  tamperStore.close();
+  const tamperDb = new DatabaseSync(path.join(tamperRoot, 'state.sqlite'));
+  const snapshotRow = tamperDb.prepare('SELECT payload FROM snapshot WHERE id=1').get();
+  const tamperedSnapshot = JSON.parse(snapshotRow.payload);
+  tamperedSnapshot.settings.organization.name = 'Tampered on disk';
+  tamperDb.prepare('UPDATE snapshot SET payload=? WHERE id=1').run(JSON.stringify(tamperedSnapshot));
+  tamperDb.close();
+  await assert.rejects(async () => {
+    const reopened = new Store(tamperRoot);
+    try { await reopened.init(); }
+    finally { reopened.close(); }
+  }, error => error.code === 'state-head-mismatch');
+  record('S05', 'corrupted-state-and-audit-chain', 'passed', 'In-memory audit corruption and restart-time SQLite snapshot tampering are detected against the unchanged audit ledger.', ['T05', 'T08', 'T18']);
 
   let timeoutClassified = false;
   try {
@@ -169,12 +183,18 @@ try {
     store.saveAttachments([{ name: 'too-large.bin', mime: 'application/octet-stream', dataBase64: Buffer.alloc(MAX_ATTACHMENT_BYTES + 1).toString('base64') }]),
     error => error.code === 'attachment-too-large'
   );
-  const saved = await store.saveAttachments(Array.from({ length: MAX_ATTACHMENTS + 3 }, (_, index) => ({
+  await assert.rejects(
+    store.saveAttachments(Array.from({ length: MAX_ATTACHMENTS + 1 }, (_, index) => ({
+      name: `overflow-${index}.txt`, mime: 'text/plain', dataBase64: Buffer.from(`item-${index}`).toString('base64')
+    }))),
+    error => error.code === 'attachment-count'
+  );
+  const saved = await store.saveAttachments(Array.from({ length: MAX_ATTACHMENTS }, (_, index) => ({
     name: `small-${index}.txt`, mime: 'text/plain', dataBase64: Buffer.from(`item-${index}`).toString('base64')
   })));
   assert.equal(saved.length, MAX_ATTACHMENTS);
   await store.deleteAttachments(saved);
-  record('S08', 'oversized-or-malicious-attachment', 'partial', 'Size and count are bounded; content scanning and quarantine are not implemented.', ['T03', 'T04', 'T08']);
+  record('S08', 'oversized-or-malicious-attachment', 'partial', 'Per-file size and total count fail closed; content scanning and quarantine remain external deployment controls.', ['T03', 'T04', 'T08']);
 
   const packageText = await readFile(new URL('../package.json', import.meta.url), 'utf8');
   const telemetryPresent = /opentelemetry|traceparent/i.test(packageText);
@@ -199,7 +219,8 @@ try {
   const restarted = await new Store(root).init();
   assert.equal(restarted.verifyChain().ok, true);
   assert.equal(restarted.snapshot().revision, store.snapshot().revision);
-  record('S12', 'restore-from-last-known-good', 'passed-local-restart', 'A clean local state restarts consistently; backup restore and RTO/RPO remain external.', ['T05', 'T09']);
+  restarted.close();
+  record('S12', 'restore-from-last-known-good', 'passed-local-restart', 'A clean local SQLite state restarts consistently; backup restore and RTO/RPO remain external.', ['T05', 'T09']);
 
   const html = await readFile(new URL('./public/index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('./public/styles.css', import.meta.url), 'utf8');
@@ -218,9 +239,10 @@ try {
   assert.ok(report.every(item => item.status && item.evidence && item.dimensions.length));
 
   const output = {
-    schemaVersion: '1.0.0',
+    schemaVersion: '1.1.0',
     model: 'ictc-enterprise-t-assurance',
     runtimeVersion: VERSION,
+    persistenceAuthority: 'sqlite-snapshot-plus-audit-ledger',
     stressCount: report.length,
     passedOrBounded: report.filter(item => item.status.startsWith('passed') || item.status === 'covered-by-browser-suite').length,
     detectedGapCount: report.filter(item => item.status === 'detected-gap').length,
@@ -235,6 +257,8 @@ try {
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(new URL('../artifacts/enterprise-t-runtime-stress.json', import.meta.url), JSON.stringify(output, null, 2));
   console.log(`enterprise-t-runtime-stress: ok (cases=${output.stressCount}, detected-gaps=${output.detectedGapCount}, result=${output.result})`);
+  store.close();
 } finally {
   await rm(root, { recursive: true, force: true });
+  await rm(tamperRoot, { recursive: true, force: true });
 }

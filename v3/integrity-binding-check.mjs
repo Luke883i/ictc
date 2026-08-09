@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { DatabaseSync } from 'node:sqlite';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { canonicalJson, sha256 } from './domain.mjs';
@@ -7,6 +8,7 @@ import { auditEventHash } from './integrity-binding.mjs';
 import { Store } from './store.mjs';
 
 const root = await mkdtemp(path.join(tmpdir(), 'ictc-integrity-binding-'));
+const tamperRoot = await mkdtemp(path.join(tmpdir(), 'ictc-integrity-sqlite-tamper-'));
 const legacyRoot = await mkdtemp(path.join(tmpdir(), 'ictc-integrity-legacy-'));
 const actor = { id: 'integrity-check', role: 'admin', permissions: [] };
 const cases = [];
@@ -63,14 +65,32 @@ try {
   store.state = clean;
   assert.equal(store.verifyChain().ok, true);
 
-  const statePath = path.join(root, 'state.json');
-  const disk = JSON.parse(await readFile(statePath, 'utf8'));
-  disk.settings.organization.name = 'Tampered on disk';
-  await writeFile(statePath, JSON.stringify(disk, null, 2));
-  await assert.rejects(new Store(root).init(), error => error.code === 'state-head-mismatch');
-  store.state = clean;
-  await store.persist();
-  record('I04', 'passed', 'Canonical-state tampering is detected even when the audit event chain itself remains structurally valid.');
+  const tamperStore = await new Store(tamperRoot).init();
+  await tamperStore.mutate(
+    actor,
+    'integrity.sqlite-tamper-baseline',
+    { type: 'integrity-check', id: 'sqlite' },
+    { value: 1 },
+    draft => {
+      draft.settings.organization.name = 'SQLite baseline';
+      return { changed: true };
+    },
+    { id: 'integrity-sqlite-tamper-baseline' }
+  );
+  assert.equal(tamperStore.verifyChain().ok, true);
+  tamperStore.close();
+  const db = new DatabaseSync(path.join(tamperRoot, 'state.sqlite'));
+  const row = db.prepare('SELECT payload FROM snapshot WHERE id=1').get();
+  const payload = JSON.parse(row.payload);
+  payload.settings.organization.name = 'Tampered SQLite snapshot';
+  db.prepare('UPDATE snapshot SET payload=? WHERE id=1').run(JSON.stringify(payload));
+  db.close();
+  await assert.rejects(async () => {
+    const reopened = new Store(tamperRoot);
+    try { await reopened.init(); }
+    finally { reopened.close(); }
+  }, error => error.code === 'state-head-mismatch');
+  record('I04', 'passed', 'Canonical SQLite snapshot tampering is detected while the append-only audit ledger remains structurally valid.');
 
   const legacyEvent = {
     id: 'event_legacy', revision: 1, at: '2026-01-01T00:00:00.000Z', actorId: 'legacy-user', role: 'admin',
@@ -93,7 +113,8 @@ try {
   assert.equal(legacy.snapshot().revision, 2);
   assert.equal(legacy.snapshot().audit.at(-1).action, 'integrity.state-bound');
   assert.equal(legacy.snapshot().audit.at(-1).metadata.reason, 'legacy-head-migration');
-  record('I05', 'passed', 'A valid legacy chain receives a one-time checkpoint; historical revisions are not retroactively reconstructed.');
+  legacy.close();
+  record('I05', 'passed', 'A valid legacy state.json chain is imported once and receives a checkpoint; historical revisions are not retroactively reconstructed.');
 
   const bundle = store.evidenceBundle('mission', missionId, actor);
   assert.ok(bundle);
@@ -105,8 +126,9 @@ try {
 
   assert.equal(canonicalJson(store.snapshot()).length > 0, true);
   const report = {
-    schemaVersion: '1.0.0',
+    schemaVersion: '2.0.0',
     control: 'W0-INTEGRITY',
+    backend: 'sqlite-snapshot-plus-audit-ledger',
     invariant: 'current-canonical-state-bound-to-audit-head',
     result: 'passed',
     caseCount: cases.length,
@@ -115,13 +137,15 @@ try {
       'The audit chain does not reconstruct historical canonical states.',
       'The binding is an application integrity control, not a qualified signature, trusted timestamp or non-repudiation mechanism.',
       'The canonical state digest excludes audit and commandResults; attachment bytes are represented through metadata digests stored in canonical state.',
-      'Actors or code with authority to rewrite state and recompute the entire chain remain outside this local control boundary.'
+      'Actors or code with authority to rewrite both snapshot and audit ledger and recompute the entire chain remain outside this local control boundary.'
     ]
   };
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(new URL('../artifacts/integrity-binding.json', import.meta.url), JSON.stringify(report, null, 2));
   console.log(`integrity-binding-check: ok (cases=${cases.length}, invariant=${report.invariant})`);
+  store.close();
 } finally {
   await rm(root, { recursive: true, force: true });
+  await rm(tamperRoot, { recursive: true, force: true });
   await rm(legacyRoot, { recursive: true, force: true });
 }

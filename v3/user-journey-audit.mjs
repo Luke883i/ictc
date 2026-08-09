@@ -9,12 +9,9 @@ const [contractText, html, render, workspaces, actions, css, monitoring, inciden
 const contract = JSON.parse(contractText);
 const checks = [];
 function annotation(value) { return String(value).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A'); }
-function check(id, condition, outcome) {
-  if (!condition) console.error(`::error title=user-journey-audit-${annotation(id)}::${annotation(outcome)}`);
-  assert.ok(condition, `${id}: ${outcome}`);
-  checks.push({id,outcome});
-}
-check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Cosa devi fare adesso?'), 'one explanatory home entry');
+function check(id, condition, outcome) { if (!condition) console.error(`::error title=user-journey-audit-${annotation(id)}::${annotation(outcome)}`); assert.ok(condition, `${id}: ${outcome}`); checks.push({id,outcome}); }
+const nav=html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';
+check('single-home-entry', (html.match(/id="homeView"/g)||[]).length === 1 && html.includes('Gestisci la compliance operativa') && html.includes('Non sai da dove iniziare?'), 'one explanatory home entry');
 check('one-contextual-cta', (html.match(/id="homePrimaryAction"/g)||[]).length === 1 && render.includes('state.data.homeNextAction') && !render.includes('function homeAction('), 'one primary action projected from server-derived role and state');
 check('horizontal-guidance', html.includes('id="homeJourney"') && css.includes('grid-auto-flow:column'), 'four-step horizontal journey');
 check('minimal-monitoring-entry', (html.match(/name="objective"[^>]*required/g)||[]).length === 1, 'one mandatory monitoring question');
@@ -34,12 +31,9 @@ check('reduced-motion', css.includes('prefers-reduced-motion'), 'motion has an a
 check('no-browser-prompts', !actions.includes('prompt(') && !actions.includes('confirm(') && !grcWorkspace.includes('prompt(') && !grcWorkspace.includes('confirm('), 'decisions use explicit in-context controls');
 check('monitoring-lifecycle', monitoring.includes('/pause') && monitoring.includes('/resume') && monitoring.includes('/revise'), 'plan can be revised, paused and resumed');
 check('incident-lifecycle', incidents.includes('/formulation') && incidents.includes('/submit') && incidents.includes('/close'), 'wording, submission and closure are distinct writes');
-check('three-item-shell-seven-services', (html.match(/data-service=/g)||[]).length === 3 && contract.services.length === 7, 'three permanent navigation items expose seven business services through Processi');
+check('three-item-shell-seven-services', (nav.match(/data-service=/g)||[]).length === 3 && [...nav.matchAll(/data-service="([^"]+)"/g)].map(m=>m[1]).join(',') === 'home,processes,proof' && contract.services.length === 7, 'three permanent navigation items expose seven business services through Processi; contextual service controls are not counted as shell items');
 check('one-grc-workspace', (grcWorkspace.match(/grcWorkspace/g)||[]).length > 0 && grcWorkspace.includes('data-grc-process'), 'AO/MC/AP/RC/AR share one contextual workspace rather than permanent navigation');
 check('compact-density', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'first viewport is compact');
 check('plain-language', !`${html}\n${render}\n${workspaces}\n${grcWorkspace}`.includes('Plan Reveal') && !`${html}\n${render}\n${workspaces}\n${grcWorkspace}`.includes('AI Lens'), 'internal labels are removed from primary UI');
-await import('node:fs/promises').then(({mkdir,writeFile}) => Promise.all([
-  mkdir(new URL('../artifacts/', import.meta.url), {recursive:true}),
-  writeFile(new URL('../artifacts/user-journey-audit.json', import.meta.url), JSON.stringify({ok:true,checks}, null, 2))
-]));
+await import('node:fs/promises').then(({mkdir,writeFile}) => Promise.all([mkdir(new URL('../artifacts/', import.meta.url), {recursive:true}),writeFile(new URL('../artifacts/user-journey-audit.json', import.meta.url), JSON.stringify({ok:true,checks}, null, 2))]));
 console.log(`user-journey-audit: ok (${checks.length} checks)`);
