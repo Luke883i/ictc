@@ -1,0 +1,4 @@
+import { canonicalProcedureRegistry } from './procedure-registry.mjs';
+import { projectionBasis } from './projection-context.mjs';
+export function metricSignal(spec,value,context,extra={}){return{id:spec.id,label:spec.label,value,drilldown:spec.drilldown,claimBoundary:spec.claimBoundary,basis:{...projectionBasis(context),numerator:extra.numerator??null,denominator:extra.denominator??null},...extra};}
+export function metricCatalogProjection(){const registry=canonicalProcedureRegistry(),procedures=registry.procedures.map(p=>({procedureId:p.id,processCode:p.code,metrics:p.metricSpecs.map(m=>structuredClone(m))}));return{schemaVersion:'1.0.0',authority:'canonical-procedure-registry.metricSpecs',procedures,metrics:procedures.flatMap(p=>p.metrics.map(m=>({...m,procedureId:p.procedureId,processCode:p.processCode}))),invariant:'No number without deterministic basis, claim boundary and drilldown.'};}
