@@ -11,7 +11,6 @@ function unquote(value) {
   if ((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))) return text.slice(1, -1);
   return text;
 }
-
 function parseAuthorities(text) {
   const out = {};
   let inSurfaces = false;
@@ -27,7 +26,6 @@ function parseAuthorities(text) {
   }
   return out;
 }
-
 async function exists(rel) {
   try { await stat(path.join(root, rel.replace(/\/$/, ''))); return true; }
   catch { return false; }
@@ -42,6 +40,7 @@ const expected = {
   runtime_entrypoint: 'v3/server.mjs',
   runtime_domain: 'v3/domain.mjs',
   runtime_state: 'v3/store.mjs',
+  runtime_persistence: 'v3/sqlite-state-persistence.mjs',
   runtime_handlers: 'v3/runtime/',
   runtime_enterprise: 'v3/enterprise.mjs',
   runtime_ai: 'v3/ai.mjs',
@@ -71,7 +70,11 @@ for (const requiredImport of ["'./store.mjs'", "'./domain.mjs'", "'./runtime/htt
   if (!server.includes(requiredImport)) errors.push(`v3/server.mjs missing canonical import ${requiredImport}`);
 }
 const store = await readFile(path.join(root, 'v3', 'store.mjs'), 'utf8');
-if (!store.includes("path.join(root, 'state.json')")) errors.push('v3/store.mjs state.json SOT boundary not detected');
+const persistence = await readFile(path.join(root, 'v3', 'sqlite-state-persistence.mjs'), 'utf8');
+if (!store.includes('new SqliteStatePersistence(root)')) errors.push('v3/store.mjs SQLite persistence port not detected');
+for (const token of ['state.sqlite', 'CREATE TABLE IF NOT EXISTS snapshot', 'CREATE TABLE IF NOT EXISTS audit', 'BEGIN IMMEDIATE', 'PRAGMA journal_mode=WAL']) {
+  if (!persistence.includes(token)) errors.push(`SQLite persistence invariant missing: ${token}`);
+}
 if (!store.includes('verifyChain()')) errors.push('v3/store.mjs verifyChain boundary not detected');
 const integrityBinding = await readFile(path.join(root, 'v3', 'integrity-binding.mjs'), 'utf8');
 const currentStateBinding = store.includes('stateSha256: canonicalStateSha256(candidate)') &&
@@ -89,7 +92,7 @@ for (const [label, text] of [['AGENTS.md', agents], ['docs/11_ARCHITECTURE.md', 
 }
 
 const result = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   check: 'authority-contract',
   ok: errors.length === 0,
   authorities,
@@ -97,8 +100,10 @@ const result = {
     entrypoint: 'v3/server.mjs',
     domain: 'v3/domain.mjs',
     state: 'v3/store.mjs',
-    stateModel: 'mutable-state-json-with-hash-linked-audit',
+    persistence: 'v3/sqlite-state-persistence.mjs',
+    stateModel: 'mutable-sqlite-snapshot-with-append-only-audit-ledger',
     canonicalStateAppendOnly: false,
+    auditLedgerAppendOnly: true,
     canonicalStateReconstructibleFromAudit: false,
     canonicalStateBoundToAuditChain: currentStateBinding,
     canonicalStateBindingMode: 'current-head-forward-plus-legacy-checkpoint',

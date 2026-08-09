@@ -8,8 +8,14 @@ const uiSources = await Promise.all(uiFiles.map(name => readFile(new URL(`ui/${n
 const js = [await readFile(new URL('app.js', publicRoot), 'utf8'), ...uiSources].join('\n');
 const css = (await Promise.all(cssFiles.map(name => readFile(new URL(name, publicRoot), 'utf8')))).join('\n');
 
-assert.equal((html.match(/data-service=/g)||[]).length,3);
+const nav=html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';
+assert.ok(nav,'canonical service nav missing');
+assert.equal((nav.match(/data-service=/g)||[]).length,3);
+assert.deepEqual([...nav.matchAll(/data-service="([^"]+)"/g)].map(match=>match[1]),['home','processes','proof']);
+for(const label of ['Oggi','Processi','Prove'])assert.ok(nav.includes(`>${label}<`),`nav label ${label}`);
 assert.ok(html.includes('id="homeView"'));
+assert.ok(html.includes('id="processesView"'));
+assert.ok(html.includes('id="procedureHub"'));
 assert.ok(html.includes('id="homePrimaryAction"'));
 assert.ok(html.includes('id="homeJourney"'));
 assert.ok(html.includes('Obiettivo di monitoraggio'));
@@ -30,4 +36,4 @@ assert.ok(css.includes('.journey-strip'));
 assert.ok(css.includes('grid-auto-flow:column'));
 assert.ok(!js.includes('new MutationObserver'));
 assert.ok(uiFiles.length>=5);
-console.log(`ui-contract-check: ok (${uiFiles.length} UI modules, one home, two operational services, three role-correct journeys)`);
+console.log(`ui-contract-check: ok (${uiFiles.length} UI modules, native Oggi/Processi/Prove shell, three role-correct journeys)`);

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Store } from './store.mjs';
@@ -12,5 +12,6 @@ try{
  const beforeFailure=store.snapshot();store.persist=async()=>{const error=new Error('simulated persistence failure');error.code='ENOSPC';throw error;};await assert.rejects(store.mutate(actor,'durability.failure',{type:'durability-check',id:'failure'},{},draft=>{draft.settings.organization.name='Ghost state';return{changed:true};},{id:'durability-failure'}),e=>e.code==='ENOSPC');store.persist=originalPersist;assert.deepEqual(store.snapshot(),beforeFailure);record('D03','passed','Failed persistence does not advance visible state.');
  const replay=await store.mutate(actor,'durability.visibility',{type:'durability-check',id:'visibility'},{value:1},()=>{throw new Error('replay change must not execute');},{id:'durability-visibility'});assert.equal(replay.replayed,true);assert.equal(replay.receipt.revision,envelope.receipt.revision);record('D04','passed','Command replay resolves to the already-durable receipt.');
  assert.ok(store.persistence.db.prepare('SELECT COUNT(*) AS n FROM audit').get().n>=1);record('D05','passed','Audit is persisted in append-only rows, separate from mutable snapshot payload.');
- console.log(`store-durability-check: ok (cases=${cases.length}, backend=sqlite-wal)`);store.close();
+ const report={schemaVersion:'2.0.0',control:'W0-PERSIST',backend:'sqlite-wal',invariant:'persist-readback-before-visible',caseCount:cases.length,result:'passed',cases,limitations:['This check proves single-process SQLite transaction/readback semantics and separate audit rows.','It does not claim multi-process HA, backup/restore, RTO/RPO or external deployment durability.']};
+ await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/store-durability.json',import.meta.url),JSON.stringify(report,null,2));console.log(`store-durability-check: ok (cases=${cases.length}, backend=sqlite-wal)`);store.close();
 }finally{await rm(root,{recursive:true,force:true});}
