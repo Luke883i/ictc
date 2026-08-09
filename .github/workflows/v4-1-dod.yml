@@ -20,6 +20,8 @@ jobs:
         run: node v3/v4-1-lexical-contract-check.mjs
       - name: V4.1 100k end-user language saturation
         run: node v3/v4-1-language-saturation.mjs
+      - name: Global V4.1 DoD
+        run: node v3/v4-1-global-dod-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
