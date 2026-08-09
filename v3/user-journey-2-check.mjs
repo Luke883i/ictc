@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 const root = new URL('./', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
-const [html, common, render, actions, workspaces, admin, journeyCss, shellCss, dod] = await Promise.all([
+const [html, common, render, actions, workspaces, admin, journeyCss, shellCss, dod, contractText] = await Promise.all([
   read('public/index.html'),
   read('public/ui/common.js'),
   read('public/ui/render.js'),
@@ -13,8 +13,12 @@ const [html, common, render, actions, workspaces, admin, journeyCss, shellCss, d
   read('public/journey-reborn.css'),
   read('public/styles.css'),
   read('../docs/USER_JOURNEY_2_DOD.md'),
+  read('product-contract.json'),
 ]);
 const css = `${journeyCss}\n${shellCss}`;
+const contract = JSON.parse(contractText);
+const nav = html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+const shellRoutes = [...nav.matchAll(/data-service="([^"]+)"/g)].map(match => match[1]);
 
 const checks = [];
 function check(id, condition, evidence) {
@@ -24,19 +28,20 @@ function check(id, condition, evidence) {
 
 check('single-home', (html.match(/id="homeView"/g) || []).length === 1, 'one canonical home view');
 check('home-default', common.includes("storageGet('ictc-service','home')"), 'home is the default route');
-check('three-routes', (html.match(/data-service=/g) || []).length === 3, 'home plus two operational routes');
-check('two-operational-services', html.includes('data-service="monitoring"') && html.includes('data-service="incidents"'), 'monitoring and events remain distinct');
+check('three-routes', shellRoutes.length === 3 && shellRoutes.join(',') === 'home,processes,proof', 'native permanent shell is Oggi / Processi / Prove');
+check('seven-business-services', contract.services.length === 7 && html.includes('id="processesView"') && html.includes('id="procedureHub"'), 'seven business services are exposed through the Processi surface');
+check('distinct-rn-ec-workspaces', html.includes('id="monitoringView"') && html.includes('id="incidentsView"'), 'monitoring and events remain distinct workflow targets without becoming permanent tabs');
 check('one-primary-home-action', (html.match(/id="homePrimaryAction"/g) || []).length === 1, 'one contextual primary CTA');
 check('role-guidance', render.includes('renderHome') && render.includes('Amministratore') && render.includes('Utente') && render.includes('Auditor'), 'home guidance is role-aware');
 check('capability-boundary', render.includes("capability('manage-monitoring')") && render.includes('state.data.homeNextAction') && actions.includes('state.data?.homeNextAction') && !render.includes('function homeAction('), 'mutation controls use server-issued capabilities while home priority is server-derived');
 check('contextual-ai', render.includes('AI disponibile') && render.includes('AI non configurata'), 'AI readiness is explained without claiming authority');
-check('horizontal-journey', html.includes('id="homeJourney"') && css.includes('.journey-strip') && css.includes('grid-auto-flow:column'), 'four-step journey is horizontal');
+check('horizontal-journey', html.includes('id="homeJourney"') && css.includes('.journey-strip') && css.includes('grid-auto-flow:column'), 'guided journey is horizontal');
 check('compact-first-viewport', css.includes('--shell-max:1280px') && css.includes('.hero{padding:var(--space-5) 0;'), 'density contract is encoded');
 check('mobile-journey', css.includes('overflow-x:auto') && css.includes('scroll-snap-type:x proximity'), 'narrow journey remains ordered and scrollable');
 check('authority-hidden-fail-closed', shellCss.includes('[hidden]{display:none!important}'), 'hidden capability controls cannot be re-exposed by component CSS');
 check('section-stacking', css.includes('.contribution-status{position:static;inset:auto;'), 'contribution history remains in normal flow and cannot cover earlier controls');
 check('home-actions-wired', actions.includes('data-home-action') && actions.includes('activateHomeAction'), 'contextual CTAs are executable');
-check('plain-language-dod', dod.includes('One coherent entry point') && dod.includes('Horizontal guided journey'), 'global DoD is explicit');
+check('plain-language-dod', dod.includes('One coherent entry point') && dod.includes('Horizontal guided journey'), 'predecessor global DoD remains explicit as a regression contract');
 
 const experienceText = `${html}\n${render}\n${workspaces}\n${admin}`;
 for (const legacy of [
@@ -53,10 +58,11 @@ for (const legacy of [
 }
 
 for (const preferred of [
-  'Home',
+  'Oggi',
+  'Processi',
+  'Prove',
   'Monitoraggio',
   'Eventi',
-  'Evidenze',
   'Configurazione AI',
   'Amministrazione',
   'Suggerimento AI da verificare',
@@ -64,14 +70,14 @@ for (const preferred of [
   check(`preferred-${preferred.toLowerCase().replaceAll(' ', '-')}`, experienceText.includes(preferred), `preferred label present: ${preferred}`);
 }
 
-check('human-authority', experienceText.includes('Tu approvi') || experienceText.includes('conferma umana'), 'human decision boundary remains visible');
+check('human-authority', experienceText.includes('Tu approvi') || experienceText.includes('conferma umana') || experienceText.includes('decisioni restano umane'), 'human decision boundary remains visible');
 check('no-global-dom-polling', !experienceText.includes('new MutationObserver'), 'journey does not depend on global DOM polling');
 
 await import('node:fs/promises').then(async ({ mkdir, writeFile }) => {
   await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
   await writeFile(
     new URL('../artifacts/user-journey-2-check.json', import.meta.url),
-    JSON.stringify({ ok: true, checks }, null, 2),
+    JSON.stringify({ ok: true, shellRoutes, businessProcesses: contract.services.length, checks }, null, 2),
   );
 });
-console.log(`user-journey-2-check: ok (${checks.length} checks)`);
+console.log(`user-journey-2-check: ok (${checks.length} checks, shell=${shellRoutes.join('/')}, services=${contract.services.length})`);
