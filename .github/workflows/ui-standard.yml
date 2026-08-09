@@ -16,11 +16,13 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Canonical active surface and retained historical fixtures
+      - name: Stable active surface and authority
         run: |
           node v3/ui-active-experience-audit.mjs
           node v3/semantic-api-contract-check.mjs
           node v3/historical-ui-fixture-check.mjs
+          node v3/v1-stable-release-contract-check.mjs
+          node v3/v1-stable-ui-contract-check.mjs
   browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
@@ -33,7 +35,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser contract syntax
-        run: python -m py_compile v3/browser-product-check.py v3/browser-enterprise-2-ui-standard-check.py
+        run: python -m py_compile v3/browser-v1-stable-check.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -43,17 +45,14 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed canonical UI journey
+      - name: Server-backed stable UI journey
         shell: bash
         run: |
           set -Eeuo pipefail
           export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
-          export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
+          export ICTC_BASE_URL="http://127.0.0.1:4807"
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-ui-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-ui-runtime"
-          export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
-          node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-ui-mock.log" 2>&1 &
-          MOCK_PID=$!
-          trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
-          for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
+          export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
-          python -u v3/browser-product-check.py
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-v1-stable-check.py
