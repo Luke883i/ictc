@@ -8,7 +8,7 @@ const contract=JSON.parse(await readFile(new URL('./product-contract.json',impor
 const server=await readFile(new URL('./server.mjs',import.meta.url),'utf8');
 const activeUi=await readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8').catch(()=>'');
 const ids=['objects','coverage','actions','risks','assurance'];
-assert.ok(['V2 Experimental','V3 Experimental','V4 Experimental · Enterprise Nexus'].includes(contract.productEdition),'V2 capability rail must survive successor editions');
+assert.ok(['V2 Experimental','V3 Experimental','V4 Experimental · Enterprise Nexus','V4.1 Experimental · Enterprise Nexus'].includes(contract.productEdition),'V2 capability rail must survive successor editions');
 for(const id of ids){assert.ok(processDefinitions().some(x=>x.id===id));assert.ok(surfaceProcessDefinitions().some(x=>x.id===id));}
 for(const rel of['object-related-to-object','mapping-links-object','gap-generates-action','risk-affects-object','risk-mitigated-by-control','assurance-supported-by-evidence'])assert.equal(assertRelation(rel),rel);
 const state={settings:{llm:{}},missions:[],catalog:[],contributions:[],incidents:[],grcObjects:[],grcMappings:[],grcActions:[],grcRisks:[],grcAssurance:[],audit:[],insightProposals:[]},admin={id:'admin',role:'admin',permissions:['read','manage-grc','contribute-grc']},p=grcProjection(state,admin);

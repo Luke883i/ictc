@@ -35,7 +35,7 @@ import { translationPackProjection } from './runtime/translation-packs.mjs';
 import { canonicalProcedureHub, createWorkbenchProjection } from './runtime/workbench-projection.mjs';
 import { authorizeEnterpriseActor, ensureEnterpriseState, enterpriseReadiness } from './enterprise.mjs';
 import { configureAiGovernance } from './ai.mjs';
-const PRODUCT_EDITION='V4 Experimental · Enterprise Nexus';
+const PRODUCT_EDITION='V4.1 Experimental · Enterprise Nexus';
 const PRODUCT_NAME='ICTC Enterprise Nexus Compliance OS';
 const here=path.dirname(fileURLToPath(import.meta.url)),publicRoot=path.join(here,'public'),contract=JSON.parse(await readFile(path.join(here,'product-contract.json'),'utf8')),permissions=Object.fromEntries(contract.roles.map(role=>[role.id,new Set(role.permissions)])),mime=new Map([['.html','text/html; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.css','text/css; charset=utf-8'],['.json','application/json; charset=utf-8'],['.svg','image/svg+xml']]),runtimeRoot=process.env.ICTC_RUNTIME_DIR||path.join(here,'runtime'),store=await new Store(runtimeRoot).init();
 await ensureEnterpriseState(store);configureAiGovernance(()=>store.snapshot());const evidenceStore=createGrcEvidenceStore(store),port=Number(process.env.PORT||process.env.ICTC_PORT||4173),host=process.env.ICTC_HOST||'127.0.0.1';assertSafeRuntimeBinding(host);const schedulerMs=Math.max(10000,Number(process.env.ICTC_SCHEDULER_TICK_MS||60000)),runningMissions=new Set(),monitoring=createMonitoringRuntime({store,permissions,runningMissions});
