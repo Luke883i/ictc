@@ -1,0 +1,74 @@
+name: convergent-kernel-dod
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: convergent-kernel-dod-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Syntax
+        run: npm run check && python3 -m py_compile v3/browser-convergent-kernel.py
+      - name: Canonical procedure and projection contracts
+        run: node v3/procedure-contracts-check.mjs && node v3/procedure-guide-check.mjs && node v3/product-contract-check.mjs && node v3/semantic-api-contract-check.mjs
+      - name: Convergent kernel invariants
+        run: node v3/convergent-kernel-check.mjs
+      - name: C01-C14 genuine convergence M plus 1000
+        run: node v3/convergent-kernel-saturation.mjs
+      - name: Existing 1.2 process fidelity
+        run: node v3/standard-library-check.mjs && node v3/monitoring-access-check.mjs && node v3/incident-contract-check.mjs && node v3/object-identity-check.mjs && node v3/procedure-summary-check.mjs && node v3/procedure-market-saturation.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: convergent-kernel-semantic-evidence
+          path: artifacts/convergent-kernel-saturation.json
+          if-no-files-found: warn
+          retention-days: 30
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          for browser in /usr/bin/google-chrome /usr/bin/chromium /usr/bin/chromium-browser; do
+            if [[ -x "$browser" ]]; then echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"; exit 0; fi
+          done
+          echo 'No supported Chromium browser found' >&2; exit 1
+      - name: Launch exact-head runtime
+        shell: bash
+        run: |
+          export ICTC_NO_OPEN=1 ICTC_PORT=4827 PORT=4827 ICTC_BASE_URL=http://127.0.0.1:4827
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-convergent-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-convergent-runtime" ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+      - name: Seven-procedure epistemic browser journey
+        run: python -u v3/browser-convergent-kernel.py
+      - name: Stop runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: convergent-kernel-browser-evidence
+          path: |
+            artifacts/browser-convergent-kernel*.json
+            artifacts/ux-v12-convergent-*.png
+          if-no-files-found: warn
+          retention-days: 30
