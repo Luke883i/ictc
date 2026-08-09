@@ -1,6 +1,5 @@
 name: v4-dod
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -63,7 +62,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: V4 Enterprise Nexus AI-OFF journey
+      - name: Historical V4 Enterprise Nexus AI-OFF journey
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -74,9 +73,3 @@ jobs:
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
           python -u v3/browser-v4-enterprise-nexus-check.py
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: v4-browser-ai-off
-          path: artifacts/browser-v4-enterprise-nexus*.json
-          if-no-files-found: warn

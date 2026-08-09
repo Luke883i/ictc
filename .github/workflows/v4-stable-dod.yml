@@ -1,6 +1,5 @@
 name: v4-stable-dod
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,28 +15,12 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Real semantic saturation
-        run: node v3/v4-stable-real-saturation.mjs
-      - name: E2E assurance mutation
-        run: node v3/v4-stable-e2e-mutation-check.mjs
-      - name: Governance enforcement
-        run: node v3/v4-stable-governance-check.mjs
-      - name: SQLite persistence capacity
-        run: node v3/v4-stable-persistence-check.mjs
-      - name: Store durability
-        run: node v3/store-durability-check.mjs
-      - name: Stable global DoD
-        run: node v3/v4-stable-global-dod-check.mjs
-      - name: Current product contract regression
-        run: node v3/product-contract-check.mjs
-      - name: V4.1 successor regression
-        run: node v3/v4-1-global-dod-check.mjs
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: v4-stable-semantic-evidence
-          path: artifacts/v4-stable-*.json
-          if-no-files-found: warn
+      - run: node v3/v4-stable-real-saturation.mjs
+      - run: node v3/v4-stable-e2e-mutation-check.mjs
+      - run: node v3/v4-stable-governance-check.mjs
+      - run: node v3/v4-stable-persistence-check.mjs
+      - run: node v3/store-durability-check.mjs
+      - run: node v3/v4-stable-global-dod-check.mjs
   browser-runtime:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -56,28 +39,13 @@ jobs:
           for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
             if command -v "$candidate" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$candidate")" >> "$GITHUB_ENV"; exit 0; fi
           done
-          echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Launch stable candidate
+      - name: Historical V4 stable runtime browser journey
         shell: bash
         run: |
           set -Eeuo pipefail
-          export ICTC_NO_OPEN=1 ICTC_PORT=4821 PORT=4821
-          export ICTC_BASE_URL="http://127.0.0.1:4821"
-          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-stable-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-stable-runtime"
-          export ICTC_SCHEDULER_TICK_MS=100000
+          export ICTC_NO_OPEN=1 ICTC_PORT=4821 PORT=4821 ICTC_BASE_URL="http://127.0.0.1:4821"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-stable-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-stable-runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
-          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
-      - name: Native shell and governance browser journey
-        run: python -u v3/browser-v4-stable-check.py
-      - name: V4.1 successor browser regression
-        run: python -u v3/browser-v4-enterprise-nexus-check.py
-      - name: Stop runtime
-        if: always()
-        run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: v4-stable-browser-evidence
-          path: artifacts/browser-v4-stable*.json
-          if-no-files-found: warn
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-v4-stable-check.py
