@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "releaseId": "v4_experimental_stable",
+  "claim": "Stable experimental runtime baseline under declared internal invariants; not production readiness, legal compliance, certification, universal usability, HA/DR or external assessment.",
+  "evidenceGrades": {
+    "E0": "builder assertion or unchecked report",
+    "E1": "same-implementation self-test",
+    "E2": "separate oracle/holdout plus mutation-tested internal checker",
+    "E3": "exact-runtime or connector observation bound to the exact commit/tree",
+    "E4": "external human, assessor, deployment or organizational evidence"
+  },
+  "closureMinimum": {
+    "internal-low": "E1",
+    "internal-medium": "E2",
+    "runtime-high": "E3",
+    "human-comprehension": "E4",
+    "production-or-legal": "E4"
+  },
+  "realSaturation": {
+    "duplicateSemanticSignaturesMax": 0,
+    "pairwiseCoverageMin": 1,
+    "criticalTripleCoverageMin": 1,
+    "dimensionInfluenceMin": 0.01,
+    "holdoutPassRateMin": 1,
+    "mutationScoreMin": 1,
+    "minimumHoldouts": 12
+  },
+  "forbiddenReleaseShortcuts": [
+    "scenario-count-as-coverage",
+    "browser-as-human-comprehension",
+    "environment-flag-as-deployment-evidence",
+    "client-preference-as-server-policy",
+    "legacy-html-rewritten-by-js-as-native-shell",
+    "skipped-check-as-pass"
+  ]
+}
