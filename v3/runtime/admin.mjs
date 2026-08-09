@@ -2,9 +2,12 @@ import { asString, id, now, uniqueStrings } from '../domain.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
 import { enterpriseReadiness, normalizeGovernance, usageSummary } from '../enterprise.mjs';
 import { assertIdentityConfiguration, evaluateIdentityClaims, identityRuntimeProjection, normalizeIdentitySettings } from './identity.mjs';
+import { normalizeProcedureFeatures, procedurePolicyProjection } from './procedure-policy.mjs';
 function activeAdmins(users){return(users||[]).filter(item=>item.role==='admin'&&item.status==='active');}
 function actorClaims(actor){return actor.presentedIdentity||{subject:actor.id,displayName:actor.displayName||actor.id,email:actor.email||'',groups:actor.groups||[]};}
 export function createAdminHandler({store,permissions,posture=()=>({integrity:store.verifyChain()})}){return async function handle(request,response,pathname,actor){const method=request.method||'GET';
+if(method==='GET'&&pathname==='/api/admin/procedures'){requirePermission(actor,'manage-enterprise',permissions);json(response,200,procedurePolicyProjection(store.snapshot(),actor));return true;}
+if(method==='PUT'&&pathname==='/api/admin/procedures'){requirePermission(actor,'manage-enterprise',permissions);const input=await bodyJson(request);const snapshot=store.snapshot(),features=normalizeProcedureFeatures(input,snapshot.settings.procedures||{}),envelope=await store.mutate(actor,'admin.procedure-policy.updated',{type:'settings',id:'procedures'},{features},draft=>{draft.settings.procedures={schemaVersion:'1.1.0',features,updatedAt:now(),updatedBy:actor.id};return procedurePolicyProjection(draft,actor);},commandFrom(request));json(response,200,envelope);return true;}
 if(method==='GET'&&pathname==='/api/admin/readiness'){requirePermission(actor,'manage-enterprise',permissions);json(response,200,enterpriseReadiness(store.snapshot(),posture()));return true;}
 if(method==='GET'&&pathname==='/api/admin/usage'){requirePermission(actor,'view-ai-usage',permissions);json(response,200,usageSummary(store.snapshot()));return true;}
 if(method==='GET'&&pathname==='/api/admin/identity'){requirePermission(actor,'manage-users',permissions);const config=store.snapshot().settings.identity||{};json(response,200,{config,runtime:identityRuntimeProjection(config)});return true;}
