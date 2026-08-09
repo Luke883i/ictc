@@ -122,7 +122,9 @@ export function resolveEvidenceRefs(inputs, state = {}, { requireUsable = false,
 export function evidenceRefDisplay(ref) {
   if (!ref) return '';
   if (typeof ref === 'string') return ref;
-  return ref.label || ref.uri || `${ref.type || 'evidence'}:${ref.id || ''}`;
+  if (ref.scope === 'internal' && ref.type && ref.id) return `ictc:${ref.type}:${ref.id}`;
+  if (ref.scope === 'external' && ref.uri) return ref.uri;
+  return ref.label || `${ref.type || 'evidence'}:${ref.id || ''}`;
 }
 
 export function bindObjectRefs(ids, state = {}, { allowedTypes = null, activeOnly = false, label = 'Oggetto' } = {}) {
