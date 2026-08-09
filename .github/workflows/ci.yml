@@ -20,8 +20,14 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Syntax
         run: npm run check && python3 -m py_compile v3/browser-v1-2-market-candidate.py
-      - name: Current product and runtime contracts
-        run: node v3/v1-2-market-candidate-check.mjs && node v3/product-contract-check.mjs && node v3/procedure-contracts-check.mjs && node v3/procedure-policy-check.mjs
+      - name: 1.2 market product profile
+        run: node v3/v1-2-market-candidate-check.mjs
+      - name: Current product contract
+        run: node v3/product-contract-check.mjs
+      - name: Current procedure contracts
+        run: node v3/procedure-contracts-check.mjs
+      - name: Current procedure policy
+        run: node v3/procedure-policy-check.mjs
       - name: Semantic authority ratchet
         run: node v3/ui-active-experience-audit.mjs && node v3/semantic-api-contract-check.mjs && node v3/historical-ui-fixture-check.mjs
       - name: Process kernel and GRC capability regression
@@ -68,8 +74,16 @@ jobs:
         run: node v3/attachment-replay-check.mjs
       - name: Enterprise administration and identity
         run: node v3/enterprise-runtime-check.mjs && node v3/identity-bridge-runtime-check.mjs
-      - name: Historical runtime capability regressions
-        run: node v3/stable-1-4-runtime-check.mjs && node v3/standard-proof-1-6-runtime-check.mjs && node v3/enterprise-1-8-runtime-check.mjs && node v3/v15-e2e.mjs && node v3/v15-runtime-saturation.mjs
+      - name: Stable 1.4 capability regression
+        run: node v3/stable-1-4-runtime-check.mjs
+      - name: Standard proof 1.6 capability regression
+        run: node v3/standard-proof-1-6-runtime-check.mjs
+      - name: Enterprise 1.8 capability regression
+        run: node v3/enterprise-1-8-runtime-check.mjs
+      - name: V1.5 process E2E regression
+        run: node v3/v15-e2e.mjs
+      - name: V1.5 runtime saturation regression
+        run: node v3/v15-runtime-saturation.mjs
       - name: Enterprise T runtime stress
         run: node v3/enterprise-t-runtime-stress.mjs
       - name: Persistence and governance
