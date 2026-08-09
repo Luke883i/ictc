@@ -24,6 +24,28 @@ function ensureStableShell(){
   if(JSON.stringify(services)!==JSON.stringify(['home','processes','proof']))throw Object.assign(new Error('Shell stabile non canonica'),{code:'stable-shell-missing',details:{services}});
   $('.home-journey-panel')?.setAttribute('hidden','');
   $('.home-overview-grid')?.setAttribute('hidden','');
+  const title=$('#homeTitle'); if(title)title.textContent='Cosa richiede attenzione?';
+  const intro=$('#homeSummary'); if(intro&&!state.data)intro.textContent='Continua il lavoro aperto oppure scegli un processo.';
+}
+
+function installStableProfileMenu(){
+  const host=$('.top-actions');
+  if(!host||$('#stableProfileMenu'))return;
+  const roleControl=$('.role-control'),runtime=$('#runtimeStatus'),admin=$('#openAdminCenter'),settings=$('#openSettings');
+  const wrapper=document.createElement('details');
+  wrapper.id='stableProfileMenu';wrapper.className='stable-profile-menu';
+  wrapper.innerHTML='<summary>Profilo</summary><div class="stable-profile-popover"><div data-stable-role-slot></div><div class="stable-profile-actions"><button type="button" data-stable-admin>Amministrazione</button><button type="button" data-stable-ai>Impostazioni AI</button></div></div>';
+  host.insertBefore(wrapper,runtime||null);
+  if(roleControl)wrapper.querySelector('[data-stable-role-slot]').append(roleControl);
+  if(admin){admin.hidden=true;wrapper.querySelector('[data-stable-admin]').addEventListener('click',()=>{wrapper.removeAttribute('open');admin.click();});}
+  if(settings){settings.hidden=true;wrapper.querySelector('[data-stable-ai]').addEventListener('click',()=>{wrapper.removeAttribute('open');settings.click();});}
+}
+
+function updateStableProfileMenu(){
+  const menu=$('#stableProfileMenu');if(!menu)return;
+  const admin=state.role==='admin';
+  const actions=menu.querySelector('.stable-profile-actions');if(actions)actions.hidden=!admin;
+  const summary=menu.querySelector('summary');if(summary)summary.textContent=state.role==='admin'?'Amministratore':state.role==='auditor'?'Auditor':'Profilo';
 }
 
 function renderProcedureHub(){
@@ -42,10 +64,7 @@ function renderProcedureHub(){
   }).join('')||'<div class="empty">Nessun processo disponibile per il profilo corrente.</div>';
 }
 
-function renderStableChrome(){
-  ensureStableShell();
-  renderProcedureHub();
-}
+function renderStableChrome(){ensureStableShell();renderProcedureHub();updateStableProfileMenu();}
 
 export function installActiveExperience(){
   if(installed)return;
@@ -63,5 +82,7 @@ export function installActiveExperience(){
   installAiOptionalControls();
   installProcessHandoffs();
   installRiskActionFidelity();
+  installStableProfileMenu();
+  updateStableProfileMenu();
   document.addEventListener('ictc:rendered',renderStableChrome);
 }

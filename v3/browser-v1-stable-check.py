@@ -15,16 +15,18 @@ try:
   expect(page.locator('html')).to_have_attribute('data-ictc-edition','1.0-stable')
   expect(page.locator('.service-nav [data-service]')).to_have_count(3)
   expect(page.locator('.service-nav')).to_contain_text('Oggi'); expect(page.locator('.service-nav')).to_contain_text('Processi'); expect(page.locator('.service-nav')).to_contain_text('Prove')
+  expect(page.locator('#homeTitle')).to_have_text('Cosa richiede attenzione?')
   expect(page.locator('.home-journey-panel')).to_be_hidden(); expect(page.locator('.home-overview-grid')).to_be_hidden()
   assert page.locator('#complianceNexus').count()==0
   assert page.locator('#downloadCurrentView').count()==0
+  expect(page.locator('#stableProfileMenu')).to_be_visible(); expect(page.locator('#openSettings')).to_be_hidden(); expect(page.locator('#openAdminCenter')).to_be_hidden()
   PHASE='single-process-catalog'; page.locator('.service-nav [data-service="processes"]').click(); hub=page.locator('#procedureHub'); hub.wait_for(state='visible'); expect(hub.locator('.stable-process-card')).to_have_count(7)
   codes=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']
   for code in codes: assert hub.locator(f'[data-process-code="{code}"]').count()==1,code
   assert hub.locator('[data-process-code="EV-01"]').count()==0
   PHASE='process-entry'; hub.locator('[data-process-code="AP-01"] .primary').click(); expect(page.locator('#grcView')).to_be_visible(); expect(page.locator('#grcWorkspace')).to_be_visible()
   PHASE='proof'; page.locator('.service-nav [data-service="proof"]').click(); expect(page.locator('#proofView')).to_be_visible(); expect(page.locator('#proofContent')).to_be_visible()
-  PHASE='auditor'; page.locator('#roleSelect').select_option('auditor'); page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub .stable-process-card')).to_have_count(7)
+  PHASE='auditor'; menu=page.locator('#stableProfileMenu'); menu.locator('summary').click(); expect(page.locator('#roleSelect')).to_be_visible(); page.locator('#roleSelect').select_option('auditor'); page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub .stable-process-card')).to_have_count(7)
   assert not errors,errors
-  report={'ok':True,'surfaces':['Oggi','Processi','Prove'],'processes':7,'processCatalogCopies':1,'homeFullCatalog':False,'maxDisclosure':5}; (ART/'browser-v1-stable.json').write_text(json.dumps(report,indent=2),encoding='utf8'); print('browser-v1-stable: complete',flush=True); browser.close()
+  report={'ok':True,'surfaces':['Oggi','Processi','Prove'],'processes':7,'processCatalogCopies':1,'homeFullCatalog':False,'maxDisclosure':5,'controlPlane':'profile-menu'}; (ART/'browser-v1-stable.json').write_text(json.dumps(report,indent=2),encoding='utf8'); print('browser-v1-stable: complete',flush=True); browser.close()
 except BaseException as e: fail(e); traceback.print_exc(); raise
