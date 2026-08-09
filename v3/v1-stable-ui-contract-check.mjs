@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { DISCLOSURE, PROCESS_SPECS, SURFACES } from './v1-stable-experience-model.mjs';
 const active=await readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8');
 const shell=await readFile(new URL('./public/ui/stable-shell.js',import.meta.url),'utf8');
+const router=await readFile(new URL('./public/ui/surface-router.js',import.meta.url),'utf8');
 const enterprise=await readFile(new URL('./public/ui/enterprise-ux.js',import.meta.url),'utf8');
 const globalTools=await readFile(new URL('./public/ui/global-tools.js',import.meta.url),'utf8');
 const css=await readFile(new URL('./public/stable-experience.css',import.meta.url),'utf8');
@@ -12,8 +13,9 @@ const terms=await readFile(new URL('./public/terms.html',import.meta.url),'utf8'
 assert.deepEqual(SURFACES.map(x=>x.id),['home','processes','proof']);assert.equal(Object.keys(PROCESS_SPECS).length,7);assert.equal(DISCLOSURE.length,5);assert.deepEqual(DISCLOSURE.map(x=>x.level),[1,2,3,4,5]);
 for(const forbidden of ['installBusinessNexus','installProcessLandscape','installV3EntryPoint','installNoviceEntry','installExperiencePolish','installProcedureGuideLanguageBinding'])assert.ok(!active.includes(forbidden),`duplicate presentation owner active: ${forbidden}`);
 assert.match(active,/installStableShell/);assert.match(active,/renderProcedureHub/);assert.match(active,/filter\(item=>item\.code&&item\.id!=='evidence'\)/);assert.match(active,/stable-process-card/);assert.match(active,/installStableProfileMenu/);assert.match(active,/actions\.append\(button\)/);assert.match(active,/actions\.hidden=!isAdmin/);
+assert.match(router,/window\.addEventListener\('click'/);assert.match(router,/isContextualWorkspaceTrigger/);assert.match(router,/data-grc-process/);assert.match(router,/navigateSurface\(trigger\.dataset\.service\)/);
 assert.match(shell,/ictcExperience='stable-1'/);assert.match(shell,/Cosa richiede attenzione\?/);assert.match(shell,/\.home-journey-panel.*remove/);assert.match(shell,/\.home-overview-grid.*remove/);assert.match(shell,/stable-header-inner/);assert.match(shell,/stableLegalFooter/);assert.match(shell,/MIT/);assert.match(shell,/Repository/);assert.match(shell,/Condizioni/);
 assert.match(enterprise,/identityMode==='trusted-header'/);assert.match(enterprise,/roleControl\.hidden=trustedIdentity\(\)/);assert.ok(!globalTools.includes('downloadCurrentView'),'export must not live in permanent header');assert.ok(globalTools.includes('placeholder="Cerca…"'));
 assert.match(styles,/stable-experience\.css/);assert.match(styles,/home-intro/);assert.match(css,/stable-header-inner/);assert.match(css,/height:52px/);assert.match(css,/home-hero/);assert.match(css,/procedure-hub/);assert.match(css,/stable-profile-menu/);assert.match(css,/stable-legal-footer/);assert.match(css,/position:fixed/);
 const nav=html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';assert.deepEqual([...nav.matchAll(/data-service="([^"]+)"/g)].map(x=>x[1]),['home','processes','proof']);assert.match(terms,/Software operativo, non conclusione di compliance/);assert.match(terms,/stable-legal-footer/);
-console.log('v1-stable-ui-contract-check: ok (3 surfaces, 7 processes, 5 disclosure levels, thin canonical shell and contextual control plane)');
+console.log('v1-stable-ui-contract-check: ok (3 surfaces, 7 processes, 5 disclosure levels, canonical shell navigation owns window capture)');
