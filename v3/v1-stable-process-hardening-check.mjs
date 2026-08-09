@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { normalizeAssuranceCase, attachAssuranceHumanDraft, approveAssurance } from './runtime/grc-assurance.mjs';
+import { normalizeAction, adoptAction, progressAction } from './runtime/grc-actions.mjs';
+import { canonicalDecisionProjection } from './runtime/decision-projection.mjs';
+const admin={id:'admin',role:'admin'},user={id:'u1',role:'user'},idFactory=p=>`${p}-stable`;
+const assurance=normalizeAssuranceCase({title:'Questionario',requestText:'Q1 e Q2'},admin,{idFactory});
+attachAssuranceHumanDraft(assurance,{questions:[{id:'q1',question:'MFA?',draftAnswer:'Si'},{id:'q2',question:'Logging?',draftAnswer:'Si'}]},admin);
+assert.throws(()=>approveAssurance(assurance,{reason:'parziale',answers:[{questionId:'q1',answer:'Si'}]},admin),e=>e.code==='assurance-response-set-incomplete');
+assert.throws(()=>approveAssurance(assurance,{reason:'id errato',answers:[{questionId:'q1',answer:'Si'},{questionId:'qx',answer:'Si'}]},admin),e=>e.code==='assurance-question-not-in-current-draft');
+approveAssurance(assurance,{reason:'set completo verificato',answers:[{questionId:'q1',answer:'Si'},{questionId:'q2',answer:'Si'}]},admin);
+assert.equal(assurance.state,'approved');assert.equal(assurance.approvedAnswers.length,2);
+const action=normalizeAction({title:'Correggere gap',owner:'u1'},admin,{idFactory});adoptAction(action,{priority:3,reason:'adozione',owner:'u1'},admin);
+assert.throws(()=>progressAction(action,{state:'cancelled',note:''},user),e=>e.code==='action-cancellation-reason-required');
+progressAction(action,{state:'cancelled',note:'Obiettivo superseded da controllo sostitutivo'},user);assert.equal(action.state,'cancelled');assert.equal(action.decisions.at(-1).kind,'cancellation');
+const decisions=canonicalDecisionProjection({catalog:[],incidents:[],grcObjects:[],grcMappings:[],grcActions:[action],grcRisks:[],grcAssurance:[assurance]},admin).records;
+assert.ok(decisions.some(x=>x.kind==='action-cancellation'&&x.outcome==='cancelled'));
+assert.ok(decisions.some(x=>x.kind==='assurance-answer-approval'));
+console.log('v1-stable-process-hardening-check: ok');
