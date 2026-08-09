@@ -16,11 +16,12 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: 1.1 product and experience contracts
-        run: |
-          node v3/v1-1-enterprise-experience-check.mjs
-          node v3/product-contract-check.mjs
-          node v3/procedure-policy-check.mjs
+      - name: 1.1 experience contract
+        run: node v3/v1-1-enterprise-experience-check.mjs
+      - name: Product contract
+        run: node v3/product-contract-check.mjs
+      - name: Procedure policy contract
+        run: node v3/procedure-policy-check.mjs
       - name: Process semantic hardening
         run: |
           node v3/v1-stable-process-hardening-check.mjs
