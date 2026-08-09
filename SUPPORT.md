@@ -1,21 +1,7 @@
-# Supporto
+# Support
 
-## Malfunzionamenti e richieste
+ICTC is an open-source project. Community support is provided through GitHub issues and discussions when enabled.
 
-Per bug e proposte usare i template GitHub presenti in `.github/ISSUE_TEMPLATE/`.
+Use public issues for reproducible bugs, feature requests and documentation problems that do not contain confidential information. Use the private security reporting path described in `SECURITY.md` for vulnerabilities.
 
-Prima di aprire una issue:
-
-1. eseguire `npm test`;
-2. annotare versione Node.js e sistema operativo;
-3. rimuovere segreti e dati personali;
-4. includere il percorso utente, risultato atteso e risultato osservato;
-5. allegare receipt o identificativi tecnici solo quando non contengono dati sensibili.
-
-## Sicurezza
-
-Non aprire issue pubbliche per vulnerabilità. Seguire `SECURITY.md`.
-
-## Limite del supporto
-
-La beta non è certificata per uso produttivo, consulenza legale o determinazioni automatiche di conformità.
+The project does not include a service-level agreement, legal advice, compliance certification, deployment warranty or guaranteed response time. Organizations that require regulated-production support should establish their own operational ownership, support model and deployment assurance before relying on ICTC for business-critical workflows.

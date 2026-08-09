@@ -1,6 +1,6 @@
-# ICTC — Enterprise Nexus Compliance OS
+# ICTC — Compliance operativa e tracciabile
 
-ICTC V4.1 è un **compliance operating system evidence-first** per sette processi business governati sulla stessa autorità runtime:
+ICTC `1.0_stable` è un compliance operations system open-source per sette processi aziendali bounded, costruiti sopra un substrato comune di decisioni umane, versioni, relazioni, audit ed evidenze.
 
 - `RN-01` — Monitoraggio normativo
 - `EC-01` — Eventi e segnalazioni
@@ -10,61 +10,22 @@ ICTC V4.1 è un **compliance operating system evidence-first** per sette process
 - `RC-01` — Rischi di compliance
 - `AR-01` — Questionari e verifiche
 
-La shell permanente è **Oggi / Processi / Prove**. Amministrazione è un control plane privilegiato, non un ottavo processo business.
+`EV-01 — Prove e tracciabilità` è il piano trasversale di ricostruzione e non un ottavo processo business.
 
-## Stability profile
+## Esperienza
+La navigazione permanente è volutamente ridotta a **Oggi / Processi / Prove**.
 
-Il branch candidate di questa release introduce il profilo **`v4_experimental_stable`** sopra l'edition `V4.1 Experimental · Enterprise Nexus`, mantenendo il runtime package `1.8.0`.
+- **Oggi**: il lavoro che richiede attenzione e la prossima azione.
+- **Processi**: l'unico catalogo dei sette processi, con stato sintetico e ingresso diretto.
+- **Prove**: decisioni, versioni, evidenze, limiti e traccia tecnica.
 
-`v4_experimental_stable` significa che gli invarianti runtime/epistemici dichiarati sono chiusi da falsifier eseguibili e regressioni sullo stesso candidate tree. **Non significa** production readiness, conformità legale, certificazione, HA/DR, accessibilità attestata o comprensione universale da parte degli utenti.
+L'interfaccia usa al massimo cinque livelli di progressive disclosure; hash, audit raw ed epistemic detail restano al livello tecnico più profondo.
 
-## Autorità e AI
+## Autorità
+L'AI è opzionale e proposal-only. Le decisioni operative, i rating, le approvazioni e le chiusure che richiedono autorità rimangono umane. La presenza di una prova o di un mapping non equivale automaticamente a conformità, applicabilità, efficacia del controllo o sufficienza legale.
 
-Decisioni, stato epistemico, process definition ed evidence restano autorità runtime/human. L'AI produce solo proposte.
-
-Esistono due controlli distinti:
-
-1. **preferenza personale AI ON/OFF** — esperienza client; sceglie percorso assistito o manuale;
-2. **policy AI organizzativa** — controllo server-side persistito; se `disabled`, il common AI boundary rifiuta la chiamata prima del provider/network. I workflow manuali restano disponibili.
-
-## Persistenza
-
-Lo Store usa SQLite/WAL con:
-
-- snapshot canonico mutabile;
-- audit ledger append-only separato;
-- transazione unica snapshot + nuovi eventi audit;
-- readback prima della pubblicazione dello stato in memoria;
-- migrazione una tantum da `state.json` a `state.legacy-imported.json`.
-
-Non esiste più il ceiling artificiale di 10.000 eventi audit. Questo migliora la baseline locale, ma non costituisce da solo HA, replica, backup/restore o database distribuito.
-
-## Allegati e routing documenti
-
-Il transport corrente è JSON/base64. Il contratto attivo è quindi intenzionalmente conservativo: massimo **10 file**, massimo **5 MiB per file** e massimo **5 MiB complessivi per richiesta**. Browser e Store rifiutano un set che supera il budget prima della persistenza parziale.
-
-Nel routing novice, un documento viene usato soltanto tramite nome/contesto per scegliere il processo; il file deve essere allegato nel workflow dopo la scelta. ICTC non afferma di aver preservato un file prima che sia realmente persistito.
-
-## Readiness enterprise
-
-I vecchi booleani d'ambiente per TLS, storage, backup, malware scan, osservabilità, dependency audit e accessibility sono trattati solo come segnali legacy. Un controllo può diventare `verified` soltanto tramite un envelope di deployment legato a `deploymentId`, issuer, `observedAt`, `expiresAt`, evidence URI e SHA-256.
-
-## Assurance
-
-I vecchi rail cardinali (100k, 1.800 profili, 12.500 routing, M+100) restano **regression fixtures storici**. Non sono più l'autorità per dichiarare saturazione reale.
-
-Il rail corrente `v4-stable-real-saturation.mjs` misura invece:
-
-- scenari semanticamente unici;
-- influenza effettiva di ogni asse;
-- pairwise coverage e critical-triple coverage;
-- frozen holdout;
-- mutation discrimination;
-- grado di indipendenza dell'evidenza.
-
-L'evidenza interna di questo rail è **E2**. Browser/runtime exact-head possono elevare specifiche proprietà a E3. La comprensione umana resta `not-assessed` finché non esiste evidenza E4 da utenti reali o assessor indipendenti.
-
-## Run
+## Runtime
+PR49 ha consolidato la baseline sperimentale con SQLite/WAL, audit separato, deployment-evidence envelopes, limiti allegati coerenti e falsifier runtime. `1.0_stable` costruisce sopra quella baseline e comprime il prodotto senza cambiare il principio di autorità.
 
 Richiede Node.js 22 o successivo.
 
@@ -75,14 +36,24 @@ npm ci
 
 Apri `http://127.0.0.1:4173`.
 
-## Verify
+## Verifica
 
 ```bash
-npm test
-node v3/v4-stable-real-saturation.mjs
-node v3/v4-stable-governance-check.mjs
-node v3/v4-stable-persistence-check.mjs
-node v3/v4-stable-global-dod-check.mjs
+npm run check
+node v3/v1-stable-experience-saturation.mjs
+node v3/v1-stable-process-hardening-check.mjs
 ```
 
-La Definition of Done completa è in `docs/V4_EXPERIMENTAL_STABLE_DOD.md`.
+Per i gate storici e runtime completi usa anche le suite del repository e i workflow CI.
+
+## Stabilità e limiti
+`1.0_stable` indica stabilità dei contratti software bounded dichiarati dalla release. Non è una certificazione di conformità, una conclusione legale, una attestazione di un assessor esterno, né una garanzia che qualunque deployment sia production-ready.
+
+La definizione architetturale e la DoD sono in:
+
+- `docs/V1_0_STABLE_ARCHITECTURE.md`
+- `docs/V1_0_STABLE_DOD.md`
+- `docs/OPEN_SOURCE_TERMS.md`
+
+## Open source
+ICTC è distribuito con licenza MIT. Prima di un uso regolato o business-critical, leggere `SECURITY.md`, `SUPPORT.md` e i claim boundary della release.

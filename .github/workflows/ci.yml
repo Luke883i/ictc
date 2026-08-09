@@ -12,7 +12,7 @@ concurrency:
 jobs:
   contract-and-audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 14
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -20,16 +20,16 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Syntax
         run: npm run check
-      - name: Product contract
-        run: node v3/product-contract-check.mjs
+      - name: Stable and runtime contracts
+        run: node v3/v1-stable-release-contract-check.mjs && node v3/product-contract-check.mjs
       - name: Semantic authority ratchet
         run: node v3/ui-active-experience-audit.mjs && node v3/semantic-api-contract-check.mjs && node v3/historical-ui-fixture-check.mjs
-      - name: V2 GRC convergence and UX saturation
-        run: node v3/process-kernel-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/v2-ux-saturation.mjs
-      - name: Current UI and journey contracts
-        run: node v3/question-audit-check.mjs && node v3/ui-contract-check.mjs && node v3/onto-epistemic-audit.mjs && node v3/user-journey-audit.mjs && node v3/user-journey-2-check.mjs
-      - name: Current saturation
-        run: node v3/experience-saturation.mjs && node v3/user-journey-2-saturation.mjs
+      - name: Process kernel and GRC capability regression
+        run: node v3/process-kernel-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/grc-object-check.mjs && node v3/grc-mapping-check.mjs && node v3/grc-action-check.mjs && node v3/grc-risk-check.mjs && node v3/grc-assurance-check.mjs
+      - name: Current stable UI and process contracts
+        run: node v3/v1-stable-ui-contract-check.mjs && node v3/v1-stable-process-hardening-check.mjs && node v3/onto-epistemic-audit.mjs
+      - name: Current stable saturation
+        run: node v3/v1-stable-experience-saturation.mjs && node v3/v4-stable-real-saturation.mjs
       - name: Security boundaries
         run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
       - name: Honest enterprise posture
@@ -57,29 +57,19 @@ jobs:
       - name: Home next action binding
         run: node v3/home-next-action-check.mjs
       - name: Evidence and persistence
-        run: node v3/evidence-check.mjs
-      - name: Evidence export authorization
-        run: node v3/evidence-export-auth-check.mjs
-      - name: V2 GRC runtime
-        run: node v3/v2-grc-runtime-check.mjs
+        run: node v3/evidence-check.mjs && node v3/evidence-export-auth-check.mjs
+      - name: GRC and process runtime
+        run: node v3/v2-grc-runtime-check.mjs && node v3/work-orchestration-runtime-check.mjs && node v3/insight-runtime-check.mjs
       - name: Attachment replay safety
         run: node v3/attachment-replay-check.mjs
-      - name: Enterprise administration
-        run: node v3/enterprise-runtime-check.mjs
-      - name: Stable authority projection
-        run: node v3/stable-1-4-runtime-check.mjs
-      - name: Standard Proof projection
-        run: node v3/standard-proof-1-6-runtime-check.mjs
-      - name: Governed regulatory jobs
-        run: node v3/enterprise-1-8-runtime-check.mjs
-      - name: End-to-end journeys
-        run: node v3/v15-e2e.mjs
-      - name: Runtime saturation
-        run: node v3/v15-runtime-saturation.mjs
-      - name: Identity bridge runtime
-        run: node v3/identity-bridge-runtime-check.mjs
+      - name: Enterprise administration and identity
+        run: node v3/enterprise-runtime-check.mjs && node v3/identity-bridge-runtime-check.mjs
+      - name: Historical runtime capability regressions
+        run: node v3/stable-1-4-runtime-check.mjs && node v3/standard-proof-1-6-runtime-check.mjs && node v3/enterprise-1-8-runtime-check.mjs && node v3/v15-e2e.mjs && node v3/v15-runtime-saturation.mjs
       - name: Enterprise T runtime stress
         run: node v3/enterprise-t-runtime-stress.mjs
+      - name: PR49 persistence and governance
+        run: node v3/v4-stable-governance-check.mjs && node v3/v4-stable-persistence-check.mjs && node v3/store-durability-check.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -90,7 +80,7 @@ jobs:
 
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -100,7 +90,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-v2-grc-check.py v3/browser-product-check.py v3/browser-enterprise-1-8-check.py v3/browser-enterprise-2-check.py v3/browser-enterprise-2-ui-standard-check.py
+        run: python -m py_compile v3/browser-v1-stable-check.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -112,28 +102,22 @@ jobs:
           if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
-      - name: Canonical V2 all-service journey
+      - name: Canonical stable journey
         shell: bash
         run: |
           set -Eeuo pipefail
           export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807
-          export ICTC_BASE_URL="http://127.0.0.1:4807" ICTC_MOCK_URL="http://127.0.0.1:4899"
-          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v2-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v2-browser-runtime"
-          export ICTC_ALLOW_PRIVATE_AI=1 ICTC_LLM_API_KEY="test-key" ICTC_SCHEDULER_TICK_MS=100000
-          node v3/mock-ai-provider.mjs >"$RUNNER_TEMP/ictc-v2-mock.log" 2>&1 &
-          MOCK_PID=$!
-          trap 'kill "$MOCK_PID" 2>/dev/null || true; ./ictc.sh stop --profile current || true' EXIT
-          for _ in $(seq 1 50); do curl -fsS http://127.0.0.1:4899 >/dev/null 2>&1 && break; sleep .1; done
+          export ICTC_BASE_URL="http://127.0.0.1:4807"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
-          python -u v3/browser-v2-grc-check.py
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-v1-stable-check.py
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ictc-browser-evidence
-          path: |
-            artifacts/browser-v2-grc.json
-            artifacts/browser-v2-error.json
-            artifacts/*.png
+          path: artifacts/browser-v1-stable*.json
           if-no-files-found: warn
           retention-days: 30
 
