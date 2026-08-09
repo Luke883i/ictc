@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';
+import { recordSourceImpact, linkIncident, actionFromOrigin } from './runtime/process-handoffs.mjs';
+import { assertRelation, v4RelationIds } from './runtime/process-kernel.mjs';
+const actor={id:'admin',role:'admin'};
+const source={id:'s1',state:'verified',title:'NIS2 update',observations:[{title:'NIS2 update',observedAt:'2026-08-08T00:00:00Z'}],impactAssessments:[]};
+const impact=recordSourceImpact(source,{outcome:'relevant',reason:'Incide sul perimetro MFA',affectedObjectIds:['o1'],requirementRefs:['R-1']},actor);assert.equal(impact.outcome,'relevant');assert.ok(impact.sourceObservationSha256);assert.equal(source.impactAssessments.length,1);
+const mappingAction=actionFromOrigin({title:'Chiudere gap MFA'},actor,{originType:'mapping',originId:'m1',relation:'gap-generates-action'});assert.equal(mappingAction.originType,'mapping');assert.equal(mappingAction.originId,'m1');assert.equal(mappingAction.originRelation,'gap-generates-action');
+const incident={id:'i1',createdBy:'admin',links:[]};const state={grcObjects:[{id:'o1'}],grcRisks:[{id:'r1'}]};linkIncident(incident,{targetType:'grc-object',targetId:'o1',note:'Server coinvolto'},actor,state);linkIncident(incident,{targetType:'risk',targetId:'r1'},actor,state);assert.equal(incident.links.length,2);assert.equal(assertRelation('incident-affects-object','incident','grc-object'),'incident-affects-object');assert.equal(assertRelation('incident-related-to-risk','incident','risk'),'incident-related-to-risk');assert.ok(v4RelationIds.includes('source-generates-action'));console.log('process-handoff-check: ok');

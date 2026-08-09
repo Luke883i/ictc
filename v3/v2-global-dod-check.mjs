@@ -9,7 +9,7 @@ const grc=await readFile(new URL('public/ui/grc-workspace.js',root),'utf8');
 const pkg=JSON.parse(await readFile(new URL('../package.json',root),'utf8'));
 const dod=await readFile(new URL('../docs/V2_GRC_DOD.md',root),'utf8');
 const required=['monitoring','incidents','evidence','objects','coverage','actions','risks','assurance'];
-assert.ok(['V2 Experimental','V3 Experimental'].includes(contract.productEdition),'V2 DoD is a successor regression capability gate');
+assert.ok(['V2 Experimental','V3 Experimental','V4 Experimental · Enterprise Nexus'].includes(contract.productEdition),'V2 DoD is a successor regression capability gate');
 for(const id of required)assert.ok(surfaceProcessDefinitions().some(x=>x.id===id),`active process missing: ${id}`);
 for(const id of['internal-sources','identity','ai'])assert.ok(processDefinitions().some(x=>x.id===id),`subprocess missing: ${id}`);
 assert.equal((server.match(/createGrcRuntime\(\{store,permissions\}\)/g)||[]).length,1,'exactly one GRC runtime mount');

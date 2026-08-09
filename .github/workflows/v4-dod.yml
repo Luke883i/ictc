@@ -1,0 +1,82 @@
+name: v4-dod
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v4-dod-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-saturation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Product and slice contracts
+        run: |
+          node v3/product-contract-check.mjs
+          node v3/v4-plan-check.mjs
+          node v3/process-landscape-check.mjs
+          node v3/ai-optionality-check.mjs
+          node v3/process-handoff-check.mjs
+          node v3/risk-action-fidelity-check.mjs
+          node v3/trace-explorer-check.mjs
+          node v3/v4-novice-ux-check.mjs
+      - name: Heterogeneous user profiles
+        run: node v3/v4-profile-saturation.mjs
+      - name: Adversarial language routing
+        run: node v3/v4-routing-saturation.mjs
+      - name: V4 state-space saturation
+        run: node v3/v4-state-saturation.mjs
+      - name: Preserve prior 100k saturation rail
+        run: node v3/v3-saturation-100k.mjs
+      - name: Global V4 DoD
+        run: node v3/v4-global-dod-check.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: v4-dod-saturation
+          path: artifacts/v4-*.json
+          if-no-files-found: warn
+  browser-ai-off:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - run: python -m py_compile v3/browser-v4-enterprise-nexus-check.py
+      - name: Resolve system Chromium
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$candidate")" >> "$GITHUB_ENV"; exit 0; fi
+          done
+          echo 'No supported Chromium browser found' >&2
+          exit 1
+      - name: V4 Enterprise Nexus AI-OFF journey
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4814 PORT=4814
+          export ICTC_BASE_URL="http://127.0.0.1:4814"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-v4-enterprise-nexus-check.py
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: v4-browser-ai-off
+          path: artifacts/browser-v4-enterprise-nexus*.json
+          if-no-files-found: warn
