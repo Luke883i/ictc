@@ -34,6 +34,7 @@ assert.match(common,/maxTotalBytes/);
 assert.match(common,/allegati complessivi/);
 assert.doesNotMatch(novice,/Il file viene conservato nel processo/);
 assert.match(novice,/Il file non viene ancora caricato/);
+assert.match(index,/<html[^>]+data-ictc-edition="v4-1-experimental"[^>]+data-ictc-stability="v4_experimental_stable"/);
 const nav=index.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';
 assert.match(nav,/>Oggi</);assert.match(nav,/>Processi</);assert.match(nav,/>Prove</);
 assert.doesNotMatch(nav,/data-service="monitoring"|data-service="incidents"/);
