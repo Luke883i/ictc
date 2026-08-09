@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+
+const root=new URL('./',import.meta.url);
+const contract=JSON.parse(await readFile(new URL('./v1-1-enterprise-experience-contract.json',root),'utf8'));
+const pkg=JSON.parse(await readFile(new URL('../package.json',root),'utf8'));
+const shell=await readFile(new URL('./public/ui/stable-shell.js',root),'utf8');
+const proof=await readFile(new URL('./public/ui/proof-surface.js',root),'utf8');
+const active=await readFile(new URL('./public/ui/active-experience.js',root),'utf8');
+const procedureAdmin=await readFile(new URL('./public/ui/procedure-admin.js',root),'utf8');
+const css=await readFile(new URL('./public/v1-1-experience.css',root),'utf8');
+const server=await readFile(new URL('./server.mjs',root),'utf8');
+const mark=await readFile(new URL('./public/assets/ictc-mark.png',root));
+
+assert.equal(contract.releaseProfile,'1.1_stable');
+assert.equal(contract.experience,'stable-2');
+assert.equal(contract.productName,'Integrated Compliance Tower Control');
+assert.equal(pkg.version,'1.8.0','1.1 product profile must not falsify runtime/package lineage');
+assert.deepEqual(contract.permanentShell.map(x=>x.label),['Oggi','Processi','Evidenze']);
+assert.deepEqual(contract.businessProcesses,['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']);
+assert.equal(contract.processCardinality,7);
+assert.equal(contract.processPresentation,'standalone-peers');
+assert.equal(contract.home.primaryActions,1);
+assert.equal(contract.home.maxPriorityRows,3);
+assert.equal(contract.home.fullCatalogCopies,1);
+assert.equal(contract.progressiveDisclosure.maxLevels,5);
+assert.equal(contract.procedurePolicy.adminFeatureFlagPerProcedure,true);
+assert.equal(contract.procedurePolicy.minimumEnabled,1);
+assert.deepEqual(contract.procedurePolicy.userScopes,{monitoring:'organization',incidents:'created-by',objects:'organization',coverage:'organization',actions:'assigned-or-created',risks:'organization',assurance:'created-by'});
+
+assert.equal(createHash('sha256').update(mark).digest('hex'),'ec4802493af95abccb5c0e0dfb949ffece385b4ce29063e999a71cf801e948fc','official project mark derivative changed');
+assert.match(shell,/\/assets\/ictc-mark\.png/);
+assert.match(shell,/Integrated Compliance Tower Control/);
+assert.match(shell,/Governa la compliance operativa, senza perdere la traccia\./);
+assert.match(shell,/data\.ictcExperience='stable-2'/);
+assert.match(shell,/evidence\.textContent='Evidenze'/);
+assert.match(shell,/decisions\?\.records\?\.length/,'Home human-decision metric must use the canonical DecisionRecord projection');
+assert.match(shell,/slice\(0,3\)/,'Home priority disclosure must be capped at three rows');
+assert.match(shell,/querySelector\('nav\[aria-label="Processi GRC"\]'\)\?\.remove/,'shared GRC implementation must not expose sibling process tabs');
+for(const label of ['Inventario di sistemi e oggetti','Controlli e copertura','Azioni correttive','Rischi di compliance','Questionari e verifiche'])assert.ok(shell.includes(label),label);
+
+assert.match(proof,/Evidenze e tracciabilità/);
+assert.match(proof,/Decisioni umane recenti/);
+assert.match(proof,/id="proofAdvanced"/);
+assert.ok(proof.indexOf('Decisioni umane recenti')<proof.indexOf('Postura tecnica, export e limiti'),'business evidence must precede technical posture');
+assert.match(proof,/non dimostra automaticamente che la prova sia sufficiente/);
+assert.match(active,/installProcedureAdmin/);
+assert.match(procedureAdmin,/\/api\/admin\/procedures/);
+assert.match(procedureAdmin,/Almeno una procedura deve restare attiva/);
+assert.match(css,/button:empty\{display:none!important\}/);
+assert.match(css,/\.grc-head nav\[aria-label="Processi GRC"\]\{display:none!important\}/);
+assert.match(css,/\.dialog-shell,html\[data-ictc-experience="stable-2"\] \.admin-shell\{display:grid!important;grid-template-rows:auto minmax\(0,1fr\) auto!important/);
+assert.match(css,/\.admin-grid\{min-height:0!important;overflow:auto!important/);
+assert.match(css,/\.contribute-card\{background:#fff!important/);
+assert.match(server,/PRODUCT_NAME='Integrated Compliance Tower Control'/);
+assert.match(server,/STABILITY_PROFILE='1.1_stable'/);
+assert.match(server,/assertWritePathEnabled\(snapshot,method,pathname\)/);
+assert.match(server,/if\(!procedureEnabled\(state,'monitoring'\)\)return/);
+
+console.log('v1-1-enterprise-experience-check: ok (brand, hero, seven peer processes, business-first evidence, dialog and feature-flag contract)');
