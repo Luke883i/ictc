@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { aiPolicyProjection, assertAiPolicy, deploymentEvidencePosture, readinessRuntimeFromDeployment } from './stable-governance.mjs';
+assert.equal(aiPolicyProjection({settings:{}}).mode,'enabled');
+assert.equal(aiPolicyProjection({settings:{aiPolicy:'disabled'}}).serverEnforced,true);
+assert.throws(()=>assertAiPolicy({settings:{aiPolicy:'disabled'}}),e=>e.code==='ai-policy-disabled');
+const legacy=deploymentEvidencePosture({ICTC_TLS_ATTESTED:'1',ICTC_DURABLE_STORAGE:'1'},new Date('2026-08-09T10:00:00Z'));
+assert.equal(legacy.controls.tls.verified,false);assert.equal(legacy.controls['durable-storage'].verified,false);
+const validControl={observedAt:'2026-08-09T09:00:00Z',expiresAt:'2026-09-09T09:00:00Z',evidenceUri:'https://evidence.example/control.json',sha256:'a'.repeat(64)};
+const evidence=deploymentEvidencePosture({ICTC_DEPLOYMENT_EVIDENCE_JSON:JSON.stringify({deploymentId:'dep-1',issuer:'platform-security',controls:Object.fromEntries(['tls','durable-storage','backup','malware-scan','observability','dependency-audit','accessibility-audit'].map(id=>[id,validControl]))})},new Date('2026-08-09T10:00:00Z'));
+for(const item of Object.values(evidence.controls))assert.equal(item.verified,true);
+const runtime=readinessRuntimeFromDeployment({safeBinding:true},evidence);assert.equal(runtime.tls,true);assert.equal(runtime.durableStorage,true);assert.equal(runtime.accessibilityAudit,true);
+const expired=deploymentEvidencePosture({ICTC_DEPLOYMENT_EVIDENCE_JSON:JSON.stringify({deploymentId:'dep-1',issuer:'platform-security',controls:{tls:{...validControl,expiresAt:'2026-08-09T09:30:00Z'}}})},new Date('2026-08-09T10:00:00Z'));assert.equal(expired.controls.tls.verified,false);assert.ok(expired.controls.tls.reasons.includes('evidence-expired'));
+console.log('v4-stable-governance-check: ok');
