@@ -10,7 +10,7 @@ concurrency:
 jobs:
   assurance:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -21,12 +21,12 @@ jobs:
           node v3/ui-active-experience-audit.mjs
           node v3/semantic-api-contract-check.mjs
           node v3/historical-ui-fixture-check.mjs
-          node v3/v1-1-enterprise-experience-check.mjs
+          node v3/v1-2-market-candidate-check.mjs
           node v3/procedure-policy-check.mjs
-          node v3/v1-1-enterprise-saturation.mjs
+          node v3/procedure-market-saturation.mjs
   browser:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -36,7 +36,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser contract syntax
-        run: python -m py_compile v3/browser-v1-1-enterprise.py
+        run: python -m py_compile v3/browser-v1-2-market-candidate.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -46,7 +46,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed 1.1 UI journey
+      - name: Server-backed 1.2 UI journey
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -56,4 +56,4 @@ jobs:
           export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-v1-1-enterprise.py
+          python -u v3/browser-v1-2-market-candidate.py
