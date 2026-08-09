@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { actorPrincipalRef, principalRef, principalMatchesActor, resolveEvidenceRef, resolveEvidenceRefs, bindObjectRefs, requirementRefs, bindingsNeedReview } from './runtime/reference-contract.mjs';
+const state={users:[{id:'u1',displayName:'Ada',role:'admin',status:'active'}],grcObjects:[{id:'obj-req',type:'requirement',status:'active',versionSha256:'req-v1'},{id:'obj-ctrl',type:'control',status:'active',versionSha256:'ctrl-v1'},{id:'obj-retired',type:'application',status:'retired',versionSha256:'old'}],grcActions:[],grcMappings:[],grcRisks:[],grcAssurance:[],incidents:[],catalog:[],contributions:[],missions:[]};
+const actor={id:'u1',displayName:'Ada',role:'admin',identityMode:'trusted-header'};
+assert.deepEqual(actorPrincipalRef(actor),{kind:'identity',id:'u1',displayName:'Ada',role:'admin',identityMode:'trusted-header'});
+const p=principalRef('u1',state);assert.equal(p.kind,'identity');assert.equal(p.displayName,'Ada');assert.equal(principalMatchesActor(p,actor),true);assert.equal(principalRef('vendor-owner',state).kind,'external');
+const internal=resolveEvidenceRef('ictc:grc-object:obj-ctrl',state);assert.equal(internal.resolution,'resolved');assert.equal(internal.usable,true);assert.equal(internal.subjectVersionSha256,'ctrl-v1');
+const external=resolveEvidenceRef('https://example.test/evidence/1',state);assert.equal(external.resolution,'declared-external');assert.equal(external.usable,true);
+const unresolved=resolveEvidenceRef('E-1',state);assert.equal(unresolved.resolution,'unresolved');assert.equal(unresolved.usable,false);assert.throws(()=>resolveEvidenceRefs(['E-1'],state,{requireUsable:true}),e=>e.code==='evidence-ref-unresolved');
+assert.equal(bindObjectRefs(['obj-ctrl'],state,{allowedTypes:['control'],activeOnly:true})[0].id,'obj-ctrl');assert.throws(()=>bindObjectRefs(['missing'],state,{activeOnly:true}),e=>e.code==='reference-unresolved');assert.throws(()=>bindObjectRefs(['obj-retired'],state,{activeOnly:true}),e=>e.code==='reference-not-active');
+const req=requirementRefs(['obj-req','https://eur-lex.europa.eu/example'],state);assert.equal(req.length,2);assert.equal(req[0].scope,'internal');assert.equal(req[1].scope,'external');assert.throws(()=>requirementRefs(['R-1'],state),e=>e.code==='requirement-ref-ambiguous');
+const binding=bindObjectRefs(['obj-ctrl'],state,{activeOnly:true});assert.deepEqual(bindingsNeedReview(binding,state),[]);state.grcObjects[1].versionSha256='ctrl-v2';assert.equal(bindingsNeedReview(binding,state)[0].reason,'version-changed');
+console.log('reference-contract-check: ok (typed PrincipalRef, EvidenceRef, requirement identity, reference binding)');
