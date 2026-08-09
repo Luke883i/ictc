@@ -9,17 +9,18 @@ import {
   appendStateBindingEvent, canonicalStateSha256, verifyReceiptAgainstState, verifyStateIntegrity
 } from './integrity-binding.mjs';
 import { SqliteStatePersistence } from './sqlite-state-persistence.mjs';
+import { appendSubjectVersion } from './runtime/subject-version.mjs';
 
 function initialState() {
   return {
-    schemaVersion: '2.2.0', revision: 0,
+    schemaVersion: '2.3.0', revision: 0,
     settings: {
       organization: { name: 'Organizzazione', scope: 'Sicurezza delle informazioni in Italia e Unione europea', jurisdictions: ['Italia', 'Unione europea'], sectors: [] },
       llm: { endpoint: '', model: '', apiKeyEnv: 'ICTC_LLM_API_KEY', temperature: 0.1 },
       aiPolicy: 'enabled',
       prompts: structuredClone(DEFAULT_PROMPTS), updatedAt: null, updatedBy: null
     },
-    missions: [], runs: [], contributions: [], catalog: [], incidents: [], audit: [], commandResults: {}
+    missions: [], runs: [], contributions: [], catalog: [], incidents: [], subjectVersions: [], audit: [], commandResults: {}
   };
 }
 function mergeState(parsed) {
@@ -31,7 +32,7 @@ function mergeState(parsed) {
     contributions: (parsed.contributions || []).map(item => ({ enrichmentAttempts: 0, ...item })),
     catalog: (parsed.catalog || []).map(item => ({ observations: [], decisions: [], ...item })),
     incidents: (parsed.incidents || []).map(item => ({ formulationVersions: [], formulationDirty: !item.finalNarrative, ...item })),
-    audit: parsed.audit || [], commandResults: parsed.commandResults || {}
+    subjectVersions: parsed.subjectVersions || [], audit: parsed.audit || [], commandResults: parsed.commandResults || {}
   };
 }
 function eventHash(event) { const { hash, ...unsigned } = event; return sha256(canonicalJson(unsigned)); }
@@ -72,8 +73,10 @@ export class Store {
       const commandId = asString(command.id, 200);
       if (commandId && this.state.commandResults[commandId]) { const replay = this.state.commandResults[commandId]; if (replay.actorId !== actor.id || replay.action !== action) throw Object.assign(new Error('Identificativo comando già usato per un’altra operazione'), { status: 409, code: 'command-id-conflict' }); envelope = structuredClone({ ...replay.envelope, replayed: true }); return; }
       if (command.expectedRevision != null && Number(command.expectedRevision) !== this.state.revision) throw Object.assign(new Error('I dati sono cambiati. Ricarica e verifica il nuovo stato.'), { status: 409, code: 'revision-conflict', details: { expectedRevision: Number(command.expectedRevision), actualRevision: this.state.revision } });
-      const draft = structuredClone(this.state); const result = await change(draft); draft.revision += 1; const candidate = mergeState(draft); const previousHash = candidate.audit.at(-1)?.hash || 'GENESIS';
-      const event = { id: id('event'), revision: candidate.revision, at: now(), actorId: actor.id, role: actor.role, action, subject: subject ? { type: asString(subject.type, 80), id: asString(subject.id, 200) } : null, inputSha256: sha256(input ?? null), resultSha256: sha256(result ?? null), stateSha256: canonicalStateSha256(candidate), previousHash, metadata: structuredClone(command.metadata || {}) };
+      const draft = structuredClone(this.state); const result = await change(draft); draft.revision += 1; const candidate = mergeState(draft); const eventAt = now();
+      appendSubjectVersion(candidate, { subject: subject ? { type: asString(subject.type, 80), id: asString(subject.id, 200) } : null, payload: result, actor, action, at: eventAt });
+      const previousHash = candidate.audit.at(-1)?.hash || 'GENESIS';
+      const event = { id: id('event'), revision: candidate.revision, at: eventAt, actorId: actor.id, role: actor.role, action, subject: subject ? { type: asString(subject.type, 80), id: asString(subject.id, 200) } : null, inputSha256: sha256(input ?? null), resultSha256: sha256(result ?? null), stateSha256: canonicalStateSha256(candidate), previousHash, metadata: structuredClone(command.metadata || {}) };
       event.hash = eventHash(event); candidate.audit.push(event);
       const receipt = { eventId: event.id, revision: event.revision, at: event.at, action: event.action, subject: event.subject, actorId: event.actorId, previousHash: event.previousHash, hash: event.hash, inputSha256: event.inputSha256, resultSha256: event.resultSha256, stateSha256: event.stateSha256 };
       envelope = { result: structuredClone(result), receipt, replayed: false };
@@ -112,6 +115,6 @@ export class Store {
     else if (type === 'contribution') { const catalog = state.catalog.filter(item => (item.observations || []).some(obs => obs.origin?.contributionId === subjectId) || item.origin?.contributionId === subjectId); for (const item of catalog) relatedIds.add(item.id); related = { catalog }; }
     else if (type === 'incident') related = { attachments: subject.attachments || [], formulations: subject.formulationVersions || [] };
     const events = state.audit.filter(event => event.subject && relatedIds.has(event.subject.id)); const integrity = this.verifyChain(); const manifest = { subjectSha256: sha256(subject), relatedSha256: sha256(related), eventsSha256: sha256(events), integrityHead: integrity.head, canonicalStateSha256: integrity.canonicalStateSha256, auditHeadStateSha256: integrity.headStateSha256, stateBoundToAuditHead: integrity.stateBound };
-    return { schemaVersion: '1.2.0', generatedAt: now(), generatedBy: actor.id, type, subject, related, events, manifest, integrity, limitations: ['Il fascicolo dimostra le operazioni registrate dal runtime, non la verità sostanziale del contenuto.','I risultati AI restano proposte o estrazioni e richiedono controllo umano.','Il digest dello stato canonico corrente è legato all’evento HEAD; le revisioni storiche non sono ricostruibili dalla sola audit chain.','Il binding esclude audit e commandResults per evitare dipendenze circolari; gli allegati sono rappresentati dai metadati e digest registrati nello stato.','La catena hash non equivale a firma qualificata, marcatura temporale certificata o non-ripudio.','La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.','I riferimenti a contributi non accessibili al ruolo corrente sono redatti dal fascicolo.'] };
+    return { schemaVersion: '1.3.0', generatedAt: now(), generatedBy: actor.id, type, subject, related, events, manifest, integrity, limitations: ['Il fascicolo dimostra le operazioni registrate dal runtime, non la verità sostanziale del contenuto.','I risultati AI restano proposte o estrazioni e richiedono controllo umano.','Le nuove mutazioni di soggetti business registrano snapshot content-addressed; i record legacy precedenti alla 1.2 Market Candidate possono non avere una versione payload ricostruibile.','Il binding esclude audit e commandResults per evitare dipendenze circolari; gli allegati sono rappresentati dai metadati e digest registrati nello stato.','La catena hash non equivale a firma qualificata, marcatura temporale certificata o non-ripudio.','La completezza del fascicolo dipende dalle informazioni e dalle fonti effettivamente acquisite.','I riferimenti a contributi non accessibili al ruolo corrente sono redatti dal fascicolo.'] };
   }
 }
