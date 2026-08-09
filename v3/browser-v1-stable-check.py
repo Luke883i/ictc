@@ -5,7 +5,7 @@ BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE=
 def fail(e):
  p={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-stable-error.json').write_text(json.dumps(p,indent=2),encoding='utf8'); print(f'::error title=browser-v1-stable::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def box(page,selector):
- b=page.locator(selector).bounding_box(); assert b is not None,selector; return {k:round(v,2) for k,v in b.items()}
+ b=page.locator(selector).first.bounding_box(); assert b is not None,selector; return {k:round(v,2) for k,v in b.items()}
 def screenshot(page,name): page.screenshot(path=str(ART/name),full_page=True)
 def nav_diag(page,errors):
  d=page.evaluate("""() => { const v=document.querySelector('#processesView'), h=document.querySelector('#procedureHub'), b=document.querySelector('.service-nav [data-service=\"processes\"]'); return {surface:document.documentElement.dataset.ictcSurface,stored:localStorage.getItem('ictc-service'),viewHidden:v?.hidden,viewDisplay:v?getComputedStyle(v).display:null,viewVisibility:v?getComputedStyle(v).visibility:null,hubDisplay:h?getComputedStyle(h).display:null,hubHeight:h?.getBoundingClientRect().height||0,hubCards:h?.querySelectorAll('.stable-process-card').length||0,hubText:(h?.innerText||'').slice(0,300),aria:b?.getAttribute('aria-current'),active:document.activeElement?.id||document.activeElement?.dataset?.service||document.activeElement?.tagName}; }"""); d['pageErrors']=list(errors); return d
