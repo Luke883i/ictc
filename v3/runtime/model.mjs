@@ -130,6 +130,22 @@ function userSettings(settings) {
     updatedBy: settings.updatedBy
   };
 }
+function publicPrincipal(user) {
+  return {
+    kind: 'identity',
+    id: asString(user?.id, 300),
+    displayName: asString(user?.displayName, 500) || asString(user?.id, 300),
+    role: ROLES.includes(user?.role) ? user.role : null,
+    status: user?.status === 'disabled' ? 'disabled' : 'active'
+  };
+}
+export function principalDirectoryProjection(state, actor) {
+  const active = (state.users || []).filter(user => user.status === 'active' && user.id).map(publicPrincipal);
+  if (actor.role === 'admin') return active;
+  const known = active.find(user => user.id === actor.id);
+  if (known) return [known];
+  return [publicPrincipal({ id: actor.id, displayName: actor.displayName || actor.id, role: actor.role, status: 'active' })];
+}
 export function visibleState(actor, store, version) {
   const state = store.snapshot();
   const visibleContributions = state.contributions.filter(item => canAccessContribution(actor, item));
@@ -148,6 +164,7 @@ export function visibleState(actor, store, version) {
     version,
     revision: state.revision,
     actor,
+    principals: principalDirectoryProjection(state, actor),
     settings: actor.role === 'admin' ? publicSettings(state.settings) : userSettings(state.settings),
     missions: state.missions.map(item => missionProjection(item, state)),
     catalog: state.catalog.map(item => ({ ...item, evidenceUrl: `/api/evidence/catalog/${item.id}` })),
@@ -160,7 +177,8 @@ export function visibleState(actor, store, version) {
       roles: ROLES.length,
       maxPrimaryActionsPerContext: 1,
       aiAuthority: 'assist-only',
-      evidenceMode: 'receipt-and-bundle'
+      evidenceMode: 'receipt-and-bundle',
+      principalVisibility: actor.role === 'admin' ? 'active-directory' : 'self-only'
     }
   };
 }

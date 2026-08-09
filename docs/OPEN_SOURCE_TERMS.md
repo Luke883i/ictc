@@ -1,24 +1,37 @@
-# Open-source terms and claim boundary
+# ICTC open-source terms and product boundary
 
-ICTC is distributed under the MIT License. These project terms explain the product boundary; they do not replace the License and are not legal advice.
+ICTC source code is distributed under the MIT License in the repository `LICENSE` file. This document explains product boundaries and the official-build presentation policy. It does not replace, narrow or expand the MIT grant and is not legal advice.
 
-## No compliance or legal conclusion
-ICTC records and reconstructs operational compliance work. It does not determine whether a law applies, whether an organization is compliant, whether a notification is legally required, whether evidence is legally sufficient, or whether a control is effective unless a competent human/external authority has made and recorded that conclusion within its own authority.
+## Software license
+
+The MIT License is controlling for copying, using, modifying, merging, publishing, distributing, sublicensing and selling copies of the software, subject to its notice conditions and disclaimer.
 
 ## Human authority
-AI and deterministic routing may assist with drafts, proposals, prioritization or navigation. They are not authoritative decision makers. Users and operators remain responsible for decisions, approvals, interpretations and actions performed using the software.
+
+ICTC can preserve originals, generate or store proposals, bind human decisions to subject versions, resolve references and expose evidence/trace surfaces. ICTC does not itself determine legal applicability, substantive compliance, control effectiveness, notification duties, certification or the correctness of a human conclusion.
 
 ## Evidence boundary
-Hashes, receipts and audit chains support internal integrity and reconstruction. They do not prove that external facts are true, that the recorded universe is complete or that referenced evidence is sufficient for a legal or technical claim.
+
+A resolved `EvidenceRef` establishes that the runtime can identify the referenced internal record/version or that an external URL was explicitly declared. Resolution does not imply relevance, authenticity of an external resource, legal admissibility, sufficiency, completeness, qualified signature, certified timestamp or non-repudiation.
 
 ## Deployment responsibility
-Repository tests do not certify a deployment. Operators are responsible for identity, TLS, secrets, storage, backup/restore, availability, monitoring, malware controls, privacy, retention, data residency and other deployment obligations relevant to their environment.
 
-## Third-party services
-If an operator connects external AI, identity, storage or other services, the operator is responsible for their contracts, data-processing terms, security configuration, lawful use and availability. ICTC does not grant rights to third-party content, models, trademarks or services.
+Operators remain responsible for deployment-specific identity, authorization, TLS, durable storage, backup/restore, malware scanning, observability, retention, privacy/data-protection obligations, third-party providers and accessibility/security validation appropriate to their context.
 
-## Data
-ICTC can contain sensitive business, personal or regulated information. Operators decide what data is entered, who may access it and how long it is retained. Public demo environments must not be used for confidential production data.
+## Persistent official-build footer
 
-## Stable release meaning
-`1.0_stable` means the bounded software contracts declared for that release have executable release gates. It does not mean certification, universal production readiness or suitability for every regulated environment.
+The official ICTC user experience includes the persistent footer:
+
+`ICTC · MIT · Repository · Condizioni`
+
+The shipped application renders this footer in every operating context: enterprise/commercial, non-profit, public-sector, personal, development, test and demonstration use. An artifact presented as an **official ICTC build** must preserve this footer as shipped and must not hide or rewrite it.
+
+This is an official-project distribution/presentation policy, not an additional MIT license restriction. The MIT License remains controlling and permits lawful modification and derivative works. A modified derivative is not made an official ICTC build merely by keeping the footer. If the project later requires an immutable notice as a legal condition on all downstream derivatives, that would require an explicit licensing/trademark strategy and appropriate legal review rather than silently changing the meaning of MIT.
+
+## Stable / enterprise-candidate language
+
+`1.0_stable` and `enterprise-candidate` describe bounded software semantics and tested product behavior. They do not claim universal production readiness, legal compliance, certification, independent-assessor approval, HA/DR, or deployment-specific security/accessibility assurance.
+
+## Third-party services and content
+
+External AI providers, source websites, external evidence URLs and other integrations have their own availability, terms, security and data-handling characteristics. ICTC records their use where supported but does not convert third-party output into authoritative fact.
