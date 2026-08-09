@@ -50,7 +50,7 @@ const PRODUCT_NAME='Integrated Compliance Tower Control';
 const STABILITY_PROFILE='1.2_market_candidate';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const publicRoot=path.join(here,'public');
-const contract=JSON.parse(await readFile(path.join(here,'product-contract-1-2.json'),'utf8'));
+const contract=JSON.parse(await readFile(path.join(here,'product-contract.json'),'utf8'));
 const permissions=Object.fromEntries(contract.roles.map(role=>[role.id,new Set(role.permissions)]));
 const mime=new Map([['.html','text/html; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.css','text/css; charset=utf-8'],['.json','application/json; charset=utf-8'],['.svg','image/svg+xml'],['.png','image/png']]);
 const runtimeRoot=process.env.ICTC_RUNTIME_DIR||path.join(here,'runtime');
