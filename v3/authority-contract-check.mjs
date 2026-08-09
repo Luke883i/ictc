@@ -77,8 +77,8 @@ for (const token of ['state.sqlite', 'CREATE TABLE IF NOT EXISTS snapshot', 'CRE
 }
 if (!store.includes('verifyChain()')) errors.push('v3/store.mjs verifyChain boundary not detected');
 const integrityBinding = await readFile(path.join(root, 'v3', 'integrity-binding.mjs'), 'utf8');
-const currentStateBinding = store.includes('stateSha256: canonicalStateSha256(candidate)') &&
-  store.includes('verifyStateIntegrity(persisted)') &&
+const currentStateBinding = /stateSha256\s*:\s*canonicalStateSha256\(candidate\)/.test(store) &&
+  /verifyStateIntegrity\(persisted\)/.test(store) &&
   integrityBinding.includes("reason: 'state-head-mismatch'") &&
   integrityBinding.includes('current-canonical-state-bound-to-audit-head');
 if (!currentStateBinding) errors.push('v3 runtime current-state to audit-head binding not detected');
