@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { PROCEDURE_IDS, PROCEDURE_SCOPE, assertProcedureEnabled, assertWritePathEnabled, enabledProcedureIds, normalizeProcedureFeatures, procedureIdsForWritePath, procedurePolicyProjection } from './runtime/procedure-policy.mjs';
+
+const admin={id:'admin',role:'admin'};
+const state={settings:{procedures:{features:{coverage:false,risks:false}}}};
+const projected=procedurePolicyProjection(state,admin);
+assert.equal(projected.procedures.length,7);
+assert.deepEqual(enabledProcedureIds(state),['monitoring','incidents','objects','actions','assurance']);
+assert.equal(projected.procedures.find(x=>x.id==='coverage').enabled,false);
+assert.equal(projected.procedures.find(x=>x.id==='actions').userScope,'assigned-or-created');
+assert.deepEqual(Object.keys(PROCEDURE_SCOPE),PROCEDURE_IDS);
+assert.throws(()=>assertProcedureEnabled(state,'coverage'),error=>error.code==='procedure-disabled');
+assert.equal(assertProcedureEnabled(state,'objects'),true);
+assert.deepEqual(procedureIdsForWritePath('/api/grc/mappings/map-1/actions'),['coverage','actions']);
+assert.deepEqual(procedureIdsForWritePath('/api/catalog/source-1/actions'),['monitoring','actions']);
+assert.deepEqual(procedureIdsForWritePath('/api/incidents/inc-1/actions'),['incidents','actions']);
+assert.equal(assertWritePathEnabled(state,'GET','/api/grc/mappings'),true);
+assert.throws(()=>assertWritePathEnabled(state,'POST','/api/grc/mappings'),error=>error.code==='procedure-disabled');
+const current={features:Object.fromEntries(PROCEDURE_IDS.map(id=>[id,true]))};
+assert.equal(normalizeProcedureFeatures({features:{monitoring:false}},current).monitoring,false);
+assert.throws(()=>normalizeProcedureFeatures({features:Object.fromEntries(PROCEDURE_IDS.map(id=>[id,false]))},current),error=>error.code==='procedure-policy-empty');
+console.log('procedure-policy-check: ok (seven independent flags, explicit scopes, write-path gating)');
