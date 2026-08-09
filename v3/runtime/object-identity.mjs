@@ -1,0 +1,3 @@
+const norm=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,' ');
+export function authoritativeObjectKey(input={}){const authority=norm(input.sourceAuthority),external=norm(input.externalReference);return authority&&external?`${authority}|${external}`:null;}
+export function assertUniqueObjectIdentity(objects=[],candidate={},ignoreId=null){const key=authoritativeObjectKey(candidate);if(!key)return true;const collision=objects.find(item=>item.id!==ignoreId&&item.status!=='retired'&&authoritativeObjectKey(item)===key);if(collision)throw Object.assign(new Error(`Identità autorevole già associata a ${collision.name||collision.id}`),{status:409,code:'grc-object-identity-collision',details:{existingId:collision.id,key}});return true;}
