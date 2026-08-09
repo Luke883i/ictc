@@ -4,6 +4,9 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdi
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 def fail(e):
  p={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-stable-error.json').write_text(json.dumps(p,indent=2),encoding='utf8'); print(f'::error title=browser-v1-stable::{PHASE}: {type(e).__name__}: {e}',flush=True)
+def box(page,selector):
+ b=page.locator(selector).bounding_box(); assert b is not None,selector; return {k:round(v,2) for k,v in b.items()}
+def screenshot(page,name): page.screenshot(path=str(ART/name),full_page=True)
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
@@ -11,22 +14,22 @@ try:
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':1440,'height':1000}); ctx.add_init_script("try{localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')}catch{}")
   page=ctx.new_page(); page.set_default_timeout(20000); errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
   PHASE='stable-shell'; page.goto(BASE+'/',wait_until='networkidle')
-  expect(page.locator('html')).to_have_attribute('data-ictc-experience','stable-1')
-  expect(page.locator('html')).to_have_attribute('data-ictc-edition','1.0-stable')
-  expect(page.locator('.service-nav [data-service]')).to_have_count(3)
-  expect(page.locator('.service-nav')).to_contain_text('Oggi'); expect(page.locator('.service-nav')).to_contain_text('Processi'); expect(page.locator('.service-nav')).to_contain_text('Prove')
-  expect(page.locator('#homeTitle')).to_have_text('Cosa richiede attenzione?')
-  expect(page.locator('.home-journey-panel')).to_be_hidden(); expect(page.locator('.home-overview-grid')).to_be_hidden()
-  assert page.locator('#complianceNexus').count()==0
-  assert page.locator('#downloadCurrentView').count()==0
-  expect(page.locator('#stableProfileMenu')).to_be_visible(); expect(page.locator('#openSettings')).to_be_hidden(); expect(page.locator('#openAdminCenter')).to_be_hidden()
+  expect(page.locator('html')).to_have_attribute('data-ictc-experience','stable-1'); expect(page.locator('html')).to_have_attribute('data-ictc-edition','1.0-stable')
+  expect(page.locator('.service-nav [data-service]')).to_have_count(3); expect(page.locator('.service-nav')).to_contain_text('Oggi'); expect(page.locator('.service-nav')).to_contain_text('Processi'); expect(page.locator('.service-nav')).to_contain_text('Prove')
+  expect(page.locator('#homeTitle')).to_have_text('Cosa richiede attenzione?'); assert page.locator('.home-journey-panel').count()==0; assert page.locator('.home-overview-grid').count()==0; assert page.locator('#complianceNexus').count()==0; assert page.locator('#downloadCurrentView').count()==0
+  expect(page.locator('#stableProfileMenu')).to_be_visible(); expect(page.locator('#openSettings')).to_be_hidden(); expect(page.locator('#openAdminCenter')).to_be_hidden(); expect(page.locator('#stableLegalFooter')).to_be_visible(); expect(page.locator('#stableLegalFooter')).to_contain_text('MIT'); expect(page.locator('#stableLegalFooter')).to_contain_text('Repository'); expect(page.locator('#stableLegalFooter')).to_contain_text('Condizioni')
+  header=box(page,'.topbar'); hero=box(page,'.home-hero'); footer=box(page,'#stableLegalFooter'); action=box(page,'#homePrimaryAction'); assert header['height']<=56,header; assert hero['height']<=270,hero; assert footer['height']<=36,footer; assert abs((footer['y']+footer['height'])-1000)<=2,footer; assert action['y']+action['height']<footer['y'],action
+  home_text=page.locator('#homeView').inner_text().lower(); assert 'sha256' not in home_text and 'audit event' not in home_text and 'epistemic' not in home_text
+  screenshot(page,'ux-home-desktop.png')
   PHASE='single-process-catalog'; page.locator('.service-nav [data-service="processes"]').click(); hub=page.locator('#procedureHub'); hub.wait_for(state='visible'); expect(hub.locator('.stable-process-card')).to_have_count(7)
   codes=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']
   for code in codes: assert hub.locator(f'[data-process-code="{code}"]').count()==1,code
-  assert hub.locator('[data-process-code="EV-01"]').count()==0
+  assert hub.locator('[data-process-code="EV-01"]').count()==0; first=box(page,'#procedureHub .stable-process-card'); assert first['y']<430,first; screenshot(page,'ux-processes-desktop.png')
   PHASE='process-entry'; hub.locator('[data-process-code="AP-01"] .primary').click(); expect(page.locator('#grcView')).to_be_visible(); expect(page.locator('#grcWorkspace')).to_be_visible()
   PHASE='proof'; page.locator('.service-nav [data-service="proof"]').click(); expect(page.locator('#proofView')).to_be_visible(); expect(page.locator('#proofContent')).to_be_visible()
-  PHASE='auditor'; menu=page.locator('#stableProfileMenu'); menu.locator('summary').click(); expect(page.locator('#roleSelect')).to_be_visible(); page.locator('#roleSelect').select_option('auditor'); page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub .stable-process-card')).to_have_count(7)
+  PHASE='auditor'; menu=page.locator('#stableProfileMenu'); menu.locator('summary').click(); expect(page.locator('#roleSelect')).to_be_visible(); page.locator('#roleSelect').select_option('auditor'); page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub .stable-process-card')).to_have_count(7); page.locator('.service-nav [data-service="proof"]').click(); screenshot(page,'ux-proof-auditor.png')
+  PHASE='terms'; terms=ctx.new_page(); terms.goto(BASE+'/terms.html',wait_until='domcontentloaded'); expect(terms.locator('.stable-legal-footer')).to_be_visible(); expect(terms.locator('main')).to_contain_text('Software operativo, non conclusione di compliance.'); screenshot(terms,'ux-terms-desktop.png'); terms.close()
+  PHASE='mobile'; mobile_ctx=browser.new_context(viewport={'width':390,'height':844}); mobile_ctx.add_init_script("try{localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','home')}catch{}") ; mobile=mobile_ctx.new_page(); mobile.goto(BASE+'/',wait_until='networkidle'); expect(mobile.locator('#stableLegalFooter')).to_be_visible(); mh=box(mobile,'.topbar'); mf=box(mobile,'#stableLegalFooter'); ma=box(mobile,'#homePrimaryAction'); assert mh['height']<=52,mh; assert abs((mf['y']+mf['height'])-844)<=2,mf; assert ma['y']+ma['height']<844,ma; expect(mobile.locator('.service-nav [data-service]')).to_have_count(3); screenshot(mobile,'ux-home-mobile.png'); mobile_ctx.close()
   assert not errors,errors
-  report={'ok':True,'surfaces':['Oggi','Processi','Prove'],'processes':7,'processCatalogCopies':1,'homeFullCatalog':False,'maxDisclosure':5,'controlPlane':'profile-menu'}; (ART/'browser-v1-stable.json').write_text(json.dumps(report,indent=2),encoding='utf8'); print('browser-v1-stable: complete',flush=True); browser.close()
+  report={'ok':True,'surfaces':['Oggi','Processi','Prove'],'processes':7,'processCatalogCopies':1,'homeFullCatalog':False,'maxDisclosure':5,'controlPlane':'profile-menu','legalFooter':'persistent','screenshots':['ux-home-desktop.png','ux-processes-desktop.png','ux-proof-auditor.png','ux-terms-desktop.png','ux-home-mobile.png'],'geometry':{'header':header,'hero':hero,'footer':footer,'homePrimaryAction':action,'firstProcessCard':first},'humanPerceptionHeuristics':{'orientationChoices':3,'firstActionAboveFold':True,'technicalTraceAbsentFromHome':True,'singleCatalog':True,'footerPersistent':True,'mobilePrimaryActionAboveFold':True},'evidenceClass':'E2-browser-geometry-not-human-research'}; (ART/'browser-v1-stable.json').write_text(json.dumps(report,indent=2),encoding='utf8'); print('browser-v1-stable: complete with screenshots and geometry',flush=True); browser.close()
 except BaseException as e: fail(e); traceback.print_exc(); raise
