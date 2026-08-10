@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import { duplicateRouteOwners,extractMutatingRoutePatterns,isProductionSource } from './write-authority-census-lib.mjs';
+assert.equal(isProductionSource('v3/runtime/control-test-handler.mjs'),true,'production control-test handler must not be hidden by filename filtering');
+assert.equal(isProductionSource('v3/control-test-check.mjs'),false);assert.equal(isProductionSource('v3/semantic-closure-census.mjs'),false);assert.equal(isProductionSource('v3/v3-saturation-100k.mjs'),false,'saturation artifacts are not production membership authorities');assert.equal(isProductionSource('v3/v4-stable-semantic-model.mjs'),false,'semantic model artifacts are not production membership authorities');assert.equal(isProductionSource('v3/runtime/testimony-handler.mjs'),true,'production names merely containing test-like text must remain visible');
+const source="if(method==='POST'&&pathname==='/api/control-tests'){const x=await store.mutate(actor,'control-test.recorded',{},input,change);}";assert.deepEqual(extractMutatingRoutePatterns(source),['/api/control-tests']);
+const duplicates=duplicateRouteOwners([{file:'a.mjs',routes:['/api/x']},{file:'b.mjs',routes:['/api/x']},{file:'c.mjs',routes:['/api/y']}]);assert.deepEqual(duplicates,[{route:'/api/x',files:['a.mjs','b.mjs']}]);
+console.log('write-authority-census-check: ok (role-based source classification + duplicate-owner falsifier)');

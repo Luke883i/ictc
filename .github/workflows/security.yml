@@ -21,6 +21,22 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - run: npm audit --audit-level=high
+  static-analysis-posture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      ICTC_ENABLE_GHAS: ${{ vars.ICTC_ENABLE_GHAS }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22'}
+      - run: node v3/security-static-analysis-posture.mjs
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ictc-static-analysis-posture
+          path: artifacts/security-static-analysis-posture.json
+          if-no-files-found: error
+          retention-days: 30
   codeql:
     if: ${{ vars.ICTC_ENABLE_GHAS == 'true' }}
     runs-on: ubuntu-24.04
