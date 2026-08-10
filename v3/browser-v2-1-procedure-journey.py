@@ -115,6 +115,12 @@ def submit_coverage(page):
     expect(card).to_be_visible()
     framework_id = card.get_attribute('data-framework-card')
     assert framework_id
+    PHASE = 'MC-01-scope-disclosure'
+    scope_editor = card.locator('.market-scope-editor')
+    expect(scope_editor).to_have_count(1)
+    if scope_editor.get_attribute('open') is None:
+        scope_editor.locator(':scope > summary').click()
+    expect(scope_editor).to_have_attribute('open', '')
     select_user(card.locator('[data-standard-scope-decision]'), 'reference', 'MC-01-scope-decision')
     fill_user(card.locator('[data-standard-scope-reason]'), 'Riferimento selezionato nel journey V2.1; nessuna conclusione di applicabilita o conformita.', 'MC-01-scope-reason')
     before_scope = current_revision(page)
@@ -304,7 +310,7 @@ try:
             'ok':True,'profile':'2.1-procedure-journey-exploration-pre-candidate',
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
-            'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-decision -> operational-mapping',
+            'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
             'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
