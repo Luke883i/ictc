@@ -32,8 +32,8 @@ assert.ok(copy.includes("processes:'Processi di Compliance'") && copy.includes("
 for (const token of ['<span>Processo di Compliance</span>','<b>Scopo del processo</b>','aria-label="Segnali del processo"','Consulta registrazioni','Nessun Processo di Compliance disponibile']) assert.ok(frame.includes(token), `process frame language missing ${token}`);
 for (const forbidden of ['<span>Procedura</span>','<b>Scopo della procedura</b>','aria-label="Segnali della procedura"',"textContent='Procedure'",'Consulta record']) assert.equal(frame.includes(forbidden), false, `retired active process wording returned: ${forbidden}`);
 
-for (const token of ['Processi di Compliance','Processo di Compliance','Scopo del processo','Consulta registrazioni','Nessuna attenzione aperta','processi senza attenzione aperta']) assert.ok(stableShell.includes(token), `stable shell fallback language missing ${token}`);
-for (const forbidden of ['processi in ordine','Scopo procedura','Procedure suggerite','Continua nella procedura','Apri Procedure','Nessuna procedura']) assert.equal(stableShell.includes(forbidden), false, `stable shell retains retired fallback wording: ${forbidden}`);
+for (const token of ["EXPERIENCE_EDITION='1.9-experience-candidate'",'ictcExperienceEdition=EXPERIENCE_EDITION','SURFACE_LABELS.processes','SURFACE_LABELS.proof','Processi di Compliance','senza attenzione aperta']) assert.ok(stableShell.includes(token), `stable shell identity/fallback contract missing ${token}`);
+for (const forbidden of ['processi in ordine','Tutte le procedure','Apri Processi</button>','<span>procedure</span>','entra nella procedura','nella procedura corretta','Ricostruisci procedure']) assert.equal(stableShell.includes(forbidden), false, `stable shell retains retired fallback wording: ${forbidden}`);
 
 assert.ok(router.includes('SURFACE_LABELS.processes') && router.includes('Torna al processo precedente'), 'router must derive Processi di Compliance navigation language from canonical copy');
 assert.ok(primitives.includes('Processi di Compliance') && !primitives.includes("aria-current=\"page\">Procedure"), 'context strip must use Processi di Compliance');
@@ -56,4 +56,4 @@ for (const item of contracts.procedures) {
   assert.ok(Array.isArray(item.evidence) && item.evidence.length, `${item.code} missing evidence model`);
 }
 
-console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical fallback lexicon / proof method / actual EP-01 revision guards / visual restraint / epistemic boundaries)');
+console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical shell identity and fallback lexicon / proof method / actual EP-01 revision guards / visual restraint / epistemic boundaries)');
