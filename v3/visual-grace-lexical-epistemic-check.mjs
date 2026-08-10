@@ -51,7 +51,9 @@ assert.equal(proof.includes('7 procedure operative'), false, 'Postura must use P
 for (const token of ['commonSubstrate?.epistemicFamilies','c.claimBoundary','anchor.after(box)','Decisioni umane visibili','Versioni registrate']) {
   assert.ok(anatomy.includes(token), `per-process epistemic trace missing ${token}`);
 }
-assert.ok(epistemic.includes('Letture proposte') && epistemic.includes('projectionRevision'), 'EP-01 must preserve proposed/read projection distinction');
+for (const token of ['Letture proposte','loadedStateRevision','requestedRevision','loadSequence']) {
+  assert.ok(epistemic.includes(token), `EP-01 proposed/read convergence guard missing ${token}`);
+}
 assert.ok(controller.includes('ictc:projection-committed') && controller.includes('ictcProjectionRevision'), 'single projection commit authority missing');
 
 for (const token of ['max-width:68ch','min-height:44px','.procedure-frame::after{display:none}','transform:none','grid-template-columns:repeat(2,minmax(0,1fr))','grid-template-columns:1fr','.proof-method-list']) {
@@ -68,4 +70,4 @@ for (const item of contracts.procedures) {
   assert.ok(Array.isArray(item.evidence) && item.evidence.length, `${item.code} missing evidence model`);
 }
 
-console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical lexicon / proof method / visual restraint / epistemic boundaries)');
+console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical lexicon / proof method / actual EP-01 revision guards / visual restraint / epistemic boundaries)');

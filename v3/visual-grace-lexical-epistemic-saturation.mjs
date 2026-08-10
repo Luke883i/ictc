@@ -55,7 +55,7 @@ const source = Object.freeze({
     claimBoundaryVisible: anatomy.includes('c.claimBoundary'),
     traceAfterWork: anatomy.includes('anchor.after(box)') && !anatomy.includes('host.prepend(box)'),
     humanEvidenceEverywhere: contracts.procedures.every(x => Array.isArray(x.humanCheckpoints) && x.humanCheckpoints.length && Array.isArray(x.evidence) && x.evidence.length && x.claimBoundary),
-    proposedDistinct: epistemic.includes('Letture proposte') && epistemic.includes('projectionRevision'),
+    proposedDistinct: epistemic.includes('Letture proposte') && epistemic.includes('loadedStateRevision') && epistemic.includes('requestedRevision') && epistemic.includes('loadSequence'),
     projectionCommit: controller.includes('ictc:projection-committed') && controller.includes('ictcProjectionRevision'),
     proofMethodVisible: proof.includes('Come ICTC dimostra la propria postura') && proof.includes('data.proof?.evidenceKinds') && proof.includes('data.proof?.rule'),
     standardsBounded: standard.benchmarkFamilies.every(x => x.ictcPractice && Array.isArray(x.evidence) && x.evidence.length && x.limit),
