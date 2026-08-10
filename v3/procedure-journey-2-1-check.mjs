@@ -12,10 +12,10 @@ for(const token of ['Esplora','Quadro','Gruppi','Relazioni','Atomo','Letture pro
 for(const token of ['EMPTY_FAMILY','familyGroupKey','familyLabel','familyMatches','hasUnclassified'])assert.ok(epistemic.includes(token),`EP-01 empty-family scope normalization missing ${token}`);
 for(const code of ['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'])assert.ok(browser.includes(code),`browser journey missing ${code}`);
 for(const token of ['contributionDialog','incidentDialog','data-grc-form','wait_advance','verify_process_projection','epistemic-level','sameProjectionDigestAcrossModes'])assert.ok(browser.includes(token),`browser journey missing ${token}`);
-for(const token of ['standard-scope-decision','marketFrameworkSelect','marketRequirementSelect','standard-library -> scope-decision -> operational-mapping'])assert.ok(browser.includes(token),`MC-01 real journey missing ${token}`);
-for(const token of ['renderStandardWorkspace',"if(id!=='coverage')return",'market-mapping-panel','data-grc-form="mapping"','marketFrameworkSelect','marketRequirementSelect'])assert.ok(market.includes(token),`active MC-01 surface ownership missing ${token}`);
+for(const token of ['standard-scope-decision','market-scope-editor','scope-disclosure','marketFrameworkSelect','marketRequirementSelect','standard-library -> scope-disclosure -> scope-decision -> operational-mapping'])assert.ok(browser.includes(token),`MC-01 real journey missing ${token}`);
+for(const token of ['renderStandardWorkspace',"if(id!=='coverage')return",'market-mapping-panel','market-scope-editor','data-grc-form="mapping"','marketFrameworkSelect','marketRequirementSelect'])assert.ok(market.includes(token),`active MC-01 surface ownership missing ${token}`);
 assert.ok(frame.includes('function openPrimary(id)')&&frame.includes("if(id==='coverage')")&&frame.includes("#grcWorkspace .market-section"),'coverage primary must target active standard library');
 for(const token of ['108000','45000','1000','favorable','antagonistic','inexperienced','compressionMutants','lastNewSignatureAt'])assert.ok(saturation.includes(token),`saturation model missing ${token}`);
 assert.ok(styles.includes("@import url('./procedure-journey-2-1.css');"),'2.1 experience CSS missing');
 assert.equal(epistemic.includes('procedureRegistry.procedures.push'),false,'EP-01 must remain outside the seven business procedure registry');
-console.log('procedure-journey-2-1-check: ok (D1-D4 / 12 tasks / active MC ownership / normalized EP groups / seven real UI writes / bounded saturation)');
+console.log('procedure-journey-2-1-check: ok (D1-D4 / 12 tasks / disclosed MC scope ownership / normalized EP groups / seven real UI writes / bounded saturation)');
