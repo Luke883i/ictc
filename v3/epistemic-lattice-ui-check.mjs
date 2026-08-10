@@ -9,6 +9,6 @@ assert.ok(tools.includes("id:'epistemic'"),'command palette missing epistemic na
 assert.ok(tools.includes("['admin','auditor'].includes(state.role)"),'command palette EP-01 must be role bounded');
 assert.ok(active.includes('installEpistemicLattice()'),'active experience does not install EP-01');
 assert.ok(styles.includes("@import url('./epistemic-lattice.css');"),'EP-01 css missing from canonical cascade');
-for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list','.epistemic-meta-card'])assert.ok(css.includes(token),`EP-01 css missing ${token}`);
+for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list','.epistemic-meta-card','.epistemic-shell,.epistemic-toolbar,.epistemic-filter-group,.epistemic-pager','.epistemic-filter-group{width:100%;min-width:0','overflow-x:auto','overscroll-behavior-inline:contain'])assert.ok(css.includes(token),`EP-01 css missing ${token}`);
 assert.equal(ui.includes('procedureRegistry.procedures.push'),false,'EP-01 must not append itself to business procedures');
-console.log('epistemic-lattice-ui-check: ok (flat/raw + proto-graph + role-bounded navigation)');
+console.log('epistemic-lattice-ui-check: ok (flat/raw + proto-graph + role-bounded navigation + local mobile overflow ownership)');
