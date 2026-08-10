@@ -1,18 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { EPISTEMIC_META_PROCEDURE } from './runtime/meta-procedure-contracts.mjs';
 const identity=JSON.parse(await readFile(new URL('./release-identity.json',import.meta.url),'utf8'));
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [readme,copy,shell,tools,browser]=await Promise.all([read('../README.md'),read('./public/ui/product-copy.js'),read('./public/ui/stable-shell.js'),read('./public/ui/global-tools.js'),read('./browser-v1-9-experience.py')]);
-assert.equal(identity.product,'ICTC');
-assert.equal(identity.semanticEdition,'1.2-market-candidate');
-assert.equal(identity.experienceEdition,'1.9-experience-candidate');
-assert.equal(identity.refinementProfile,'1.9.1-pre-candidate');
-assert.equal(identity.navigation.proof,'Postura Standard & Security ICTC');
-assert.ok(copy.includes(`proof:'${identity.navigation.proof}'`),'product-copy must own canonical proof label');
-assert.ok(copy.includes(`proofCompact:'${identity.navigation.proofCompact}'`),'product-copy must own compact proof label');
-assert.ok(readme.includes(identity.navigation.proof),'README proof label drift');
-assert.ok(browser.includes(identity.navigation.proof),'browser contract proof label drift');
+assert.equal(identity.product,'ICTC');assert.equal(identity.semanticEdition,'1.2-market-candidate');assert.equal(identity.experienceEdition,'1.9-experience-candidate');assert.equal(identity.refinementProfile,'1.9.1-pre-candidate');assert.equal(identity.epistemicProfile,'2.0-epistemic-lattice-pre-candidate');
+assert.equal(identity.navigation.proof,'Postura Standard & Security ICTC');assert.equal(identity.navigation.epistemic,EPISTEMIC_META_PROCEDURE.label);assert.equal(identity.metaProcedures.length,1);assert.equal(identity.metaProcedures[0].businessProcess,false);assert.equal(identity.metaProcedures[0].crossCutting,true);
+assert.ok(copy.includes(`proof:'${identity.navigation.proof}'`),'product-copy must own canonical proof label');assert.ok(copy.includes(`proofCompact:'${identity.navigation.proofCompact}'`),'product-copy must own compact proof label');assert.ok(readme.includes(identity.navigation.proof),'README proof label drift');assert.ok(browser.includes(identity.navigation.proof),'browser contract proof label drift');
 for(const [name,source] of [['stable-shell',shell],['global-tools',tools]]){assert.ok(source.includes("from './product-copy.js'"),`${name} must import product-copy authority`);assert.ok(source.includes('SURFACE_LABELS.proof'),`${name} must consume canonical proof label`);}
-assert.ok(readme.includes(identity.semanticEdition));assert.ok(readme.includes(identity.experienceEdition));assert.ok(readme.includes(identity.refinementProfile));
-assert.ok(!readme.includes('Oggi / Processi / Prove'),'README keeps stale navigation');
-console.log(JSON.stringify({ok:true,authority:'release-identity',identity,consumers:['README','stable-shell','global-tools','browser-v1-9']}));
+for(const token of [identity.semanticEdition,identity.experienceEdition,identity.refinementProfile,identity.epistemicProfile,EPISTEMIC_META_PROCEDURE.code,EPISTEMIC_META_PROCEDURE.label])assert.ok(readme.includes(token),`README identity drift: ${token}`);
+assert.ok(readme.includes('non un ottavo processo business'));assert.ok(!readme.includes('Oggi / Processi / Prove'),'README keeps stale navigation');
+console.log(JSON.stringify({ok:true,authority:'release-identity',identity,consumers:['README','stable-shell','global-tools','browser-v1-9','meta-procedure-contract']}));
