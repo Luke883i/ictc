@@ -4,3 +4,19 @@ html[data-ictc-experience-edition="1.9-experience-candidate"] .procedure-state.r
   color:#5b6678;
   border:1px solid #dde3eb;
 }
+
+/* Tablet is a first-class layout, not a desktop layout squeezed until 760px. */
+@media(max-width:900px){
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .stable-header-inner{min-width:0;gap:.45rem}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .brand{min-width:0;flex:0 1 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .service-nav{min-width:0;flex:1 1 auto;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .service-nav button{flex:0 0 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .top-actions{min-width:0;flex:0 0 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .global-command-trigger kbd{display:none}
+}
+@media(max-width:820px){
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-hero{grid-template-columns:minmax(0,1fr)}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-pulse{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-intro,
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-next{min-width:0}
+}
