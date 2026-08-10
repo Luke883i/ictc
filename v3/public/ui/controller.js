@@ -1,4 +1,31 @@
 import { $, api, state } from './common.js';
 import { render } from './render.js';
 import { renderIncidentWorkspace, renderPlanDialog, renderSourceDialog } from './workspaces.js';
-export async function refresh({keepDialog=true}={}){state.data=await api('/api/bootstrap');state.role=state.data.actor.role;render();if(keepDialog&&state.activeIncidentId&&$('#incidentWorkspace').open)renderIncidentWorkspace();if(keepDialog&&state.activeSourceId&&$('#sourceDialog').open)renderSourceDialog();if(keepDialog&&state.activeMissionId&&$('#planDialog').open)renderPlanDialog();document.dispatchEvent(new CustomEvent('ictc:rendered',{detail:{actorRole:state.data.actor.role}}));}
+
+let committedRevision=null;
+let refreshSequence=0;
+
+function numericRevision(value){const revision=Number(value);return Number.isFinite(revision)&&revision>=0?revision:0;}
+
+export async function refresh({keepDialog=true,reason='refresh'}={}){
+  const sequence=++refreshSequence;
+  const previousRevision=committedRevision==null?numericRevision(state.data?.revision):committedRevision;
+  const next=await api('/api/bootstrap');
+  if(sequence!==refreshSequence)return state.data;
+  const revision=numericRevision(next?.revision);
+  if(committedRevision!=null&&revision<committedRevision){
+    const error=new Error(`Projection revision regressed from ${committedRevision} to ${revision}`);
+    error.code='projection-revision-regressed';
+    throw error;
+  }
+  state.data=next;
+  state.role=state.data.actor.role;
+  committedRevision=revision;
+  render();
+  if(keepDialog&&state.activeIncidentId&&$('#incidentWorkspace').open)renderIncidentWorkspace();
+  if(keepDialog&&state.activeSourceId&&$('#sourceDialog').open)renderSourceDialog();
+  if(keepDialog&&state.activeMissionId&&$('#planDialog').open)renderPlanDialog();
+  document.dispatchEvent(new CustomEvent('ictc:rendered',{detail:{actorRole:state.data.actor.role}}));
+  document.dispatchEvent(new CustomEvent('ictc:projection-committed',{detail:{previousRevision,revision,changed:revision!==previousRevision,actorRole:state.data.actor.role,reason}}));
+  return state.data;
+}
