@@ -19,10 +19,11 @@ import { createIncidentMarketHandler } from './incident-market-handler.mjs';
 import { createIncidentHandler } from './incidents.mjs';
 import { createEvidenceHandler } from './evidence.mjs';
 import { createAdminHandler } from './admin.mjs';
+import { createEpistemicLatticeHandler } from './epistemic-lattice.mjs';
 import { procedureAdapters } from './procedure-adapters.mjs';
 
 const HANDLER_KEYS=Object.freeze({monitoring:['manual-monitoring','monitoring-jobs','user-monitoring','monitoring-runtime','contributions'],incidents:['manual-incidents','incident-market','incidents'],objects:['grc-runtime'],coverage:['standard-library','control-test','grc-runtime'],actions:['grc-runtime'],risks:['risk-action-fidelity','grc-runtime'],assurance:['manual-assurance','grc-runtime']});
-const SHARED_KEYS=Object.freeze(['work-orchestration','process-landscape','process-handoffs','insights','workbench','procedure-invariant','review-needs','evidence','admin']);
+const SHARED_KEYS=Object.freeze(['work-orchestration','process-landscape','process-handoffs','insights','workbench','procedure-invariant','review-needs','epistemic-lattice','evidence','admin']);
 for(const adapter of procedureAdapters())if(!HANDLER_KEYS[adapter.id])throw new Error(`Missing runtime handler registration for ${adapter.id}`);
 export function runtimeHandlerPlan(){const ordered=[...SHARED_KEYS];for(const adapter of procedureAdapters())for(const key of HANDLER_KEYS[adapter.id])if(!ordered.includes(key))ordered.push(key);return ordered;}
 export function createRuntimeHandlers({store,permissions,monitoring,evidenceStore,posture}){const factories={
@@ -39,6 +40,7 @@ export function createRuntimeHandlers({store,permissions,monitoring,evidenceStor
   'procedure-invariant':()=>createProcedureInvariantHandler({store,permissions}),
   'control-test':()=>createControlTestHandler({store,permissions}),
   'review-needs':()=>createReviewNeedHandler({store,permissions}),
+  'epistemic-lattice':()=>createEpistemicLatticeHandler({store,permissions}),
   'grc-runtime':()=>createGrcRuntime({store,permissions}),
   'monitoring-jobs':()=>createMonitoringJobHandler({store,permissions}),
   'user-monitoring':()=>createUserMonitoringHandler({store,runMission:monitoring.runMission}),
