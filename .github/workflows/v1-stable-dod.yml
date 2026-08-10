@@ -1,6 +1,5 @@
 name: v1-2-market-candidate-dod
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

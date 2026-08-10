@@ -18,32 +18,8 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Syntax
-        run: npm run check && python3 -m py_compile v3/browser-v1-2-market-candidate.py
-      - name: 1.2 market product profile
-        run: node v3/v1-2-market-candidate-check.mjs
-      - name: Current product contract
-        run: node v3/product-contract-check.mjs
-      - name: Current procedure contracts
-        run: node v3/procedure-contracts-check.mjs
-      - name: Current procedure policy
-        run: node v3/procedure-policy-check.mjs
-      - name: Semantic authority ratchet
-        run: node v3/ui-active-experience-audit.mjs && node v3/semantic-api-contract-check.mjs && node v3/historical-ui-fixture-check.mjs
-      - name: Process kernel and GRC capability regression
-        run: node v3/process-kernel-check.mjs && node v3/v2-grc-convergence-check.mjs && node v3/v2-grc-saturation.mjs && node v3/grc-object-check.mjs && node v3/grc-mapping-check.mjs && node v3/grc-action-check.mjs && node v3/grc-risk-check.mjs && node v3/grc-assurance-check.mjs
-      - name: Current procedure primitives
-        run: node v3/standard-library-check.mjs && node v3/monitoring-access-check.mjs && node v3/incident-contract-check.mjs && node v3/object-identity-check.mjs && node v3/procedure-summary-check.mjs
-      - name: Current process semantic hardening
-        run: node v3/v1-stable-process-hardening-check.mjs && node v3/reference-contract-check.mjs && node v3/reference-integration-check.mjs && node v3/ao-reattestation-check.mjs && node v3/rn-requirement-identity-check.mjs && node v3/dependency-review-check.mjs && node v3/onto-epistemic-audit.mjs
-      - name: Current semantic convergence
-        run: node v3/procedure-market-saturation.mjs && node v3/v4-stable-real-saturation.mjs
-      - name: Security boundaries
-        run: node v3/security-boundary-check.mjs && node v3/ai-network-policy-check.mjs && node v3/hardening-saturation.mjs
-      - name: Honest enterprise posture
-        run: node v3/enterprise-readiness-check.mjs && node v3/enterprise-convergence-check.mjs
-      - name: Enterprise T assurance
-        run: node v3/enterprise-t-saturation.mjs && node v3/enterprise-invariant-convergence.mjs && node v3/enterprise-t-audit.mjs && node v3/enterprise-falsification-check.mjs
+      - name: Current semantic release suite
+        run: npm run test:current:semantic
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -60,34 +36,8 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Procedure policy and market primitives
-        run: node v3/procedure-policy-check.mjs && node v3/standard-library-check.mjs && node v3/monitoring-access-check.mjs && node v3/incident-contract-check.mjs && node v3/object-identity-check.mjs && node v3/procedure-summary-check.mjs
-      - name: FI-01 reference binding
-        run: node v3/fi01-reference-check.mjs
-      - name: Home next action binding
-        run: node v3/home-next-action-check.mjs
-      - name: Evidence and persistence
-        run: node v3/evidence-check.mjs && node v3/evidence-export-auth-check.mjs
-      - name: GRC and process runtime
-        run: node v3/v2-grc-runtime-check.mjs && node v3/work-orchestration-runtime-check.mjs && node v3/insight-runtime-check.mjs
-      - name: Attachment replay safety
-        run: node v3/attachment-replay-check.mjs
-      - name: Enterprise administration and identity
-        run: node v3/enterprise-runtime-check.mjs && node v3/identity-bridge-runtime-check.mjs
-      - name: Stable 1.4 capability regression
-        run: node v3/stable-1-4-runtime-check.mjs
-      - name: Standard proof 1.6 capability regression
-        run: node v3/standard-proof-1-6-runtime-check.mjs
-      - name: Enterprise 1.8 capability regression
-        run: node v3/enterprise-1-8-runtime-check.mjs
-      - name: V1.5 process E2E regression
-        run: node v3/v15-e2e.mjs
-      - name: V1.5 runtime saturation regression
-        run: node v3/v15-runtime-saturation.mjs
-      - name: Enterprise T runtime stress
-        run: node v3/enterprise-t-runtime-stress.mjs
-      - name: Persistence and governance
-        run: node v3/v4-stable-governance-check.mjs && node v3/v4-stable-persistence-check.mjs && node v3/store-durability-check.mjs
+      - name: Current runtime release suite
+        run: npm run test:current:runtime
       - uses: actions/upload-artifact@v6
         if: always()
         with:

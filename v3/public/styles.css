@@ -6,17 +6,7 @@
 @import url('./active-experience.css');
 @import url('./grc-workspace.css');
 @import url('./operational-entry.css');
-@import url('./stable-experience.css');
-@import url('./v1-1-experience.css');
+@import url('./market-shell.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
-
-html[data-ictc-experience="stable-1"] .home-intro,html[data-ictc-experience="stable-1"] .home-next{padding:.8rem 1rem}
-html[data-ictc-experience="stable-1"] .home-intro{min-height:0}
-html[data-ictc-experience="stable-1"] .home-intro h1{font-size:clamp(1.72rem,3vw,2.25rem);margin:.15rem 0 .35rem}
-html[data-ictc-experience="stable-1"] .home-intro p,html[data-ictc-experience="stable-1"] .home-next p{margin:.2rem 0}
-html[data-ictc-experience="stable-1"] .home-next{gap:.2rem}
-html[data-ictc-experience="stable-1"] .home-next h2{margin:.05rem 0 .15rem}
-html[data-ictc-experience="stable-1"] .home-next .primary{padding:.62rem .8rem}
-html[data-ictc-experience="stable-1"] .home-next .assist-note{margin:.2rem 0 0}
