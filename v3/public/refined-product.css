@@ -1,0 +1,42 @@
+/* ICTC refined-product pre-candidate: final visual correctness layer. */
+:root{--refined-control-min:44px;--refined-dialog-max:94dvh;--refined-footer-gap:1rem}
+html{color-scheme:light}
+html:has(dialog[open]),body:has(dialog[open]){overflow:hidden!important;overscroll-behavior:none}
+dialog[open]{overflow:hidden!important;max-height:none!important}
+.dialog-shell{max-height:var(--refined-dialog-max)!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+.dialog-shell>header,.dialog-shell>footer{flex:0 0 auto}
+.dialog-body{min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;scrollbar-gutter:stable}
+.dialog-shell>header button[aria-label="Chiudi"],.icon-button{min-width:44px!important;min-height:44px!important;display:inline-grid!important;place-items:center!important;padding:0!important;line-height:1}
+.dialog-shell>header button[aria-label="Chiudi"] svg,.icon-button svg{width:18px;height:18px;display:block}
+.card-actions button:not(.primary),.secondary{background:#fff;color:var(--ink,#172033)}
+.card-actions .primary{background:linear-gradient(135deg,var(--accent,#5b5cf0),#7778f5)!important;color:#fff!important;border-color:transparent!important}
+.card-actions{align-items:stretch}
+.card-actions button{min-height:var(--refined-control-min)}
+.refined-incident-intake{display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(280px,.72fr)!important;gap:1rem!important;align-items:start!important}
+.refined-incident-intake>.prompt-field{grid-column:1;grid-row:1}
+.refined-incident-intake>.prompt-field textarea{min-height:300px!important;resize:vertical}
+.refined-incident-intake>aside{grid-column:2;grid-row:1;display:grid;gap:.8rem;align-content:start}
+.refined-incident-intake>aside>[data-market-event-fields],.refined-incident-intake>aside>[data-market-event-dates]{display:grid!important;grid-template-columns:1fr!important;gap:.7rem!important}
+.refined-incident-intake .evidence-note{padding:.75rem!important}
+.question-compass.refined-question{padding:1rem!important;border-radius:16px!important;background:#1d274d!important}
+.question-compass.refined-question h3{font-size:1.25rem!important;margin:.25rem 0 .65rem!important}
+.question-compass.refined-question textarea{min-height:104px!important}
+.question-compass.refined-question .refined-question-why{margin:.55rem 0 0;border:1px solid rgba(255,255,255,.16);border-radius:10px;background:rgba(255,255,255,.06)}
+.question-compass.refined-question .refined-question-why>summary{cursor:pointer;padding:.62rem .72rem;font-size:.78rem;font-weight:800;list-style:none}
+.question-compass.refined-question .refined-question-why>summary::-webkit-details-marker{display:none}
+.question-compass.refined-question .refined-question-why-body{padding:0 .72rem .72rem}
+.question-compass.refined-question .why-grid{margin:.2rem 0 0!important;gap:.45rem!important}
+.question-compass.refined-question .why-grid div{padding:.55rem!important;font-size:.74rem!important}
+.question-compass.refined-question .ai-suggestion{margin:.45rem 0 0;padding:.6rem!important}
+.incident-card{min-height:0!important}
+.incident-card>p{margin:.25rem 0!important}
+.incident-card .card-actions{align-self:center!important}
+.stable-legal-footer{position:static!important;inset:auto!important;min-height:32px;margin-top:1rem;border-top:1px solid var(--line,#dce4ef);background:transparent!important;box-shadow:none!important}
+body{padding-bottom:0!important}
+.ictc-brand-mark{opacity:1!important}
+.service-nav button,.stable-profile-menu>summary,.global-command-trigger,.procedure-primary,.procedure-secondary{min-height:var(--refined-control-min)!important}
+.global-command-trigger{padding-block:.4rem!important}
+[data-refined-compact-label]{white-space:nowrap}
+@media(max-width:900px){.refined-incident-intake{grid-template-columns:1fr!important}.refined-incident-intake>.prompt-field,.refined-incident-intake>aside{grid-column:1;grid-row:auto}.refined-incident-intake>.prompt-field textarea{min-height:220px!important}}
+@media(max-width:620px){.dialog,.dialog.wide,.dialog.full{width:100vw!important}.dialog-shell{max-height:100dvh!important;min-height:100dvh!important;border-radius:0!important}.question-compass.refined-question{padding:.85rem!important}.stable-legal-footer{font-size:.68rem}.service-nav [data-service="proof"]{font-size:0}.service-nav [data-service="proof"]::after{content:"Postura ICTC";font-size:.76rem}}
+@media(prefers-reduced-motion:reduce){.question-compass.refined-question,.dialog-shell{scroll-behavior:auto}}
