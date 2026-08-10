@@ -24,9 +24,9 @@ Ogni procedura può creare un record iniziale compatibile in un'altra procedura 
 
 ## Come leggere ICTC
 
-L'esperienza distribuisce la complessità in strati. La superficie operativa mostra prima ciò che serve per agire; contesto, lineage, dati raw e limiti sono disponibili tramite disclosure progressive. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+L'esperienza distribuisce la complessità in strati. La superficie operativa mostra prima ciò che serve per agire; contesto, tracciabilità, dati raw e limiti sono disponibili tramite disclosure progressive. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
 
-**Postura Standard & Security ICTC** risponde, in quest'ordine, a tre domande: cosa è osservabile, quale evidenza manca, cosa ICTC non conclude. Decisioni, runtime, deployment gap, riferimenti ed export sono livelli successivi.
+**Postura Standard & Security ICTC** risponde, in quest'ordine, a tre domande: cosa è osservabile, quale evidenza manca, cosa ICTC non conclude. Decisioni, runtime, requisiti esterni di deployment, riferimenti ed export sono livelli successivi.
 
 **EP-01 · Reticolo epistemico** presenta la stessa proiezione revision-bound in tre modi: `Esplora`, `Flat / raw`, `Proto-grafo`. In Esplora il percorso è **Quadro → Gruppi → Relazioni → Atomo**. Le letture AI restano visivamente e semanticamente separate dai record business.
 
@@ -60,14 +60,14 @@ I receipt e i binding di digest rilevano incoerenze entro il modello software ve
 
 ## Evidenze ed export
 
-I fascicoli oggetto-specifici sono **same-as-read**: un export non espande mai l'autorizzazione di lettura. Un'unica proiezione canonica alimenta:
+I fascicoli oggetto-specifici mantengono **lo stesso perimetro di lettura** (`same-as-read` nel contratto tecnico): un export non espande mai l'autorizzazione di lettura. Un'unica proiezione canonica alimenta:
 
 - **PDF** stampabile con intestazione ICTC;
 - **XML** strutturato;
 - **Markdown** leggibile;
 - **ZIP** completo con JSON, graph, claims, decisioni, audit, receipt, PDF/XML/Markdown e checksum SHA-256.
 
-Il receipt di lineage riporta, quando disponibili, revisione, timestamp, actor/role, subject, `previousHash`, event hash, digest input/result/state, semantic manifest ed epistemic-step binding. È evidenza tecnica di ciò che ICTC ha registrato, non attestazione della verità sostanziale del contenuto.
+Il receipt di tracciabilità (`lineage` nel formato tecnico) riporta, quando disponibili, revisione, timestamp, actor/role, subject, `previousHash`, event hash, digest input/result/state, semantic manifest ed epistemic-step binding. È evidenza tecnica di ciò che ICTC ha registrato, non attestazione della verità sostanziale del contenuto.
 
 ## Avvio locale
 
@@ -113,8 +113,11 @@ I journey browser server-backed e gli artifact commit-bound sono eseguiti in Git
 
 ## Sviluppo e documentazione
 
+**Se è la prima volta nel repository, parti da `docs/START_HERE.md`.** È una mappa verso gli owner correnti, non una nuova autorità.
+
 Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml`. Le guide operative principali sono:
 
+- `docs/START_HERE.md` — percorso minimo per orientarsi senza ricostruire la storia delle PR;
 - `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
 - `docs/TESTING.md` — suite e falsificatori;
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
@@ -122,4 +125,4 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/PR60_GLOBAL_DOD.md` — convergenza e Definition of Done della candidate;
 - `SECURITY.md` — boundary e responsabilità di deployment.
 
-La documentazione storica rimane utile per lineage progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.
+La documentazione storica rimane utile per tracciabilità progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.

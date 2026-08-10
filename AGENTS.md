@@ -17,14 +17,20 @@ Never turn an observation, extraction, score, AI proposal, mapping, receipt or c
 9. Every PR states purpose, user journey, epistemic impact, DoD, checks, non-goals and material residual limits.
 10. Presentation modes (Explore, raw, graph, PDF, XML, Markdown, ZIP) are representations of authorized data, never independent sources of truth.
 
-## Required reads
+## Read path
 
-- Product/epistemic: `docs/00_PROMPT_CLARIFICATION.md`, `docs/01_TO_BE_IDEA.md`, `docs/02_EPISTEMIC_CONTRACT.md`
-- UI/language: `docs/03_ENDUSER_LANGUAGE.md`, `docs/05_UI_OBJECT_MODEL.md`, `docs/06_INFORMATION_ARCHITECTURE.md`
-- Architecture: `docs/11_ARCHITECTURE.md`, `docs/authority-matrix.yaml`
-- AI: `docs/10_LOCAL_AI_CONTRACT.md`
-- Delivery: `docs/13_DEVOPS_AND_CI_CD.md`, `docs/14_ITERATION_DOD.md`, `docs/TESTING.md`
-- Current convergence: `docs/PR60_GLOBAL_DOD.md`
+For a new contributor, **start with `docs/START_HERE.md`**. It is a routing page, not an authority. Before changing an authority, read `docs/authority-matrix.yaml` and the owner it identifies.
+
+Read additional documents by responsibility instead of treating the whole `docs/` directory as mandatory:
+
+- Product/epistemic changes: `docs/00_PROMPT_CLARIFICATION.md`, `docs/01_TO_BE_IDEA.md`, `docs/02_EPISTEMIC_CONTRACT.md`.
+- UI/language changes: `docs/03_ENDUSER_LANGUAGE.md`, `docs/05_UI_OBJECT_MODEL.md`, `docs/06_INFORMATION_ARCHITECTURE.md`.
+- Architecture/persistence: `docs/11_ARCHITECTURE.md`, `docs/authority-matrix.yaml`.
+- AI: `docs/10_LOCAL_AI_CONTRACT.md`.
+- Delivery/CI: `docs/13_DEVOPS_AND_CI_CD.md`, `docs/14_ITERATION_DOD.md`, `docs/TESTING.md`.
+- Current PR convergence: `docs/PR60_GLOBAL_DOD.md`.
+
+Historical/candidate documents are useful for design lineage but do not override the current executable owner declared by the authority matrix.
 
 ## Free/private repository governance
 
