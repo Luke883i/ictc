@@ -10,6 +10,9 @@
 @import url('./market-1-2.css');
 @import url('./experience-1-9.css');
 @import url('./refined-product.css');
+@import url('./surface-primitives.css');
+@import url('./epistemic-lattice.css');
+@import url('./cross-procedure.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}

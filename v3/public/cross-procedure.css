@@ -1,0 +1,6 @@
+/* Cross-procedure creation: one reusable secondary workflow. */
+.cross-create-dialog .dialog-shell{max-width:min(920px,96vw)}
+.cross-create-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.cross-create-grid label{display:grid;gap:.3rem;min-width:0}.cross-create-grid label>span{font-size:.76rem;font-weight:800}.cross-create-grid :where(input,select,textarea){width:100%;min-height:44px;max-width:100%}.cross-create-wide{grid-column:1/-1}.cross-create-boundary{margin:.8rem 0 0;padding:.7rem;border-left:3px solid var(--accent,#5b5cf0);background:color-mix(in srgb,var(--surface,#fff) 92%,#5b5cf0);font-size:.76rem;color:var(--muted,#64748b)}
+.procedure-anatomy-actions [data-cross-create]{min-height:44px}
+@media(max-width:680px){.cross-create-grid{grid-template-columns:1fr}.cross-create-wide{grid-column:1}.cross-create-dialog .dialog-shell{width:100vw;max-width:none}}

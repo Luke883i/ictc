@@ -9,9 +9,10 @@ L'identità corrente è multidimensionale e dichiarata in `v3/release-identity.j
 - package software: `1.8.0`;
 - profilo semantico: `1.2-market-candidate`;
 - esperienza: `1.9-experience-candidate`;
-- profilo di raffinamento in PR: `1.9.1-pre-candidate`.
+- profilo di raffinamento: `1.9.1-pre-candidate`;
+- profilo epistemico in PR: `2.0-epistemic-lattice-pre-candidate`.
 
-Queste dimensioni non vanno fuse in un unico numero: package, semantica, esperienza e refinement hanno autorità diverse. Il file `v3/release-identity.json` è la fonte cross-documenti per questa identità.
+Queste dimensioni non vanno fuse in un unico numero: package, semantica, esperienza, refinement ed epistemica hanno autorità diverse. Il file `v3/release-identity.json` è la fonte cross-documenti per questa identità.
 
 ## Processi
 
@@ -25,6 +26,8 @@ Queste dimensioni non vanno fuse in un unico numero: package, semantica, esperie
 
 `EV-01` resta un piano trasversale di ricostruzione, non un ottavo processo business.
 
+La pre-candidate 2.0 aggiunge `EP-01 — Reticolo epistemico` come **meta-procedura cross-cutting** per admin e auditor. EP-01 non entra nel registry dei sette processi business: proietta versioni ed effetti semantici cumulati in modalità flat/raw e proto-grafo, con AI human-ON proposal-only.
+
 ## Esperienza
 
 La navigazione canonica è:
@@ -35,9 +38,13 @@ Su viewport stretti la terza voce può essere resa come **Postura ICTC**, manten
 
 La superficie Postura collega controlli applicativi, standard, sicurezza, evidenze, deployment gap e limiti. Non è una certificazione, un parere legale o un security assessment del deployment.
 
+Da **Processi**, admin e auditor possono aprire **Reticolo epistemico**. La vista flat/raw e il proto-grafo sono due rappresentazioni della stessa proiezione SQLite revision-bound; il grafo non costituisce una seconda fonte di verità.
+
 ## Autorità ed epistemica
 
 L'AI è opzionale e proposal-only. Le decisioni operative, i rating, le approvazioni e le chiusure che richiedono autorità rimangono umane. La presenza di una prova, di un hash o di un mapping non equivale automaticamente a conformità, applicabilità, efficacia del controllo o sufficienza legale.
+
+In EP-01 l'AI richiede un'esplicita attivazione umana per ogni analisi. Le derivazioni progressive L1-L4 restano `proposed`, devono citare gli atomi basis e i riferimenti standard/best-practice usati e possono essere revisionate separatamente senza modificare i record business originari.
 
 ## Avvio
 
@@ -58,7 +65,7 @@ npm run test:current:runtime
 python -u v3/browser-v1-9-experience.py
 ```
 
-Il refinement pre-candidate aggiunge anche `v3/refined-product-check.mjs`, `v3/refined-product-saturation.mjs` e il browser polish audit integrato nel journey V1.9.
+Il profilo epistemico 2.0 aggiunge i gate di surface primitives, EP-01, AI human-ON, cross-procedure creation e `v3/epistemic-lattice-saturation.mjs`. Il saturation è bounded evidence e non prova l'assenza di classi di difetto ignote.
 
 ## Limiti
 

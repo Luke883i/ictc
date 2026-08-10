@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { buildCrossProcedureTarget, crossProcedureMatrix, CROSS_PROCEDURE_TARGETS } from './runtime/cross-procedure-create.mjs';
+import { procedureAdapterIds } from './runtime/procedure-adapters.mjs';
+import { runtimeHandlerPlan } from './runtime/runtime-handler-registry.mjs';
+const ids=procedureAdapterIds(),matrix=crossProcedureMatrix(),actor={id:'check-admin',role:'admin'},state={revision:0,grcObjects:[],grcActions:[],grcMappings:[],grcRisks:[],grcAssurance:[],principals:[]};
+assert.equal(ids.length,7);assert.equal(Object.keys(CROSS_PROCEDURE_TARGETS).length,7);assert.equal(matrix.length,49);for(const source of ids)for(const target of ids)assert.ok(matrix.some(row=>row.sourceProcedureId===source&&row.targetProcedureId===target),`${source}->${target}`);
+const samples={monitoring:{objective:'Monitoraggio collegato',cadenceHours:24},incidents:{originalNarrative:'Evento collegato',awarenessAt:new Date().toISOString()},objects:{type:'business-process',name:'Oggetto collegato'},coverage:{requirementLabel:'Requisito collegato',rationale:'Da valutare'},actions:{title:'Azione collegata'},risks:{title:'Rischio collegato',likelihood:3,impact:3},assurance:{title:'Assurance collegata',requestText:'Verificare il punto collegato'}};
+for(const id of ids){const origin={sourceProcedureId:'monitoring',sourceSubject:{type:'mission',id:'m1'},targetProcedureId:id,predicate:'cross-procedure-created-from',createdBy:actor.id,createdAt:new Date().toISOString()},built=buildCrossProcedureTarget(id,samples[id],actor,state,origin);assert.equal(built.subject.type,CROSS_PROCEDURE_TARGETS[id].subjectType);assert.ok(built.item.id);assert.deepEqual(built.item.crossOrigin,origin);assert.ok(!['approved','closed','reviewed','active','mapped'].includes(built.item.state),`${id} cross-create skipped native entry checkpoint`);}
+assert.ok(runtimeHandlerPlan().includes('cross-procedure-create'));
+const source=await readFile(new URL('./runtime/cross-procedure-create.mjs',import.meta.url),'utf8');for(const token of ['assertProcedureEnabled(snapshot,targetProcedureId)','canReadProcedureRecord','command.semanticSubjects=[{type:source.type,id:source.id}]','epistemicEffects','cross-procedure-created-from'])assert.ok(source.includes(token),`cross-create contract missing ${token}`);
+console.log('cross-procedure-create-check: ok (7 adapters, 49 source-target pairs, native entry states, dual-subject receipt binding)');
