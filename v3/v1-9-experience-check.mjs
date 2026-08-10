@@ -12,8 +12,10 @@ assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not 
 assert.match(copy,/home:'Home'/);assert.match(copy,/processes:'Processi'/);assert.match(copy,/proof:'Postura Standard & Security ICTC'/);
 assert.match(shell,/SURFACE_LABELS\.home/);assert.match(shell,/SURFACE_LABELS\.proof/);assert.match(tools,/SURFACE_LABELS\.proof/);
 assertActiveInstallers(active,['installProcedureFrame','installRefinedProduct'],{label:'V1.9 active experience'});
-for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Apri Evidenze','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
+for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Consulta record','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
 assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);assert.match(frame,/state\.role==='auditor'/);
+assert.ok(frame.includes('openReadSurface(id)'),'auditor primary must remain procedure-bound in the current experience');
+assert.doesNotMatch(frame,/navigateSurface\('proof'\)/,'procedure primary must not redirect auditor out of the current procedure');
 assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
 assert.doesNotMatch(frame,/className='grc-head procedure-frame'/,'canonical ProcedureFrame must not expose the legacy GRC header hook');
 assert.doesNotMatch(frame,/button\.remove\(\)/,'presentation layer must not delete unknown controls to hide accessibility bugs');
@@ -28,4 +30,4 @@ assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed 
 for(const token of ['refined-incident-intake','refined-question','neutralizeDynamicMarketCss','PRODUCT_COPY.proofAction'])assert.ok(refined.includes(token),token);
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}\n${refined}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
-console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + shared explicit install-pipeline authority)');
+console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + procedure-bound auditor read + shared install authority)');

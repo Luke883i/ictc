@@ -1,0 +1,46 @@
+/* Onto-Compliance Horizon v1: visual semantics must not imply authority the data does not carry. */
+html[data-ictc-experience-edition="1.9-experience-candidate"] .procedure-state.ready{
+  background:#f1f4f8;
+  color:#5b6678;
+  border:1px solid #dde3eb;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope.in-scope{
+  background:#eef1ff;
+  color:#4652a3;
+  border-color:#d8ddff;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor{
+  width:100%;
+  border-top:1px solid #edf0f4;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor>summary{
+  display:flex;
+  min-height:44px;
+  align-items:center;
+  cursor:pointer;
+  color:#536078;
+  font-size:.72rem;
+  font-weight:750;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor>.market-scope-form{
+  padding:.15rem 0 .65rem;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-framework-card footer{
+  margin-top:auto;
+}
+
+/* Tablet is a first-class layout, not a desktop layout squeezed until 760px. */
+@media(max-width:900px){
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .stable-header-inner{min-width:0;gap:.45rem}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .brand{min-width:0;flex:0 1 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .service-nav{min-width:0;flex:1 1 auto;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .service-nav button{flex:0 0 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .top-actions{min-width:0;flex:0 0 auto}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .global-command-trigger kbd{display:none}
+}
+@media(max-width:820px){
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-hero{grid-template-columns:minmax(0,1fr)}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-pulse{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-intro,
+  html[data-ictc-experience-edition="1.9-experience-candidate"] .home-next{min-width:0}
+}

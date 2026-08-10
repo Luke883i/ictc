@@ -34,6 +34,8 @@ jobs:
           node v3/cross-procedure-create-check.mjs
           node v3/cross-procedure-create-ui-check.mjs
           node v3/ux-language-polish-check.mjs
+          node v3/onto-compliance-horizon-check.mjs
+          node v3/onto-compliance-saturation.mjs
           node v3/epistemic-lattice-saturation.mjs
           node v3/procedure-journey-saturation.mjs
           node v3/pr60-convergence-saturation.mjs
@@ -49,11 +51,12 @@ jobs:
             artifacts/epistemic-lattice*.json
             artifacts/procedure-journey-saturation.json
             artifacts/pr60-convergence-saturation.json
+            artifacts/onto-compliance-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
     runs-on: ubuntu-24.04
-    timeout-minutes: 38
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -63,7 +66,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser contract syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -73,7 +76,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed Experience 1.9 + Epistemic 2.0 + Procedure Journey 2.1 + PR60 polish
+      - name: Server-backed Experience 1.9 + Epistemic 2.0 + Procedure Journey 2.1 + Onto-Compliance Horizon v1
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -87,6 +90,7 @@ jobs:
           python -u v3/browser-v2-epistemic.py
           python -u v3/browser-v2-1-procedure-journey.py
           python -u v3/browser-pr60-polish.py
+          python -u v3/browser-onto-compliance-v1.py
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -96,9 +100,11 @@ jobs:
             artifacts/browser-v2-epistemic*.json
             artifacts/browser-v2-1*.json
             artifacts/browser-pr60*.json
+            artifacts/browser-onto-compliance*.json
             artifacts/ux-v19-*.png
             artifacts/ux-v20-*.png
             artifacts/ux-v21-*.png
             artifacts/ux-pr60-*.png
+            artifacts/ux-och-v1-*.png
           if-no-files-found: warn
           retention-days: 30
