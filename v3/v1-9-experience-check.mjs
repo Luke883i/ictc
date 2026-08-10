@@ -15,6 +15,7 @@ for(const token of ['Scopo della procedura','data-procedure-primary','data-proce
 assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);
 assert.match(frame,/state\.role==='auditor'/);
 assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
+assert.doesNotMatch(frame,/className='grc-head procedure-frame'/,'canonical ProcedureFrame must not expose the legacy GRC header hook');
 assert.doesNotMatch(frame,/button\.remove\(\)/,'presentation layer must not delete unknown controls to hide accessibility bugs');
 for(const token of ['pushState','replaceState','popstate','view','procedureId','getBackLabel','navigateBack'])assert.ok(router.includes(token),token);
 for(const token of ['metaKey','RECENT_KEY','Home','Processi','Evidenze','ArrowDown','ArrowUp','Escape','enabledProcedures'])assert.ok(tools.includes(token),token);
