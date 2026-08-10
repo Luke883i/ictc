@@ -1,39 +1,18 @@
 import { $, esc, state } from './common.js';
 import { getBackLabel, navigateBack, navigateSurface } from './surface-router.js';
 
-const FALLBACK_ACTIONS=Object.freeze({
-  monitoring:'Aggiungi materiale',
-  incidents:'Registra evento',
-  objects:'Aggiungi oggetto',
-  coverage:'Aggiungi requisito',
-  actions:'Crea azione',
-  risks:'Aggiungi scenario',
-  assurance:'Nuova richiesta'
-});
-const WORKSPACE_IDS=Object.freeze(['monitoring','incidents','objects','coverage','actions','risks','assurance']);
-let installed=false;
-
+const FALLBACK_ACTIONS=Object.freeze({monitoring:'Aggiungi materiale',incidents:'Registra evento',objects:'Aggiungi oggetto',coverage:'Aggiungi requisito',actions:'Crea azione',risks:'Aggiungi scenario',assurance:'Nuova richiesta'});
+const WORKSPACE_IDS=Object.freeze(['monitoring','incidents','objects','coverage','actions','risks','assurance']);let installed=false;
 function contract(id){return(state.data?.procedureRegistry?.procedures||[]).find(item=>item.id===id)||null;}
 function operational(id){return(state.data?.procedures||[]).find(item=>item.id===id)||null;}
 function enabledProcedures(){const enabled=new Set(state.data?.experience?.procedurePolicy?.enabled||[]);return(state.data?.procedureRegistry?.procedures||[]).filter(item=>!enabled.size||enabled.has(item.id));}
 function activeGrcId(){let id=state.activeProcessId||'';if(!id)try{id=localStorage.getItem('ictc-grc-process')||'';}catch{}return WORKSPACE_IDS.includes(id)?id:'objects';}
 function totalFromMetrics(item){const metrics=item?.metrics||[];const candidate=metrics.find(metric=>/tot|record|element|cas|azioni|risch|oggett|requis/i.test(String(metric.label||'')));const n=Number(candidate?.value);return Number.isFinite(n)?n:null;}
-function frameModel(id){const meta=contract(id)||{},item=operational(id)||{},attention=Number(item.attentionCount||0),total=totalFromMetrics(item);return{
-  id,
-  code:meta.code||item.code||id.toUpperCase(),
-  label:meta.label||item.label||id,
-  purpose:meta.purpose||item.description||meta.claimBoundary||'',
-  attention,
-  total,
-  stateLabel:attention>0?'Da vedere':'In ordine',
-  actionLabel:state.role==='auditor'?'Apri Evidenze':item.actionLabel||FALLBACK_ACTIONS[id]||'Apri',
-  entryLabel:'Apri',
-  service:meta.adapter?.surface||item.service||id
-};}
-function signalMarkup(model){const total=model.total==null?'':`<span class="procedure-signal"><b>${esc(model.total)}</b><small>record</small></span>`;return `<div class="procedure-signals" aria-label="Stato della procedura"><span class="procedure-state ${model.attention>0?'attention':'ready'}">${esc(model.stateLabel)}</span><span class="procedure-signal"><b>${esc(model.attention)}</b><small>da vedere</small></span>${total}</div>`;}
+function frameModel(id){const meta=contract(id)||{},item=operational(id)||{},attention=Number(item.attentionCount||0),total=totalFromMetrics(item);return{id,code:meta.code||item.code||id.toUpperCase(),label:meta.label||item.label||id,purpose:meta.purpose||item.description||meta.claimBoundary||'',attention,total,stateLabel:attention>0?'Da vedere':'In ordine',actionLabel:state.role==='auditor'?'Apri Evidenze':item.actionLabel||FALLBACK_ACTIONS[id]||'Apri',entryLabel:'Apri',service:meta.adapter?.surface||item.service||id};}
+function signalMarkup(model,{includeState=true}={}){const statePart=includeState?`<span class="procedure-state ${model.attention>0?'attention':'ready'}">${esc(model.stateLabel)}</span>`:'',total=model.total==null?'':`<span class="procedure-signal"><b>${esc(model.total)}</b><small>record</small></span>`;return `<div class="procedure-signals" aria-label="Stato della procedura">${statePart}<span class="procedure-signal"><b>${esc(model.attention)}</b><small>da vedere</small></span>${total}</div>`;}
 function backMarkup(){return `<button class="procedure-back" type="button" data-nav-back aria-label="${esc(getBackLabel())}"><span aria-hidden="true">←</span><span data-back-label>${esc(getBackLabel())}</span></button>`;}
 function frameMarkup(model){return `${backMarkup()}<div class="procedure-frame-main"><div class="procedure-frame-copy"><div class="procedure-frame-kicker"><span>${esc(model.code)}</span><span aria-hidden="true">·</span><span>Procedura</span></div><h1>${esc(model.label)}</h1><p class="procedure-purpose"><b>Scopo della procedura</b><span>${esc(model.purpose)}</span></p></div><div class="procedure-frame-operate">${signalMarkup(model)}<div class="procedure-frame-actions"><button class="primary procedure-primary" type="button" data-procedure-primary="${esc(model.id)}">${esc(model.actionLabel)}</button>${model.id==='monitoring'&&state.role!=='auditor'?'<button class="secondary procedure-secondary" type="button" data-procedure-secondary="monitoring-plan">Crea monitoraggio</button>':''}</div></div></div>`;}
-function cardMarkup(canonical){const model=frameModel(canonical.id);return `<article class="procedure-card" data-procedure-id="${esc(model.id)}" data-process-code="${esc(model.code)}" data-procedure-frame-variant="card"><header><div class="procedure-frame-kicker"><span>${esc(model.code)}</span><span aria-hidden="true">·</span><span>Procedura</span></div><span class="procedure-state ${model.attention>0?'attention':'ready'}">${esc(model.stateLabel)}</span></header><h2>${esc(model.label)}</h2><p class="procedure-purpose"><b>Scopo della procedura</b><span>${esc(model.purpose)}</span></p><footer>${signalMarkup(model)}<button class="primary procedure-primary" type="button" ${model.service==='grc'?`data-service="grc" data-grc-process="${esc(model.id)}"`:`data-service="${esc(model.service)}"`}>${esc(model.entryLabel)}</button></footer></article>`;}
+function cardMarkup(canonical){const model=frameModel(canonical.id);return `<article class="procedure-card" data-procedure-id="${esc(model.id)}" data-process-code="${esc(model.code)}" data-procedure-frame-variant="card"><header><div class="procedure-frame-kicker"><span>${esc(model.code)}</span><span aria-hidden="true">·</span><span>Procedura</span></div><span class="procedure-state ${model.attention>0?'attention':'ready'}">${esc(model.stateLabel)}</span></header><h2>${esc(model.label)}</h2><p class="procedure-purpose"><b>Scopo della procedura</b><span>${esc(model.purpose)}</span></p><footer>${signalMarkup(model,{includeState:false})}<button class="primary procedure-primary" type="button" ${model.service==='grc'?`data-service="grc" data-grc-process="${esc(model.id)}"`:`data-service="${esc(model.service)}"`}>${esc(model.entryLabel)}</button></footer></article>`;}
 export function renderProcedureHub(){const host=$('#procedureHub');if(!host||!state.data)return;host.dataset.procedureHub='procedure-frame-1-9';host.innerHTML=enabledProcedures().map(cardMarkup).join('')||'<div class="empty">Nessuna procedura disponibile per il profilo corrente.</div>';}
 function mountNativeFrame(id,selector){const view=$(selector);if(!view)return;let frame=view.querySelector(':scope > .procedure-frame');if(!frame){frame=document.createElement('header');frame.className='procedure-frame';frame.dataset.procedureFrame='canonical-1-9';const hero=view.querySelector(':scope > .hero');if(hero)hero.before(frame);else view.prepend(frame);}frame.innerHTML=frameMarkup(frameModel(id));for(const legacy of view.querySelectorAll(':scope > .workspace-return:not([data-nav-back])'))legacy.remove();}
 function mountGrcFrame(){const head=$('#grcWorkspace .grc-head');if(!head)return;head.className='grc-head procedure-frame';head.dataset.procedureFrame='canonical-1-9';head.innerHTML=frameMarkup(frameModel(activeGrcId()));}
