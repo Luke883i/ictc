@@ -9,6 +9,9 @@
   --radius-sm:8px;--radius-md:12px;--radius-lg:20px;--radius-xl:28px;
   --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.5rem;--space-6:2rem;--space-7:3rem;
   --shadow-sm:0 6px 18px rgba(22,35,57,.07);--shadow-md:0 18px 48px rgba(22,35,57,.11);
+  --ui-page-max:1240px;--ui-header-h:48px;--ui-control-h:36px;--ui-section-gap:.85rem;--ui-card-pad:.8rem;--ui-surface-gap:.65rem;
+  --motion-fast:120ms;--motion-standard:170ms;--motion-slow:240ms;--ease-interface:cubic-bezier(.2,.75,.25,1);
+  --elevation-rest:0 3px 14px rgba(15,23,42,.025);--elevation-focus:0 12px 32px rgba(15,23,42,.065);--elevation-float:0 18px 44px rgba(15,23,42,.1);
   --ink:var(--color-text);--muted:var(--color-muted);--line:var(--color-border);--panel:var(--color-surface);--accent:var(--color-brand);--accent2:var(--color-accent);--danger:var(--color-danger);--shadow:var(--shadow-md);
   font-family:var(--font-sans);
 }
