@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,router,tools,active,styles,baseCss,journeyCss]=await Promise.all([read('./public/ui/epistemic-lattice.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/epistemic-lattice.css'),read('./public/procedure-journey-2-1.css')]);
 for(const token of ['EP-01','Reticolo epistemico','Esplora','Flat / raw','Proto-grafo','data-epistemic-mode','projectionSha256','data-service="epistemic"'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);
@@ -11,9 +12,9 @@ assert.ok(ui.includes("if(!allowed()){clearProtectedState();render();return;}"),
 assert.ok(router.includes("epistemic:'#epistemicView'"),'router missing epistemic surface');
 assert.ok(tools.includes("id:'epistemic'"),'command palette missing epistemic navigation');
 assert.ok(tools.includes("['admin','auditor'].includes(state.role)"),'command palette EP-01 must be role bounded');
-assert.ok(active.includes('installEpistemicLattice()'),'active experience does not install EP-01');
+assertActiveInstallers(active,['installEpistemicLattice'],{label:'EP-01 active experience'});
 assert.ok(styles.includes("@import url('./epistemic-lattice.css');")&&styles.includes("@import url('./procedure-journey-2-1.css');"),'EP-01 css missing from canonical cascade');
 for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list','.epistemic-meta-card'])assert.ok(baseCss.includes(token),`EP-01 base css missing ${token}`);
 for(const token of ['.epistemic-level-nav','.epistemic-cluster-grid','.epistemic-atom-readable','.epistemic-proposed-readings'])assert.ok(journeyCss.includes(token),`EP-01 exploration css missing ${token}`);
 assert.equal(ui.includes('procedureRegistry.procedures.push'),false,'EP-01 must not append itself to business procedures');
-console.log('epistemic-lattice-ui-check: ok (same-digest expert modes + progressive exploration + revision convergence)');
+console.log('epistemic-lattice-ui-check: ok (same-digest expert modes + progressive exploration + revision convergence + shared install contract)');
