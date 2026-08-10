@@ -31,7 +31,7 @@ def fetch_json(page,path,role):return page.evaluate("""async args=>{const r=awai
 def bootstrap(page,role):return fetch_json(page,'/api/bootstrap',role)
 
 def open_process(page,code):
- page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click();page.wait_for_timeout(90);expect(page.locator('.procedure-frame:visible')).to_be_visible()
+ page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click();expect(page.locator('.procedure-frame:visible')).to_be_visible();page.wait_for_function("()=>{const f=document.querySelector('main > .view:not([hidden]) .procedure-frame .procedure-frame-main');return !!f&&f.getClientRects().length>0&&getComputedStyle(f).display!=='none'&&getComputedStyle(f).visibility!=='hidden'&&f.innerText.includes('Processo di Compliance')}")
 
 def screenshot(page,role,vp,surface):
  if vp['width'] not in SCREENSHOT_WIDTHS:return
@@ -42,13 +42,27 @@ def scene_metrics(page,args):
  const visible=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden'&&getComputedStyle(e).display!=='none';
  const rect=e=>{if(!visible(e))return null;const r=e.getBoundingClientRect();return{x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1)}};
  const uniq=xs=>[...new Set(xs)],vis=q=>[...document.querySelectorAll(q)].filter(visible);
- const frame=args.frame?document.querySelector(args.frame):null,work=args.work?document.querySelector(args.work):null,anatomy=args.anatomy?document.querySelector(args.anatomy):null;
+ const frame=args.frame?document.querySelector(args.frame):null,work=args.work?document.querySelector(args.work):null,anatomy=args.anatomy?document.querySelector(args.anatomy):null,frameMain=frame?.querySelector('.procedure-frame-main')||null;
  const primary=uniq([...vis('.procedure-frame .procedure-primary'),...vis('.hero .primary'),...vis('.hero .primary-entry')]).filter(e=>e.getBoundingClientRect().top<innerHeight+1);
  const bodyText=(document.querySelector(args.scope||'main > .view:not([hidden])')?.innerText||'');
  const identity=vis('.procedure-frame-kicker,.hero .eyebrow').filter(e=>args.code&&e.textContent.includes(args.code));
  const purpose=frame?.querySelector('.procedure-purpose span'),kicker=frame?.querySelector('.procedure-frame-kicker'),primaryButton=frame?.querySelector('.procedure-primary');
- return{activeView:document.querySelector('main > .view:not([hidden])')?.id||'',h1:vis('h1').map(e=>e.textContent.trim()).filter(Boolean),pageOverflow:{innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth},primaryAboveFold:primary.map(e=>({text:e.textContent.trim(),rect:rect(e),className:e.className})),actionsAboveFold:vis('button,summary,[role="button"]').filter(e=>e.getBoundingClientRect().top<innerHeight+1).length,frame:rect(frame),work:rect(work),anatomy:rect(anatomy),anatomyBeforeWork:!!(anatomy&&work&&(anatomy.compareDocumentPosition(work)&Node.DOCUMENT_POSITION_FOLLOWING)),duplicateCodeIdentity:identity.map(e=>e.textContent.trim()),framePrimaryText:visible(primaryButton)?primaryButton.textContent.trim():'',favorableAttentionLanguage:/\bIn ordine\b|processi in ordine/i.test(bodyText),favorableMatches:(bodyText.match(/In ordine|processi in ordine/gi)||[]).slice(0,12),frameRatio:frame?+(frame.getBoundingClientRect().height/innerHeight).toFixed(3):null,scopeTextLength:bodyText.length,openScopeEditors:vis('.market-scope-editor[open]').length,visibleScopeEditors:vis('.market-scope-editor').length,visibleScopeTextareas:vis('.market-scope-editor textarea').length,purposeFont:purpose?parseFloat(getComputedStyle(purpose).fontSize):null,kickerFont:kicker?parseFloat(getComputedStyle(kicker).fontSize):null,primaryHeight:primaryButton?+primaryButton.getBoundingClientRect().height.toFixed(1):null,frameText:frame?.innerText||'',projectionRevision:document.querySelector(args.scope||'main > .view:not([hidden])')?.dataset?.projectionRevision||''};
+ const mainStyle=frameMain?getComputedStyle(frameMain):null;
+ return{activeView:document.querySelector('main > .view:not([hidden])')?.id||'',h1:vis('h1').map(e=>e.textContent.trim()).filter(Boolean),pageOverflow:{innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth},primaryAboveFold:primary.map(e=>({text:e.textContent.trim(),rect:rect(e),className:e.className})),actionsAboveFold:vis('button,summary,[role="button"]').filter(e=>e.getBoundingClientRect().top<innerHeight+1).length,frame:rect(frame),frameMain:rect(frameMain),frameMainState:frameMain?{display:mainStyle.display,visibility:mainStyle.visibility,opacity:mainStyle.opacity,text:frameMain.innerText||'',raw:frameMain.textContent||''}:null,work:rect(work),anatomy:rect(anatomy),anatomyBeforeWork:!!(anatomy&&work&&(anatomy.compareDocumentPosition(work)&Node.DOCUMENT_POSITION_FOLLOWING)),duplicateCodeIdentity:identity.map(e=>e.textContent.trim()),framePrimaryText:visible(primaryButton)?primaryButton.textContent.trim():'',favorableAttentionLanguage:/\bIn ordine\b|processi in ordine/i.test(bodyText),favorableMatches:(bodyText.match(/In ordine|processi in ordine/gi)||[]).slice(0,12),frameRatio:frame?+(frame.getBoundingClientRect().height/innerHeight).toFixed(3):null,scopeTextLength:bodyText.length,openScopeEditors:vis('.market-scope-editor[open]').length,visibleScopeEditors:vis('.market-scope-editor').length,visibleScopeTextareas:vis('.market-scope-editor textarea').length,purposeFont:purpose?parseFloat(getComputedStyle(purpose).fontSize):null,kickerFont:kicker?parseFloat(getComputedStyle(kicker).fontSize):null,primaryHeight:primaryButton?+primaryButton.getBoundingClientRect().height.toFixed(1):null,frameText:frame?.innerText||'',frameMainText:frameMain?.innerText||'',projectionRevision:document.querySelector(args.scope||'main > .view:not([hidden])')?.dataset?.projectionRevision||''};
  }""",args)
+
+def disclosed_trace(page,anatomy):
+ details=page.locator(anatomy)
+ if not details.count():return None,False
+ was_open=details.get_attribute('open') is not None
+ if not was_open:
+  details.locator(':scope > summary').click();expect(details).to_have_attribute('open','')
+ expect(details.locator('.procedure-anatomy-body')).to_be_visible()
+ return details,was_open
+
+def close_trace(details,was_open):
+ if details is not None and not was_open:
+  details.locator(':scope > summary').click();expect(details).not_to_have_attribute('open','')
 
 def audit_scene(page,role,vp,surface,scope,code='',frame='',work='',anatomy='',contract=None,families=None,revision=None):
  global PHASE;PHASE=f'{role}-{vp["name"]}-{surface}';m=scene_metrics(page,{'scope':scope,'code':code,'frame':frame,'work':work,'anatomy':anatomy});scenes.append({'role':role,'viewport':vp['name'],'width':vp['width'],'height':vp['height'],'surface':surface,'metrics':m})
@@ -59,21 +73,23 @@ def audit_scene(page,role,vp,surface,scope,code='',frame='',work='',anatomy='',c
   if m['anatomyBeforeWork']:add_anomaly('technical-trace-before-native-work',role,vp['name'],surface,{'anatomy':m['anatomy'],'work':m['work']},'native work precedes technical trace')
   if len(m['primaryAboveFold'])>1:add_anomaly('competing-primary-actions-above-fold',role,vp['name'],surface,[x['text'] for x in m['primaryAboveFold']],'one dominant primary entry action')
   if len(m['duplicateCodeIdentity'])>1:add_anomaly('duplicate-process-identity',role,vp['name'],surface,m['duplicateCodeIdentity'],'process code asserted once in identity layer')
-  if re.search(r'\bProcedur[ae]\b',m['frameText'],re.I):add_anomaly('retired-process-language-visible',role,vp['name'],surface,m['frameText'][:180],'Processo di Compliance')
-  if 'Processo di Compliance' not in m['frameText']:add_anomaly('process-singular-language-missing',role,vp['name'],surface,m['frameText'][:180],'Processo di Compliance')
+  if re.search(r'\bProcedur[ae]\b',m['frameMainText'],re.I):add_anomaly('retired-process-language-visible',role,vp['name'],surface,m['frameMainText'][:180],'Processo di Compliance')
+  if 'Processo di Compliance' not in m['frameMainText']:add_anomaly('process-singular-language-missing',role,vp['name'],surface,m['frameMainState'],'visible Processo di Compliance identity in frame main')
   if m['purposeFont'] is not None and m['purposeFont']<12:add_anomaly('process-purpose-too-small',role,vp['name'],surface,m['purposeFont'],'>= 12px computed')
   if m['kickerFont'] is not None and m['kickerFont']<10:add_anomaly('process-kicker-too-small',role,vp['name'],surface,m['kickerFont'],'>= 10px computed')
   if m['primaryHeight'] is not None and m['primaryHeight']<43.5:add_anomaly('process-primary-target-too-small',role,vp['name'],surface,m['primaryHeight'],'>= 44 CSS px')
   if surface=='MC-01' and role=='admin' and m['openScopeEditors']>0:add_anomaly('coverage-scope-editors-expanded-by-default',role,vp['name'],surface,m['openScopeEditors'],0)
   if revision is not None and m['projectionRevision'] and int(m['projectionRevision'])<int(revision):add_anomaly('process-projection-behind-bootstrap',role,vp['name'],surface,m['projectionRevision'],f'>={revision}')
+  details,was_open=disclosed_trace(page,anatomy) if (contract or families is not None) else (None,False)
   if contract:
    title=page.locator(f'{frame} h1').inner_text().strip() if page.locator(f'{frame} h1').count() else '';code_text=page.locator(f'{frame} .procedure-frame-kicker span').first.inner_text().strip() if page.locator(f'{frame} .procedure-frame-kicker span').count() else ''
    if title!=contract.get('label') or code_text!=contract.get('code'):add_anomaly('process-contract-identity-mismatch',role,vp['name'],surface,{'title':title,'code':code_text},{'title':contract.get('label'),'code':contract.get('code')})
-   anatomy_text=(page.locator(anatomy).text_content() or '') if page.locator(anatomy).count() else '';boundary=contract.get('claimBoundary') or ''
-   if boundary and boundary not in anatomy_text:add_anomaly('claim-boundary-not-present-in-process-trace',role,vp['name'],surface,False,'canonical claim boundary present')
+   anatomy_text=details.inner_text() if details is not None else '';boundary=contract.get('claimBoundary') or ''
+   if boundary and boundary not in anatomy_text:add_anomaly('claim-boundary-not-present-in-process-trace',role,vp['name'],surface,False,'canonical claim boundary visible after disclosure')
   if families is not None:
-   actual=page.locator(f'{anatomy} .procedure-anatomy-epistemic span').all_inner_texts() if page.locator(anatomy).count() else []
+   actual=details.locator('.procedure-anatomy-epistemic span').all_inner_texts() if details is not None else []
    if actual!=families:add_anomaly('epistemic-family-convergence',role,vp['name'],surface,actual,families)
+  close_trace(details,was_open)
  screenshot(page,role,vp,surface);return m
 
 def hub_metrics(page):return page.locator('#procedureHub .procedure-card').evaluate_all("""nodes=>{const r=nodes.filter(n=>n.getClientRects().length).map(n=>n.getBoundingClientRect()),w=r.map(x=>x.width),h=r.map(x=>x.height),xs=[];for(const x of r.map(v=>v.x).sort((a,b)=>a-b))if(!xs.some(v=>Math.abs(v-x)<3))xs.push(x);return{count:r.length,columns:xs.length,widthRange:r.length?Math.max(...w)-Math.min(...w):0,heightRange:r.length?Math.max(...h)-Math.min(...h):0,widths:w.map(x=>+x.toFixed(1)),heights:h.map(x=>+x.toFixed(1)),primaryHeights:nodes.filter(n=>n.getClientRects().length).map(n=>+(n.querySelector('.procedure-primary')?.getBoundingClientRect().height||0).toFixed(1))}}""")
