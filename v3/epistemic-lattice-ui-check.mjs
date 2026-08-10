@@ -9,12 +9,12 @@ for(const token of ['Quadro','Gruppi','Relazioni','Atomo','Letture proposte','da
 for(const token of ['ictc:projection-committed','loadSequence','loadedStateRevision','projectionStale','surfaceContextLevel','ictc:context-changed'])assert.ok(ui.includes(token),`EP-01 convergence hardening missing ${token}`);
 assert.ok(ui.includes("if(sequence!==loadSequence)return null"),'stale lattice response must be ignored');
 assert.ok(ui.includes("if(!allowed()){clearProtectedState();render();return;}"),'role denial must clear protected lattice state');
-assert.ok(router.includes("epistemic:'#epistemicView'"),'router missing epistemic surface');
-assert.ok(tools.includes("id:'epistemic'"),'command palette missing epistemic navigation');
-assert.ok(tools.includes("['admin','auditor'].includes(state.role)"),'command palette EP-01 must be role bounded');
+assert.match(router,/\bepistemic\s*:\s*['"]#epistemicView['"]/,'router missing epistemic surface');
+assert.ok(tools.includes("id:'epistemic'")||/id\s*:\s*['"]epistemic['"]/.test(tools),'command palette missing epistemic navigation');
+assert.ok(tools.includes("['admin','auditor'].includes(state.role)")||/\[['"]admin['"],['"]auditor['"]\]\.includes\(state\.role\)/.test(tools),'command palette EP-01 must be role bounded');
 assertActiveInstallers(active,['installEpistemicLattice'],{label:'EP-01 active experience'});
 assert.ok(styles.includes("@import url('./epistemic-lattice.css');")&&styles.includes("@import url('./procedure-journey-2-1.css');"),'EP-01 css missing from canonical cascade');
 for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list','.epistemic-meta-card'])assert.ok(baseCss.includes(token),`EP-01 base css missing ${token}`);
 for(const token of ['.epistemic-level-nav','.epistemic-cluster-grid','.epistemic-atom-readable','.epistemic-proposed-readings'])assert.ok(journeyCss.includes(token),`EP-01 exploration css missing ${token}`);
 assert.equal(ui.includes('procedureRegistry.procedures.push'),false,'EP-01 must not append itself to business procedures');
-console.log('epistemic-lattice-ui-check: ok (same-digest expert modes + progressive exploration + revision convergence + shared install contract)');
+console.log('epistemic-lattice-ui-check: ok (same-digest expert modes + progressive exploration + revision convergence + semantic route/install contracts)');
