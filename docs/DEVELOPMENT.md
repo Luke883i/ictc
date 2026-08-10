@@ -2,7 +2,7 @@
 
 ## Setup
 
-Richiede Node.js 22 o successivo. Il launcher canonico è `ictc.sh`; l'entrypoint applicativo resta `v3/server.mjs` come dichiarato in `docs/authority-matrix.yaml`.
+Richiede Node.js 22 o successivo. Il launcher canonico è `ictc.sh`; l'entrypoint applicativo resta `v3/server.mjs`.
 
 ```bash
 git clone https://github.com/Luke883i/ictc.git
@@ -12,56 +12,47 @@ npm ci
 ./ictc.sh start --no-open
 ```
 
-Per fermare o verificare il runtime usare rispettivamente `./ictc.sh stop` e `./ictc.sh status`.
+Per fermare o diagnosticare il runtime: `./ictc.sh stop`, `./ictc.sh status`, `./ictc.sh doctor`.
 
-## Branch
+## Prima di modificare
 
-Usare branch brevi e descrittivi:
+1. Leggere `AGENTS.md`.
+2. Identificare l'owner in `docs/authority-matrix.yaml`.
+3. Separare runtime authority, projection, presentation e documentazione derivata.
+4. Preferire estensione di un owner esistente a un nuovo layer parallelo.
+5. Per una write, definire persistence/readback/receipt e il refresh delle proiezioni dipendenti.
+6. Per AI, mantenere `proposed` fino a una azione umana autorizzata.
+7. Per export, mantenere `same-as-read` e claim boundary.
+8. Per UI, riusare primitive, un solo primary action e progressive disclosure.
 
-```text
-agent/<scopo>
-feat/<scopo>
-fix/<scopo>
-docs/<scopo>
-```
+## Persistenza di sviluppo
 
-## Regole di modifica
-
-1. Individuare il file autoritativo in `docs/authority-matrix.yaml`.
-2. Non renderizzare entità grezze: usare `OutcomeEnvelope`.
-3. Non assegnare a output AI stati riservati alla decisione umana.
-4. Ogni controllo UI deve comparire in `docs/ui-wiring-manifest.json`.
-5. Ogni scrittura critica deve essere persistita, riletta e collegata a receipt.
-6. I test runtime devono usare `ICTC_RUNTIME_DIR` isolata e non contaminare la SOT dell'utente.
-7. Non modificare manualmente artefatti generati.
-8. Un comando normativo documentato deve essere eseguibile: `node v3/docs-command-contract-check.mjs` è il falsificatore del contratto comandi.
+La SOT locale usa `state.sqlite` sotto `ICTC_RUNTIME_DIR` (o runtime directory predefinita). I test runtime devono usare directory isolate. Non modificare il database dell'utente per preparare fixture. Un `state.json` è legacy import input, non lo storage corrente da editare.
 
 ## Ciclo locale canonico
-
-Per una modifica ordinaria:
 
 ```bash
 npm run check
 node v3/authority-contract-check.mjs
 node v3/docs-command-contract-check.mjs
+node v3/documentation-authority-check.mjs
 npm test
 ```
 
-`./ictc.sh audit` è il launcher equivalente per l'audit completo e delega allo script npm `audit`. Per una candidata di release usare anche `npm run release:check`.
+Per una candidate usare anche:
 
-I check browser/visuali completi sono eseguiti dai workflow GitHub e devono essere letti sullo stesso HEAD della PR; non esiste oggi uno script npm locale canonico per la visual validation finché non viene materializzato in `package.json`.
+```bash
+npm run release:check
+```
+
+I browser journey completi girano in GitHub Actions e devono essere letti sull'exact PR HEAD.
+
+## Branch e commit
+
+Usare branch brevi (`agent/`, `feat/`, `fix/`, `docs/`). I commit dovrebbero avere una responsabilità falsificabile: contratto, runtime, UI, hardening, test, documentazione. Non combinare una correzione del prodotto con un allentamento del test che la rileva.
 
 ## Pull request
 
-La PR deve dichiarare:
+La PR dichiara problema, journey, impatto epistemico, schema/API, DoD, verifiche, non-obiettivi, residual risk e rollback. Se un check fallisce, correggere la causa sul nuovo commit e rieseguire exact-head; non usare il verde di un SHA precedente.
 
-- problema e obiettivo;
-- journey interessata;
-- impatto epistemico;
-- modifiche allo schema o alle API;
-- Definition of Done;
-- test e audit eseguiti;
-- limiti e non-obiettivi;
-- eventuale piano di rollback.
-
-La promozione segue inoltre GOV-01F: exact PR HEAD, required pre-merge checks sul medesimo SHA, merge via PR e readback post-merge del nuovo SHA di `main`.
+La governance GOV-01F resta compensativa finché GitHub non riporta branch protection server-side attiva.

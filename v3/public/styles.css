@@ -13,6 +13,7 @@
 @import url('./surface-primitives.css');
 @import url('./epistemic-lattice.css');
 @import url('./cross-procedure.css');
+@import url('./procedure-journey-2-1.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}

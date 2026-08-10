@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [index,styles,frame,router,tools,shell,active,css,market,copy,refined]=await Promise.all([
   read('./public/index.html'),read('./public/styles.css'),read('./public/ui/procedure-frame.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/stable-shell.js'),read('./public/ui/active-experience.js'),read('./public/experience-1-9.css'),read('./public/ui/procedure-market-ux.js'),read('./public/ui/product-copy.js'),read('./public/ui/refined-product.js')
@@ -10,8 +11,7 @@ assert.match(shell,/EXPERIENCE_EDITION='1\.9-experience-candidate'/);
 assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not rewrite semantic edition');
 assert.match(copy,/home:'Home'/);assert.match(copy,/processes:'Processi'/);assert.match(copy,/proof:'Postura Standard & Security ICTC'/);
 assert.match(shell,/SURFACE_LABELS\.home/);assert.match(shell,/SURFACE_LABELS\.proof/);assert.match(tools,/SURFACE_LABELS\.proof/);
-assert.match(active,/installProcedureFrame\(\)/);assert.match(active,/installRefinedProduct\(\)/);
-assert.equal((active.match(/installProcedureFrame\(\)/g)||[]).length,1);
+assertActiveInstallers(active,['installProcedureFrame','installRefinedProduct'],{label:'V1.9 active experience'});
 for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Apri Evidenze','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
 assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);assert.match(frame,/state\.role==='auditor'/);
 assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
@@ -28,4 +28,4 @@ assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed 
 for(const token of ['refined-incident-intake','refined-question','neutralizeDynamicMarketCss','PRODUCT_COPY.proofAction'])assert.ok(refined.includes(token),token);
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}\n${refined}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
-console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + refined pre-candidate authority)');
+console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + shared explicit install-pipeline authority)');

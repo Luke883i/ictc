@@ -24,9 +24,96 @@ import { installSurfacePrimitives } from './surface-primitives.js';
 import { installEpistemicLattice } from './epistemic-lattice.js';
 import { installEpistemicInferenceUi } from './epistemic-inference-ui.js';
 import { installCrossProcedureCreate } from './cross-procedure-create.js';
-let installed=false;
-function installStableProfileMenu(){const host=$('.top-actions');if(!host||$('#stableProfileMenu'))return;const roleControl=$('.role-control'),runtime=$('#runtimeStatus'),admin=$('#openAdminCenter'),settings=$('#openSettings');const wrapper=document.createElement('details');wrapper.id='stableProfileMenu';wrapper.className='stable-profile-menu';wrapper.innerHTML='<summary>Profilo</summary><div class="stable-profile-popover"><div data-stable-role-slot></div><div class="stable-profile-actions" data-stable-profile-actions></div></div>';host.insertBefore(wrapper,runtime||null);if(roleControl)wrapper.querySelector('[data-stable-role-slot]').append(roleControl);const actions=wrapper.querySelector('[data-stable-profile-actions]');for(const button of [admin,settings])if(button){button.hidden=false;actions.append(button);button.addEventListener('click',()=>wrapper.removeAttribute('open'));}}
-function updateStableProfileMenu(){const menu=$('#stableProfileMenu');if(!menu)return;const isAdmin=state.role==='admin',actions=menu.querySelector('[data-stable-profile-actions]');if(actions)actions.hidden=!isAdmin;const summary=menu.querySelector('summary');if(summary)summary.textContent=isAdmin?'Amministrazione':state.role==='auditor'?'Auditor':'Profilo';}
-function removeHiddenDuplicateEntries(){const legacy=$('#userMonitoringIntro [data-open-contribution]');if(legacy)legacy.removeAttribute('data-open-contribution');}
-function renderStableChrome(){ensureStableShell();removeHiddenDuplicateEntries();updateStableProfileMenu();renderProcedureExperience();}
-export function installActiveExperience(){if(installed)return;installed=true;installStableShell();installProofSurface();installTraceExplorer();installGrcWorkspace();installSurfaceRouter();installStandardUseLanguage();installProcedureMarketUx();installStandardBrowser();installDraftStore();installProcedureAnatomy();installBindings();installAdminCenter();installProcedureAdmin();installEnterpriseExperience();installFi01Reference();installGlobalTools();installAiOptionalControls();installProcessHandoffs();installRiskActionFidelity();installStableProfileMenu();installProcedureFrame();installRefinedProduct();installEpistemicLattice();installEpistemicInferenceUi();installCrossProcedureCreate();installSurfacePrimitives();updateStableProfileMenu();renderStableChrome();document.addEventListener('ictc:rendered',renderStableChrome);}
+import { installEvidenceDownloads } from './evidence-download-ui.js';
+
+let installed = false;
+
+function installStableProfileMenu() {
+  const host = $('.top-actions');
+  if (!host || $('#stableProfileMenu')) return;
+  const roleControl = $('.role-control');
+  const runtime = $('#runtimeStatus');
+  const admin = $('#openAdminCenter');
+  const settings = $('#openSettings');
+  const wrapper = document.createElement('details');
+  wrapper.id = 'stableProfileMenu';
+  wrapper.className = 'stable-profile-menu';
+  wrapper.innerHTML = '<summary>Profilo</summary><div class="stable-profile-popover"><div data-stable-role-slot></div><div class="stable-profile-actions" data-stable-profile-actions></div></div>';
+  host.insertBefore(wrapper, runtime || null);
+  if (roleControl) wrapper.querySelector('[data-stable-role-slot]').append(roleControl);
+  const actions = wrapper.querySelector('[data-stable-profile-actions]');
+  for (const button of [admin, settings]) {
+    if (!button) continue;
+    button.hidden = false;
+    actions.append(button);
+    button.addEventListener('click', () => wrapper.removeAttribute('open'));
+  }
+}
+
+function updateStableProfileMenu() {
+  const menu = $('#stableProfileMenu');
+  if (!menu) return;
+  const isAdmin = state.role === 'admin';
+  const actions = menu.querySelector('[data-stable-profile-actions]');
+  if (actions) actions.hidden = !isAdmin;
+  const summary = menu.querySelector('summary');
+  if (summary) summary.textContent = isAdmin ? 'Amministrazione' : state.role === 'auditor' ? 'Auditor' : 'Profilo';
+}
+
+function removeHiddenDuplicateEntries() {
+  const legacy = $('#userMonitoringIntro [data-open-contribution]');
+  if (legacy) legacy.removeAttribute('data-open-contribution');
+}
+
+function renderStableChrome() {
+  ensureStableShell();
+  removeHiddenDuplicateEntries();
+  updateStableProfileMenu();
+  renderProcedureExperience();
+}
+
+const INSTALL_ORDER = Object.freeze([
+  // Shell, routing and primary surfaces.
+  installStableShell,
+  installProofSurface,
+  installTraceExplorer,
+  installGrcWorkspace,
+  installSurfaceRouter,
+
+  // Domain presentation layers that decorate those surfaces.
+  installStandardUseLanguage,
+  installProcedureMarketUx,
+  installStandardBrowser,
+  installDraftStore,
+  installProcedureAnatomy,
+
+  // User actions, administration and enterprise helpers.
+  installBindings,
+  installAdminCenter,
+  installProcedureAdmin,
+  installEnterpriseExperience,
+  installFi01Reference,
+  installGlobalTools,
+  installAiOptionalControls,
+  installProcessHandoffs,
+  installRiskActionFidelity,
+  installStableProfileMenu,
+
+  // Progressive experience and cross-cutting representations.
+  installProcedureFrame,
+  installRefinedProduct,
+  installEpistemicLattice,
+  installEpistemicInferenceUi,
+  installCrossProcedureCreate,
+  installEvidenceDownloads,
+  installSurfacePrimitives
+]);
+
+export function installActiveExperience() {
+  if (installed) return;
+  installed = true;
+  for (const install of INSTALL_ORDER) install();
+  updateStableProfileMenu();
+  renderStableChrome();
+  document.addEventListener('ictc:rendered', renderStableChrome);
+}

@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,active,css]=await Promise.all([read('./public/ui/epistemic-inference-ui.js'),read('./public/ui/active-experience.js'),read('./public/epistemic-lattice.css')]);
 for(const token of ['AI ON per questa analisi','input id="epistemicAiOn"','humanOn:true','mode:query?\'query\':\'coverage\'','data-epistemic-review','state.role!==\'admin\'','showReceipt(value)','data-epistemic-refresh'])assert.ok(ui.includes(token),`inference UI missing ${token}`);
 assert.ok(ui.includes("button.disabled=!event.target.checked"),'inference trigger must remain disabled until human ON');
-assert.ok(active.includes('installEpistemicInferenceUi()'),'active experience does not install inference UI');
+assertActiveInstallers(active,['installEpistemicInferenceUi'],{label:'epistemic inference active experience'});
 for(const token of ['.epistemic-inference-panel','.epistemic-ai-switch','.epistemic-derivation[data-status="proposed"]','.epistemic-review'])assert.ok(css.includes(token),`inference css missing ${token}`);
 assert.equal(ui.includes('data-service="actions"'),false,'AI inference UI must not directly launch remediation');
-console.log('epistemic-inference-ui-check: ok (visible human-ON boundary + admin-only derivation review affordance)');
+console.log('epistemic-inference-ui-check: ok (visible human-ON boundary + admin-only review + shared install contract)');

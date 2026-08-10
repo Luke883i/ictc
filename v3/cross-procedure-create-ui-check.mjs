@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,active,styles,crossCss,primitiveCss]=await Promise.all([read('./public/ui/cross-procedure-create.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/cross-procedure.css'),read('./public/surface-primitives.css')]);
 for(const token of ['Crea collegato','data-cross-create','data-cross-submit','/api/cross-procedure/create','source:{procedureId:currentProcedure,type,id}','targetProcedureId','nativePayload','procedure-cross-tools'])assert.ok(ui.includes(token),`cross-create UI missing ${token}`);
 assert.match(ui,/state\.role==='auditor'\)(return|continue)/,'auditor must not receive create affordance');
 for(const target of ['monitoring','incidents','objects','coverage','actions','risks','assurance'])assert.ok(ui.includes(`target==='${target}'`),`native payload adapter UI missing ${target}`);
-assert.ok(active.includes('installCrossProcedureCreate()'),'active experience does not install cross-create UX');
+assertActiveInstallers(active,['installCrossProcedureCreate'],{label:'cross-procedure active experience'});
 assert.ok(styles.includes("@import url('./cross-procedure.css');"),'cross-create css missing from canonical cascade');
 for(const token of ['.cross-create-grid','.cross-create-boundary'])assert.ok(crossCss.includes(token),`cross-create dialog css missing ${token}`);
 for(const token of ['.procedure-cross-tools','[data-cross-create]'])assert.ok(primitiveCss.includes(token),`visible context tool primitive missing ${token}`);
 assert.equal(ui.includes('class="primary" data-cross-create'),false,'cross-create must never compete as procedure primary CTA');
 assert.equal(ui.includes("querySelector('.procedure-anatomy-actions')"),false,'cross-create must not hide inside collapsed technical anatomy');
-console.log('cross-procedure-create-ui-check: ok (visible context tool + single reusable dialog + seven native payload adapters)');
+console.log('cross-procedure-create-ui-check: ok (visible context tool + seven native payload adapters + shared install contract)');

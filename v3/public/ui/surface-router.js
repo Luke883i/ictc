@@ -1,26 +1,238 @@
 import { $, $$, state, storageSet } from './common.js';
 import { SURFACE_LABELS } from './product-copy.js';
 
-const surfaces=Object.freeze({home:'#homeView',processes:'#processesView',grc:'#grcView',monitoring:'#monitoringView',incidents:'#incidentsView',proof:'#proofView',epistemic:'#epistemicView'});
-const GRC_PROCEDURES=new Set(['objects','coverage','actions','risks','assurance']);
-const BACK_LABELS=Object.freeze({home:'Torna a Home',processes:'Torna a Processi',proof:`Torna a ${SURFACE_LABELS.proofCompact||'Postura ICTC'}`,monitoring:'Torna al monitoraggio',incidents:'Torna agli eventi',grc:'Torna alla procedura precedente',epistemic:'Torna al Reticolo epistemico'});
-let navigationEpoch=0,installed=false,lastRoute=null;
+const SURFACES = Object.freeze({
+  home: '#homeView',
+  processes: '#processesView',
+  grc: '#grcView',
+  monitoring: '#monitoringView',
+  incidents: '#incidentsView',
+  proof: '#proofView',
+  epistemic: '#epistemicView'
+});
+const GRC_PROCEDURES = new Set(['objects', 'coverage', 'actions', 'risks', 'assurance']);
+const BACK_LABELS = Object.freeze({
+  home: 'Torna a Home',
+  processes: 'Torna a Processi',
+  proof: `Torna a ${SURFACE_LABELS.proofCompact || 'Postura ICTC'}`,
+  monitoring: 'Torna al monitoraggio',
+  incidents: 'Torna agli eventi',
+  grc: 'Torna alla procedura precedente',
+  epistemic: 'Torna al Reticolo epistemico'
+});
 
-function normalizeSurface(value){return Object.hasOwn(surfaces,value)?value:'home';}
-function normalizeProcedure(value){return GRC_PROCEDURES.has(value)?value:null;}
-function currentProcedure(){return normalizeProcedure(state.activeProcessId)||(()=>{try{return normalizeProcedure(localStorage.getItem('ictc-grc-process'));}catch{return null;}})()||'objects';}
-function routeFor(surface=state.service,procedureId=null){const normalized=normalizeSurface(surface),route={surface:normalized};if(normalized==='grc')route.procedureId=normalizeProcedure(procedureId)||currentProcedure();return route;}
-function sameRoute(a,b){return Boolean(a&&b&&a.surface===b.surface&&(a.procedureId||null)===(b.procedureId||null));}
-function routeFromUrl(){if(typeof location==='undefined')return null;const url=new URL(location.href),view=url.searchParams.get('view');if(!view||!Object.hasOwn(surfaces,view))return null;const route={surface:view};if(view==='grc')route.procedureId=normalizeProcedure(url.searchParams.get('procedure'))||'objects';return route;}
-function routeUrl(route){if(typeof location==='undefined')return'';const url=new URL(location.href);url.searchParams.set('view',route.surface);if(route.surface==='grc'&&route.procedureId)url.searchParams.set('procedure',route.procedureId);else url.searchParams.delete('procedure');return `${url.pathname}${url.search}${url.hash}`;}
-function applyRoute(route){const next=routeFor(route?.surface,route?.procedureId);state.service=next.surface;if(next.surface==='grc'&&next.procedureId){state.activeProcessId=next.procedureId;storageSet('ictc-grc-process',next.procedureId);}storageSet('ictc-service',next.surface);lastRoute=next;return next;}
-function commitHistory(route,mode='push',from=null){if(typeof history==='undefined'||mode==='none')return;const current=history.state?.ictc?history.state.route:null;if(mode==='push'&&sameRoute(current,route))return;const payload={ictc:true,route,from:from||history.state?.route||lastRoute||null};const method=mode==='replace'?'replaceState':'pushState';history[method](payload,'',routeUrl(route));}
-function focusSurface(active,targetSelector=null){const epoch=++navigationEpoch,selector=targetSelector||surfaces[active]||'#main';const focusCurrent=()=>{if(epoch!==navigationEpoch||state.service!==active)return;const target=$(selector);if(!target||target.hidden)return;if(!target.hasAttribute('tabindex'))target.setAttribute('tabindex','-1');target.focus({preventScroll:false});};focusCurrent();queueMicrotask(focusCurrent);requestAnimationFrame(focusCurrent);}
+let navigationEpoch = 0;
+let installed = false;
+let lastRoute = null;
 
-export function renderSurfaceNavigation(){const active=normalizeSurface(state.service);state.service=active;for(const [surface,selector] of Object.entries(surfaces)){const view=$(selector);if(view)view.hidden=surface!==active;}$$('.workspace-return').forEach(button=>{const owner=button.closest('.view');if(owner&&!owner.hidden)button.setAttribute('data-workspace-return','');else button.removeAttribute('data-workspace-return');});$$('[data-service]').forEach(button=>button.setAttribute('aria-current',button.dataset.service===active?'page':'false'));document.documentElement.dataset.ictcSurface=active;document.documentElement.dataset.ictcWorkspace=['monitoring','incidents','grc','epistemic'].includes(active)?active:'none';return active;}
-export function navigateSurface(value,{focus=true,focusTarget=null,historyMode='push',procedureId=null,origin=null}={}){const from=routeFor(state.service),next=routeFor(value,procedureId);applyRoute(next);commitHistory(next,historyMode,origin||from);renderSurfaceNavigation();document.dispatchEvent(new CustomEvent('ictc:surface-changed',{detail:{surface:next.surface,procedureId:next.procedureId||null,route:next,from}}));if(focus)focusSurface(next.surface,focusTarget);return next.surface;}
-export function getBackLabel(){const from=typeof history!=='undefined'&&history.state?.ictc?history.state.from:null;return BACK_LABELS[from?.surface]||'Torna a Processi';}
-export function navigateBack(){const from=typeof history!=='undefined'&&history.state?.ictc?history.state.from:null;if(from&&typeof history!=='undefined'&&history.length>1){history.back();return from.surface;}return navigateSurface('processes',{historyMode:'replace'});}
-function isContextualWorkspaceTrigger(trigger){return trigger.hasAttribute('data-grc-process')||trigger.hasAttribute('data-home-action')||trigger.hasAttribute('data-global-kind');}
-function restoreFromHistory(event){const route=event.state?.ictc?event.state.route:routeFromUrl();if(!route)return;applyRoute(route);renderSurfaceNavigation();document.dispatchEvent(new CustomEvent('ictc:surface-changed',{detail:{surface:route.surface,procedureId:route.procedureId||null,route,history:'pop'}}));focusSurface(route.surface);}
-export function installSurfaceRouter(){if(installed)return;installed=true;const urlRoute=routeFromUrl(),initial=urlRoute||routeFor(state.service);applyRoute(initial);commitHistory(initial,'replace',null);window.addEventListener('popstate',restoreFromHistory);window.addEventListener('click',event=>{const back=event.target.closest?.('[data-nav-back]');if(back){event.preventDefault();event.stopImmediatePropagation();navigateBack();return;}const trigger=event.target.closest?.('[data-service]');if(!trigger||isContextualWorkspaceTrigger(trigger))return;event.preventDefault();event.stopImmediatePropagation();navigateSurface(trigger.dataset.service);},true);document.addEventListener('ictc:rendered',renderSurfaceNavigation);renderSurfaceNavigation();}
+function normalizeSurface(value) {
+  return Object.hasOwn(SURFACES, value) ? value : 'home';
+}
+
+function normalizeProcedure(value) {
+  return GRC_PROCEDURES.has(value) ? value : null;
+}
+
+function storedProcedure() {
+  try { return normalizeProcedure(localStorage.getItem('ictc-grc-process')); }
+  catch { return null; }
+}
+
+function currentProcedure() {
+  return normalizeProcedure(state.activeProcessId) || storedProcedure() || 'objects';
+}
+
+function routeFor(surface = state.service, procedureId = null) {
+  const route = { surface: normalizeSurface(surface) };
+  if (route.surface === 'grc') route.procedureId = normalizeProcedure(procedureId) || currentProcedure();
+  return route;
+}
+
+function sameRoute(left, right) {
+  return Boolean(left && right && left.surface === right.surface && (left.procedureId || null) === (right.procedureId || null));
+}
+
+function routeFromUrl() {
+  const url = new URL(location.href);
+  const view = url.searchParams.get('view');
+  if (!view || !Object.hasOwn(SURFACES, view)) return null;
+  const route = { surface: view };
+  if (view === 'grc') route.procedureId = normalizeProcedure(url.searchParams.get('procedure')) || 'objects';
+  return route;
+}
+
+function routeUrl(route) {
+  const url = new URL(location.href);
+  url.searchParams.set('view', route.surface);
+  if (route.surface === 'grc' && route.procedureId) url.searchParams.set('procedure', route.procedureId);
+  else url.searchParams.delete('procedure');
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function applyRoute(route) {
+  const next = routeFor(route?.surface, route?.procedureId);
+  state.service = next.surface;
+  if (next.surface === 'grc') {
+    state.activeProcessId = next.procedureId;
+    storageSet('ictc-grc-process', next.procedureId);
+  }
+  storageSet('ictc-service', next.surface);
+  lastRoute = next;
+  return next;
+}
+
+function commitHistory(route, mode = 'push', from = null) {
+  if (mode === 'none') return;
+  const current = history.state?.ictc ? history.state.route : null;
+  if (mode === 'push' && sameRoute(current, route)) return;
+  const payload = { ictc: true, route, from: from || history.state?.route || lastRoute || null };
+  history[mode === 'replace' ? 'replaceState' : 'pushState'](payload, '', routeUrl(route));
+}
+
+function focusSurface(active, targetSelector = null) {
+  const epoch = ++navigationEpoch;
+  const selector = targetSelector || SURFACES[active] || '#main';
+  const focusCurrent = () => {
+    if (epoch !== navigationEpoch || state.service !== active) return;
+    const target = $(selector);
+    if (!target || target.hidden) return;
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: false });
+  };
+  focusCurrent();
+  queueMicrotask(focusCurrent);
+  requestAnimationFrame(focusCurrent);
+}
+
+function reducedMotion() {
+  return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+}
+
+function transitionDirection(from, next, mode) {
+  if (mode === 'pop' || (next.surface === 'processes' && from.surface !== 'processes')) return 'back';
+  if (from.surface === 'processes' && next.surface !== 'processes') return 'forward';
+  return from.surface === next.surface ? 'lateral' : 'cross';
+}
+
+function runTransition(update, direction) {
+  const root = document.documentElement;
+  root.dataset.ictcTransitionDirection = direction;
+  if (reducedMotion() || typeof document.startViewTransition !== 'function') {
+    update();
+    queueMicrotask(() => delete root.dataset.ictcTransitionDirection);
+    return null;
+  }
+  const transition = document.startViewTransition(update);
+  Promise.resolve(transition.finished).finally(() => delete root.dataset.ictcTransitionDirection);
+  return transition;
+}
+
+function focusAfterTransition(transition, surface, targetSelector) {
+  if (!transition) {
+    focusSurface(surface, targetSelector);
+    return;
+  }
+  Promise.resolve(transition.ready).catch(() => {}).then(() => focusSurface(surface, targetSelector));
+}
+
+export function renderSurfaceNavigation() {
+  const active = normalizeSurface(state.service);
+  state.service = active;
+  for (const [surface, selector] of Object.entries(SURFACES)) {
+    const view = $(selector);
+    if (view) view.hidden = surface !== active;
+  }
+  $$('.workspace-return').forEach(button => {
+    const owner = button.closest('.view');
+    if (owner && !owner.hidden) button.setAttribute('data-workspace-return', '');
+    else button.removeAttribute('data-workspace-return');
+  });
+  $$('[data-service]').forEach(button => button.setAttribute('aria-current', button.dataset.service === active ? 'page' : 'false'));
+  document.documentElement.dataset.ictcSurface = active;
+  document.documentElement.dataset.ictcWorkspace = ['monitoring', 'incidents', 'grc', 'epistemic'].includes(active) ? active : 'none';
+  return active;
+}
+
+function announceSurfaceChanged(next, from, direction, extra = {}) {
+  document.dispatchEvent(new CustomEvent('ictc:surface-changed', {
+    detail: {
+      surface: next.surface,
+      procedureId: next.procedureId || null,
+      route: next,
+      from,
+      direction,
+      ...extra
+    }
+  }));
+}
+
+export function navigateSurface(value, {
+  focus = true,
+  focusTarget = null,
+  historyMode = 'push',
+  procedureId = null,
+  origin = null
+} = {}) {
+  const from = routeFor(state.service);
+  const next = routeFor(value, procedureId);
+  const direction = transitionDirection(from, next, historyMode);
+  applyRoute(next);
+  commitHistory(next, historyMode, origin || from);
+  announceSurfaceChanged(next, from, direction);
+  const transition = runTransition(renderSurfaceNavigation, direction);
+  if (focus) focusAfterTransition(transition, next.surface, focusTarget);
+  return next.surface;
+}
+
+export function getBackLabel() {
+  const from = history.state?.ictc ? history.state.from : null;
+  return BACK_LABELS[from?.surface] || 'Torna a Processi';
+}
+
+export function navigateBack() {
+  const from = history.state?.ictc ? history.state.from : null;
+  if (from && history.length > 1) {
+    history.back();
+    return from.surface;
+  }
+  return navigateSurface('processes', { historyMode: 'replace' });
+}
+
+function isContextualTrigger(trigger) {
+  return trigger.hasAttribute('data-grc-process') || trigger.hasAttribute('data-home-action') || trigger.hasAttribute('data-global-kind');
+}
+
+function restoreFromHistory(event) {
+  const route = event.state?.ictc ? event.state.route : routeFromUrl();
+  if (!route) return;
+  const from = routeFor(state.service);
+  const next = applyRoute(route);
+  announceSurfaceChanged(next, from, 'back', { history: 'pop' });
+  const transition = runTransition(renderSurfaceNavigation, 'back');
+  focusAfterTransition(transition, next.surface, null);
+}
+
+export function installSurfaceRouter() {
+  if (installed) return;
+  installed = true;
+  const initial = routeFromUrl() || routeFor(state.service);
+  applyRoute(initial);
+  commitHistory(initial, 'replace', null);
+  window.addEventListener('popstate', restoreFromHistory);
+  window.addEventListener('click', event => {
+    const back = event.target.closest?.('[data-nav-back]');
+    if (back) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      navigateBack();
+      return;
+    }
+    const trigger = event.target.closest?.('[data-service]');
+    if (!trigger || isContextualTrigger(trigger)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    navigateSurface(trigger.dataset.service);
+  }, true);
+  document.addEventListener('ictc:rendered', renderSurfaceNavigation);
+  renderSurfaceNavigation();
+}
