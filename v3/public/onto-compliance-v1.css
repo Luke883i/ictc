@@ -4,6 +4,30 @@ html[data-ictc-experience-edition="1.9-experience-candidate"] .procedure-state.r
   color:#5b6678;
   border:1px solid #dde3eb;
 }
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope.in-scope{
+  background:#eef1ff;
+  color:#4652a3;
+  border-color:#d8ddff;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor{
+  width:100%;
+  border-top:1px solid #edf0f4;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor>summary{
+  display:flex;
+  min-height:44px;
+  align-items:center;
+  cursor:pointer;
+  color:#536078;
+  font-size:.72rem;
+  font-weight:750;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-scope-editor>.market-scope-form{
+  padding:.15rem 0 .65rem;
+}
+html[data-ictc-experience-edition="1.9-experience-candidate"] .market-framework-card footer{
+  margin-top:auto;
+}
 
 /* Tablet is a first-class layout, not a desktop layout squeezed until 760px. */
 @media(max-width:900px){
