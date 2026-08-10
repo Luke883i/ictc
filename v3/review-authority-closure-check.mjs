@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import { canonicalReviewInbox } from './runtime/review-inbox.mjs';
+import { reconcileReviewNeeds } from './runtime/review-need-ledger.mjs';
+const state={revision:7,settings:{},grcObjects:[{id:'o1',name:'Oggetto',status:'active',attestationDueAt:'2020-01-01T00:00:00.000Z',createdBy:'admin'}],grcMappings:[],grcActions:[],grcRisks:[],grcAssurance:[],catalog:[],incidents:[],reviewNeeds:[]},at='2026-08-10T10:00:00.000Z',actor={id:'admin',role:'admin'};
+let result=reconcileReviewNeeds(state,{at,revision:8,context:{validAsOf:at,stateRevision:8},causeMode:'business',causation:'business-state-change'});assert.equal(result.created.length,0,'clock-only due work must not be attributed to a business mutation');
+result=reconcileReviewNeeds(state,{at,revision:8,context:{validAsOf:at,stateRevision:8},causeMode:'clock',causation:'clock-sweep'});assert.equal(result.created.length,1);assert.equal(result.created[0].causeClass,'clock');assert.equal(result.created[0].causation,'clock-sweep');const id=result.created[0].id;
+result=reconcileReviewNeeds(state,{at:'2026-08-10T10:01:00.000Z',revision:9,context:{validAsOf:'2026-08-10T10:01:00.000Z',stateRevision:9},causeMode:'clock',causation:'clock-sweep'});assert.equal(result.created.length,0);assert.equal(state.reviewNeeds.length,1,'clock sweep retry must be idempotent');
+state.grcObjects[0].attestationDueAt='2030-01-01T00:00:00.000Z';const inbox=canonicalReviewInbox(state,actor);assert.equal(inbox.dependencyReviewAuthority,'persisted-review-need-ledger');assert.ok(inbox.items.some(item=>item.id===id&&item.authority==='persisted-review-need-ledger'),'inbox must read the persisted ReviewNeed instead of re-deriving current state');
+console.log('review-authority-closure-check: ok (clock causation separated; persisted ledger owns dependency-review inbox)');
