@@ -1,0 +1,6 @@
+/* Onto-Compliance Horizon v1: visual semantics must not imply authority the data does not carry. */
+html[data-ictc-experience-edition="1.9-experience-candidate"] .procedure-state.ready{
+  background:#f1f4f8;
+  color:#5b6678;
+  border:1px solid #dde3eb;
+}
