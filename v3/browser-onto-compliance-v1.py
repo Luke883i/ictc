@@ -109,13 +109,13 @@ def audit_proof(page,role,vp,width):
     no_overflow(page,role,vp,'proof'); one_h1(page,role,vp,'proof'); shot(page,role,vp,'proof',width)
 
 def epistemic_network_coverage(page,role,expected_ids):
-    seen=set(); offset=0; limit=80; pages=0
+    seen=set(); offset=0; limit=200; pages=0
     for pages in range(1,41):
         data=api_json(page,f'/api/epistemic-lattice?offset={offset}&limit={limit}',role)
         atoms=data.get('atoms',[])
         seen.update(str(a.get('procedureId')) for a in atoms if a.get('procedureId'))
         projection=data.get('projection',{})
-        if len(atoms)<limit or int(projection.get('fromRevision') or 0)<=1: break
+        if int(projection.get('fromRevision') or 0)<=1 or int(projection.get('toRevision') or 0)<=0: break
         offset+=limit
     return {'seen':sorted(seen),'missing':sorted(set(expected_ids)-seen),'pages':pages,'offset':offset}
 
@@ -125,7 +125,7 @@ def audit_ep(page,role,vp,width,expected_ids,revision):
         expect(meta).to_be_visible(); meta.locator('[data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible()
         page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision)
         current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role)
-        expected_current=sorted({str(a.get('procedureId')) for a in current.get('atoms',[]) if a.get('procedureId')})
+        expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])})
         actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
         if actual_current!=expected_current: anomaly('epistemic-current-page-projection-mismatch',role,vp,'EP-01',actual_current,expected_current)
         if role not in network_coverage_checked:
