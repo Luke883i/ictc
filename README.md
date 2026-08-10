@@ -1,52 +1,75 @@
-# ICTC — Compliance operativa e tracciabile
+# ICTC
 
-ICTC è un compliance operations system open-source per sette processi aziendali bounded, costruiti sopra un substrato comune di decisioni umane, versioni, relazioni, audit ed evidenze.
+ICTC è un sistema operativo di compliance per registrare lavoro, decisioni, evidenze e relazioni attraverso **sette procedure aziendali bounded**, mantenendo separati fatti registrati, proposte AI, review umane e conclusioni che richiedono autorità esterna.
 
-## Identità di rilascio
+ICTC non è una certificazione, un parere legale, un auditor autonomo né un security perimeter. Un controllo presente, un mapping, un hash o un receipt non dimostrano da soli conformità, applicabilità, efficacia o sufficienza probatoria.
 
-L'identità corrente è multidimensionale e dichiarata in `v3/release-identity.json`:
+## Il prodotto, oggi
 
-- package software: `1.8.0`;
-- profilo semantico: `1.2-market-candidate`;
-- esperienza: `1.9-experience-candidate`;
-- profilo di raffinamento: `1.9.1-pre-candidate`;
-- profilo epistemico in PR: `2.0-epistemic-lattice-pre-candidate`.
+La navigazione canonica è **Home / Processi / Postura Standard & Security ICTC**. Da Processi, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
 
-Queste dimensioni non vanno fuse in un unico numero: package, semantica, esperienza, refinement ed epistemica hanno autorità diverse. Il file `v3/release-identity.json` è la fonte cross-documenti per questa identità.
+Le sette procedure sono:
 
-## Processi
+| Codice | Procedura | Oggetto operativo |
+|---|---|---|
+| RN-01 | Monitoraggio normativo | monitoraggi, fonti, requisiti e decisioni di fonte |
+| EC-01 | Eventi e segnalazioni | fatti originari, chiarimenti, formulazioni e stato evento |
+| AO-01 | Inventario | sistemi e oggetti nel perimetro |
+| MC-01 | Controlli e copertura | standard, requisiti e proposte di mapping |
+| AP-01 | Azioni correttive | azioni, owner, scadenze e stato |
+| RC-01 | Rischi compliance | rischi, valutazioni e trattamento |
+| AR-01 | Questionari e verifiche | casi di assurance, domande, risposte e review |
 
-- `RN-01` — Monitoraggio normativo
-- `EC-01` — Eventi e segnalazioni
-- `AO-01` — Inventario di sistemi e oggetti
-- `MC-01` — Controlli e copertura
-- `AP-01` — Azioni correttive
-- `RC-01` — Rischi di compliance
-- `AR-01` — Questionari e verifiche
+Ogni procedura può creare un record iniziale compatibile in un'altra procedura tramite il contratto cross-procedure, senza bypassare RBAC, policy o normalizzatore del target.
 
-`EV-01` resta un piano trasversale di ricostruzione, non un ottavo processo business.
+## Come leggere ICTC
 
-La pre-candidate 2.0 aggiunge `EP-01 — Reticolo epistemico` come **meta-procedura cross-cutting** per admin e auditor. EP-01 non entra nel registry dei sette processi business: proietta versioni ed effetti semantici cumulati in modalità flat/raw e proto-grafo, con AI human-ON proposal-only.
+L'esperienza distribuisce la complessità in strati. La superficie operativa mostra prima ciò che serve per agire; contesto, lineage, dati raw e limiti sono disponibili tramite disclosure progressive. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
 
-## Esperienza
+**Postura Standard & Security ICTC** risponde, in quest'ordine, a tre domande: cosa è osservabile, quale evidenza manca, cosa ICTC non conclude. Decisioni, runtime, deployment gap, riferimenti ed export sono livelli successivi.
 
-La navigazione canonica è:
+**EP-01 · Reticolo epistemico** presenta la stessa proiezione revision-bound in tre modi: `Esplora`, `Flat / raw`, `Proto-grafo`. In Esplora il percorso è **Quadro → Gruppi → Relazioni → Atomo**. Le letture AI restano visivamente e semanticamente separate dai record business.
 
-**Home / Processi / Postura Standard & Security ICTC**
+## Autorità epistemica
 
-Su viewport stretti la terza voce può essere resa come **Postura ICTC**, mantenendo il nome completo come accessible name e titolo della superficie.
+La regola centrale è semplice: **registrare non significa concludere**.
 
-La superficie Postura collega controlli applicativi, standard, sicurezza, evidenze, deployment gap e limiti. Non è una certificazione, un parere legale o un security assessment del deployment.
+- una osservazione descrive ciò che è stato acquisito;
+- una proposta AI resta `proposed`;
+- una review o decisione umana è registrata come azione distinta;
+- ogni statement conserva producer, input, timestamp, limiti e receipt quando previsti;
+- la sola presenza di evidenza non produce un verdetto legale o di compliance.
 
-Da **Processi**, admin e auditor possono aprire **Reticolo epistemico**. La vista flat/raw e il proto-grafo sono due rappresentazioni della stessa proiezione SQLite revision-bound; il grafo non costituisce una seconda fonte di verità.
+L'AI è opzionale. In EP-01 l'inferenza richiede un'esplicita attivazione umana per ogni run; le derivazioni L1–L4 citano i basis atom e i riferimenti impiegati e non promuovono autonomamente stato umano.
 
-## Autorità ed epistemica
+## Persistenza e integrità AS-IS
 
-L'AI è opzionale e proposal-only. Le decisioni operative, i rating, le approvazioni e le chiusure che richiedono autorità rimangono umane. La presenza di una prova, di un hash o di un mapping non equivale automaticamente a conformità, applicabilità, efficacia del controllo o sufficienza legale.
+Il runtime canonico è `v3/server.mjs`. La persistenza locale corrente è **SQLite** (`state.sqlite`) tramite `v3/sqlite-state-persistence.mjs`, con WAL, `synchronous=FULL` e foreign keys abilitate.
 
-In EP-01 l'AI richiede un'esplicita attivazione umana per ogni analisi. Le derivazioni progressive L1-L4 restano `proposed`, devono citare gli atomi basis e i riferimenti standard/best-practice usati e possono essere revisionate separatamente senza modificare i record business originari.
+Il modello distingue responsabilità diverse:
 
-## Avvio
+- `snapshot`: stato canonico corrente, mutabile per revisione;
+- `audit`: ledger append-only hash-linked delle mutazioni;
+- `subject_payload`: payload content-addressed;
+- `subject_version`: versioni semantiche append-only;
+- `epistemic_step`: step epistemici append-only legati alla revisione/audit.
+
+Un vecchio `state.json`, se presente, è solo sorgente di import legacy e viene archiviato dopo la migrazione. ICTC non deve essere descritto come event store completo: lo snapshot corrente non è ricostruito esclusivamente dal ledger audit.
+
+I receipt e i binding di digest rilevano incoerenze entro il modello software verificato; non equivalgono a firma qualificata, trusted timestamp o non-ripudio contro un attore capace di riscrivere storage e catena.
+
+## Evidenze ed export
+
+I fascicoli oggetto-specifici sono **same-as-read**: un export non espande mai l'autorizzazione di lettura. Un'unica proiezione canonica alimenta:
+
+- **PDF** stampabile con intestazione ICTC;
+- **XML** strutturato;
+- **Markdown** leggibile;
+- **ZIP** completo con JSON, graph, claims, decisioni, audit, receipt, PDF/XML/Markdown e checksum SHA-256.
+
+Il receipt di lineage riporta, quando disponibili, revisione, timestamp, actor/role, subject, `previousHash`, event hash, digest input/result/state, semantic manifest ed epistemic-step binding. È evidenza tecnica di ciò che ICTC ha registrato, non attestazione della verità sostanziale del contenuto.
+
+## Avvio locale
 
 Richiede Node.js 22 o successivo.
 
@@ -55,18 +78,48 @@ npm ci
 ./ictc.sh start --no-open
 ```
 
-Apri `http://127.0.0.1:4173`.
+Il server ascolta normalmente su `127.0.0.1:4173`. Un bind di rete richiede le condizioni di sicurezza previste dal runtime; TLS e protezione del deployment restano responsabilità dell'operatore.
 
-## Verifica corrente
+## Verifica
+
+La suite corrente è la superficie normativa per la candidate in sviluppo:
+
+```bash
+npm test
+npm run release:check
+```
+
+Per diagnosi mirata:
 
 ```bash
 npm run test:current:semantic
 npm run test:current:runtime
-python -u v3/browser-v1-9-experience.py
+node v3/authority-contract-check.mjs
+node v3/docs-command-contract-check.mjs
 ```
 
-Il profilo epistemico 2.0 aggiunge i gate di surface primitives, EP-01, AI human-ON, cross-procedure creation e `v3/epistemic-lattice-saturation.mjs`. Il saturation è bounded evidence e non prova l'assenza di classi di difetto ignote.
+I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
 
-## Limiti
+## Identità della candidate
 
-La stabilità software dichiarata non è una certificazione di conformità, una attestazione di un assessor esterno, né una garanzia che qualunque deployment sia production-ready. Prima di un uso regolato o business-critical leggere `SECURITY.md`, `SUPPORT.md`, i documenti di autorità e i claim boundary della release.
+`v3/release-identity.json` è la fonte cross-documenti. Le dimensioni restano separate perché descrivono contratti diversi:
+
+- package: `1.8.0`;
+- semantica: `1.2-market-candidate`;
+- esperienza: `1.9-experience-candidate`;
+- refinement: `1.9.1-pre-candidate`;
+- profilo epistemico: `2.0-epistemic-lattice-pre-candidate`;
+- journey/convergenza: `2.1-procedure-journey-semantic-exploration-pre-candidate`.
+
+## Sviluppo e documentazione
+
+Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml`. Le guide operative principali sono:
+
+- `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
+- `docs/TESTING.md` — suite e falsificatori;
+- `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
+- `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
+- `docs/PR60_GLOBAL_DOD.md` — convergenza e Definition of Done della candidate;
+- `SECURITY.md` — boundary e responsabilità di deployment.
+
+La documentazione storica rimane utile per lineage progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.

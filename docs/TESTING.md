@@ -1,60 +1,52 @@
 # Strategia di test e audit
 
-## Comando completo
+## Superficie normativa corrente
 
 ```bash
 npm test
 ```
 
-`npm test` concatena i tre livelli canonici `test:contract`, `test:runtime` e `test:enterprise-t`. `./ictc.sh audit` delega a `npm run audit`, che oggi delega allo stesso `npm test`.
+`npm test` esegue `test:current`, cioè **current semantic suite + current runtime suite**. I rail storici (`test:contract`, `test:runtime`, `test:enterprise-t`, `test:legacy-regressions`) restano disponibili per diagnosi/regressione ma non ridefiniscono da soli la candidate corrente.
 
-## Comandi canonici
+Per una release candidate:
 
-| Livello | Scopo | Comando |
+```bash
+npm run release:check
+```
+
+`release:check` aggiunge il rail stable prima della suite corrente.
+
+## Livelli
+
+| Livello | Comando | Cosa falsifica |
 |---|---|---|
-| Sintassi | Parsing dei moduli runtime/UI/check | `npm run check` |
-| Contratto | Contratti prodotto, journey, epistemica, security e assurance | `npm run test:contract` |
-| Runtime | Evidenza, replay, persistenza, journey E2E e runtime saturation | `npm run test:runtime` |
-| Enterprise T | Saturation, convergence, audit e falsification | `npm run test:enterprise-t` |
-| Suite completa | Contratto + runtime + Enterprise T | `npm test` |
-| Audit completo | Alias operativo della suite completa | `npm run audit` |
-| Release candidate | Gate locale di release attualmente equivalente alla suite completa | `npm run release:check` |
-| Authority | Coerenza tra authority matrix e runtime eseguibile | `node v3/authority-contract-check.mjs` |
-| Documentazione comandi | Ogni comando normativo documentato deve esistere | `node v3/docs-command-contract-check.mjs` |
-| GOV-01F self-test | Provenienza PR/main e direct-push detector | `node v3/governance-free-private-check.mjs --self-test` |
+| Sintassi | `npm run check` | parsing dei moduli |
+| Semantic current | `npm run test:current:semantic` | authority, procedure, UI contract, epistemica, security static posture, saturation |
+| Runtime current | `npm run test:current:runtime` | persistenza, readback, authorization, evidence, E2E runtime |
+| Candidate corrente | `npm test` | semantic + runtime current |
+| Release | `npm run release:check` | stable rail + candidate corrente |
+| Authority | `node v3/authority-contract-check.mjs` | ownership dichiarata vs runtime |
+| Docs commands | `node v3/docs-command-contract-check.mjs` | comandi normativi esistenti |
+| Docs AS-IS | `node v3/documentation-authority-check.mjs` | drift persistence/release/testing/security |
 
-Gli script specializzati presenti in `package.json` possono essere usati per regressioni mirate; la tabella sopra è la superficie normativa minima. Nessun documento deve prescrivere un nuovo script npm prima che lo script esista realmente in `package.json`.
+## Browser journey
 
-## Journey critiche
+GitHub Actions esegue journey server-backed sul medesimo PR HEAD. La candidate mantiene i journey V1.9, V2.0 e V2.1 invece di sostituirli: regressione dell'esperienza precedente e nuovi percorsi vengono falsificati insieme.
 
-- proposta manuale di link o file;
-- acquisizione locale, checksum e classificazione proposta;
-- review umana della fonte;
-- esecuzione di un job di scouting;
-- review di un finding;
-- creazione di segnalazione o incidente;
-- conferma owner e RACI;
-- interrogazione dell'assistente senza write authority;
-- persistenza dopo riavvio;
-- verifica della hash-chain.
+Il journey V2.1 attraversa le sette procedure con scritture reali da UI, verifica avanzamento revisione/proiezione, EP-01, History, mobile e reduced-motion. I test browser sono evidenza automatizzata; non sostituiscono test umani con screen reader o una review visuale professionale.
 
-## Criterio di accettazione
+## Evidence/export
 
-Una UI non è considerata funzionante se:
+Il fascicolo oggetto-specifico deve mantenere la stessa autorizzazione di lettura in PDF, XML, Markdown e ZIP. I gate verificano magic/header, escaping XML, lineage, digest, claim boundary e assenza di widening authorization.
 
-- mostra un esito prima di persistenza e readback quando il contratto richiede una scrittura;
-- presenta una proposta AI come decisione umana;
-- dichiara un controllo nel wiring manifest senza handler e route reali;
-- dipende da stato di test nella SOT usata dall'utente;
-- non offre focus visibile, nome accessibile o alternativa al movimento.
+## Saturation
 
-## Browser e tecnologie assistive
+I saturation runner usano scenari pseudo-casuali, fault injection e holdout con seed distinto. Un risultato senza nuove firme nello spazio generato è **bounded evidence**, non prova universale di assenza di difetti. I compression mutant devono inoltre dimostrare che una semplificazione che rimuove una responsabilità necessaria reintroduce almeno un'anomalia osservabile.
 
-I workflow `browser` e `browser-journeys` forniscono evidenza browser automatizzata sul commit osservato; non sostituiscono test umani con tecnologie assistive. Prima di una release destinata a utenti reali restano necessari, quando applicabili:
+## Accessibilità e finitura
 
-- tastiera completa sui browser target;
-- VoiceOver su macOS/iOS;
-- NVDA su Windows;
-- zoom 200% e reflow a 320 CSS pixel;
-- contrasto e modalità `prefers-reduced-motion`;
-- verifica manuale dei dialoghi e del ritorno del focus.
+Prima di una release destinata a utenti reali sono ancora raccomandati test manuali su tastiera, VoiceOver/NVDA, zoom 200%, reflow 320 CSS px, contrasto, dialog/focus e stampa dei receipt PDF. Il CI automatizzato verifica reduced-motion, nomi accessibili e vari invarianti geometrici, non ogni combinazione AT/browser.
+
+## Regola exact-head
+
+Il colore di un check appartiene al commit su cui è stato eseguito. Dopo ogni commit correttivo i risultati del vecchio SHA sono genealogia, non DoD corrente. La promozione usa soltanto check e artifact dell'exact PR HEAD osservato.
