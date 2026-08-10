@@ -9,15 +9,15 @@ assert.match(index,/data-ictc-edition="1\.2-market-candidate"/,'semantic edition
 assert.match(shell,/ictcExperienceEdition=EXPERIENCE_EDITION/);
 assert.match(shell,/EXPERIENCE_EDITION='1\.9-experience-candidate'/);
 assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not rewrite semantic edition');
-assert.match(copy,/home:'Home'/);assert.match(copy,/processes:'Processi'/);assert.match(copy,/proof:'Postura Standard & Security ICTC'/);
+assert.match(copy,/home:'Oggi'/);assert.match(copy,/processes:'Processi di Compliance'/);assert.match(copy,/proof:'Postura ICTC'/);
 assert.match(shell,/SURFACE_LABELS\.home/);assert.match(shell,/SURFACE_LABELS\.proof/);assert.match(tools,/SURFACE_LABELS\.proof/);
 assertActiveInstallers(active,['installProcedureFrame','installRefinedProduct'],{label:'V1.9 active experience'});
-for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Consulta record','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
+for(const token of ['Scopo del processo','data-procedure-primary','data-process-code','Consulta registrazioni','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
 assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);assert.match(frame,/state\.role==='auditor'/);
-assert.ok(frame.includes('openReadSurface(id)'),'auditor primary must remain procedure-bound in the current experience');
-assert.doesNotMatch(frame,/navigateSurface\('proof'\)/,'procedure primary must not redirect auditor out of the current procedure');
-assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
-assert.doesNotMatch(frame,/className='grc-head procedure-frame'/,'canonical ProcedureFrame must not expose the legacy GRC header hook');
+assert.ok(frame.includes('openReadSurface(id)'),'auditor primary must remain process-bound in the current experience');
+assert.doesNotMatch(frame,/navigateSurface\('proof'\)/,'process primary must not redirect auditor out of the current process');
+assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'process membership and primary labels must come from canonical registry');
+assert.doesNotMatch(frame,/className='grc-head procedure-frame'/,'canonical process frame must not expose the legacy GRC header hook');
 assert.doesNotMatch(frame,/button\.remove\(\)/,'presentation layer must not delete unknown controls to hide accessibility bugs');
 for(const token of ['pushState','replaceState','popstate','view','procedureId','getBackLabel','navigateBack'])assert.ok(router.includes(token),token);
 for(const token of ['metaKey','RECENT_KEY','ArrowDown','ArrowUp','Escape','enabledProcedures','allowedRecent'])assert.ok(tools.includes(token),token);
@@ -30,4 +30,4 @@ assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed 
 for(const token of ['refined-incident-intake','refined-question','neutralizeDynamicMarketCss','PRODUCT_COPY.proofAction'])assert.ok(refined.includes(token),token);
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}\n${refined}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
-console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + procedure-bound auditor read + shared install authority)');
+console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + canonical Processi di Compliance language + process-bound auditor read)');
