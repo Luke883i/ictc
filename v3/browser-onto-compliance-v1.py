@@ -15,7 +15,7 @@ PROCEDURES=[
  {'code':'RC-01','id':'risks','view':'#grcView','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','anatomy':'#grcWorkspace > .procedure-anatomy'},
  {'code':'AR-01','id':'assurance','view':'#grcView','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','anatomy':'#grcWorkspace > .procedure-anatomy'}]
 SCREENSHOT_WIDTHS={390,1280}
-PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]
+PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=set()
 
 def anomaly(kind,role,vp,surface,measured,expected):
     anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})
@@ -108,11 +108,30 @@ def audit_proof(page,role,vp,width):
     if re.search(r'\b\d+(?:[.,]\d+)?\s*%',text): anomaly('posture-percentage-verdict',role,vp,'proof',re.findall(r'\b\d+(?:[.,]\d+)?\s*%',text),'no compliance/certainty percentage')
     no_overflow(page,role,vp,'proof'); one_h1(page,role,vp,'proof'); shot(page,role,vp,'proof',width)
 
-def audit_ep(page,role,vp,width,codes):
+def epistemic_network_coverage(page,role,expected_ids):
+    seen=set(); offset=0; limit=80; pages=0
+    for pages in range(1,41):
+        data=api_json(page,f'/api/epistemic-lattice?offset={offset}&limit={limit}',role)
+        atoms=data.get('atoms',[])
+        seen.update(str(a.get('procedureId')) for a in atoms if a.get('procedureId'))
+        projection=data.get('projection',{})
+        if len(atoms)<limit or int(projection.get('fromRevision') or 0)<=1: break
+        offset+=limit
+    return {'seen':sorted(seen),'missing':sorted(set(expected_ids)-seen),'pages':pages,'offset':offset}
+
+def audit_ep(page,role,vp,width,expected_ids,revision):
     page.locator('.service-nav [data-service="processes"]').click(); meta=page.locator('#epistemicMetaCard')
     if role in ('admin','auditor'):
-        expect(meta).to_be_visible(); meta.locator('[data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible(); text=page.locator('#epistemicView').inner_text(); missing=[c for c in codes if c not in text]
-        if missing: anomaly('epistemic-seven-process-coverage',role,vp,'EP-01',missing,codes)
+        expect(meta).to_be_visible(); meta.locator('[data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible()
+        page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision)
+        current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role)
+        expected_current=sorted({str(a.get('procedureId')) for a in current.get('atoms',[]) if a.get('procedureId')})
+        actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
+        if actual_current!=expected_current: anomaly('epistemic-current-page-projection-mismatch',role,vp,'EP-01',actual_current,expected_current)
+        if role not in network_coverage_checked:
+            coverage=epistemic_network_coverage(page,role,expected_ids)
+            if coverage['missing']: anomaly('epistemic-seven-process-network-coverage',role,vp,'EP-01',coverage,sorted(expected_ids))
+            network_coverage_checked.add(role)
         no_overflow(page,role,vp,'EP-01'); one_h1(page,role,vp,'EP-01'); shot(page,role,vp,'EP-01',width)
     elif meta.count() and meta.is_visible(): anomaly('epistemic-meta-visible-to-user',role,vp,'processes',True,False)
 
@@ -128,16 +147,16 @@ try:
                 labels=page.locator('.service-nav [data-service]').all_text_contents(); expected=['Oggi','Processi di Compliance','Postura ICTC']
                 if [x.strip() for x in labels]!=expected: anomaly('top-navigation-language',role,vp,'shell',labels,expected)
                 no_overflow(page,role,vp,'home'); one_h1(page,role,vp,'home'); shot(page,role,vp,'home',width)
-                page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub .procedure-card')).to_have_count(7); h=visible_columns(page); expected_cols={390:1,768:2,1280:3,1600:3}[width]
+                page.locator('.service-nav [data-service="processes"]').click(); cards=page.locator('#procedureHub .procedure-card'); expect(cards).to_have_count(7); expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7); h=visible_columns(page); expected_cols={390:1,768:2,1280:3,1600:3}[width]
                 if h['count']!=7: anomaly('process-hub-count',role,vp,'processes',h['count'],7)
                 if h['columns']!=expected_cols: anomaly('process-hub-columns',role,vp,'processes',h['columns'],expected_cols)
                 if any(x<43.5 for x in h['primaryHeights']): anomaly('process-card-target-too-small',role,vp,'processes',h['primaryHeights'],'all >=44px')
                 if (page.locator('#processesView h1').text_content() or '').strip()!='Processi di Compliance': anomaly('process-hub-title',role,vp,'processes',page.locator('#processesView h1').text_content(),'Processi di Compliance')
                 no_overflow(page,role,vp,'processes'); one_h1(page,role,vp,'processes'); shot(page,role,vp,'processes',width)
                 for proc in PROCEDURES: audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
-                audit_proof(page,role,vp,width); audit_ep(page,role,vp,width,[x['code'] for x in registry.values()]); ctx.close()
+                audit_proof(page,role,vp,width); audit_ep(page,role,vp,width,list(registry.keys()),revision); ctx.close()
         unique={x['signature']:x for x in anomalies}
-        report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+visual-grace-lexical-epistemic-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'}
+        report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+visual-grace-lexical-epistemic-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'}
         (ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
         if anomalies:
             for x in list(unique.values())[:40]: print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
