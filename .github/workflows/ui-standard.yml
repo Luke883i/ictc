@@ -34,6 +34,8 @@ jobs:
           node v3/cross-procedure-create-check.mjs
           node v3/cross-procedure-create-ui-check.mjs
           node v3/ux-language-polish-check.mjs
+          node v3/onto-compliance-horizon-check.mjs
+          node v3/onto-compliance-saturation.mjs
           node v3/epistemic-lattice-saturation.mjs
           node v3/procedure-journey-saturation.mjs
           node v3/pr60-convergence-saturation.mjs
@@ -49,6 +51,7 @@ jobs:
             artifacts/epistemic-lattice*.json
             artifacts/procedure-journey-saturation.json
             artifacts/pr60-convergence-saturation.json
+            artifacts/onto-compliance-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
