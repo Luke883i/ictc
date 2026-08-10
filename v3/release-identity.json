@@ -1,0 +1,12 @@
+{
+  "schemaVersion":"1.0.0",
+  "product":"ICTC",
+  "packageVersion":"1.8.0",
+  "semanticEdition":"1.2-market-candidate",
+  "experienceEdition":"1.9-experience-candidate",
+  "refinementProfile":"1.9.1-pre-candidate",
+  "releaseStage":"pre-candidate-pr",
+  "navigation":{"home":"Home","processes":"Processi","proof":"Postura Standard & Security ICTC","proofCompact":"Postura ICTC"},
+  "authorityBoundary":"Presentation and evidence surfaces do not create legal, compliance or security conclusions. Human decisions remain authoritative where required.",
+  "sourceOfTruth":"This file is the cross-document release identity authority for the refined-product pre-candidate. Package, semantic and experience versions are deliberately separate dimensions."
+}
