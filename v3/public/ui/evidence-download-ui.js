@@ -1,0 +1,8 @@
+import { downloadProtected, notify } from './common.js';
+const FORMATS=Object.freeze([['pdf','Stampa PDF'],['xml','XML strutturato'],['md','Markdown'],['zip','ZIP completo']]);
+let installed=false,scheduled=false;
+function baseUrl(value){return String(value||'').replace(/\.(?:zip|pdf|xml|md)$/,'');}
+function menuFor(button){const base=baseUrl(button.dataset.downloadEvidence);if(!base)return null;const details=document.createElement('details');details.className='evidence-export-menu';details.dataset.evidenceBase=base;details.innerHTML=`<summary class="secondary">Fascicolo</summary><div role="group" aria-label="Formati fascicolo">${FORMATS.map(([format,label])=>`<button type="button" data-evidence-download="${format}">${label}</button>`).join('')}</div>`;button.replaceWith(details);return details;}
+function enhance(){scheduled=false;for(const button of document.querySelectorAll('button[data-download-evidence]'))menuFor(button);}
+function schedule(){if(scheduled)return;scheduled=true;queueMicrotask(enhance);}
+export function installEvidenceDownloads(){if(installed)return;installed=true;schedule();document.addEventListener('ictc:rendered',schedule);document.addEventListener('click',async event=>{const button=event.target.closest?.('[data-evidence-download]');if(!button)return;event.preventDefault();const menu=button.closest('.evidence-export-menu'),format=button.dataset.evidenceDownload,base=menu?.dataset.evidenceBase;if(!base||!FORMATS.some(([id])=>id===format))return;try{await downloadProtected(`${base}.${format}`,`ictc-evidence.${format}`);menu?.removeAttribute('open');notify(format==='pdf'?'Receipt PDF pronto per stampa':'Fascicolo evidenze scaricato');}catch(error){notify(error.message,true);}});}
