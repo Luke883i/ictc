@@ -11,9 +11,10 @@ assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not 
 assert.match(shell,/home\.textContent='Home'/);
 assert.match(active,/installProcedureFrame\(\)/);
 assert.equal((active.match(/installProcedureFrame\(\)/g)||[]).length,1);
-for(const id of ['monitoring','incidents','objects','coverage','actions','risks','assurance'])assert.ok(frame.includes(`${id}:`)||frame.includes(`'${id}'`),id);
-for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Apri Evidenze','data-nav-back'])assert.ok(frame.includes(token),token);
+for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Apri Evidenze','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
+assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);
 assert.match(frame,/state\.role==='auditor'/);
+assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
 assert.doesNotMatch(frame,/button\.remove\(\)/,'presentation layer must not delete unknown controls to hide accessibility bugs');
 for(const token of ['pushState','replaceState','popstate','view','procedureId','getBackLabel','navigateBack'])assert.ok(router.includes(token),token);
 for(const token of ['metaKey','RECENT_KEY','Home','Processi','Evidenze','ArrowDown','ArrowUp','Escape','enabledProcedures'])assert.ok(tools.includes(token),token);
@@ -26,4 +27,4 @@ assert.match(css,/\.command-dialog/);assert.match(css,/\.procedure-frame/);asser
 assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed controls must be audited, not hidden by presentation CSS');
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
-console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 Candidate; one canonical visible procedure frame)');
+console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 Candidate; registry-driven procedure frame)');
