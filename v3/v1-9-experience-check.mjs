@@ -23,6 +23,7 @@ assert.match(css,/data-ictc-experience-edition="1\.9-experience-candidate"/);
 assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 for(const bp of ['max-width:980px','max-width:760px','max-width:520px'])assert.ok(css.includes(bp),bp);
 assert.match(css,/\.command-dialog/);assert.match(css,/\.procedure-frame/);assert.match(css,/\.procedure-card/);
+assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed controls must be audited, not hidden by presentation CSS');
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
 console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 Candidate; one canonical visible procedure frame)');
