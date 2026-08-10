@@ -1,6 +1,6 @@
 # Onto-Compliance Horizon v1.0 — visual, ontological and epistemic convergence
 
-Status: candidate design/assurance contract for PR #60. This document is a map and a falsification contract; it does not create business authority.
+Status: candidate design/assurance contract for PR #61. This document is a map and a falsification contract; it does not create business authority.
 
 ## Intent
 
@@ -19,7 +19,7 @@ For every business procedure the first useful reading order is:
 1. **Identity** — procedure code, label and purpose from the canonical procedure contract.
 2. **Action** — exactly one dominant action for the current role and context.
 3. **Work** — the native task surface, records and process-specific controls.
-4. **Evidence / trace** — receipts, cross-links, provenance, technical anatomy and product posture.
+4. **Evidence / Trace** — receipts, cross-links, provenance, technical anatomy and product posture.
 
 Consequences:
 
