@@ -1,0 +1,20 @@
+/* ICTC 2.1 journey presentation extensions; no business-state authority. */
+:root{--surface-motion-fast:160ms;--surface-motion-standard:210ms}
+.surface-context-strip{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin:-.45rem 0 .85rem;min-width:0;max-width:100%;color:var(--muted,#64748b);font-size:.75rem;font-weight:750}
+.surface-context-strip>*{display:inline-flex;align-items:center;min-height:32px}
+.surface-context-strip>*+*::before{content:"/";margin-inline:.2rem .55rem;color:var(--muted,#64748b);opacity:.55}
+.surface-context-strip button{border:0;background:transparent;padding:.15rem .3rem;color:var(--accent,#4f46e5);font:inherit;font-weight:850;cursor:pointer}
+.surface-context-strip [aria-current="page"]{color:var(--ink,#172033)}
+.surface-busy[aria-busy="true"]{cursor:progress;opacity:.78}
+:root[data-ictc-transition-direction="forward"]::view-transition-old(root){animation:ictc-vt-out var(--surface-motion-standard) ease both}
+:root[data-ictc-transition-direction="forward"]::view-transition-new(root){animation:ictc-vt-in-forward var(--surface-motion-standard) ease both}
+:root[data-ictc-transition-direction="back"]::view-transition-old(root){animation:ictc-vt-out var(--surface-motion-fast) ease both}
+:root[data-ictc-transition-direction="back"]::view-transition-new(root){animation:ictc-vt-in-back var(--surface-motion-fast) ease both}
+:root[data-ictc-transition-direction="cross"]::view-transition-old(root),:root[data-ictc-transition-direction="lateral"]::view-transition-old(root){animation:ictc-vt-out var(--surface-motion-fast) ease both}
+:root[data-ictc-transition-direction="cross"]::view-transition-new(root),:root[data-ictc-transition-direction="lateral"]::view-transition-new(root){animation:ictc-vt-in-cross var(--surface-motion-fast) ease both}
+@keyframes ictc-vt-out{to{opacity:0;transform:translateY(-4px)}}
+@keyframes ictc-vt-in-forward{from{opacity:0;transform:translateY(7px)}}
+@keyframes ictc-vt-in-back{from{opacity:0;transform:translateY(-5px)}}
+@keyframes ictc-vt-in-cross{from{opacity:0}}
+@media(max-width:620px){.surface-context-strip{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:.2rem}.surface-context-strip>*{flex:0 0 auto}}
+@media(prefers-reduced-motion:reduce){:root::view-transition-old(root),:root::view-transition-new(root){animation-duration:.001ms!important}}

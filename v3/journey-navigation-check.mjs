@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [router,primitives,styles,css]=await Promise.all([read('./public/ui/surface-router.js'),read('./public/ui/surface-primitives.js'),read('./public/styles.css'),read('./public/procedure-journey-2-1.css')]);
+for(const token of ['document.startViewTransition','prefers-reduced-motion: reduce','ictcTransitionDirection','transitionDirection','focusAfterTransition'])assert.ok(router.includes(token),`surface transition contract missing ${token}`);
+for(const token of ['surface-context-strip','Percorso corrente','data-service="processes"','surfaceContextLevel','ictc:context-changed'])assert.ok(primitives.includes(token),`current-path contract missing ${token}`);
+assert.ok(styles.includes("@import url('./procedure-journey-2-1.css');"),'2.1 journey css missing from canonical cascade');
+for(const token of ['::view-transition-old(root)','::view-transition-new(root)','@media(prefers-reduced-motion:reduce)','.surface-context-strip'])assert.ok(css.includes(token),`journey css missing ${token}`);
+assert.equal(router.includes('await document.startViewTransition'),false,'navigation must not become async-gated by transition API');
+console.log('journey-navigation-check: ok (progressive transitions + current-path primitive)');
