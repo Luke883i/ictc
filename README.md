@@ -24,11 +24,15 @@ Ogni procedura può creare un record iniziale compatibile in un'altra procedura 
 
 ## Come leggere ICTC
 
-L'esperienza distribuisce la complessità in strati. La superficie operativa mostra prima ciò che serve per agire; contesto, tracciabilità, dati raw e limiti sono disponibili tramite disclosure progressive. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia**: prima dice in quale procedura sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+
+Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio.
 
 **Postura Standard & Security ICTC** risponde, in quest'ordine, a tre domande: cosa è osservabile, quale evidenza manca, cosa ICTC non conclude. Decisioni, runtime, requisiti esterni di deployment, riferimenti ed export sono livelli successivi.
 
 **EP-01 · Reticolo epistemico** presenta la stessa proiezione revision-bound in tre modi: `Esplora`, `Flat / raw`, `Proto-grafo`. In Esplora il percorso è **Quadro → Gruppi → Relazioni → Atomo**. Le letture AI restano visivamente e semanticamente separate dai record business.
+
+Il profilo **Onto-Compliance Horizon v1** è un contratto di design e assurance: controlla che gerarchia visuale, procedura dichiarata e autorità epistemica dicano la stessa cosa. Non introduce un nuovo processo, un nuovo score né una conclusione di compliance.
 
 ## Autorità epistemica
 
@@ -96,9 +100,11 @@ npm run test:current:semantic
 npm run test:current:runtime
 node v3/authority-contract-check.mjs
 node v3/docs-command-contract-check.mjs
+node v3/onto-compliance-horizon-check.mjs
+node v3/onto-compliance-saturation.mjs
 ```
 
-I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
+I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti. Nel profilo Onto-Compliance, `M+100` significa nessuna nuova signature misurata nel holdout dichiarato e `G+100` nessuna ulteriore compressione sicura nello spazio di operatori dichiarato: non sono teoremi di correttezza o minimalità globale.
 
 ## Identità della candidate
 
@@ -109,7 +115,8 @@ I journey browser server-backed e gli artifact commit-bound sono eseguiti in Git
 - esperienza: `1.9-experience-candidate`;
 - refinement: `1.9.1-pre-candidate`;
 - profilo epistemico: `2.0-epistemic-lattice-pre-candidate`;
-- journey/convergenza: `2.1-procedure-journey-semantic-exploration-pre-candidate`.
+- journey/convergenza: `2.1-procedure-journey-semantic-exploration-pre-candidate`;
+- design/assurance Onto-Compliance: `1.0-candidate`.
 
 ## Sviluppo e documentazione
 
@@ -121,8 +128,9 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
 - `docs/TESTING.md` — suite e falsificatori;
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
+- `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
 - `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
-- `docs/PR60_GLOBAL_DOD.md` — convergenza e Definition of Done della candidate;
+- `docs/PR60_GLOBAL_DOD.md` — convergenza Procedure Journey 2.1 già materializzata;
 - `SECURITY.md` — boundary e responsabilità di deployment.
 
 La documentazione storica rimane utile per tracciabilità progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.
