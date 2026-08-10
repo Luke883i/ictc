@@ -272,7 +272,9 @@ try:
 
         PHASE = 'history-transition'
         processes(page).click()
-        page.locator('#procedureHub [data-process-code="RC-01"] :scope > footer .primary').click()
+        risk_card = page.locator('#procedureHub [data-process-code="RC-01"]')
+        expect(risk_card).to_be_visible()
+        risk_card.locator(':scope > footer .primary').click()
         expect(page.locator('#grcView')).to_be_visible()
         page.go_back(wait_until='networkidle'); expect(page.locator('#processesView')).to_be_visible()
         page.go_forward(wait_until='networkidle'); expect(page.locator('#grcView')).to_be_visible()
@@ -292,7 +294,9 @@ try:
         rcx = browser.new_context(viewport={'width':1280,'height':850}, reduced_motion='reduce')
         rcx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
         rp = rcx.new_page(); rp.goto(BASE+'/?view=processes', wait_until='networkidle')
-        rp.locator('#procedureHub [data-process-code="AP-01"] :scope > footer .primary').click()
+        action_card = rp.locator('#procedureHub [data-process-code="AP-01"]')
+        expect(action_card).to_be_visible()
+        action_card.locator(':scope > footer .primary').click()
         expect(rp.locator('#grcView')).to_be_visible(); no_overflow(rp); rcx.close()
 
         assert not errors, errors
