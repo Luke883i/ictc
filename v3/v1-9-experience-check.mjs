@@ -10,8 +10,12 @@ assert.match(shell,/EXPERIENCE_EDITION='1\.9-experience-candidate'/);
 assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not rewrite semantic edition');
 assert.match(copy,/home:'Home'/);assert.match(copy,/processes:'Processi'/);assert.match(copy,/proof:'Postura Standard & Security ICTC'/);
 assert.match(shell,/SURFACE_LABELS\.home/);assert.match(shell,/SURFACE_LABELS\.proof/);assert.match(tools,/SURFACE_LABELS\.proof/);
-assert.match(active,/installProcedureFrame\(\)/);assert.match(active,/installRefinedProduct\(\)/);
-assert.equal((active.match(/installProcedureFrame\(\)/g)||[]).length,1);
+assert.match(active,/const INSTALL_ORDER\s*=\s*Object\.freeze\(/,'active experience must expose an inspectable install pipeline');
+for(const installer of ['installProcedureFrame','installRefinedProduct']){
+  const pipeline=active.slice(active.indexOf('const INSTALL_ORDER'),active.indexOf('export function installActiveExperience'));
+  assert.equal((pipeline.match(new RegExp(`\\b${installer}\\b`,'g'))||[]).length,1,`${installer} must appear once in INSTALL_ORDER`);
+}
+assert.match(active,/for \(const install of INSTALL_ORDER\) install\(\);/,'active experience must have one install executor');
 for(const token of ['Scopo della procedura','data-procedure-primary','data-process-code','Apri Evidenze','data-nav-back','enabledProcedures','grcProcedureIds','meta.ux?.primaryAction'])assert.ok(frame.includes(token),token);
 assert.match(frame,/state\.data\?\.procedureRegistry\?\.procedures/);assert.match(frame,/state\.role==='auditor'/);
 assert.doesNotMatch(frame,/FALLBACK_ACTIONS|WORKSPACE_IDS/,'procedure membership and primary labels must come from canonical registry');
@@ -28,4 +32,4 @@ assert.doesNotMatch(css,/button:empty[^\{]*\{[^}]*display\s*:\s*none/i,'unnamed 
 for(const token of ['refined-incident-intake','refined-question','neutralizeDynamicMarketCss','PRODUCT_COPY.proofAction'])assert.ok(refined.includes(token),token);
 for(const forbidden of ['MutationObserver','prompt(','confirm(','complianceScore','maturityScore'])assert.ok(!`${frame}\n${router}\n${tools}\n${shell}\n${refined}`.includes(forbidden),forbidden);
 assert.match(market,/function renderStandardWorkspace/);
-console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + refined pre-candidate authority)');
+console.log('v1-9-experience-check: ok (semantic 1.2 + Experience 1.9 + explicit active-experience install authority)');
