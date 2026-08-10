@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [ui,router,tools,active,styles,css]=await Promise.all([read('./public/ui/epistemic-lattice.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/epistemic-lattice.css')]);
+for(const token of ['EP-01','Reticolo epistemico','Flat / raw','Proto-grafo','data-epistemic-mode','surface-raw','projectionSha256','data-service="epistemic"'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);
+assert.ok(router.includes("epistemic:'#epistemicView'"),'router missing epistemic surface');
+assert.ok(router.includes("epistemic:'Torna al Reticolo epistemico'"),'router missing epistemic back label');
+assert.ok(tools.includes("id:'epistemic'"),'command palette missing epistemic navigation');
+assert.ok(tools.includes("['admin','auditor'].includes(state.role)"),'command palette EP-01 must be role bounded');
+assert.ok(active.includes('installEpistemicLattice()'),'active experience does not install EP-01');
+assert.ok(styles.includes("@import url('./epistemic-lattice.css');"),'EP-01 css missing from canonical cascade');
+for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list','.epistemic-meta-card'])assert.ok(css.includes(token),`EP-01 css missing ${token}`);
+assert.equal(ui.includes('procedureRegistry.procedures.push'),false,'EP-01 must not append itself to business procedures');
+console.log('epistemic-lattice-ui-check: ok (flat/raw + proto-graph + role-bounded navigation)');
