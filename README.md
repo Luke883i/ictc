@@ -1,6 +1,19 @@
 # ICTC — Compliance operativa e tracciabile
 
-ICTC `1.0_stable` è un compliance operations system open-source per sette processi aziendali bounded, costruiti sopra un substrato comune di decisioni umane, versioni, relazioni, audit ed evidenze.
+ICTC è un compliance operations system open-source per sette processi aziendali bounded, costruiti sopra un substrato comune di decisioni umane, versioni, relazioni, audit ed evidenze.
+
+## Identità di rilascio
+
+L'identità corrente è multidimensionale e dichiarata in `v3/release-identity.json`:
+
+- package software: `1.8.0`;
+- profilo semantico: `1.2-market-candidate`;
+- esperienza: `1.9-experience-candidate`;
+- profilo di raffinamento in PR: `1.9.1-pre-candidate`.
+
+Queste dimensioni non vanno fuse in un unico numero: package, semantica, esperienza e refinement hanno autorità diverse. Il file `v3/release-identity.json` è la fonte cross-documenti per questa identità.
+
+## Processi
 
 - `RN-01` — Monitoraggio normativo
 - `EC-01` — Eventi e segnalazioni
@@ -10,22 +23,23 @@ ICTC `1.0_stable` è un compliance operations system open-source per sette proce
 - `RC-01` — Rischi di compliance
 - `AR-01` — Questionari e verifiche
 
-`EV-01 — Prove e tracciabilità` è il piano trasversale di ricostruzione e non un ottavo processo business.
+`EV-01` resta un piano trasversale di ricostruzione, non un ottavo processo business.
 
 ## Esperienza
-La navigazione permanente è volutamente ridotta a **Oggi / Processi / Prove**.
 
-- **Oggi**: il lavoro che richiede attenzione e la prossima azione.
-- **Processi**: l'unico catalogo dei sette processi, con stato sintetico e ingresso diretto.
-- **Prove**: decisioni, versioni, evidenze, limiti e traccia tecnica.
+La navigazione canonica è:
 
-L'interfaccia usa al massimo cinque livelli di progressive disclosure; hash, audit raw ed epistemic detail restano al livello tecnico più profondo.
+**Home / Processi / Postura Standard & Security ICTC**
 
-## Autorità
-L'AI è opzionale e proposal-only. Le decisioni operative, i rating, le approvazioni e le chiusure che richiedono autorità rimangono umane. La presenza di una prova o di un mapping non equivale automaticamente a conformità, applicabilità, efficacia del controllo o sufficienza legale.
+Su viewport stretti la terza voce può essere resa come **Postura ICTC**, mantenendo il nome completo come accessible name e titolo della superficie.
 
-## Runtime
-PR49 ha consolidato la baseline sperimentale con SQLite/WAL, audit separato, deployment-evidence envelopes, limiti allegati coerenti e falsifier runtime. `1.0_stable` costruisce sopra quella baseline e comprime il prodotto senza cambiare il principio di autorità.
+La superficie Postura collega controlli applicativi, standard, sicurezza, evidenze, deployment gap e limiti. Non è una certificazione, un parere legale o un security assessment del deployment.
+
+## Autorità ed epistemica
+
+L'AI è opzionale e proposal-only. Le decisioni operative, i rating, le approvazioni e le chiusure che richiedono autorità rimangono umane. La presenza di una prova, di un hash o di un mapping non equivale automaticamente a conformità, applicabilità, efficacia del controllo o sufficienza legale.
+
+## Avvio
 
 Richiede Node.js 22 o successivo.
 
@@ -36,24 +50,16 @@ npm ci
 
 Apri `http://127.0.0.1:4173`.
 
-## Verifica
+## Verifica corrente
 
 ```bash
-npm run check
-node v3/v1-stable-experience-saturation.mjs
-node v3/v1-stable-process-hardening-check.mjs
+npm run test:current:semantic
+npm run test:current:runtime
+python -u v3/browser-v1-9-experience.py
 ```
 
-Per i gate storici e runtime completi usa anche le suite del repository e i workflow CI.
+Il refinement pre-candidate aggiunge anche `v3/refined-product-check.mjs`, `v3/refined-product-saturation.mjs` e il browser polish audit integrato nel journey V1.9.
 
-## Stabilità e limiti
-`1.0_stable` indica stabilità dei contratti software bounded dichiarati dalla release. Non è una certificazione di conformità, una conclusione legale, una attestazione di un assessor esterno, né una garanzia che qualunque deployment sia production-ready.
+## Limiti
 
-La definizione architetturale e la DoD sono in:
-
-- `docs/V1_0_STABLE_ARCHITECTURE.md`
-- `docs/V1_0_STABLE_DOD.md`
-- `docs/OPEN_SOURCE_TERMS.md`
-
-## Open source
-ICTC è distribuito con licenza MIT. Prima di un uso regolato o business-critical, leggere `SECURITY.md`, `SUPPORT.md` e i claim boundary della release.
+La stabilità software dichiarata non è una certificazione di conformità, una attestazione di un assessor esterno, né una garanzia che qualunque deployment sia production-ready. Prima di un uso regolato o business-critical leggere `SECURITY.md`, `SUPPORT.md`, i documenti di autorità e i claim boundary della release.
