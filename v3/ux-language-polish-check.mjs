@@ -34,6 +34,7 @@ assert.equal((evidenceUi.match(/document\.addEventListener\('click'/g) || []).le
 assert.ok(evidenceUi.includes("event.key !== 'Escape'"), 'evidence disclosure should close with Escape');
 
 for (const token of ['.proof-snapshot', '.proof-reading-grid', '.proof-section', '.evidence-export-menu', '@media(max-width:420px)', 'prefers-reduced-motion']) assert.ok(journeyCss.includes(token), `2.1 polish css missing ${token}`);
+assert.doesNotMatch(journeyCss, /min-height:(?:32|40|42)px/, '2.1 interactive presentation must not locally undercut the 44px target contract');
 assert.ok(primitiveCss.includes('--surface-control-min:44px'), 'canonical minimum control target missing');
 assert.ok(primitiveCss.includes(':where(button,summary,[role="button"])'), 'new surface controls must inherit the 44px target grammar');
 assert.ok(copy.includes("proof:'Postura Standard & Security ICTC'"), 'canonical proof label drift');
