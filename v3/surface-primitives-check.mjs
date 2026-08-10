@@ -6,5 +6,8 @@ assert.ok(styles.includes("@import url('./surface-primitives.css');"),'surface p
 for(const token of ['.surface-canvas','.surface-toolbar','.surface-mode-switch','.surface-data-region','.surface-raw','--surface-control-min:44px','prefers-reduced-motion'])assert.ok(css.includes(token),`surface primitive css missing ${token}`);
 for(const surface of ['home','processes','monitoring','incidents','grc','proof','epistemic'])assert.ok(js.includes(`${surface}:`),`surface primitive root missing ${surface}`);
 for(const token of ['surface-canvas','surface-panel','surface-toolbar','surface-data-region','ictcSurfacePrimitives'])assert.ok(js.includes(token),`surface primitive runtime missing ${token}`);
+assert.ok(js.includes('applyPending=false'),'surface primitive events must share a coalescing owner');
+assert.ok(js.includes('scheduleSurfacePrimitives'),'surface primitive coalescer missing');
+assert.ok(js.includes("['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed']"),'surface primitive event ownership drift');
 assert.ok(active.includes("installSurfacePrimitives"),'active experience does not install canonical surface primitives');
-console.log('surface-primitives-check: ok (shared canvas/panel/toolbar/data/raw primitives across all surfaces)');
+console.log('surface-primitives-check: ok (shared primitives + coalesced event application)');
