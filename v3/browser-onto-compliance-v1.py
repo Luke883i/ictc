@@ -57,12 +57,22 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
     if g['kicker'] and g['kicker']['font']<10: anomaly('process-kicker-too-small',role,vp,proc['code'],g['kicker']['font'],'>=10px')
     if g['primary'] and g['primary']['h']<43.5: anomaly('process-primary-target-too-small',role,vp,proc['code'],g['primary']['h'],'>=44px')
     if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I): anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
-    anatomy=page.locator(proc['anatomy']); expect(anatomy).to_be_visible(); work=page.locator(proc['work']); expect(work).to_be_visible()
+    anatomy=page.locator(proc['anatomy']); work=page.locator(proc['work']).first
+    try: anatomy.wait_for(state='visible',timeout=5000)
+    except Exception:
+        anomaly('technical-trace-not-visible',role,vp,proc['code'],{'count':anatomy.count(),'html':anatomy.first.evaluate('(e)=>e?.outerHTML?.slice(0,500)||null') if anatomy.count() else None},'one visible procedure anatomy'); return
+    try: work.wait_for(state='visible',timeout=5000)
+    except Exception:
+        anomaly('native-work-not-visible',role,vp,proc['code'],{'count':page.locator(proc['work']).count(),'selector':proc['work']},'first native work anchor visible'); return
     order=page.evaluate("x=>{const a=document.querySelector(x.a),w=document.querySelector(x.w);return !!(a&&w&&(a.compareDocumentPosition(w)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'a':proc['anatomy'],'w':proc['work']})
     if order: anomaly('technical-trace-before-native-work',role,vp,proc['code'],True,False)
     was_open=anatomy.get_attribute('open') is not None
     if not was_open: anatomy.locator(':scope > summary').click(); expect(anatomy).to_have_attribute('open','')
-    expect(anatomy.locator('.procedure-anatomy-body')).to_be_visible(); trace=anatomy.text_content() or ''
+    body=anatomy.locator('.procedure-anatomy-grid')
+    try: body.wait_for(state='visible',timeout=5000)
+    except Exception:
+        anomaly('technical-trace-body-not-visible',role,vp,proc['code'],{'open':anatomy.get_attribute('open'),'text':anatomy.text_content()},'visible anatomy body after disclosure'); return
+    trace=anatomy.text_content() or ''
     actual=[x.strip() for x in anatomy.locator('.procedure-anatomy-epistemic span').all_text_contents()]
     if actual!=families: anomaly('epistemic-family-convergence',role,vp,proc['code'],actual,families)
     boundary=(contract or {}).get('claimBoundary','')
