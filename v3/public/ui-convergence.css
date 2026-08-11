@@ -17,11 +17,13 @@
 .epistemic-envelope b{font-variant-numeric:tabular-nums}
 .epistemic-envelope small{flex-basis:100%;opacity:.78}
 .epistemic-compression-boundary{margin:0;font-size:.86rem;opacity:.8}
-.epistemic-graph-controls{display:flex;justify-content:flex-end;margin-bottom:.5rem}
+.epistemic-graph-controls{display:flex;align-items:center;justify-content:flex-end;margin-bottom:.5rem}
 .epistemic-graph-canvas{overflow:auto;overscroll-behavior:contain}
 .epistemic-graph-canvas svg{min-width:720px;transition:transform .12s ease}
-.epistemic-graph-canvas g[data-epistemic-node]{cursor:grab;outline:none}
-.epistemic-graph-canvas g[data-epistemic-node]:focus-visible circle{stroke-width:4}
+.epistemic-graph-canvas g[data-epistemic-node]{cursor:grab;outline:none;touch-action:none}
+.epistemic-graph-canvas g[data-epistemic-node]:active{cursor:grabbing}
+.epistemic-graph-canvas g[data-epistemic-node]:focus-visible circle.epistemic-graph-node{stroke-width:4}
+.epistemic-graph-hit{fill:transparent;pointer-events:all}
 .epistemic-graph-node{vector-effect:non-scaling-stroke}
 .epistemic-graph-label{pointer-events:none;font-size:10px}
 @media(max-width:900px){.epistemic-envelope-layers{grid-template-columns:1fr}.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}}
