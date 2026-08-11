@@ -1,4 +1,5 @@
 import { $, esc, state } from './common.js';
+import { ICTC_MANIFEST } from './product-copy.js';
 import { installReborn3Experience } from './reborn-3-home.js';
 
 const conciseRoleSummaries = {
@@ -27,10 +28,28 @@ function normalizeShell() {
   document.title = 'ICTC 1.4 · Decisioni, fonti ed eventi';
 }
 
+function ensureManifest(root) {
+  if (!root || $('#ictcManifest')) return;
+  root.insertAdjacentHTML('afterbegin', `
+    <aside id="ictcManifest" class="ictc-manifest" aria-labelledby="ictcManifestTitle" data-information-value="home">
+      <div class="ictc-manifest-copy">
+        <p class="eyebrow">${esc(ICTC_MANIFEST.eyebrow)}</p>
+        <h2 id="ictcManifestTitle">${esc(ICTC_MANIFEST.title)}</h2>
+        <p class="ictc-manifest-lead">${esc(ICTC_MANIFEST.lead)}</p>
+      </div>
+      <div class="ictc-manifest-method" aria-label="Metodo, governo dati e confine ICTC">
+        <p><b>Metodo comune</b><span>${esc(ICTC_MANIFEST.method)}</span></p>
+        <p><b>Dati e AI</b><span>${esc(ICTC_MANIFEST.dataAndAi)}</span></p>
+        <p><b>Confine</b><span>${esc(ICTC_MANIFEST.boundary)}</span></p>
+      </div>
+    </aside>`);
+}
+
 function ensureAuthorityStructure() {
   const root = $('#homeView');
   const trust = root?.querySelector('.trust-brief');
   if (!root || !trust) return null;
+  ensureManifest(root);
   root.dataset.stable14 = 'true';
   let authority = $('#homeAuthority');
   if (!authority) {
