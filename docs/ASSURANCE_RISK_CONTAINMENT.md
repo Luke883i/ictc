@@ -1,46 +1,67 @@
 # Assurance risk containment
 
-Status: current engineering-risk contract. This document does not create product, legal, compliance, certification or repository-administration authority.
+Status: current engineering-risk contract for PR64. This document defines repository-internal evidence and stop conditions; it does not create product, legal, compliance, certification or repository-administration authority.
 
 ## Why this exists
 
-The PR1–PR63 trajectory repeatedly shows a healthy expansion -> falsification -> compression cycle, but also a recurring structural risk: the same development circuit can define a model, implement it, define its oracle and close the PR. High scenario counts improve pressure inside the declared model; they do not create independence from that model.
+The PR1–PR63 trajectory repeatedly shows a productive expansion -> falsification -> compression cycle, but also a recurring structural risk: the same development circuit can define a model, implement it, define its oracle and close the PR. High scenario counts increase pressure inside the declared model; they do not manufacture epistemic independence.
 
-The minimum containment strategy therefore targets delivery mechanics rather than adding another product profile.
+PR64 therefore targets the delivery/assurance mechanics and deliberately avoids a new product profile or business capability.
 
-## Trajectory synthesis
+## Audit synthesis
 
-- PR1–PR5 established the epistemic foundation, executable runtime, evidence atlas and stable local boundary.
-- PR6–PR13 repeatedly expanded and then compressed UI/product abstractions, ending in two explicit human-authoritative evidence journeys.
-- PR14–PR20 hardened identity, AI egress, enterprise posture and runtime stress while keeping external deployment blockers explicit.
-- PR21–PR28 iterated heavily on experience, accessibility, standard proof, identity bridge and certification-evidence surfaces.
-- PR29–PR43 introduced compensating GitHub-Free governance, executable authority maps, durability/integrity controls, API/release identity and server-owned projections/ontology.
-- PR44–PR56 converged active UI authority, process kernels, GRC, stable compression, SQLite semantic history and authority/integrity closure.
-- PR57–PR63 added experience refinement, epistemic lattice, seven-process journeys, onto-compliance semantics, lexical/visual convergence and meaningful cross-process handoffs.
+The strongest trajectory pattern is not monotonic expansion. ICTC has repeatedly deleted and replaced abstractions, and the release process is strongest when compression follows falsification. The unresolved risks were: ambiguous evidence inputs, correlated assurance substitutions, count-based suite ratcheting, review-bandwidth overload, exact-head drift and the temptation to convert external residual controls into internal green claims.
 
-Across the trajectory, the strongest pattern is not monotonic expansion: ICTC is capable of deleting and replacing abstractions. The missing invariant was making safe contraction first-class in the release assurance itself.
+The PR64 audit found two additional definitional defects before closure:
 
-## Structural risks and containment
+1. boolean-like document values such as `"false"` could previously be coerced by JavaScript truthiness if they reached the model boundary;
+2. `same-circuit` assurance could previously be treated as contained by static analysis alone, even though SAST is not a substitute for independent review or oracle diversity.
 
-1. **Preventive governance gap.** `main` protection is an external repository-owner control. Post-merge evidence and GOV-01F remain detective/compensating controls and must never be described as server-side prevention.
-2. **Independent review gap.** Automated exact-head evidence cannot prove that a second independent reviewer inspected the change. Review independence remains external evidence.
-3. **Correlated assurance.** Model, implementation, oracle and closure may originate in the same human+AI circuit. External SAST, independent review and heterogeneous runtime/browser oracles reduce this risk; scenario count alone does not.
-4. **Review bandwidth.** Large changes without independent review are explicitly a delivery risk even when every internal checker is green.
-5. **Complexity ratchet.** Coverage is now expressed as required assurance families with substitutable candidate checks. A safe consolidation may reduce checker count without failing merely because the suite became smaller.
-6. **Coverage regression.** Contraction is permitted only when each required family remains represented. Deleting checks while losing a required family remains a hard failure.
-7. **Exact-head truth.** Evidence belongs to the commit on which it ran. Old green checks are genealogy, not current closure evidence.
-8. **Skipped external analysis.** Truthful disclosure of a skipped tool is required, but a disclosed skip is still not an executed independent oracle.
-9. **Mutation sensitivity.** A scenario family that cannot distinguish a deliberately weakened assurance rule is not counted as meaningful falsification pressure.
+Both are now fail-closed invariants.
 
-## Executable model
+## Atomized intentions
 
-`v3/assurance-risk-model.mjs` contains the bounded project-risk semantics and the coverage-family contract.
+- **I01 — Typed evidence.** Assurance dimensions accept only their declared boolean or enum domains.
+- **I02 — Unknown is not safe.** Missing, malformed, extra or non-object evidence becomes `input-contract-gap` with conservative normalization.
+- **I03 — Non-substitution.** Post-merge evidence is not prevention; SAST is not review; exact-head evidence is not independence.
+- **I04 — Correlation containment.** `same-circuit` assurance is contained only when independent review is combined with at least one technical oracle channel (external static analysis or a heterogeneous technical oracle).
+- **I05 — Safe compression.** Release assurance preserves responsibility families, not a historical minimum checker count.
+- **I06 — Falsification sensitivity.** Deliberately weakened assurance rules must change observed risk signatures.
+- **I07 — Document-boundary robustness.** Schema fuzzing covers 1..10,000 deterministic malformed/document-like cases.
+- **I08 — Bounded claims.** Scenario and fuzz counts are engineering pressure, never defect probabilities or certification.
+- **I09 — Exact-head closure.** Only CI evidence bound to the final PR HEAD can close the PR DoD.
+- **I10 — External residual honesty.** Branch protection, independent human review, GHAS entitlement and independent legal/security assessment cannot be self-certified by repository code.
 
-`v3/assurance-risk-check.mjs` executes exactly 100,000 deterministic scenarios split evenly among positive, negative, adversarial and edge families across 13 dimensions:
+## Reticular multi-abstraction DoD
+
+`ASSURANCE_DOD_LATTICE` is executable data in `v3/assurance-risk-model.mjs`. The existing assurance checker verifies that the graph is acyclic, every dependency exists, all I01–I10 intentions are represented and root `G0` reaches every node.
+
+| Node | Layer | Meaning | Depends on |
+|---|---|---|---|
+| A1 | axiom | claim boundary | — |
+| A2 | axiom | unknown is not positive evidence | — |
+| A3 | axiom | assurance controls are non-substitutable | — |
+| M1 | model | closed input contract | A2 |
+| M2 | model | review + technical oracle composition | A3 |
+| M3 | model | coverage-family contraction | A3 |
+| T1 | test | 100k bounded saturation | M1, M2, M3 |
+| T2 | test | 10k document-boundary fuzz | M1 |
+| T3 | test | mutation discrimination | M2, M3 |
+| C1 | closure | bounded evidence claim | A1, T1, T2, T3 |
+| C2 | closure | exact-head CI evidence | C1 |
+| C3 | closure | external residual controls remain explicit | A1, A3 |
+| G0 | global | PR64 global DoD | C2, C3, M3 |
+
+`G0` is intentionally not self-asserted by the simulation process. The checker proves the repository-internal graph and evidence nodes; exact-head GitHub CI supplies C2 externally. This prevents the model from certifying its own execution environment.
+
+## Executable evidence
+
+`v3/assurance-risk-check.mjs` executes exactly **100,000 deterministic engineering scenarios**, split evenly among positive, negative, adversarial and edge families across **14 dimensions**:
 
 - branch protection;
 - independent review;
 - external static analysis;
+- heterogeneous technical oracle;
 - exact-head evidence;
 - post-merge evidence;
 - change surface;
@@ -52,16 +73,30 @@ Across the trajectory, the strongest pattern is not monotonic expansion: ICTC is
 - truthful skipped-tool reporting;
 - PR-vs-direct-push delivery.
 
-Seven deliberately wrong mutants test the detector: post-merge evidence substituting prevention, SAST substituting review, exact-head evidence masking correlated assurance, minimum checker count masquerading as coverage, a truthful skip masquerading as executed SAST, coverage loss being ignored, and mutation sensitivity being assumed rather than observed.
+Seven deliberately wrong mutants test non-substitution and sensitivity: post-merge-as-prevention, SAST-as-review, exact-head-as-independence, minimum-count-as-coverage, truthful-skip-as-executed-SAST, ignored coverage loss and assumed mutation sensitivity.
 
-The generated artifact is `artifacts/assurance-risk-saturation.json`.
+The same checker then executes exactly **10,000 deterministic schema/document fuzz cases**. The corpus includes empty and whitespace strings, boolean-like text, numerics, YAML/JSON/Markdown-shaped fragments, Unicode markers, arrays, objects, unknown fields, non-object roots and a long payload. Every malformed case must produce `input-contract-gap`; a dedicated witness proves the string `"false"` normalizes conservatively rather than becoming truthy evidence.
 
-## Minimality rule
+The generated artifact remains `artifacts/assurance-risk-saturation.json` and records saturation, fuzz, mutation and lattice summaries with replay digests.
 
-The current release suite must preserve assurance **families**, not a historical minimum number of checker files. Consolidation is desirable when it removes duplicate responsibility while preserving the family contract and falsifier sensitivity.
+## Minimality and compression rule
 
-No new release identity, business process, workflow engine, graph database or compliance conclusion is introduced by this containment layer.
+The current release suite must preserve assurance **families**, not a minimum number of checker files. Consolidation is desirable when it removes duplicate responsibility while preserving coverage, falsifier sensitivity and the DoD graph. PR64 adds no release identity, business process, workflow engine, graph database, compliance score or autonomous authority.
+
+## Stop conditions
+
+Repository-internal work stops only when all of the following are true on one final HEAD:
+
+1. I01–I10 are represented by the reticular DoD and root `G0` reaches all nodes;
+2. 100k saturation completes and all structural mutants are discriminated;
+3. 10k document-boundary fuzz completes with all malformed inputs rejected fail-closed;
+4. coverage-family validation passes and no count ratchet is reintroduced;
+5. the full applicable GitHub CI set for the exact final HEAD has no failure, queued or in-progress residue;
+6. skipped conditional tooling is reported as skipped, never green;
+7. residual external controls remain explicit rather than converted into repository claims.
+
+Only then may PR64 leave draft/merge. This is a bounded repository-engineering DoD, not external certification.
 
 ## Residual external controls
 
-This repository change cannot itself create server-side branch protection, a human reviewer, GitHub Advanced Security entitlement, deployment controls or independent legal/security assessment. Those controls must remain visible as external/residual rather than being converted into internal green claims.
+Repository code cannot itself create server-side branch protection, an independent human reviewer, GitHub Advanced Security entitlement, deployment controls or independent legal/security assessment. Those remain external/residual controls even when G0 is satisfied for the PR scope.
