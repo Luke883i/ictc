@@ -35,6 +35,12 @@ def open_profile(page):
     expect(menu.locator(':scope > summary')).to_be_visible()
     if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
 
+def activate_profile_action(page,selector):
+    open_profile(page)
+    action=page.locator(f'#stableProfileMenu {selector}')
+    expect(action).to_be_visible()
+    action.dispatch_event('click')
+
 def open_grc_process(page,code):
     open_view(page,'processes')
     card=page.locator(f'#procedureHub [data-process-code="{code}"]')
@@ -97,25 +103,28 @@ try:
             PHASE=f'grc-{procedure}-information-value'
             assert_information_value(page,'grc',needle)
 
-        PHASE='admin-governance'
+        PHASE='admin-governance-open'
         open_view(page,'home')
-        open_profile(page)
-        page.locator('#openAdminCenter').click()
+        activate_profile_action(page,'#openAdminCenter')
         admin=page.locator('#adminCenter')
         expect(admin).to_be_visible()
+        PHASE='admin-governance-information'
         expect(admin.locator('[data-dialog-information-value="admin"]')).to_contain_text('Telemetria AI')
         expect(admin.locator('[data-dialog-information-value="admin"]')).to_contain_text('provider, modelli e budget')
-        admin.locator('[data-admin-close]').click()
+        PHASE='admin-governance-close'
+        page.keyboard.press('Escape')
         expect(admin).not_to_be_visible()
 
-        PHASE='ai-settings-boundary'
-        open_profile(page)
-        page.locator('#openSettings').click()
+        PHASE='ai-settings-open'
+        activate_profile_action(page,'#openSettings')
         settings=page.locator('#settingsDialog')
         expect(settings).to_be_visible()
+        PHASE='ai-settings-information'
         expect(settings.locator('[data-dialog-information-value="aiSettings"]')).to_contain_text('Canale AI')
         expect(settings.locator('[data-dialog-information-value="aiSettings"]')).to_contain_text('non rende i suoi output veri')
-        settings.locator('[data-close="settingsDialog"]').first.click()
+        PHASE='ai-settings-close'
+        page.keyboard.press('Escape')
+        expect(settings).not_to_be_visible()
 
         PHASE='mobile-information-density'
         mc=browser.new_context(viewport={'width':390,'height':844})
