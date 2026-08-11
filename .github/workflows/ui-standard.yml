@@ -29,10 +29,12 @@ jobs:
           node v3/procedure-journey-2-1-check.mjs
       - name: Epistemic and cross-process contracts
         run: |
+          node v3/procedure-dod-check.mjs
           node v3/epistemic-lattice-check.mjs
           node v3/epistemic-lattice-ui-check.mjs
           node v3/epistemic-inference-check.mjs
           node v3/epistemic-inference-ui-check.mjs
+          node v3/ui-epistemic-convergence-check.mjs
           node v3/cross-procedure-create-check.mjs
           node v3/cross-procedure-create-ui-check.mjs
       - name: Visual, lexical and posture contracts
@@ -44,6 +46,7 @@ jobs:
         run: |
           node v3/onto-compliance-saturation.mjs
           node v3/visual-grace-lexical-epistemic-saturation.mjs
+          node v3/ui-epistemic-procedure-saturation.mjs
           node v3/epistemic-lattice-saturation.mjs
           node v3/procedure-journey-saturation.mjs
           node v3/pr60-convergence-saturation.mjs
@@ -61,6 +64,7 @@ jobs:
             artifacts/pr60-convergence-saturation.json
             artifacts/onto-compliance-saturation.json
             artifacts/visual-grace-lexical-epistemic-saturation.json
+            artifacts/ui-epistemic-procedure-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
@@ -75,7 +79,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser contract syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -85,7 +89,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed Experience 1.9 + Epistemic 2.0 + Journey 2.1 + Onto-Compliance + Visual Grace v1
+      - name: Server-backed Experience 1.9 + Epistemic 2.0 + UI convergence + Journey 2.1 + Onto-Compliance + Visual Grace v1
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -97,6 +101,7 @@ jobs:
           trap './ictc.sh stop --profile current || true' EXIT
           python -u v3/browser-v1-9-experience.py
           python -u v3/browser-v2-epistemic.py
+          python -u v3/browser-ui-epistemic-convergence.py
           python -u v3/browser-v2-1-procedure-journey.py
           python -u v3/browser-pr60-polish.py
           python -u v3/browser-onto-compliance-v1.py
@@ -107,11 +112,13 @@ jobs:
           path: |
             artifacts/browser-v1-9*.json
             artifacts/browser-v2-epistemic*.json
+            artifacts/browser-ui-epistemic-convergence*.json
             artifacts/browser-v2-1*.json
             artifacts/browser-pr60*.json
             artifacts/browser-onto-compliance*.json
             artifacts/ux-v19-*.png
             artifacts/ux-v20-*.png
+            artifacts/ux-ui-epistemic-*.png
             artifacts/ux-v21-*.png
             artifacts/ux-pr60-*.png
             artifacts/ux-och-v1-*.png
