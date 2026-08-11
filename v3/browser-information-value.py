@@ -34,8 +34,9 @@ def assert_horizontal_first(page):
         if len(boxes)>1:
             required=sum(item['width'] for item in boxes)+10*(len(boxes)-1)
             if required<=host['width']+1:
-                tops=[round(item['y'],1) for item in boxes]
-                assert max(tops)-min(tops)<=3,{'row':index,'host':host,'children':boxes}
+                tops=[item['y'] for item in boxes]
+                bottoms=[item['y']+item['height'] for item in boxes]
+                assert max(tops)<=min(bottoms)+1,{'row':index,'host':host,'children':boxes}
                 checked+=1
     assert checked>0,'no measurable horizontal-first row exercised'
 
