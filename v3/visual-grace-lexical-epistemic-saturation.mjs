@@ -38,11 +38,11 @@ const source = Object.freeze({
     shellPosture: index.includes('>Postura ICTC</button>'),
     processHeading: index.includes('<h1>Processi di Compliance</h1>'),
     canonicalCopyOwner: copy.includes("processes:'Processi di Compliance'") && copy.includes("proof:'Postura ICTC'"),
-    frameSingular: frame.includes('<span>Processo di Compliance</span>'),
-    framePurpose: frame.includes('<b>Scopo del processo</b>'),
-    frameSignals: frame.includes('aria-label="Segnali del processo"'),
+    frameSingular: frame.includes('process-code') && !frame.includes('<span>Processo di Compliance</span>'),
+    framePurpose: frame.includes('procedure-purpose') && !frame.includes('<b>Scopo del processo</b>'),
+    frameSignals: frame.includes('aria-label="Segnali del processo"') && frame.includes('metric.label'),
     auditorPlainRead: frame.includes('Consulta registrazioni'),
-    contextCanonical: primitives.includes('Processi di Compliance') && primitives.includes('Postura ICTC'),
+    contextCanonical: primitives.includes('>Processi</button>') && primitives.includes('EP-01') && !primitives.includes('>Processi di Compliance</button>'),
     backCanonical: router.includes('SURFACE_LABELS.processes'),
     proofCanonical: proof.includes('7 Processi di Compliance') && !proof.includes('Procedure con decisioni'),
     retiredFrameAbsent: !['<span>Procedura</span>','<b>Scopo della procedura</b>','Segnali della procedura','Consulta record'].some(x => frame.includes(x))
@@ -84,7 +84,7 @@ const DIMENSIONS = Object.freeze({
 
 const FAULTS = Object.freeze({
   visual:['tiny-purpose','tiny-kicker','small-target','unbounded-measure','hover-lift','frame-blob','desktop-grid-on-mobile','overflow-mask','unstyled-proof-method','success-observation','decorative-frame'],
-  lexical:['nav-processes-short','nav-evidence','heading-procedures','copy-owner-split','frame-procedura','old-purpose','old-signals','auditor-record','context-processes-short','back-hardcoded','proof-procedure','retired-frame'],
+  lexical:['nav-processes-short','nav-evidence','heading-procedures','copy-owner-split','frame-meta-duplication','purpose-meta-duplication','old-signals','auditor-record','context-title-duplication','back-hardcoded','proof-procedure','retired-frame'],
   epistemic:['eighth-business-process','code-drift','ep-business-leak','families-hidden','boundary-hidden','trace-before-work','missing-human-evidence','proposal-blur','projection-split','proof-method-hidden','unbounded-standard','certification-upgrade','global-proof-claim']
 });
 
@@ -96,7 +96,7 @@ function clone(x){return structuredClone(x);}
 function inject(profile,family,fault){const p=clone(profile);const f=p[family];
   const maps={
     visual:{'tiny-purpose':'readablePurpose','tiny-kicker':'readableKicker','small-target':'minTargets44','unbounded-measure':'boundedMeasure','hover-lift':'noHoverLift','frame-blob':'noFrameBlob','desktop-grid-on-mobile':'responsiveGrid','overflow-mask':'noOverflowMask','unstyled-proof-method':'proofMethodStyled','success-observation':'neutralObservation','decorative-frame':'restrainedFrame'},
-    lexical:{'nav-processes-short':'shellProcesses','nav-evidence':'shellPosture','heading-procedures':'processHeading','copy-owner-split':'canonicalCopyOwner','frame-procedura':'frameSingular','old-purpose':'framePurpose','old-signals':'frameSignals','auditor-record':'auditorPlainRead','context-processes-short':'contextCanonical','back-hardcoded':'backCanonical','proof-procedure':'proofCanonical','retired-frame':'retiredFrameAbsent'},
+    lexical:{'nav-processes-short':'shellProcesses','nav-evidence':'shellPosture','heading-procedures':'processHeading','copy-owner-split':'canonicalCopyOwner','frame-meta-duplication':'frameSingular','purpose-meta-duplication':'framePurpose','old-signals':'frameSignals','auditor-record':'auditorPlainRead','context-title-duplication':'contextCanonical','back-hardcoded':'backCanonical','proof-procedure':'proofCanonical','retired-frame':'retiredFrameAbsent'},
     epistemic:{'eighth-business-process':'sevenProcesses','code-drift':'codesStable','ep-business-leak':'epCrossCutting','families-hidden':'commonFamilies','boundary-hidden':'claimBoundaryVisible','trace-before-work':'traceAfterWork','missing-human-evidence':'humanEvidenceEverywhere','proposal-blur':'proposedDistinct','projection-split':'projectionCommit','proof-method-hidden':'proofMethodVisible','unbounded-standard':'standardsBounded','certification-upgrade':'noCertificationUpgrade','global-proof-claim':'docBoundary'}
   };
   const key=maps[family][fault];if(!key)throw new Error(`${family}:${fault}`);f[key]=false;return p;
