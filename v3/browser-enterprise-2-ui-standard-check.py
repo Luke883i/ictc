@@ -81,6 +81,35 @@ def assert_pointer_target(target, label):
     assert hit['same'], f'{label}: pointer center intercepted: {hit}'
 
 
+def assert_admin_vertical_containment(page):
+    metrics = page.evaluate("""() => {
+      const dialog=document.querySelector('#adminCenter');
+      const shell=dialog?.querySelector('.admin-shell');
+      const grid=dialog?.querySelector('.admin-grid');
+      const d=dialog?.getBoundingClientRect();
+      const s=shell?.getBoundingClientRect();
+      const g=grid?.getBoundingClientRect();
+      return {
+        innerHeight,
+        dialog:{top:d?.top,bottom:d?.bottom,height:d?.height,clientHeight:dialog?.clientHeight,scrollHeight:dialog?.scrollHeight,overflowY:getComputedStyle(dialog).overflowY},
+        shell:{top:s?.top,bottom:s?.bottom,height:s?.height,clientHeight:shell?.clientHeight,scrollHeight:shell?.scrollHeight,overflowY:getComputedStyle(shell).overflowY},
+        grid:{top:g?.top,bottom:g?.bottom,height:g?.height,clientHeight:grid?.clientHeight,scrollHeight:grid?.scrollHeight,overflowY:getComputedStyle(grid).overflowY}
+      };
+    }""")
+    assert metrics['dialog']['top'] >= -1 and metrics['dialog']['bottom'] <= metrics['innerHeight'] + 1, metrics
+    assert metrics['shell']['height'] <= metrics['dialog']['clientHeight'] + 1, metrics
+    assert metrics['dialog']['scrollHeight'] <= metrics['dialog']['clientHeight'] + 1, metrics
+    assert metrics['shell']['scrollHeight'] <= metrics['shell']['clientHeight'] + 1, metrics
+    assert metrics['grid']['overflowY'] in ('auto','scroll'), metrics
+    assert metrics['grid']['scrollHeight'] > metrics['grid']['clientHeight'], metrics
+    grid = page.locator('#adminCenter .admin-grid')
+    grid.evaluate('el => { el.scrollTop = el.scrollHeight; }')
+    page.wait_for_timeout(40)
+    last = page.locator('#governanceForm .admin-actions button').bounding_box()
+    gb = grid.bounding_box()
+    assert last and gb and last['y'] + last['height'] <= gb['y'] + gb['height'] + 1 and last['y'] >= gb['y'] - 1, (last, gb, metrics)
+
+
 def annotate(error):
     payload = {'ok': False, 'phase': PHASE, 'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
     (ART / 'browser-enterprise-2-ui-standard-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
@@ -187,7 +216,11 @@ try:
         assert_pointer_target(page.locator('#adminCenter .admin-section-nav button[aria-current="page"]').first, 'admin-nav-mobile-hit-target')
         no_overflow(page, 'admin-390', '#adminCenter')
         close_box_in_header(page, '#adminCenter')
-        shot(page, 'admin-governance')
+        PHASE = 'admin-vertical-containment'
+        page.set_viewport_size({'width': 390, 'height': 568})
+        page.wait_for_timeout(80)
+        assert_admin_vertical_containment(page)
+        shot(page, 'admin-governance-568')
         page.keyboard.press('Escape')
 
         PHASE = 'proof-disclosure-and-placeholder'
@@ -226,7 +259,7 @@ try:
             'checks': [
                 'metric-value-label-atomic', 'metric-rerender-reconciled', 'server-issued-admin-visibility', 'dialog-close-in-header', 'dialog-single-scroll-body', 'compact-mobile-footer',
                 'settings-three-column-mobile-stepper', 'monitoring-single-open', 'admin-single-direct-panel', 'admin-nav-min-target', 'admin-nav-sequential-hit-test',
-                'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
+                'admin-vertical-contained-single-scroll-owner', 'classification-localized', 'placeholder-copy-zero', 'proof-standard-contained', 'mobile-brand-compact',
                 '320-reflow', '390-reflow', 'zoom-200', 'reduced-motion', 'forced-colors'
             ]
         }
