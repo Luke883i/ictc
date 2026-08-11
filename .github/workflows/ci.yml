@@ -56,7 +56,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-epistemic-professional-demo.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-onto-compliance-v1.py v3/browser-information-value.py v3/browser-risk-drilldown.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-onto-compliance-v1.py v3/browser-information-value.py v3/browser-risk-drilldown.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -68,7 +68,7 @@ jobs:
           if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
-      - name: Canonical Experience + Epistemic professional demo matrix + Procedure Journey + Onto-Compliance
+      - name: Canonical Experience + Epistemic + Procedure Journey + Onto-Compliance
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -80,7 +80,6 @@ jobs:
           trap './ictc.sh stop --profile current || true' EXIT
           python -u v3/browser-v1-9-experience.py
           python -u v3/browser-v2-epistemic.py
-          python -u v3/browser-epistemic-professional-demo.py
           python -u v3/browser-ui-epistemic-convergence.py
           python -u v3/browser-v2-1-procedure-journey.py
           python -u v3/browser-onto-compliance-v1.py
@@ -93,7 +92,6 @@ jobs:
           path: |
             artifacts/browser-v1-9*.json
             artifacts/browser-v2-epistemic*.json
-            artifacts/browser-epistemic-professional-demo*.json
             artifacts/browser-ui-epistemic-convergence*.json
             artifacts/browser-v2-1*.json
             artifacts/browser-onto-compliance*.json
@@ -105,6 +103,45 @@ jobs:
             artifacts/ux-v21-*.png
             artifacts/ux-och-v1-*.png
             artifacts/information-value-*.png
+          if-no-files-found: warn
+          retention-days: 30
+  epistemic-professional-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Professional demo browser syntax
+        run: python -m py_compile v3/browser-epistemic-professional-demo.py
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Isolated server-backed EP-01 professional DEMO matrix
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1
+          python -u v3/browser-epistemic-professional-demo.py
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: ictc-epistemic-professional-browser-evidence
+          path: |
+            artifacts/browser-epistemic-professional-demo*.json
+            artifacts/browser-epistemic-professional-demo-server.log
             artifacts/epistemic-*.png
           if-no-files-found: warn
           retention-days: 30
