@@ -105,6 +105,8 @@ try:
         seed_id,drag_id=connected[0],connected[1]
         page.evaluate("""id=>[...document.querySelectorAll('.epistemic-node-list button')].find(b=>b.dataset.epistemicNode===id)?.click()""",seed_id)
         graph_ready(page); assert selected_node(page)==seed_id,(selected_node(page),seed_id)
+        targetability=page.evaluate("""id=>{const g=[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(x=>x.dataset.epistemicNode===id);if(!g)return null;g.scrollIntoView({block:'center',inline:'center'});const hit=g.querySelector('.epistemic-graph-hit');if(!hit)return null;const r=hit.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,under=document.elementFromPoint(x,y);return{x,y,innerWidth,innerHeight,inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,hitId:under?.closest?.('g[data-epistemic-node]')?.dataset.epistemicNode||null};}""",drag_id)
+        assert targetability and targetability['inViewport'] and targetability['hitId']==drag_id,targetability
         baseline=page.evaluate("""id=>{const g=[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(x=>x.dataset.epistemicNode===id);const hit=g?.querySelector('.epistemic-graph-hit');const line=[...document.querySelectorAll('.epistemic-graph-edge')].find(l=>l.dataset.graphFrom===id||l.dataset.graphTo===id);if(!g||!hit||!line)return null;const r=hit.getBoundingClientRect(),from=line.dataset.graphFrom===id;return{id,center:{x:r.left+r.width/2,y:r.top+r.height/2},from,x:Number(line.getAttribute(from?'x1':'x2')),y:Number(line.getAttribute(from?'y1':'y2'))};}""",drag_id)
         assert baseline,drag_id
         capture['on']=True
@@ -144,7 +146,7 @@ try:
         m.screenshot(path=str(ART/'ux-ui-epistemic-convergence-mobile.png'),full_page=True); mc.close()
 
         assert not errors,errors
-        out={'ok':True,'profile':'ui-epistemic-procedure-convergence-browser','draftAsyncReadiness':True,'meaningfulTargets':targets,'compressionRevision':rev,'compressionDigest':digest,'reversibleEnvelope':True,'visualNodeRadius':10,'hitRadius':22,'labelNodeCollisions':0,'dragMovesConnectedEdges':True,'dragDoesNotActivate':True,'clickActivatesDetail':True,'keyboardActivatesDetail':True,'graphGesturesWriteCount':len(writes),'mobileOverflow':False,'evidenceClass':'E2-server-backed-browser+interaction-falsification'}
+        out={'ok':True,'profile':'ui-epistemic-procedure-convergence-browser','draftAsyncReadiness':True,'meaningfulTargets':targets,'compressionRevision':rev,'compressionDigest':digest,'reversibleEnvelope':True,'visualNodeRadius':10,'hitRadius':22,'labelNodeCollisions':0,'dragTargetability':True,'dragMovesConnectedEdges':True,'dragDoesNotActivate':True,'clickActivatesDetail':True,'keyboardActivatesDetail':True,'graphGesturesWriteCount':len(writes),'mobileOverflow':False,'evidenceClass':'E2-server-backed-browser+interaction-falsification'}
         (ART/'browser-ui-epistemic-convergence.json').write_text(json.dumps(out,indent=2),encoding='utf8')
         print('browser-ui-epistemic-convergence: complete',flush=True)
         ctx.close(); browser.close()
