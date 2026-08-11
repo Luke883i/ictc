@@ -16,17 +16,24 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Surface, authority and journey contracts
-        run: |
-          node v3/ui-active-experience-audit.mjs
-          node v3/semantic-api-contract-check.mjs
-          node v3/historical-ui-fixture-check.mjs
-          node v3/v1-2-market-candidate-check.mjs
-          node v3/v1-9-experience-check.mjs
-          node v3/surface-primitives-check.mjs
-          node v3/projection-commit-check.mjs
-          node v3/journey-navigation-check.mjs
-          node v3/procedure-journey-2-1-check.mjs
+      - name: Active experience graph
+        run: node v3/ui-active-experience-audit.mjs
+      - name: Semantic API contract
+        run: node v3/semantic-api-contract-check.mjs
+      - name: Historical UI fixtures
+        run: node v3/historical-ui-fixture-check.mjs
+      - name: Market candidate contract
+        run: node v3/v1-2-market-candidate-check.mjs
+      - name: Experience 1.9 contract
+        run: node v3/v1-9-experience-check.mjs
+      - name: Surface primitives contract
+        run: node v3/surface-primitives-check.mjs
+      - name: Projection commit contract
+        run: node v3/projection-commit-check.mjs
+      - name: Journey navigation contract
+        run: node v3/journey-navigation-check.mjs
+      - name: Procedure journey 2.1 contract
+        run: node v3/procedure-journey-2-1-check.mjs
       - name: Epistemic and cross-process contracts
         run: |
           node v3/procedure-dod-check.mjs
