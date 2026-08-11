@@ -45,14 +45,17 @@ def open_process(page,code,proc):
     page.locator('.service-nav [data-service="processes"]').click(); card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click(); expect(page.locator(proc['view'])).to_be_visible(); frame=page.locator(proc['frame']); expect(frame).to_be_visible(); expect(frame.locator('.procedure-frame-main')).to_be_visible(); return frame
 
 def process_geometry(page,proc):
-    return page.locator(proc['frame']).evaluate("""(f,workSelector)=>{const info=e=>{if(!e)return null;const s=getComputedStyle(e),r=e.getBoundingClientRect();return {display:s.display,visibility:s.visibility,opacity:s.opacity,w:+r.width.toFixed(1),h:+r.height.toFixed(1),font:+parseFloat(s.fontSize).toFixed(2),text:e.textContent||''}};const m=f.querySelector('.procedure-frame-main'),p=f.querySelector('.procedure-purpose span'),k=f.querySelector('.procedure-frame-kicker'),b=f.querySelector('.procedure-primary'),w=document.querySelector(workSelector);return {frame:info(f),main:info(m),purpose:info(p),kicker:info(k),primary:info(b),workY:w?w.getBoundingClientRect().y:null,frameY:f.getBoundingClientRect().y}}""", proc['work'])
+    return page.locator(proc['frame']).evaluate("""(f,workSelector)=>{const info=e=>{if(!e)return null;const s=getComputedStyle(e),r=e.getBoundingClientRect();return {display:s.display,visibility:s.visibility,opacity:s.opacity,w:+r.width.toFixed(1),h:+r.height.toFixed(1),font:+parseFloat(s.fontSize).toFixed(2),text:e.textContent||''}};const m=f.querySelector('.procedure-frame-main'),p=f.querySelector('.procedure-purpose'),k=f.querySelector('.procedure-frame-kicker'),b=f.querySelector('.procedure-primary'),w=document.querySelector(workSelector);return {frame:info(f),main:info(m),purpose:info(p),kicker:info(k),primary:info(b),workY:w?w.getBoundingClientRect().y:null,frameY:f.getBoundingClientRect().y}}""", proc['work'])
 
 def audit_process(page,role,vp,width,proc,contract,families,revision):
     global PHASE; PHASE=f'{role}-{vp}-{proc["code"]}'
     frame=open_process(page,proc['code'],proc); raw=(frame.text_content() or ''); rendered=frame.inner_text(); g=process_geometry(page,proc)
-    if 'Processo di Compliance' not in raw: anomaly('process-singular-language-missing',role,vp,proc['code'],raw[:240],'Processo di Compliance')
+    if 'Processo di Compliance' in raw: anomaly('process-singular-language-duplicated',role,vp,proc['code'],raw[:240],'code + business label without repeated process meta-label')
+    if 'Scopo del processo' in raw: anomaly('process-purpose-meta-label-duplicated',role,vp,proc['code'],raw[:240],'purpose text without repeated purpose meta-label')
     if re.search(r'\bProcedur[ae]\b',raw,re.I): anomaly('retired-process-language-visible',role,vp,proc['code'],raw[:240],'no Procedura/Procedure')
     if contract and ((frame.locator('h1').text_content() or '').strip()!=contract.get('label') or (frame.locator('.procedure-frame-kicker span').first.text_content() or '').strip()!=contract.get('code')): anomaly('process-contract-identity-mismatch',role,vp,proc['code'],raw[:180],{'code':contract.get('code'),'label':contract.get('label')})
+    purpose=(frame.locator('.procedure-purpose').text_content() or '').strip()
+    if not purpose: anomaly('process-purpose-missing',role,vp,proc['code'],purpose,'non-empty canonical process purpose')
     if g['purpose'] and g['purpose']['font']<12: anomaly('process-purpose-too-small',role,vp,proc['code'],g['purpose']['font'],'>=12px')
     if g['kicker'] and g['kicker']['font']<10: anomaly('process-kicker-too-small',role,vp,proc['code'],g['kicker']['font'],'>=10px')
     if g['primary'] and g['primary']['h']<43.5: anomaly('process-primary-target-too-small',role,vp,proc['code'],g['primary']['h'],'>=44px')
