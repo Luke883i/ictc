@@ -150,11 +150,11 @@ try:
         landscape=page.locator('#processLandscape'); expect(landscape).to_be_visible()
         expected_standards={
             'monitoring':'ISO 37301:2021',
-            'incidents':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'incidents':'NIST CSF 2.0',
             'objects':'ISO 37301:2021',
-            'coverage':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'coverage':'NIST CSF 2.0',
             'actions':'Site Reliability Engineering practices',
-            'risks':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'risks':'NIST CSF 2.0',
             'assurance':'GOV.UK Design System and USWDS'
         }
         for process_id,standard_name in expected_standards.items():
