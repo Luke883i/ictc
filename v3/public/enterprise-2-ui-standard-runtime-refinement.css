@@ -1,8 +1,33 @@
 /* Server-backed refinements discovered only under the complete runtime cascade. */
-html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-shell{display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;min-height:0!important}
+html[data-ui-standard="ictc-surface-standard-1"] #adminCenter{
+  height:min(94dvh,860px)!important;
+  max-height:94dvh!important;
+  overflow:hidden!important;
+}
+html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-shell{
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  height:100%!important;
+  max-height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
 html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-head{grid-row:1}
 html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-section-nav{grid-row:2;position:relative;z-index:2}
-html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-grid{grid-row:3;min-height:0!important}
+html[data-ui-standard="ictc-surface-standard-1"] #adminCenter .admin-grid{
+  grid-row:3;
+  min-height:0!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+
+@media(max-width:760px){
+  html[data-ui-standard="ictc-surface-standard-1"] #adminCenter{
+    height:100dvh!important;
+    max-height:100dvh!important;
+  }
+}
 
 @media(max-width:480px){
   html[data-ui-standard="ictc-surface-standard-1"][data-compliance-flow="compliance-guided-1"] dialog[data-progressive-dialog="true"] footer.ui-dialog-footer{display:grid!important;grid-template-columns:76px minmax(0,1fr)!important;grid-auto-flow:column!important;grid-auto-rows:44px!important;align-items:center!important;gap:8px!important;min-height:60px!important;max-height:72px!important;height:auto!important;padding:8px 12px!important;overflow:hidden!important}

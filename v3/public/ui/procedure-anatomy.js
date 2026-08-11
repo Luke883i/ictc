@@ -1,17 +1,173 @@
 import { esc, state } from './common.js';
-let installed=false;
-const scopeLabels={all:'Organizzazione',read:'Sola lettura','created-by':'Creati da te','assigned-or-created':'Assegnati o creati da te','organization-contribute':'Organizzazione · contributo',organization:'Organizzazione','own-monitors-plus-organization-sources':'Monitor personali · fonti organizzative'};
-function contract(id){return state.data?.procedureRegistry?.procedures?.find(x=>x.id===id)||null;}
-function summary(id){return state.data?.procedureSummary?.rows?.find(x=>x.id===id)||null;}
-function landscapeItem(id){const landscape=state.data?.processLandscape;if(!landscape)return null;return[...(landscape.phases||[]).flatMap(phase=>phase.items||[]),...(landscape.ungrouped||[])].find(item=>item.processId===id)||null;}
-function decisionCount(id){const types=new Set(contract(id)?.adapter?.subjectTypes||[]);return(state.data?.decisions?.records||[]).filter(x=>types.has(x.subject?.type)).length;}
-function versionCount(id){return(state.data?.subjectVersions?.records||[]).filter(x=>x.procedureId===id).length;}
-function hostFor(id){const c=contract(id),surface=c?.adapter?.surface;if(surface==='monitoring')return document.querySelector('#monitoringView');if(surface==='incidents')return document.querySelector('#incidentsView');if(surface==='grc'){let active=state.activeProcessId||'';try{active=active||localStorage.getItem('ictc-grc-process')||'';}catch{}if(active!==id)return null;return document.querySelector('#grcWorkspace');}return null;}
-function workAnchor(host){if(!host)return null;if(host.id==='grcWorkspace')return host.querySelector(':scope > .grc-body');return host.querySelector(':scope > .section-block');}
-function ensureCss(){if(document.querySelector('link[data-procedure-anatomy]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/procedure-anatomy.css';link.dataset.procedureAnatomy='';document.head.append(link);}
-function epistemicLegend(){const families=state.data?.procedureRegistry?.commonSubstrate?.epistemicFamilies||[];return families.map(item=>`<span>${esc(item)}</span>`).join('');}
-function benchmarkMarkup(id){const item=landscapeItem(id),applications=item?.benchmarkApplications||[];if(!applications.length)return'';return`<section class="procedure-anatomy-standards" data-procedure-standard-applications="${esc(id)}"><small>Standard e pratiche applicate</small><ul>${applications.map(application=>`<li><strong>${esc(application.name||application.ref)}</strong><span>${(application.methodSteps||[]).map(esc).join(' · ')}</span>${(application.evidence||[]).length?`<small>Prova: ${application.evidence.map(esc).join(' · ')}</small>`:''}${application.limit?`<small>Limite: ${esc(application.limit)}</small>`:''}</li>`).join('')}</ul><p><small>Il collegamento mostra dove il metodo ICTC applica il riferimento dichiarato; non è una certificazione o una decisione di applicabilità legale.</small></p></section>`;}
-function renderOne(id){const host=hostFor(id),c=contract(id),s=summary(id);if(!host||!c||!s)return;host.querySelector(':scope > [data-procedure-anatomy]')?.remove();const asOf=state.data?.projectionContext?.asOf,access=c.accessPolicy?.[state.role]||c.access?.[state.role]||c.adapter?.userScope||'actor-visible',decisions=decisionCount(id),versions=versionCount(id),box=document.createElement('details');box.className='procedure-anatomy';box.dataset.procedureAnatomy=id;box.innerHTML=`<summary><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary><div class="procedure-anatomy-grid"><div><small>Ambito visibile</small><strong>${esc(scopeLabels[access]||access)}</strong></div><div><small>Vista dati</small><strong>${asOf?esc(new Date(asOf).toLocaleString('it-IT')):'corrente'}</strong></div><div><small>Decisioni umane visibili</small><strong>${esc(decisions)}</strong></div><div><small>Versioni registrate</small><strong>${esc(versions)}</strong></div></div><div class="procedure-anatomy-epistemic" aria-label="Legenda epistemica">${epistemicLegend()}</div>${benchmarkMarkup(id)}<p>${esc(c.claimBoundary)}</p><div class="procedure-anatomy-actions"><button type="button" data-service="proof">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;const anchor=workAnchor(host);if(anchor)anchor.after(box);else host.append(box);}
-function render(){for(const c of state.data?.procedureRegistry?.procedures||[])renderOne(c.id);}
-function scheduleRender(){queueMicrotask(render);}
-export function installProcedureAnatomy(){if(installed)return;installed=true;ensureCss();render();document.addEventListener('ictc:rendered',render);document.addEventListener('ictc:surface-changed',scheduleRender);window.addEventListener('click',event=>{if(event.target.closest?.('[data-grc-process]'))scheduleRender();},true);document.addEventListener('click',event=>{const proof=event.target.closest('[data-procedure-anatomy] [data-service="proof"]');if(proof){document.querySelector('.service-nav [data-service="proof"]')?.click();return;}if(event.target.closest('[data-workspace-return]'))scheduleRender();});}
+
+let installed = false;
+
+const scopeLabels = {
+  all: 'Organizzazione',
+  read: 'Sola lettura',
+  'created-by': 'Creati da te',
+  'assigned-or-created': 'Assegnati o creati da te',
+  'organization-contribute': 'Organizzazione · contributo',
+  organization: 'Organizzazione',
+  'own-monitors-plus-organization-sources': 'Monitor personali · fonti organizzative'
+};
+
+const alignmentLabels = {
+  'aligned-and-evidenced': 'Applicazione con evidenza',
+  'practice-inspired': 'Pratica di riferimento',
+  'implemented-baseline': 'Baseline implementata',
+  'external-validation-required': 'Validazione esterna richiesta',
+  'context-only': 'Contesto',
+  reference: 'Riferimento dichiarato'
+};
+
+function contract(id) {
+  return state.data?.procedureRegistry?.procedures?.find(item => item.id === id) || null;
+}
+
+function summary(id) {
+  return state.data?.procedureSummary?.rows?.find(item => item.id === id) || null;
+}
+
+function landscapeItem(id) {
+  const landscape = state.data?.processLandscape;
+  if (!landscape) return null;
+  return [...(landscape.phases || []).flatMap(phase => phase.items || []), ...(landscape.ungrouped || [])]
+    .find(item => item.processId === id) || null;
+}
+
+function decisionCount(id) {
+  const types = new Set(contract(id)?.adapter?.subjectTypes || []);
+  return (state.data?.decisions?.records || []).filter(item => types.has(item.subject?.type)).length;
+}
+
+function versionCount(id) {
+  return (state.data?.subjectVersions?.records || []).filter(item => item.procedureId === id).length;
+}
+
+function hostFor(id) {
+  const current = contract(id);
+  const surface = current?.adapter?.surface;
+  if (surface === 'monitoring') return document.querySelector('#monitoringView');
+  if (surface === 'incidents') return document.querySelector('#incidentsView');
+  if (surface === 'grc') {
+    let active = state.activeProcessId || '';
+    try { active = active || localStorage.getItem('ictc-grc-process') || ''; } catch {}
+    if (active !== id) return null;
+    return document.querySelector('#grcWorkspace');
+  }
+  return null;
+}
+
+function workAnchor(host) {
+  if (!host) return null;
+  if (host.id === 'grcWorkspace') return host.querySelector(':scope > .grc-body');
+  return host.querySelector(':scope > .section-block');
+}
+
+function ensureCss() {
+  if (document.querySelector('link[data-procedure-anatomy]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/procedure-anatomy.css';
+  link.dataset.procedureAnatomy = '';
+  document.head.append(link);
+}
+
+function epistemicLegend() {
+  const families = state.data?.procedureRegistry?.commonSubstrate?.epistemicFamilies || [];
+  return families.map(item => `<span>${esc(item)}</span>`).join('');
+}
+
+function benchmarkMarkup(id) {
+  const applications = landscapeItem(id)?.benchmarkApplications || [];
+  if (!applications.length) return '';
+
+  const rows = applications.map(application => {
+    const name = application.name || application.ref;
+    const methodSteps = application.methodSteps || [];
+    const evidence = application.evidence || [];
+    const alignment = alignmentLabels[application.alignment] || alignmentLabels.reference;
+    const practice = application.practice || 'Pratica dichiarata nel catalogo standard ICTC.';
+    return `<details class="procedure-standard-application" data-procedure-standard-application="${esc(application.ref)}">
+      <summary>
+        <span class="procedure-standard-name">${esc(name)}</span>
+        <span class="procedure-standard-meta">${esc(methodSteps.length)} passaggi · ${esc(alignment)}</span>
+      </summary>
+      <div class="procedure-standard-body">
+        <p class="procedure-standard-practice"><b>Come ICTC applica</b><span>${esc(practice)}</span></p>
+        <div class="procedure-standard-methods"><small>Passaggi del metodo</small><ol>${methodSteps.map(step => `<li>${esc(step)}</li>`).join('')}</ol></div>
+        ${evidence.length ? `<p class="procedure-standard-evidence"><b>Prova:</b> <span>${evidence.map(esc).join(' · ')}</span></p>` : ''}
+        ${application.limit ? `<p class="procedure-standard-limit"><b>Limite:</b> <span>${esc(application.limit)}</span></p>` : ''}
+      </div>
+    </details>`;
+  }).join('');
+
+  return `<section class="procedure-anatomy-standards" data-procedure-standard-applications="${esc(id)}">
+    <div class="procedure-anatomy-standard-head">
+      <span>Standard e pratiche applicate</span>
+      <small>${esc(applications.length)} riferimenti · dettagli su richiesta</small>
+    </div>
+    ${rows}
+    <p class="procedure-standard-boundary"><small>Il collegamento mostra dove il metodo ICTC applica il riferimento dichiarato; non è una certificazione o una decisione di applicabilità legale.</small></p>
+  </section>`;
+}
+
+function renderOne(id) {
+  const host = hostFor(id);
+  const current = contract(id);
+  const row = summary(id);
+  if (!host || !current || !row) return;
+
+  host.querySelector(':scope > [data-procedure-anatomy]')?.remove();
+  const asOf = state.data?.projectionContext?.asOf;
+  const access = current.accessPolicy?.[state.role] || current.access?.[state.role] || current.adapter?.userScope || 'actor-visible';
+  const decisions = decisionCount(id);
+  const versions = versionCount(id);
+  const box = document.createElement('details');
+  box.className = 'procedure-anatomy';
+  box.dataset.procedureAnatomy = id;
+  box.innerHTML = `<summary><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
+    <div class="procedure-anatomy-grid">
+      <div><small>Ambito visibile</small><strong>${esc(scopeLabels[access] || access)}</strong></div>
+      <div><small>Vista dati</small><strong>${asOf ? esc(new Date(asOf).toLocaleString('it-IT')) : 'corrente'}</strong></div>
+      <div><small>Decisioni umane visibili</small><strong>${esc(decisions)}</strong></div>
+      <div><small>Versioni registrate</small><strong>${esc(versions)}</strong></div>
+    </div>
+    <div class="procedure-anatomy-epistemic" aria-label="Legenda epistemica">${epistemicLegend()}</div>
+    ${benchmarkMarkup(id)}
+    <p>${esc(current.claimBoundary)}</p>
+    <div class="procedure-anatomy-actions"><button type="button" data-service="proof">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
+
+  const anchor = workAnchor(host);
+  if (anchor) anchor.after(box);
+  else host.append(box);
+}
+
+function render() {
+  for (const current of state.data?.procedureRegistry?.procedures || []) renderOne(current.id);
+}
+
+function scheduleRender() {
+  queueMicrotask(render);
+}
+
+export function installProcedureAnatomy() {
+  if (installed) return;
+  installed = true;
+  ensureCss();
+  render();
+  document.addEventListener('ictc:rendered', render);
+  document.addEventListener('ictc:surface-changed', scheduleRender);
+  window.addEventListener('click', event => {
+    if (event.target.closest?.('[data-grc-process]')) scheduleRender();
+  }, true);
+  document.addEventListener('click', event => {
+    const proof = event.target.closest('[data-procedure-anatomy] [data-service="proof"]');
+    if (proof) {
+      document.querySelector('.service-nav [data-service="proof"]')?.click();
+      return;
+    }
+    if (event.target.closest('[data-workspace-return]')) scheduleRender();
+  });
+}
