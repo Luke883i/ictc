@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { canonicalProcedureContracts } from './runtime/procedure-contracts.mjs';
+import { PROCEDURE_DOD, BUSINESS_PROCEDURE_IDS, MEANINGFUL_HANDOFFS } from './procedure-dod.mjs';
+import { canonicalProcedureOntologyProjection, PROCEDURE_ONTOLOGY_IDS, procedureExpectation } from './procedure-ontology-model.mjs';
+
+assert.deepEqual(PROCEDURE_ONTOLOGY_IDS,BUSINESS_PROCEDURE_IDS,'procedure ontology must reuse the canonical seven-process order');
+const contracts=canonicalProcedureContracts(),projection=canonicalProcedureOntologyProjection();
+assert.equal(contracts.length,7);assert.equal(projection.procedures.length,7);
+const edges=new Set(MEANINGFUL_HANDOFFS.map(item=>`${item.sourceProcedureId}->${item.targetProcedureId}`));
+for(const procedure of projection.procedures){const contract=contracts.find(item=>item.id===procedure.id),expected=procedureExpectation(procedure.id),dod=PROCEDURE_DOD[procedure.id];assert.ok(contract&&dod,`${procedure.id}: canonical owners present`);assert.deepEqual(procedure.faults,[],`${procedure.id}: ontology fault`);assert.equal(procedure.method.length,5,`${procedure.id}: five native completion expectations`);assert.ok(procedure.method.every(Boolean));assert.deepEqual(procedure.handoffs,dod.handoffs);assert.ok(expected.handoffs.every(target=>edges.has(`${procedure.id}->${target}`)),`${procedure.id}: handoff graph drift`);assert.ok(procedure.metrics.every(metric=>metric.id&&metric.label&&metric.drilldown&&metric.claimBoundary),`${procedure.id}: metric semantics incomplete`);assert.ok(procedure.evidencePolicy.length>=3,`${procedure.id}: evidence anatomy too weak`);assert.ok(procedure.humanCheckpoints.length>=1,`${procedure.id}: missing human checkpoint`);assert.ok(procedure.exit&&procedure.claimBoundary,`${procedure.id}: missing exit/claim boundary`);}
+const coverage=contracts.find(item=>item.id==='coverage');assert.ok(coverage.humanCheckpoints.includes('standard-use')&&coverage.humanCheckpoints.includes('requirement-applicability')&&coverage.humanCheckpoints.includes('mapping-review'),'coverage must separate organizational use, applicability and mapping review');assert.match(coverage.claimBoundary,/distinct|separat|legal applicability|effectiveness/i);
+const risks=contracts.find(item=>item.id==='risks');assert.ok(risks.aiSupport.forbidden.includes('rate-risk')&&risks.aiSupport.forbidden.includes('decide-treatment'));assert.ok(risks.evidencePolicy.includes('rating-reason')&&risks.evidencePolicy.includes('review-date'));
+const assurance=contracts.find(item=>item.id==='assurance');assert.ok(assurance.aiSupport.forbidden.includes('approve-response-set'));assert.ok(assurance.transitions.some(item=>item.id==='approve-version'&&item.versionBound===true&&item.human===true));
+console.log(`procedure-ontology-check: ok procedures=${projection.procedures.length} handoffs=${MEANINGFUL_HANDOFFS.length}`);
