@@ -1,7 +1,7 @@
-import json, os, pathlib, re, shutil, subprocess, tempfile, time, traceback, urllib.request
+import json, os, pathlib, shutil, subprocess, tempfile, time, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True); PHASE='init'
-PORT=47000+(os.getpid()%800); BASE=f'http://127.0.0.1:{PORT}'; RUNTIME=tempfile.mkdtemp(prefix='ictc-epistemic-professional-'); LOG=ART/'browser-epistemic-professional-demo-server.log'; PROC=None
+EXTERNAL_BASE=(os.environ.get('ICTC_BASE_URL') or '').rstrip('/'); PORT=47000+(os.getpid()%800); BASE=EXTERNAL_BASE or f'http://127.0.0.1:{PORT}'; RUNTIME=None if EXTERNAL_BASE else tempfile.mkdtemp(prefix='ictc-epistemic-professional-'); LOG=ART/'browser-epistemic-professional-demo-server.log'; PROC=None
 LENSES=['compliance-lead','internal-auditor','dpo-privacy','security-manager','risk-manager','control-owner','assurance-reviewer','legal-231-reviewer','it-operations','supplier-procurement','quality-manager','executive-sme']
 EXPECTED_MODES={'compliance-lead':'explore','internal-auditor':'flat','dpo-privacy':'explore','security-manager':'graph','risk-manager':'explore','control-owner':'graph','assurance-reviewer':'explore','legal-231-reviewer':'flat','it-operations':'graph','supplier-procurement':'explore','quality-manager':'explore','executive-sme':'explore'}
 SHOTS=[]
@@ -11,24 +11,33 @@ def no_overflow(page):
  m=page.evaluate('()=>[innerWidth,document.documentElement.scrollWidth,document.body.scrollWidth]'); assert m[1]<=m[0]+1 and m[2]<=m[0]+1,m
 def api(page,path,role='admin'):
  return page.evaluate("""async a=>{const r=await fetch(a.path,{headers:{'x-ictc-role':a.role,'x-ictc-actor-id':'browser-'+a.role}});const j=await r.json();return{status:r.status,payload:j}}""",{'path':path,'role':role})
+def health_request():
+ req=urllib.request.Request(BASE+'/api/health',headers={'x-ictc-role':'admin','x-ictc-actor-id':'browser-admin'}); return urllib.request.urlopen(req,timeout=2).read()
 def start_server():
  global PROC
+ if EXTERNAL_BASE:
+  for _ in range(30):
+   try: health_request(); return None
+   except Exception: time.sleep(.2)
+  raise RuntimeError(f'external demo server not ready: {BASE}')
  env={**os.environ,'ICTC_RUNTIME_DIR':RUNTIME,'ICTC_PORT':str(PORT),'PORT':str(PORT),'ICTC_HOST':'127.0.0.1','ICTC_DEMO_SEED':'1','ICTC_SCHEDULER_TICK_MS':'100000','ICTC_NO_OPEN':'1'}
  node=shutil.which('node'); assert node,'node missing'
  log=open(LOG,'w',encoding='utf8'); PROC=subprocess.Popen([node,str(ROOT/'v3/server.mjs')],cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT)
- for _ in range(1800):
+ deadline=time.monotonic()+180
+ while time.monotonic()<deadline:
   if PROC.poll() is not None:
    log.flush(); raise RuntimeError(f'demo server exited {PROC.returncode}: {LOG.read_text(encoding="utf8")[-6000:]}')
-  try:
-   req=urllib.request.Request(BASE+'/api/health',headers={'x-ictc-role':'admin','x-ictc-actor-id':'browser-admin'}); urllib.request.urlopen(req,timeout=.4).read(); return log
-  except Exception: time.sleep(.1)
- raise RuntimeError(f'demo server not ready after saturated readiness window: {LOG.read_text(encoding="utf8")[-6000:]}')
+  try: health_request(); return log
+  except Exception: time.sleep(.2)
+ raise RuntimeError(f'demo server not ready within 180s: {LOG.read_text(encoding="utf8")[-6000:]}')
 def stop_server(log):
+ if EXTERNAL_BASE:return
  if PROC and PROC.poll() is None:
   PROC.terminate()
   try: PROC.wait(timeout=5)
   except subprocess.TimeoutExpired: PROC.kill(); PROC.wait(timeout=3)
- log.close(); shutil.rmtree(RUNTIME,ignore_errors=True)
+ if log: log.close()
+ if RUNTIME: shutil.rmtree(RUNTIME,ignore_errors=True)
 def open_epistemic(page):
  page.goto(BASE+'/?view=processes',wait_until='networkidle'); expect(page.locator('#procedureHub .procedure-card')).to_have_count(7); expect(page.locator('#epistemicMetaCard')).to_be_visible(); page.locator('#epistemicMetaCard [data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible(); expect(page.locator('#epistemicProfessionalTools')).to_be_visible(); expect(page.locator('#epistemicLens option')).to_have_count(12); no_overflow(page)
 def fail(e):
@@ -43,7 +52,7 @@ try:
   ctx=browser.new_context(viewport={'width':1440,'height':950}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
   page=ctx.new_page(); page.set_default_timeout(30000); errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
   PHASE='demo-reality-bootstrap'; open_epistemic(page); boot=api(page,'/api/bootstrap')['payload']; assert boot['experience']['demoMode'] is True; assert boot['experience']['demo']['reality']['enabled'] is True; assert boot['experience']['demo']['reality']['threads']==12; assert boot['demoAudit']['verdict']=='coherent'; lattice=api(page,'/api/epistemic-lattice?offset=0&limit=80')['payload']; assert lattice['schemaVersion']=='1.2.0'; assert len(lattice['professionalLenses']['lenses'])==12; assert lattice['diagnostics']['counts']['businessThreads']==12; assert lattice['diagnostics']['counts']['contextualizedBusinessAtoms']>0; digest=lattice['projection']['projectionSha256']; label_before=page.locator('#epistemicPageLabel').inner_text(); assert digest[:12] in label_before
-  PHASE='professional-lens-matrix'; select=page.locator('#epistemicLens'); host=page.locator('#epistemicProfessionalTools');
+  PHASE='professional-lens-matrix'; select=page.locator('#epistemicLens'); host=page.locator('#epistemicProfessionalTools')
   for lens_id in LENSES:
    select.select_option(lens_id); page.wait_for_timeout(80); expect(select).to_have_value(lens_id); expected=EXPECTED_MODES[lens_id]; expect(page.locator(f'[data-epistemic-mode="{expected}"]')).to_have_attribute('aria-pressed','true'); expect(page.locator('#epistemicLensContext')).to_contain_text('Limite:'); expect(page.locator('#epistemicLensContext')).to_contain_text('conteggi, non score'); assert digest[:12] in page.locator('#epistemicLensContext').inner_text(); host.scroll_into_view_if_needed(); no_overflow(page); shot(page,f'epistemic-lens-{lens_id}.png')
   assert page.locator('#epistemicPageLabel').inner_text()==label_before,'professional lenses changed canonical projection digest/page'
@@ -65,5 +74,4 @@ try:
 except BaseException as e:
  fail(e); traceback.print_exc(); raise
 finally:
- if log is not None: stop_server(log)
- else: shutil.rmtree(RUNTIME,ignore_errors=True)
+ stop_server(log)
