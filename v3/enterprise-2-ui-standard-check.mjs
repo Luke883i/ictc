@@ -8,22 +8,27 @@ const baseModel = JSON.parse(await read('./enterprise-2-ui-standard-model.json')
 const runtimeFindings = JSON.parse(await read('./enterprise-2-ui-standard-runtime-findings.json'));
 const model = {
   ...baseModel,
+  surfaces: [...baseModel.surfaces, ...(runtimeFindings.surfaces || [])],
+  components: [...baseModel.components, ...(runtimeFindings.components || [])],
   lexicalRules: [...baseModel.lexicalRules, ...(runtimeFindings.lexicalRules || [])],
-  layoutRules: [...baseModel.layoutRules, ...runtimeFindings.layoutRules],
-  contradictionPrimitives: [...baseModel.contradictionPrimitives, ...runtimeFindings.contradictionPrimitives],
-  standardObligations: [...baseModel.standardObligations, ...runtimeFindings.standardObligations],
-  definitionOfDone: [...baseModel.definitionOfDone, ...runtimeFindings.definitionOfDone]
+  layoutRules: [...baseModel.layoutRules, ...(runtimeFindings.layoutRules || [])],
+  contradictionPrimitives: [...baseModel.contradictionPrimitives, ...(runtimeFindings.contradictionPrimitives || [])],
+  standardObligations: [...baseModel.standardObligations, ...(runtimeFindings.standardObligations || [])],
+  definitionOfDone: [...baseModel.definitionOfDone, ...(runtimeFindings.definitionOfDone || [])]
 };
 const saturation = JSON.parse(await read('../artifacts/enterprise-2-ui-standard-saturation.json'));
 const ui = await read('./public/ui/enterprise-2-ui-standard.js');
 const runtimeCss = await read('./public/enterprise-2-ui-standard-runtime-refinement.css');
 const css = `${await read('./public/enterprise-2-ui-standard.css')}\n${runtimeCss}`;
 const actions = await read('./public/ui/actions.js');
+const procedureAnatomy = await read('./public/ui/procedure-anatomy.js');
+const procedureAnatomyCss = await read('./public/procedure-anatomy.css');
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
 const docs = await read('../docs/ENTERPRISE_2_UI_STANDARD.md');
 const convergenceDocs = await read('../docs/ENTERPRISE_2_UI_STANDARD_RUNTIME_CONVERGENCE.md');
 const browser = await read('./browser-enterprise-2-ui-standard-check.py');
+const kernelBrowser = await read('./browser-convergent-kernel.py');
 const productBrowser = await read('./browser-product-check.py');
 const verified = [];
 
@@ -32,6 +37,7 @@ function verify(name, assertion) { assertion(); verified.push(name); }
 verify('javascript-syntax', () => {
   execFileSync(process.execPath, ['--check', new URL('./public/ui/enterprise-2-ui-standard.js', import.meta.url).pathname], { stdio: 'pipe' });
   execFileSync(process.execPath, ['--check', new URL('./public/ui/actions.js', import.meta.url).pathname], { stdio: 'pipe' });
+  execFileSync(process.execPath, ['--check', new URL('./public/ui/procedure-anatomy.js', import.meta.url).pathname], { stdio: 'pipe' });
 });
 verify('terminal-wiring', () => {
   assert.match(app, /installEnterprise2UiStandard/);
@@ -53,11 +59,30 @@ verify('server-issued-authority-visibility', () => {
   assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L11'));
 });
 verify('server-backed-runtime-findings', () => {
-  assert.equal(runtimeFindings.observedFailures.length, 7);
-  for (const rule of ['terminal-mobile-action-bar-cascade-final','stable-admin-owner-after-delayed-legacy-pass','intrinsic-zoom-reflow-grid','admin-navigation-target-min-44-terminal','admin-navigation-row-ownership-and-hit-testing']) assert.ok(model.layoutRules.includes(rule));
-  assert.ok(model.lexicalRules.includes('direct-workspace-rerender-reconciles-terminal-vocabulary'));
-  for (const contradiction of ['legacy-progressive-footer-exceeds-mobile-height-budget','legacy-delayed-admin-activation-hides-owner-panel','200-percent-text-expansion-overflows-global-nav','source-decision-rerender-reverts-to-legacy-vocabulary','admin-navigation-target-below-control-budget','admin-navigation-hit-target-occluded-after-section-transition']) assert.ok(model.contradictionPrimitives.includes(contradiction));
-  for (const id of ['ICTC-L12','ICTC-L13','ICTC-L14','ICTC-L15','ICTC-L16']) assert.ok(model.standardObligations.some(item => item.id === id));
+  assert.equal(runtimeFindings.observedFailures.length, 10);
+  for (const rule of [
+    'terminal-mobile-action-bar-cascade-final',
+    'stable-admin-owner-after-delayed-legacy-pass',
+    'intrinsic-zoom-reflow-grid',
+    'admin-navigation-target-min-44-terminal',
+    'admin-navigation-row-ownership-and-hit-testing',
+    'procedure-standard-progressive-disclosure',
+    'procedure-standard-horizontal-first-summary',
+    'admin-viewport-contained-single-scroll-owner'
+  ]) assert.ok(model.layoutRules.includes(rule));
+  for (const rule of ['direct-workspace-rerender-reconciles-terminal-vocabulary','standard-practice-evidence-limit-complete']) assert.ok(model.lexicalRules.includes(rule));
+  for (const contradiction of [
+    'legacy-progressive-footer-exceeds-mobile-height-budget',
+    'legacy-delayed-admin-activation-hides-owner-panel',
+    '200-percent-text-expansion-overflows-global-nav',
+    'source-decision-rerender-reverts-to-legacy-vocabulary',
+    'admin-navigation-target-below-control-budget',
+    'admin-navigation-hit-target-occluded-after-section-transition',
+    'procedure-standard-detail-overexposed',
+    'procedure-standard-practice-omitted',
+    'admin-dialog-scroll-owner-implicit'
+  ]) assert.ok(model.contradictionPrimitives.includes(contradiction));
+  for (const id of ['ICTC-L12','ICTC-L13','ICTC-L14','ICTC-L15','ICTC-L16','ICTC-L17','ICTC-L18']) assert.ok(model.standardObligations.some(item => item.id === id));
   assert.match(ui, /setTimeout\(applyUiStandard, 320\)/);
   assert.match(runtimeCss, /max-height:72px!important/);
   assert.match(runtimeCss, /repeat\(auto-fit,minmax\(min\(100%,9rem\),1fr\)\)/);
@@ -102,29 +127,56 @@ verify('admin-isolation', () => {
   assert.match(ui, /panel\.hidden = panel !== owner/);
   assert.match(browser, /admin-panel:visible/);
 });
+verify('procedure-context-hardening', () => {
+  assert.ok(model.surfaces.some(item => item.id === 'procedure-context'));
+  assert.ok(model.components.includes('procedure-standard-application'));
+  assert.match(procedureAnatomy, /procedure-standard-application/);
+  assert.match(procedureAnatomy, /procedure-standard-practice/);
+  assert.match(procedureAnatomy, /application\.practice/);
+  assert.match(procedureAnatomy, /application\.alignment/);
+  assert.match(procedureAnatomy, /Come ICTC applica/);
+  assert.match(procedureAnatomyCss, /\.procedure-standard-application\s*>\s*summary/);
+  assert.match(procedureAnatomyCss, /min-height:\s*44px/);
+  assert.match(procedureAnatomyCss, /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto/);
+  assert.match(procedureAnatomyCss, /@media\s*\(max-width:\s*620px\)/);
+  assert.match(kernelBrowser, /progressiveStandardApplications/);
+  assert.match(kernelBrowser, /procedureContextMobileReflow/);
+  assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L17'));
+});
+verify('admin-vertical-containment', () => {
+  assert.match(runtimeCss, /#adminCenter\{[^}]*height:min\(94dvh,860px\)!important[^}]*overflow:hidden!important/s);
+  assert.match(runtimeCss, /#adminCenter \.admin-shell\{[^}]*height:100%!important[^}]*overflow:hidden!important/s);
+  assert.match(runtimeCss, /#adminCenter \.admin-grid\{[^}]*overflow:auto!important[^}]*scrollbar-gutter:stable/s);
+  assert.match(browser, /admin-vertical-containment/);
+  assert.match(browser, /assert_admin_vertical_containment/);
+  assert.ok(model.standardObligations.some(item => item.id === 'ICTC-L18'));
+});
 verify('responsive-contract', () => {
   for (const token of ['max-width:480px','100dvh','68ch']) assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.equal(model.budgets.controlMinPx, 44);
   for (const token of ['320','390','zoom-200']) assert.match(browser, new RegExp(token));
 });
 verify('surface-coverage', () => {
-  assert.equal(model.surfaces.length, 22);
+  assert.equal(model.surfaces.length, 23);
   for (const surface of model.surfaces) assert.ok(saturation.coverage[surface.id]?.length, surface.id);
   assert.equal(saturation.standardCoverage.length, model.standardObligations.length);
+  assert.ok(saturation.coverage['procedure-context'].includes('ICTC-L17'));
 });
 verify('triple-saturation', () => {
-  assert.equal(saturation.M, 109); assert.equal(saturation.MPlus100, 209); assert.equal(saturation.noveltyAfterM, 0);
-  assert.equal(saturation.N, 57); assert.equal(saturation.NPlus100, 157); assert.equal(saturation.contradictionsAfterN, 0);
-  assert.equal(saturation.Z, 32); assert.equal(saturation.ZPlus100, 132); assert.equal(saturation.uncoveredStandardsAtZ, 0); assert.equal(saturation.uncoveredStandardsAfterZ, 0);
+  assert.equal(saturation.M, 115); assert.equal(saturation.MPlus100, 215); assert.equal(saturation.noveltyAfterM, 0);
+  assert.equal(saturation.N, 60); assert.equal(saturation.NPlus100, 160); assert.equal(saturation.contradictionsAfterN, 0);
+  assert.equal(saturation.Z, 34); assert.equal(saturation.ZPlus100, 134); assert.equal(saturation.uncoveredStandardsAtZ, 0); assert.equal(saturation.uncoveredStandardsAfterZ, 0);
 });
 verify('documented-dod', () => {
-  assert.equal(model.definitionOfDone.length, 26);
+  assert.equal(model.definitionOfDone.length, 29);
   assert.match(docs, /non dichiara conformità WCAG/i);
-  assert.match(convergenceDocs, /M = 109/); assert.match(convergenceDocs, /N = 57/); assert.match(convergenceDocs, /Z = 32/);
-  assert.match(convergenceDocs, /38/);
+  assert.match(convergenceDocs, /M = 115/); assert.match(convergenceDocs, /N = 60/); assert.match(convergenceDocs, /Z = 34/);
+  assert.match(convergenceDocs, /23 declared UI surfaces/i);
+  assert.match(convergenceDocs, /post-#67/i);
   assert.match(convergenceDocs, /hit-testing/i);
   assert.match(convergenceDocs, /post-decision/i);
-  assert.match(convergenceDocs, /supersede/i);
+  assert.match(convergenceDocs, /progressive benchmark/i);
+  assert.match(convergenceDocs, /vertical containment/i);
 });
 
 const report = {
@@ -147,4 +199,4 @@ const report = {
 };
 await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await writeFile(new URL('../artifacts/enterprise-2-ui-standard-check.json', import.meta.url), JSON.stringify(report, null, 2));
-console.log(`enterprise-2-ui-standard-check: ok (${verified.length} groups, ${model.surfaces.length} surfaces, ${runtimeFindings.observedFailures.length} server-backed findings)`);
+console.log(`enterprise-2-ui-standard-check: ok (${verified.length} groups, ${model.surfaces.length} surfaces, ${runtimeFindings.observedFailures.length} runtime findings)`);

@@ -4,9 +4,11 @@ This note is the **authoritative convergence delta** for `ictc-surface-standard-
 
 ## Why the model changed
 
-The deterministic fixture reached a provisional bounded convergence, but the real server-backed and retained browser journeys exposed seven classes that did not exist in the fixture model. Treating those failures as noise would violate the saturation method, so each real finding was incorporated as a new primitive/witness before recomputing the tails.
+The deterministic fixture reached a provisional bounded convergence, but real server-backed journeys continued to expose classes that did not exist in the fixture model. Treating those failures or coverage gaps as noise would violate the saturation method, so each material runtime finding is appended before recomputing the tails.
 
-| Server-backed finding | Observed failure | Runtime resolution | Standard witness |
+The post-#67 hardening slice adds three classes: one **direct server-backed falsification** (the seven-procedure oracle expected progressive benchmark rows on RN-01 and found none), one information-completeness gap proven by the runtime/UI projection mismatch, and one Administration vertical-containment property that the previous browser contract did not directly prove.
+
+| Runtime finding | Observed failure / gap | Runtime resolution | Standard witness |
 |---|---|---|---|
 | Authority layering | `renderIdentity()` exposed `Configura AI` for admin, then a legacy presentation layer hid it | server-issued `actor.role` is the final visibility source | ICTC-L11 |
 | Mobile action-bar cascade | settings footer reached 161.375 px at 320 px | terminal 2-column 44 px action bar, budget <=72 px | ICTC-L12 |
@@ -14,26 +16,27 @@ The deterministic fixture reached a provisional bounded convergence, but the rea
 | Text zoom reflow | 200% text enlargement produced +29 px, then +2 px residual overflow | intrinsic rem grid plus bounded topbar/select sizing; no font reduction and no overflow masking | ICTC-L14 |
 | Post-decision source rerender | after `Accetta nel catalogo`, refresh was normalized before `renderSourceDialog()` rebuilt base `Verificata` / `Stato umano` copy | direct source-dialog reconstruction emits `ictc:surface-changed` after the DOM mutation so terminal layers reconcile the stable dialog | ICTC-L15 |
 | Admin navigation target budget | at 390 px the active administration tab measured about 137 x 38 CSS px | terminal Surface Standard enforces the existing 44 px control budget on every administration navigation button; authoritative browser measures the stable target | WCAG-2.5.8 / `controlMinPx=44` |
-| Admin navigation hit-testing | after stable `EV-01 · Controlli`, `GA-01 · Governo AI` was visible and enabled but header/body descendants repeatedly intercepted its real pointer click | the admin shell owns explicit header/navigation/body rows and the scroll body has `min-height:0`; authoritative browser verifies `elementFromPoint()` ownership before the real click | ICTC-L16 |
+| Admin navigation hit-testing | after stable `EV-01 · Controlli`, `GA-01 · Governo AI` was visible and enabled but header/body descendants intercepted its real pointer click | the admin shell owns explicit header/navigation/body rows and the scroll body has `min-height:0`; authoritative browser verifies `elementFromPoint()` ownership before the real click | ICTC-L16 |
+| Procedure standard progressive disclosure | post-#67 seven-procedure oracle expected two progressive benchmark application rows on RN-01 and found none because benchmark details were one always-expanded list | every benchmark application is a native closed `details/summary` row with a compact summary and bounded detail | ICTC-L17 |
+| Procedure standard information completeness | runtime projected `practice` and `alignment`, but the user projection omitted the practice while showing lower-level method/evidence/limit detail | expanded benchmark detail now presents declared ICTC practice first, then mapped method steps, evidence and limitation | ICTC-L17 |
+| Administration vertical containment | prior browser evidence proved horizontal reflow, target size, isolation and hit-testing but did not prove low-viewport single-scroll ownership; terminal sizing still relied on implicit shell height | Admin dialog is explicitly viewport-bounded, shell fills/clips it, `.admin-grid` is the sole task scroller with stable gutter, and a 390 x 568 browser journey reaches the final active control | ICTC-L18 |
 
 ## Effective standard model
 
 The effective standard is compiled from:
 
 - `enterprise-2-ui-standard-model.json` — immutable historical base standard;
-- `enterprise-2-ui-standard-runtime-findings.json` — append-only findings discovered by the complete server-backed cascade and retained browser journeys.
+- `enterprise-2-ui-standard-runtime-findings.json` — append-only findings and post-#67 hardening knowledge discovered against the complete runtime cascade.
 
-This split is deliberate: historical convergence is not rewritten after falsification; new runtime knowledge is appended and then compiled by the saturation gate.
+The effective model now spans **23 declared UI surfaces**, including the procedure-context sub-surface, and adds `procedure-standard-application` as a governed component. Historical convergence is not rewritten after falsification; new knowledge is appended and the same saturation gate is recomputed.
 
 ## Final triple convergence
 
-- **Novelty:** `M = 109`, confirmation through `M + 100 = 209`, novelty after M = **0**.
-- **Contradictions:** `N = 57`, confirmation through `N + 100 = 157`, contradictions after N = **0**.
-- **Standards:** `Z = 32`, confirmation through `Z + 100 = 132`, uncovered obligations at/after Z = **0**.
+- **Novelty:** `M = 115`, confirmation through `M + 100 = 215`, novelty after M = **0**.
+- **Contradictions:** `N = 60`, confirmation through `N + 100 = 160`, contradictions after N = **0**.
+- **Standards:** `Z = 34`, confirmation through `Z + 100 = 134`, uncovered obligations at/after Z = **0**.
 
-The target-size finding increases M and N because it adds a runtime layout primitive and an observed contradiction, but it does not increase Z because the 44 px obligation was already present. The subsequent hit-testing finding adds M and N again and also adds Z through explicit ICTC-L16: stable pointer operability of the administration navigation after consecutive section transitions.
-
-The coverage matrix spans all 22 declared UI surfaces. Every standard obligation has at least one applicable surface and at least one runtime/test witness.
+Relative to the previous `109/57/32` frontier, the post-#67 slice is `delta M/N/Z = +6/+3/+2`. The six novelty primitives are one new declared surface, one governed component, one lexical completeness rule and three layout rules. The three contradiction primitives cover overexposed standard detail, omitted practice and implicit Admin scroll ownership. ICTC-L17 and ICTC-L18 add explicit standard witnesses for procedure context and Administration containment.
 
 ## Runtime DoD added by server-backed evidence
 
@@ -44,12 +47,17 @@ The coverage matrix spans all 22 declared UI surfaces. Every standard obligation
 5. a direct post-decision source-dialog rerender emits the semantic surface-change event and retains canonical terminal vocabulary in the stable DOM;
 6. administration section navigation preserves the declared >=44 px target on the 390 px mobile surface after the full cascade;
 7. the administration shell exposes a dedicated navigation row whose button center remains the top hit target after a stable section transition, and the next section is reached with a real non-forced pointer click;
-8. the Surface Standard assurance, its server-backed browser journey, historical product/1.8/Enterprise 2 journeys and general CI execute on the same PR head before this convergence is treated as demonstrated.
+8. every canonical procedure exposes benchmark applications as progressive benchmark details, default closed, with the declared ICTC practice, mapped native method steps, evidence and limitation available on demand;
+9. benchmark summaries are horizontal-first when room exists and reflow without horizontal overflow on the 390 px procedure context;
+10. Administration remains contained within a low viewport, header/navigation do not become task scrollers, `.admin-grid` owns vertical scrolling, and the last active control remains reachable;
+11. Surface Standard assurance, seven-procedure browser journey, historical product journeys and general CI execute on the same PR head before this convergence is treated as demonstrated.
 
-## Historical-contract maturation
+## Falsification history
 
-The historical alignment slice began with `delta M/N/Z = 0/0/0`: the initial failures were stale evidence consumers. It then falsified three runtime assumptions: stable source vocabulary after a direct rerender, the effective minimum target of administration navigation on mobile, and stable pointer ownership of the navigation row after a section transition. They are promoted into the runtime standard rather than hidden by weakening browser assertions. The mature slice therefore has `delta M/N/Z = 3/3/2` relative to the previous `106/54/30` frontier.
+The post-#67 audit deliberately committed the stronger browser oracle before the runtime fix. On `bd8257f7e88fce8b2fa4165b1efbe396b2370a87`, the server-backed convergent-kernel journey failed at `common-anatomy:RN-01` because the locator expected two `.procedure-standard-application` rows and found none. The oracle was not weakened: the runtime projection was refactored into native nested disclosure and the missing practice was surfaced.
+
+Administration vertical containment is recorded differently: it was a **hardening/coverage gap**, not a measured baseline failure, because the RN-01 falsification stopped the browser journey before the new low-viewport assertion was reached. The mature candidate must therefore prove the property on its exact head without retroactively claiming that the baseline had failed it.
 
 ## Standards boundary
 
-The standard continues to use WCAG 2.2, WAI-ARIA APG, HTML Living Standard, GOV.UK Design System and ICTC internal invariants as design/test references. The evidence demonstrates implementation of the declared project standard; it does **not** claim certified WCAG conformance, legal compliance, certification, representative-user validation or production readiness.
+The standard continues to use WCAG 2.2, WAI-ARIA APG, HTML Living Standard, GOV.UK Design System and ICTC internal invariants as design/test references. The evidence demonstrates implementation of the declared project standard; it does **not** claim certified WCAG conformance, legal compliance, certification, representative-user validation, independent assurance or production readiness.

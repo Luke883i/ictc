@@ -43,7 +43,8 @@ for (const token of ['Come ICTC dimostra la propria postura','proofEvidenceKinds
 assert.equal(proof.includes('Procedure con decisioni'), false, 'Postura must not expose retired Procedure naming');
 assert.equal(proof.includes('7 procedure operative'), false, 'Postura must use Processi di Compliance');
 
-for (const token of ['commonSubstrate?.epistemicFamilies','c.claimBoundary','anchor.after(box)','Decisioni umane visibili','Versioni registrate']) assert.ok(anatomy.includes(token), `per-process epistemic trace missing ${token}`);
+for (const token of ['commonSubstrate?.epistemicFamilies','anchor.after(box)','Decisioni umane visibili','Versioni registrate']) assert.ok(anatomy.includes(token), `per-process epistemic trace missing ${token}`);
+assert.match(anatomy, /\b(?:c|current)\.claimBoundary\b/, 'per-process epistemic trace must project the canonical claim boundary regardless of local variable naming');
 for (const token of ['Letture proposte','loadedStateRevision','requestedRevision','loadSequence','Vista trasversale','Scopo della vista','Tutti i Processi di Compliance','<small>Processo di Compliance</small>','<th>Processo di Compliance</th>']) assert.ok(epistemic.includes(token), `EP-01 convergence/language contract missing ${token}`);
 for (const forbidden of ['<span>Meta-procedura</span>','<b>Scopo della procedura</b>','sr-only">Procedura</span>','>Tutte le procedure</option>','<small>Procedura</small>','<th>Procedura</th>']) assert.equal(epistemic.includes(forbidden), false, `EP-01 retains retired user-facing procedure wording: ${forbidden}`);
 assert.ok(controller.includes('ictc:projection-committed') && controller.includes('ictcProjectionRevision'), 'single projection commit authority missing');

@@ -6,11 +6,13 @@ const baseModel = JSON.parse(await read('./enterprise-2-ui-standard-model.json')
 const runtimeFindings = JSON.parse(await read('./enterprise-2-ui-standard-runtime-findings.json'));
 const model = {
   ...baseModel,
+  surfaces: [...baseModel.surfaces, ...(runtimeFindings.surfaces || [])],
+  components: [...baseModel.components, ...(runtimeFindings.components || [])],
   lexicalRules: [...baseModel.lexicalRules, ...(runtimeFindings.lexicalRules || [])],
-  layoutRules: [...baseModel.layoutRules, ...runtimeFindings.layoutRules],
-  contradictionPrimitives: [...baseModel.contradictionPrimitives, ...runtimeFindings.contradictionPrimitives],
-  standardObligations: [...baseModel.standardObligations, ...runtimeFindings.standardObligations],
-  definitionOfDone: [...baseModel.definitionOfDone, ...runtimeFindings.definitionOfDone]
+  layoutRules: [...baseModel.layoutRules, ...(runtimeFindings.layoutRules || [])],
+  contradictionPrimitives: [...baseModel.contradictionPrimitives, ...(runtimeFindings.contradictionPrimitives || [])],
+  standardObligations: [...baseModel.standardObligations, ...(runtimeFindings.standardObligations || [])],
+  definitionOfDone: [...baseModel.definitionOfDone, ...(runtimeFindings.definitionOfDone || [])]
 };
 const tail = 100;
 const surfaces = model.surfaces.map(item => item.id);
@@ -23,6 +25,9 @@ const noveltyPrimitives = [
   ...model.accessibilityRules.map(item => `accessibility:${item}`),
   ...model.stateRules.map(item => `state:${item}`)
 ];
+
+assert.equal(new Set(surfaces).size, surfaces.length, 'duplicate surface ids distort novelty saturation');
+assert.equal(new Set(model.components).size, model.components.length, 'duplicate components distort novelty saturation');
 
 function confirmationScenario(index, axis) {
   return { index, axis, surface: surfaces[(index * 7 + axis.length) % surfaces.length], mode: modes[(index * 5 + axis.length) % modes.length], novelty: [], contradictions: [], uncoveredStandards: [] };
@@ -51,14 +56,15 @@ const Z = model.standardObligations.length;
 const standardScenarios = standardCoverage.map((item, i) => ({ index: i + 1, axis: 'standard', standard: item.id, surfaces: item.surfaces, witnesses: item.witnesses, novelty: [], contradictions: [], uncoveredStandards: item.surfaces.length && item.witnesses.length ? [] : [item.id] }));
 for (let i = 1; i <= tail; i += 1) standardScenarios.push(confirmationScenario(Z + i, 'standard'));
 
-assert.equal(M, 109);
-assert.equal(N, 57);
-assert.equal(Z, 32);
+assert.equal(M, 115);
+assert.equal(N, 60);
+assert.equal(Z, 34);
 assert.equal(noveltyScenarios.slice(M).flatMap(item => item.novelty).length, 0);
 assert.equal(contradictionScenarios.slice(N).flatMap(item => item.contradictions).length, 0);
 assert.equal(uncovered.length, 0);
 assert.equal(standardScenarios.slice(Z).flatMap(item => item.uncoveredStandards).length, 0);
 for (const surface of model.surfaces) assert.ok(coverage[surface.id]?.length, `surface without standards: ${surface.id}`);
+assert.ok(coverage['procedure-context']?.includes('ICTC-L17'), 'procedure context must retain its dedicated standard witness');
 
 const report = {
   schemaVersion: model.schemaVersion,

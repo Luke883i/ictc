@@ -1,1 +1,249 @@
-.procedure-anatomy{margin-top:12px;border:1px solid var(--line,#d9dee7);border-radius:14px;background:color-mix(in srgb,var(--panel,#fff) 94%,transparent);font-size:.86rem}.procedure-anatomy>summary{display:flex;gap:10px;align-items:center;list-style:none;cursor:pointer;padding:9px 12px;color:var(--muted,#586174)}.procedure-anatomy>summary::-webkit-details-marker{display:none}.procedure-anatomy>summary span:last-child{margin-left:auto}.procedure-anatomy-code{font-weight:700;color:var(--text,#172033)}.procedure-anatomy-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:0 12px 10px}.procedure-anatomy-grid div{min-width:0;padding:8px 9px;border-radius:10px;background:var(--soft,#f6f7f9)}.procedure-anatomy-grid small{display:block;color:var(--muted,#667085);font-size:.72rem}.procedure-anatomy-grid strong{display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.procedure-anatomy-epistemic{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px}.procedure-anatomy-epistemic span{padding:3px 7px;border:1px solid var(--line,#d9dee7);border-radius:999px;font-size:.72rem;color:var(--muted,#667085)}.procedure-anatomy>p{margin:9px 12px;color:var(--muted,#667085);max-width:90ch}.procedure-anatomy-actions{display:flex;align-items:center;gap:10px;padding:0 12px 12px}.procedure-anatomy-actions button{padding:6px 9px}.procedure-anatomy-actions small{color:var(--muted,#667085)}@media(max-width:760px){.procedure-anatomy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.procedure-anatomy>summary span:nth-child(2){display:none}.procedure-anatomy-actions{align-items:flex-start;flex-direction:column}}
+.procedure-anatomy {
+  margin-top: 12px;
+  border: 1px solid var(--line, #d9dee7);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel, #fff) 94%, transparent);
+  font-size: .86rem;
+}
+
+.procedure-anatomy > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  list-style: none;
+  cursor: pointer;
+  padding: 9px 12px;
+  color: var(--muted, #586174);
+}
+
+.procedure-anatomy > summary::-webkit-details-marker,
+.procedure-standard-application > summary::-webkit-details-marker {
+  display: none;
+}
+
+.procedure-anatomy > summary span,
+.procedure-anatomy > summary small {
+  min-width: 0;
+}
+
+.procedure-anatomy > summary small {
+  white-space: nowrap;
+}
+
+.procedure-anatomy-code {
+  font-weight: 700;
+  color: var(--text, #172033);
+}
+
+.procedure-anatomy-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 12px 10px;
+}
+
+.procedure-anatomy-grid div {
+  min-width: 0;
+  padding: 8px 9px;
+  border-radius: 10px;
+  background: var(--soft, #f6f7f9);
+}
+
+.procedure-anatomy-grid small {
+  display: block;
+  color: var(--muted, #667085);
+  font-size: .72rem;
+}
+
+.procedure-anatomy-grid strong {
+  display: block;
+  margin-top: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.procedure-anatomy-epistemic {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.procedure-anatomy-epistemic span {
+  padding: 3px 7px;
+  border: 1px solid var(--line, #d9dee7);
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: .72rem;
+  color: var(--muted, #667085);
+}
+
+.procedure-anatomy-standards {
+  margin: 10px 12px 0;
+  border-top: 1px solid var(--line, #d9dee7);
+  border-bottom: 1px solid var(--line, #d9dee7);
+}
+
+.procedure-anatomy-standard-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: baseline;
+  min-height: 40px;
+  padding: 9px 0 7px;
+}
+
+.procedure-anatomy-standard-head > span {
+  min-width: 0;
+  font-weight: 760;
+  color: var(--text, #172033);
+}
+
+.procedure-anatomy-standard-head > small {
+  white-space: nowrap;
+  color: var(--muted, #667085);
+  font-size: .7rem;
+}
+
+.procedure-standard-application {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--line, #d9dee7) 72%, transparent);
+  background: transparent;
+}
+
+.procedure-standard-application > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.procedure-standard-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 720;
+  color: var(--text, #172033);
+}
+
+.procedure-standard-meta {
+  white-space: nowrap;
+  color: var(--muted, #667085);
+  font-size: .7rem;
+}
+
+.procedure-standard-body {
+  display: grid;
+  gap: 9px;
+  padding: 0 0 12px;
+  color: var(--muted, #667085);
+}
+
+.procedure-standard-body p,
+.procedure-standard-body ol {
+  margin: 0;
+}
+
+.procedure-standard-practice {
+  display: grid;
+  gap: 3px;
+  max-width: 90ch;
+}
+
+.procedure-standard-practice b,
+.procedure-standard-evidence b,
+.procedure-standard-limit b,
+.procedure-standard-methods > small {
+  color: var(--text, #172033);
+  font-size: .7rem;
+  letter-spacing: .02em;
+}
+
+.procedure-standard-methods ol {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+  padding-left: 1.15rem;
+}
+
+.procedure-standard-evidence,
+.procedure-standard-limit {
+  max-width: 90ch;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.procedure-standard-boundary {
+  margin: 8px 0 9px;
+  color: var(--muted, #667085);
+  line-height: 1.4;
+}
+
+.procedure-anatomy > p {
+  margin: 9px 12px;
+  color: var(--muted, #667085);
+  max-width: 90ch;
+}
+
+.procedure-anatomy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.procedure-anatomy-actions button {
+  min-height: 44px;
+  padding: 6px 9px;
+  white-space: nowrap;
+}
+
+.procedure-anatomy-actions small {
+  color: var(--muted, #667085);
+}
+
+@media (max-width: 760px) {
+  .procedure-anatomy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .procedure-anatomy-actions {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .procedure-anatomy > summary,
+  .procedure-anatomy-standard-head,
+  .procedure-standard-application > summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+    align-items: start;
+  }
+
+  .procedure-anatomy > summary small,
+  .procedure-anatomy-standard-head > small,
+  .procedure-standard-meta,
+  .procedure-standard-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .procedure-anatomy-standards {
+    margin-inline: 10px;
+  }
+
+  .procedure-anatomy-actions {
+    flex-direction: column;
+  }
+}
