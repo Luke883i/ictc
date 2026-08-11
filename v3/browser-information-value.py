@@ -15,10 +15,8 @@ def no_overflow(page):
     metric=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
     assert max(metric['html'],metric['body'])<=metric['inner']+1,metric
 
-def open_view(page,view,procedure=None):
-    url=f'{BASE}/?view={view}'
-    if procedure: url+=f'&procedure={procedure}'
-    page.goto(url,wait_until='networkidle')
+def open_view(page,view):
+    page.goto(f'{BASE}/?view={view}',wait_until='networkidle')
 
 def assert_information_value(page,key,contains=None):
     card=page.locator(f'[data-surface-information-value="{key}"]')
@@ -36,6 +34,14 @@ def open_profile(page):
     menu=page.locator('#stableProfileMenu')
     expect(menu.locator(':scope > summary')).to_be_visible()
     if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
+
+def open_grc_process(page,code):
+    open_view(page,'processes')
+    card=page.locator(f'#procedureHub [data-process-code="{code}"]')
+    expect(card).to_be_visible()
+    card.locator(':scope > footer .primary').click()
+    expect(page.locator('#grcView')).to_be_visible()
+    expect(page.locator('[data-surface-context-strip]:visible')).to_contain_text(code)
 
 try:
     with sync_playwright() as pw:
@@ -74,21 +80,22 @@ try:
             ('incidents','obblighi di notifica'),
             ('proof','non è certificazione'),
             ('epistemic','non crea verità sostanziale')]:
+            PHASE=f'top-level-{view}'
             open_view(page,view)
             assert_information_value(page,view,needle)
 
-        PHASE='all-grc-procedures'
         procedure_boundaries={
-            'objects':'completezza dell’ambiente reale',
-            'coverage':'non stabiliscono applicabilità, certificazione o efficacia',
-            'actions':'non equivale a chiusura verificata',
-            'risks':'non probabilità oggettive',
-            'assurance':'non costituisce certificazione o assurance esterna'
+            'objects':('AO-01','completezza dell’ambiente reale'),
+            'coverage':('MC-01','non stabiliscono applicabilità, certificazione o efficacia'),
+            'actions':('AP-01','non equivale a chiusura verificata'),
+            'risks':('RC-01','non probabilità oggettive'),
+            'assurance':('AR-01','non costituisce certificazione o assurance esterna')
         }
-        for procedure,needle in procedure_boundaries.items():
-            open_view(page,'grc',procedure)
+        for procedure,(code,needle) in procedure_boundaries.items():
+            PHASE=f'grc-{procedure}-navigation'
+            open_grc_process(page,code)
+            PHASE=f'grc-{procedure}-information-value'
             assert_information_value(page,'grc',needle)
-            expect(page.locator('.procedure-frame')).to_be_visible()
 
         PHASE='admin-governance'
         open_view(page,'home')
