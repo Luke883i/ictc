@@ -33,6 +33,15 @@ def graph_ready(page):
     expect(page.locator('.epistemic-graph-canvas g[data-epistemic-node]').first).to_be_visible()
     page.wait_for_function("()=>document.querySelectorAll('.epistemic-graph-edge[data-graph-from],.epistemic-graph-edge[data-graph-to]').length>0")
 
+def wait_node_detail(page,node_id,atom_ids):
+    if node_id in atom_ids:
+        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",arg=node_id)
+        expect(page.locator('.epistemic-detail')).to_be_visible()
+        return 'atom'
+    page.wait_for_function("id=>document.querySelector('#epistemicGraphReferenceDetail')?.dataset.graphReferenceId===id",arg=node_id)
+    expect(page.locator('#epistemicGraphReferenceDetail')).to_be_visible()
+    return 'reference'
+
 try:
     with sync_playwright() as pw:
         launch={'headless':True,'args':['--no-sandbox']}
@@ -83,8 +92,10 @@ try:
         assert rev>0 and len(digest)>=16,(rev,digest)
         envelopes=page.locator('#epistemicCompression [data-envelope-kind]')
         assert envelopes.count()>0
-        atom_ids=(envelopes.first.get_attribute('data-atom-ids') or '').split(',')
-        assert any(atom_ids),atom_ids
+        atom_ids=set()
+        for i in range(envelopes.count()):
+            atom_ids.update(x for x in (envelopes.nth(i).get_attribute('data-atom-ids') or '').split(',') if x)
+        assert atom_ids
         incident_envelope=page.locator('#epistemicCompression [data-envelope-kind="procedure"][data-envelope-value="incidents"]')
         expect(incident_envelope).to_be_visible(); incident_envelope.click()
         expect(page.locator('#epistemicProcedureFilter')).to_have_value('incidents')
@@ -101,8 +112,11 @@ try:
         collisions=page.evaluate("""()=>{const circles=[...document.querySelectorAll('.epistemic-graph-node')].map((c,i)=>({i,r:c.getBoundingClientRect()}));return [...document.querySelectorAll('.epistemic-graph-label')].flatMap((t,i)=>{const r=t.getBoundingClientRect();if(!r.width||!r.height)return[];return circles.filter(c=>!(r.right<=c.r.left||r.left>=c.r.right||r.bottom<=c.r.top||r.top>=c.r.bottom)).map(c=>({label:i,node:c.i}));});}""")
         assert not collisions,collisions
         connected=page.evaluate("""()=>{const ids=[];for(const l of document.querySelectorAll('.epistemic-graph-edge'))for(const id of [l.dataset.graphFrom,l.dataset.graphTo])if(id&&!ids.includes(id))ids.push(id);return ids;}""")
-        assert len(connected)>=2,connected
-        seed_id,drag_id=connected[0],connected[1]
+        atom_connected=[x for x in connected if x in atom_ids]
+        reference_connected=[x for x in connected if x not in atom_ids]
+        assert atom_connected and reference_connected,(connected,len(atom_ids))
+        seed_id=atom_connected[0]
+        drag_id=next(x for x in connected if x!=seed_id)
         page.evaluate("""id=>[...document.querySelectorAll('.epistemic-node-list button')].find(b=>b.dataset.epistemicNode===id)?.click()""",seed_id)
         graph_ready(page); assert selected_node(page)==seed_id,(selected_node(page),seed_id)
         targetability=page.evaluate("""id=>{const g=[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(x=>x.dataset.epistemicNode===id);if(!g)return null;g.scrollIntoView({block:'center',inline:'center'});const hit=g.querySelector('.epistemic-graph-hit');if(!hit)return null;const r=hit.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,under=document.elementFromPoint(x,y);return{x,y,innerWidth,innerHeight,inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,hitId:under?.closest?.('g[data-epistemic-node]')?.dataset.epistemicNode||null};}""",drag_id)
@@ -118,15 +132,23 @@ try:
         assert selected_node(page)==seed_id,(selected_node(page),seed_id,'drag must not activate node')
         assert not writes,writes
 
-        PHASE='graph-activation-reset'
-        page.evaluate("""id=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(g=>g.dataset.epistemicNode===id)?.querySelector('.epistemic-graph-node')?.dispatchEvent(new MouseEvent('click',{bubbles:true}))""",drag_id)
-        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",arg=drag_id)
+        PHASE='graph-click-activation'
+        click_id=reference_connected[0]
+        page.evaluate("""id=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(g=>g.dataset.epistemicNode===id)?.querySelector('.epistemic-graph-node')?.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))""",click_id)
+        assert wait_node_detail(page,click_id,atom_ids)=='reference'
+        ref_detail=page.locator('#epistemicGraphReferenceDetail')
+        expect(ref_detail).to_contain_text(click_id)
+        expect(ref_detail.locator('[data-epistemic-basis]').first).to_be_visible()
         graph_ready(page)
-        keyboard_id=page.evaluate("""selected=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].map(g=>g.dataset.epistemicNode).find(id=>id!==selected)||selected""",drag_id)
+
+        PHASE='graph-keyboard-activation'
+        keyboard_id=atom_connected[-1]
         page.evaluate("""id=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(g=>g.dataset.epistemicNode===id)?.focus()""",keyboard_id)
         page.keyboard.press('Enter')
-        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",arg=keyboard_id)
+        assert wait_node_detail(page,keyboard_id,atom_ids)=='atom'
         graph_ready(page)
+
+        PHASE='graph-zoom-reset'
         capture['on']=True
         page.locator('[data-graph-zoom="in"]').click(); expect(page.locator('[data-graph-zoom-label]')).to_have_text('110%')
         assert 'scale(1.1)' in (page.locator('.epistemic-graph-canvas svg').get_attribute('style') or '')
@@ -146,7 +168,7 @@ try:
         m.screenshot(path=str(ART/'ux-ui-epistemic-convergence-mobile.png'),full_page=True); mc.close()
 
         assert not errors,errors
-        out={'ok':True,'profile':'ui-epistemic-procedure-convergence-browser','draftAsyncReadiness':True,'meaningfulTargets':targets,'compressionRevision':rev,'compressionDigest':digest,'reversibleEnvelope':True,'visualNodeRadius':10,'hitRadius':22,'labelNodeCollisions':0,'dragTargetability':True,'dragMovesConnectedEdges':True,'dragDoesNotActivate':True,'clickActivatesDetail':True,'keyboardActivatesDetail':True,'graphGesturesWriteCount':len(writes),'mobileOverflow':False,'evidenceClass':'E2-server-backed-browser+interaction-falsification'}
+        out={'ok':True,'profile':'ui-epistemic-procedure-convergence-browser','draftAsyncReadiness':True,'meaningfulTargets':targets,'compressionRevision':rev,'compressionDigest':digest,'reversibleEnvelope':True,'visualNodeRadius':10,'hitRadius':22,'labelNodeCollisions':0,'dragTargetability':True,'dragMovesConnectedEdges':True,'dragDoesNotActivate':True,'referenceClickOpensDetail':True,'referenceLinksCanonicalAtom':True,'keyboardAtomOpensDetail':True,'graphGesturesWriteCount':len(writes),'mobileOverflow':False,'evidenceClass':'E2-server-backed-browser+interaction-falsification'}
         (ART/'browser-ui-epistemic-convergence.json').write_text(json.dumps(out,indent=2),encoding='utf8')
         print('browser-ui-epistemic-convergence: complete',flush=True)
         ctx.close(); browser.close()

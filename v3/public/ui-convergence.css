@@ -26,6 +26,10 @@
 .epistemic-graph-hit{fill:transparent;pointer-events:all}
 .epistemic-graph-node{vector-effect:non-scaling-stroke}
 .epistemic-graph-label{pointer-events:none;font-size:10px}
+.epistemic-graph-reference-detail{display:grid;gap:.8rem;margin-top:var(--ictc-panel-gap)}
+.epistemic-graph-reference-detail>header{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.epistemic-reference-relation{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;min-height:44px;padding:.65rem .75rem}
+.epistemic-reference-relation small{overflow-wrap:anywhere;text-align:right}
 @media(max-width:900px){.epistemic-envelope-layers{grid-template-columns:1fr}.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:1fr}.epistemic-compression>header{display:grid}.epistemic-graph-controls{justify-content:flex-start}}
+@media(max-width:560px){.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:1fr}.epistemic-compression>header{display:grid}.epistemic-graph-controls{justify-content:flex-start}.epistemic-reference-relation{display:grid}.epistemic-reference-relation small{text-align:left}}
 @media(prefers-reduced-motion:reduce){.epistemic-graph-canvas svg{transition:none}}
