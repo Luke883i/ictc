@@ -30,7 +30,7 @@ COMMAND="${COMMAND:-help}"
 if [[ -n "$RUNTIME_OVERRIDE" ]]; then
   RUNTIME="$RUNTIME_OVERRIDE"
 elif [[ "$DEMO_SEED" = 1 ]]; then
-  RUNTIME="$STATE/demo-runtime"
+  RUNTIME="$STATE/demo-runtime-v2"
 else
   RUNTIME="$STATE/runtime"
 fi
@@ -66,7 +66,7 @@ start(){
       if [[ "$DEMO_SEED" = 1 ]]; then
         echo "ICTC DEMO attivo: $URL · runtime=$RUNTIME"
       else
-        echo "ICTC attivo: $URL"
+        echo "ICTC attivo: $URL · runtime=$RUNTIME"
       fi
       [[ "$NO_OPEN" = 1 ]] || { command -v xdg-open >/dev/null && xdg-open "$URL" >/dev/null 2>&1 & }
       return
@@ -105,7 +105,13 @@ case "$COMMAND" in
   test) (cd "$ROOT" && npm test) ;;
   audit) (cd "$ROOT" && npm run audit) ;;
   help)
-    echo './ictc.sh start [--no-open] [--demo-seed] | demo [--no-open] | stop | restart | status | logs | doctor | test | audit'
-    echo 'Demo: ./ictc.sh demo usa .ictc/demo-runtime e abilita un dataset sintetico PMI; -demoseed è alias compatibile di --demo-seed.'
+    echo 'Uso:'
+    echo '  ./ictc.sh start [--no-open]                 # modalità standard, .ictc/runtime'
+    echo '  ./ictc.sh demo [--no-open]                  # modalità demo PMI v2, .ictc/demo-runtime-v2'
+    echo '  ./ictc.sh start --demo-seed [--no-open]     # equivalente esplicito di demo'
+    echo '  ./ictc.sh start -demoseed [--no-open]       # alias compatibile'
+    echo '  ./ictc.sh stop | restart | status | logs | doctor | test | audit'
+    echo 'La modalità demo usa gli stessi owner/runtime ICTC, aggiunge dati sintetici e disabilita lo scheduler operativo; non rappresenta esiti reali di compliance.'
+    echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale per il seed demo.'
     ;;
 esac
