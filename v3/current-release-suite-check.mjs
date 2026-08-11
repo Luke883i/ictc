@@ -1,5 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import { CURRENT_RUNTIME, CURRENT_SEMANTIC } from './current-release-suite.mjs';
+import { ASSURANCE_COVERAGE_CONTRACT } from './assurance-risk-model.mjs';
 
 const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 const ci = await readFile(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
@@ -21,11 +22,22 @@ for (const path of paths) {
   try { await access(new URL(`../${path}`, import.meta.url)); }
   catch { failures.push(`current suite path missing: ${path}`); }
 }
-check(CURRENT_SEMANTIC.length >= 35, 'semantic suite unexpectedly contracted');
-check(CURRENT_RUNTIME.length >= 20, 'runtime suite unexpectedly contracted');
+check(new Set(CURRENT_SEMANTIC).size === CURRENT_SEMANTIC.length, 'semantic suite contains duplicate check paths');
+check(new Set(CURRENT_RUNTIME).size === CURRENT_RUNTIME.length, 'runtime suite contains duplicate check paths');
+
+for (const [family, contract] of Object.entries(ASSURANCE_COVERAGE_CONTRACT)) {
+  const suite = contract.mode === 'runtime' ? CURRENT_RUNTIME : CURRENT_SEMANTIC;
+  check(contract.candidates.some(path => suite.includes(path)), `assurance coverage family missing from ${contract.mode} suite: ${family}`);
+}
 
 if (failures.length) {
   console.error(JSON.stringify({ ok: false, failures }, null, 2));
   process.exit(1);
 }
-console.log(JSON.stringify({ ok: true, semanticChecks: CURRENT_SEMANTIC.length, runtimeChecks: CURRENT_RUNTIME.length, uniqueChecks: paths.length }));
+console.log(JSON.stringify({
+  ok: true,
+  semanticChecks: CURRENT_SEMANTIC.length,
+  runtimeChecks: CURRENT_RUNTIME.length,
+  uniqueChecks: paths.length,
+  coverageFamilies: Object.keys(ASSURANCE_COVERAGE_CONTRACT).length
+}));
