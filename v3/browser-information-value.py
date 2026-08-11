@@ -146,6 +146,27 @@ try:
         above_fold(hub.locator('.procedure-primary').first,900,'first-process-action')
         assert_horizontal_first(page); assert_touch_targets(page); no_overflow(page)
 
+        PHASE='procedure-standard-applications'
+        landscape=page.locator('#processLandscape'); expect(landscape).to_be_visible()
+        expected_standards={
+            'monitoring':'ISO 37301:2021',
+            'incidents':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'objects':'ISO 37301:2021',
+            'coverage':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'actions':'Site Reliability Engineering practices',
+            'risks':'The NIST Cybersecurity Framework (CSF) 2.0',
+            'assurance':'GOV.UK Design System and USWDS'
+        }
+        for process_id,standard_name in expected_standards.items():
+            PHASE=f'procedure-standard-{process_id}'
+            card=landscape.locator(f'[data-process-id="{process_id}"]'); expect(card).to_be_visible()
+            details=card.locator('details'); details.locator(':scope > summary').click()
+            expect(details).to_contain_text('Standard e pratiche applicate')
+            expect(details).to_contain_text(standard_name)
+            expect(details).to_contain_text('Prova:')
+            expect(details).to_contain_text('Limite:')
+            expect(details).to_contain_text('non è una certificazione o una decisione di applicabilità legale')
+
         procedure_boundaries={
             'objects':('AO-01','completezza dell’ambiente reale'),
             'coverage':('MC-01','non stabiliscono applicabilità, certificazione o efficacia'),
@@ -194,7 +215,7 @@ try:
 
         assert not writes,writes
         assert not errors,errors
-        out={'ok':True,'profile':'all-surface-information-value+density','topLevelViews':['home','processes','monitoring','incidents','grc','proof','epistemic'],'grcProcedures':list(procedure_boundaries),'roles':['admin','user','auditor'],'adminTelemetry':True,'aiSettingsBoundary':True,'desktopManifestMaxPx':245,'desktopInformationMaxPx':210,'desktopFirstActionFoldPx':900,'mobileWidths':[390,320],'horizontalFirstRows':True,'minInteractiveTargetPx':44,'mobileOverflow':False,'writeCount':len(writes),'claimBoundary':'Browser projection/geometry evidence only; does not determine legal applicability, conformity, certification, human comprehension or deployment security.'}
+        out={'ok':True,'profile':'all-surface-information-value+density+procedure-standard-application','topLevelViews':['home','processes','monitoring','incidents','grc','proof','epistemic'],'grcProcedures':list(procedure_boundaries),'standardApplicationProcedures':list(expected_standards),'roles':['admin','user','auditor'],'adminTelemetry':True,'aiSettingsBoundary':True,'desktopManifestMaxPx':245,'desktopInformationMaxPx':210,'desktopFirstActionFoldPx':900,'mobileWidths':[390,320],'horizontalFirstRows':True,'minInteractiveTargetPx':44,'mobileOverflow':False,'writeCount':len(writes),'claimBoundary':'Browser projection/geometry evidence only; benchmark application bindings do not determine legal applicability, conformity, certification, human comprehension or deployment security.'}
         (ART/'browser-information-value.json').write_text(json.dumps(out,indent=2),encoding='utf8')
         print('browser-information-value: complete',flush=True)
         ctx.close(); browser.close()
