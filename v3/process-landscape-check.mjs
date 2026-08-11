@@ -1,15 +1,13 @@
 import assert from 'node:assert/strict';
 import { processLandscapeProjection, PHASES } from './runtime/process-landscape.mjs';
-const ids=['monitoring','incidents','evidence','objects','coverage','actions','risks','assurance'];
-const procedures=ids.map((id,i)=>({id,code:id==='evidence'?'EV-01':`P-${i}`,label:id,description:`${id} desc`,kind:id==='evidence'?'assurance':'service',readOnly:false,attentionCount:i%2,metrics:[{value:i,label:'x'}]}));
-const work={queue:{items:[{processId:'risks'},{processId:'actions'}]},procedures:ids.map(id=>({processId:id,checkpoint:id==='evidence'?null:`${id}-review`,entry:`entry ${id}`}))};
-const reviewInbox={items:[{processId:'risks'},{processId:'coverage'}]};
+import { canonicalProcedureContracts } from './runtime/procedure-contracts.mjs';
+import { PROCEDURE_DOD } from './procedure-dod.mjs';
+const contracts=canonicalProcedureContracts();
+const procedures=[...contracts.map((contract,index)=>({id:contract.id,code:contract.code,label:contract.label,description:contract.purpose,kind:'service',readOnly:false,attentionCount:index%2,metrics:[{value:index,label:'x'}]})),{id:'evidence',code:'EV-01',label:'Prove e tracciabilità',description:'Ricostruisci la prova.',kind:'assurance',readOnly:false,attentionCount:0,metrics:[]}];
+const ids=procedures.map(item=>item.id),work={queue:{items:[{processId:'risks'},{processId:'actions'}]},procedures:ids.map(id=>({processId:id,checkpoint:id==='evidence'?null:`${id}-review`,entry:`entry ${id}`}))},reviewInbox={items:[{processId:'risks'},{processId:'coverage'}]};
 const out=processLandscapeProjection({procedures,work,reviewInbox});
-assert.equal(out.authority,'runtime-process-landscape-projection');assert.equal(out.schemaVersion,'4.1.0');
-assert.equal(PHASES.length,4);assert.match(out.limitations[0],/quattro macro-fasi/i);
-assert.equal(out.counts.businessProcesses,7);assert.equal(out.counts.visibleProcesses,8);
-const flattened=out.phases.flatMap(p=>p.items);assert.equal(new Set(flattened.map(x=>x.processId)).size,8);
-assert.equal(flattened.find(x=>x.processId==='risks').reviewCount,1);assert.equal(flattened.find(x=>x.processId==='actions').workCount,1);assert.equal(flattened.find(x=>x.processId==='evidence').supportSurface,true);
-const business=flattened.filter(x=>x.processId!=='evidence');assert.ok(business.every(x=>x.purpose&&x.proofHint&&x.method.length===5&&x.handoffs.length>=1&&x.benchmarkRefs.length>=1));assert.ok(business.every(x=>!/P-\d/.test(x.processCode)),'business codes must come from canonical contracts');
-assert.equal(flattened.find(x=>x.processId==='evidence').method.length,0);assert.equal(out.ungrouped.length,0);
-console.log('process-landscape-check: ok canonical-derived business semantics');
+assert.equal(out.authority,'runtime-process-landscape-projection');assert.equal(out.schemaVersion,'4.1.0');assert.equal(PHASES.length,4);assert.match(out.limitations[0],/quattro macro-fasi/i);
+const flattened=out.phases.flatMap(phase=>phase.items);assert.equal(new Set(flattened.map(item=>item.processId)).size,8);assert.equal(out.ungrouped.length,0);assert.equal(flattened.find(item=>item.processId==='risks').reviewCount,1);assert.equal(flattened.find(item=>item.processId==='actions').workCount,1);
+for(const contract of contracts){const item=flattened.find(candidate=>candidate.processId===contract.id),dod=PROCEDURE_DOD[contract.id];assert.ok(item,`${contract.id}: missing from landscape`);assert.equal(item.processCode,contract.code);assert.equal(item.label,contract.label);assert.equal(item.purpose,contract.purpose);assert.deepEqual(item.method,[...dod.completion]);assert.deepEqual(item.handoffs,[...dod.handoffs]);assert.deepEqual(item.benchmarkRefs,[...dod.benchmarkRefs]);assert.ok(item.proofHint);}
+const evidence=flattened.find(item=>item.processId==='evidence');assert.equal(evidence.supportSurface,true);assert.deepEqual(evidence.method,[]);assert.deepEqual(evidence.handoffs,[]);
+console.log('process-landscape-check: ok canonical contracts + procedure DoD');
