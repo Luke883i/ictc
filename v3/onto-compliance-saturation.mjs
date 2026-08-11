@@ -15,7 +15,7 @@ const sourceProfile={
   ep01CrossCutting:meta.includes("businessProcess:false")&&meta.includes("code:'EP-01'"),
   attentionObservational:frame.includes('semanticSignals')&&frame.includes('metric.label')&&!frame.includes("'In ordine'")&&!frame.includes('Nessuna attenzione aperta'),
   homeAttentionObservational:market.includes('procedure senza attenzione aperta')&&!/processi in ordine/i.test(market),
-  auditorProcedureBound:frame.includes("const readOnly=state.role==='auditor'")&&frame.includes("actionLabel:readOnly?'Consulta registrazioni'")&&frame.includes('openReadSurface(id)')&&!frame.includes("navigateSurface('proof')"),
+  auditorProcedureBound:frame.includes("readOnly=state.role==='auditor'")&&frame.includes("actionLabel:readOnly?'Consulta registrazioni'")&&frame.includes('openReadSurface(id)')&&!frame.includes("navigateSurface('proof')"),
   traceOwners:(anatomy.includes('anchor.after(box)')?1:0)+(frame.includes('placeTechnicalContext')?1:0),
   traceAfterWork:anatomy.includes('function workAnchor(')&&anatomy.includes('anchor.after(box)')&&!anatomy.includes('host.prepend(box)'),
   tabletLocalContainment:css.includes('@media(max-width:900px)')&&css.includes('.service-nav')&&css.includes('overflow-x:auto')&&!css.includes('body{overflow-x:hidden}'),
