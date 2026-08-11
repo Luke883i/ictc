@@ -1,19 +1,148 @@
 import { $, api, esc, state } from './common.js';
+
 let installed=false,offset=0,limit=80,sequence=0,observer=null;
 const countBy=(atoms,key)=>{const m=new Map();for(const a of atoms){const k=key(a)||'cross-cutting';m.set(k,(m.get(k)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0])));};
 const allowed=()=>state.role==='admin'||state.role==='auditor';
-function envelopeButton(kind,value,count,atomIds){return`<button type="button" class="epistemic-envelope" data-envelope-kind="${kind}" data-envelope-value="${esc(value)}" data-atom-ids="${esc(atomIds.join(','))}"><span>${esc(value)}</span><b>${count}</b><small>Drilldown</small></button>`;}
-function renderCompression(value){const view=$('#epistemicView'),host=$('#epistemicModeHost');if(!view||!host)return;let box=$('#epistemicCompression');if(!box){box=document.createElement('section');box.id='epistemicCompression';box.className='epistemic-compression surface-panel';host.before(box);}const atoms=value?.atoms||[],p=value?.projection||{};box.dataset.stateRevision=String(p.stateRevision||0);box.dataset.projectionDigest=p.projectionSha256||'';const procedures=countBy(atoms,a=>a.procedureId||'cross-cutting'),families=countBy(atoms,a=>(a.families||[])[0]||'Senza famiglia'),statuses=countBy(atoms,a=>a.epistemicStatus||'recorded');const idsFor=(fn,v)=>atoms.filter(a=>fn(a)===v).map(a=>a.atomId);box.innerHTML=`<header><div><p class="eyebrow">Compressione epistemica</p><h2>Leggi prima i concetti, poi apri la traccia</h2><p>Le card raggruppano la pagina corrente senza creare nuovi fatti. Ogni gruppo resta reversibile agli atomi e al digest della proiezione.</p></div><span class="surface-chip">r${Number(p.stateRevision||0)} · ${(p.projectionSha256||'').slice(0,12)}</span></header><div class="epistemic-envelope-layers"><section><h3>Processi</h3><div class="epistemic-envelope-grid">${procedures.map(([v,n])=>envelopeButton('procedure',v,n,idsFor(a=>a.procedureId||'cross-cutting',v))).join('')}</div></section><section><h3>Stati epistemici</h3><div class="epistemic-envelope-grid compact">${statuses.map(([v,n])=>envelopeButton('status',v,n,idsFor(a=>a.epistemicStatus||'recorded',v))).join('')}</div></section><details><summary>Famiglie e basis concettuale</summary><div class="epistemic-envelope-grid compact">${families.map(([v,n])=>envelopeButton('family',v,n,idsFor(a=>(a.families||[])[0]||'Senza famiglia',v))).join('')}</div></details></div><p class="epistemic-compression-boundary">Compressione di presentazione: non modifica atomId, revisione, digest, producer, basis, stato o relazioni registrate.</p>`;}
-async function refreshCompression(){if(!allowed()||state.service!=='epistemic')return;const seq=++sequence;try{const value=await api(`/api/epistemic-lattice?offset=${offset}&limit=${limit}`);if(seq===sequence)renderCompression(value);}catch{} }
-function applyEnvelope(button){const kind=button.dataset.envelopeKind,value=button.dataset.envelopeValue;if(kind==='procedure'&&value!=='cross-cutting'){const select=$('#epistemicProcedureFilter');if(select){select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));}}else if(kind==='family'&&value!=='Senza famiglia'){const select=$('#epistemicFamilyFilter');if(select){select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));}}else if(kind==='status'){const input=$('#epistemicSearch');if(input){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));}}}
+
+function envelopeButton(kind,value,count,atomIds){
+  return `<button type="button" class="epistemic-envelope" data-envelope-kind="${kind}" data-envelope-value="${esc(value)}" data-atom-ids="${esc(atomIds.join(','))}"><span>${esc(value)}</span><b>${count}</b><small>Drilldown</small></button>`;
+}
+
+function renderCompression(value){
+  const view=$('#epistemicView'),host=$('#epistemicModeHost');
+  if(!view||!host)return;
+  let box=$('#epistemicCompression');
+  if(!box){box=document.createElement('section');box.id='epistemicCompression';box.className='epistemic-compression surface-panel';host.before(box);}
+  const atoms=value?.atoms||[],p=value?.projection||{};
+  box.dataset.stateRevision=String(p.stateRevision||0);
+  box.dataset.projectionDigest=p.projectionSha256||'';
+  const procedures=countBy(atoms,a=>a.procedureId||'cross-cutting');
+  const families=countBy(atoms,a=>(a.families||[])[0]||'Senza famiglia');
+  const statuses=countBy(atoms,a=>a.epistemicStatus||'recorded');
+  const idsFor=(fn,v)=>atoms.filter(a=>fn(a)===v).map(a=>a.atomId);
+  box.innerHTML=`<header><div><p class="eyebrow">Compressione epistemica</p><h2>Leggi prima i concetti, poi apri la traccia</h2><p>Le card raggruppano la pagina corrente senza creare nuovi fatti. Ogni gruppo resta reversibile agli atomi e al digest della proiezione.</p></div><span class="surface-chip">r${Number(p.stateRevision||0)} · ${(p.projectionSha256||'').slice(0,12)}</span></header><div class="epistemic-envelope-layers"><section><h3>Processi</h3><div class="epistemic-envelope-grid">${procedures.map(([v,n])=>envelopeButton('procedure',v,n,idsFor(a=>a.procedureId||'cross-cutting',v))).join('')}</div></section><section><h3>Stati epistemici</h3><div class="epistemic-envelope-grid compact">${statuses.map(([v,n])=>envelopeButton('status',v,n,idsFor(a=>a.epistemicStatus||'recorded',v))).join('')}</div></section><details><summary>Famiglie e basis concettuale</summary><div class="epistemic-envelope-grid compact">${families.map(([v,n])=>envelopeButton('family',v,n,idsFor(a=>(a.families||[])[0]||'Senza famiglia',v))).join('')}</div></details></div><p class="epistemic-compression-boundary">Compressione di presentazione: non modifica atomId, revisione, digest, producer, basis, stato o relazioni registrate.</p>`;
+}
+
+async function refreshCompression(){
+  if(!allowed()||state.service!=='epistemic')return;
+  const seq=++sequence;
+  try{const value=await api(`/api/epistemic-lattice?offset=${offset}&limit=${limit}`);if(seq===sequence)renderCompression(value);}catch{}
+}
+
+function applyEnvelope(button){
+  const kind=button.dataset.envelopeKind,value=button.dataset.envelopeValue;
+  if(kind==='procedure'&&value!=='cross-cutting'){
+    const select=$('#epistemicProcedureFilter');if(select){select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));}
+  }else if(kind==='family'&&value!=='Senza famiglia'){
+    const select=$('#epistemicFamilyFilter');if(select){select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));}
+  }else if(kind==='status'){
+    const input=$('#epistemicSearch');if(input){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));}
+  }
+}
+
 function graphGroups(svg){return [...svg.querySelectorAll('g')].filter(g=>g.querySelector('circle.epistemic-graph-node'));}
 const pointKey=(x,y)=>`${Number(x||0).toFixed(3)}:${Number(y||0).toFixed(3)}`;
-function annotateGraphEdges(svg){const byPoint=new Map();for(const g of graphGroups(svg)){const circle=g.querySelector('circle.epistemic-graph-node'),id=circle?.querySelector('title')?.textContent||'';if(circle&&id)byPoint.set(pointKey(circle.getAttribute('cx'),circle.getAttribute('cy')),id);}for(const line of svg.querySelectorAll('line.epistemic-graph-edge')){line.dataset.baseX1=line.getAttribute('x1')||'0';line.dataset.baseY1=line.getAttribute('y1')||'0';line.dataset.baseX2=line.getAttribute('x2')||'0';line.dataset.baseY2=line.getAttribute('y2')||'0';const from=byPoint.get(pointKey(line.dataset.baseX1,line.dataset.baseY1)),to=byPoint.get(pointKey(line.dataset.baseX2,line.dataset.baseY2));if(from)line.dataset.graphFrom=from;if(to)line.dataset.graphTo=to;}}
-function moveEdges(svg,id,x,y){for(const line of svg.querySelectorAll('line.epistemic-graph-edge')){if(line.dataset.graphFrom===id){line.setAttribute('x1',String(Number(line.dataset.baseX1||0)+x));line.setAttribute('y1',String(Number(line.dataset.baseY1||0)+y));}if(line.dataset.graphTo===id){line.setAttribute('x2',String(Number(line.dataset.baseX2||0)+x));line.setAttribute('y2',String(Number(line.dataset.baseY2||0)+y));}}}
-function restoreEdges(svg){for(const line of svg.querySelectorAll('line.epistemic-graph-edge'))for(const attr of ['x1','y1','x2','y2']){const key=`base${attr[0].toUpperCase()}${attr.slice(1)}`;if(line.dataset[key]!=null)line.setAttribute(attr,line.dataset[key]);}}
-function ensureHitTarget(g,circle){if(g.querySelector('.epistemic-graph-hit'))return;const hit=document.createElementNS('http://www.w3.org/2000/svg','circle');for(const attr of ['cx','cy'])hit.setAttribute(attr,circle.getAttribute(attr)||'0');hit.setAttribute('r','22');hit.setAttribute('class','epistemic-graph-hit');hit.setAttribute('aria-hidden','true');g.insertBefore(hit,circle);}
-function enhanceGraph(){const graph=$('.epistemic-graph'),canvas=graph?.querySelector('.epistemic-graph-canvas'),svg=canvas?.querySelector('svg');if(!graph||!svg||graph.dataset.enhanced==='true')return;graph.dataset.enhanced='true';canvas.removeAttribute('aria-hidden');svg.setAttribute('aria-label','Grafo epistemico interattivo');svg.setAttribute('role','group');annotateGraphEdges(svg);const controls=document.createElement('div');controls.className='epistemic-graph-controls';controls.innerHTML='<button type="button" class="secondary" data-graph-zoom="out" aria-label="Riduci grafo">−</button><span class="surface-chip" data-graph-zoom-label aria-live="polite">100%</span><button type="button" class="secondary" data-graph-reset>Reset</button><button type="button" class="secondary" data-graph-zoom="in" aria-label="Ingrandisci grafo">+</button>';canvas.before(controls);let zoom=1;const positions=new Map();const applyZoom=()=>{svg.style.transform=`scale(${zoom})`;svg.style.transformOrigin='0 0';const label=controls.querySelector('[data-graph-zoom-label]');if(label)label.textContent=`${Math.round(zoom*100)}%`;};const resetPresentation=()=>{zoom=1;positions.clear();applyZoom();for(const g of graphGroups(svg))g.removeAttribute('transform');restoreEdges(svg);};controls.addEventListener('click',e=>{const z=e.target.closest('[data-graph-zoom]');if(z){zoom=Math.max(.7,Math.min(1.8,zoom+(z.dataset.graphZoom==='in'?.1:-.1)));applyZoom();}if(e.target.closest('[data-graph-reset]'))resetPresentation();});
-  const groups=graphGroups(svg),dense=groups.length>28;for(const [index,g] of groups.entries()){const circle=g.querySelector('circle.epistemic-graph-node'),label=g.querySelector('text'),id=circle?.querySelector('title')?.textContent||'';if(!circle||!id)continue;circle.setAttribute('r','10');ensureHitTarget(g,circle);g.dataset.epistemicNode=id;g.setAttribute('role','button');g.setAttribute('tabindex','0');g.setAttribute('aria-label',`Apri nodo ${id}`);if(label){label.textContent=(label.textContent||'').slice(0,10);label.setAttribute('x',String(Number(circle.getAttribute('cx')||0)+18));label.setAttribute('y',String(Number(circle.getAttribute('cy')||0)+(index%2?14:-9)));if(dense&&index%2)label.style.display='none';}g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();g.click();}});let drag=null,suppressClick=false;g.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopPropagation();}},true);g.addEventListener('pointerdown',e=>{const p=positions.get(id)||{x:0,y:0};drag={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,originX:p.x,originY:p.y,moved:false};g.setPointerCapture?.(e.pointerId);});g.addEventListener('pointermove',e=>{if(!drag||drag.pointerId!==e.pointerId)return;const dx=(e.clientX-drag.startX)/zoom,dy=(e.clientY-drag.startY)/zoom,x=drag.originX+dx,y=drag.originY+dy;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;positions.set(id,{x,y});g.setAttribute('transform',`translate(${x} ${y})`);moveEdges(svg,id,x,y);});const finish=e=>{if(!drag||drag.pointerId!==e.pointerId)return;suppressClick=drag.moved;drag=null;g.releasePointerCapture?.(e.pointerId);setTimeout(()=>{suppressClick=false;},0);};g.addEventListener('pointerup',finish);g.addEventListener('pointercancel',finish);}
+
+function annotateGraphEdges(svg){
+  const byPoint=new Map();
+  for(const g of graphGroups(svg)){
+    const circle=g.querySelector('circle.epistemic-graph-node'),id=circle?.querySelector('title')?.textContent||'';
+    if(circle&&id)byPoint.set(pointKey(circle.getAttribute('cx'),circle.getAttribute('cy')),id);
+  }
+  for(const line of svg.querySelectorAll('line.epistemic-graph-edge')){
+    line.dataset.baseX1=line.getAttribute('x1')||'0';line.dataset.baseY1=line.getAttribute('y1')||'0';line.dataset.baseX2=line.getAttribute('x2')||'0';line.dataset.baseY2=line.getAttribute('y2')||'0';
+    const from=byPoint.get(pointKey(line.dataset.baseX1,line.dataset.baseY1)),to=byPoint.get(pointKey(line.dataset.baseX2,line.dataset.baseY2));
+    if(from)line.dataset.graphFrom=from;if(to)line.dataset.graphTo=to;
+  }
 }
-function observeGraph(){const host=$('#epistemicModeHost');if(!host)return;observer?.disconnect();observer=new MutationObserver(()=>queueMicrotask(enhanceGraph));observer.observe(host,{childList:true,subtree:true});enhanceGraph();}
-export function installEpistemicExperience(){if(installed)return;installed=true;document.addEventListener('ictc:surface-changed',e=>{if(e.detail?.surface==='epistemic'){offset=0;queueMicrotask(()=>{observeGraph();void refreshCompression();});}});document.addEventListener('ictc:projection-committed',()=>{if(state.service==='epistemic')void refreshCompression();});document.addEventListener('click',e=>{const envelope=e.target.closest?.('[data-envelope-kind]');if(envelope){applyEnvelope(envelope);return;}if(e.target.closest?.('[data-epistemic-older]')){offset+=limit;queueMicrotask(()=>void refreshCompression());}if(e.target.closest?.('[data-epistemic-newer]')){offset=Math.max(0,offset-limit);queueMicrotask(()=>void refreshCompression());}if(e.target.closest?.('[data-epistemic-mode="graph"]'))queueMicrotask(enhanceGraph);});if(state.service==='epistemic')queueMicrotask(()=>{observeGraph();void refreshCompression();});}
+
+function moveEdges(svg,id,x,y){
+  for(const line of svg.querySelectorAll('line.epistemic-graph-edge')){
+    if(line.dataset.graphFrom===id){line.setAttribute('x1',String(Number(line.dataset.baseX1||0)+x));line.setAttribute('y1',String(Number(line.dataset.baseY1||0)+y));}
+    if(line.dataset.graphTo===id){line.setAttribute('x2',String(Number(line.dataset.baseX2||0)+x));line.setAttribute('y2',String(Number(line.dataset.baseY2||0)+y));}
+  }
+}
+
+function restoreEdges(svg){
+  for(const line of svg.querySelectorAll('line.epistemic-graph-edge'))for(const attr of ['x1','y1','x2','y2']){
+    const key=`base${attr[0].toUpperCase()}${attr.slice(1)}`;
+    if(line.dataset[key]!=null)line.setAttribute(attr,line.dataset[key]);
+  }
+}
+
+function ensureHitTarget(g,circle){
+  if(g.querySelector('.epistemic-graph-hit'))return;
+  const hit=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  for(const attr of ['cx','cy'])hit.setAttribute(attr,circle.getAttribute(attr)||'0');
+  hit.setAttribute('r','22');hit.setAttribute('class','epistemic-graph-hit');hit.setAttribute('aria-hidden','true');g.insertBefore(hit,circle);
+}
+
+function installNodeDrag(g,svg,id,positions,getZoom){
+  let suppressClick=false;
+  g.addEventListener('click',event=>{if(suppressClick){event.preventDefault();event.stopPropagation();}},true);
+  g.addEventListener('pointerdown',event=>{
+    if(event.button!==0)return;
+    const origin=positions.get(id)||{x:0,y:0};
+    const drag={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,originX:origin.x,originY:origin.y,moved:false};
+    const session=new AbortController();
+    const move=next=>{
+      if(next.pointerId!==drag.pointerId)return;
+      const zoom=getZoom(),dx=(next.clientX-drag.startX)/zoom,dy=(next.clientY-drag.startY)/zoom,x=drag.originX+dx,y=drag.originY+dy;
+      if(Math.hypot(next.clientX-drag.startX,next.clientY-drag.startY)>4)drag.moved=true;
+      positions.set(id,{x,y});g.setAttribute('transform',`translate(${x} ${y})`);moveEdges(svg,id,x,y);
+    };
+    const finish=next=>{
+      if(next.pointerId!==drag.pointerId)return;
+      suppressClick=drag.moved;
+      session.abort();
+      try{g.releasePointerCapture?.(drag.pointerId);}catch{}
+      setTimeout(()=>{suppressClick=false;},0);
+    };
+    document.addEventListener('pointermove',move,{signal:session.signal});
+    document.addEventListener('pointerup',finish,{signal:session.signal});
+    document.addEventListener('pointercancel',finish,{signal:session.signal});
+    try{g.setPointerCapture?.(event.pointerId);}catch{}
+  });
+}
+
+function enhanceGraph(){
+  const graph=$('.epistemic-graph'),canvas=graph?.querySelector('.epistemic-graph-canvas'),svg=canvas?.querySelector('svg');
+  if(!graph||!svg||graph.dataset.enhanced==='true')return;
+  graph.dataset.enhanced='true';canvas.removeAttribute('aria-hidden');svg.setAttribute('aria-label','Grafo epistemico interattivo');svg.setAttribute('role','group');annotateGraphEdges(svg);
+  const controls=document.createElement('div');
+  controls.className='epistemic-graph-controls';
+  controls.innerHTML='<button type="button" class="secondary" data-graph-zoom="out" aria-label="Riduci grafo">−</button><span class="surface-chip" data-graph-zoom-label aria-live="polite">100%</span><button type="button" class="secondary" data-graph-reset>Reset</button><button type="button" class="secondary" data-graph-zoom="in" aria-label="Ingrandisci grafo">+</button>';
+  canvas.before(controls);
+  let zoom=1;
+  const positions=new Map();
+  const applyZoom=()=>{svg.style.transform=`scale(${zoom})`;svg.style.transformOrigin='0 0';const label=controls.querySelector('[data-graph-zoom-label]');if(label)label.textContent=`${Math.round(zoom*100)}%`;};
+  const resetPresentation=()=>{zoom=1;positions.clear();applyZoom();for(const g of graphGroups(svg))g.removeAttribute('transform');restoreEdges(svg);};
+  controls.addEventListener('click',event=>{const z=event.target.closest('[data-graph-zoom]');if(z){zoom=Math.max(.7,Math.min(1.8,zoom+(z.dataset.graphZoom==='in'?.1:-.1)));applyZoom();}if(event.target.closest('[data-graph-reset]'))resetPresentation();});
+  const groups=graphGroups(svg),dense=groups.length>28;
+  for(const [index,g] of groups.entries()){
+    const circle=g.querySelector('circle.epistemic-graph-node'),label=g.querySelector('text'),id=circle?.querySelector('title')?.textContent||'';
+    if(!circle||!id)continue;
+    circle.setAttribute('r','10');ensureHitTarget(g,circle);g.dataset.epistemicNode=id;g.setAttribute('role','button');g.setAttribute('tabindex','0');g.setAttribute('aria-label',`Apri nodo ${id}`);
+    if(label){label.textContent=(label.textContent||'').slice(0,10);label.setAttribute('x',String(Number(circle.getAttribute('cx')||0)+18));label.setAttribute('y',String(Number(circle.getAttribute('cy')||0)+(index%2?14:-9)));if(dense&&index%2)label.style.display='none';}
+    g.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();g.click();}});
+    installNodeDrag(g,svg,id,positions,()=>zoom);
+  }
+}
+
+function observeGraph(){
+  const host=$('#epistemicModeHost');if(!host)return;
+  observer?.disconnect();observer=new MutationObserver(()=>queueMicrotask(enhanceGraph));observer.observe(host,{childList:true,subtree:true});enhanceGraph();
+}
+
+export function installEpistemicExperience(){
+  if(installed)return;installed=true;
+  document.addEventListener('ictc:surface-changed',event=>{if(event.detail?.surface==='epistemic'){offset=0;queueMicrotask(()=>{observeGraph();void refreshCompression();});}});
+  document.addEventListener('ictc:projection-committed',()=>{if(state.service==='epistemic')void refreshCompression();});
+  document.addEventListener('click',event=>{
+    const envelope=event.target.closest?.('[data-envelope-kind]');if(envelope){applyEnvelope(envelope);return;}
+    if(event.target.closest?.('[data-epistemic-older]')){offset+=limit;queueMicrotask(()=>void refreshCompression());}
+    if(event.target.closest?.('[data-epistemic-newer]')){offset=Math.max(0,offset-limit);queueMicrotask(()=>void refreshCompression());}
+    if(event.target.closest?.('[data-epistemic-mode="graph"]'))queueMicrotask(enhanceGraph);
+  });
+  if(state.service==='epistemic')queueMicrotask(()=>{observeGraph();void refreshCompression();});
+}
