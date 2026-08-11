@@ -16,13 +16,13 @@ def start_server():
  env={**os.environ,'ICTC_RUNTIME_DIR':RUNTIME,'ICTC_PORT':str(PORT),'PORT':str(PORT),'ICTC_HOST':'127.0.0.1','ICTC_DEMO_SEED':'1','ICTC_SCHEDULER_TICK_MS':'100000','ICTC_NO_OPEN':'1'}
  node=shutil.which('node'); assert node,'node missing'
  log=open(LOG,'w',encoding='utf8'); PROC=subprocess.Popen([node,str(ROOT/'v3/server.mjs')],cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT)
- for _ in range(600):
+ for _ in range(1800):
   if PROC.poll() is not None:
    log.flush(); raise RuntimeError(f'demo server exited {PROC.returncode}: {LOG.read_text(encoding="utf8")[-6000:]}')
   try:
    req=urllib.request.Request(BASE+'/api/health',headers={'x-ictc-role':'admin','x-ictc-actor-id':'browser-admin'}); urllib.request.urlopen(req,timeout=.4).read(); return log
   except Exception: time.sleep(.1)
- raise RuntimeError(f'demo server not ready: {LOG.read_text(encoding="utf8")[-6000:]}')
+ raise RuntimeError(f'demo server not ready after saturated readiness window: {LOG.read_text(encoding="utf8")[-6000:]}')
 def stop_server(log):
  if PROC and PROC.poll() is None:
   PROC.terminate()
