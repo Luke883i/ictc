@@ -29,14 +29,15 @@ for (const token of ['Processi di Compliance','Processo di Compliance','Postura 
 for (const token of ['>Processi di Compliance</button>','>Postura ICTC</button>','<h1>Processi di Compliance</h1>','Apri Processi di Compliance']) assert.ok(index.includes(token), `shell canonical language missing ${token}`);
 assert.ok(copy.includes("processes:'Processi di Compliance'") && copy.includes("proof:'Postura ICTC'"), 'product-copy must own canonical surface labels');
 
-for (const token of ['<span>Processo di Compliance</span>','<b>Scopo del processo</b>','aria-label="Segnali del processo"','Consulta registrazioni','Nessun Processo di Compliance disponibile']) assert.ok(frame.includes(token), `process frame language missing ${token}`);
-for (const forbidden of ['<span>Procedura</span>','<b>Scopo della procedura</b>','aria-label="Segnali della procedura"',"textContent='Procedure'",'Consulta record']) assert.equal(frame.includes(forbidden), false, `retired active process wording returned: ${forbidden}`);
+for (const token of ['semanticSignals','metric.label','aria-label="Segnali del processo"','Consulta registrazioni',"entryLabel:readOnly?'Consulta':'Gestisci'"]) assert.ok(frame.includes(token), `compact process frame language missing ${token}`);
+for (const forbidden of ['<span>Processo di Compliance</span>','<b>Scopo del processo</b>','<small>da vedere</small>','<small>registrazioni</small>','Nessuna attenzione aperta','<span>Procedura</span>','<b>Scopo della procedura</b>','aria-label="Segnali della procedura"',"textContent='Procedure'",'Consulta record']) assert.equal(frame.includes(forbidden), false, `retired active process wording returned: ${forbidden}`);
 
 for (const token of ["EXPERIENCE_EDITION='1.9-experience-candidate'",'ictcExperienceEdition=EXPERIENCE_EDITION','SURFACE_LABELS.processes','SURFACE_LABELS.proof','Processi di Compliance','senza attenzione aperta']) assert.ok(stableShell.includes(token), `stable shell identity/fallback contract missing ${token}`);
 for (const forbidden of ['processi in ordine','Tutte le procedure','Apri Processi</button>','<span>procedure</span>','entra nella procedura','nella procedura corretta','Ricostruisci procedure']) assert.equal(stableShell.includes(forbidden), false, `stable shell retains retired fallback wording: ${forbidden}`);
 
 assert.ok(router.includes('SURFACE_LABELS.processes') && router.includes('Torna al processo precedente'), 'router must derive Processi di Compliance navigation language from canonical copy');
-assert.ok(primitives.includes('Processi di Compliance') && !primitives.includes("aria-current=\"page\">Procedure"), 'context strip must use Processi di Compliance');
+assert.ok(primitives.includes('>Processi</button>') && primitives.includes('surface-information-detail') && primitives.includes('ictc-manifest-detail'), 'context/information strip must use compact final-view grammar');
+assert.equal(primitives.includes('>Processi di Compliance</button>'), false, 'context strip must not repeat the full Processi di Compliance title beside the local heading');
 
 for (const token of ['Come ICTC dimostra la propria postura','proofEvidenceKinds','proofBenchmarkMappings','Pratica ICTC.','Evidenza.','<b>Limite.</b>','data.proof?.evidenceKinds','data.proof?.rule','data.benchmarkFamilies']) assert.ok(proof.includes(token), `Postura proof method missing ${token}`);
 assert.equal(proof.includes('Procedure con decisioni'), false, 'Postura must not expose retired Procedure naming');
@@ -57,4 +58,4 @@ for (const item of contracts.procedures) {
   assert.ok(Array.isArray(item.evidence) && item.evidence.length, `${item.code} missing evidence model`);
 }
 
-console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical shell and EP-01 language / proof method / actual revision guards / visual restraint / epistemic boundaries)');
+console.log('visual-grace-lexical-epistemic-check: ok (canonical seven processes / compact frame language / proof method / visual restraint / epistemic boundaries)');

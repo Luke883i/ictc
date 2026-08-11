@@ -48,6 +48,11 @@ def openp(page, code):
     expect(page.locator('[data-surface-context-strip]:visible')).to_contain_text(code)
     return card
 
+def projected_signals(item):
+    metrics = [metric for metric in item.get('metrics', []) if isinstance(metric.get('value'), (int, float)) and float(metric.get('value')) > 0]
+    attention = [metric for metric in metrics if metric.get('severity') in ('attention', 'critical')]
+    return (attention or metrics)[:2]
+
 def verify_process_projection(page, code, pid, rev):
     processes(page).click()
     check_surface_revision(page, '#processesView', rev)
@@ -55,8 +60,13 @@ def verify_process_projection(page, code, pid, rev):
     expect(card).to_be_visible()
     data = bootstrap(page)
     item = next(x for x in data.get('procedures', []) if x.get('id') == pid)
-    rendered = int(card.locator('.procedure-signals .procedure-signal b').first.inner_text())
-    assert rendered == int(item.get('attentionCount') or 0), (code, rendered, item.get('attentionCount'))
+    expected = projected_signals(item)
+    signals = card.locator('.procedure-signals .procedure-signal')
+    assert signals.count() == len(expected), (code, signals.count(), expected)
+    for index, metric in enumerate(expected):
+        rendered = signals.nth(index)
+        assert int(rendered.locator('b').inner_text()) == int(metric.get('value')), (code, index, metric)
+        assert rendered.locator('small').inner_text().strip() == str(metric.get('label') or metric.get('id')), (code, index, metric)
     no_overflow(page)
 
 def fill_user(locator, value, phase):
