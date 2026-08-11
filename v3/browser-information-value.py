@@ -32,6 +32,11 @@ def assert_information_value(page,key,contains=None):
     if contains: expect(card).to_contain_text(contains)
     no_overflow(page)
 
+def open_profile(page):
+    menu=page.locator('#stableProfileMenu')
+    expect(menu.locator(':scope > summary')).to_be_visible()
+    if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
+
 try:
     with sync_playwright() as pw:
         launch={'headless':True,'args':['--no-sandbox']}
@@ -60,6 +65,7 @@ try:
             expect(page.locator('#ictcManifest')).to_contain_text('Conformità come lavoro umano verificabile.')
             expect(page.locator('#homeRole')).not_to_be_empty()
         page.evaluate("()=>localStorage.setItem('ictc-role','admin')")
+        page.reload(wait_until='networkidle')
 
         PHASE='top-level-surfaces'
         for view,needle in [
@@ -86,6 +92,7 @@ try:
 
         PHASE='admin-governance'
         open_view(page,'home')
+        open_profile(page)
         page.locator('#openAdminCenter').click()
         admin=page.locator('#adminCenter')
         expect(admin).to_be_visible()
@@ -95,6 +102,7 @@ try:
         expect(admin).not_to_be_visible()
 
         PHASE='ai-settings-boundary'
+        open_profile(page)
         page.locator('#openSettings').click()
         settings=page.locator('#settingsDialog')
         expect(settings).to_be_visible()
