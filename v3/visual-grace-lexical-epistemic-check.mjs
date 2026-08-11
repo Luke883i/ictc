@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
-const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,meta,epistemic,controller,stableShell] = await Promise.all([
+const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,meta,epistemic,controller,stableShell,stableHome] = await Promise.all([
   read('../docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md'),
   read('./public/index.html'),
   read('./public/ui/product-copy.js'),
@@ -16,7 +16,8 @@ const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,met
   read('./runtime/meta-procedure-contracts.mjs'),
   read('./public/ui/epistemic-lattice.js'),
   read('./public/ui/controller.js'),
-  read('./public/ui/stable-shell.js')
+  read('./public/ui/stable-shell.js'),
+  read('./public/ui/stable-1-4-home.js')
 ]);
 
 const contracts = JSON.parse(contractsRaw);
@@ -47,9 +48,18 @@ for (const token of ['Letture proposte','loadedStateRevision','requestedRevision
 for (const forbidden of ['<span>Meta-procedura</span>','<b>Scopo della procedura</b>','sr-only">Procedura</span>','>Tutte le procedure</option>','<small>Procedura</small>','<th>Procedura</th>']) assert.equal(epistemic.includes(forbidden), false, `EP-01 retains retired user-facing procedure wording: ${forbidden}`);
 assert.ok(controller.includes('ictc:projection-committed') && controller.includes('ictcProjectionRevision'), 'single projection commit authority missing');
 
+for (const token of ['Conformità come lavoro umano verificabile.','Requisito → rischio o impatto','Dati e AI','adminTelemetry','non determina da solo applicabilità normativa']) assert.ok(copy.includes(token), `global information-value contract missing ${token}`);
+for (const surface of ['home','processes','monitoring','incidents','grc','proof','epistemic','admin','aiSettings']) assert.ok(copy.includes(`${surface}:Object.freeze`), `information-value surface missing ${surface}`);
+for (const procedure of ['monitoring','incidents','objects','coverage','actions','risks','assurance']) assert.ok(copy.includes(`${procedure}:'`), `procedure information boundary missing ${procedure}`);
+for (const token of ['ICTC_MANIFEST','id="ictcManifest"','Metodo comune','Dati e AI','Confine']) assert.ok(stableHome.includes(token), `home manifest projection missing ${token}`);
+for (const token of ['COMMON_COMPLIANCE_METHOD','SURFACE_INFORMATION','PROCEDURE_INFORMATION_BOUNDARIES','dataset.surfaceInformationValue','markAdministrationViews','dataset.dialogInformationValue']) assert.ok(primitives.includes(token), `all-surface information primitive missing ${token}`);
+for (const forbidden of ['garantisce conformità','certifica automaticamente','determina automaticamente l’applicabilità']) assert.equal((copy+stableHome+primitives).toLowerCase().includes(forbidden.toLowerCase()), false, `information-value projection overclaims: ${forbidden}`);
+
 for (const token of ['max-width:68ch','min-height:44px','.procedure-frame::after{display:none}','transform:none','grid-template-columns:repeat(2,minmax(0,1fr))','grid-template-columns:1fr','.proof-method-list']) assert.ok(css.includes(token), `visual grace contract missing ${token}`);
 assert.equal(css.includes('body{overflow-x:hidden}'), false, 'visual polish must not mask document overflow');
 for (const retiredTiny of ['font-size:.58rem','font-size:.59rem']) assert.equal(css.includes(retiredTiny), false, `final visual layer must not reintroduce micro typography ${retiredTiny}`);
+const convergenceCss = await read('./public/ui-convergence.css');
+for (const token of ['.ictc-manifest{','.surface-information-value{','.surface-information-grid{','.dialog-information-value{','@media(max-width:700px)']) assert.ok(convergenceCss.includes(token), `information-value visual hierarchy missing ${token}`);
 
 for (const item of contracts.procedures) {
   assert.ok(item.claimBoundary, `${item.code} missing claim boundary`);
@@ -57,4 +67,4 @@ for (const item of contracts.procedures) {
   assert.ok(Array.isArray(item.evidence) && item.evidence.length, `${item.code} missing evidence model`);
 }
 
-console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical shell and EP-01 language / proof method / actual revision guards / visual restraint / epistemic boundaries)');
+console.log('visual-grace-lexical-epistemic-check: ok (7 Processi di Compliance / canonical shell and EP-01 language / all-surface information value / proof method / visual restraint / epistemic boundaries)');
