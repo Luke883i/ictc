@@ -10,9 +10,9 @@ if(marketIndex<0)failures.push('market-css-not-canonical');if(experienceIndex<0)
 for(const token of ['html:has(dialog[open])','dialog[open]{overflow:hidden','min-height:0!important','card-actions button:not(.primary)','refined-incident-intake','refined-question-why','--refined-control-min:44px'])requireToken(refinedCss,token,`refined-css:${token}`);
 for(const token of ['link[data-market-12]','neutralizeDynamicMarketCss','refineIncidentIntake','refineQuestion','refineProofSurface'])requireToken(refinedJs,token,`refined-js:${token}`);
 for(const token of ['installRefinedProduct','installProcedureFrame'])requireToken(active,token,`active:${token}`);
-for(const token of ['Postura Standard & Security ICTC','proofCompact'])requireToken(copy,token,`copy:${token}`);
+for(const token of ['Postura ICTC','Processi di Compliance','proofCompact'])requireToken(copy,token,`copy:${token}`);
 for(const token of ['SURFACE_LABELS.home','SURFACE_LABELS.processes','SURFACE_LABELS.proof'])requireToken(shell,token,`shell:${token}`);
 for(const token of ['SURFACE_LABELS.proof','function allowedRecent(item){return rows().some','navigator.platform'])requireToken(tools,token,`tools:${token}`);
-for(const token of ['one_scroll_owner','painted','incident-intake','Postura Standard & Security ICTC'])requireToken(browser,token,`browser:${token}`);
+for(const token of ['one_scroll_owner','painted','incident-intake','Postura ICTC','Processi di Compliance'])requireToken(browser,token,`browser:${token}`);
 assert.deepEqual(failures,[],`refined product invariant drift: ${failures.join(', ')}`);
-console.log(JSON.stringify({ok:true,authority:'refined-product-static-contract',cssOrder:{marketIndex,experienceIndex,refinedIndex},invariants:31}));
+console.log(JSON.stringify({ok:true,authority:'refined-product-static-contract',cssOrder:{marketIndex,experienceIndex,refinedIndex},invariants:32}));

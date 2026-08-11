@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Current active surface and authority
+      - name: Surface, authority and journey contracts
         run: |
           node v3/ui-active-experience-audit.mjs
           node v3/semantic-api-contract-check.mjs
@@ -27,15 +27,23 @@ jobs:
           node v3/projection-commit-check.mjs
           node v3/journey-navigation-check.mjs
           node v3/procedure-journey-2-1-check.mjs
+      - name: Epistemic and cross-process contracts
+        run: |
           node v3/epistemic-lattice-check.mjs
           node v3/epistemic-lattice-ui-check.mjs
           node v3/epistemic-inference-check.mjs
           node v3/epistemic-inference-ui-check.mjs
           node v3/cross-procedure-create-check.mjs
           node v3/cross-procedure-create-ui-check.mjs
+      - name: Visual, lexical and posture contracts
+        run: |
           node v3/ux-language-polish-check.mjs
           node v3/onto-compliance-horizon-check.mjs
+          node v3/visual-grace-lexical-epistemic-check.mjs
+      - name: Bounded saturation and compression
+        run: |
           node v3/onto-compliance-saturation.mjs
+          node v3/visual-grace-lexical-epistemic-saturation.mjs
           node v3/epistemic-lattice-saturation.mjs
           node v3/procedure-journey-saturation.mjs
           node v3/pr60-convergence-saturation.mjs
@@ -52,6 +60,7 @@ jobs:
             artifacts/procedure-journey-saturation.json
             artifacts/pr60-convergence-saturation.json
             artifacts/onto-compliance-saturation.json
+            artifacts/visual-grace-lexical-epistemic-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
@@ -76,7 +85,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed Experience 1.9 + Epistemic 2.0 + Procedure Journey 2.1 + Onto-Compliance Horizon v1
+      - name: Server-backed Experience 1.9 + Epistemic 2.0 + Journey 2.1 + Onto-Compliance + Visual Grace v1
         shell: bash
         run: |
           set -Eeuo pipefail

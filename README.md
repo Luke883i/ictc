@@ -1,16 +1,16 @@
 # ICTC
 
-ICTC è un sistema operativo di compliance per registrare lavoro, decisioni, evidenze e relazioni attraverso **sette procedure aziendali bounded**, mantenendo separati fatti registrati, proposte AI, review umane e conclusioni che richiedono autorità esterna.
+ICTC è un sistema operativo di compliance per registrare lavoro, decisioni, evidenze e relazioni attraverso **sette Processi di Compliance bounded**, mantenendo separati fatti registrati, proposte AI, review umane e conclusioni che richiedono autorità esterna.
 
 ICTC non è una certificazione, un parere legale, un auditor autonomo né un security perimeter. Un controllo presente, un mapping, un hash o un receipt non dimostrano da soli conformità, applicabilità, efficacia o sufficienza probatoria.
 
 ## Il prodotto, oggi
 
-La navigazione canonica è **Home / Processi / Postura Standard & Security ICTC**. Da Processi, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
+La navigazione canonica è **Oggi / Processi di Compliance / Postura ICTC**. Da Processi di Compliance, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
 
-Le sette procedure sono:
+I sette Processi di Compliance sono:
 
-| Codice | Procedura | Oggetto operativo |
+| Codice | Processo di Compliance | Oggetto operativo |
 |---|---|---|
 | RN-01 | Monitoraggio normativo | monitoraggi, fonti, requisiti e decisioni di fonte |
 | EC-01 | Eventi e segnalazioni | fatti originari, chiarimenti, formulazioni e stato evento |
@@ -20,19 +20,23 @@ Le sette procedure sono:
 | RC-01 | Rischi compliance | rischi, valutazioni e trattamento |
 | AR-01 | Questionari e verifiche | casi di assurance, domande, risposte e review |
 
-Ogni procedura può creare un record iniziale compatibile in un'altra procedura tramite il contratto cross-procedure, senza bypassare RBAC, policy o normalizzatore del target.
+Ogni processo può creare un record iniziale compatibile in un altro processo tramite il contratto cross-process, senza bypassare RBAC, policy o normalizzatore del target.
+
+> Nota di compatibilità: identificatori tecnici storici come `procedureRegistry`, `procedureId`, nomi file `procedure-*` e campi API versionati restano invariati finché una migrazione esplicita non li sostituisce. Nel linguaggio utente e nella documentazione corrente il dominio business è **Processi di Compliance**.
 
 ## Come leggere ICTC
 
-L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia**: prima dice in quale procedura sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia → Limite**: prima dice in quale Processo di Compliance sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
 
 Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio.
 
-**Postura Standard & Security ICTC** risponde, in quest'ordine, a tre domande: cosa è osservabile, quale evidenza manca, cosa ICTC non conclude. Decisioni, runtime, requisiti esterni di deployment, riferimenti ed export sono livelli successivi.
+**Postura ICTC** risponde, in quest'ordine, a quattro domande: cosa è osservabile, come ICTC lo dimostra, quale evidenza manca e cosa ICTC non conclude. Il metodo di prova è esplicito: **pratica → evidenza → limite**. Decisioni, runtime, requisiti esterni di deployment, standard dichiarati, riferimenti ed export sono livelli successivi.
+
+Le mappature a benchmark e standard dichiarati — per esempio WCAG 2.2, WAI-ARIA APG, ISO 9241-210, ISO 37301, NIST CSF 2.0, NIST SSDF ed EU AI Act — descrivono pratiche adottate, evidenze disponibili e limiti. Non sono certificazioni, conclusioni di applicabilità, percentuali di conformità o assessment dell'organizzazione/deployment.
 
 **EP-01 · Reticolo epistemico** presenta la stessa proiezione revision-bound in tre modi: `Esplora`, `Flat / raw`, `Proto-grafo`. In Esplora il percorso è **Quadro → Gruppi → Relazioni → Atomo**. Le letture AI restano visivamente e semanticamente separate dai record business.
 
-Il profilo **Onto-Compliance Horizon v1** è un contratto di design e assurance: controlla che gerarchia visuale, procedura dichiarata e autorità epistemica dicano la stessa cosa. Non introduce un nuovo processo, un nuovo score né una conclusione di compliance.
+Il profilo **Onto-Compliance Horizon v1** è un contratto di design e assurance: controlla che gerarchia visuale, Processo di Compliance dichiarato e autorità epistemica dicano la stessa cosa. Il profilo **Visual Grace / Lexical / Epistemic v1** aggiunge proporzione, leggibilità, lessico canonico e convergenza del reticolo come osservabili testabili. Nessuno dei due introduce un nuovo processo, score o verdetto di compliance.
 
 ## Autorità epistemica
 
@@ -102,9 +106,13 @@ node v3/authority-contract-check.mjs
 node v3/docs-command-contract-check.mjs
 node v3/onto-compliance-horizon-check.mjs
 node v3/onto-compliance-saturation.mjs
+node v3/visual-grace-lexical-epistemic-check.mjs
+node v3/visual-grace-lexical-epistemic-saturation.mjs
 ```
 
-I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti. Nel profilo Onto-Compliance, `M+100` significa nessuna nuova signature misurata nel holdout dichiarato e `G+100` nessuna ulteriore compressione sicura nello spazio di operatori dichiarato: non sono teoremi di correttezza o minimalità globale.
+I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
+
+Nel profilo Onto-Compliance storico, `M+100` significa nessuna nuova signature misurata nel holdout dichiarato e `G+100` nessuna ulteriore compressione sicura nello spazio di operatori dichiarato. Nel profilo Visual Grace / Lexical / Epistemic, ciascuna famiglia usa discovery pseudocasuale riproducibile e un holdout distinto **M+10000** senza nuova classe di anomalia normalizzata né violazione del target corrente. Questi stop non sono teoremi di correttezza, minimalità, gradevolezza universale o conformità.
 
 ## Identità della candidate
 
@@ -116,7 +124,8 @@ I journey browser server-backed e gli artifact commit-bound sono eseguiti in Git
 - refinement: `1.9.1-pre-candidate`;
 - profilo epistemico: `2.0-epistemic-lattice-pre-candidate`;
 - journey/convergenza: `2.1-procedure-journey-semantic-exploration-pre-candidate`;
-- design/assurance Onto-Compliance: `1.0-candidate`.
+- design/assurance Onto-Compliance: `1.0-candidate`;
+- visual grace / lexical / epistemic assurance: `1.0-candidate`.
 
 ## Sviluppo e documentazione
 
@@ -129,8 +138,9 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/TESTING.md` — suite e falsificatori;
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
 - `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
+- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova della Postura e stop M+10000;
 - `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
-- `docs/PR60_GLOBAL_DOD.md` — convergenza Procedure Journey 2.1 già materializzata;
+- `docs/PR60_GLOBAL_DOD.md` — convergenza Journey 2.1 già materializzata;
 - `SECURITY.md` — boundary e responsabilità di deployment.
 
 La documentazione storica rimane utile per tracciabilità progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.

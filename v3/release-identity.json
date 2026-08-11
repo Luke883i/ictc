@@ -1,5 +1,5 @@
 {
-  "schemaVersion":"1.3.0",
+  "schemaVersion":"1.4.0",
   "product":"ICTC",
   "packageVersion":"1.8.0",
   "semanticEdition":"1.2-market-candidate",
@@ -8,10 +8,11 @@
   "epistemicProfile":"2.0-epistemic-lattice-pre-candidate",
   "journeyProfile":"2.1-procedure-journey-semantic-exploration-pre-candidate",
   "ontoComplianceHorizon":"1.0-candidate",
+  "visualGraceLexicalEpistemicProfile":"1.0-candidate",
   "releaseStage":"pre-candidate-pr",
-  "navigation":{"home":"Home","processes":"Processi","proof":"Postura Standard & Security ICTC","proofCompact":"Postura ICTC","epistemic":"Reticolo epistemico"},
+  "navigation":{"home":"Oggi","processes":"Processi di Compliance","proof":"Postura ICTC","proofCompact":"Postura ICTC","epistemic":"Reticolo epistemico"},
   "metaProcedures":[{"id":"epistemic-lattice","code":"EP-01","label":"Reticolo epistemico","businessProcess":false,"crossCutting":true}],
   "evidenceRepresentations":["pdf","xml","md","zip"],
-  "authorityBoundary":"Presentation, Onto-Compliance Horizon, epistemic-lattice, posture and evidence formats do not create legal, compliance or security conclusions. AI derivations remain proposals; human decisions remain authoritative where required. Evidence exports are same-as-read representations of the canonical evidence dossier.",
-  "sourceOfTruth":"This file is the cross-document release identity authority. Package, semantic, experience, refinement, epistemic, journey and Onto-Compliance Horizon profiles are deliberately separate dimensions."
+  "authorityBoundary":"Presentation, Onto-Compliance Horizon, visual/lexical/epistemic assurance, epistemic-lattice, posture and evidence formats do not create legal, compliance or security conclusions. AI derivations remain proposals; human decisions remain authoritative where required. Evidence exports are same-as-read representations of the canonical evidence dossier.",
+  "sourceOfTruth":"This file is the cross-document release identity authority. Package, semantic, experience, refinement, epistemic, journey, Onto-Compliance Horizon and visual/lexical/epistemic assurance profiles are deliberately separate dimensions."
 }

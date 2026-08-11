@@ -12,12 +12,12 @@ const SURFACES = Object.freeze({
 });
 const GRC_PROCEDURES = new Set(['objects', 'coverage', 'actions', 'risks', 'assurance']);
 const BACK_LABELS = Object.freeze({
-  home: 'Torna a Home',
-  processes: 'Torna a Processi',
+  home: 'Torna a Oggi',
+  processes: `Torna a ${SURFACE_LABELS.processes}`,
   proof: `Torna a ${SURFACE_LABELS.proofCompact || 'Postura ICTC'}`,
   monitoring: 'Torna al monitoraggio',
   incidents: 'Torna agli eventi',
-  grc: 'Torna alla procedura precedente',
+  grc: 'Torna al processo precedente',
   epistemic: 'Torna al Reticolo epistemico'
 });
 
@@ -186,7 +186,7 @@ export function navigateSurface(value, {
 
 export function getBackLabel() {
   const from = history.state?.ictc ? history.state.from : null;
-  return BACK_LABELS[from?.surface] || 'Torna a Processi';
+  return BACK_LABELS[from?.surface] || `Torna a ${SURFACE_LABELS.processes}`;
 }
 
 export function navigateBack() {

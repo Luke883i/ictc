@@ -13,7 +13,7 @@ const [proof, epistemic, evidenceUi, journeyCss, primitiveCss, copy] = await Pro
 ]);
 
 assert.ok(proof.includes('SURFACE_LABELS.proof'), 'Postura title must consume product-copy authority');
-for (const label of ['Osservabile', 'Da completare', 'Confine', 'Decisioni e tracciabilità', 'Runtime e integrità', 'Deployment e requisiti esterni', 'Standard e riferimenti', 'Export della vista corrente']) {
+for (const label of ['Osservabile', 'Da completare', 'Confine', 'Come ICTC dimostra la propria postura', 'Decisioni e tracciabilità', 'Runtime e integrità', 'Deployment e requisiti esterni', 'Standard dichiarati e riferimenti', 'Export della vista corrente']) {
   assert.ok(proof.includes(label), `Postura progressive section missing: ${label}`);
 }
 assert.ok(!proof.includes('<h1 id="proofTitle">Evidenze e tracciabilità</h1>'), 'stale proof title returned');
@@ -24,6 +24,7 @@ assert.ok(!proof.includes('Decisioni e lineage'), 'end-user Postura should prefe
 assert.ok(proof.includes("ictc:projection-committed"), 'Postura must refresh from projection commits rather than generic renders');
 assert.ok(!proof.includes("document.addEventListener('ictc:rendered'"), 'Postura must not force network refresh on every generic render');
 assert.ok(proof.includes('requestSequence') && proof.includes('cachedRevision'), 'Postura stale-response and revision cache ownership missing');
+assert.ok(proof.includes('data.proof?.evidenceKinds') && proof.includes('data.proof?.rule') && proof.includes('data.benchmarkFamilies'), 'Postura must expose server-owned proof method and benchmark limits');
 
 for (const level of ['Quadro', 'Gruppi', 'Relazioni', 'Atomo']) assert.ok(epistemic.includes(level), `EP progressive level missing ${level}`);
 assert.ok(epistemic.includes("epistemicStatus==='proposed'"), 'proposed AI readings must stay distinguishable');
@@ -37,7 +38,8 @@ for (const token of ['.proof-snapshot', '.proof-reading-grid', '.proof-section',
 assert.doesNotMatch(journeyCss, /min-height:(?:32|40|42)px/, '2.1 interactive presentation must not locally undercut the 44px target contract');
 assert.ok(primitiveCss.includes('--surface-control-min:44px'), 'canonical minimum control target missing');
 assert.ok(primitiveCss.includes(':where(button,summary,[role="button"])'), 'new surface controls must inherit the 44px target grammar');
-assert.ok(copy.includes("proof:'Postura Standard & Security ICTC'"), 'canonical proof label drift');
+assert.ok(copy.includes("proof:'Postura ICTC'"), 'canonical proof label drift');
+assert.ok(copy.includes("processes:'Processi di Compliance'"), 'canonical Processi di Compliance label drift');
 
 const printableDoc = {
   subject: { type: 'catalog', id: 'long-token', label: 'X'.repeat(240) },
@@ -58,7 +60,7 @@ for (const pattern of forbidden) {
 console.log(JSON.stringify({
   ok: true,
   check: 'ux-language-polish',
-  surfaces: ['posture', 'epistemic', 'evidence-download'],
-  hardening: ['revision-bound-proof-refresh', '44px-control-grammar', 'escape-disclosure', 'long-token-print-wrap'],
+  surfaces: ['posture', 'epistemic', 'evidence-download', 'compliance-processes'],
+  hardening: ['revision-bound-proof-refresh', '44px-control-grammar', 'escape-disclosure', 'long-token-print-wrap', 'proof-method-disclosure', 'canonical-process-language'],
   boundary: 'lexical/structural and bounded renderer audit; not a human visual review or legal assessment'
 }));
