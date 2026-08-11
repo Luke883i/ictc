@@ -28,7 +28,7 @@ Ogni processo può creare un record iniziale compatibile in un altro processo tr
 
 L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia → Limite**: prima dice in quale Processo di Compliance sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
 
-Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio.
+Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio. All'interno di ciascun Processo di Compliance lo stesso subject non viene contato due volte nel totale di attenzione soltanto perché appartiene anche a una sottocategoria, per esempio `ready-for-review` o `review-due`.
 
 **Postura ICTC** risponde, in quest'ordine, a quattro domande: cosa è osservabile, come ICTC lo dimostra, quale evidenza manca e cosa ICTC non conclude. Il metodo di prova è esplicito: **pratica → evidenza → limite**. Decisioni, runtime, requisiti esterni di deployment, standard dichiarati, riferimenti ed export sono livelli successivi.
 
@@ -79,14 +79,73 @@ Il receipt di tracciabilità (`lineage` nel formato tecnico) riporta, quando dis
 
 ## Avvio locale
 
-Richiede Node.js 22 o successivo.
+Richiede Node.js 22 o successivo. Installa una volta le dipendenze:
 
 ```bash
 npm ci
+```
+
+### Modalità standard
+
+Avvia ICTC sul runtime locale canonico `.ictc/runtime`:
+
+```bash
+./ictc.sh start
+```
+
+Per non aprire automaticamente il browser:
+
+```bash
 ./ictc.sh start --no-open
 ```
 
-Il server ascolta normalmente su `127.0.0.1:4173`. Un bind di rete richiede le condizioni di sicurezza previste dal runtime; TLS e protezione del deployment restano responsabilità dell'operatore.
+Questa modalità **non inserisce dati demo**. È la modalità da usare per uno stato operativo reale o per una runtime vuota che vuoi popolare manualmente.
+
+### Modalità demo PMI
+
+Avvia ICTC con il dataset sintetico **Officine Aurora S.r.l. · DEMO**:
+
+```bash
+./ictc.sh demo
+```
+
+Oppure senza apertura automatica del browser:
+
+```bash
+./ictc.sh demo --no-open
+```
+
+La modalità demo usa di default `.ictc/demo-runtime-v2` e gli stessi owner, normalizzatori, SQLite store e projection del prodotto standard. Non esiste un database demo parallelo. Il seed v2 crea 700 record primari — 100 per ciascuno dei sette Processi di Compliance — più record sintetici di contesto per uso organizzativo degli standard e scope dei requisiti.
+
+In demo:
+
+- ogni business record è marcato `synthetic-demo`;
+- le decisioni umane sono attribuite a persone DEMO;
+- lo scheduler operativo è disabilitato, quindi i monitoraggi sintetici storici non avviano attività autonome;
+- il banner persistente dichiara sempre che dati e risultati sono sintetici;
+- admin e auditor ricevono nel bootstrap la projection read-only `demoAudit`, che verifica coerenza locale/intermedia/globale del dataset e dei contatori;
+- `demoAudit.verdict = coherent` significa soltanto che gli invarianti dichiarati del dataset sintetico risultano coerenti. Non significa conformità, applicabilità legale, efficacia dei controlli, certificazione o assurance indipendente.
+
+Sono mantenute anche due forme compatibili dello stesso avvio:
+
+```bash
+./ictc.sh start --demo-seed
+./ictc.sh start -demoseed
+```
+
+Non usare `ICTC_RUNTIME_DIR` per puntare il seed demo a una runtime reale esistente: il seed rifiuta uno stato business non-demo, ma la separazione delle directory resta una responsabilità operativa importante.
+
+### Operazioni sul launcher
+
+```bash
+./ictc.sh status
+./ictc.sh logs
+./ictc.sh doctor
+./ictc.sh stop
+./ictc.sh restart
+```
+
+`ICTC_PORT`, `ICTC_HOST`, `ICTC_STATE_DIR` e `ICTC_RUNTIME_DIR` possono essere usati come override espliciti. Il server ascolta normalmente su `127.0.0.1:4173`. Un bind di rete richiede le condizioni di sicurezza previste dal runtime; TLS e protezione del deployment restano responsabilità dell'operatore.
 
 ## Verifica
 
@@ -102,6 +161,8 @@ Per diagnosi mirata:
 ```bash
 npm run test:current:semantic
 npm run test:current:runtime
+node v3/demo-outcome-audit-check.mjs
+node v3/demo-outcome-saturation.mjs
 node v3/authority-contract-check.mjs
 node v3/docs-command-contract-check.mjs
 node v3/onto-compliance-horizon-check.mjs
@@ -111,6 +172,8 @@ node v3/visual-grace-lexical-epistemic-saturation.mjs
 ```
 
 I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
+
+Il profilo demo-outcome esegue 10.000 scenari con seed pseudocasuale univoco e riproducibile attraverso classi di stress dichiarate, più 10.000 mutazioni negative. La convergenza e l'holdout dimostrano soltanto che, nel vocabolario e negli operatori testati, non emerge una nuova classe normalizzata: non sono una prova di rappresentatività universale delle PMI italiane o di correttezza sostanziale dei singoli giudizi di compliance.
 
 Nel profilo Onto-Compliance storico, `M+100` significa nessuna nuova signature misurata nel holdout dichiarato e `G+100` nessuna ulteriore compressione sicura nello spazio di operatori dichiarato. Nel profilo Visual Grace / Lexical / Epistemic, ciascuna famiglia usa discovery pseudocasuale riproducibile e un holdout distinto **M+10000** senza nuova classe di anomalia normalizzata né violazione del target corrente. Questi stop non sono teoremi di correttezza, minimalità, gradevolezza universale o conformità.
 
