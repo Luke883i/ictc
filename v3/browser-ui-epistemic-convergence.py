@@ -120,12 +120,12 @@ try:
 
         PHASE='graph-activation-reset'
         page.evaluate("""id=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(g=>g.dataset.epistemicNode===id)?.querySelector('.epistemic-graph-node')?.dispatchEvent(new MouseEvent('click',{bubbles:true}))""",drag_id)
-        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",drag_id)
+        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",arg=drag_id)
         graph_ready(page)
         keyboard_id=page.evaluate("""selected=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].map(g=>g.dataset.epistemicNode).find(id=>id!==selected)||selected""",drag_id)
         page.evaluate("""id=>[...document.querySelectorAll('.epistemic-graph-canvas g[data-epistemic-node]')].find(g=>g.dataset.epistemicNode===id)?.focus()""",keyboard_id)
         page.keyboard.press('Enter')
-        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",keyboard_id)
+        page.wait_for_function("id=>[...document.querySelectorAll('.epistemic-node-list button')].some(b=>b.dataset.epistemicNode===id&&b.getAttribute('aria-pressed')==='true')",arg=keyboard_id)
         graph_ready(page)
         capture['on']=True
         page.locator('[data-graph-zoom="in"]').click(); expect(page.locator('[data-graph-zoom-label]')).to_have_text('110%')
