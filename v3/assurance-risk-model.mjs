@@ -24,30 +24,49 @@ export const ASSURANCE_RISK_CODES = Object.freeze({
   EXACT_HEAD_GAP: 'exact-head-gap',
   CLAIM_TRUTH_GAP: 'claim-truth-gap',
   MUTATION_SENSITIVITY_GAP: 'mutation-sensitivity-gap',
+  INPUT_CONTRACT_GAP: 'input-contract-gap',
   POST_ACCEPTANCE_DETECTION_GAP: 'post-acceptance-detection-gap',
   DIRECT_PUSH_PATH: 'direct-push-path'
 });
 
 const LARGE_SURFACES = new Set(['large','massive']);
+const BOOLEAN_FIELDS = Object.freeze(['branchProtection','independentReviewer','externalStaticAnalysis','exactHeadEvidence','postMergeEvidence','coveragePreserved','mutationSensitivity','skippedExternalTruthful']);
+const ENUM_FIELDS = Object.freeze({
+  changeSurface: Object.freeze(['small','medium','large','massive']),
+  modelOracleCoupling: Object.freeze(['independent','partial','same-circuit']),
+  suiteChange: Object.freeze(['contraction','flat','expansion']),
+  coverageContract: Object.freeze(['coverage','minimum-count']),
+  deliveryMode: Object.freeze(['pr','direct-push'])
+});
+const ALLOWED_FIELDS = new Set([...BOOLEAN_FIELDS,...Object.keys(ENUM_FIELDS)]);
+const ENUM_FALLBACKS = Object.freeze({ changeSurface:'massive', modelOracleCoupling:'same-circuit', suiteChange:'contraction', coverageContract:'minimum-count', deliveryMode:'direct-push' });
+
+function normalizeScenario(input) {
+  const raw = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
+  const issues = [];
+  if (raw !== input) issues.push('input:plain-object-required');
+  for (const key of Object.keys(raw)) if (!ALLOWED_FIELDS.has(key)) issues.push(`${key}:unknown-field`);
+  const scenario = {};
+  for (const key of BOOLEAN_FIELDS) {
+    if (typeof raw[key] !== 'boolean') {
+      issues.push(`${key}:boolean-required`);
+      scenario[key] = false;
+    } else scenario[key] = raw[key];
+  }
+  for (const [key,domain] of Object.entries(ENUM_FIELDS)) {
+    if (!domain.includes(raw[key])) {
+      issues.push(`${key}:enum-required`);
+      scenario[key] = ENUM_FALLBACKS[key];
+    } else scenario[key] = raw[key];
+  }
+  return { scenario:Object.freeze(scenario), validationIssues:Object.freeze(issues.sort()) };
+}
 
 export function evaluateAssuranceScenario(input) {
-  const scenario = {
-    branchProtection: Boolean(input.branchProtection),
-    independentReviewer: Boolean(input.independentReviewer),
-    externalStaticAnalysis: Boolean(input.externalStaticAnalysis),
-    exactHeadEvidence: Boolean(input.exactHeadEvidence),
-    postMergeEvidence: Boolean(input.postMergeEvidence),
-    changeSurface: input.changeSurface || 'medium',
-    modelOracleCoupling: input.modelOracleCoupling || 'same-circuit',
-    suiteChange: input.suiteChange || 'flat',
-    coverageContract: input.coverageContract || 'coverage',
-    coveragePreserved: input.coveragePreserved !== false,
-    mutationSensitivity: input.mutationSensitivity !== false,
-    skippedExternalTruthful: input.skippedExternalTruthful !== false,
-    deliveryMode: input.deliveryMode || 'pr'
-  };
+  const { scenario, validationIssues } = normalizeScenario(input);
   const risks = new Set();
 
+  if (validationIssues.length) risks.add(ASSURANCE_RISK_CODES.INPUT_CONTRACT_GAP);
   if (!scenario.branchProtection) risks.add(ASSURANCE_RISK_CODES.PREVENTIVE_GOVERNANCE_GAP);
   if (!scenario.independentReviewer) risks.add(ASSURANCE_RISK_CODES.INDEPENDENT_REVIEW_GAP);
   if (scenario.modelOracleCoupling === 'same-circuit' && !scenario.externalStaticAnalysis) risks.add(ASSURANCE_RISK_CODES.CORRELATED_ASSURANCE_GAP);
@@ -61,7 +80,8 @@ export function evaluateAssuranceScenario(input) {
   if (scenario.deliveryMode === 'direct-push') risks.add(ASSURANCE_RISK_CODES.DIRECT_PUSH_PATH);
 
   return Object.freeze({
-    scenario: Object.freeze(scenario),
+    scenario,
+    validationIssues,
     risks: Object.freeze([...risks].sort()),
     containment: Object.freeze({
       preventionExternal: !scenario.branchProtection,
