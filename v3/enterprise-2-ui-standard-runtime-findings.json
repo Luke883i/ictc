@@ -1,9 +1,16 @@
 {
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "baseStandard": "ictc-surface-standard-1",
-  "evidenceSource": "server-backed-browser",
+  "evidenceSource": "server-backed-browser+post-67-hardening-audit",
+  "surfaces": [
+    {"id":"procedure-context","tags":["interactive","disclosures","navigation","procedure-context"]}
+  ],
+  "components": [
+    "procedure-standard-application"
+  ],
   "lexicalRules": [
-    "direct-workspace-rerender-reconciles-terminal-vocabulary"
+    "direct-workspace-rerender-reconciles-terminal-vocabulary",
+    "standard-practice-evidence-limit-complete"
   ],
   "layoutRules": [
     "server-issued-admin-visibility-final",
@@ -11,7 +18,10 @@
     "stable-admin-owner-after-delayed-legacy-pass",
     "intrinsic-zoom-reflow-grid",
     "admin-navigation-target-min-44-terminal",
-    "admin-navigation-row-ownership-and-hit-testing"
+    "admin-navigation-row-ownership-and-hit-testing",
+    "procedure-standard-progressive-disclosure",
+    "procedure-standard-horizontal-first-summary",
+    "admin-viewport-contained-single-scroll-owner"
   ],
   "contradictionPrimitives": [
     "server-admin-action-hidden-by-legacy-layer",
@@ -20,7 +30,10 @@
     "200-percent-text-expansion-overflows-global-nav",
     "source-decision-rerender-reverts-to-legacy-vocabulary",
     "admin-navigation-target-below-control-budget",
-    "admin-navigation-hit-target-occluded-after-section-transition"
+    "admin-navigation-hit-target-occluded-after-section-transition",
+    "procedure-standard-detail-overexposed",
+    "procedure-standard-practice-omitted",
+    "admin-dialog-scroll-owner-implicit"
   ],
   "standardObligations": [
     {
@@ -58,6 +71,18 @@
       "source": "ICTC Surface Standard 1",
       "tags": ["admin", "navigation", "interactive"],
       "witness": ["admin shell owns explicit header/navigation/body grid rows", "elementFromPoint at the next administration tab center resolves to that tab after a stable section transition", "real pointer click changes aria-current while one direct owner panel remains visible"]
+    },
+    {
+      "id": "ICTC-L17",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["procedure-context"],
+      "witness": ["each benchmark application is a native closed details/summary row", "summary keeps benchmark name and short status horizontal when space permits", "expanded detail exposes ICTC practice, mapped method steps, evidence and limit", "seven-procedure browser journey verifies all canonical procedures and 390px reflow"]
+    },
+    {
+      "id": "ICTC-L18",
+      "source": "ICTC Surface Standard 1",
+      "tags": ["admin", "dialogs"],
+      "witness": ["admin dialog is explicitly viewport bounded", "admin shell fills and clips the dialog without becoming a scroll owner", "admin grid is the sole vertical task scroller with stable scrollbar gutter", "server-backed low-viewport browser reaches the final governance action"]
     }
   ],
   "definitionOfDone": [
@@ -67,7 +92,10 @@
     "Topbar, role controls and service navigation intrinsically reflow at 200% text enlargement without reducing text size or hiding content.",
     "A direct source-workspace rerender after a human catalog decision emits the semantic surface-change event and the stable dialog retains canonical terminal vocabulary.",
     "Administration section navigation preserves the declared 44px minimum target on the 390px mobile surface after the full CSS cascade.",
-    "Administration section navigation owns a dedicated layout row and remains pointer-operable across consecutive stable section transitions without force-click or hit-testing bypasses."
+    "Administration section navigation owns a dedicated layout row and remains pointer-operable across consecutive stable section transitions without force-click or hit-testing bypasses.",
+    "Procedure standard applications default closed and reveal practice, method-step mapping, evidence and limitation only on demand across all seven canonical procedures.",
+    "Procedure standard summaries remain horizontal-first when space permits and reflow without horizontal overflow on the 390px procedure context.",
+    "Administration is viewport-contained on a low mobile viewport and the admin grid remains the only vertical task scroll owner with the final active control reachable."
   ],
   "observedFailures": [
     {"class": "authority-layering", "observation": "legacy presentation hid Configura AI after server-issued admin visibility", "resolution": "server actor role is final visibility source", "standard": "ICTC-L11"},
@@ -76,6 +104,9 @@
     {"class": "text-zoom-reflow", "observation": "200% text enlargement produced 29px then 2px horizontal overflow", "resolution": "intrinsic rem grid plus bounded topbar/control sizing", "standard": "ICTC-L14"},
     {"class": "post-decision-terminal-vocabulary", "observation": "after Accetta nel catalogo, refresh was terminal-normalized before renderSourceDialog rebuilt legacy Verificata/Stato umano copy, so stable post-decision DOM lost canonical vocabulary", "resolution": "emit ictc:surface-changed immediately after direct source-dialog reconstruction so terminal layers reconcile the stable DOM", "standard": "ICTC-L15"},
     {"class": "admin-navigation-target-budget", "observation": "at 390px the active administration navigation button measured 137.03125 x 38 CSS px, below the declared 44px control target", "resolution": "terminal Surface Standard enforces min-height: var(--uis-control) on administration navigation buttons and authoritative browser measures the stable mobile target", "standard": "WCAG-2.5.8 / ICTC controlMinPx=44"},
-    {"class": "admin-navigation-hit-testing", "observation": "after the stable Controlli section transition, the subsequent GA-01 Governo AI button was visible and enabled but its click center was repeatedly intercepted by admin header/body descendants", "resolution": "give #adminCenter .admin-shell explicit header/navigation/body rows and keep the body min-height zero so the navigation row remains geometrically owned and pointer-operable", "standard": "ICTC-L16"}
+    {"class": "admin-navigation-hit-testing", "observation": "after the stable Controlli section transition, the subsequent GA-01 Governo AI button was visible and enabled but its click center was repeatedly intercepted by admin header/body descendants", "resolution": "give #adminCenter .admin-shell explicit header/navigation/body rows and keep the body min-height zero so the navigation row remains geometrically owned and pointer-operable", "standard": "ICTC-L16"},
+    {"class": "procedure-standard-progressive-disclosure", "observation": "the post-67 oracle expected two progressive benchmark application rows on RN-01 and found none because all benchmark details were emitted as one unstyled list", "resolution": "each benchmark is a native closed details/summary row with compact summary and bounded detail", "standard": "ICTC-L17"},
+    {"class": "procedure-standard-information-completeness", "observation": "runtime projected benchmark practice/alignment but the user projection omitted practice while exposing lower-level evidence and limit", "resolution": "expanded benchmark detail now exposes the declared ICTC practice before method steps, evidence and limitation", "standard": "ICTC-L17"},
+    {"class": "admin-vertical-containment-hardening", "observation": "the prior browser contract did not prove low-viewport vertical reachability and terminal CSS relied on implicit shell sizing despite a one-scroll-owner requirement", "resolution": "explicit dialog height, shell 100% containment/clip, admin-grid sole scrolling and low-viewport reachability oracle", "standard": "ICTC-L18"}
   ]
 }
