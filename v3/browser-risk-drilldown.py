@@ -42,7 +42,7 @@ try:
 
         PHASE='pre-review-exclusion'
         before=request(ctx,'GET','/api/grc')['risks']
-        assert sum(sum(row) for row in before['heatmap'])==0 or all(r.get('riskId')!=risk_id for r in before.get('reviewed',[])),before
+        assert all(r.get('riskId')!=risk_id for r in before.get('reviewed',[])),before
         assert all(risk_id not in cell.get('riskIds',[]) for row in before.get('heatmapCells',[]) for cell in row)
 
         PHASE='human-review'
@@ -53,16 +53,19 @@ try:
         assert risk_id in cell['riskIds'],cell
         assert any(item.get('riskId')==risk_id for item in after['reviewed'])
 
-        PHASE='ui-open'
+        PHASE='ui-grid'
         open_risks(page)
         cells=page.locator('#grcWorkspace .risk-map .risk-cell')
         expect(cells).to_have_count(25)
-        target=page.locator('#grcWorkspace .risk-map details.risk-cell').filter(has=page.locator(f'a[href="#risk-{risk_id}"]'))
-        expect(target).to_have_count(1)
-        if target.get_attribute('open') is None: target.locator(':scope > summary').click()
+        target=cells.nth(19)
+        assert target.evaluate('(el)=>el.tagName')=='DETAILS','human-rated 4x5 cell must be drillable'
+
+        PHASE='ui-cell-drilldown'
         link=target.locator(f'a[href="#risk-{risk_id}"]')
+        expect(link).to_have_count(1)
+        if target.get_attribute('open') is None: target.locator(':scope > summary').click()
         expect(link).to_be_visible()
-        assert page.locator(f'#risk-{risk_id}').count()==1
+        expect(page.locator(f'#risk-{risk_id}')).to_have_count(1)
 
         PHASE='aggregate-projections'
         dims=page.locator('#grcWorkspace details[data-risk-dimensions]')
