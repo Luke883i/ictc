@@ -11,7 +11,7 @@ const controlMin=Number((primitiveCss.match(/--surface-control-min:(\d+)px/)||[]
 const sourceProfile={
  businessProcedures:registry.length,
  ep01CrossCutting:meta.includes("businessProcess:false")&&meta.includes("code:'EP-01'"),
- attentionObservational:frame.includes('Nessuna attenzione aperta')&&!frame.includes("'In ordine'"),
+ attentionObservational:frame.includes('semanticSignals')&&frame.includes('metric.label')&&!frame.includes("'In ordine'")&&!frame.includes('Nessuna attenzione aperta'),
  homeAttentionObservational:market.includes('procedure senza attenzione aperta')&&!/processi in ordine/i.test(market),
  auditorProcedureBound:frame.includes("state.role==='auditor'?'Consulta registrazioni'")&&frame.includes('openReadSurface(id)')&&!frame.includes("navigateSurface('proof')"),
  traceOwners:(anatomy.includes('anchor.after(box)')?1:0)+(frame.includes('placeTechnicalContext')?1:0),
