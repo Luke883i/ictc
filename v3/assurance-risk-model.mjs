@@ -23,6 +23,7 @@ export const ASSURANCE_RISK_CODES = Object.freeze({
   COVERAGE_REGRESSION: 'coverage-regression',
   EXACT_HEAD_GAP: 'exact-head-gap',
   CLAIM_TRUTH_GAP: 'claim-truth-gap',
+  MUTATION_SENSITIVITY_GAP: 'mutation-sensitivity-gap',
   POST_ACCEPTANCE_DETECTION_GAP: 'post-acceptance-detection-gap',
   DIRECT_PUSH_PATH: 'direct-push-path'
 });
@@ -55,6 +56,7 @@ export function evaluateAssuranceScenario(input) {
   if (!scenario.coveragePreserved) risks.add(ASSURANCE_RISK_CODES.COVERAGE_REGRESSION);
   if (!scenario.exactHeadEvidence) risks.add(ASSURANCE_RISK_CODES.EXACT_HEAD_GAP);
   if (!scenario.skippedExternalTruthful) risks.add(ASSURANCE_RISK_CODES.CLAIM_TRUTH_GAP);
+  if (!scenario.mutationSensitivity) risks.add(ASSURANCE_RISK_CODES.MUTATION_SENSITIVITY_GAP);
   if (!scenario.branchProtection && !scenario.postMergeEvidence) risks.add(ASSURANCE_RISK_CODES.POST_ACCEPTANCE_DETECTION_GAP);
   if (scenario.deliveryMode === 'direct-push') risks.add(ASSURANCE_RISK_CODES.DIRECT_PUSH_PATH);
 

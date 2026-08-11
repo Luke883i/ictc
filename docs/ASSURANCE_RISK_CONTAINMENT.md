@@ -30,6 +30,7 @@ Across the trajectory, the strongest pattern is not monotonic expansion: ICTC is
 6. **Coverage regression.** Contraction is permitted only when each required family remains represented. Deleting checks while losing a required family remains a hard failure.
 7. **Exact-head truth.** Evidence belongs to the commit on which it ran. Old green checks are genealogy, not current closure evidence.
 8. **Skipped external analysis.** Truthful disclosure of a skipped tool is required, but a disclosed skip is still not an executed independent oracle.
+9. **Mutation sensitivity.** A scenario family that cannot distinguish a deliberately weakened assurance rule is not counted as meaningful falsification pressure.
 
 ## Executable model
 
@@ -51,7 +52,7 @@ Across the trajectory, the strongest pattern is not monotonic expansion: ICTC is
 - truthful skipped-tool reporting;
 - PR-vs-direct-push delivery.
 
-Six deliberately wrong mutants test the detector: post-merge evidence substituting prevention, SAST substituting review, exact-head evidence masking correlated assurance, minimum checker count masquerading as coverage, a truthful skip masquerading as executed SAST, and coverage loss being ignored.
+Seven deliberately wrong mutants test the detector: post-merge evidence substituting prevention, SAST substituting review, exact-head evidence masking correlated assurance, minimum checker count masquerading as coverage, a truthful skip masquerading as executed SAST, coverage loss being ignored, and mutation sensitivity being assumed rather than observed.
 
 The generated artifact is `artifacts/assurance-risk-saturation.json`.
 

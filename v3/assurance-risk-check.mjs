@@ -35,7 +35,8 @@ const MUTANTS = {
   exactHeadAsIndependence: s => ({ ...s, modelOracleCoupling:s.exactHeadEvidence ? 'independent' : s.modelOracleCoupling }),
   countAsCoverage: s => ({ ...s, coverageContract:s.coverageContract === 'minimum-count' ? 'coverage' : s.coverageContract }),
   skipAsSast: s => ({ ...s, externalStaticAnalysis:s.externalStaticAnalysis || s.skippedExternalTruthful }),
-  ignoreCoverageLoss: s => ({ ...s, coveragePreserved:true })
+  ignoreCoverageLoss: s => ({ ...s, coveragePreserved:true }),
+  assumeMutationSensitivity: s => ({ ...s, mutationSensitivity:true })
 };
 const signature = result => result.risks.join('|');
 
