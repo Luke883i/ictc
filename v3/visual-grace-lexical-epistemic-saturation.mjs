@@ -52,7 +52,7 @@ const source = Object.freeze({
     codesStable: contracts.procedures.map(x=>x.code).join('|') === 'RN-01|EC-01|AO-01|MC-01|AP-01|RC-01|AR-01',
     epCrossCutting: meta.includes("code:'EP-01'") && meta.includes('businessProcess:false') && meta.includes('crossCutting:true'),
     commonFamilies: anatomy.includes('commonSubstrate?.epistemicFamilies'),
-    claimBoundaryVisible: anatomy.includes('c.claimBoundary'),
+    claimBoundaryVisible: /\b(?:c|current)\.claimBoundary\b/.test(anatomy),
     traceAfterWork: anatomy.includes('anchor.after(box)') && !anatomy.includes('host.prepend(box)'),
     humanEvidenceEverywhere: contracts.procedures.every(x => Array.isArray(x.humanCheckpoints) && x.humanCheckpoints.length && Array.isArray(x.evidence) && x.evidence.length && x.claimBoundary),
     proposedDistinct: epistemic.includes('Letture proposte') && epistemic.includes('loadedStateRevision') && epistemic.includes('requestedRevision') && epistemic.includes('loadSequence'),
