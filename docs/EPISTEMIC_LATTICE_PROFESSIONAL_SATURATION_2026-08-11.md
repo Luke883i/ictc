@@ -11,7 +11,7 @@ The remaining problem is not the existence of the lattice. It is whether differe
 ## Severe demo-auditor findings
 
 1. Existing browser evidence is mode-centric: flat, graph, mobile, RBAC and Human-ON are covered, but professional work classes are not explicitly exercised or screenshot-bound.
-2. The current search haystack privileges atom identity, kind, procedure, family, producer and digest. Rich business context embedded in the recorded payload is not a first-class navigation signal.
+2. The current search grammar privileges atom identity, kind, procedure, family, producer and digest. Rich business context embedded in the recorded payload is not a first-class navigation signal.
 3. The projection does not expose a canonical set of professional lenses or diagnostic quality signals, so every user has to reinvent how to interrogate the same evidence fabric.
 4. The PMI demo seed has realistic lifecycle diversity but relatively weak cross-procedure narrative correlation. It needs recurring business threads that can be followed across monitoring, incidents, objects, coverage, actions, risks and assurance.
 5. A professional lens must remain a read/filter/orientation aid over one projection. It must never become a hidden scoring model, legal classifier, applicability engine, or second truth store.
@@ -37,24 +37,24 @@ Actual RBAC remains only `admin`, `auditor`, `user`. Professional lenses never g
 
 ## Synthetic PMI reality model
 
-The demo seed remains 100 primary records per business procedure (700 total) so previous procedure DoD stays stable. Richness increases through contextual metadata rather than by inventing a second business registry.
+The base procedure seed remains **Officine Aurora v2** with exactly 100 primary records per business procedure (700 total). Richness is added by an idempotent `reality-context v1` pass over those canonical records instead of silently replacing the seed identity or creating a second business registry.
 
-Every primary demo record must carry one of twelve recurring synthetic business threads. Each thread includes a site/department, systems, a synthetic counterparty where relevant, evidence condition, operating pressure and explicit uncertainty. Example threads include privileged supplier access, MES patch deferral, backup restore evidence, M365 sharing, customer security questionnaires, payroll DPA/subprocessors, VPN supplier access, portal logging, travelling notebook, vulnerability exceptions, production segmentation and retention/classification.
+The reality pass creates new semantic versions in the normal Store. Every primary demo record receives one of twelve recurring synthetic business threads. Each thread includes a site/department, systems, a synthetic counterparty where relevant, evidence condition, operating pressure and explicit uncertainty. Threads cover privileged supplier access, MES patch deferral, backup restore evidence, M365 sharing, customer security questionnaires, payroll DPA/subprocessors, maintenance VPN expiry, portal logging, travelling notebook, vulnerability exceptions, production segmentation and retention/classification.
 
-The same thread identifiers recur across different procedures, making the lattice searchable longitudinally while preserving native procedure state and authority. Context is synthetic orientation data; it does not create legal facts.
+The same thread identifiers recur across all seven procedures, making the lattice searchable longitudinally while preserving native procedure state and authority. Context is synthetic orientation data; it does not create legal facts.
 
 ## Directional calibration loop
 
-The term “fine-tuning” in this PR means engineering calibration over synthetic fixtures, not training or modifying model weights.
+The term “fine-tuning” in this PR means engineering calibration over synthetic fixtures, **not training or modifying model weights**.
 
 - Dataset -> product: realistic synthetic threads falsify search, filtering, lineage navigation, pagination, role boundaries and claim boundaries.
-- Product -> dataset: failed navigation or ambiguous aggregates identify missing context, weak diversity or over-regular synthetic patterns, which are corrected in the seed.
+- Product -> dataset: failed navigation or ambiguous aggregates identify missing context, weak diversity or over-regular synthetic patterns, which are corrected in the seed context.
 - Dataset -> dataset: mutation and coverage checks ensure the synthetic corpus contains different uncertainty/evidence/pressure states instead of only happy paths.
 - Product -> product: professional lenses and diagnostics are accepted only if they remain projections over the same atom set/digest and do not alter authority.
 
 ## Screenshot matrix
 
-The browser journey must materialize screenshot evidence for every lens above, plus the orthogonal EP-01 interaction classes:
+The server-backed demo browser journey must materialize screenshot evidence for every lens above, plus the orthogonal EP-01 interaction classes:
 
 - Explore overview;
 - group drilldown;
@@ -62,12 +62,15 @@ The browser journey must materialize screenshot evidence for every lens above, p
 - atom/basis detail;
 - Flat/raw;
 - Proto-graph with accessible node list;
+- synthetic PMI thread search and lineage;
 - AI Human-ON off/on boundary;
+- explicit 231 non-inference boundary;
+- executive no-score boundary;
 - user RBAC denial;
 - auditor read-only access;
 - 390px mobile graph/overflow behavior.
 
-The twelve lens screenshots are the exhaustive evidence set for the declared professional-use taxonomy. They are not a claim that every human purpose outside that taxonomy has been enumerated.
+The twelve lens screenshots are the exhaustive evidence set for the **declared professional-use taxonomy**. They are not a claim that every human purpose outside that taxonomy has been enumerated.
 
 ## Local DoD
 
@@ -82,25 +85,27 @@ The twelve lens screenshots are the exhaustive evidence set for the declared pro
 
 ## Intermediate DoD
 
-- seed v3 still has exactly 700 primary records and all earlier demo outcome invariants;
+- base demo v2 + reality-context v1 still has exactly 700 primary owner records and all earlier demo outcome invariants;
+- reality-context creates append-only semantic versions rather than a competing record store;
 - all twelve business threads occur across all seven procedures;
-- evidence condition includes at least `current`, `partial`, `stale`, `missing` and `external` examples;
+- evidence condition includes `current`, `partial`, `stale`, `missing` and `external` examples;
 - uncertainty includes low/medium/high examples;
 - operating pressure includes routine/urgent/customer-deadline/production-pressure examples;
 - lattice diagnostics report context coverage, proposed-basis coverage and status partitions without becoming a score;
-- every screenshot is generated by a server-backed browser journey from the same runtime.
+- every screenshot is generated by a server-backed demo browser journey from the same runtime.
 
 ## Global DoD
 
 1. 100,000 deterministic professional-use simulations, each with a unique SHA-256 scenario seed.
-2. 100,000 deterministic mutation simulations over the same use space.
-3. All twelve lenses, seven procedures, three RBAC roles, three presentation modes, four exploration levels, representative viewport classes, density classes, pagination states, AI states, uncertainty states and business-thread contexts are exercised.
-4. Target model emits zero declared invariant violations.
-5. Every declared mutation family is killed and dynamic anomaly-signature discovery reaches a stable tail.
-6. Existing 24k+2k lattice saturation remains green; this PR adds a stronger dedicated professional-use envelope rather than weakening it.
-7. Runtime server-backed demo seed, semantic suite and browser journeys are green on exact PR HEAD.
-8. CI has no applicable failures. Conditional/skipped jobs remain reported as skipped.
+2. 100,000 deterministic mutation simulations, each with a unique SHA-256 scenario seed.
+3. A seed-separated 5,000-scenario target holdout emits zero declared invariant violations.
+4. All twelve lenses, seven procedures, three RBAC roles, three presentation modes, four exploration levels, twelve work tasks, representative viewport/density classes, pagination states, AI states, uncertainty states and business-thread contexts are exercised.
+5. Target model emits zero declared invariant violations.
+6. Every declared mutation family is killed and dynamic anomaly-signature discovery reaches a stable tail.
+7. Existing 24k+2k lattice saturation remains green; this PR adds a stronger dedicated professional-use envelope rather than weakening it.
+8. Runtime server-backed demo seed/reality pass, semantic suite and browser journeys are green on exact PR HEAD.
+9. CI has no applicable failures. Conditional/skipped jobs remain reported as skipped.
 
 ## Claim boundary
 
-This is bounded engineering evidence over ICTC’s synthetic PMI model, declared professional-use taxonomy, generated state space and mutation operators. It is not independent assurance and does not prove legal applicability, compliance, control effectiveness, certification, representativeness of every SME, or absence of unknown usability/semantic defects outside the generated space.
+This is bounded engineering evidence over ICTC’s synthetic PMI model, declared professional-use taxonomy, generated state space and mutation operators. It is not independent assurance and does not prove legal applicability, compliance, control effectiveness, certification, representativeness of every SME, universal usability, or absence of unknown semantic defects outside the generated space.
