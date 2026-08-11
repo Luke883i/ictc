@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [active,exp,css,styles,lattice]=await Promise.all([read('./public/ui/active-experience.js'),read('./public/ui/epistemic-experience.js'),read('./public/ui-convergence.css'),read('./public/styles.css'),read('./public/ui/epistemic-lattice.js')]);
+for(const token of ['installEpistemicExperience','installEpistemicLattice,installEpistemicExperience'])assert.ok(active.includes(token),`active experience missing ${token}`);
+for(const token of ['Compressione epistemica','data-atom-ids','box.dataset.stateRevision','box.dataset.projectionDigest','latestProjection','epistemic-envelope','MutationObserver','dataset.epistemicNode','setPointerCapture','data-graph-zoom','data-graph-reset',"setAttribute('r','10')",'epistemic-graph-hit','annotateGraphEdges','moveEdges','graphFrom','suppressClick','stopPropagation','restoreEdges','if(!view||!host)return','AbortController',"g.addEventListener('pointerdown'","g.addEventListener('mousedown'","document.addEventListener(moveType",'dragActive','session.abort()','renderReferenceDetail','epistemicGraphReferenceDetail','data-epistemic-basis','Nodo di riferimento',"new MouseEvent('click'",'Non lo promuove ad atomo'])assert.ok(exp.includes(token),`epistemic experience missing ${token}`);
+assert.equal(exp.includes('if(!view||!host||view.hidden)return'),false,'compression projection must not be dropped while View Transition keeps the destination surface temporarily hidden');
+for(const token of ['--ictc-control-min:44px','.epistemic-envelope-grid','.epistemic-graph-controls','.epistemic-graph-hit','.epistemic-graph-reference-detail','.epistemic-reference-relation','touch-action:none','prefers-reduced-motion'])assert.ok(css.includes(token),`ui convergence css missing ${token}`);
+assert.ok(styles.includes("@import url('./ui-convergence.css');"));
+assert.ok(lattice.includes('projectionSha256')&&lattice.includes('Quadro')&&lattice.includes('Gruppi')&&lattice.includes('Relazioni')&&lattice.includes('Atomo'),'existing lattice authority/drilldown must remain');
+assert.equal(exp.includes("method:'POST'"),false,'presentation compression/graph enhancement must not issue writes');
+console.log('ui-epistemic-convergence-check: ok reversible compression + atom/reference node detail + transition-safe projection + pointer/mouse drag + zero-write presentation');

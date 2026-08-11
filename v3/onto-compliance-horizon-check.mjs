@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
-const [frame,anatomy,market,css,styles,contracts,meta,doc,browser]=await Promise.all([
- read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-anatomy.js'),read('./public/ui/procedure-market-ux.js'),read('./public/onto-compliance-v1.css'),read('./public/styles.css'),read('./procedure-contracts-1-2.json'),read('./runtime/meta-procedure-contracts.mjs'),read('../docs/ONTO_COMPLIANCE_HORIZON_V1.md'),read('./browser-onto-compliance-v1.py')
+const [frame,anatomy,market,css,styles,convergence,contracts,meta,doc,browser]=await Promise.all([
+ read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-anatomy.js'),read('./public/ui/procedure-market-ux.js'),read('./public/onto-compliance-v1.css'),read('./public/styles.css'),read('./public/ui-convergence.css'),read('./procedure-contracts-1-2.json'),read('./runtime/meta-procedure-contracts.mjs'),read('../docs/ONTO_COMPLIANCE_HORIZON_V1.md'),read('./browser-onto-compliance-v1.py')
 ]);
 const registry=JSON.parse(contracts).procedures;
 assert.equal(registry.length,7,'business process registry must remain exactly seven');
@@ -20,7 +20,9 @@ assert.ok(css.includes('.market-scope.in-scope')&&css.includes('background:#eef1
 for(const bp of ['@media(max-width:900px)','@media(max-width:820px)'])assert.ok(css.includes(bp),`responsive horizon missing ${bp}`);
 assert.ok(css.includes('.service-nav')&&css.includes('overflow-x:auto'),'tablet navigation must own overflow locally');
 assert.equal(css.includes('body{overflow-x:hidden}'),false,'document overflow must not be masked at body level');
-assert.ok(styles.trim().split('\n').filter(Boolean).at(-3)?.includes("onto-compliance-v1.css")||styles.includes("@import url('./onto-compliance-v1.css');\n\n[hidden]"),'onto-compliance layer must be final imported experience layer');
+const imports=[...styles.matchAll(/@import\s+url\(['"]?([^)'"\s]+)['"]?\)/g)].map(match=>match[1]);
+assert.deepEqual(imports.slice(-2),['./onto-compliance-v1.css','./ui-convergence.css'],'Onto-Compliance must remain the semantic visual horizon immediately before the final geometry/rhythm convergence resolver');
+assert.doesNotMatch(convergence,/(?:^|[;{])\s*(?:color|background(?:-color)?)\s*:/m,'final UI convergence resolver must not create an independent palette authority');
 for(const token of ['Identity','Action','Work','Evidence / Trace','M+100','G+100','Rice'])assert.ok(doc.includes(token),`design convergence contract missing ${token}`);
 for(const token of ["'work':'#monitoringView > .section-block'","'work':'#incidentsView > .section-block'",'coverage-scope-editors-expanded-by-default','auditor-primary-leaves-process','epistemic-family-convergence','posture-proof-method-count'])assert.ok(browser.includes(token),`runtime visual audit missing ${token}`);
-console.log('onto-compliance-horizon-check: ok (visual hierarchy + canonical process wording + single trace owner + tablet containment)');
+console.log('onto-compliance-horizon-check: ok (visual hierarchy + canonical process wording + Onto horizon followed only by palette-neutral convergence resolver)');

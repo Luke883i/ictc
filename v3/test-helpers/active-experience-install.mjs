@@ -9,6 +9,6 @@ export function assertActiveInstallers(source,names,{label='active experience'}=
     const matches=pipeline.match(new RegExp(`\\b${name}\\b`,'g'))||[];
     assert.equal(matches.length,1,`${label}: ${name} must appear exactly once in INSTALL_ORDER`);
   }
-  assert.match(source,/for \(const install of INSTALL_ORDER\) install\(\);/,`${label} must use one install executor`);
+  assert.match(source,/for\s*\(\s*const\s+install\s+of\s+INSTALL_ORDER\s*\)\s*install\s*\(\s*\)\s*;/,`${label} must use one install executor independent of formatting`);
   return{installers:names.length,pipelineStart:start,pipelineEnd:end};
 }

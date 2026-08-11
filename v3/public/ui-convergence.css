@@ -1,0 +1,35 @@
+/* Final convergence layer: geometry/rhythm only. Semantic state remains owned by native surfaces. */
+:root{--ictc-control-min:44px;--ictc-control-radius:10px;--ictc-control-gap:.625rem;--ictc-panel-gap:1rem;--ictc-readable:68ch}
+:where(.primary,.secondary,.icon-button,.procedure-back,.surface-mode-switch button,.epistemic-level-nav button,.epistemic-envelope,[data-cross-create],[data-cross-submit]){min-height:var(--ictc-control-min);border-radius:var(--ictc-control-radius);line-height:1.2;display:inline-flex;align-items:center;justify-content:center;gap:.45rem}
+:where(input[type="text"],input[type="search"],input[type="url"],input[type="email"],input[type="number"],select,textarea){min-height:var(--ictc-control-min);border-radius:var(--ictc-control-radius);font:inherit}
+:where(.surface-toolbar,.procedure-frame-actions,.procedure-cross-tools,.epistemic-pager,.epistemic-graph-controls){gap:var(--ictc-control-gap)}
+:where(.surface-panel,.epistemic-explore-panel,.cross-create-dialog .dialog-body){border-radius:14px}
+:where(.procedure-purpose,.epistemic-claim-boundary,.epistemic-compression p){max-width:var(--ictc-readable)}
+.epistemic-compression{display:grid;gap:var(--ictc-panel-gap);margin-bottom:var(--ictc-panel-gap)}
+.epistemic-compression>header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.epistemic-compression>header p{margin:.25rem 0 0}
+.epistemic-envelope-layers{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:var(--ictc-panel-gap)}
+.epistemic-envelope-layers>details{grid-column:1/-1}
+.epistemic-envelope-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--ictc-control-gap)}
+.epistemic-envelope-grid.compact{grid-template-columns:repeat(4,minmax(0,1fr))}
+.epistemic-envelope{padding:.7rem .8rem;text-align:left;justify-content:flex-start;flex-wrap:wrap;min-width:0}
+.epistemic-envelope span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 7rem}
+.epistemic-envelope b{font-variant-numeric:tabular-nums}
+.epistemic-envelope small{flex-basis:100%;opacity:.78}
+.epistemic-compression-boundary{margin:0;font-size:.86rem;opacity:.8}
+.epistemic-graph-controls{display:flex;align-items:center;justify-content:flex-end;margin-bottom:.5rem}
+.epistemic-graph-canvas{overflow:auto;overscroll-behavior:contain}
+.epistemic-graph-canvas svg{min-width:720px;transition:transform .12s ease}
+.epistemic-graph-canvas g[data-epistemic-node]{cursor:grab;outline:none;touch-action:none}
+.epistemic-graph-canvas g[data-epistemic-node]:active{cursor:grabbing}
+.epistemic-graph-canvas g[data-epistemic-node]:focus-visible circle.epistemic-graph-node{stroke-width:4}
+.epistemic-graph-hit{fill:transparent;pointer-events:all}
+.epistemic-graph-node{vector-effect:non-scaling-stroke}
+.epistemic-graph-label{pointer-events:none;font-size:10px}
+.epistemic-graph-reference-detail{display:grid;gap:.8rem;margin-top:var(--ictc-panel-gap)}
+.epistemic-graph-reference-detail>header{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.epistemic-reference-relation{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;min-height:44px;padding:.65rem .75rem}
+.epistemic-reference-relation small{overflow-wrap:anywhere;text-align:right}
+@media(max-width:900px){.epistemic-envelope-layers{grid-template-columns:1fr}.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.epistemic-envelope-grid,.epistemic-envelope-grid.compact{grid-template-columns:1fr}.epistemic-compression>header{display:grid}.epistemic-graph-controls{justify-content:flex-start}.epistemic-reference-relation{display:grid}.epistemic-reference-relation small{text-align:left}}
+@media(prefers-reduced-motion:reduce){.epistemic-graph-canvas svg{transition:none}}
