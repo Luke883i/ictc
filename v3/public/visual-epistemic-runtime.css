@@ -3,9 +3,9 @@ html[data-ictc-experience="market-1"] .stable-header-inner{height:46px;gap:.55re
 html[data-ictc-experience="market-1"] .ictc-brand-mark{width:26px;height:26px}
 html[data-ictc-experience="market-1"] .brand b{font-size:.84rem}
 html[data-ictc-experience="market-1"] .brand small{font-size:.58rem;max-width:160px}
-html[data-ictc-experience="market-1"] .service-nav button{min-height:30px;padding:.28rem .5rem;font-size:.72rem}
-html[data-ictc-experience="market-1"] .stable-profile-menu>summary{padding:.3rem .5rem;font-size:.69rem}
-html[data-ictc-experience="market-1"] .top-actions button{min-height:30px;padding:.3rem .55rem;font-size:.7rem}
+html[data-ictc-experience="market-1"] .service-nav button{min-height:44px;padding:.18rem .5rem;font-size:.72rem}
+html[data-ictc-experience="market-1"] .stable-profile-menu>summary{min-height:44px;padding:.18rem .5rem;font-size:.69rem;align-items:center}
+html[data-ictc-experience="market-1"] .top-actions button{min-height:44px;padding:.18rem .55rem;font-size:.7rem}
 
 html[data-ictc-experience="market-1"] .demo-mode-banner{max-width:1240px;margin:0 auto;padding:.48rem clamp(1rem,3vw,2.25rem) .56rem;display:grid;gap:.38rem;border-bottom:1px solid var(--market-shell-line,#dce3ea);color:var(--market-shell-muted,#66758e);background:rgba(248,250,252,.72)}
 html[data-ictc-experience="market-1"] .demo-context-line{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;min-width:0}
@@ -19,6 +19,7 @@ html[data-ictc-experience="market-1"] .home-priority-head>span{font-weight:700;c
 
 /* Proof status is evidence status, never a compliance score. */
 html[data-ictc-experience="market-1"] .proof-view{max-width:1180px;margin:0 auto;padding:clamp(1.2rem,2.8vw,2rem) 0 2rem}
+html[data-ictc-experience="market-1"] .proof-semantic-qualifier{margin:.28rem 0 0;font-size:.78rem;font-weight:750;color:#5b6980}
 html[data-ictc-experience="market-1"] .proof-snapshot{grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}
 html[data-ictc-experience="market-1"] .proof-snapshot article{min-width:0;padding:.85rem}
 html[data-ictc-experience="market-1"] .proof-snapshot b{font-size:1.15rem;line-height:1.2}
@@ -47,7 +48,7 @@ html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item head
 html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item h3{margin:.12rem 0;font-size:1rem;line-height:1.25}
 html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item>p{margin:.12rem 0;font-size:.78rem;line-height:1.45;color:#526077}
 html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer{align-items:center;gap:.38rem}
-html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer button{min-height:34px;padding:.42rem .62rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer button{min-height:44px;padding:.32rem .62rem;font-size:.74rem}
 html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-evidence-action{order:2;color:#506078}
 html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-next-action{order:0;font-weight:800;background:var(--accent,#5b5cf0);color:#fff;border-color:transparent}
 html[data-ictc-experience="market-1"] .risk-map-frame{display:grid;grid-template-columns:auto minmax(0,520px);grid-template-rows:auto auto;gap:.35rem .55rem;align-items:center;width:max-content;max-width:100%}
@@ -61,7 +62,7 @@ html[data-ictc-experience="market-1"] .risk-map-boundary{margin:.15rem 0 0;max-w
 html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner{padding:.72rem .9rem;min-height:0;border-radius:14px;box-shadow:none}
 html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner strong{font-size:.84rem}
 html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner p{font-size:.72rem;margin:.15rem 0 0}
-html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner button{min-height:34px;padding:.42rem .68rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner button{min-height:44px;padding:.32rem .68rem;font-size:.74rem}
 html[data-ictc-experience="market-1"] .demo-scheduler-note{margin:.2rem 0 .7rem;padding:.58rem .72rem;border:1px solid #eadfbf;border-radius:10px;background:#fffaf0;color:#685b3e;font-size:.7rem;line-height:1.4}
 
 /* Epistemic lattice exposes professional meaning before implementation vocabulary. */
