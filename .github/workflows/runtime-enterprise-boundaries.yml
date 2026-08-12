@@ -61,5 +61,7 @@ jobs:
           retention-days: 30
       - name: Existing current semantic suite
         run: npm run test:current:semantic
+      - name: Evidence runtime diagnostic
+        run: node v3/evidence-runtime-diagnostic.mjs
       - name: Existing current runtime suite
         run: npm run test:current:runtime
