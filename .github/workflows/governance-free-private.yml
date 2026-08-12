@@ -8,20 +8,21 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  checks: read
 concurrency:
   group: ictc-governance-free-private-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   governance-free-private:
     runs-on: ubuntu-24.04
-    timeout-minutes: 6
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with: {node-version: '22'}
       - name: Governance contract self-test
         run: node v3/governance-free-private-check.mjs --self-test
-      - name: Validate PR or main-push provenance
+      - name: Validate exact-SHA provenance and required composite gate
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node v3/governance-free-private-check.mjs
