@@ -1,0 +1,90 @@
+/* Screenshot-derived runtime hierarchy and epistemic density guard. */
+html[data-ictc-experience="market-1"] .stable-header-inner{height:46px;gap:.55rem}
+html[data-ictc-experience="market-1"] .ictc-brand-mark{width:26px;height:26px}
+html[data-ictc-experience="market-1"] .brand b{font-size:.84rem}
+html[data-ictc-experience="market-1"] .brand small{font-size:.58rem;max-width:160px}
+html[data-ictc-experience="market-1"] .service-nav button{min-height:44px;padding:.18rem .5rem;font-size:.72rem}
+html[data-ictc-experience="market-1"] .stable-profile-menu>summary{min-height:44px;padding:.18rem .5rem;font-size:.69rem;align-items:center}
+html[data-ictc-experience="market-1"] .top-actions button{min-height:44px;padding:.18rem .55rem;font-size:.7rem}
+
+html[data-ictc-experience="market-1"] .demo-mode-banner{max-width:1240px;margin:0 auto;padding:.48rem clamp(1rem,3vw,2.25rem) .56rem;display:grid;gap:.38rem;border-bottom:1px solid var(--market-shell-line,#dce3ea);color:var(--market-shell-muted,#66758e);background:rgba(248,250,252,.72)}
+html[data-ictc-experience="market-1"] .demo-context-line{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;min-width:0}
+html[data-ictc-experience="market-1"] .demo-context-badge{display:inline-flex;align-items:center;min-height:24px;padding:.2rem .48rem;border-radius:999px;background:#fff3d8;color:#7a4a08;font-size:.68rem;letter-spacing:.06em}
+html[data-ictc-experience="market-1"] .demo-context-label{font-size:.68rem;font-weight:760;color:var(--market-shell-text,#151b2c)}
+html[data-ictc-experience="market-1"] .demo-context-chip{display:inline-flex;align-items:center;min-height:24px;max-width:100%;padding:.2rem .48rem;border:1px solid var(--market-shell-line,#dce3ea);border-radius:999px;background:#fff;font-size:.65rem;line-height:1.2;white-space:normal}
+html[data-ictc-experience="market-1"] .demo-context-boundary{margin:0;font-size:.64rem;line-height:1.35;color:#68768b}
+
+html[data-ictc-experience="market-1"] .home-intro h1{font-size:clamp(1.85rem,3.25vw,2.7rem);line-height:1.02;letter-spacing:-.045em}
+html[data-ictc-experience="market-1"] .home-priority-head>span{font-weight:700;color:#58677e}
+
+/* Proof status is evidence status, never a compliance score. */
+html[data-ictc-experience="market-1"] .proof-view{max-width:1180px;margin:0 auto;padding:clamp(1.2rem,2.8vw,2rem) 0 2rem}
+html[data-ictc-experience="market-1"] .proof-semantic-qualifier{margin:.28rem 0 0;font-size:.78rem;font-weight:750;color:#5b6980}
+html[data-ictc-experience="market-1"] .proof-snapshot{grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}
+html[data-ictc-experience="market-1"] .proof-snapshot article{min-width:0;padding:.85rem}
+html[data-ictc-experience="market-1"] .proof-snapshot b{font-size:1.15rem;line-height:1.2}
+html[data-ictc-experience="market-1"] .proof-snapshot small{font-size:.68rem;line-height:1.35}
+html[data-ictc-experience="market-1"] .proof-reading-grid{gap:.7rem}
+html[data-ictc-experience="market-1"] .proof-reading-card{min-width:0;padding:1rem}
+html[data-ictc-experience="market-1"] .proof-section>summary{padding:.85rem 1rem}
+html[data-ictc-experience="market-1"] .proof-section:not([open])>summary small{color:#6b778d}
+html[data-ictc-experience="market-1"] .proof-section-body{padding:1rem}
+html[data-ictc-experience="market-1"] .proof-list{display:grid;gap:.55rem}
+html[data-ictc-experience="market-1"] .proof-list li{display:grid;gap:.22rem;padding:.72rem .8rem;border:1px solid #e4e9f0;border-radius:12px;background:#fff}
+html[data-ictc-experience="market-1"] .proof-list li>span,html[data-ictc-experience="market-1"] .proof-list li>small{line-height:1.4}
+html[data-ictc-experience="market-1"] .proof-technical-detail{margin-top:.2rem;border-top:1px dashed #dfe5ec;padding-top:.35rem}
+html[data-ictc-experience="market-1"] .proof-technical-detail>summary{cursor:pointer;font-size:.7rem;font-weight:700;color:#617089}
+html[data-ictc-experience="market-1"] .proof-technical-detail code,html[data-ictc-experience="market-1"] .proof-technical-detail small{display:block;margin-top:.35rem;font-size:.66rem;overflow-wrap:anywhere;color:#6b778d}
+html[data-ictc-experience="market-1"] .evidence-decision-list{display:grid;gap:.55rem}
+html[data-ictc-experience="market-1"] .evidence-decision{display:grid;grid-template-columns:minmax(90px,.28fr) minmax(0,1fr);gap:.8rem;padding:.75rem;border:1px solid #e5eaf0;border-radius:12px}
+html[data-ictc-experience="market-1"] .evidence-decision h3{font-size:.92rem;margin:0 0 .22rem}
+html[data-ictc-experience="market-1"] .evidence-decision p{margin:.15rem 0;font-size:.78rem;line-height:1.4}
+html[data-ictc-experience="market-1"] .evidence-decision small{font-size:.66rem;line-height:1.35;color:#6d788b}
+
+/* GRC metrics state what they mean before users infer arithmetic or assurance. */
+html[data-ictc-experience="market-1"] .epistemic-kpi-note{margin:-.2rem 0 .2rem;padding:.58rem .7rem;border-radius:10px;background:#f7f9fb;color:#5d6b80;font-size:.7rem;line-height:1.4}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item{padding:.82rem;gap:.42rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item header{gap:.12rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item h3{margin:.12rem 0;font-size:1rem;line-height:1.25}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item>p{margin:.12rem 0;font-size:.78rem;line-height:1.45;color:#526077}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer{align-items:center;gap:.38rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer button{min-height:44px;padding:.32rem .62rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-evidence-action{order:2;color:#506078}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-next-action{order:0;font-weight:800;background:var(--accent,#5b5cf0);color:#fff;border-color:transparent}
+html[data-ictc-experience="market-1"] .risk-map-frame{display:grid;grid-template-columns:auto minmax(0,520px);grid-template-rows:auto auto;gap:.35rem .55rem;align-items:center;width:max-content;max-width:100%}
+html[data-ictc-experience="market-1"] .risk-map-frame .risk-map{grid-column:2;grid-row:1;max-width:100%}
+html[data-ictc-experience="market-1"] .risk-axis{font-size:.68rem;font-weight:750;color:#66758e}
+html[data-ictc-experience="market-1"] .risk-axis-y{grid-column:1;grid-row:1;writing-mode:vertical-rl;transform:rotate(180deg)}
+html[data-ictc-experience="market-1"] .risk-axis-x{grid-column:2;grid-row:2;text-align:center}
+html[data-ictc-experience="market-1"] .risk-map-boundary{margin:.15rem 0 0;max-width:72ch;font-size:.7rem;line-height:1.4;color:#657289}
+
+/* AI setup is contextual support, not the primary work signal. */
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner{padding:.72rem .9rem;min-height:0;border-radius:14px;box-shadow:none}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner strong{font-size:.84rem}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner p{font-size:.72rem;margin:.15rem 0 0}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner button{min-height:44px;padding:.32rem .68rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .demo-scheduler-note{margin:.2rem 0 .7rem;padding:.58rem .72rem;border:1px solid #eadfbf;border-radius:10px;background:#fffaf0;color:#685b3e;font-size:.7rem;line-height:1.4}
+
+/* Epistemic lattice exposes professional meaning before implementation vocabulary. */
+html[data-ictc-experience="market-1"] .epistemic-cluster-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.65rem}
+html[data-ictc-experience="market-1"] .epistemic-cluster{min-width:0;overflow:hidden}
+html[data-ictc-experience="market-1"] .epistemic-cluster span,html[data-ictc-experience="market-1"] .epistemic-cluster b,html[data-ictc-experience="market-1"] .epistemic-cluster small{overflow-wrap:anywhere}
+html[data-ictc-experience="market-1"] .epistemic-overview{min-width:0}
+html[data-ictc-experience="market-1"] .epistemic-explore-panel{min-width:0}
+
+@media(max-width:820px){
+  html[data-ictc-experience="market-1"] .demo-mode-banner{padding-inline:1rem}
+  html[data-ictc-experience="market-1"] .demo-context-boundary{max-width:74ch}
+  html[data-ictc-experience="market-1"] .proof-snapshot{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+  html[data-ictc-experience="market-1"] .stable-header-inner{height:44px}
+  html[data-ictc-experience="market-1"] .demo-context-chip{font-size:.62rem}
+  html[data-ictc-experience="market-1"] .demo-context-label{display:none}
+  html[data-ictc-experience="market-1"] .proof-snapshot{grid-template-columns:1fr}
+  html[data-ictc-experience="market-1"] .evidence-decision{grid-template-columns:1fr}
+  html[data-ictc-experience="market-1"] .risk-map-frame{width:100%;grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  html[data-ictc-experience="market-1"] .risk-map-frame .risk-map{grid-column:1;grid-row:2}
+  html[data-ictc-experience="market-1"] .risk-axis-y{grid-column:1;grid-row:1;writing-mode:horizontal-tb;transform:none}
+  html[data-ictc-experience="market-1"] .risk-axis-x{grid-column:1;grid-row:3}
+}

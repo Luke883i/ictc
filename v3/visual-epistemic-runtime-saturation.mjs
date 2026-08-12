@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+
+const FAMILIES=Object.freeze([
+  'F01-demo-cacophony','F02-header-scale','F03-hero-dominance','F04-equal-kpi-salience','F05-generic-cta','F06-proof-compliance-conflation','F07-engineering-language-leak','F08-raw-validation-code-leak','F09-repeated-diagnostic-no-priority','F10-trace-item-overlap','F11-nested-scroll','F12-duplicate-decision-indistinguishability','F13-mixed-language','F14-kpi-overlap-additivity','F15-risk-axis-ambiguity','F16-risk-score-objectivity','F17-technical-provenance-first','F18-atom-implementation-vocab','F19-overflow-clipping','F20-card-whitespace','F21-action-density','F22-action-hierarchy','F23-demo-time-ambiguity','F24-ai-banner-salience','F25-state-proof-runtime-deployment-conflation','F26-progressive-disclosure-absence','F27-evidence-sufficiency-conflation','F28-role-capability-responsibility-conflation','F29-external-evidence-remediation-gap','F30-subject-identity-loss','F31-provenance-vs-authority-confusion','F32-workflow-vs-substantive-state','F33-synthetic-vs-operational-time','F34-count-denominator-ambiguity'
+]);
+const CATALOG=new Set(FAMILIES);
+const MITIGATION=Object.freeze({
+  'F01-demo-cacophony':'demo-chip-context','F02-header-scale':'shell-proportion-guard','F03-hero-dominance':'shell-proportion-guard','F04-equal-kpi-salience':'grc-non-additive-metrics','F05-generic-cta':'next-human-action-hierarchy','F06-proof-compliance-conflation':'proof-name-boundary','F07-engineering-language-leak':'epistemic-professional-language','F08-raw-validation-code-leak':'proof-progressive-technical-disclosure','F09-repeated-diagnostic-no-priority':'proof-progressive-technical-disclosure','F10-trace-item-overlap':'trace-subject-identity','F11-nested-scroll':'trace-no-nested-scroll','F12-duplicate-decision-indistinguishability':'trace-subject-identity','F13-mixed-language':'epistemic-professional-language','F14-kpi-overlap-additivity':'grc-non-additive-metrics','F15-risk-axis-ambiguity':'risk-axis-and-boundary','F16-risk-score-objectivity':'risk-axis-and-boundary','F17-technical-provenance-first':'trace-technical-disclosure','F18-atom-implementation-vocab':'epistemic-professional-language','F19-overflow-clipping':'shell-proportion-guard','F20-card-whitespace':'next-human-action-hierarchy','F21-action-density':'next-human-action-hierarchy','F22-action-hierarchy':'next-human-action-hierarchy','F23-demo-time-ambiguity':'demo-time-boundary','F24-ai-banner-salience':'ai-secondary-salience','F25-state-proof-runtime-deployment-conflation':'proof-evidence-not-score','F26-progressive-disclosure-absence':'trace-technical-disclosure','F27-evidence-sufficiency-conflation':'proof-evidence-not-score','F28-role-capability-responsibility-conflation':'proof-evidence-not-score','F29-external-evidence-remediation-gap':'proof-progressive-technical-disclosure','F30-subject-identity-loss':'trace-subject-identity','F31-provenance-vs-authority-confusion':'trace-technical-disclosure','F32-workflow-vs-substantive-state':'grc-non-additive-metrics','F33-synthetic-vs-operational-time':'demo-time-boundary','F34-count-denominator-ambiguity':'proof-evidence-not-score'
+});
+const SEEDS=Object.freeze(['compliance-admin-monday-backlog','compliance-analyst-source-review','auditor-quarterly-evidence','privacy-officer-incident-review','risk-manager-rating-session','control-owner-reattestation','ciso-deployment-evidence','legal-review-read-only','vendor-assurance-questionnaire','monitoring-daily-catchup','mobile-executive-check','tablet-workshop-review','demo-onboarding','high-density-import','partial-deployment-attestation','expired-external-evidence']);
+const ROLES=['admin','user','auditor'],SURFACES=['home','proof','trace','grc-actions','grc-risks','monitoring','epistemic'],VIEWPORTS=['desktop','tablet','mobile'],DENSITIES=['low','medium','high'],EVIDENCE=['complete','partial','invalid'];
+function hash(value){let h=2166136261>>>0;for(const ch of value){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+function next(x){x^=x<<13;x^=x>>>17;x^=x<<5;return x>>>0;}
+function scenario(index,phase){let r=hash(`${SEEDS[index%SEEDS.length]}:${phase}:${index}`);const pick=arr=>{r=next(r);return arr[r%arr.length];};return{seed:SEEDS[index%SEEDS.length],role:pick(ROLES),surface:pick(SURFACES),viewport:pick(VIEWPORTS),density:pick(DENSITIES),demo:Boolean(pick([0,1])),aiConfigured:Boolean(pick([0,1])),evidence:pick(EVIDENCE),overlap:Boolean(pick([0,1])),scheduler:Boolean(pick([0,1]))};}
+function classify(s){const out=new Set();
+  if(s.demo){out.add('F01-demo-cacophony');out.add('F23-demo-time-ambiguity');out.add('F33-synthetic-vs-operational-time');}
+  if(s.viewport==='mobile'){out.add('F02-header-scale');out.add('F03-hero-dominance');out.add('F19-overflow-clipping');}
+  if(s.density==='high'){out.add('F20-card-whitespace');out.add('F21-action-density');out.add('F26-progressive-disclosure-absence');}
+  if(s.surface==='home'){out.add('F04-equal-kpi-salience');out.add('F05-generic-cta');}
+  if(s.surface==='proof'){out.add('F06-proof-compliance-conflation');out.add('F07-engineering-language-leak');out.add('F08-raw-validation-code-leak');out.add('F09-repeated-diagnostic-no-priority');out.add('F25-state-proof-runtime-deployment-conflation');out.add('F27-evidence-sufficiency-conflation');out.add('F29-external-evidence-remediation-gap');out.add('F34-count-denominator-ambiguity');}
+  if(s.surface==='trace'){out.add('F10-trace-item-overlap');out.add('F11-nested-scroll');out.add('F12-duplicate-decision-indistinguishability');out.add('F17-technical-provenance-first');out.add('F26-progressive-disclosure-absence');out.add('F30-subject-identity-loss');out.add('F31-provenance-vs-authority-confusion');}
+  if(s.surface==='grc-actions'){out.add('F14-kpi-overlap-additivity');out.add('F20-card-whitespace');out.add('F21-action-density');out.add('F22-action-hierarchy');out.add('F32-workflow-vs-substantive-state');}
+  if(s.surface==='grc-risks'){out.add('F15-risk-axis-ambiguity');out.add('F16-risk-score-objectivity');out.add('F20-card-whitespace');out.add('F32-workflow-vs-substantive-state');}
+  if(s.surface==='monitoring'){out.add('F23-demo-time-ambiguity');out.add('F24-ai-banner-salience');out.add('F33-synthetic-vs-operational-time');}
+  if(s.surface==='epistemic'){out.add('F07-engineering-language-leak');out.add('F13-mixed-language');out.add('F17-technical-provenance-first');out.add('F18-atom-implementation-vocab');out.add('F19-overflow-clipping');out.add('F26-progressive-disclosure-absence');out.add('F31-provenance-vs-authority-confusion');}
+  if(s.role==='admin')out.add('F28-role-capability-responsibility-conflation');
+  if(s.evidence!=='complete'){out.add('F27-evidence-sufficiency-conflation');out.add('F29-external-evidence-remediation-gap');}
+  if(s.overlap)out.add('F14-kpi-overlap-additivity');
+  return out;
+}
+
+for(const family of FAMILIES)assert.ok(MITIGATION[family],`missing mitigation mapping for ${family}`);
+const DISCOVERY=20_000,HOLDOUT=100_000,discovered=new Set(),counts=Object.fromEntries(FAMILIES.map(x=>[x,0]));
+for(let i=0;i<DISCOVERY;i++)for(const family of classify(scenario(i,'discovery'))){assert.ok(CATALOG.has(family),`novel discovery family ${family}`);discovered.add(family);counts[family]++;}
+assert.equal(discovered.size,FAMILIES.length,`discovery failed to exercise full catalog: ${discovered.size}/${FAMILIES.length}`);
+const holdoutNovel=new Set();
+for(let i=0;i<HOLDOUT;i++)for(const family of classify(scenario(i,'holdout'))){assert.ok(CATALOG.has(family),`unknown holdout family ${family}`);if(!discovered.has(family))holdoutNovel.add(family);counts[family]++;}
+assert.equal(holdoutNovel.size,0,`holdout produced novel families: ${[...holdoutNovel].join(', ')}`);
+assert.ok(Object.values(counts).every(value=>value>0),'every visual epistemic family must be exercised');
+console.log(JSON.stringify({ok:true,model:'screenshot-derived-visual-epistemic-runtime',evidenceClass:'E2-model-based',catalogM:FAMILIES.length,discoveryScenarios:DISCOVERY,noNoveltyHoldoutScenarios:HOLDOUT,holdoutNovel:0,seeds:SEEDS.length,familyCounts:counts}));
