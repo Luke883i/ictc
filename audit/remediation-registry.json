@@ -1,0 +1,23 @@
+{
+  "schemaVersion":"1.0.0",
+  "authority":"HERA-CIA remediation registry",
+  "claimBoundary":"A repository change may close E1-E2 findings. E3-E5 findings remain blocked until independent/deployment evidence is attached and validated; scenario counts never substitute for independence.",
+  "findings":[
+    {"id":"F-01","severity":"critical","gate":"branch-protection","requiredGrade":"E3","status":"blocked-external","rootControl":"server-side protected delivery plus independent review"},
+    {"id":"F-02","severity":"critical","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"encrypted backup plus clean-host restore drill and approved RTO/RPO"},
+    {"id":"F-03","severity":"high","gate":"repository","requiredGrade":"E2","status":"in-remediation","rootControl":"Windows/Linux Node 22/24 runtime matrix plus portable path/resource lifecycle"},
+    {"id":"F-04","severity":"high","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"SLO/capacity/soak evidence; repository HTTP budgets are necessary but insufficient"},
+    {"id":"F-05","severity":"high","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"encrypted storage/backup and trusted identity boundary; local mode is development-only"},
+    {"id":"F-06","severity":"high","gate":"repository","requiredGrade":"E2","status":"in-remediation","rootControl":"immutable Action pins plus generated SBOM/provenance/signature pipeline"},
+    {"id":"F-07","severity":"high","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"metrics/traces/logs, alert drill and error budget evidence"},
+    {"id":"F-08","severity":"high","gate":"repository","requiredGrade":"E2","status":"in-remediation","rootControl":"operational docs are executable consumers of SQLite authority"},
+    {"id":"F-09","severity":"high","gate":"repository","requiredGrade":"E2","status":"in-remediation","rootControl":"explicit HTTP timeout and abuse-budget contract with hostile tests"},
+    {"id":"F-10","severity":"high","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"scanner/quarantine integration with replay-safe attestation"},
+    {"id":"F-11","severity":"medium","gate":"repository","requiredGrade":"E2","status":"in-remediation","rootControl":"readiness fixtures use deployment evidence envelopes; synthetic truth cannot project enterprise-ready"},
+    {"id":"F-12","severity":"medium","gate":"deployment-evidence","requiredGrade":"E4","status":"blocked-external","rootControl":"data inventory, retention/deletion/legal-hold executable policy"},
+    {"id":"F-13","severity":"medium","gate":"repository","requiredGrade":"E2","status":"open","rootControl":"versioned error and pagination/capacity API contract"},
+    {"id":"F-14","severity":"medium","gate":"independent-review","requiredGrade":"E3","status":"blocked-external","rootControl":"architecture budget plus reviewer/oracle independence"},
+    {"id":"F-15","severity":"medium","gate":"repository","requiredGrade":"E2","status":"open","rootControl":"atomic AI budget reservation plus versioned eval/drift rollback gate"},
+    {"id":"F-16","severity":"medium","gate":"human-at","requiredGrade":"E3","status":"blocked-external","rootControl":"independent human assistive-technology/usability evidence"}
+  ]
+}
