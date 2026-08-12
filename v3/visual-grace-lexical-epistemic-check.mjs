@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
-const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,meta,epistemic,controller,stableShell] = await Promise.all([
+const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,meta,epistemic,controller,stableShell,visualRuntime] = await Promise.all([
   read('../docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md'),
   read('./public/index.html'),
   read('./public/ui/product-copy.js'),
@@ -16,7 +16,8 @@ const [doc,index,copy,frame,router,primitives,proof,css,anatomy,contractsRaw,met
   read('./runtime/meta-procedure-contracts.mjs'),
   read('./public/ui/epistemic-lattice.js'),
   read('./public/ui/controller.js'),
-  read('./public/ui/stable-shell.js')
+  read('./public/ui/stable-shell.js'),
+  read('./public/ui/visual-epistemic-runtime.js')
 ]);
 
 const contracts = JSON.parse(contractsRaw);
@@ -39,7 +40,8 @@ assert.ok(router.includes('SURFACE_LABELS.processes') && router.includes('Torna 
 assert.ok(primitives.includes('>Processi</button>') && primitives.includes('surface-information-detail') && primitives.includes('ictc-manifest-detail'), 'context/information strip must use compact final-view grammar');
 assert.equal(primitives.includes('>Processi di Compliance</button>'), false, 'context strip must not repeat the full Processi di Compliance title beside the local heading');
 
-for (const token of ['Come ICTC dimostra la propria postura','proofEvidenceKinds','proofBenchmarkMappings','Pratica ICTC.','Evidenza.','<b>Limite.</b>','data.proof?.evidenceKinds','data.proof?.rule','data.benchmarkFamilies']) assert.ok(proof.includes(token), `Postura proof method missing ${token}`);
+for (const token of ['Come leggere le prove ICTC','proofEvidenceKinds','proofBenchmarkMappings','Pratica ICTC.','Evidenza.','<b>Limite.</b>','data.proof?.evidenceKinds','data.proof?.rule','data.benchmarkFamilies']) assert.ok(proof.includes(token), `Postura proof method missing ${token}`);
+assert.ok(visualRuntime.includes('Prove e limiti del funzionamento ICTC') && visualRuntime.includes('non è un giudizio di conformità dell’organizzazione'), 'stable Postura route must carry an evidence-first semantic qualifier');
 assert.equal(proof.includes('Procedure con decisioni'), false, 'Postura must not expose retired Procedure naming');
 assert.equal(proof.includes('7 procedure operative'), false, 'Postura must use Processi di Compliance');
 
@@ -59,4 +61,4 @@ for (const item of contracts.procedures) {
   assert.ok(Array.isArray(item.evidence) && item.evidence.length, `${item.code} missing evidence model`);
 }
 
-console.log('visual-grace-lexical-epistemic-check: ok (canonical seven processes / compact frame language / proof method / visual restraint / epistemic boundaries)');
+console.log('visual-grace-lexical-epistemic-check: ok (canonical seven processes / compact frame language / evidence-first proof method / visual restraint / epistemic boundaries)');
