@@ -2,9 +2,10 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export async function runtimeHarness(prefix='ictc-test') {
-  const root=path.resolve(new URL('..',import.meta.url).pathname);
+  const root=path.resolve(fileURLToPath(new URL('..',import.meta.url)));
   const dir=await mkdtemp(path.join(os.tmpdir(),`${prefix}-`));
   const apiPort=5400+(process.pid%200), aiPort=5700+(process.pid%200);
   const base=`http://127.0.0.1:${apiPort}`; let server,mock,revision=0,seq=0;
