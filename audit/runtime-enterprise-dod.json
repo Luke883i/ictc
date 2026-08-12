@@ -1,0 +1,29 @@
+{
+  "schemaVersion":"1.0.0",
+  "authority":"runtime enterprise boundary DoD",
+  "claimBoundary":"Local DoD is E2 repository engineering evidence. External scanner efficacy, KMS/HSM custody, approved RTO/RPO, branch protection and independent review remain external gates.",
+  "localDoD":[
+    {"id":"tenant-isolation","status":"verified-by-candidate-tests","definition":"trusted membership routing plus physically distinct SQLite roots; scheduler and mission locks tenant-scoped"},
+    {"id":"attachment-quarantine","status":"verified-by-candidate-tests","definition":"new bytes land in quarantine, unsafe bytes are not downloadable, authenticated scanner verdict gates promotion"},
+    {"id":"recovery","status":"verified-by-candidate-tests","definition":"consistent SQLite backup, AES-256-GCM objects, authenticated manifest, clean-target restore and integrity verification"},
+    {"id":"privacy-lifecycle","status":"verified-by-candidate-tests","definition":"inventory, retention policy, legal hold and erasure tombstone preserving digest lineage"},
+    {"id":"observability","status":"verified-by-candidate-tests","definition":"request correlation, structured redacted logs and bounded process metrics"},
+    {"id":"http-abuse","status":"verified-by-candidate-tests","definition":"explicit HTTP timeouts plus bounded per-process token bucket"},
+    {"id":"ai-budget","status":"verified-by-candidate-tests","definition":"transactional reservation/settle/release prevents concurrent budget oversubscription in the current SQLite authority"},
+    {"id":"portability","status":"verified-by-candidate-tests","definition":"enterprise boundary runtime check executes on supported Ubuntu/Windows matrix"}
+  ],
+  "globalDoD":[
+    {"id":"existing-current-suite","required":true,"definition":"existing semantic and runtime release suites remain green"},
+    {"id":"hostile-saturation","required":true,"definition":"1,000,000 seeded boundary scenarios with zero false allows/denials"},
+    {"id":"exact-head-ci","required":true,"definition":"every workflow triggered for the final PR head is terminal success; skipped is not success"},
+    {"id":"no-false-enterprise-closure","required":true,"definition":"E3-E5 findings remain blocked until independent/deployment evidence exists"}
+  ],
+  "externalResiduals":[
+    {"id":"branch-protection","status":"blocked-external"},
+    {"id":"independent-review","status":"blocked-external"},
+    {"id":"production-scanner-efficacy","status":"blocked-external"},
+    {"id":"kms-hsm-key-custody","status":"blocked-external"},
+    {"id":"approved-rto-rpo-drill","status":"blocked-external"},
+    {"id":"external-observability-alert-drill","status":"blocked-external"}
+  ]
+}
