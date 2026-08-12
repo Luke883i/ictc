@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 18
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: Syntax
@@ -26,7 +26,7 @@ jobs:
         run: node v3/convergent-kernel-saturation.mjs
       - name: Existing 1.2 process fidelity
         run: node v3/standard-library-check.mjs && node v3/monitoring-access-check.mjs && node v3/incident-contract-check.mjs && node v3/object-identity-check.mjs && node v3/procedure-summary-check.mjs && node v3/procedure-market-saturation.mjs
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
           name: convergent-kernel-semantic-evidence
@@ -37,10 +37,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 22
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with: {node-version: '22', cache: npm}
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a3d1d17b0727d3a5c003e4131df72b7f70e31c88 # v6
         with: {python-version: '3.12'}
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
@@ -63,7 +63,7 @@ jobs:
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
           name: convergent-kernel-browser-evidence
