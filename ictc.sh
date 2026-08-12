@@ -61,7 +61,9 @@ start(){
     echo $! >"$PID.tmp"
   )
   mv "$PID.tmp" "$PID"
-  for _ in $(seq 1 160); do
+  local attempts="${ICTC_STARTUP_ATTEMPTS:-160}"
+  if [[ "$DEMO_SEED" = 1 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
+  for _ in $(seq 1 "$attempts"); do
     if alive && health; then
       if [[ "$DEMO_SEED" = 1 ]]; then
         echo "ICTC DEMO attivo: $URL · runtime=$RUNTIME"
@@ -73,6 +75,7 @@ start(){
     fi
     sleep .2
   done
+  echo "ICTC non pronto dopo ${attempts} tentativi (demoSeed=${DEMO_SEED})" >&2
   tail -80 "$OUT" >&2 || true
   exit 1
 }
@@ -107,11 +110,12 @@ case "$COMMAND" in
   help)
     echo 'Uso:'
     echo '  ./ictc.sh start [--no-open]                 # modalità standard, .ictc/runtime'
-    echo '  ./ictc.sh demo [--no-open]                  # modalità demo PMI v2, .ictc/demo-runtime-v2'
+    echo '  ./ictc.sh demo [--no-open]                  # modalità demo PMI v2 + reality context, .ictc/demo-runtime-v2'
     echo '  ./ictc.sh start --demo-seed [--no-open]     # equivalente esplicito di demo'
     echo '  ./ictc.sh start -demoseed [--no-open]       # alias compatibile'
     echo '  ./ictc.sh stop | restart | status | logs | doctor | test | audit'
-    echo 'La modalità demo usa gli stessi owner/runtime ICTC, aggiunge dati sintetici e disabilita lo scheduler operativo; non rappresenta esiti reali di compliance.'
+    echo 'La modalità demo usa gli stessi owner/runtime ICTC, materializza dati sintetici e lineage contestuale e disabilita lo scheduler operativo; non rappresenta esiti reali di compliance.'
+    echo 'Il bootstrap demo può richiedere più tempo del runtime standard; ICTC_DEMO_STARTUP_ATTEMPTS consente di modificare il budget di readiness senza cambiare i dati.'
     echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale per il seed demo.'
     ;;
 esac
