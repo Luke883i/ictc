@@ -126,7 +126,7 @@ try:
             ('processes','Processo di Compliance'),
             ('monitoring','applicabilità o completezza'),
             ('incidents','obblighi di notifica'),
-            ('proof','non è certificazione'),
+            ('proof','non sono certificazione'),
             ('epistemic','non crea verità sostanziale')]:
             PHASE=f'top-level-{view}'
             open_view(page,view)
