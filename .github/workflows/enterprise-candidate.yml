@@ -5,8 +5,7 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-permissions:
-  contents: read
+permissions: {contents: read}
 concurrency:
   group: enterprise-candidate-${{ github.ref }}
   cancel-in-progress: true
@@ -26,6 +25,7 @@ jobs:
       - run: npm run release:check
       - run: node v3/runtime-enterprise-boundaries-ci.mjs
       - run: node v3/browser-local-write-boundary-check.mjs
+      - run: node v3/privacy-erasure-race-check.mjs
       - run: node v3/tenant-identity-coherence-check.mjs
       - run: node v3/attachment-scanner-tenant-check.mjs
       - run: node v3/csv-export-security-check.mjs
