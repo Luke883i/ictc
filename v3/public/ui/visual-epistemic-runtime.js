@@ -87,6 +87,7 @@ function normalizeMonitoring(){
 function normalizeProofSemantics(){
   const title=$('#proofTitle');
   if(!title)return;
+  title.textContent='Postura ICTC';
   let qualifier=title.parentElement?.querySelector('.proof-semantic-qualifier');
   if(!qualifier){qualifier=document.createElement('p');qualifier.className='proof-semantic-qualifier';title.after(qualifier);}
   qualifier.textContent='Prove e limiti del funzionamento ICTC';

@@ -5,7 +5,7 @@ const [shell,copy,proof,trace,traceCss,runtime,runtimeCss,active,styles]=await P
 const checks=[];const ok=(id,test,msg)=>{try{assert.ok(test,msg||id);checks.push(id);}catch(e){console.error(`::error title=visual-epistemic-runtime:${id}::${e.message}`);throw e;}};
 ok('demo-chip-context',/demo-context-badge/.test(shell)&&/demo-context-chip/.test(shell)&&/Nessun dato, contatore o esito demo rappresenta una conclusione reale/.test(shell));
 ok('shell-proportion-guard',/stable-header-inner\{height:46px/.test(runtimeCss)&&/home-intro h1\{font-size:clamp\(1\.85rem,3\.25vw,2\.7rem\)/.test(runtimeCss));
-ok('proof-route-stable-content-bounded',/proof:'Postura ICTC'/.test(copy)&&/proofTitle:'Prove e limiti ICTC'/.test(copy)&&/Prove e limiti del funzionamento ICTC/.test(runtime)&&/non è un giudizio di conformità dell’organizzazione/.test(runtime));
+ok('proof-route-stable-content-bounded',/proof:'Postura ICTC'/.test(copy)&&/proofTitle:'Prove e limiti ICTC'/.test(copy)&&/title\.textContent='Postura ICTC'/.test(runtime)&&/Prove e limiti del funzionamento ICTC/.test(runtime)&&/non è un giudizio di conformità dell’organizzazione/.test(runtime));
 ok('proof-evidence-not-score',/Controlli con evidenza/.test(proof)&&/non è un punteggio di conformità o sicurezza/.test(proof)&&/Catena integra · r/.test(proof)&&! /Coerente · r/.test(proof));
 ok('proof-progressive-disclosure',/proof-technical-detail/.test(proof)&&/Attestazione assente, incompleta o non valida/.test(proof)&&!/<details class="proof-section" open><summary><span><b>Decisioni e tracciabilità/.test(proof));
 ok('trace-no-nested-scroll',/trace-list\{[^}]*max-height:none;overflow:visible/.test(traceCss)&&!/max-height:68vh/.test(traceCss));
