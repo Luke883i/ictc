@@ -1,0 +1,16 @@
+{
+  "schemaVersion":"1.0.0",
+  "authority":"security-enterprise-hardening-dod",
+  "baseline":{"main":"c8e7806b8ed32e869c688ed8802fa5148288ce2a","profile":"post-pr73-runtime-enterprise-boundaries"},
+  "claimBoundary":"These DoD items establish repository E2 engineering evidence only. External E3/E4 assurance gates remain external and cannot be closed by scenario count.",
+  "items":[
+    {"id":"SEC-SSRF-01","severity":"high","required":["reserved IPv4/IPv6 and IPv4-mapped IPv6 denied","DNS remains connection-pinned","redirect target revalidated","provider response bytes bounded"]},
+    {"id":"SEC-ATT-01","severity":"critical","required":["served attachment bytes match metadata digest and size","physical namespace must match trust/storage state","recovery never launders quarantine bytes into clean namespace"]},
+    {"id":"SEC-ID-01","severity":"critical","required":["tenant routing identity and authorized actor membership reconcile","custom Shibboleth headers cannot diverge from selected tenant","malformed and encoded-separator route params fail closed"]},
+    {"id":"SEC-SCAN-01","severity":"high","required":["scanner attestation signs tenant id","cross-tenant attestation replay denied","legacy clean trust without tenant binding unusable in multi-tenant mode","attachment metadata tenant and signed trust tenant reconcile in generic evidence resolution","re-attestation migrates legacy attachment tenant metadata"]},
+    {"id":"SEC-CSV-01","severity":"high","required":["spreadsheet formula prefixes neutralized after control/whitespace prefix","ordinary cells preserve value","JSON export semantics unchanged"]},
+    {"id":"SEC-SAT-01","severity":"high","required":["baseline M equals 1000000","holdout equals 10000","total equals 1010000","falseAllows equals 0","falseDenials equals 0","family counts reconcile to total","deterministic trace digest emitted","representative witnesses retained"]},
+    {"id":"SEC-REG-01","severity":"high","required":["existing current semantic suite passes","existing current runtime suite passes","runtime enterprise boundary matrix passes Ubuntu/Windows Node 22/24"]}
+  ],
+  "externalResiduals":["server-side branch protection","independent reviewer/oracle","production malware scanner efficacy","KMS/HSM key custody and rotation","approved off-host RTO/RPO drill","deployment collector/alert/error-budget drill","human assistive-technology evidence"]
+}

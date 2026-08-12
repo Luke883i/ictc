@@ -4,25 +4,40 @@ import { request as httpsRequest } from 'node:https';
 import net from 'node:net';
 import { asString } from './domain.mjs';
 
+const DEFAULT_MAX_RESPONSE_BYTES = 2_000_000;
+
 function forbiddenIpv4(address) {
   const octets = address.split('.').map(Number);
-  const [a, b] = octets;
+  const [a, b, c] = octets;
   return a === 0 || a === 10 || a === 127 ||
     (a === 100 && b >= 64 && b <= 127) ||
     (a === 169 && b === 254) ||
     (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && (b === 0 || b === 168)) ||
+    (a === 192 && b === 0) ||
+    (a === 192 && b === 88 && c === 99) ||
+    (a === 192 && b === 168) ||
     (a === 198 && (b === 18 || b === 19)) ||
+    (a === 198 && b === 51 && c === 100) ||
+    (a === 203 && b === 0 && c === 113) ||
     a >= 224;
 }
 
 function forbiddenIpv6(address) {
   const normalized = address.toLowerCase().split('%')[0];
   if (normalized === '::' || normalized === '::1') return true;
+  if (normalized.startsWith('::ffff:')) return true;
   if (normalized.startsWith('fc') || normalized.startsWith('fd')) return true;
   if (/^fe[89ab]/.test(normalized)) return true;
-  const mapped = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  return mapped ? forbiddenIpv4(mapped[1]) : false;
+  if (normalized.startsWith('ff')) return true;
+  const first = Number.parseInt(normalized.split(':')[0] || '0', 16);
+  if (!Number.isFinite(first) || first < 0x2000 || first > 0x3fff) return true;
+  if (/^2001:(?:0|0000):/i.test(normalized)) return true;
+  if (/^2001:(?:2|0002):/i.test(normalized)) return true;
+  if (/^2001:(?:20|0020):/i.test(normalized)) return true;
+  if (/^2001:db8:/i.test(normalized)) return true;
+  if (/^2002:/i.test(normalized)) return true;
+  if (/^3fff:/i.test(normalized)) return true;
+  return false;
 }
 
 export function isForbiddenAddress(address) {
@@ -74,20 +89,48 @@ function responseHeaders(raw = {}) {
   return headers;
 }
 
-async function pinnedFetch(urlValue, init = {}, target) {
+async function pinnedFetch(urlValue, init = {}, target, transport = {}) {
   const url = new URL(urlValue);
   const requestImpl = url.protocol === 'https:' ? httpsRequest : httpRequest;
+  const maxResponseBytes = Math.max(1_024, Math.min(20_000_000, Number(transport.maxResponseBytes) || DEFAULT_MAX_RESPONSE_BYTES));
   return new Promise((resolve, reject) => {
+    let settled = false;
+    const fail = error => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    };
     const request = requestImpl(url, {
       method: init.method || 'GET',
       headers: init.headers,
       signal: init.signal,
       lookup: pinnedLookup(target)
     }, response => {
+      const declared = Number(response.headers['content-length']);
+      if (Number.isFinite(declared) && declared > maxResponseBytes) {
+        const error = Object.assign(new Error('Risposta del provider AI troppo grande'), { status: 502, code: 'ai-response-too-large', details: { maxResponseBytes, declaredBytes: declared } });
+        response.destroy(error);
+        fail(error);
+        return;
+      }
       const chunks = [];
-      response.on('data', chunk => chunks.push(Buffer.from(chunk)));
-      response.on('error', reject);
+      let received = 0;
+      response.on('data', chunk => {
+        if (settled) return;
+        const buffer = Buffer.from(chunk);
+        received += buffer.length;
+        if (received > maxResponseBytes) {
+          const error = Object.assign(new Error('Risposta del provider AI troppo grande'), { status: 502, code: 'ai-response-too-large', details: { maxResponseBytes, receivedBytes: received } });
+          response.destroy(error);
+          fail(error);
+          return;
+        }
+        chunks.push(buffer);
+      });
+      response.on('error', fail);
       response.on('end', () => {
+        if (settled) return;
+        settled = true;
         const status = Number(response.statusCode || 502);
         resolve(new Response(Buffer.concat(chunks), {
           status,
@@ -96,12 +139,12 @@ async function pinnedFetch(urlValue, init = {}, target) {
         }));
       });
     });
-    request.on('error', reject);
+    request.on('error', fail);
     if (init.body != null) {
       if (typeof init.body === 'string' || Buffer.isBuffer(init.body) || init.body instanceof Uint8Array) request.write(init.body);
       else {
         request.destroy();
-        reject(Object.assign(new Error('Body richiesta AI non supportato dal transport pinning'), { status: 500, code: 'ai-request-body-unsupported' }));
+        fail(Object.assign(new Error('Body richiesta AI non supportato dal transport pinning'), { status: 500, code: 'ai-request-body-unsupported' }));
         return;
       }
     }
@@ -122,12 +165,13 @@ function hasReplayableBody(init = {}) {
 
 export async function fetchAiEndpoint(endpoint, init = {}, options = {}) {
   const fetchImpl = options.fetchImpl || pinnedFetch;
+  const maxResponseBytes = Math.max(1_024, Math.min(20_000_000, Number(options.maxResponseBytes || process.env.ICTC_AI_MAX_RESPONSE_BYTES) || DEFAULT_MAX_RESPONSE_BYTES));
   let current = asString(endpoint, 4_000);
   let currentInit = { ...init };
   for (let redirect = 0; redirect <= 3; redirect += 1) {
     const resolved = await resolveAiEndpoint(current, options);
     const target = resolved.records[0];
-    const response = await fetchImpl(resolved.url.toString(), { ...currentInit, redirect: 'manual' }, target);
+    const response = await fetchImpl(resolved.url.toString(), { ...currentInit, redirect: 'manual' }, target, { maxResponseBytes });
     if (![301, 302, 303, 307, 308].includes(response.status)) return response;
     const location = response.headers.get('location');
     if (!location) throw Object.assign(new Error('Redirect AI senza destinazione'), { status: 502, code: 'ai-redirect-invalid' });

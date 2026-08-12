@@ -27,11 +27,21 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Enterprise boundary DoD contract
         run: node v3/runtime-enterprise-dod-check.mjs
+      - name: Security hardening DoD contract
+        run: node v3/security-enterprise-dod-check.mjs
+      - name: Tenant identity coherence
+        run: node v3/tenant-identity-coherence-check.mjs
+      - name: Tenant-bound scanner trust
+        run: node v3/attachment-scanner-tenant-check.mjs
+      - name: CSV export injection boundary
+        run: node v3/csv-export-security-check.mjs
+      - name: AI network policy boundary
+        run: node v3/ai-network-policy-check.mjs
       - name: Enterprise boundary runtime falsifier
         run: node v3/runtime-enterprise-boundaries-ci.mjs
   hostile-saturation:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -39,9 +49,19 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: One-million tenant security and lifecycle scenarios
+      - name: Existing one-million tenant security and lifecycle scenarios
         run: node v3/runtime-enterprise-boundaries-saturation.mjs
+      - name: M plus 10000 attack saturation and holdout mutations
+        run: node v3/security-attack-saturation.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+        with:
+          name: security-attack-saturation
+          path: artifacts/security-attack-saturation.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Existing current semantic suite
         run: npm run test:current:semantic
+      - name: Evidence runtime diagnostic
+        run: node v3/evidence-runtime-diagnostic.mjs
       - name: Existing current runtime suite
         run: npm run test:current:runtime

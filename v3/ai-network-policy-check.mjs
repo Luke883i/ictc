@@ -4,7 +4,8 @@ import { fetchAiEndpoint, isForbiddenAddress, validateAiEndpoint } from './netwo
 
 const saved = {
   allowPrivate: process.env.ICTC_ALLOW_PRIVATE_AI,
-  allowInsecure: process.env.ICTC_ALLOW_INSECURE_AI
+  allowInsecure: process.env.ICTC_ALLOW_INSECURE_AI,
+  maxResponseBytes: process.env.ICTC_AI_MAX_RESPONSE_BYTES
 };
 function restore(name, value) { if (value == null) delete process.env[name]; else process.env[name] = value; }
 const headers = value => ({ get: name => name.toLowerCase() === 'location' ? value : null });
@@ -12,14 +13,27 @@ const headers = value => ({ get: name => name.toLowerCase() === 'location' ? val
 try {
   delete process.env.ICTC_ALLOW_PRIVATE_AI;
   delete process.env.ICTC_ALLOW_INSECURE_AI;
+  delete process.env.ICTC_AI_MAX_RESPONSE_BYTES;
   assert.equal(isForbiddenAddress('127.0.0.1'), true);
   assert.equal(isForbiddenAddress('169.254.169.254'), true);
   assert.equal(isForbiddenAddress('10.1.2.3'), true);
+  assert.equal(isForbiddenAddress('192.0.2.1'), true);
+  assert.equal(isForbiddenAddress('198.51.100.1'), true);
+  assert.equal(isForbiddenAddress('203.0.113.1'), true);
   assert.equal(isForbiddenAddress('8.8.8.8'), false);
   assert.equal(isForbiddenAddress('::1'), true);
   assert.equal(isForbiddenAddress('fd00::1'), true);
+  assert.equal(isForbiddenAddress('::ffff:127.0.0.1'), true);
+  assert.equal(isForbiddenAddress('::ffff:7f00:1'), true);
+  assert.equal(isForbiddenAddress('2001:db8::1'), true);
+  assert.equal(isForbiddenAddress('2002:7f00:1::1'), true);
+  assert.equal(isForbiddenAddress('2606:4700:4700::1111'), false);
   await assert.rejects(
     validateAiEndpoint('https://provider.example/v1', { lookup: async () => [{ address: '127.0.0.1', family: 4 }] }),
+    error => error.code === 'private-ai-endpoint'
+  );
+  await assert.rejects(
+    validateAiEndpoint('https://provider.example/v1', { lookup: async () => [{ address: '::ffff:7f00:1', family: 6 }] }),
     error => error.code === 'private-ai-endpoint'
   );
   await assert.rejects(
@@ -100,26 +114,35 @@ try {
   process.env.ICTC_ALLOW_INSECURE_AI = '1';
   const server = createServer((request, response) => {
     assert.match(request.headers.host || '', /^provider\.example:/);
+    if (request.url === '/large') {
+      response.writeHead(200, { 'content-type': 'application/json', 'content-length': '4096' });
+      response.end('x'.repeat(4096));
+      return;
+    }
     response.writeHead(200, { 'content-type': 'application/json', 'x-request-id': 'pinned-local' });
     response.end('{"ok":true}');
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
     const address = server.address();
-    const pinned = await fetchAiEndpoint(`http://provider.example:${address.port}/v1`, {}, {
-      lookup: async hostname => {
-        assert.equal(hostname, 'provider.example');
-        return [{ address: '127.0.0.1', family: 4 }];
-      }
-    });
+    const lookup = async hostname => {
+      assert.equal(hostname, 'provider.example');
+      return [{ address: '127.0.0.1', family: 4 }];
+    };
+    const pinned = await fetchAiEndpoint(`http://provider.example:${address.port}/v1`, {}, { lookup });
     assert.equal(pinned.status, 200);
     assert.equal(pinned.headers.get('x-request-id'), 'pinned-local');
+    await assert.rejects(
+      fetchAiEndpoint(`http://provider.example:${address.port}/large`, {}, { lookup, maxResponseBytes: 1024 }),
+      error => error.code === 'ai-response-too-large'
+    );
   } finally {
     await new Promise(resolve => server.close(resolve));
   }
 
-  console.log('ai-network-policy-check: ok (pinned DNS, safe redirects)');
+  console.log('ai-network-policy-check: ok (reserved IP denial + pinned DNS + safe redirects + bounded provider response)');
 } finally {
   restore('ICTC_ALLOW_PRIVATE_AI', saved.allowPrivate);
   restore('ICTC_ALLOW_INSECURE_AI', saved.allowInsecure);
+  restore('ICTC_AI_MAX_RESPONSE_BYTES', saved.maxResponseBytes);
 }
