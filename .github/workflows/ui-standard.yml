@@ -34,6 +34,10 @@ jobs:
         run: node v3/journey-navigation-check.mjs
       - name: Procedure journey 2.1 contract
         run: node v3/procedure-journey-2-1-check.mjs
+      - name: Procedure finetuning 1.4 contract and five-million saturation
+        run: |
+          node v3/procedure-finetuning-check.mjs
+          node v3/procedure-finetuning-saturation.mjs
       - name: Epistemic and cross-process contracts
         run: |
           node v3/procedure-dod-check.mjs
@@ -72,6 +76,7 @@ jobs:
             artifacts/onto-compliance-saturation.json
             artifacts/visual-grace-lexical-epistemic-saturation.json
             artifacts/ui-epistemic-procedure-saturation.json
+            artifacts/procedure-finetuning-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
@@ -86,7 +91,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser contract syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py v3/browser-procedure-finetuning-1-4.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -96,7 +101,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed Experience 1.9 + Epistemic 2.0 + UI convergence + Journey 2.1 + Onto-Compliance + Visual Grace v1
+      - name: Server-backed Experience 1.9 + Epistemic 2.0 + UI convergence + Journey 2.1 + Onto-Compliance + Visual Grace + Procedure Finetuning 1.4
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -112,6 +117,7 @@ jobs:
           python -u v3/browser-v2-1-procedure-journey.py
           python -u v3/browser-pr60-polish.py
           python -u v3/browser-onto-compliance-v1.py
+          python -u v3/browser-procedure-finetuning-1-4.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
@@ -123,11 +129,13 @@ jobs:
             artifacts/browser-v2-1*.json
             artifacts/browser-pr60*.json
             artifacts/browser-onto-compliance*.json
+            artifacts/browser-procedure-finetuning-1-4*.json
             artifacts/ux-v19-*.png
             artifacts/ux-v20-*.png
             artifacts/ux-ui-epistemic-*.png
             artifacts/ux-v21-*.png
             artifacts/ux-pr60-*.png
             artifacts/ux-och-v1-*.png
+            artifacts/ux-finetune-*.png
           if-no-files-found: warn
           retention-days: 30
