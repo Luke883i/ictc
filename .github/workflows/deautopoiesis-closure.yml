@@ -1,0 +1,43 @@
+name: deautopoiesis-closure
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deautopoiesis-closure-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  false-closure-firewall:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Audit remediation registry cannot self-close external gates
+        run: node v3/audit-remediation-closure-check.mjs
+      - name: One-million hostile seeded closure simulations
+        run: node v3/deautopoiesis-adversarial-saturation.mjs
+      - name: Operational storage authority
+        run: node v3/operations-storage-authority-check.mjs
+      - name: Enterprise readiness evidence-envelope fixture
+        run: node v3/enterprise-readiness-check.mjs
+  runtime-portability:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+        node: ['22', '24']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: ${{ matrix.node }}, cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Current runtime suite on supported matrix
+        run: npm run test:current:runtime
