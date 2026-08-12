@@ -36,7 +36,9 @@ Il repository verifica il protocollo e la quarantena, non l'efficacia sostanzial
 
 ## Privacy lifecycle e storia semantica
 
-`subject_version` e i digest rimangono append-oriented. Per i tipi business supportati, una erasure autorizzata non cancella occurrence, audit o digest: marca il payload content-addressed come erased, imposta `payload_json=NULL` e lega l'operazione a un `erasure_receipt_sha256`. La materializzazione distingue quindi esplicitamente `payloadErased=true` da payload mancante/corrotto; un payload non erased continua a fallire se il digest non coincide.
+`subject_version` e i digest rimangono append-oriented. Per i tipi business supportati, una erasure autorizzata non cancella occurrence, audit o digest: **marca come erased le versioni semantiche del soggetto**, legandole a `erasure_receipt_sha256`. La materializzazione di quelle versioni restituisce `payloadErased=true` e non espone il payload, distinguendo quindi una cancellazione intenzionale da payload mancante/corrotto.
+
+`subject_payload` è deduplicato per digest e può essere condiviso da versioni appartenenti a soggetti diversi. Per questo il body fisico `payload_json` viene impostato a `NULL` soltanto quando non esiste più alcuna `subject_version` non-erased che referenzia quel digest. L'erasure di un soggetto non può quindi cancellare la materializzazione ancora lecita di un altro soggetto con payload identico.
 
 La legal hold precede la retention/erasure. L'oggetto business viene tombstoned, gli attachment bytes vengono rimossi da clean e quarantine e una receipt di cancellazione viene conservata nello snapshot. Questa semantica evita che il diritto alla cancellazione venga implementato rompendo silenziosamente il verificatore.
 
@@ -48,7 +50,9 @@ Lo SQLite **attivo** non è cifrato applicativamente da ICTC: un deployment sens
 
 Il provider env (`ICTC_RECOVERY_KEY_BASE64`, `ICTC_RECOVERY_KEY_ID`) è un adapter locale. Custody, rotation, envelope encryption con KMS/HSM e access-policy della chiave sono responsabilità del deployment e devono produrre evidence esterna.
 
-Il backup usa la SQLite backup API anziché una copia raw del file WAL-live. Il restore avviene su staging vuoto e richiede verifica di revision, audit HEAD, canonical state digest e integrity binding prima della promotion. `rtoMs` e `rpoSecondsAtRestore` sono misure osservate, non obiettivi approvati.
+Il backup usa la SQLite backup API anziché una copia raw del file WAL-live. **Lo snapshot SQLite copiato è l'inventory authority del recovery point**: vengono inclusi soltanto gli attachment ID referenziati da quello snapshot, e ogni byte viene accettato soltanto se digest (e size dichiarata) coincidono con i metadata snapshot. Byte orfani o non ancora committati non entrano nel recovery point; un oggetto referenziato assente o incoerente fa fallire il backup chiuso.
+
+Il restore avviene su staging vuoto e richiede manifest autenticato, entry univoche, `state.sqlite`, digest ciphertext/plaintext, revision, audit HEAD, canonical state digest e integrity binding prima della promotion. `rtoMs` e `rpoSecondsAtRestore` sono misure osservate, non obiettivi approvati.
 
 ## Isolamento dei test
 
