@@ -28,7 +28,7 @@ jobs:
       - name: Enterprise boundary DoD contract
         run: node v3/runtime-enterprise-dod-check.mjs
       - name: Enterprise boundary runtime falsifier
-        run: node v3/runtime-enterprise-boundaries-check.mjs
+        run: node v3/runtime-enterprise-boundaries-ci.mjs
   hostile-saturation:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
