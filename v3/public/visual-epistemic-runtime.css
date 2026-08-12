@@ -40,6 +40,37 @@ html[data-ictc-experience="market-1"] .evidence-decision h3{font-size:.92rem;mar
 html[data-ictc-experience="market-1"] .evidence-decision p{margin:.15rem 0;font-size:.78rem;line-height:1.4}
 html[data-ictc-experience="market-1"] .evidence-decision small{font-size:.66rem;line-height:1.35;color:#6d788b}
 
+/* GRC metrics state what they mean before users infer arithmetic or assurance. */
+html[data-ictc-experience="market-1"] .epistemic-kpi-note{margin:-.2rem 0 .2rem;padding:.58rem .7rem;border-radius:10px;background:#f7f9fb;color:#5d6b80;font-size:.7rem;line-height:1.4}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item{padding:.82rem;gap:.42rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item header{gap:.12rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item h3{margin:.12rem 0;font-size:1rem;line-height:1.25}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item>p{margin:.12rem 0;font-size:.78rem;line-height:1.45;color:#526077}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer{align-items:center;gap:.38rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer button{min-height:34px;padding:.42rem .62rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-evidence-action{order:2;color:#506078}
+html[data-ictc-experience="market-1"] .grc-list article.epistemic-work-item footer .epistemic-next-action{order:0;font-weight:800;background:var(--accent,#5b5cf0);color:#fff;border-color:transparent}
+html[data-ictc-experience="market-1"] .risk-map-frame{display:grid;grid-template-columns:auto minmax(0,520px);grid-template-rows:auto auto;gap:.35rem .55rem;align-items:center;width:max-content;max-width:100%}
+html[data-ictc-experience="market-1"] .risk-map-frame .risk-map{grid-column:2;grid-row:1;max-width:100%}
+html[data-ictc-experience="market-1"] .risk-axis{font-size:.68rem;font-weight:750;color:#66758e}
+html[data-ictc-experience="market-1"] .risk-axis-y{grid-column:1;grid-row:1;writing-mode:vertical-rl;transform:rotate(180deg)}
+html[data-ictc-experience="market-1"] .risk-axis-x{grid-column:2;grid-row:2;text-align:center}
+html[data-ictc-experience="market-1"] .risk-map-boundary{margin:.15rem 0 0;max-width:72ch;font-size:.7rem;line-height:1.4;color:#657289}
+
+/* AI setup is contextual support, not the primary work signal. */
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner{padding:.72rem .9rem;min-height:0;border-radius:14px;box-shadow:none}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner strong{font-size:.84rem}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner p{font-size:.72rem;margin:.15rem 0 0}
+html[data-ictc-experience="market-1"] .setup-banner.epistemic-secondary-banner button{min-height:34px;padding:.42rem .68rem;font-size:.74rem}
+html[data-ictc-experience="market-1"] .demo-scheduler-note{margin:.2rem 0 .7rem;padding:.58rem .72rem;border:1px solid #eadfbf;border-radius:10px;background:#fffaf0;color:#685b3e;font-size:.7rem;line-height:1.4}
+
+/* Epistemic lattice exposes professional meaning before implementation vocabulary. */
+html[data-ictc-experience="market-1"] .epistemic-cluster-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.65rem}
+html[data-ictc-experience="market-1"] .epistemic-cluster{min-width:0;overflow:hidden}
+html[data-ictc-experience="market-1"] .epistemic-cluster span,html[data-ictc-experience="market-1"] .epistemic-cluster b,html[data-ictc-experience="market-1"] .epistemic-cluster small{overflow-wrap:anywhere}
+html[data-ictc-experience="market-1"] .epistemic-overview{min-width:0}
+html[data-ictc-experience="market-1"] .epistemic-explore-panel{min-width:0}
+
 @media(max-width:820px){
   html[data-ictc-experience="market-1"] .demo-mode-banner{padding-inline:1rem}
   html[data-ictc-experience="market-1"] .demo-context-boundary{max-width:74ch}
@@ -51,4 +82,8 @@ html[data-ictc-experience="market-1"] .evidence-decision small{font-size:.66rem;
   html[data-ictc-experience="market-1"] .demo-context-label{display:none}
   html[data-ictc-experience="market-1"] .proof-snapshot{grid-template-columns:1fr}
   html[data-ictc-experience="market-1"] .evidence-decision{grid-template-columns:1fr}
+  html[data-ictc-experience="market-1"] .risk-map-frame{width:100%;grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  html[data-ictc-experience="market-1"] .risk-map-frame .risk-map{grid-column:1;grid-row:2}
+  html[data-ictc-experience="market-1"] .risk-axis-y{grid-column:1;grid-row:1;writing-mode:horizontal-tb;transform:none}
+  html[data-ictc-experience="market-1"] .risk-axis-x{grid-column:1;grid-row:3}
 }
