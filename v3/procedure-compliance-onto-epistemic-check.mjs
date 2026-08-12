@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { RN_SOURCE_CLASSES, assertRnClosedUniverse, inferRnSourceClass, normalizeRnDiscoveredItem, rnMiningPrompt } from './runtime/rn-monitoring-policy.mjs';
+import { monitoringJobCandidate } from './runtime/monitoring-jobs.mjs';
+import { validateRnDiscoveryOutput } from './runtime/rn-ai-output.mjs';
+import { rnEpistemicAtoms } from './runtime/rn-epistemic-atoms.mjs';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [contract,ui,css,standards,handoffs,ai,lattice]=await Promise.all([read('./procedure-finetuning-contract-1-4.json').then(JSON.parse),read('./public/ui/procedure-finetuning-1-4.js'),read('./public/procedure-finetuning-1-4.css'),read('./runtime/standard-library-current.mjs'),read('./public/ui/process-handoffs.js'),read('./ai.mjs'),read('./runtime/epistemic-lattice.mjs')]);
+
+assert.deepEqual(assertRnClosedUniverse(),RN_SOURCE_CLASSES);
+assert.throws(()=>assertRnClosedUniverse(['binding-eu-law']),error=>error.code==='rn-source-universe-fixed');
+assert.equal(inferRnSourceClass({documentType:'regulation',jurisdiction:'European Union',authority:'European Commission'}),'binding-eu-law');
+assert.equal(inferRnSourceClass({documentType:'legislative-decree',jurisdiction:'Italia'}),'binding-italian-law');
+assert.equal(inferRnSourceClass({documentType:'authority-decision',authority:'Garante Privacy'}),'competent-authority-decisions');
+assert.equal(inferRnSourceClass({documentType:'case-law'}),'public-jurisprudence-and-case-information-without-personal-data');
+assert.equal(normalizeRnDiscoveredItem({documentType:'blog-post'},{}),null);
+const prompt=rnMiningPrompt('BASE',{});for(const sourceClass of RN_SOURCE_CLASSES)assert.ok(prompt.includes(sourceClass));assert.match(prompt,/exclude personal data/i);assert.match(prompt,/never establish legal applicability/i);
+const job=monitoringJobCandidate({objective:'Sorveglia il perimetro normativo',sourceClasses:RN_SOURCE_CLASSES});assert.deepEqual(job.sourceClasses,RN_SOURCE_CLASSES);assert.equal(job.sourceUniverse,'RN-01-closed-public-source-universe');assert.throws(()=>monitoringJobCandidate({objective:'subset',sourceClasses:['binding-eu-law']}),error=>error.code==='rn-source-universe-fixed');
+const validated=validateRnDiscoveryOutput({items:[{title:'GDPR',documentType:'regulation',authority:'European Union',jurisdiction:'European Union',identifier:'2016/679',sourceUrl:'https://eur-lex.europa.eu/',publicationDate:'2016-05-04',effectiveDate:'2018-05-25',summary:'Regolamento',relevance:'Privacy',confidence:.9,sourceClass:'binding-eu-law',domainLabels:['GDPR'],applicationHypothesis:'Da valutare sul perimetro trattamenti',semanticConcepts:['sicurezza del trattamento'],changeType:'',noveltyReason:''}]},'compliance-discovery');assert.equal(validated.items[0].sourceClass,'binding-eu-law');assert.deepEqual(validated.items[0].domainLabels,['GDPR']);assert.deepEqual(validated.items[0].semanticConcepts,['sicurezza del trattamento']);
+const atoms=rnEpistemicAtoms({revision:7,catalog:[{id:'src-1',state:'candidate',title:'GDPR',authority:'European Union',sourceUrl:'https://eur-lex.europa.eu/',sourceClass:'binding-eu-law',domainLabels:['GDPR'],applicationHypothesis:'Da valutare',semanticConcepts:['sicurezza del trattamento'],origin:{kind:'mission-run',missionId:'m1'},aiTrace:{model:'test'},createdAt:'2026-01-01T00:00:00.000Z',updatedAt:'2026-01-01T00:00:00.000Z'}]});assert.equal(atoms.filter(x=>x.kind==='rn-source-observation').length,1);const concept=atoms.find(x=>x.kind==='rn-semantic-concept');assert.ok(concept);assert.equal(concept.epistemicStatus,'proposed');assert.equal(concept.authority.type,'assist-only');assert.ok(concept.basisRefs.some(ref=>ref.id==='rn-source:src-1'));
+assert.match(ai,/rnMiningPrompt/);assert.match(lattice,/rnEpistemicAtoms/);
+assert.match(ui,/una domanda alla volta/);assert.match(contract.processes['EC-01'].claimBoundary,/does not determine legal notification/i);
+for(const token of ['Fonte autorevole','Responsabile','Riesame'])assert.ok(ui.includes(token),`AO ${token}`);assert.ok(contract.processes['AO-01'].auditorAcceptanceCriteria.length>=8);
+for(const field of ['reference','concept','intent','expectedOutcome','evidenceQuestion','scopeStatus','sourceAuthority','version'])assert.ok(standards.includes(field),`MC ${field}`);assert.match(css,/finetune-concept-drilldown[^}]*background:var\(--surface,#fff\)!important/);assert.match(contract.processes['MC-01'].claimBoundary,/does not establish legal applicability, certification, equivalence or control effectiveness/i);
+assert.match(ui,/Completato non significa chiuso/);assert.match(ui,/Perché esiste/);assert.match(ui,/Prossima decisione/);assert.match(contract.processes['AP-01'].claimBoundary,/completion is not verified closure/i);
+assert.match(handoffs,/non determina applicabilità legale/);assert.match(handoffs,/non modifica rating o stato/);assert.match(handoffs,/Priorità e ownership diventano operative solo dopo adozione umana/);
+for(const invariant of ['humanDecisionAuthorityExplicit','aiSuggestionNeverSilentDecision','crossProcessHandoffCreatesReviewWork'])assert.equal(contract.globalDoD[invariant],true,invariant);
+console.log(JSON.stringify({ok:true,control:'PROCEDURE-COMPLIANCE-ONTO-EPISTEMIC',scope:contract.scope,rnClosedSourceUniverse:RN_SOURCE_CLASSES.length,rnRuntimeEnforced:true,rnSemanticLattice:true,ecFactLegalSeparation:true,aoAuditorRegister:true,mcConceptAtoms:true,apCompletionClosureSeparation:true,crossProcessReviewOnly:true}));
