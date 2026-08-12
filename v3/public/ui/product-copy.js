@@ -1,4 +1,4 @@
-export const SURFACE_LABELS=Object.freeze({home:'Oggi',processes:'Processi di Compliance',proof:'Prove e limiti ICTC',proofCompact:'Prove e limiti'});
+export const SURFACE_LABELS=Object.freeze({home:'Oggi',processes:'Processi di Compliance',proof:'Postura ICTC',proofCompact:'Postura ICTC'});
 
 export const ICTC_MANIFEST=Object.freeze({
   eyebrow:'Scopo ICTC',

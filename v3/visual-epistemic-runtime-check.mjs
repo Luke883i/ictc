@@ -26,9 +26,10 @@ check('shell-proportion-guard',()=>{
   assert.match(content.runtimeCss,/stable-header-inner\{height:46px/);
   assert.match(content.runtimeCss,/home-intro h1\{font-size:clamp\(1\.85rem,3\.25vw,2\.7rem\)/);
 });
-check('proof-name-boundary',()=>{
-  assert.match(content.copy,/proof:'Prove e limiti ICTC'/);
-  assert.doesNotMatch(content.copy,/proof:'Postura ICTC'/);
+check('proof-route-stable-content-bounded',()=>{
+  assert.match(content.copy,/proof:'Postura ICTC'/);
+  assert.match(content.copy,/proofTitle:'Prove e limiti ICTC'/);
+  assert.match(content.runtime,/title\.textContent='Prove e limiti ICTC'/);
   assert.match(content.copy,/non costituiscono certificazione/);
 });
 check('proof-evidence-not-score',()=>{
