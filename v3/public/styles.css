@@ -16,8 +16,8 @@
 @import url('./cross-procedure.css');
 @import url('./procedure-journey-2-1.css');
 @import url('./onto-compliance-v1.css');
-@import url('./ui-convergence.css');
 @import url('./visual-epistemic-runtime.css');
+@import url('./ui-convergence.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
