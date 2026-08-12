@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { Readable } from 'node:stream';
+import { assertBrowserWriteBoundary, bodyJson } from './runtime/http.mjs';
+const req=(headers={},body='')=>Object.assign(Readable.from(body?[Buffer.from(body)]:[]),{method:'POST',headers:{host:'127.0.0.1:4173',...headers},socket:{remoteAddress:'127.0.0.1'}});
+assert.throws(()=>assertBrowserWriteBoundary(req({'sec-fetch-site':'cross-site','origin':'https://evil.invalid','content-type':'text/plain'})),e=>e.code==='browser-cross-site-write');
+assert.throws(()=>assertBrowserWriteBoundary(req({origin:'http://localhost:4173','content-type':'application/json'})),e=>e.code==='browser-origin-mismatch');
+assert.doesNotThrow(()=>assertBrowserWriteBoundary(req({'sec-fetch-site':'same-origin',origin:'http://127.0.0.1:4173','content-type':'application/json'})));
+await assert.rejects(bodyJson(req({'content-type':'text/plain'},'{"x":1}')),e=>e.code==='json-content-type-required');
+assert.deepEqual(await bodyJson(req({'content-type':'application/json'},'{"x":1}')),{x:1});
+console.log('browser-local-write-boundary-check: ok (cross-site/origin/simple-content-type writes fail closed)');
