@@ -10,7 +10,7 @@ concurrency:
 jobs:
   assurance:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -26,18 +26,21 @@ jobs:
         run: node v3/v1-2-market-candidate-check.mjs
       - name: Experience 1.9 contract
         run: node v3/v1-9-experience-check.mjs
-      - name: Surface primitives contract
-        run: node v3/surface-primitives-check.mjs
-      - name: Projection commit contract
-        run: node v3/projection-commit-check.mjs
-      - name: Journey navigation contract
-        run: node v3/journey-navigation-check.mjs
-      - name: Procedure journey 2.1 contract
-        run: node v3/procedure-journey-2-1-check.mjs
-      - name: Procedure finetuning 1.4 contract and five-million saturation
+      - name: Surface and journey contracts
         run: |
+          node v3/surface-primitives-check.mjs
+          node v3/projection-commit-check.mjs
+          node v3/journey-navigation-check.mjs
+          node v3/procedure-journey-2-1-check.mjs
+      - name: Procedure finetuning intent, runtime and compliance ontology
+        run: |
+          node v3/procedure-finetuning-intent-coverage-check.mjs
           node v3/procedure-finetuning-check.mjs
+          node v3/procedure-compliance-onto-epistemic-check.mjs
+      - name: Procedure finetuning model saturation
+        run: |
           node v3/procedure-finetuning-saturation.mjs
+          node v3/procedure-compliance-onto-epistemic-saturation.mjs
       - name: Epistemic and cross-process contracts
         run: |
           node v3/procedure-dod-check.mjs
@@ -77,6 +80,7 @@ jobs:
             artifacts/visual-grace-lexical-epistemic-saturation.json
             artifacts/ui-epistemic-procedure-saturation.json
             artifacts/procedure-finetuning-saturation.json
+            artifacts/procedure-compliance-onto-epistemic-saturation.json
           if-no-files-found: warn
           retention-days: 30
   browser:
@@ -101,7 +105,7 @@ jobs:
           done
           echo 'No supported Chromium browser found' >&2
           exit 1
-      - name: Server-backed Experience 1.9 + Epistemic 2.0 + UI convergence + Journey 2.1 + Onto-Compliance + Visual Grace + Procedure Finetuning 1.4
+      - name: Server-backed experience and five procedure journeys
         shell: bash
         run: |
           set -Eeuo pipefail
