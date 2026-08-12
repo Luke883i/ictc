@@ -11,5 +11,6 @@ const required=[
   ['v3/runtime/tenant-authority.mjs',['AsyncLocalStorage','sqlite-per-tenant','tenant-membership-required']]
 ];
 for(const[file,tokens]of required){const text=await readFile(file,'utf8');for(const token of tokens)assert.ok(text.includes(token),`${file} missing ${token}`);}
+const evidence=await readFile('v3/runtime/evidence.mjs','utf8'),incidentAuth=evidence.indexOf("if(incident&&actor.role!=='auditor'&&!canAccessIncident"),contributionAuth=evidence.indexOf('if(contribution&&!canAccessContribution'),byteRead=evidence.indexOf('store.attachment(params.id)');assert.ok(incidentAuth>=0&&incidentAuth<byteRead,'incident authorization must precede attachment byte read');assert.ok(contributionAuth>=0&&contributionAuth<byteRead,'contribution authorization must precede attachment byte read');
 const dod=JSON.parse(await readFile('audit/runtime-enterprise-dod.json','utf8'));assert.equal(dod.schemaVersion,'1.0.0');assert.ok(dod.localDoD.every(item=>item.status==='verified-by-candidate-tests'));assert.ok(dod.externalResiduals.every(item=>item.status==='blocked-external'));assert.ok(dod.globalDoD.some(item=>item.id==='exact-head-ci'&&item.required===true));
 console.log('runtime-enterprise-dod-check: ok');
