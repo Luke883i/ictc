@@ -22,6 +22,8 @@ surfaces:
     authority: v3/domain.mjs
   runtime_state:
     authority: v3/store.mjs
+  runtime_store_adapter:
+    authority: v3/runtime-store.mjs
   runtime_persistence:
     authority: v3/sqlite-state-persistence.mjs
   runtime_handlers:
@@ -44,6 +46,7 @@ rules:
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
   - package.json scripts.start and ictc.sh must resolve to runtime_entrypoint
+  - runtime_store_adapter may add runtime-only persistence/storage hardening but must extend runtime_state and may not become a second business write authority
   - mutable canonical state and append-only audit ledger are separate authorities
   - runtime documentation must not claim append-only canonical state or historical reconstructibility unless executable proof establishes it
   - a change to a declared runtime authority requires authority-contract evidence on the same commit
