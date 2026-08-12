@@ -1,4 +1,4 @@
-export const SURFACE_LABELS=Object.freeze({home:'Oggi',processes:'Processi di Compliance',proof:'Postura ICTC',proofCompact:'Postura ICTC'});
+export const SURFACE_LABELS=Object.freeze({home:'Oggi',processes:'Processi di Compliance',proof:'Prove e limiti ICTC',proofCompact:'Prove e limiti'});
 
 export const ICTC_MANIFEST=Object.freeze({
   eyebrow:'Scopo ICTC',
@@ -18,7 +18,7 @@ export const SURFACE_INFORMATION=Object.freeze({
   monitoring:Object.freeze({purpose:'Osserva fonti, materiali e cambiamenti nel perimetro dichiarato.',why:'Un cambiamento può modificare requisiti, rischi, controlli, azioni o priorità.',evidence:'Originali, versioni del piano, esecuzioni, osservazioni e decisioni sulle fonti.',boundary:'La scoperta di una fonte non prova applicabilità, vigenza, completezza o impatto.'}),
   incidents:Object.freeze({purpose:'Preserva i fatti e governa chiarimenti, impatto, risposta e chiusura.',why:'Una ricostruzione affidabile separa fatti, inferenze, decisioni e obblighi da valutare.',evidence:'Originale, allegati, risposte, versioni, decisioni, collegamenti e receipt.',boundary:'La classificazione operativa non determina obblighi di notifica, responsabilità o rilevanza regolatoria.'}),
   grc:Object.freeze({purpose:'Trasforma requisiti, rischi e verifiche in lavoro governato e ricostruibile.',why:'La conformità richiede collegare ciò che conta a chi decide, cosa viene fatto e quale prova rimane.',evidence:'Stati, versioni, responsabilità, relazioni, decisioni ed evidenze del processo attivo.',boundary:'Stati, score e mapping operativi non equivalgono automaticamente ad applicabilità, efficacia o conformità.'}),
-  proof:Object.freeze({purpose:'Leggi ciò che ICTC può dimostrare sul proprio funzionamento e con quali limiti.',why:'Una postura utile distingue pratica, evidenza osservabile e confine della prova.',evidence:'Controlli, artefatti, mapping e limiti verificabili del runtime e del repository.',boundary:'Postura ICTC non è certificazione, conclusione legale o security assessment del deployment.'}),
+  proof:Object.freeze({purpose:'Leggi quali fatti sul funzionamento di ICTC sono osservati e con quale evidenza.',why:'Una lettura affidabile distingue fatto registrato, evidenza tecnica, requisito esterno e limite della prova.',evidence:'Controlli, artefatti, mapping e limiti verificabili del runtime e del repository.',boundary:'Le prove sul funzionamento ICTC non sono certificazione, conclusione legale, security assessment del deployment o giudizio di conformità dell’organizzazione.'}),
   epistemic:Object.freeze({purpose:'Esplora come fonti, requisiti, oggetti, rischi, controlli, decisioni ed evidenze sono collegati.',why:'La vista trasversale rende visibili dipendenze, basi e lacune senza trasformare inferenze in fatti.',evidence:'Relazioni, versioni, basi dichiarate, checkpoint e letture proposte.',boundary:'Il reticolo organizza conoscenza e inferenze; non crea verità sostanziale, applicabilità o autorità decisionale.'}),
   admin:Object.freeze({purpose:'Governa accessi, identità, provider e modelli AI, budget e telemetria operativa.',why:'Sicurezza e uso responsabile dell’AI richiedono configurazione esplicita, osservabilità e responsabilità amministrativa.',evidence:'Controlli verificati, readiness, utilizzo AI per scopo, budget, identità e policy configurate.',boundary:'Telemetria e readiness descrivono il runtime osservato; non certificano il deployment o la conformità dell’organizzazione.'}),
   aiSettings:Object.freeze({purpose:'Configura il canale AI senza delegargli autorità decisionale.',why:'Provider, modello, credenziali e istruzioni definiscono dove può avvenire l’egress e come viene usata l’AI.',evidence:'Configurazione tracciata, trace di chiamata e receipt delle modifiche.',boundary:'Configurare un provider non rende i suoi output veri, applicabili o autorizzati.'})
@@ -35,8 +35,8 @@ export const PROCEDURE_INFORMATION_BOUNDARIES=Object.freeze({
 });
 
 export const PRODUCT_COPY=Object.freeze({
- proofTitle:'Postura ICTC',
- proofLead:'Mostra cosa ICTC puo dimostrare oggi, con quali prove e quali limiti.',
- proofBoundary:'La postura descrive controlli ed evidenze osservabili di ICTC; non e una certificazione, una conclusione legale o un security assessment del deployment.',
- proofAction:'Apri Postura ICTC'
+ proofTitle:'Prove e limiti ICTC',
+ proofLead:'Mostra quali fatti sul funzionamento ICTC sono osservati, con quale evidenza e quali aspetti restano esterni.',
+ proofBoundary:'Le prove descrivono controlli ed evidenze osservabili di ICTC; non costituiscono certificazione, conclusione legale, security assessment del deployment o giudizio di conformità dell’organizzazione.',
+ proofAction:'Apri prove e limiti ICTC'
 });
