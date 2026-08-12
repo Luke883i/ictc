@@ -1,4 +1,3 @@
-import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { DISCLOSURE, PROCESS_SPECS, SURFACES } from './v1-stable-experience-model.mjs';
 const active=await readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8');
@@ -6,7 +5,7 @@ const shell=await readFile(new URL('./public/ui/stable-shell.js',import.meta.url
 const router=await readFile(new URL('./public/ui/surface-router.js',import.meta.url),'utf8');
 const enterprise=await readFile(new URL('./public/ui/enterprise-ux.js',import.meta.url),'utf8');
 const globalTools=await readFile(new URL('./public/ui/global-tools.js',import.meta.url),'utf8');
-const css=await readFile(new URL('./public/stable-experience.css',import.meta.url),'utf8');
+const marketShell=await readFile(new URL('./public/market-shell.css',import.meta.url),'utf8');
 const styles=await readFile(new URL('./public/styles.css',import.meta.url),'utf8');
 const html=await readFile(new URL('./public/index.html',import.meta.url),'utf8');
 const terms=await readFile(new URL('./public/terms.html',import.meta.url),'utf8');
@@ -26,8 +25,8 @@ check('legal-footer',/stableLegalFooter/.test(shell)&&/MIT/.test(shell)&&/Reposi
 check('trusted-identity',/identityMode==='trusted-header'/.test(enterprise)&&/roleControl\.hidden=trustedIdentity\(\)/.test(enterprise),'trusted identity must suppress local role switching');
 check('no-header-export',!globalTools.includes('downloadCurrentView'),'export must not live in permanent header');
 check('command-search',/id=\\?"globalSearch\\?"/.test(globalTools)&&/type=\\?"search\\?"/.test(globalTools),'command palette must expose a dedicated search control without freezing placeholder copy');
-check('stable-css-import',/stable-experience\.css/.test(styles),'stable experience stylesheet must remain imported');
-check('stable-css-contract',/stable-header-inner/.test(css)&&/stable-legal-footer/.test(css),'stable stylesheet must retain header/footer contract');
+check('market-css-owner',!/stable-experience\.css/.test(styles)&&/market-shell\.css/.test(styles),'current native shell must use market-shell.css and keep legacy stable-experience.css detached');
+check('market-css-contract',/html\[data-ictc-experience="market-1"\] \.stable-header-inner/.test(marketShell)&&/html\[data-ictc-experience="market-1"\] \.stable-legal-footer/.test(marketShell)&&/html\[data-ictc-experience="market-1"\] \.stable-process-card/.test(marketShell),'market shell stylesheet must retain header/footer/process-card contract under market-1 scope');
 const nav=html.match(/<nav class="service-nav"[\s\S]*?<\/nav>/)?.[0]||'';check('html-nav',JSON.stringify([...nav.matchAll(/data-service="([^"]+)"/g)].map(x=>x[1]))===JSON.stringify(['home','processes','proof']),'HTML navigation must expose exactly the three canonical surfaces');
 check('terms-anti-overclaim',/Software operativo, non conclusione di compliance/.test(terms)&&/Non determina automaticamente applicabilit[aà] normativa/i.test(terms)&&/stable-legal-footer/.test(terms),'terms must preserve anti-overclaim and legal footer');
 console.log(`v1-stable-ui-contract-check: ok (${checks.length} named invariants; current canonical UI owner)`);
