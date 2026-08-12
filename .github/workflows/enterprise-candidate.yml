@@ -14,15 +14,16 @@ jobs:
   enterprise-candidate:
     runs-on: ubuntu-24.04
     timeout-minutes: 55
+    env:
+      ICTC_CI_TRUTH_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '22'
-          cache: npm
+        with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - run: node v3/enterprise-gate-manifest-check.mjs
       - run: npm run release:check
@@ -32,6 +33,10 @@ jobs:
       - run: node v3/csv-export-security-check.mjs
       - run: node v3/ai-network-policy-check.mjs
       - run: node v3/security-enterprise-dod-check.mjs
+      - run: node v3/enterprise-t-saturation.mjs
+      - run: node v3/enterprise-invariant-convergence.mjs
+      - run: node v3/enterprise-t-audit.mjs
+      - run: node v3/enterprise-t-runtime-stress.mjs
       - run: node v3/ci-truth-check.mjs
       - run: node v3/enterprise-candidate-saturation.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
@@ -41,5 +46,7 @@ jobs:
           path: |
             artifacts/enterprise-candidate-saturation.json
             artifacts/ci-truth.json
+            artifacts/enterprise-t-audit.json
+            artifacts/enterprise-t-runtime-stress.json
           if-no-files-found: warn
           retention-days: 30

@@ -1,21 +1,18 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
   "controlId": "GOV-CI-TRUTH",
   "mode": "RATCHET",
-  "bootstrapBaseSha": "9962de3984760aaaf33ca7934de2a14409644306",
+  "migrationFromSchemaVersion": "1.0.0",
+  "migrationBaseSha": "507630cf5504f32781274ad043ba913e9d3e10a8",
   "allowedRuntimeGaps": [
-    {"id":"S09","severity":"high","remediation":"OBSERVABILITY","reason":"No telemetry pipeline is present."},
-    {"id":"S10","severity":"high","remediation":"GOV-SUPPLY","reason":"GitHub Actions still use mutable major tags."}
+    {"id":"S09","profile":"telemetry-backpressure-and-high-cardinality","status":"detected-gap"}
   ],
   "allowedAuditFindings": [
-    {"id":"A01","severity":"critical","remediation":"GOV-01-UPGRADE-OPTION","reason":"Server-side branch protection remains unavailable on the current GitHub plan."},
-    {"id":"A02","severity":"critical","remediation":"DURABLE-STORE-EVOLUTION","reason":"The canonical store remains local JSON rather than a multi-instance transactional datastore."},
-    {"id":"A03","severity":"high","remediation":"OBSERVABILITY","reason":"Correlated traces, metrics, logs and SLOs are not yet implemented."},
-    {"id":"A04","severity":"high","remediation":"GOV-SUPPLY","reason":"CI action references are not pinned to immutable SHAs."},
-    {"id":"A07","severity":"high","remediation":"W0-HARDENING","reason":"Retained as a bootstrap allowance if the current audit still reports the centralized CSP gap."},
-    {"id":"A08","severity":"high","remediation":"W0-HARDENING","reason":"Application request-rate / abuse budgets remain open."},
-    {"id":"A13","severity":"critical","remediation":"DR-CONTROL","reason":"Backup, restore, RTO and RPO remain external blockers."},
-    {"id":"A14","severity":"high","remediation":"ACCESSIBILITY-EVIDENCE","reason":"Human assistive-technology evidence remains external."}
+    {"id":"A01","dimension":"T01","severity":"critical","status":"open-external","statement":"The baseline GitHub API observation reports main as unprotected; repository code cannot enforce review or required checks."},
+    {"id":"A02","dimension":"T05","severity":"critical","status":"open","statement":"Persistence is now a transactional process-local SQLite/WAL snapshot plus audit ledger, but cross-process/multi-instance state coordination, HA and restore evidence remain unproven."},
+    {"id":"A03","dimension":"T07","severity":"high","status":"open","statement":"No correlated traces, metrics and logs or SLO model is present."},
+    {"id":"A13","dimension":"T09","severity":"critical","status":"open-external","statement":"Backup, restore, RTO and RPO are declared blockers rather than implemented controls."},
+    {"id":"A14","dimension":"T17","severity":"high","status":"open-external","statement":"Human assistive-technology evidence is absent."}
   ],
-  "boundary": "The baseline is debt, not acceptance. It may shrink but must not expand after bootstrap."
+  "boundary": "Debt is bound to semantic finding fingerprints, not IDs. The set may shrink but must not expand or be semantically reused after the anchored one-shot v1->v2 migration. Stale allowances are fatal."
 }
