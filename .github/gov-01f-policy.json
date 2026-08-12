@@ -1,50 +1,18 @@
 {
-  "schemaVersion": "1.5.0",
+  "schemaVersion": "2.0.0",
   "controlId": "GOV-01F",
+  "controlClass": "COMPENSATING",
   "mode": "FREE_PRIVATE_COMPENSATING",
-  "defaultBranch": "main",
   "serverSidePrevention": false,
-  "allowedBranchPrefixes": [
-    "agent/",
-    "feat/",
-    "fix/",
-    "docs/"
-  ],
-  "requiredPreMergeChecks": [
-    "governance-free-private",
-    "authority-contract",
-    "docs-command-contract",
-    "contract-and-audit",
-    "store-durability",
-    "integrity-binding",
-    "ci-truth",
-    "runtime-e2e",
-    "browser-journeys",
-    "launcher-smoke",
-    "dependency-audit",
-    "assurance",
-    "browser"
-  ],
-  "requiredPostMergeChecks": [
-    "governance-free-private",
-    "authority-contract",
-    "docs-command-contract",
-    "contract-and-audit",
-    "store-durability",
-    "integrity-binding",
-    "ci-truth",
-    "runtime-e2e",
-    "browser-journeys",
-    "launcher-smoke",
-    "dependency-audit",
-    "evidence"
-  ],
-  "excludedUntilAvailable": [
-    "codeql"
-  ],
+  "defaultBranch": "main",
+  "allowedBranchPrefixes": ["agent/", "codex/", "fix/", "feat/", "docs/", "chore/", "refactor/", "test/", "ci/"],
+  "gateManifest": ".github/enterprise-gate-manifest.json",
+  "requiredPreMergeChecks": ["enterprise-candidate"],
+  "requiredPostMergeChecks": ["enterprise-candidate"],
   "limitations": [
-    "GitHub Free on a private repository does not enforce branch protection or required status checks server-side.",
-    "GOV-01F detects governance breaches and blocks AI-assisted promotion by convention; it cannot physically prevent an owner direct-push to main.",
-    "A green GOV-01F check is not equivalent to protected=true."
+    "This is compensating governance, not GitHub branch protection.",
+    "A direct push can only be detected after GitHub accepts it.",
+    "Required checks are observed on the exact SHA and cannot prevent an authorized actor from bypassing repository-side process controls.",
+    "Independent human review and server-side enforcement remain external blockers."
   ]
 }

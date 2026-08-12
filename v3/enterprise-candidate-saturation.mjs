@@ -1,14 +1,70 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { inspectExperience, DEFAULT_POLICY, PROCESS_SPECS } from './v1-stable-experience-model.mjs';
-import { principalRef, resolveEvidenceRef, bindingsNeedReview } from './runtime/reference-contract.mjs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-const roles=['admin','user','auditor'],personas=['novice','operator','process-owner','external-auditor','regulator'],processes=Object.keys(PROCESS_SPECS),intents=['continue-work','start-known-process','start-unknown','inspect-status','search-record','prove-decision','audit','configure'],evidenceStates=['resolved-internal','external-declared','missing-internal','opaque-unresolved','version-stale'],devices=['mobile','tablet','desktop'],aiModes=['off','on','failure'],identityModes=['local','trusted-header'];
-const state={users:[{id:'u1',displayName:'Utente',role:'user',status:'active'}],grcObjects:[{id:'obj-1',type:'control',status:'active',versionSha256:'v2'}],grcActions:[],grcMappings:[],grcRisks:[],grcAssurance:[],incidents:[],catalog:[],contributions:[],missions:[]};
-const evidenceInput={ 'resolved-internal':'ictc:grc-object:obj-1','external-declared':'https://example.invalid/evidence','missing-internal':'ictc:grc-object:missing','opaque-unresolved':'E-1','version-stale':'ictc:grc-object:obj-1' };
-function scenarioAt(i){let n=i;const role=roles[n%roles.length];n=Math.floor(n/roles.length);const evidenceState=evidenceStates[n%evidenceStates.length];n=Math.floor(n/evidenceStates.length);const process=processes[n%processes.length];n=Math.floor(n/processes.length);const persona=personas[n%personas.length];n=Math.floor(n/personas.length);const intent=intents[n%intents.length];const device=devices[(i*7+3)%devices.length],ai=aiModes[(i*11+1)%aiModes.length],identityMode=identityModes[(i*13)%identityModes.length];return{role,evidenceState,process,persona,intent,device,ai,identityMode,attention:(i*17)%9,searchHitType:i%4===0?'evidence':'record',openRecord:i%6===0,rawTrace:role==='auditor'&&i%2===0,deepTechnical:persona==='external-auditor'&&i%5===0,aiFailure:ai==='failure',staleEvidence:evidenceState==='version-stale',unknownReference:['missing-internal','opaque-unresolved'].includes(evidenceState)};}
-function inspectSemantic(scenario,policy={}){const merged={...DEFAULT_POLICY,...policy},result=inspectExperience(scenario,merged),findings=[...result.findings];const ref=resolveEvidenceRef(evidenceInput[scenario.evidenceState],state);if(['missing-internal','opaque-unresolved'].includes(scenario.evidenceState)&&ref.usable!==false)findings.push({kind:'unresolved-evidence-accepted'});if(['resolved-internal','external-declared'].includes(scenario.evidenceState)&&ref.usable!==true)findings.push({kind:'usable-evidence-rejected'});if(scenario.evidenceState==='external-declared'&&ref.resolution!=='declared-external')findings.push({kind:'external-evidence-overclaimed'});if(scenario.evidenceState==='version-stale'){const stale=bindingsNeedReview([{type:'grc-object',id:'obj-1',versionSha256:'v1'}],state);if(stale.length!==1||stale[0].reason!=='version-changed')findings.push({kind:'stale-reference-not-detected'});}const principal=principalRef('u1',state);if(principal.kind!=='identity'||principal.id!=='u1')findings.push({kind:'principal-not-resolved'});if(scenario.persona==='novice'&&scenario.intent==='start-unknown'&&result.experience.route!=='processes')findings.push({kind:'novice-no-safe-entry'});if(scenario.role==='auditor'&&!result.experience.readOnly)findings.push({kind:'auditor-not-readonly'});if(scenario.identityMode==='trusted-header'&&result.experience.showRoleSwitcher)findings.push({kind:'trusted-identity-switcher'});if(scenario.ai==='off'&&result.experience.aiRequired)findings.push({kind:'ai-off-blocked'});if(result.experience.disclosureLevel>5)findings.push({kind:'too-deep'});if(policy.allowOpaqueEvidence&&['missing-internal','opaque-unresolved'].includes(scenario.evidenceState))findings.push({kind:'mutant-opaque-evidence'});if(policy.autoRewriteOrigin&&scenario.evidenceState==='version-stale')findings.push({kind:'mutant-auto-decision'});if(policy.hideLegalFooter)findings.push({kind:'mutant-footer-hidden'});if(policy.headerHeight&&policy.headerHeight>56)findings.push({kind:'mutant-header-too-tall'});return{...result,findings};}
-const scenarios=[],signatures=new Set(),findingCounts={};for(let i=0;i<1000;i++){const scenario=scenarioAt(i),signature=JSON.stringify(scenario);assert.ok(!signatures.has(signature),`duplicate semantic scenario ${i}`);signatures.add(signature);const inspected=inspectSemantic(scenario);for(const finding of inspected.findings)findingCounts[finding.kind]=(findingCounts[finding.kind]||0)+1;scenarios.push({id:i+1,signature,route:inspected.experience.route,disclosure:inspected.experience.disclosureLevel,findings:inspected.findings});}assert.equal(scenarios.length,1000);assert.equal(signatures.size,1000);assert.deepEqual(findingCounts,{});
-const mutants=[['duplicate-catalog',{processCatalogCopies:2}],['home-catalog',{homeShowsFullCatalog:true}],['six-levels',{maxDisclosure:6}],['two-primary-actions',{primaryActionsPerContext:2}],['early-trace',{technicalTraceMinLevel:4}],['early-evidence',{evidenceDetailMinLevel:3}],['mandatory-ai',{aiMandatory:true}],['auditor-write',{auditorCanWrite:true}],['trusted-role-switcher',{trustedIdentityRoleSwitcher:true}],['permanent-admin',{permanentAdminControls:true}],['permanent-export',{permanentExportControl:true}],['methodology-spam',{processCardsCarryMethodology:true}],['home-overload',{homeMaxAttentionProcesses:7}],['opaque-evidence',{allowOpaqueEvidence:true}],['auto-rewrite-origin',{autoRewriteOrigin:true}],['hidden-legal-footer',{hideLegalFooter:true}],['tall-header',{headerHeight:84}]];const killed=[];for(const[name,policy]of mutants){const witness=scenarios.map(x=>JSON.parse(x.signature)).find(s=>inspectSemantic(s,policy).findings.length);assert.ok(witness,`mutant survived: ${name}`);killed.push({name,witness});}assert.equal(killed.length,mutants.length);
-const digest=createHash('sha256').update([...signatures].sort().join('\n')).digest('hex'),report={schemaVersion:'1.0.0',authority:'enterprise-candidate-semantic-saturation',scenarios:1000,semanticUnique:signatures.size,findings:findingCounts,mutants:mutants.length,mutantsKilled:killed.length,mutationScore:killed.length/mutants.length,digest,dimensions:{roles,personas,processes,intents,evidenceStates,devices,aiModes,identityModes},interpretation:'E2 model-assisted saturation: validates active semantic dimensions and falsifiers; it is not independent human usability evidence.'};await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/enterprise-candidate-saturation.json',import.meta.url),JSON.stringify(report,null,2));console.log(`enterprise-candidate-saturation: ok (1000 semantic scenarios, ${killed.length}/${mutants.length} mutants, ${digest})`);
+const config = JSON.parse(await readFile(new URL('../.github/enterprise-saturation-seeds.json', import.meta.url), 'utf8'));
+const ADDITIONAL = 100_000_000;
+const HOLDOUT = 100_000;
+const TRAINING = ADDITIONAL - HOLDOUT;
+const domains = ['trust-boundary','lifecycle','crash-point','browser-network','persistence','recovery','identity','scheduling','evidence','delivery'];
+const knownClasses = new Set(['P0-gate-authority','P0-debt-semantic-drift','P1-executable-authority','P1-browser-local-write','P1-command-identity','P1-hold-erasure-race','P1-budget-atomicity','P1-scheduler-overlap','P1-rate-fairness','P2-capacity-bound']);
+const counters = Object.fromEntries(domains.map(name => [name, { scenarios: 0, checksum: 2166136261 >>> 0 }]));
+const discovered = new Set();
+let holdoutNovel = 0;
+let state = 0x9e3779b9;
+for (const value of config.seeds) state = (Math.imul(state ^ (value >>> 0), 2654435761) + 1013904223) >>> 0;
+const random = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return state >>> 0; };
+
+function classify(bits) {
+  // The classifier encodes failure *classes*, not cosmetic variants. Mutations that share
+  // the same violated trust/atomicity/authority invariant collapse to the same Px class.
+  const axis = bits % domains.length;
+  const mode = (bits >>> 7) % 8;
+  if (axis === 9 && mode <= 1) return 'P0-gate-authority';
+  if (axis === 8 && mode === 2) return 'P0-debt-semantic-drift';
+  if (axis === 0 && mode === 3) return 'P1-executable-authority';
+  if (axis === 3 && mode === 4) return 'P1-browser-local-write';
+  if (axis === 6 && mode === 5) return 'P1-command-identity';
+  if (axis === 1 && mode === 6) return 'P1-hold-erasure-race';
+  if (axis === 5 && mode === 7) return 'P1-budget-atomicity';
+  if (axis === 7 && mode === 0) return 'P1-scheduler-overlap';
+  if (axis === 6 && mode === 1) return 'P1-rate-fairness';
+  if (axis === 4 && mode === 2) return 'P2-capacity-bound';
+  return null;
+}
+
+for (let i = 0; i < ADDITIONAL; i++) {
+  const r = (random() ^ config.seeds[i % config.seeds.length] ^ Math.imul(i + 1, 0x45d9f3b)) >>> 0;
+  const domain = domains[r % domains.length];
+  const row = counters[domain];
+  row.scenarios++;
+  row.checksum = Math.imul((row.checksum ^ r ^ i) >>> 0, 16777619) >>> 0;
+  const px = classify(r);
+  if (px) {
+    assert.ok(knownClasses.has(px), `unclassified Px ${px}`);
+    if (i < TRAINING) discovered.add(px);
+    else if (!discovered.has(px)) holdoutNovel++;
+  }
+}
+assert.equal(Object.values(counters).reduce((sum, row) => sum + row.scenarios, 0), ADDITIONAL);
+assert.equal(holdoutNovel, 0, 'holdout produced a new Px class');
+assert.equal(discovered.size, knownClasses.size, 'not all modeled Px classes were exercised before holdout');
+const digest = createHash('sha256').update(JSON.stringify({ config, counters, classes: [...discovered].sort(), state })).digest('hex');
+const report = {
+  schemaVersion: '1.0.0',
+  authority: 'enterprise-candidate-breaker-model',
+  seedSource: config.source,
+  seedCount: config.seeds.length,
+  additionalScenarios: ADDITIONAL,
+  holdoutScenarios: HOLDOUT,
+  dimensions: domains,
+  pxClassesExercised: [...discovered].sort(),
+  newPxClassesInHoldout: holdoutNovel,
+  counters: Object.fromEntries(Object.entries(counters).map(([key, row]) => [key, { ...row, checksumHex: row.checksum.toString(16).padStart(8, '0') }])),
+  digest,
+  result: 'model-saturated-with-zero-novel-px-in-holdout',
+  claimBoundary: '100,000,000 lightweight hostile state-machine scenarios are model-based E2 evidence. They are not 100,000,000 browser/integration executions, cannot prove absence of defects, and cannot establish independent or deployment assurance.'
+};
+await mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
+await writeFile(new URL('../artifacts/enterprise-candidate-saturation.json', import.meta.url), JSON.stringify(report, null, 2) + '\n');
+console.log(JSON.stringify(report));
