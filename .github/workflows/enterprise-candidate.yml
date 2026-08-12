@@ -27,6 +27,7 @@ jobs:
       - run: node v3/browser-local-write-boundary-check.mjs
       - run: node v3/command-identity-boundary-check.mjs
       - run: node v3/privacy-erasure-race-check.mjs
+      - run: node v3/ai-secret-policy-check.mjs
       - run: node v3/tenant-identity-coherence-check.mjs
       - run: node v3/attachment-scanner-tenant-check.mjs
       - run: node v3/csv-export-security-check.mjs

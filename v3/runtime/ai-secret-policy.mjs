@@ -1,0 +1,2 @@
+import { asString } from '../domain.mjs';
+export function normalizeAiKeyEnv(value){const name=asString(value,200);if(!name)return'';if(name==='ICTC_LLM_API_KEY'||/^ICTC_LLM_API_KEY_[A-Z0-9_]{1,160}$/.test(name))return name;throw Object.assign(new Error('Variabile secret AI fuori namespace consentito'),{status:400,code:'ai-key-env-not-allowed',details:{requiredNamespace:'ICTC_LLM_API_KEY[_SUFFIX]'}});}

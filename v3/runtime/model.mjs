@@ -1,225 +1,24 @@
-import {
-  CATALOG_STATES, DOCUMENT_TYPES, ROLES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings
-} from '../domain.mjs';
+import { CATALOG_STATES, DOCUMENT_TYPES, ROLES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings } from '../domain.mjs';
 import { deriveQuestions, submissionReadiness } from '../question-engine.mjs';
 import { httpError } from './http.mjs';
-
-export function findMission(state, id) {
-  const item = state.missions.find(entry => entry.id === id);
-  if (!item) throw httpError(404, 'Monitoraggio non trovato', 'not-found');
-  return item;
-}
-export function findCatalog(state, id) {
-  const item = state.catalog.find(entry => entry.id === id);
-  if (!item) throw httpError(404, 'Fonte non trovata', 'not-found');
-  return item;
-}
-export function findContribution(state, id) {
-  const item = state.contributions.find(entry => entry.id === id);
-  if (!item) throw httpError(404, 'Contributo non trovato', 'not-found');
-  return item;
-}
-export function findIncident(state, id) {
-  const item = state.incidents.find(entry => entry.id === id);
-  if (!item) throw httpError(404, 'Segnalazione non trovata', 'not-found');
-  return item;
-}
-export function canAccessIncident(actor, incident) {
-  return actor.role === 'admin' || actor.role === 'auditor' || incident.createdBy === actor.id;
-}
-export function ensureIncidentOwner(actor, incident) {
-  if (incident.createdBy !== actor.id) throw httpError(403, 'Puoi modificare soltanto le segnalazioni che hai creato', 'not-owner');
-}
-export function canAccessContribution(actor, contribution) {
-  return actor.role === 'admin' || contribution.createdBy === actor.id;
-}
-export function ensureContributionOwner(actor, contribution) {
-  if (contribution.createdBy !== actor.id) throw httpError(403, 'Puoi elaborare soltanto i contributi che hai creato', 'not-owner');
-}
-export function catalogKey(item) {
-  const identifier = asString(item.identifier, 500).toLowerCase();
-  if (identifier) return `id:${identifier}`;
-  const sourceUrl = normalizeUrl(item.sourceUrl).toLowerCase();
-  if (sourceUrl) return `url:${sourceUrl}`;
-  const authority = asString(item.authority, 500).toLowerCase().replace(/\s+/g, ' ');
-  const title = asString(item.title, 1_000).toLowerCase().replace(/\s+/g, ' ');
-  return `title:${authority}|${title}`;
-}
-function observationFrom(item) {
-  return {
-    observedAt: item.origin?.observedAt || now(),
-    origin: structuredClone(item.origin || null),
-    title: item.title,
-    documentType: item.documentType,
-    authority: item.authority,
-    jurisdiction: item.jurisdiction,
-    identifier: item.identifier,
-    sourceUrl: item.sourceUrl,
-    publicationDate: item.publicationDate,
-    effectiveDate: item.effectiveDate,
-    summary: item.summary,
-    relevance: item.relevance,
-    confidence: item.confidence,
-    aiTrace: structuredClone(item.aiTrace || null)
-  };
-}
-export function normalizeCatalogItem(raw, origin, trace, idFactory) {
-  const documentType = asString(raw.documentType, 80).toLowerCase();
-  const item = {
-    id: idFactory('source'),
-    title: asString(raw.title, 1_000) || 'Fonte senza titolo',
-    documentType: DOCUMENT_TYPES.includes(documentType) ? documentType : 'other',
-    authority: asString(raw.authority, 500),
-    jurisdiction: asString(raw.jurisdiction, 500),
-    identifier: asString(raw.identifier, 500),
-    sourceUrl: normalizeUrl(raw.sourceUrl),
-    publicationDate: asString(raw.publicationDate, 80),
-    effectiveDate: asString(raw.effectiveDate, 80),
-    summary: asString(raw.summary, 5_000),
-    relevance: asString(raw.relevance, 3_000),
-    confidence: Math.max(0, Math.min(1, Number(raw.confidence || 0))),
-    state: 'candidate', origin, aiTrace: trace, decisions: [], observations: [], createdAt: now(), updatedAt: now()
-  };
-  item.observations.push(observationFrom(item));
-  return item;
-}
-export function mergeCatalogObservation(existing, normalized) {
-  const preserved = {
-    id: existing.id,
-    state: existing.state,
-    decisions: existing.decisions || [],
-    observations: existing.observations || [],
-    createdAt: existing.createdAt
-  };
-  const observation = observationFrom(normalized);
-  const observationSha256 = sha256(observation);
-  const lastDecision = preserved.decisions.at(-1);
-  const decisionStillApplies = lastDecision?.observationSha256 === observationSha256;
-  Object.assign(existing, normalized, preserved, {
-    state: decisionStillApplies ? preserved.state : 'candidate',
-    reviewReason: decisionStillApplies ? null : 'new-observation',
-    updatedAt: now()
-  });
-  existing.observations = [...preserved.observations, observation].slice(-250);
-  return existing;
-}
-export function missionProjection(mission, state) {
-  const runs = state.runs.filter(run => run.missionId === mission.id);
-  return { ...mission, runCount: runs.length, lastRun: runs.at(-1) || null, evidenceUrl: `/api/evidence/mission/${mission.id}` };
-}
-export function incidentProjection(incident) {
-  const questions = deriveQuestions(incident);
-  return {
-    ...incident,
-    questions,
-    nextQuestion: questions[0] || null,
-    readiness: submissionReadiness(incident),
-    evidenceUrl: `/api/evidence/incident/${incident.id}`
-  };
-}
-function userSettings(settings) {
-  return {
-    organization: structuredClone(settings.organization),
-    llm: {
-      configured: Boolean(settings.llm.endpoint && settings.llm.model),
-      ready: Boolean(settings.llm.endpoint && settings.llm.model && (!settings.llm.apiKeyEnv || process.env[settings.llm.apiKeyEnv])),
-      model: settings.llm.model || ''
-    },
-    prompts: null,
-    updatedAt: settings.updatedAt,
-    updatedBy: settings.updatedBy
-  };
-}
-function publicPrincipal(user) {
-  return {
-    kind: 'identity',
-    id: asString(user?.id, 300),
-    displayName: asString(user?.displayName, 500) || asString(user?.id, 300),
-    role: ROLES.includes(user?.role) ? user.role : null,
-    status: user?.status === 'disabled' ? 'disabled' : 'active'
-  };
-}
-export function principalDirectoryProjection(state, actor) {
-  const active = (state.users || []).filter(user => user.status === 'active' && user.id).map(publicPrincipal);
-  if (actor.role === 'admin') return active;
-  const known = active.find(user => user.id === actor.id);
-  if (known) return [known];
-  return [publicPrincipal({ id: actor.id, displayName: actor.displayName || actor.id, role: actor.role, status: 'active' })];
-}
-export function visibleState(actor, store, version) {
-  const state = store.snapshot();
-  const visibleContributions = state.contributions.filter(item => canAccessContribution(actor, item));
-  const visibleIncidents = state.incidents.filter(item => canAccessIncident(actor, item));
-  const privateIds = new Set([
-    ...visibleContributions.map(item => item.id),
-    ...visibleIncidents.map(item => item.id)
-  ]);
-  const recentEvents = state.audit.filter(event => {
-    if (actor.role === 'admin') return true;
-    if (!event.subject) return event.actorId === actor.id;
-    if (['incident', 'contribution'].includes(event.subject.type)) return privateIds.has(event.subject.id);
-    return true;
-  }).slice(-8).reverse();
-  return {
-    version,
-    revision: state.revision,
-    actor,
-    principals: principalDirectoryProjection(state, actor),
-    settings: actor.role === 'admin' ? publicSettings(state.settings) : userSettings(state.settings),
-    missions: state.missions.map(item => missionProjection(item, state)),
-    catalog: state.catalog.map(item => ({ ...item, evidenceUrl: `/api/evidence/catalog/${item.id}` })),
-    contributions: visibleContributions.map(item => ({ ...item, evidenceUrl: `/api/evidence/contribution/${item.id}` })),
-    incidents: visibleIncidents.map(incidentProjection),
-    integrity: store.verifyChain(),
-    recentEvents,
-    experience: {
-      services: 2,
-      roles: ROLES.length,
-      maxPrimaryActionsPerContext: 1,
-      aiAuthority: 'assist-only',
-      evidenceMode: 'receipt-and-bundle',
-      principalVisibility: actor.role === 'admin' ? 'active-directory' : 'self-only'
-    }
-  };
-}
-export function validateSettings(input, current) {
-  const organization = input.organization || {};
-  const llm = input.llm || {};
-  const prompts = input.prompts || {};
-  const endpoint = normalizeUrl(llm.endpoint ?? current.llm.endpoint);
-  if (endpoint) {
-    const parsed = new URL(endpoint);
-    const privateHost = ['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) || /^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(parsed.hostname);
-    if (privateHost && process.env.ICTC_ALLOW_PRIVATE_AI !== '1') throw httpError(400, 'Endpoint privato non consentito', 'private-ai-endpoint');
-  }
-  return {
-    organization: {
-      name: asString(organization.name ?? current.organization.name, 500) || 'Organizzazione',
-      scope: asString(organization.scope ?? current.organization.scope, 10_000),
-      jurisdictions: uniqueStrings(organization.jurisdictions ?? current.organization.jurisdictions),
-      sectors: uniqueStrings(organization.sectors ?? current.organization.sectors)
-    },
-    llm: {
-      endpoint,
-      model: asString(llm.model ?? current.llm.model, 500),
-      apiKeyEnv: asString(llm.apiKeyEnv ?? current.llm.apiKeyEnv, 200),
-      temperature: Math.max(0, Math.min(2, Number(llm.temperature ?? current.llm.temperature ?? 0.1)))
-    },
-    prompts: {
-      monitoringPlan: asString(prompts.monitoringPlan ?? current.prompts.monitoringPlan, 40_000),
-      complianceDiscovery: asString(prompts.complianceDiscovery ?? current.prompts.complianceDiscovery, 40_000),
-      contributionEnrichment: asString(prompts.contributionEnrichment ?? current.prompts.contributionEnrichment, 40_000),
-      incidentAnalysis: asString(prompts.incidentAnalysis ?? current.prompts.incidentAnalysis, 40_000),
-      incidentDraft: asString(prompts.incidentDraft ?? current.prompts.incidentDraft, 40_000)
-    }
-  };
-}
-export function applyCatalogDecision(item, decision, reason, actorId) {
-  if (!CATALOG_STATES.includes(decision)) throw httpError(400, 'Stato non valido');
-  const observation = item.observations?.at(-1) || observationFrom(item);
-  item.state = decision;
-  item.reviewReason = null;
-  item.updatedAt = now();
-  item.decisions.push({ decision, reason, at: now(), by: actorId, observationSha256: sha256(observation) });
-  return item;
-}
+import { normalizeAiKeyEnv } from './ai-secret-policy.mjs';
+export function findMission(state,id){const item=state.missions.find(entry=>entry.id===id);if(!item)throw httpError(404,'Monitoraggio non trovato','not-found');return item;}
+export function findCatalog(state,id){const item=state.catalog.find(entry=>entry.id===id);if(!item)throw httpError(404,'Fonte non trovata','not-found');return item;}
+export function findContribution(state,id){const item=state.contributions.find(entry=>entry.id===id);if(!item)throw httpError(404,'Contributo non trovato','not-found');return item;}
+export function findIncident(state,id){const item=state.incidents.find(entry=>entry.id===id);if(!item)throw httpError(404,'Segnalazione non trovata','not-found');return item;}
+export function canAccessIncident(actor,incident){return actor.role==='admin'||actor.role==='auditor'||incident.createdBy===actor.id;}
+export function ensureIncidentOwner(actor,incident){if(incident.createdBy!==actor.id)throw httpError(403,'Puoi modificare soltanto le segnalazioni che hai creato','not-owner');}
+export function canAccessContribution(actor,contribution){return actor.role==='admin'||contribution.createdBy===actor.id;}
+export function ensureContributionOwner(actor,contribution){if(contribution.createdBy!==actor.id)throw httpError(403,'Puoi elaborare soltanto i contributi che hai creato','not-owner');}
+export function catalogKey(item){const identifier=asString(item.identifier,500).toLowerCase();if(identifier)return`id:${identifier}`;const sourceUrl=normalizeUrl(item.sourceUrl).toLowerCase();if(sourceUrl)return`url:${sourceUrl}`;const authority=asString(item.authority,500).toLowerCase().replace(/\s+/g,' '),title=asString(item.title,1000).toLowerCase().replace(/\s+/g,' ');return`title:${authority}|${title}`;}
+function observationFrom(item){return{observedAt:item.origin?.observedAt||now(),origin:structuredClone(item.origin||null),title:item.title,documentType:item.documentType,authority:item.authority,jurisdiction:item.jurisdiction,identifier:item.identifier,sourceUrl:item.sourceUrl,publicationDate:item.publicationDate,effectiveDate:item.effectiveDate,summary:item.summary,relevance:item.relevance,confidence:item.confidence,aiTrace:structuredClone(item.aiTrace||null)};}
+export function normalizeCatalogItem(raw,origin,trace,idFactory){const documentType=asString(raw.documentType,80).toLowerCase(),item={id:idFactory('source'),title:asString(raw.title,1000)||'Fonte senza titolo',documentType:DOCUMENT_TYPES.includes(documentType)?documentType:'other',authority:asString(raw.authority,500),jurisdiction:asString(raw.jurisdiction,500),identifier:asString(raw.identifier,500),sourceUrl:normalizeUrl(raw.sourceUrl),publicationDate:asString(raw.publicationDate,80),effectiveDate:asString(raw.effectiveDate,80),summary:asString(raw.summary,5000),relevance:asString(raw.relevance,3000),confidence:Math.max(0,Math.min(1,Number(raw.confidence||0))),state:'candidate',origin,aiTrace:trace,decisions:[],observations:[],createdAt:now(),updatedAt:now()};item.observations.push(observationFrom(item));return item;}
+export function mergeCatalogObservation(existing,normalized){const preserved={id:existing.id,state:existing.state,decisions:existing.decisions||[],observations:existing.observations||[],createdAt:existing.createdAt},observation=observationFrom(normalized),observationSha256=sha256(observation),lastDecision=preserved.decisions.at(-1),decisionStillApplies=lastDecision?.observationSha256===observationSha256;Object.assign(existing,normalized,preserved,{state:decisionStillApplies?preserved.state:'candidate',reviewReason:decisionStillApplies?null:'new-observation',updatedAt:now()});existing.observations=[...preserved.observations,observation].slice(-250);return existing;}
+export function missionProjection(mission,state){const runs=state.runs.filter(run=>run.missionId===mission.id);return{...mission,runCount:runs.length,lastRun:runs.at(-1)||null,evidenceUrl:`/api/evidence/mission/${mission.id}`};}
+export function incidentProjection(incident){const questions=deriveQuestions(incident);return{...incident,questions,nextQuestion:questions[0]||null,readiness:submissionReadiness(incident),evidenceUrl:`/api/evidence/incident/${incident.id}`};}
+function userSettings(settings){const keyEnv=normalizeAiKeyEnv(settings.llm.apiKeyEnv);return{organization:structuredClone(settings.organization),llm:{configured:Boolean(settings.llm.endpoint&&settings.llm.model),ready:Boolean(settings.llm.endpoint&&settings.llm.model&&(!keyEnv||process.env[keyEnv])),model:settings.llm.model||''},prompts:null,updatedAt:settings.updatedAt,updatedBy:settings.updatedBy};}
+function publicPrincipal(user){return{kind:'identity',id:asString(user?.id,300),displayName:asString(user?.displayName,500)||asString(user?.id,300),role:ROLES.includes(user?.role)?user.role:null,status:user?.status==='disabled'?'disabled':'active'};}
+export function principalDirectoryProjection(state,actor){const active=(state.users||[]).filter(user=>user.status==='active'&&user.id).map(publicPrincipal);if(actor.role==='admin')return active;const known=active.find(user=>user.id===actor.id);if(known)return[known];return[publicPrincipal({id:actor.id,displayName:actor.displayName||actor.id,role:actor.role,status:'active'})];}
+export function visibleState(actor,store,version){const state=store.snapshot(),visibleContributions=state.contributions.filter(item=>canAccessContribution(actor,item)),visibleIncidents=state.incidents.filter(item=>canAccessIncident(actor,item)),privateIds=new Set([...visibleContributions.map(item=>item.id),...visibleIncidents.map(item=>item.id)]),recentEvents=state.audit.filter(event=>{if(actor.role==='admin')return true;if(!event.subject)return event.actorId===actor.id;if(['incident','contribution'].includes(event.subject.type))return privateIds.has(event.subject.id);return true;}).slice(-8).reverse();return{version,revision:state.revision,actor,principals:principalDirectoryProjection(state,actor),settings:actor.role==='admin'?publicSettings(state.settings):userSettings(state.settings),missions:state.missions.map(item=>missionProjection(item,state)),catalog:state.catalog.map(item=>({...item,evidenceUrl:`/api/evidence/catalog/${item.id}`})),contributions:visibleContributions.map(item=>({...item,evidenceUrl:`/api/evidence/contribution/${item.id}`})),incidents:visibleIncidents.map(incidentProjection),integrity:store.verifyChain(),recentEvents,experience:{services:2,roles:ROLES.length,maxPrimaryActionsPerContext:1,aiAuthority:'assist-only',evidenceMode:'receipt-and-bundle',principalVisibility:actor.role==='admin'?'active-directory':'self-only'}};}
+export function validateSettings(input,current){const organization=input.organization||{},llm=input.llm||{},prompts=input.prompts||{},endpoint=normalizeUrl(llm.endpoint??current.llm.endpoint);if(endpoint){const parsed=new URL(endpoint),privateHost=['localhost','127.0.0.1','::1'].includes(parsed.hostname)||/^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(parsed.hostname);if(privateHost&&process.env.ICTC_ALLOW_PRIVATE_AI!=='1')throw httpError(400,'Endpoint privato non consentito','private-ai-endpoint');}return{organization:{name:asString(organization.name??current.organization.name,500)||'Organizzazione',scope:asString(organization.scope??current.organization.scope,10000),jurisdictions:uniqueStrings(organization.jurisdictions??current.organization.jurisdictions),sectors:uniqueStrings(organization.sectors??current.organization.sectors)},llm:{endpoint,model:asString(llm.model??current.llm.model,500),apiKeyEnv:normalizeAiKeyEnv(llm.apiKeyEnv??current.llm.apiKeyEnv),temperature:Math.max(0,Math.min(2,Number(llm.temperature??current.llm.temperature??0.1)))},prompts:{monitoringPlan:asString(prompts.monitoringPlan??current.prompts.monitoringPlan,40000),complianceDiscovery:asString(prompts.complianceDiscovery??current.prompts.complianceDiscovery,40000),contributionEnrichment:asString(prompts.contributionEnrichment??current.prompts.contributionEnrichment,40000),incidentAnalysis:asString(prompts.incidentAnalysis??current.prompts.incidentAnalysis,40000),incidentDraft:asString(prompts.incidentDraft??current.prompts.incidentDraft,40000)}};}
+export function applyCatalogDecision(item,decision,reason,actorId){if(!CATALOG_STATES.includes(decision))throw httpError(400,'Stato non valido');const observation=item.observations?.at(-1)||observationFrom(item);item.state=decision;item.reviewReason=null;item.updatedAt=now();item.decisions.push({decision,reason,at:now(),by:actorId,observationSha256:sha256(observation)});return item;}
