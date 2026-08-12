@@ -84,11 +84,13 @@ function normalizeMonitoring(){
   const note=document.createElement('p');note.className='demo-scheduler-note';note.textContent='Contesto DEMO: lo scheduler operativo è disabilitato. Date di prossima esecuzione nel passato appartengono al dataset sintetico e non indicano job mancati.';
   section.querySelector('.section-head')?.after(note);
 }
-function normalizeProofTitle(){
+function normalizeProofSemantics(){
   const title=$('#proofTitle');
-  if(title)title.textContent='Prove e limiti ICTC';
-  const lead=$('#proofLead');
-  if(lead)lead.textContent='Mostra quali fatti sul funzionamento ICTC sono osservati, con quale evidenza e quali aspetti restano esterni.';
+  if(!title)return;
+  let qualifier=title.parentElement?.querySelector('.proof-semantic-qualifier');
+  if(!qualifier){qualifier=document.createElement('p');qualifier.className='proof-semantic-qualifier';title.after(qualifier);}
+  qualifier.textContent='Prove e limiti del funzionamento ICTC';
+  title.setAttribute('aria-description','Postura tecnica basata su prove osservabili; non è un giudizio di conformità dell’organizzazione.');
 }
 function normalizeEpistemicLattice(){
   const root=$('#epistemicView');if(!root)return;
@@ -105,7 +107,7 @@ function normalizeEpistemicLattice(){
 }
 function apply(){
   if(scheduled)return;scheduled=true;
-  queueMicrotask(()=>{scheduled=false;normalizeProofTitle();normalizeGrc();normalizeMonitoring();normalizeEpistemicLattice();document.documentElement.dataset.visualEpistemicRuntime='1';});
+  queueMicrotask(()=>{scheduled=false;normalizeProofSemantics();normalizeGrc();normalizeMonitoring();normalizeEpistemicLattice();document.documentElement.dataset.visualEpistemicRuntime='1';});
 }
 export function installVisualEpistemicRuntime(){
   if(installed)return;installed=true;

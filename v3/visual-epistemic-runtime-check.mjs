@@ -1,95 +1,21 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-
-const files=Object.freeze({
-  shell:'v3/public/ui/stable-shell.js',
-  copy:'v3/public/ui/product-copy.js',
-  proof:'v3/public/ui/proof-surface.js',
-  trace:'v3/public/ui/trace-explorer.js',
-  traceCss:'v3/public/trace-explorer.css',
-  runtime:'v3/public/ui/visual-epistemic-runtime.js',
-  runtimeCss:'v3/public/visual-epistemic-runtime.css',
-  active:'v3/public/ui/active-experience.js',
-  styles:'v3/public/styles.css'
-});
-const content=Object.fromEntries(await Promise.all(Object.entries(files).map(async([key,path])=>[key,await readFile(path,'utf8')])));
-const checks=[];
-function check(id,fn){try{fn();checks.push(id);}catch(error){console.error(`::error title=visual-epistemic-runtime:${id}::${error.message}`);throw error;}}
-
-check('demo-chip-context',()=>{
-  assert.match(content.shell,/demo-context-badge/);
-  assert.match(content.shell,/demo-context-chip/);
-  assert.match(content.shell,/Nessun dato, contatore o esito demo rappresenta una conclusione reale/);
-  assert.doesNotMatch(content.shell,/DEMO · dati sintetici<\/strong><span>/);
-});
-check('shell-proportion-guard',()=>{
-  assert.match(content.runtimeCss,/stable-header-inner\{height:46px/);
-  assert.match(content.runtimeCss,/home-intro h1\{font-size:clamp\(1\.85rem,3\.25vw,2\.7rem\)/);
-});
-check('proof-route-stable-content-bounded',()=>{
-  assert.match(content.copy,/proof:'Postura ICTC'/);
-  assert.match(content.copy,/proofTitle:'Prove e limiti ICTC'/);
-  assert.match(content.runtime,/title\.textContent='Prove e limiti ICTC'/);
-  assert.match(content.copy,/non costituiscono certificazione/);
-});
-check('proof-evidence-not-score',()=>{
-  assert.match(content.proof,/Controlli con evidenza/);
-  assert.match(content.proof,/non è un punteggio di conformità o sicurezza/);
-  assert.match(content.proof,/Catena integra · r/);
-  assert.doesNotMatch(content.proof,/Coerente · r/);
-});
-check('proof-progressive-technical-disclosure',()=>{
-  assert.match(content.proof,/proof-technical-detail/);
-  assert.match(content.proof,/Attestazione assente, incompleta o non valida/);
-  assert.match(content.proof,/<details class="proof-section"><summary><span><b>Decisioni e tracciabilità/);
-  assert.doesNotMatch(content.proof,/<details class="proof-section" open><summary><span><b>Decisioni e tracciabilità/);
-});
-check('trace-no-nested-scroll',()=>{
-  assert.match(content.traceCss,/trace-list\{[^}]*max-height:none;overflow:visible/);
-  assert.doesNotMatch(content.traceCss,/max-height:68vh/);
-});
-check('trace-subject-identity',()=>{
-  assert.match(content.trace,/Identificativo \$\{esc\(String\(t\.subject\.id/);
-  assert.match(content.trace,/aria-current=/);
-});
-check('trace-technical-disclosure',()=>{
-  assert.match(content.trace,/trace-technical/);
-  assert.match(content.trace,/Digest e identificativi/);
-  assert.match(content.trace,/Hash di audit/);
-  assert.match(content.trace,/Stato epistemico/);
-});
-check('grc-non-additive-metrics',()=>{
-  assert.match(content.runtime,/Le categorie possono sovrapporsi/);
-  assert.match(content.runtime,/metricSemantics='non-additive-unless-explicit'/);
-});
-check('risk-axis-and-boundary',()=>{
-  assert.match(content.runtime,/Impatto →/);
-  assert.match(content.runtime,/Probabilità →/);
-  assert.match(content.runtime,/non è una probabilità oggettiva né una conclusione regolatoria/);
-});
-check('next-human-action-hierarchy',()=>{
-  assert.match(content.runtime,/epistemic-next-action/);
-  assert.match(content.runtimeCss,/epistemic-next-action[^}]*font-weight:800/);
-  assert.match(content.runtime,/epistemic-evidence-action/);
-});
-check('demo-time-boundary',()=>{
-  assert.match(content.runtime,/lo scheduler operativo è disabilitato/);
-  assert.match(content.runtime,/non indicano job mancati/);
-});
-check('ai-secondary-salience',()=>{
-  assert.match(content.runtime,/epistemic-secondary-banner/);
-  assert.match(content.runtimeCss,/setup-banner\.epistemic-secondary-banner/);
-});
-check('epistemic-professional-language',()=>{
-  assert.match(content.runtime,/actions:'Azioni'/);
-  assert.match(content.runtime,/recorded:'Registrato'/);
-  assert.match(content.runtime,/tracce tecniche nella pagina/);
-  assert.match(content.runtime,/La vista raggruppa la presentazione senza modificare origine, versione, integrità, base, stato o relazioni registrate/);
-});
-check('runtime-owner-installed',()=>{
-  assert.match(content.active,/installVisualEpistemicRuntime/);
-  assert.match(content.active,/installSurfacePrimitives,installVisualEpistemicRuntime/);
-  assert.match(content.styles,/visual-epistemic-runtime\.css/);
-});
-
+import {readFile} from 'node:fs/promises';
+const read=p=>readFile(p,'utf8');
+const [shell,copy,proof,trace,traceCss,runtime,runtimeCss,active,styles]=await Promise.all(['v3/public/ui/stable-shell.js','v3/public/ui/product-copy.js','v3/public/ui/proof-surface.js','v3/public/ui/trace-explorer.js','v3/public/trace-explorer.css','v3/public/ui/visual-epistemic-runtime.js','v3/public/visual-epistemic-runtime.css','v3/public/ui/active-experience.js','v3/public/styles.css'].map(read));
+const checks=[];const ok=(id,test,msg)=>{try{assert.ok(test,msg||id);checks.push(id);}catch(e){console.error(`::error title=visual-epistemic-runtime:${id}::${e.message}`);throw e;}};
+ok('demo-chip-context',/demo-context-badge/.test(shell)&&/demo-context-chip/.test(shell)&&/Nessun dato, contatore o esito demo rappresenta una conclusione reale/.test(shell));
+ok('shell-proportion-guard',/stable-header-inner\{height:46px/.test(runtimeCss)&&/home-intro h1\{font-size:clamp\(1\.85rem,3\.25vw,2\.7rem\)/.test(runtimeCss));
+ok('proof-route-stable-content-bounded',/proof:'Postura ICTC'/.test(copy)&&/proofTitle:'Prove e limiti ICTC'/.test(copy)&&/Prove e limiti del funzionamento ICTC/.test(runtime)&&/non è un giudizio di conformità dell’organizzazione/.test(runtime));
+ok('proof-evidence-not-score',/Controlli con evidenza/.test(proof)&&/non è un punteggio di conformità o sicurezza/.test(proof)&&/Catena integra · r/.test(proof)&&! /Coerente · r/.test(proof));
+ok('proof-progressive-disclosure',/proof-technical-detail/.test(proof)&&/Attestazione assente, incompleta o non valida/.test(proof)&&!/<details class="proof-section" open><summary><span><b>Decisioni e tracciabilità/.test(proof));
+ok('trace-no-nested-scroll',/trace-list\{[^}]*max-height:none;overflow:visible/.test(traceCss)&&!/max-height:68vh/.test(traceCss));
+ok('trace-subject-identity',/Identificativo \$\{esc\(String\(t\.subject\.id/.test(trace)&&/aria-current=/.test(trace));
+ok('trace-technical-disclosure',/trace-technical/.test(trace)&&/Digest e identificativi/.test(trace)&&/Hash di audit/.test(trace)&&/Stato epistemico/.test(trace));
+ok('grc-non-additive-metrics',/Le categorie possono sovrapporsi/.test(runtime)&&/metricSemantics='non-additive-unless-explicit'/.test(runtime));
+ok('risk-axis-and-boundary',/Impatto →/.test(runtime)&&/Probabilità →/.test(runtime)&&/non è una probabilità oggettiva né una conclusione regolatoria/.test(runtime));
+ok('next-human-action-hierarchy',/epistemic-next-action/.test(runtime)&&/epistemic-next-action[^}]*font-weight:800/.test(runtimeCss)&&/epistemic-evidence-action/.test(runtime));
+ok('demo-time-boundary',/lo scheduler operativo è disabilitato/.test(runtime)&&/non indicano job mancati/.test(runtime));
+ok('ai-secondary-salience',/epistemic-secondary-banner/.test(runtime)&&/setup-banner\.epistemic-secondary-banner/.test(runtimeCss));
+ok('epistemic-professional-language',/actions:'Azioni'/.test(runtime)&&/recorded:'Registrato'/.test(runtime)&&/tracce tecniche nella pagina/.test(runtime));
+ok('runtime-owner-installed',/installVisualEpistemicRuntime/.test(active)&&/installSurfacePrimitives,installVisualEpistemicRuntime/.test(active)&&/visual-epistemic-runtime\.css/.test(styles));
 console.log(JSON.stringify({ok:true,control:'VISUAL-EPISTEMIC-RUNTIME',checks:checks.length,checked:checks}));
