@@ -34,12 +34,12 @@ function classify(bits) {
 }
 
 for (let i = 0; i < ADDITIONAL; i++) {
-  const r = random() ^ config.seeds[i % config.seeds.length] ^ Math.imul(i + 1, 0x45d9f3b);
+  const r = (random() ^ config.seeds[i % config.seeds.length] ^ Math.imul(i + 1, 0x45d9f3b)) >>> 0;
   const domain = domains[r % domains.length];
   const row = counters[domain];
   row.scenarios++;
   row.checksum = Math.imul((row.checksum ^ r ^ i) >>> 0, 16777619) >>> 0;
-  const px = classify(r >>> 0);
+  const px = classify(r);
   if (px) {
     assert.ok(knownClasses.has(px), `unclassified Px ${px}`);
     if (i < TRAINING) discovered.add(px);
