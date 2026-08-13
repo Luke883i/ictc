@@ -17,5 +17,6 @@ ok('next-human-action-hierarchy',/epistemic-next-action/.test(runtime)&&/epistem
 ok('demo-time-boundary',/lo scheduler operativo è disabilitato/.test(runtime)&&/non indicano job mancati/.test(runtime));
 ok('ai-secondary-salience',/epistemic-secondary-banner/.test(runtime)&&/setup-banner\.epistemic-secondary-banner/.test(runtimeCss));
 ok('epistemic-professional-language',/actions:'Azioni'/.test(runtime)&&/recorded:'Registrato'/.test(runtime)&&/tracce tecniche nella pagina/.test(runtime));
-ok('runtime-owner-installed',/installVisualEpistemicRuntime/.test(active)&&/installSurfacePrimitives,installVisualEpistemicRuntime/.test(active)&&/visual-epistemic-runtime\.css/.test(styles));
+const visualInstall=active.indexOf('installVisualEpistemicRuntime'),surfaceInstall=active.indexOf('installSurfacePrimitives');
+ok('runtime-owner-installed',visualInstall>=0&&surfaceInstall>=0&&surfaceInstall<visualInstall&&/visual-epistemic-runtime\.css/.test(styles)&&styles.indexOf('visual-epistemic-runtime.css')<styles.indexOf('ui-convergence.css'));
 console.log(JSON.stringify({ok:true,control:'VISUAL-EPISTEMIC-RUNTIME',checks:checks.length,checked:checks}));

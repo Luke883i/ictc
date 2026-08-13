@@ -21,9 +21,9 @@ for(const bp of ['@media(max-width:900px)','@media(max-width:820px)'])assert.ok(
 assert.ok(css.includes('.service-nav')&&css.includes('overflow-x:auto'),'tablet navigation must own overflow locally');
 assert.equal(css.includes('body{overflow-x:hidden}'),false,'document overflow must not be masked at body level');
 const imports=[...styles.matchAll(/@import\s+url\(['"]?([^)'"\s]+)['"]?\)/g)].map(match=>match[1]);
-assert.deepEqual(imports.slice(-3),['./onto-compliance-v1.css','./visual-epistemic-runtime.css','./ui-convergence.css'],'screenshot-derived visual semantics must sit inside the Onto-Compliance horizon and below the final geometry/rhythm convergence resolver');
+assert.deepEqual(imports.slice(-4),['./onto-compliance-v1.css','./procedure-finetuning-1-4.css','./visual-epistemic-runtime.css','./ui-convergence.css'],'procedure finetuning must remain inside the Onto-Compliance horizon, below screenshot-derived visual semantics, and below the final palette-neutral convergence resolver');
 assert.doesNotMatch(convergence,/(?:^|[;{])\s*(?:color|background(?:-color)?)\s*:/m,'final UI convergence resolver must not create an independent palette authority');
 for(const token of ['[data-compact-row]','[data-compact-tabs]','surface-information-detail','ictc-manifest-detail'])assert.ok(convergence.includes(token),`final geometry convergence missing ${token}`);
 for(const token of ['Identity','Action','Work','Evidence / Trace','M+100','G+100','Rice'])assert.ok(doc.includes(token),`design convergence contract missing ${token}`);
 for(const token of ["'work':'#monitoringView > .section-block'","'work':'#incidentsView > .section-block'",'coverage-scope-editors-expanded-by-default','auditor-primary-leaves-process','epistemic-family-convergence','posture-proof-method-count'])assert.ok(browser.includes(token),`runtime visual audit missing ${token}`);
-console.log('onto-compliance-horizon-check: ok (canonical process authority + screenshot-derived semantic layer + palette-neutral final convergence)');
+console.log('onto-compliance-horizon-check: ok (canonical process authority + procedure-specific journey layer + screenshot-derived semantic layer + palette-neutral final convergence)');
