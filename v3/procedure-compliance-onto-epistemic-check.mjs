@@ -12,7 +12,8 @@ assert.throws(()=>assertRnClosedUniverse(['binding-eu-law']),error=>error.code==
 assert.equal(inferRnSourceClass({documentType:'regulation',jurisdiction:'European Union',authority:'European Commission'}),'binding-eu-law');
 assert.equal(inferRnSourceClass({documentType:'legislative-decree',jurisdiction:'Italia'}),'binding-italian-law');
 assert.equal(inferRnSourceClass({documentType:'authority-decision',authority:'Garante Privacy'}),'competent-authority-decisions');
-assert.equal(inferRnSourceClass({documentType:'case-law'}),'public-jurisprudence-and-case-information-without-personal-data');
+assert.equal(inferRnSourceClass({documentType:'case-law'}),null);
+assert.equal(inferRnSourceClass({documentType:'case-law',authority:'Corte di Cassazione',sourceUrl:'https://www.cortedicassazione.it/'}),'public-jurisprudence-and-case-information-without-personal-data');
 assert.equal(normalizeRnDiscoveredItem({documentType:'blog-post'},{}),null);
 const prompt=rnMiningPrompt('BASE',{});for(const sourceClass of RN_SOURCE_CLASSES)assert.ok(prompt.includes(sourceClass));assert.match(prompt,/exclude personal data/i);assert.match(prompt,/never establish legal applicability/i);
 const job=monitoringJobCandidate({objective:'Sorveglia il perimetro normativo',sourceClasses:RN_SOURCE_CLASSES});assert.deepEqual(job.sourceClasses,RN_SOURCE_CLASSES);assert.equal(job.sourceUniverse,'RN-01-closed-public-source-universe');assert.throws(()=>monitoringJobCandidate({objective:'subset',sourceClasses:['binding-eu-law']}),error=>error.code==='rn-source-universe-fixed');

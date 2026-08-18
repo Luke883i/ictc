@@ -1,5 +1,6 @@
 import { DOCUMENT_TYPES, asString, id, normalizeUrl, now } from '../domain.mjs';
 import { httpError } from './http.mjs';
+import { normalizeRnDiscoveredItem } from './rn-monitoring-policy.mjs';
 
 function requiredText(value, field, max = 1000) {
   const normalized = asString(value, max);
@@ -24,7 +25,7 @@ function requiredUrl(value) {
 export function normalizeInternalSourceReference(input, actor) {
   const documentType = asString(input.documentType, 80).toLowerCase();
   const recordedAt = now();
-  return {
+  const source = {
     title: requiredText(input.title, 'title', 1000),
     documentType: DOCUMENT_TYPES.includes(documentType) ? documentType : 'other',
     authority: asString(input.authority, 500),
@@ -33,7 +34,20 @@ export function normalizeInternalSourceReference(input, actor) {
     sourceUrl: normalizeUrl(input.publicSourceUrl),
     publicationDate: asString(input.publicationDate, 80),
     effectiveDate: asString(input.effectiveDate, 80),
-    relevance: asString(input.note, 3000),
+    relevance: asString(input.note, 3000)
+  };
+  const eligible = normalizeRnDiscoveredItem(source, { sourceClasses: null });
+  if (!eligible) {
+    throw httpError(
+      400,
+      'Il riferimento interno può entrare in RN-01 solo se il contenuto referenziato appartiene a una delle quattro classi di fonte ammesse.',
+      'internal-reference-outside-rn-universe'
+    );
+  }
+  return {
+    ...source,
+    sourceClass: eligible.sourceClass,
+    rnClassificationEvidence: eligible.rnClassificationEvidence,
     internalReference: {
       masterSystem: requiredText(input.masterSystem, 'masterSystem', 300),
       masterId: requiredText(input.masterId, 'masterId', 500),
@@ -80,6 +94,8 @@ export async function recordInternalSourceReference(store, actor, input, command
     summary: '',
     relevance: normalized.relevance,
     confidence: 0,
+    sourceClass: normalized.sourceClass,
+    rnClassificationEvidence: structuredClone(normalized.rnClassificationEvidence),
     aiTrace: null,
     internalReference: structuredClone(normalized.internalReference)
   };
@@ -96,6 +112,8 @@ export async function recordInternalSourceReference(store, actor, input, command
     summary: '',
     relevance: normalized.relevance,
     confidence: 0,
+    sourceClass: normalized.sourceClass,
+    rnClassificationEvidence: structuredClone(normalized.rnClassificationEvidence),
     state: 'candidate',
     origin,
     internalReference: structuredClone(normalized.internalReference),
@@ -117,7 +135,8 @@ export async function recordInternalSourceReference(store, actor, input, command
       contentSha256: normalized.internalReference.contentSha256,
       referenceUrl: normalized.internalReference.referenceUrl,
       title: normalized.title,
-      publicSourceUrl: normalized.sourceUrl
+      publicSourceUrl: normalized.sourceUrl,
+      sourceClass: normalized.sourceClass
     },
     draft => {
       const duplicate = draft.catalog.find(item => item.internalReference && internalReferenceVersionKey(item.internalReference) === versionKey);

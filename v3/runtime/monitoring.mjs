@@ -4,6 +4,7 @@ import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch }
 import {
   applyCatalogDecision, catalogKey, findCatalog, findMission, mergeCatalogObservation, normalizeCatalogItem
 } from './model.mjs';
+import { assertRnClosedUniverse, assertRnVerifiableSource, normalizeRnDiscoveredItem } from './rn-monitoring-policy.mjs';
 
 function derivedCommand(command, suffix) {
   return command.id ? { ...command, id: `${command.id}-${suffix}`, expectedRevision: null } : {};
@@ -13,7 +14,8 @@ function candidateFrom(input, previous = {}) {
     objective: asString(input.objective ?? previous.objective, 10_000),
     cadenceHours: cadenceHours(input.cadence ?? input.cadenceHours ?? previous.cadenceHours),
     sourceHints: uniqueStrings(input.sourceHints ?? previous.sourceHints),
-    promptOverride: asString(input.promptOverride ?? previous.promptOverride, 40_000)
+    promptOverride: asString(input.promptOverride ?? previous.promptOverride, 40_000),
+    sourceClasses: assertRnClosedUniverse(input.sourceClasses ?? previous.sourceClasses)
   };
 }
 
@@ -24,6 +26,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
     const ai = await createMonitoringPlan(before.settings, mission);
     return store.mutate(actor, 'monitoring.mission.planned', { type: 'mission', id: missionId }, { trace: ai.trace }, draft => {
       const current = findMission(draft, missionId);
+      current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
       current.plan = ai.output;
       current.planTrace = ai.trace;
       current.planVersion = Number(current.planVersion || 0) + 1;
@@ -39,6 +42,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
   async function deferPlan(missionId, actor, error, command = {}) {
     return store.mutate(actor, 'monitoring.mission.plan.deferred', { type: 'mission', id: missionId }, { error: error.message }, draft => {
       const current = findMission(draft, missionId);
+      current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
       current.state = 'needs-plan';
       current.aiError = error.message;
       current.updatedAt = now();
@@ -52,6 +56,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
     try {
       const before = store.snapshot();
       const mission = findMission(before, missionId);
+      assertRnClosedUniverse(mission.sourceClasses);
       if (mission.state !== 'active') throw httpError(409, 'Attiva prima il monitoraggio', 'mission-not-active');
       if (!mission.plan) throw httpError(409, 'Il piano AI non è disponibile', 'mission-plan-missing');
       const runId = id('run');
@@ -67,7 +72,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
           current.lastError = error.message;
           current.lastRunAt = startedAt;
           current.nextRunAt = nextRunAt(startedAt, current.cadenceHours);
-          const run = { id: runId, missionId, state: 'failed', startedAt, completedAt: now(), error: error.message, discovered: 0, inserted: 0, updated: 0 };
+          const run = { id: runId, missionId, state: 'failed', startedAt, completedAt: now(), error: error.message, discovered: 0, eligible: 0, excluded: 0, inserted: 0, updated: 0 };
           draft.runs.push(run);
           return run;
         }, command);
@@ -76,10 +81,17 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       const items = Array.isArray(discovery.output.items) ? discovery.output.items : [];
       return store.mutate(actor, 'monitoring.run.completed', { type: 'run', id: runId }, { missionId, trace: discovery.trace }, draft => {
         const current = findMission(draft, missionId);
+        current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
         let inserted = 0;
         let updated = 0;
+        let excluded = 0;
         for (const raw of items.slice(0, 200)) {
-          const normalized = normalizeCatalogItem(raw, { kind: 'mission-run', missionId, runId, observedAt: now() }, discovery.trace, id);
+          const eligible = normalizeRnDiscoveredItem(raw, current);
+          if (!eligible) {
+            excluded += 1;
+            continue;
+          }
+          const normalized = normalizeCatalogItem(eligible, { kind: 'mission-run', missionId, runId, observedAt: now() }, discovery.trace, id);
           const key = catalogKey(normalized);
           const existing = draft.catalog.find(entry => catalogKey(entry) === key && key !== '||');
           if (existing) {
@@ -91,7 +103,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
           }
         }
         const completedAt = now();
-        const run = { id: runId, missionId, state: 'completed', startedAt, completedAt, discovered: items.length, inserted, updated, aiTrace: discovery.trace };
+        const run = { id: runId, missionId, state: 'completed', startedAt, completedAt, discovered: items.length, eligible: inserted + updated, excluded, inserted, updated, aiTrace: discovery.trace };
         draft.runs.push(run);
         current.lastRunAt = completedAt;
         current.nextRunAt = nextRunAt(completedAt, current.cadenceHours);
@@ -195,6 +207,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       const input = await bodyJson(request);
       const envelope = await store.mutate(actor, 'monitoring.mission.activated', { type: 'mission', id: params.id }, input, draft => {
         const mission = findMission(draft, params.id);
+        mission.sourceClasses = assertRnClosedUniverse(mission.sourceClasses);
         if (!['draft', 'paused'].includes(mission.state) || !mission.plan) throw httpError(409, 'Monitoraggio non attivabile: verifica prima il piano', 'state-conflict');
         mission.state = 'active';
         mission.updatedAt = now();
@@ -231,6 +244,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       const input = await bodyJson(request);
       const envelope = await store.mutate(actor, 'monitoring.mission.resumed', { type: 'mission', id: params.id }, input, draft => {
         const mission = findMission(draft, params.id);
+        mission.sourceClasses = assertRnClosedUniverse(mission.sourceClasses);
         if (mission.state !== 'paused') throw httpError(409, 'Puoi riprendere solo un monitoraggio sospeso', 'state-conflict');
         mission.state = 'active';
         mission.pausedAt = null;
@@ -259,8 +273,12 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       if (!['verified', 'rejected'].includes(decision)) throw httpError(400, 'Decisione non valida', 'invalid-decision');
       const reason = asString(input.reason, 5_000);
       if (!reason) throw httpError(400, 'Motiva la decisione sulla fonte', 'reason-required');
-      const envelope = await store.mutate(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason }, draft => {
-        return applyCatalogDecision(findCatalog(draft, params.id), decision, reason, actor.id);
+      const before = store.snapshot(), source = findCatalog(before, params.id), privacyReviewed = input.privacyReviewed === true;
+      const verificationBasis = decision === 'verified' ? assertRnVerifiableSource(source, { privacyReviewed }) : null;
+      const envelope = await store.mutate(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason, verificationBasis, privacyReviewed }, draft => {
+        const current = applyCatalogDecision(findCatalog(draft, params.id), decision, reason, actor.id);
+        if (verificationBasis) current.rnVerification = { ...verificationBasis, privacyReviewed, by: actor.id, at: now() };
+        return current;
       }, commandFrom(request));
       json(response, 200, envelope);
       return true;

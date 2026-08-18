@@ -56,7 +56,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-onto-compliance-v1.py v3/browser-information-value.py v3/browser-risk-drilldown.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-onto-compliance-v1.py v3/browser-information-value.py v3/browser-risk-drilldown.py v3/browser-ao-activation.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -85,6 +85,7 @@ jobs:
           python -u v3/browser-onto-compliance-v1.py
           python -u v3/browser-information-value.py
           python -u v3/browser-risk-drilldown.py
+          python -u v3/browser-ao-activation.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
@@ -97,6 +98,7 @@ jobs:
             artifacts/browser-onto-compliance*.json
             artifacts/browser-information-value*.json
             artifacts/browser-risk-drilldown*.json
+            artifacts/browser-ao-activation*.json
             artifacts/ux-v19-*.png
             artifacts/ux-v20-*.png
             artifacts/ux-ui-epistemic-*.png
@@ -183,3 +185,45 @@ jobs:
           ./ictc.sh start --profile current --no-open
           curl -fsS http://127.0.0.1:4807/api/health
           ./ictc.sh status --profile current
+  ci-verdict:
+    if: always()
+    needs: [contract-and-audit, runtime-e2e, browser-journeys, epistemic-professional-browser, launcher-smoke]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      statuses: write
+    env:
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CONTRACT_RESULT: ${{ needs['contract-and-audit'].result }}
+      RUNTIME_RESULT: ${{ needs['runtime-e2e'].result }}
+      BROWSER_RESULT: ${{ needs['browser-journeys'].result }}
+      PROFESSIONAL_RESULT: ${{ needs['epistemic-professional-browser'].result }}
+      LAUNCHER_RESULT: ${{ needs['launcher-smoke'].result }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Publish exact-head CI verdict
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          post_status() {
+            local context="$1" result="$2" state='failure'
+            [[ "$result" == 'success' ]] && state='success'
+            local payload
+            payload=$(printf '{"state":"%s","context":"%s","description":"job result: %s"}' "$state" "$context" "$result")
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+              -d "$payload" >/dev/null
+            [[ "$state" == 'success' ]]
+          }
+          overall='success'
+          post_status 'ictc/contract-and-audit' "$CONTRACT_RESULT" || overall='failure'
+          post_status 'ictc/runtime-e2e' "$RUNTIME_RESULT" || overall='failure'
+          post_status 'ictc/browser-journeys' "$BROWSER_RESULT" || overall='failure'
+          post_status 'ictc/epistemic-professional-browser' "$PROFESSIONAL_RESULT" || overall='failure'
+          post_status 'ictc/launcher-smoke' "$LAUNCHER_RESULT" || overall='failure'
+          post_status 'ictc/exact-head-ci' "$overall" || true
+          [[ "$overall" == 'success' ]]

@@ -2,6 +2,7 @@ import { enrichContribution } from '../ai.mjs';
 import { asString, id, normalizeUrl, now, uniqueStrings } from '../domain.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
 import { recordInternalSourceReference } from './internal-source-reference.mjs';
+import { normalizeRnDiscoveredItem } from './rn-monitoring-policy.mjs';
 import {
   catalogKey, ensureContributionOwner, findContribution, mergeCatalogObservation, normalizeCatalogItem
 } from './model.mjs';
@@ -26,8 +27,11 @@ export function createContributionHandler({ store, permissions }) {
       contribution.enrichmentAttempts = Number(contribution.enrichmentAttempts || 0) + 1;
       let inserted = 0;
       let updated = 0;
+      let excluded = 0;
       for (const raw of items.slice(0, 50)) {
-        const normalized = normalizeCatalogItem(raw, { kind: 'contribution', contributionId, observedAt: now() }, ai.trace, id);
+        const eligible = normalizeRnDiscoveredItem(raw, { sourceClasses: null });
+        if (!eligible) { excluded += 1; continue; }
+        const normalized = normalizeCatalogItem(eligible, { kind: 'contribution', contributionId, observedAt: now() }, ai.trace, id);
         const key = catalogKey(normalized);
         const existing = draft.catalog.find(entry => catalogKey(entry) === key && key !== '||');
         if (existing) {
@@ -38,7 +42,7 @@ export function createContributionHandler({ store, permissions }) {
           inserted += 1;
         }
       }
-      return { contribution, inserted, updated };
+      return { contribution, inserted, updated, excluded };
     }, command);
   }
 
