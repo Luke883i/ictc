@@ -14,6 +14,7 @@ export const RN_MINING_POLICY = Object.freeze({
   epistemicRule: 'Return candidate observations with source links and explicit limitations; never establish legal applicability, legal interpretation or compliance.'
 });
 
+const JURISPRUDENCE_CLASS='public-jurisprudence-and-case-information-without-personal-data';
 function bounded(value,max=40000){return String(value??'').trim().slice(0,max);}
 export function normalizeRnSourceClasses(value,{defaultAll=true}={}){
   const input=Array.isArray(value)?value:value==null?[]:[value];
@@ -36,12 +37,30 @@ export function inferRnSourceClass(item={}){
   const explicit=bounded(item.sourceClass,200);
   if(RN_SOURCE_CLASSES.includes(explicit))return explicit;
   const type=bounded(item.documentType,100).toLowerCase(),jurisdiction=bounded(item.jurisdiction,300).toLowerCase(),authority=bounded(item.authority,500).toLowerCase(),changeType=bounded(item.changeType,100).toLowerCase();
-  if(type==='case-law'||changeType==='case-law')return'public-jurisprudence-and-case-information-without-personal-data';
+  if(type==='case-law'||changeType==='case-law')return JURISPRUDENCE_CLASS;
   if(type==='authority-decision')return'competent-authority-decisions';
   if(['regulation','directive','treaty'].includes(type)||/(unione europea|european union|\beu\b)/.test(jurisdiction))return'binding-eu-law';
   if(['law','legislative-decree','decree','constitution'].includes(type)||/(italia|italy|italiana)/.test(jurisdiction))return'binding-italian-law';
   if(type==='decision'||/(garante|\bacn\b|agenzia nazionale|autorità|authority)/.test(authority))return'competent-authority-decisions';
   return null;
+}
+
+function rnProvenanceReference(item={}){
+  const sourceUrl=bounded(item.sourceUrl,4000);if(sourceUrl)return{kind:'source-url',value:sourceUrl};
+  const identifier=bounded(item.identifier,500);if(identifier)return{kind:'identifier',value:identifier};
+  const contributionId=bounded(item.origin?.contributionId,300);if(contributionId)return{kind:'preserved-contribution',value:contributionId};
+  return null;
+}
+export function rnVerificationBasis(item={}){
+  const sourceClass=inferRnSourceClass(item),authority=bounded(item.authority,500),reference=rnProvenanceReference(item);
+  return{sourceClass,authority:authority||null,reference,privacyReviewRequired:sourceClass===JURISPRUDENCE_CLASS,verifiable:Boolean(sourceClass&&authority&&reference)};
+}
+export function assertRnVerifiableSource(item={}){
+  const basis=rnVerificationBasis(item);
+  if(!basis.sourceClass)throw Object.assign(new Error('La fonte non appartiene a una classe RN-01 verificabile'),{status:409,code:'rn-source-class-unverified'});
+  if(!basis.authority)throw Object.assign(new Error('Indica l’autorità o il soggetto che ha pubblicato la fonte prima della verifica'),{status:409,code:'rn-source-authority-required'});
+  if(!basis.reference)throw Object.assign(new Error('La verifica richiede un riferimento ricostruibile: URL, identificativo oppure contributo originale preservato'),{status:409,code:'rn-source-reference-required'});
+  return basis;
 }
 
 export function rnMiningPrompt(basePrompt,mission={}){
