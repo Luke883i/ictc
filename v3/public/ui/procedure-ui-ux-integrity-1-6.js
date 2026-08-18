@@ -4,6 +4,7 @@ import { refresh } from './controller.js';
 const OWNER='procedure-ui-ux-1-6';
 let installed=false,timer=null;
 
+function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
 function ensureRuntimeActor(){
   if(!state.data)return;
   const actor={id:`local-${state.role}`,role:state.role};
@@ -33,12 +34,45 @@ function enforceMappingReference(){
     const card=button.closest('article');if(card&&!card.querySelector('[data-uiux-incomplete-mapping-note]')){const note=document.createElement('p');note.className='ux-terminal-note';note.dataset.uiuxIncompleteMappingNote='true';note.textContent='Manca il riferimento requisito: nessuna decisione di perimetro può essere registrata su questa proposta.';card.querySelector('footer')?.before(note);}
   }
 }
-function enforce(){ensureRuntimeActor();enforceMappingReference();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function stampDialogContexts(){
+  const contexts=[['#uiuxScopeDialog','coverage','scope'],['#uiuxMappingDialog','coverage','map'],['#uiuxIncompleteMappingDialog','coverage','map'],['#uiuxActionVerifyDialog','actions','verify'],['#uiuxActionStateDialog','actions','execute']];
+  for(const [selector,process,stage] of contexts){const dialog=$(selector);if(!dialog)continue;dialog.dataset.uiuxOwner=OWNER;dialog.dataset.uiuxProcess=process;dialog.dataset.uiuxPhase=stage;}
+}
+function classifyControl(node,process,stage){
+  const attrs=[...node.attributes||[]].map(a=>a.name).join(' '),text=(node.textContent||node.getAttribute('aria-label')||'').trim().toLowerCase();
+  if(/evidence|dossier|download/.test(attrs)||/dossier|evidenz|prova/.test(text))return['evidence','inspect-evidence','navigation','consume'];
+  if(node.tagName==='SUMMARY')return[stage||'detail','inspect-progressive-detail','navigation','none'];
+  if(/uiux-action-verify/.test(attrs))return['verify','verify-action-result','human','consume-and-produce'];
+  if(/uiux-scope-decision/.test(attrs))return['scope','decide-requirement-scope','human','produce'];
+  if(/uiux-mapping-decision/.test(attrs))return['map','decide-mapping','human','produce'];
+  if(/uiux-reject-incomplete/.test(attrs))return['map','reject-incomplete-mapping','human','produce'];
+  if(/uiux-action-quick|uiux-action-state|action-adopt/.test(attrs))return[stage||'execute',slug(text),'human','produce'];
+  if(/source-decision|object-review|object-attest|submit-incident|close-incident|save-manual|answer-question/.test(attrs))return[stage||'decide',slug(text),'human','produce'];
+  if(/ai|generate-draft|action-ai/.test(attrs)||/\bai\b/.test(text))return[stage||'assist','request-ai-proposal','human','produce'];
+  if(node.matches('a[href]'))return[stage||'navigate',slug(text),'navigation','none'];
+  return[stage||'support',slug(text),'navigation','none'];
+}
+function stampJourneyAnchors(){
+  stampDialogContexts();
+  for(const host of document.querySelectorAll(`[data-uiux-owner="${OWNER}"]`)){
+    const process=host.dataset.uiuxProcess||host.closest?.('[data-uiux-process]')?.dataset.uiuxProcess||'';
+    const hostStage=host.dataset.uiuxPhase||host.closest?.('[data-uiux-phase]')?.dataset.uiuxPhase||'support';
+    if(!process)continue;
+    host.dataset.journeyProcess=host.dataset.journeyProcess||process;host.dataset.journeySurface=host.dataset.journeySurface||'procedure-specific';
+    for(const node of host.querySelectorAll('button,a[href],summary')){
+      if(node.dataset.journeyProcess)continue;
+      const stage=node.closest?.('[data-uiux-phase]')?.dataset.uiuxPhase||hostStage,[s,intent,authority,effect]=classifyControl(node,process,stage);
+      node.dataset.journeyProcess=process;node.dataset.journeyStage=s;node.dataset.journeyIntent=intent;node.dataset.journeyAuthority=authority;node.dataset.journeyEvidenceEffect=effect;
+    }
+  }
+}
+function enforce(){ensureRuntimeActor();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
   if(installed)return;installed=true;ensureRejectDialog();ensureRuntimeActor();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
+  document.addEventListener('toggle',schedule,true);
   schedule();
 }
