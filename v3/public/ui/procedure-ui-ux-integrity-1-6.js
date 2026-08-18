@@ -2,7 +2,7 @@ import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
 
 const OWNER='procedure-ui-ux-1-6';
-let installed=false,timer=null;
+let installed=false,timer=null,workspaceObserver=null,workspaceObserved=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
 function ensureAccessibilityOverrides(){
@@ -70,10 +70,16 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function ensureWorkspaceObserver(){
+  const root=$('#grcWorkspace');if(!root||root===workspaceObserved)return;
+  workspaceObserver?.disconnect();workspaceObserved=root;
+  workspaceObserver=new MutationObserver(()=>enforce());
+  workspaceObserver.observe(root,{childList:true,subtree:true});
+}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceMappingReference();stampJourneyAnchors();ensureWorkspaceObserver();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureWorkspaceObserver();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
