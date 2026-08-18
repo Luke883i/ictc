@@ -1,11 +1,21 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 P={'RN-01':'monitoring','EC-01':'incidents','AO-01':'grc','MC-01':'grc','AP-01':'grc','RC-01':'grc','AR-01':'grc'}
 BUTTON_LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta norme e controlli','AP-01':'Gestisci remediation','RC-01':'Valuta rischi','AR-01':'Gestisci questionari'}
+def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:72] or 'unknown'
+def _publish_failure_phase(exc):
+ token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
+ if not token or len(sha)!=40 or not repo:return
+ line=traceback.extract_tb(exc.__traceback__)[-1].lineno if exc.__traceback__ else 0
+ detail=_slug(f'{type(exc).__name__}-L{line}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
+ body=json.dumps({'state':'failure','context':f'ictc/browser-v1-9-failure/{_slug(PHASE)}/{detail}','description':f'Browser 1.9 {PHASE}: {type(exc).__name__}'[:140]}).encode()
+ req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+ try: urllib.request.urlopen(req,timeout=8).read()
+ except Exception: pass
 def fail(e):
- payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-9-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-v1-9::{PHASE}: {type(e).__name__}: {e}',flush=True)
+ payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-9-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); _publish_failure_phase(e); print(f'::error title=browser-v1-9::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def processes(page): return page.locator('.service-nav [data-service="processes"]')
 def openp(page,code):
  processes(page).click(); c=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(c).to_be_visible(); expect(c.locator(':scope > footer .primary')).to_have_count(1); c.locator(':scope > footer .primary').click(); page.wait_for_timeout(120)
