@@ -1,0 +1,65 @@
+name: ictc-procedure-convergence-diagnostic
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  statuses: write
+concurrency:
+  group: ictc-procedure-convergence-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  procedure-convergence-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Execute canonical convergence checker
+        id: convergence
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          output=$(node --input-type=module <<'NODE' 2>&1
+          try {
+            await import('./v3/procedure-intent-convergence-check.mjs');
+            console.log('ICTC_CONVERGENCE_REASON=none');
+          } catch (error) {
+            const message=String(error?.message||error).replace(/\s+/g,' ').slice(0,320);
+            console.log(`ICTC_CONVERGENCE_REASON=${error?.code||error?.name||'error'}:${message}`);
+            process.exit(1);
+          }
+          NODE
+          )
+          rc=$?
+          printf '%s\n' "$output"
+          reason=$(printf '%s\n' "$output" | sed -n 's/^ICTC_CONVERGENCE_REASON=//p' | tail -1)
+          echo "reason=${reason:-unknown}" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+      - name: Publish exact-head convergence diagnostic
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          OUTCOME: ${{ steps.convergence.outcome }}
+          REASON: ${{ steps.convergence.outputs.reason }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          post() {
+            local context="$1" state="$2" description="$3"
+            local payload
+            payload=$(printf '{"state":"%s","context":"%s","description":"%s"}' "$state" "$context" "$description")
+            curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" -d "$payload" >/dev/null
+          }
+          if [[ "$OUTCOME" == success ]]; then
+            post 'ictc/procedure-convergence-diagnostic' success 'procedure convergence checker passed'
+            exit 0
+          fi
+          slug=$(printf '%s' "${REASON:-unknown}" | tr -cs 'A-Za-z0-9._-' '-' | cut -c1-110)
+          post 'ictc/procedure-convergence-diagnostic' failure 'procedure convergence checker failed'
+          post "ictc/convergence-failure/$slug" failure 'exact convergence assertion failure'
+          exit 1
