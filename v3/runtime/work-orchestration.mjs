@@ -7,7 +7,7 @@ import { procedureTraceFor, procedureTraceGraph } from './procedure-trace.mjs';
 import { assertProcedureEnabled, procedureEnabled } from './procedure-policy.mjs';
 import { procedureAdapterIds, procedureAdapters } from './procedure-adapters.mjs';
 const LEGACY_PRIORITY=Object.freeze({'verify-internal-source':120,'verify-source':118,'review-incident':112,'continue-own-incident':110,'inspect-internal-source':108,'inspect-source':106,'inspect-incident':104,'record-incident':88,'contribute-material':74,'configure-ai':42,'create-monitoring':36,'monitor-activity':28,'inspect-evidence':24,'read-only-home':10});
-const GRC_PRIORITY=Object.freeze({'review-object':116,'review-mapping':114,'review-risk':112,'treat-risk':111,'adopt-action':109,'verify-action':108,'progress-action':107,'approve-assurance':105,'create-object':40});
+const GRC_PRIORITY=Object.freeze({'complete-object-basis':117,'review-object':116,'review-mapping':114,'review-risk':112,'treat-risk':111,'adopt-action':109,'verify-action':108,'progress-action':107,'approve-assurance':105,'create-object':40});
 const BUSINESS_IDS=new Set(procedureAdapterIds());
 function normalize(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}
 function nearOne(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue;}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++;}}return d+(i<a.length||j<b.length?1:0)<=1;}
