@@ -32,11 +32,13 @@ function enforceMappingReference(){
   const root=$('#grcWorkspace');if(!root)return;
   const input=root.querySelector('[data-grc-form="mapping"] [name="requirementRef"]');
   if(input){input.required=true;input.placeholder='Codice o riferimento risolvibile richiesto';input.setAttribute('aria-describedby','uiuxRequirementRefHint');if(!$('#uiuxRequirementRefHint')){const hint=document.createElement('small');hint.id='uiuxRequirementRefHint';hint.textContent='Obbligatorio: il perimetro si decide sul requisito identificato, non sulla sola descrizione.';input.after(hint);}}
+  for(const legacy of root.querySelectorAll('[data-mapping-decision]'))legacy.remove();
   for(const button of root.querySelectorAll('[data-uiux-scope-decision]')){
     if(String(button.dataset.requirementRef||'').trim())continue;
     const id=button.dataset.uiuxScopeDecision||'';delete button.dataset.uiuxScopeDecision;delete button.dataset.requirementRef;button.dataset.uiuxRejectIncomplete=id;button.textContent='Rifiuta proposta incompleta';
     const card=button.closest('article');if(card&&!card.querySelector('[data-uiux-incomplete-mapping-note]')){const note=document.createElement('p');note.className='ux-terminal-note';note.dataset.uiuxIncompleteMappingNote='true';note.textContent='Manca il riferimento requisito: nessuna decisione di perimetro può essere registrata su questa proposta.';card.querySelector('footer')?.before(note);}
   }
+  for(const button of root.querySelectorAll('[data-uiux-reject-incomplete]'))button.textContent='Rifiuta proposta incompleta';
 }
 function stampDialogContexts(){
   const contexts=[['#uiuxScopeDialog','coverage','scope'],['#uiuxMappingDialog','coverage','map'],['#uiuxIncompleteMappingDialog','coverage','map'],['#uiuxActionVerifyDialog','actions','verify'],['#uiuxActionStateDialog','actions','execute']];
