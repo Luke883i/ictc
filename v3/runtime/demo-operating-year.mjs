@@ -1,4 +1,4 @@
-export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.0.2';
+export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.1.0';
 export const DEMO_COMPANY_CONTEXT=Object.freeze({
   name:'Meccanica Selene S.r.l. · DEMO',
   legalForm:'S.r.l.',
@@ -83,13 +83,22 @@ const AO_YEAR_ONE_INDEX=new Set([
   ...Array.from({length:4},(_,i)=>90+i),
   ...Array.from({length:3},(_,i)=>95+i)
 ]);
-export const YEAR_ONE_EXPECTED_COUNTS=Object.freeze({monitoring:17,incidents:25,objects:60,coverage:50,actions:34,risks:20,assurance:13});
+export const YEAR_ONE_EXPECTED_COUNTS=Object.freeze({monitoring:8,incidents:17,objects:60,coverage:34,actions:25,risks:20,assurance:13});
+export const YEAR_ONE_SELECTION_RATIONALE=Object.freeze({
+  monitoring:'Otto configurazioni di monitoraggio: due esempi per ciascuna delle quattro classi RN; le fonti scoperte non sono contate come nuove missioni.',
+  incidents:'Diciassette casi in dodici mesi, includendo incidenti, quasi incidenti e osservazioni: abbastanza per mostrare maturità senza simulare un flusso industriale anomalo.',
+  objects:'Sessanta identità ad alta granularità di governance, non una replica della CMDB e senza requisiti normativi nel cohort positivo.',
+  coverage:'Trentaquattro decisioni di mapping distribuite fra mapped, gap, proposte e rifiuti; i concetti normativi non sono moltiplicati per riempire il registro.',
+  actions:'Venticinque impegni di remediation/governance: una parte nasce da handoff, una parte da decisioni gestionali native, con completion distinta da closure.',
+  risks:'Venti scenari di rischio sintetici per il contesto annuale esteso; RC resta regression-only nel fine-tuning delle cinque app.',
+  assurance:'Tredici casi di assurance/questionario sintetici; AR resta regression-only nel fine-tuning delle cinque app.'
+});
 export function isOperatingYearRecord(procedureId,record,index){
   if(procedureId==='objects')return AO_YEAR_ONE_INDEX.has(index)&&record?.type!=='requirement';
-  if(procedureId==='monitoring')return index%6===0;
-  if(procedureId==='incidents')return index%4===0;
-  if(procedureId==='coverage')return index%2===0;
-  if(procedureId==='actions')return index%3===0;
+  if(procedureId==='monitoring')return index%13===0;
+  if(procedureId==='incidents')return index%6===0;
+  if(procedureId==='coverage')return index%3===0;
+  if(procedureId==='actions')return index%4===0;
   if(procedureId==='risks')return index%5===0;
   if(procedureId==='assurance')return index%8===0;
   return false;
@@ -97,7 +106,7 @@ export function isOperatingYearRecord(procedureId,record,index){
 const monthForIndex=(procedureId,index)=>1+((index*7+procedureId.length*3)%12);
 function phaseForMonth(month){const normalized=month>=7?month:month+12;if(normalized<=9)return'Q1';if(normalized<=12)return'Q2';if(normalized<=15)return'Q3';return'Q4';}
 function dateForMonth(month,index){const year=month>=7?2025:2026;const day=5+((index*11)%21);return`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}
-export function operatingYearContext(procedureId,record,index){if(procedureId==='objects'&&record?.attributes&&Object.prototype.hasOwnProperty.call(record.attributes,'company'))record.attributes.company=DEMO_COMPANY_CONTEXT.name;const showcase=isOperatingYearRecord(procedureId,record,index),month=monthForIndex(procedureId,index),phase=phaseForMonth(month);return Object.freeze({schemaVersion:DEMO_OPERATING_YEAR_SCHEMA_VERSION,id:'meccanica-selene-year-one',cohort:showcase?'operating-year':'stress-corpus',showcase,month,phase,contextDate:dateForMonth(month,index),referenceDate:DEMO_COMPANY_CONTEXT.operatingYear.referenceDate,company:DEMO_COMPANY_CONTEXT.name,stressOnly:!showcase,claimBoundary:showcase?'Record sintetico plausibile nel racconto di un anno di uso; non prova che una PMI reale produrrebbe esattamente questo record.':'Fixture sintetica di stress: utile alla falsificazione, non deve essere presentata come esempio positivo di adozione o copertura.'});}
+export function operatingYearContext(procedureId,record,index){if(procedureId==='objects'&&record?.attributes&&Object.prototype.hasOwnProperty.call(record.attributes,'company'))record.attributes.company=DEMO_COMPANY_CONTEXT.name;const showcase=isOperatingYearRecord(procedureId,record,index),month=monthForIndex(procedureId,index),phase=phaseForMonth(month);return Object.freeze({schemaVersion:DEMO_OPERATING_YEAR_SCHEMA_VERSION,id:'meccanica-selene-year-one',cohort:showcase?'operating-year':'stress-corpus',showcase,month,phase,contextDate:dateForMonth(month,index),referenceDate:DEMO_COMPANY_CONTEXT.operatingYear.referenceDate,company:DEMO_COMPANY_CONTEXT.name,stressOnly:!showcase,selectionRationale:YEAR_ONE_SELECTION_RATIONALE[procedureId]||'Cohort sintetico di contesto.',claimBoundary:showcase?'Record sintetico plausibile nel racconto di un anno di uso; non prova che una PMI reale produrrebbe esattamente questo record.':'Fixture sintetica di stress: utile alla falsificazione, non deve essere presentata come esempio positivo di adozione o copertura.'});}
 
 export const YEAR_ONE_DOD=Object.freeze({
   durationMonths:12,
@@ -106,6 +115,7 @@ export const YEAR_ONE_DOD=Object.freeze({
   expectedShowcaseCounts:YEAR_ONE_EXPECTED_COUNTS,
   rules:Object.freeze([
     'operating-year and stress-corpus are explicitly separated',
+    'showcase density follows the cadence and ontology of each procedure rather than a uniform table percentage',
     'all 12 months and all four phases are represented across the selected five procedures',
     'AO operating-year contains no requirement objects and no evidence-only pseudo objects',
     'AO operating-year is materially smaller than the 100-record stress corpus',
