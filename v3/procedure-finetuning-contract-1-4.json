@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "authority": "procedure-finetuning-contract",
   "scope": ["RN-01", "EC-01", "AO-01", "MC-01", "AP-01"],
   "regressionOnly": ["RC-01", "AR-01"],
-  "intent": "Make the nature of each selected compliance process operationally legible. Every visible control must be anchored to a process-specific abstract journey while inheriting a common cognitive substrate.",
+  "intent": "Make the nature of each selected compliance process operationally legible and bidirectionally testable from procedure to data and from data back to exactly one procedure. Every visible control must be anchored to a process-specific abstract journey while inheriting a common cognitive substrate.",
   "globalDoD": {
     "commonJourneySubstrate": true,
     "everyVisibleControlAnchored": true,
@@ -12,11 +12,19 @@
     "technicalDetailProgressivelyDisclosed": true,
     "crossProcessHandoffCreatesReviewWork": true,
     "browserJourneyPerSelectedProcess": true,
+    "procedureToDemoTraceable": true,
+    "demoToProcedureUnambiguous": true,
+    "positiveAndNegativeDemoExamplesPerProcess": true,
+    "uiPrimaryActionMax": 1,
+    "uiPrimaryQuestionMax": 1,
+    "uiPrimaryFactsMax": 4,
     "mutationKillRate": 1,
     "seededScenariosPerProcess": 1000000,
     "operationalScenariosPerProcess": 900000,
     "natureFalsificationHoldoutPerProcess": 100000,
     "totalSeededScenarios": 5000000,
+    "ontologyNoveltyHoldout": 1000,
+    "uxNoveltyHoldout": 1000,
     "ciExactShaAllGreen": true
   },
   "commonSubstrate": {
@@ -24,20 +32,30 @@
     "cognitiveInvariants": [
       "The next meaningful action is understandable without reading the entire page.",
       "A decision context exposes at most one primary action; evidence and navigation remain subordinate.",
+      "A decision context exposes at most one material question; secondary questions are progressive detail.",
+      "No primary decision surface needs more than four facts before the user can choose the next action.",
       "Workflow state, evidence state and substantive compliance meaning use distinct language.",
       "Counts never imply additivity, compliance, maturity or risk unless explicitly defined.",
       "Technical identifiers, hashes, raw model traces and machine codes are progressive detail.",
-      "The process claim boundary remains near the decision context.",
+      "The process claim boundary remains visible near the decision context.",
       "AI output remains visibly proposed until a human checkpoint records adoption, correction or rejection.",
       "Cross-process automation may propose work but cannot silently mutate another process decision.",
+      "A shared business thread is navigation context, never a shared domain object or decision carrier.",
       "Auditor mode prioritizes identity, source authority, owner, version, decision, evidence and review state over editing affordances.",
-      "Rejected, not-applicable, retired and cancelled are valid terminal outcomes and do not force remediation."
+      "Rejected, not-applicable, retired and cancelled are valid terminal outcomes and do not force remediation.",
+      "A DEMO negative example must remain recognizably invalid and cannot be made valid by relabeling it with another process code."
     ],
     "controlAnchor": {
       "requiredAttributes": ["process", "stage", "intent", "authority", "evidenceEffect"],
       "authorityValues": ["human", "ai-proposal", "system-observation", "navigation"],
       "evidenceEffectValues": ["none", "consume", "produce", "consume-and-produce"]
-    }
+    },
+    "bidirectionalDataRule": {
+      "procedureToData": "Every procedure must emit a minimal set of native signals sufficient to explain why a DEMO record belongs to that process.",
+      "dataToProcedure": "Ignoring procedureId and presentation labels, the native signals of a DEMO record must identify exactly one selected process.",
+      "crossReference": "Links may preserve provenance and suggest review work; they never import lifecycle, decision, applicability, rating, effectiveness or assurance conclusions from the linked process."
+    },
+    "uiBudget": {"primaryActions": 1, "materialQuestions": 1, "primaryFacts": 4, "visibleClaimBoundariesMin": 1, "technicalDetailMode": "progressive-disclosure"}
   },
   "processes": {
     "RN-01": {
@@ -45,11 +63,29 @@
       "name": "Monitoraggio normativo e fonti",
       "nature": "Regulatory sensing and source-governance process: converts bounded public-source observations into verified source records and impact-review work without deciding legal applicability.",
       "ontologicalObject": "public regulatory or jurisprudential source observation",
+      "identityPredicate": "A record is RN-01 only when it represents an observation of an allowed public source class with reconstructable provenance; the label alone is never sufficient.",
+      "notThis": ["internal policy or procedure", "vendor release note", "customer requirement", "asset identity", "incident case", "risk scenario", "remediation commitment"],
       "purpose": "Continuously observe all and only the declared public-source classes, preserve originals, verify source authority, atomize concepts and create reviewable downstream implications.",
       "sourceClasses": ["binding-eu-law", "binding-italian-law", "competent-authority-decisions", "public-jurisprudence-and-case-information-without-personal-data"],
       "contributors": [
         {"kind":"human","input":["url","file","pasted-text","note"],"aiAssist":["title","label","summary","relevance","domain","application-hypothesis"],"boundary":"AI enrichment is a suggestion; source verification and applicability assessment remain human."},
         {"kind":"scheduled-ai","input":["approved-monitor-objective","approved-source-policy","approved-cadence"],"output":["candidate-facts","candidate-sources","change-observations","source-links"],"boundary":"The scheduled miner may discover and propose; it cannot verify a source, establish applicability, or write a downstream decision."}
+      ],
+      "dataContract": {
+        "requiredSignals": ["source-class-supported-by-independent-evidence", "source-authority", "reconstructable-public-reference", "observation-provenance"],
+        "decisionSignals": ["source-verification-state", "human-source-decision", "impact-disposition"],
+        "evidenceSignals": ["original-material-or-reference", "classification-evidence", "decision-receipt"],
+        "forbiddenInference": ["observed-means-applicable", "ai-confidence-means-authority", "sourceClass-label-means-proof", "case-law-with-personal-data-is-admissible"],
+        "crossReferencePolicy": "May create typed review work in MC/AO/AP; may not transfer applicability, mapping, object activation or remediation closure."
+      },
+      "positiveDemoExamples": [
+        {"id":"rn-positive-eu-law","example":"Direttiva UE on EUR-Lex with directive type, EU authority and reconstructable public URL","whyValid":"Class is supported independently by document type and EU provenance; source remains candidate until human verification."},
+        {"id":"rn-positive-case","example":"Public judgment from a recognized court with public URL and explicit no-personal-data review before verification","whyValid":"Court provenance plus privacy checkpoint supports the fourth closed-world class."}
+      ],
+      "negativeDemoExamples": [
+        {"id":"rn-negative-internal","example":"Internal NIS2 procedure stored in a DMS and labeled binding-eu-law","whyInvalid":"Internal material is not a public regulatory source; relabeling cannot create provenance."},
+        {"id":"rn-negative-vendor","example":"Microsoft release note labeled competent-authority-decisions","whyInvalid":"Vendor operational content is outside the RN source universe."},
+        {"id":"rn-negative-bare-case","example":"case-law label without court authority or source provenance","whyInvalid":"Document type alone is not sufficient independent evidence."}
       ],
       "journey": [
         {"stage":"scope","question":"Che cosa deve essere sorvegliato e quali classi di fonte sono ammesse?","primaryIntent":"define-monitor","humanDecision":"approve-monitor-plan","evidence":"monitor-plan-version"},
@@ -60,12 +96,8 @@
         {"stage":"assess-impact","question":"La fonte richiede una valutazione di perimetro, controllo o azione?","primaryIntent":"assess-impact","humanDecision":"impact-disposition","evidence":"impact-decision"},
         {"stage":"handoff","question":"Quale nuovo lavoro deve essere creato senza mutare decisioni altrui?","primaryIntent":"create-review-handoff","humanDecision":"confirm-handoff","evidence":"cross-process-link"}
       ],
-      "schedulerUi": {
-        "form": "internal-dialog",
-        "fields": ["objective", "source-classes", "cadence", "source-hints", "mining-meta-prompt"],
-        "defaultMetaPrompt": "Search only public information. Verify each claimed fact against source links. Prefer official EU/Italian authorities for normative facts. Jurisprudence/case mining must exclude personal data. Return candidate observations with source, date, authority, domain label, confidence and explicit limitations.",
-        "activationCheckpoint": "human-plan-approval"
-      },
+      "schedulerUi": {"form":"internal-dialog","fields":["objective","source-classes","cadence","source-hints","mining-meta-prompt"],"defaultMetaPrompt":"Search only public information. Verify each claimed fact against source links. Prefer official EU/Italian authorities for normative facts. Jurisprudence/case mining must exclude personal data. Return candidate observations with source, date, authority, domain label, confidence and explicit limitations.","activationCheckpoint":"human-plan-approval"},
+      "uiBudget": {"primaryFacts":["source-class", "authority", "reference", "verification-state"],"primaryAction":"verify-or-reject-source","progressiveDetail":["ai-trace","semantic-atoms","raw-material"]},
       "claimBoundary": "RN-01 observes and organizes public-source evidence. It does not establish legal applicability, completeness of the legal universe, legal interpretation or compliance."
     },
     "EC-01": {
@@ -73,7 +105,25 @@
       "name": "Incidenti e quasi incidenti",
       "nature": "Fact-preservation and case-governance process: converts an observed event into a reconstructed, human-confirmed case while keeping facts, assumptions, classification and legal significance distinct.",
       "ontologicalObject": "event case",
+      "identityPredicate": "A record is EC-01 when it preserves an occurrence narrative and awareness context whose facts can be clarified over time without rewriting the original report.",
+      "notThis": ["risk scenario", "remediation task", "legal notification conclusion", "asset identity", "regulatory source"],
       "purpose": "Preserve the original event narrative, progressively resolve missing facts, confirm a bounded formulation, acknowledge downstream work and close with a reasoned human disposition.",
+      "dataContract": {
+        "requiredSignals": ["immutable-original-narrative", "awareness-time", "case-identity", "fact-unknown-separation"],
+        "decisionSignals": ["human-confirmed-formulation", "closure-disposition"],
+        "evidenceSignals": ["original-report", "question-answer-history", "formulation-version", "closure-reason"],
+        "forbiddenInference": ["incident-severity-means-legal-notification", "ai-summary-replaces-original", "handoff-means-risk-or-action-adopted"],
+        "crossReferencePolicy": "May suggest AO/RC/AP/AR review work; linked targets retain their own adoption, rating, activation and assurance checkpoints."
+      },
+      "positiveDemoExamples": [
+        {"id":"ec-positive-phishing","example":"Phishing report with original user narrative, awareness time, one unresolved fact and later human-confirmed formulation","whyValid":"The occurrence remains primary and later analysis is versioned rather than substituted."},
+        {"id":"ec-positive-unknown","example":"Lost notebook case where encryption status remains unknown until answered","whyValid":"Unknown is preserved as epistemic state instead of guessed."}
+      ],
+      "negativeDemoExamples": [
+        {"id":"ec-negative-legal","example":"GDPR breach reportable written as the event fact before legal assessment","whyInvalid":"Legal significance is not an event fact and cannot replace the original narrative."},
+        {"id":"ec-negative-action","example":"Apply patch to MES represented as an incident","whyInvalid":"A future commitment is AP-01, not an observed occurrence."},
+        {"id":"ec-negative-risk","example":"Possible credential compromise next year represented as incident","whyInvalid":"A prospective scenario is RC-01 rather than an occurred case."}
+      ],
       "journey": [
         {"stage":"capture","question":"Che cosa è successo o poteva succedere?","primaryIntent":"record-original","humanDecision":null,"evidence":"original-report"},
         {"stage":"clarify","question":"Qual è la prossima informazione materialmente necessaria?","primaryIntent":"answer-next-question","humanDecision":"confirm-or-mark-unknown","evidence":"answer-version"},
@@ -83,6 +133,7 @@
         {"stage":"close","question":"Perché il fascicolo può essere chiuso e quali attività restano aperte?","primaryIntent":"close-case","humanDecision":"closure-disposition","evidence":"closure-decision"}
       ],
       "copyRule": "Prefer one question and one next action at a time; history, AI trace and technical provenance remain drill-down detail.",
+      "uiBudget": {"primaryFacts":["original-occurrence", "awareness-time", "current-unknown", "case-state"],"primaryAction":"answer-next-material-question","progressiveDetail":["ai-analysis","version-history","cross-process-links"]},
       "claimBoundary": "Operational event classification does not determine legal notification duties, liability or regulatory significance."
     },
     "AO-01": {
@@ -90,8 +141,26 @@
       "name": "Inventario di sistemi e oggetti",
       "nature": "Governed identity and accountability registry: establishes which organizational objects are represented, why they are trusted, who owns them, what they depend on and when identity must be re-attested.",
       "ontologicalObject": "governed organizational object identity",
+      "identityPredicate": "A record is AO-01 when it has a stable organizational identity with authoritative source and accountable owner; evidence files and effectiveness statements are not object identities.",
+      "notThis": ["evidence attachment", "control effectiveness conclusion", "risk scenario", "incident", "remediation task", "normative concept"],
       "purpose": "Maintain an auditor-readable register of systems, services, data, suppliers, processes, policies and controls with authoritative source, ownership, criticality, lifecycle and dependency evidence.",
       "auditorAcceptanceCriteria": ["identity-is-unambiguous", "source-authority-visible", "owner-visible", "criticality-basis-visible", "dependencies-reconstructable", "attestation-visible", "terminal-state-reasoned", "evidence-secondary"],
+      "dataContract": {
+        "requiredSignals": ["stable-object-identity", "source-authority", "owner-principal", "object-version"],
+        "decisionSignals": ["candidate-review", "activation-or-rejection", "attestation-or-rework", "retirement"],
+        "evidenceSignals": ["source-authority-basis", "change-history", "relations", "attestation"],
+        "forbiddenInference": ["registered-means-complete-real-world", "evidence-file-is-object", "active-control-means-effective", "relation-means-shared-lifecycle"],
+        "crossReferencePolicy": "Relations describe dependency or provenance only; linked incidents, mappings, actions and risks keep independent states."
+      },
+      "positiveDemoExamples": [
+        {"id":"ao-positive-server","example":"MES server with stable external reference, CMDB authority, named owner, criticality basis, dependency links and current attestation","whyValid":"Identity, authority and accountability are independently reconstructable."},
+        {"id":"ao-positive-supplier","example":"Supplier identity tied to approved vendor register and contract with owner and review cadence","whyValid":"The governed object is the supplier identity, not the contract evidence itself."}
+      ],
+      "negativeDemoExamples": [
+        {"id":"ao-negative-screenshot","example":"Screenshot of MFA settings represented as an inventory object","whyInvalid":"A screenshot is evidence, not a governed organizational identity."},
+        {"id":"ao-negative-effectiveness","example":"MFA is effective represented as an object","whyInvalid":"Effectiveness is a claim requiring evidence and review, not an identity."},
+        {"id":"ao-negative-no-authority","example":"Active server with owner but no source authority","whyInvalid":"Activation lacks the authoritative identity basis required by AO-01."}
+      ],
       "journey": [
         {"stage":"identify","question":"Che cosa è questo oggetto e qual è il suo identificatore operativo?","primaryIntent":"create-candidate","humanDecision":null,"evidence":"identity-candidate"},
         {"stage":"establish-authority","question":"Quale fonte autorevole ne sostiene identità e attributi?","primaryIntent":"bind-source-authority","humanDecision":"accept-source-basis","evidence":"source-authority"},
@@ -101,6 +170,7 @@
         {"stage":"reattest","question":"Le informazioni restano attuali e sufficientemente sostenute?","primaryIntent":"reattest-object","humanDecision":"reattest-or-rework","evidence":"attestation"},
         {"stage":"retire","question":"L'oggetto deve uscire dal perimetro attivo e perché?","primaryIntent":"retire-object","humanDecision":"retirement","evidence":"retirement-decision"}
       ],
+      "uiBudget": {"primaryFacts":["identity", "source-authority", "owner", "review-state"],"primaryAction":"complete-basis-or-review-object","progressiveDetail":["criticality-basis","relations","attestation-history","evidence"]},
       "claimBoundary": "AO-01 governs the represented inventory. It does not prove completeness of the real environment, CMDB, data estate or supplier universe."
     },
     "MC-01": {
@@ -108,8 +178,26 @@
       "name": "Standard e Controlli",
       "nature": "Normative abstraction and control-mapping process: converts a declared law, standard or framework into minimal reviewable concepts and relationships without importing unlicensed text or inferring compliance.",
       "ontologicalObject": "declared normative or framework concept node",
+      "identityPredicate": "A record is MC-01 when it represents a declared normative/framework concept and an explicit scope or mapping decision; percentages and control evidence do not become concept identity.",
+      "notThis": ["source text copy", "legal applicability conclusion", "control effectiveness claim", "certification claim", "remediation action", "asset identity"],
       "purpose": "Represent each selected law, standard or framework through minimal complete abstractions, scope decisions, conceptual nodes, mappings, gaps and explicit uncertainty.",
       "minimalAtom": ["reference", "concept", "intent", "expected-outcome", "evidence-question", "scope-status", "source-authority", "version"],
+      "dataContract": {
+        "requiredSignals": ["declared-reference", "concept", "intent", "scope-status", "source-authority", "version"],
+        "decisionSignals": ["scope-decision", "mapping-disposition"],
+        "evidenceSignals": ["concept-atom-version", "mapping-rationale", "supporting-object-or-evidence-reference"],
+        "forbiddenInference": ["tracked-means-applicable", "mapped-means-effective", "crosswalk-means-equivalent", "coverage-percent-means-compliance"],
+        "crossReferencePolicy": "Mappings reference AO/evidence as support and may propose AP work; they never activate objects, establish effectiveness or close actions."
+      },
+      "positiveDemoExamples": [
+        {"id":"mc-positive-gdpr32","example":"GDPR art. 32 declared reference represented as a minimal concept atom with scope decision, source authority and mapping rationale","whyValid":"The abstraction is minimal but retains source, intent, expected outcome and evidence question."},
+        {"id":"mc-positive-iso-gap","example":"ISO control concept mapped as gap with explicit rationale and AP handoff proposal","whyValid":"Gap disposition is a mapping decision; remediation remains a separate AP commitment."}
+      ],
+      "negativeDemoExamples": [
+        {"id":"mc-negative-percent","example":"100 percent coverage displayed as compliant","whyInvalid":"A derived ratio cannot establish applicability, effectiveness or compliance."},
+        {"id":"mc-negative-equivalence","example":"GDPR concept crosswalked to ISO and therefore declared equivalent","whyInvalid":"Shared intent does not prove normative equivalence."},
+        {"id":"mc-negative-copy","example":"Licensed standard text copied wholesale as the concept model","whyInvalid":"MC-01 stores minimal abstraction and declared references, not an unbounded source-text mirror."}
+      ],
       "journey": [
         {"stage":"select","question":"Quale norma, standard o framework stai valutando e in quale versione?","primaryIntent":"select-framework","humanDecision":null,"evidence":"framework-version"},
         {"stage":"scope","question":"Come deve essere usato nel perimetro ICTC?","primaryIntent":"declare-use","humanDecision":"tracked-reference-or-not-used","evidence":"scope-decision"},
@@ -119,6 +207,7 @@
         {"stage":"remediate","question":"Un gap richiede nuovo lavoro AP-01?","primaryIntent":"create-gap-handoff","humanDecision":"confirm-action-handoff","evidence":"cross-process-link"}
       ],
       "uiInvariant": "Drill-down backgrounds are opaque and readable; concept atoms precede technical identifiers and raw source detail.",
+      "uiBudget": {"primaryFacts":["reference", "concept", "scope-status", "mapping-disposition"],"primaryAction":"decide-scope-or-mapping","progressiveDetail":["expected-outcome","evidence-question","crosswalk-rationale","source-detail"]},
       "claimBoundary": "MC-01 represents the declared universe and semantic relationships. It does not establish legal applicability, certification, equivalence or control effectiveness."
     },
     "AP-01": {
@@ -126,7 +215,25 @@
       "name": "Azioni correttive",
       "nature": "Commitment and verified-remediation process: converts an accepted gap, finding, risk treatment or manual need into accountable work whose completion is distinct from verified closure.",
       "ontologicalObject": "governed remediation commitment",
+      "identityPredicate": "A record is AP-01 when a human-adoptable commitment has reconstructable origin, accountable owner and expected operational outcome; evidence, findings and risks are not actions themselves.",
+      "notThis": ["finding itself", "risk scenario", "evidence attachment", "incident", "mapping gap without adoption", "automatic closure assertion"],
       "purpose": "Make origin, expected outcome, owner, priority, due date, blockers, completion evidence and independent closure verification legible as one work narrative.",
+      "dataContract": {
+        "requiredSignals": ["reconstructable-origin", "commitment-title", "owner-after-adoption", "expected-outcome", "workflow-state"],
+        "decisionSignals": ["priority-adoption", "work-update", "ready-for-review", "verification-or-rework", "reasoned-cancellation"],
+        "evidenceSignals": ["origin-link", "updates", "completion-evidence-refs", "verification-record"],
+        "forbiddenInference": ["done-means-closed", "cancelled-means-remediated", "priority-means-legal-obligation", "origin-decision-transfers-to-action"],
+        "crossReferencePolicy": "Origins preserve why the action exists; source procedure decisions remain source-local and closure never mutates the originating record automatically."
+      },
+      "positiveDemoExamples": [
+        {"id":"ap-positive-gap","example":"Accepted mapping gap becomes a proposed action, then human adoption sets owner/priority/due date, completion evidence leads to distinct verification","whyValid":"Commitment, execution evidence and closure authority are separate checkpoints."},
+        {"id":"ap-positive-cancel","example":"Obsolete proposed work is cancelled with a reason and remains terminal without being counted as remediated","whyValid":"Cancellation is a valid disposition, not simulated success."}
+      ],
+      "negativeDemoExamples": [
+        {"id":"ap-negative-done","example":"Legacy done state counted as closed without verification evidence","whyInvalid":"Operational completion is only ready-for-review."},
+        {"id":"ap-negative-finding","example":"Audit finding stored directly as an action without an adopted commitment","whyInvalid":"A finding can originate work but is not itself the remediation commitment."},
+        {"id":"ap-negative-priority","example":"Priority 5 interpreted as legally mandatory","whyInvalid":"Priority is a management decision, not a legal conclusion."}
+      ],
       "journey": [
         {"stage":"understand-origin","question":"Perché esiste questa azione e quale oggetto/gap/finding la origina?","primaryIntent":"inspect-origin","humanDecision":null,"evidence":"origin-link"},
         {"stage":"adopt","question":"Questa proposta deve diventare un impegno e con quale priorità?","primaryIntent":"adopt-action","humanDecision":"priority-adoption","evidence":"priority-decision"},
@@ -136,6 +243,7 @@
         {"stage":"verify","question":"L'evidenza dimostra il risultato atteso?","primaryIntent":"verify-close","humanDecision":"close-or-rework","evidence":"verification"},
         {"stage":"cancel","question":"Perché l'impegno non deve più proseguire?","primaryIntent":"cancel-action","humanDecision":"reasoned-cancellation","evidence":"cancellation-decision"}
       ],
+      "uiBudget": {"primaryFacts":["origin", "owner", "workflow-state", "expected-outcome"],"primaryAction":"next-native-workflow-decision","progressiveDetail":["priority-rationale","updates","evidence-refs","verification-history"]},
       "claimBoundary": "Operational completion is not verified closure. Priority expresses a management decision, not a legal conclusion."
     }
   },
@@ -151,8 +259,17 @@
       "erase-source-authority",
       "erase-claim-boundary",
       "merge-workflow-and-evidence-state",
-      "silently-write-cross-process-decision"
+      "silently-write-cross-process-decision",
+      "relabel-negative-example-as-valid",
+      "erase-procedure-native-data-signal",
+      "make-demo-record-match-two-procedures",
+      "promote-shared-thread-to-domain-object",
+      "duplicate-primary-action",
+      "duplicate-material-question",
+      "exceed-primary-fact-budget",
+      "technical-detail-before-decision",
+      "hide-boundary-behind-drilldown"
     ],
-    "successCondition": "Every mutation is detected by at least one process-specific invariant and no holdout scenario creates a novel unclassified failure family."
+    "successCondition": "Every mutation is detected by at least one process-specific invariant; procedure-to-data and data-to-procedure remain bijectively discriminative for the selected five processes; ontology and UX discovery each complete with an exact +1000 seed-separated no-novelty holdout."
   }
 }
