@@ -64,6 +64,13 @@ function ensureIncidentWorkspaceLifecycle(){
   });
   incidentObserver.observe(workspace,{attributes:true,attributeFilter:['open']});
 }
+function enforceActionVerifySemantics(){
+  const dialog=$('#uiuxActionVerifyDialog'),decision=dialog?.querySelector('select[name="decision"]'),field=dialog?.querySelector('[data-uiux-self-review]'),input=field?.querySelector('input[name="selfReviewAcknowledged"]');
+  if(!dialog||!decision||!field||!input)return;
+  const sync=()=>{const selfReview=!field.hidden;input.required=selfReview&&decision.value==='closed';if(decision.value!=='closed')input.checked=false;};
+  if(dialog.dataset.uiuxSelfReviewIntegrityBound!=='true'){dialog.dataset.uiuxSelfReviewIntegrityBound='true';decision.addEventListener('change',sync);}
+  sync();
+}
 function stampDialogContexts(){
   const contexts=[['#uiuxScopeDialog','coverage','scope'],['#uiuxMappingDialog','coverage','map'],['#uiuxIncompleteMappingDialog','coverage','map'],['#uiuxActionVerifyDialog','actions','verify'],['#uiuxActionStateDialog','actions','execute']];
   for(const [selector,process,stage] of contexts){const dialog=$(selector);if(!dialog)continue;dialog.dataset.uiuxOwner=OWNER;dialog.dataset.uiuxProcess=process;dialog.dataset.uiuxPhase=stage;}
@@ -96,10 +103,10 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();enforceActionVerifySemantics();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
