@@ -13,6 +13,7 @@ const STABLE=Object.freeze([
   'v3/procedure-executive-harmonization-saturation.mjs',
   'v3/demo-procedure-ontology-check.mjs',
   'v3/procedure-intent-convergence-check.mjs',
+  'v3/rn-contribution-boundary-check.mjs',
   'v3/procedure-intent-convergence-saturation.mjs',
   'v3/v1-stable-experience-saturation.mjs',
   'v3/v1-stable-process-hardening-check.mjs'

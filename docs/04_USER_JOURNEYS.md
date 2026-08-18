@@ -6,8 +6,8 @@ Questo documento è l'owner canonico delle user journey business ICTC. Le sette 
 
 **Governa:** osservazioni provenienti da sole quattro classi pubbliche: norme cogenti UE, norme cogenti italiane, provvedimenti/comunicazioni di autorità competenti, giurisprudenza e casi pubblici senza dati personali.
 
-1. La persona definisce o apre un monitor limitato a una delle quattro classi ammesse.
-2. Il materiale entra da contributo umano (link/file/nota) oppure da scouting AI schedulato; l'AI produce soltanto fonti e fatti candidati con fonte indicata.
+1. La persona definisce o apre un monitor limitato alle quattro classi ammesse come universo chiuso.
+2. Il materiale entra da contributo umano (link/file/nota) oppure da scouting AI schedulato; entrambi attraversano la stessa policy server-side di classificazione RN-01 e l'AI produce soltanto fonti e fatti candidati con fonte indicata.
 3. Titolo, labeling, sintesi, rilevanza e ambito proposti dall'AI restano proposte.
 4. Una persona verifica fonte, identità/versione e qualità minima del materiale.
 5. ICTC atomizza il materiale verificato in concetti/proposizioni collegabili mantenendo origine e limiti.
@@ -20,7 +20,7 @@ Questo documento è l'owner canonico delle user journey business ICTC. Le sette 
 
 1. L'utente inserisce link o file e una nota.
 2. ICTC conserva originale, provenienza e checksum.
-3. Se l'AI è attiva propone titolo, labeling, sintesi, rilevanza e ambito senza promuovere la fonte.
+3. Se l'AI è attiva propone titolo, labeling, sintesi, rilevanza e ambito senza promuovere la fonte; un item fuori dalle quattro classi RN-01 non entra nel catalogo RN come candidato.
 4. Una persona include/esclude o richiede chiarimenti.
 5. La decisione genera persistenza, readback, receipt e aggiornamento della proiezione.
 
@@ -79,10 +79,10 @@ Questo documento è l'owner canonico delle user journey business ICTC. Le sette 
 2. Una persona adotta/prioritizza l'impegno e assegna owner e scadenza.
 3. Il lavoro procede con aggiornamenti e blocker espliciti.
 4. Il completamento produce evidenza e porta alla review; non chiude l'azione.
-5. Una persona distinta verifica risultato/evidenza e decide chiusura o rework.
+5. Un checkpoint di verifica distinto riesamina risultato ed evidenza e decide chiusura o rework. Se chi verifica coincide con chi ha completato il lavoro, la self-review richiede acknowledgement esplicito e resta tracciata come tale.
 6. Cancellazione e altri terminali negativi richiedono una ragione e non generano remediation ricorsiva automatica.
 
-**Limite:** `done` o “lavoro completato” non significa chiusura verificata; priorità e closure restano decisioni umane.
+**Limite:** `done` o “lavoro completato” non significa chiusura verificata; priorità e closure restano decisioni umane e la self-review dichiarata non equivale a verifica indipendente.
 
 ## RC-01 · Rischi compliance
 
