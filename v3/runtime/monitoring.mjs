@@ -4,7 +4,7 @@ import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch }
 import {
   applyCatalogDecision, catalogKey, findCatalog, findMission, mergeCatalogObservation, normalizeCatalogItem
 } from './model.mjs';
-import { assertRnClosedUniverse, assertRnVerifiableSource } from './rn-monitoring-policy.mjs';
+import { assertRnClosedUniverse, assertRnVerifiableSource, normalizeRnDiscoveredItem } from './rn-monitoring-policy.mjs';
 
 function derivedCommand(command, suffix) {
   return command.id ? { ...command, id: `${command.id}-${suffix}`, expectedRevision: null } : {};
@@ -72,7 +72,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
           current.lastError = error.message;
           current.lastRunAt = startedAt;
           current.nextRunAt = nextRunAt(startedAt, current.cadenceHours);
-          const run = { id: runId, missionId, state: 'failed', startedAt, completedAt: now(), error: error.message, discovered: 0, inserted: 0, updated: 0 };
+          const run = { id: runId, missionId, state: 'failed', startedAt, completedAt: now(), error: error.message, discovered: 0, eligible: 0, excluded: 0, inserted: 0, updated: 0 };
           draft.runs.push(run);
           return run;
         }, command);
@@ -84,8 +84,14 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
         current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
         let inserted = 0;
         let updated = 0;
+        let excluded = 0;
         for (const raw of items.slice(0, 200)) {
-          const normalized = normalizeCatalogItem(raw, { kind: 'mission-run', missionId, runId, observedAt: now() }, discovery.trace, id);
+          const eligible = normalizeRnDiscoveredItem(raw, current);
+          if (!eligible) {
+            excluded += 1;
+            continue;
+          }
+          const normalized = normalizeCatalogItem(eligible, { kind: 'mission-run', missionId, runId, observedAt: now() }, discovery.trace, id);
           const key = catalogKey(normalized);
           const existing = draft.catalog.find(entry => catalogKey(entry) === key && key !== '||');
           if (existing) {
@@ -97,7 +103,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
           }
         }
         const completedAt = now();
-        const run = { id: runId, missionId, state: 'completed', startedAt, completedAt, discovered: items.length, inserted, updated, aiTrace: discovery.trace };
+        const run = { id: runId, missionId, state: 'completed', startedAt, completedAt, discovered: items.length, eligible: inserted + updated, excluded, inserted, updated, aiTrace: discovery.trace };
         draft.runs.push(run);
         current.lastRunAt = completedAt;
         current.nextRunAt = nextRunAt(completedAt, current.cadenceHours);
