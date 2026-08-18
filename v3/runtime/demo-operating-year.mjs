@@ -1,4 +1,4 @@
-export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.1.0';
+export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.1.1';
 export const DEMO_COMPANY_CONTEXT=Object.freeze({
   name:'Meccanica Selene S.r.l. · DEMO',
   legalForm:'S.r.l.',
@@ -96,7 +96,7 @@ export const YEAR_ONE_SELECTION_RATIONALE=Object.freeze({
 export function isOperatingYearRecord(procedureId,record,index){
   if(procedureId==='objects')return AO_YEAR_ONE_INDEX.has(index)&&record?.type!=='requirement';
   if(procedureId==='monitoring')return index%13===0;
-  if(procedureId==='incidents')return index%6===0;
+  if(procedureId==='incidents')return index===0||(index%6===1&&index<97);
   if(procedureId==='coverage')return index%3===0;
   if(procedureId==='actions')return index%4===0;
   if(procedureId==='risks')return index%5===0;
