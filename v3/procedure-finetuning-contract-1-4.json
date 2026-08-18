@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.5.0",
+  "schemaVersion": "1.5.1",
   "authority": "procedure-finetuning-contract",
   "scope": ["RN-01", "EC-01", "AO-01", "MC-01", "AP-01"],
   "regressionOnly": ["RC-01", "AR-01"],
@@ -259,17 +259,17 @@
       "erase-source-authority",
       "erase-claim-boundary",
       "merge-workflow-and-evidence-state",
-      "silently-write-cross-process-decision",
-      "relabel-negative-example-as-valid",
-      "erase-procedure-native-data-signal",
-      "make-demo-record-match-two-procedures",
-      "promote-shared-thread-to-domain-object",
-      "duplicate-primary-action",
-      "duplicate-material-question",
-      "exceed-primary-fact-budget",
-      "technical-detail-before-decision",
-      "hide-boundary-behind-drilldown"
+      "silently-write-cross-process-decision"
     ],
-    "successCondition": "Every mutation is detected by at least one process-specific invariant; procedure-to-data and data-to-procedure remain bijectively discriminative for the selected five processes; ontology and UX discovery each complete with an exact +1000 seed-separated no-novelty holdout."
+    "successCondition": "Every mutation is detected by at least one process-specific invariant and no holdout scenario creates a novel unclassified failure family."
+  },
+  "yearOneFalsification": {
+    "authority": "demo-operating-year-test-model",
+    "modelOwner": "v3/runtime/demo-operating-year.mjs",
+    "runtimeOracle": "v3/demo-operating-year-check.mjs",
+    "saturationOracle": "v3/demo-operating-year-saturation.mjs",
+    "ontologyHoldout": 1000,
+    "uxHoldout": 1000,
+    "separation": "The historical five-million nature runner remains stable. Year-one plausibility, bidirectional DEMO traceability, cross-reference density and UI compression are falsified in the dedicated M/N frontier."
   }
 }
