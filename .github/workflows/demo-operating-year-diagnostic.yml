@@ -1,0 +1,65 @@
+name: ictc-demo-operating-year-diagnostic
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  statuses: write
+concurrency:
+  group: ictc-demo-operating-year-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  demo-operating-year-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Reconstruct DEMO invariant set
+        id: demo
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          output=$(node --input-type=module <<'NODE' 2>&1
+          import { buildDemoDataset } from './v3/runtime/demo-seed.mjs';
+          import { applyDemoRealityContext, demoRealityViolations } from './v3/runtime/demo-reality-context.mjs';
+          const fixture={users:[{id:'local-admin',displayName:'Amministratore locale',role:'admin',status:'active'},{id:'local-user',displayName:'Utente locale',role:'user',status:'active'},{id:'local-auditor',displayName:'Auditor locale',role:'auditor',status:'active'}],settings:{organization:{name:'Organizzazione',jurisdictions:['Italia','Unione europea'],sectors:[]}}};
+          const dataset=buildDemoDataset(fixture),state={missions:dataset.records.monitoring,incidents:dataset.records.incidents,grcObjects:dataset.records.objects,grcMappings:dataset.records.coverage,grcActions:dataset.records.actions,grcRisks:dataset.records.risks,grcAssurance:dataset.records.assurance,standardScopes:dataset.support?.standardScopes||[],requirementScopes:dataset.support?.requirementScopes||[],settings:{}};
+          applyDemoRealityContext(state);
+          const violations=demoRealityViolations(state);
+          if(violations.length){console.log(`ICTC_DEMO_REASON=${violations.slice(0,8).join('__')}`);process.exit(1);}
+          console.log('ICTC_DEMO_REASON=none');
+          NODE
+          )
+          rc=$?
+          printf '%s\n' "$output"
+          reason=$(printf '%s\n' "$output" | sed -n 's/^ICTC_DEMO_REASON=//p' | tail -1)
+          echo "reason=${reason:-unknown}" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+      - name: Publish exact-head DEMO diagnostic
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          OUTCOME: ${{ steps.demo.outcome }}
+          REASON: ${{ steps.demo.outputs.reason }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          post() {
+            local context="$1" state="$2" description="$3"
+            local payload
+            payload=$(printf '{"state":"%s","context":"%s","description":"%s"}' "$state" "$context" "$description")
+            curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" -d "$payload" >/dev/null
+          }
+          if [[ "$OUTCOME" == success ]]; then
+            post 'ictc/demo-operating-year-diagnostic' success 'DEMO operating-year invariant set passed'
+            exit 0
+          fi
+          slug=$(printf '%s' "${REASON:-unknown}" | tr -cs 'A-Za-z0-9._-' '-' | cut -c1-95)
+          post 'ictc/demo-operating-year-diagnostic' failure 'DEMO operating-year invariant set failed'
+          post "ictc/demo-failure/$slug" failure 'first normalized DEMO violation family'
+          exit 1
