@@ -26,7 +26,7 @@ Each procedure must be legible from the nature of the object it governs; common 
 
 ## Local DoD
 
-- **RN-01:** exact four-class closed universe; three contributor paths share one filter; `sourceClass` is not self-authenticating; verification requires independent classification evidence, publishing authority and reconstructable reference. Public jurisprudence/case verification additionally requires explicit human confirmation that the candidate content retains no personal data. Verification is observation-bound: a changed observation or later decision invalidates the old verification basis. Candidate UI shows proposed class/provenance, not AI confidence as authority, and never calls an unverified link “official”.
+- **RN-01:** exact four-class closed universe; all three contributor paths apply the same classifier **before catalog persistence**; `sourceClass` is not self-authenticating; verification requires independent classification evidence, publishing authority and reconstructable reference. Public jurisprudence/case verification additionally requires explicit human confirmation that the candidate content retains no personal data. Verification is observation-bound: a changed observation or later decision invalidates the old verification basis. Candidate UI shows proposed class/provenance, not AI confidence as authority, and never calls an unverified link “official”.
 - **EC-01:** one material question/primary action at a time; original narrative immutable; operational classification does not decide notification/legal meaning.
 - **AO-01:** auditor read path exposes identity, authority, accountability and review; DEMO governed-field migrations are version-safe, digest-safe and attestation-safe.
 - **MC-01:** concept atoms complete; primary surfaces use mapping/gap/review counts, not coverage percentages.
@@ -38,22 +38,24 @@ Each procedure must be legible from the nature of the object it governs; common 
 
 1. **Authority minimization:** zero new semantic/runtime owners; hardening extends canonical owners.
 2. **RN closed universe:** every new/revised mission persists exactly four classes; subsets/extras fail closed.
-3. **RN classification integrity:** proposed labels can resolve compatible independent evidence but never create it; type-backed evidence outranks host-only ambiguity; mislabeled vendor/internal material is rejected.
-4. **RN verification provenance:** 100% of newly verified candidates have independently supported class + authority + reconstructable reference.
-5. **RN jurisprudence privacy:** case/jurisprudence candidates cannot become verified until an authorized human confirms no personal data are retained; this confirmation is persisted with the decision basis.
-6. **RN temporal validity:** any new observation that no longer matches the decided observation returns the item to candidate and clears `rnVerification`; every new decision starts from a clean verification basis.
-7. **DEMO idempotence:** a second `applyDemoRealityContext()` is deep-equal; target 700/700 stable records.
-8. **AO governed-field integrity:** source-authority migration increments version once, records history and canonical digest; pre-existing due state is preserved, otherwise the new version is explicitly re-attested.
-9. **MC decision-first metrics:** primary dashboard/card expose decision/gap/review counts, never `coveragePercent`.
-10. **AP closure integrity:** primary projections consume `readyForReview` and `closed`; legacy `done` never means closure.
-11. **Mutation frontier:** all **22** failure families killed; finite M + exact M+1000 with zero new normalized family.
-12. **Exact-head CI:** final SHA reports all required ICTC statuses successful, including runtime diagnostic and exact-head verdict.
+3. **RN three-path enforcement:** scheduled AI, human contribution + AI enrichment and manual observation all pass `normalizeRnDiscoveredItem` before `normalizeCatalogItem`; raw AI scheduler output can never write directly to the catalog. Scheduled runs record discovered/eligible/excluded counts.
+4. **RN classification integrity:** proposed labels can resolve compatible independent evidence but never create it; type-backed evidence outranks host-only ambiguity; mislabeled vendor/internal material is rejected.
+5. **RN verification provenance:** 100% of newly verified candidates have independently supported class + authority + reconstructable reference.
+6. **RN jurisprudence privacy:** case/jurisprudence candidates cannot become verified until an authorized human confirms no personal data are retained; this confirmation is persisted with the decision basis.
+7. **RN temporal validity:** any new observation that no longer matches the decided observation returns the item to candidate and clears `rnVerification`; every new decision starts from a clean verification basis.
+8. **DEMO idempotence:** a second `applyDemoRealityContext()` is deep-equal; target 700/700 stable records.
+9. **AO governed-field integrity:** source-authority migration increments version once, records history and canonical digest; pre-existing due state is preserved, otherwise the new version is explicitly re-attested.
+10. **MC decision-first metrics:** primary dashboard/card expose decision/gap/review counts, never `coveragePercent`.
+11. **AP closure integrity:** primary projections consume `readyForReview` and `closed`; legacy `done` never means closure.
+12. **Mutation frontier:** all **23** failure families killed; finite M + exact M+1000 with zero new normalized family.
+13. **Exact-head CI:** final SHA reports all required ICTC statuses successful, including runtime diagnostic and exact-head verdict.
 
 ## Challenging success metrics
 
 - Ontology separation: **7/7**; collapsed contracts: **0**.
 - Primary actions per decision context: **<=1**.
-- RN write paths: **3/3** on one closed-world filter; persisted source universe: **100% exact-four**.
+- RN write paths: **3/3** on one closed-world filter **before catalog persistence**; persisted source universe: **100% exact-four**.
+- RN scheduled raw-to-catalog bypasses: **0**; every scheduled run exposes `eligible` and `excluded` counts.
 - RN verified-source basis: **100% independent class evidence + authority + reference**.
 - RN label-laundering survivors: **0**.
 - RN verified jurisprudence/case records without explicit privacy review: **0**.
@@ -63,7 +65,7 @@ Each procedure must be legible from the nature of the object it governs; common 
 - AO migration integrity: **100/100**; silent governed-field rebases: **0**.
 - MC primary percentage shortcuts: **0**.
 - AP primary consumers of legacy `counts.done`: **0**.
-- Mutation testing: **100% kill rate over 22 families**.
+- Mutation testing: **100% kill rate over 23 families**.
 - Novelty holdout: **0 new normalized signatures in exact N+1000**.
 - Parallel semantic owners introduced by hardening: **0**.
 - Exact-head required status failures: **0**.
@@ -73,7 +75,8 @@ Each procedure must be legible from the nature of the object it governs; common 
 - Start from authority matrix and existing owners; never create a parallel semantic owner for convenience.
 - Prefer bounded projections over raw storage reads; keep writes persistence/readback/receipt aware.
 - Keep AI proposed-only; labels, confidence and summaries never become human authority.
-- Validate RN at mission scope, AI normalization, contribution enrichment, manual observation and human source-decision boundaries.
+- Validate RN at mission scope, scheduled AI discovery, contribution enrichment, manual observation and human source-decision boundaries.
+- Enforce the same RN classifier before catalog normalization on every contributor path; explicitly forbid `normalizeCatalogItem(raw)` in the scheduler.
 - Never trust `sourceClass` alone; require independent metadata/provenance and prefer type-backed evidence over ambiguous host-only evidence.
 - For jurisprudence/cases, require visible no-personal-data review before verification and persist it.
 - Bind source verification to the exact observation; a new observation or later decision must clear stale verification state.
