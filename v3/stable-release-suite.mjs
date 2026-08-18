@@ -13,6 +13,8 @@ export const STABLE=Object.freeze([
   'v3/procedure-executive-harmonization-check.mjs',
   'v3/procedure-executive-harmonization-saturation.mjs',
   'v3/demo-procedure-ontology-check.mjs',
+  'v3/demo-operating-year-check.mjs',
+  'v3/demo-operating-year-saturation.mjs',
   'v3/procedure-intent-convergence-check.mjs',
   'v3/rn-contribution-boundary-check.mjs',
   'v3/procedure-intent-convergence-saturation.mjs',
