@@ -2,7 +2,7 @@ import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
 
 const OWNER='procedure-ui-ux-1-6';
-let installed=false,timer=null,workspaceObserver=null,workspaceObserved=null;
+let installed=false,timer=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
 function ensureAccessibilityOverrides(){
@@ -30,6 +30,7 @@ function ensureRejectDialog(){
 }
 function activeGrc(){let value=state.activeProcessId||'';try{value=value||localStorage.getItem('ictc-grc-process')||'';}catch{}return value;}
 function ensureMetricNode(card,tag,before=null){let node=card.querySelector(tag);if(node)return node;node=document.createElement(tag);if(before)card.insertBefore(node,before);else card.append(node);return node;}
+function setText(node,value){const next=String(value);if(node.textContent!==next)node.textContent=next;}
 function enforceCoveragePosture(){
   const root=$('#grcWorkspace'),p=state.data?.grc?.coverage;if(!root||!p||activeGrc()!=='coverage')return;
   let host=root.querySelector('.grc-kpis');
@@ -47,7 +48,7 @@ function enforceCoveragePosture(){
   if(!host)return;
   const cards=[...host.querySelectorAll(':scope > .grc-kpi')];if(cards.length<3)return;
   const values=[['Decisioni registrate',p.decided??0,`${p.declared??0} elementi dichiarati`],['Gap',p.gaps??0,'decisioni esplicite'],['Da decidere',p.unresolved??0,'nessuna inferenza automatica'],['Fuori perimetro',p.notApplicable??0,'decisioni di scope']];
-  cards.slice(0,4).forEach((card,index)=>{const row=values[index];if(!row)return;const small=ensureMetricNode(card,'small',card.firstChild),strong=ensureMetricNode(card,'strong'),span=ensureMetricNode(card,'span');small.textContent=row[0];strong.textContent=String(row[1]);span.textContent=row[2];});
+  cards.slice(0,4).forEach((card,index)=>{const row=values[index];if(!row)return;const small=ensureMetricNode(card,'small',card.firstChild),strong=ensureMetricNode(card,'strong'),span=ensureMetricNode(card,'span');setText(small,row[0]);setText(strong,row[1]);setText(span,row[2]);});
   root.dataset.uiuxCoveragePercentagePrimary='false';
 }
 function enforceMappingReference(){
@@ -92,16 +93,10 @@ function stampJourneyAnchors(){
     }
   }
 }
-function ensureWorkspaceObserver(){
-  const root=$('#grcWorkspace');if(!root||root===workspaceObserved)return;
-  workspaceObserver?.disconnect();workspaceObserved=root;
-  workspaceObserver=new MutationObserver(()=>enforce());
-  workspaceObserver.observe(root,{childList:true,subtree:true});
-}
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();stampJourneyAnchors();ensureWorkspaceObserver();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureWorkspaceObserver();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
