@@ -5,6 +5,10 @@ const OWNER='procedure-ui-ux-1-6';
 let installed=false,timer=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
+function ensureAccessibilityOverrides(){
+  if($('#procedureUiUx16IntegrityStyles'))return;
+  const style=document.createElement('style');style.id='procedureUiUx16IntegrityStyles';style.textContent='@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}}';document.head.append(style);
+}
 function ensureRuntimeActor(){
   if(!state.data)return;
   const actor={id:`local-${state.role}`,role:state.role};
@@ -66,10 +70,10 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureRuntimeActor();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureRejectDialog();ensureRuntimeActor();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
