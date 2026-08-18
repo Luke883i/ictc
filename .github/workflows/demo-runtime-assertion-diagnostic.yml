@@ -26,7 +26,8 @@ jobs:
           output=$(node v3/demo-seed-runtime-check.mjs 2>&1)
           rc=$?
           printf '%s\n' "$output"
-          reason=$(printf '%s\n' "$output" | grep -E 'AssertionError|ERR_ASSERTION|expected|actual|Error:' | tail -1 | tr '\n' ' ' | cut -c1-360)
+          reason=$(printf '%s\n' "$output" | grep -m1 -E 'AssertionError|Error:' | tr '\n' ' ' | cut -c1-360)
+          if [[ -z "$reason" ]]; then reason=$(printf '%s\n' "$output" | grep -m1 -E 'ERR_ASSERTION|expected|actual' | tr '\n' ' ' | cut -c1-360); fi
           if [[ -z "$reason" ]]; then reason=$(printf '%s\n' "$output" | tail -1 | cut -c1-360); fi
           echo "reason=${reason:-unknown}" >> "$GITHUB_OUTPUT"
           exit "$rc"
