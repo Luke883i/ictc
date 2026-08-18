@@ -1,0 +1,54 @@
+name: ictc-runtime-diagnostic
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  statuses: write
+concurrency:
+  group: ictc-runtime-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  runtime-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Run current runtime rail
+        id: runtime-suite
+        continue-on-error: true
+        run: npm run test:current:runtime
+      - name: Publish failing checker on exact head
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          FAILED_CHECK: ${{ steps.runtime-suite.outputs.failed_check }}
+          RUNTIME_OUTCOME: ${{ steps.runtime-suite.outcome }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          post() {
+            local context="$1" state="$2" description="$3"
+            local payload
+            payload=$(printf '{"state":"%s","context":"%s","description":"%s"}' "$state" "$context" "$description")
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+              -d "$payload" >/dev/null
+          }
+          if [[ "$RUNTIME_OUTCOME" == 'success' ]]; then
+            post 'ictc/runtime-diagnostic' success 'current runtime rail passed'
+            exit 0
+          fi
+          post 'ictc/runtime-diagnostic' failure 'current runtime rail failed'
+          if [[ -n "$FAILED_CHECK" ]]; then
+            slug=$(basename "$FAILED_CHECK" .mjs | tr -cs 'A-Za-z0-9._-' '-')
+            post "ictc/runtime-failure/$slug" failure "failed checker: $FAILED_CHECK"
+          fi
+          exit 1
