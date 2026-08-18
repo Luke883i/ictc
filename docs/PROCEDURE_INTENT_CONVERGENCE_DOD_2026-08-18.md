@@ -6,7 +6,7 @@ This document turns the product request into an executable convergence plan. It 
 
 The target is not a literal restyling of five pages. ICTC must make each procedure legible from the nature of the object it governs, reduce cognitive load continuously, keep cross-procedure references useful without transferring authority, and keep DEMO data semantically faithful enough to act as a realistic falsifier.
 
-The common product question is: **what am I governing, what human decision is needed now, what evidence will remain, and what does this state not prove?** The answer must be visible with minimal reading. Technical trace, history, raw AI output and hashes are secondary detail.
+The common product question is: **what am I governing, what human decision is needed now, what evidence will remain, and what does this state not prove?** Technical trace, history, raw AI output, confidence scores and hashes are secondary detail.
 
 ## Global DoD
 
@@ -28,7 +28,7 @@ The common product question is: **what am I governing, what human decision is ne
 
 ## Local DoD and metrics
 
-- RN-01: exactly four allowed source classes; two contributors remain explicit; scheduled AI produces candidate facts/sources only; zero out-of-nature synthetic monitoring topics.
+- RN-01: exactly four source classes; all contributor paths share one filter; a proposed class is not self-authenticating; verification needs independent classification evidence, publishing authority and a reconstructable reference; zero out-of-nature DEMO sources.
 - EC-01: one material question and one primary action at a time; original narrative immutable; legal/notification meaning remains outside operational classification.
 - AO-01: severe-auditor read path needs no technical drilldown to establish identity, authority basis, accountable owner and last/next review; stale or rejected remains visible.
 - MC-01: every displayed framework concept is atomically complete; no concept abstraction masquerades as normative wording; mapping/scope/effectiveness remain distinct.
@@ -38,55 +38,57 @@ The common product question is: **what am I governing, what human decision is ne
 
 ## Final pre-merge hardening DoD
 
-The PR is merge-ready only when these stronger ratchets also hold:
-
-1. **Authority minimization:** zero new semantic/runtime owners in the hardening cycle; fixes must extend canonical owners already named by the authority matrix.
-2. **RN closed universe:** every newly created or revised mission persists exactly the four RN-01 source classes. Subsets and extra classes fail closed.
-3. **RN verification provenance:** a catalog candidate cannot become `verified` without a source class, an identified publishing authority and a reconstructable reference (source URL, identifier or preserved human contribution). The verification basis remains attached to the decided source.
-4. **DEMO idempotence:** after one successful normalization pass, a second `applyDemoRealityContext()` produces deep-equal state. Target: 700/700 records stable on replay.
-5. **AO governed-field integrity:** changing DEMO `sourceAuthority` increments the object version exactly once, records a synthetic migration edge in `changeHistory` and recomputes the canonical version digest. If the previous object was already due, that due state is preserved; otherwise the DEMO persona explicitly re-attests the new version. Target: 100/100 AO records version-safe, zero silent digest rebases and no artificial explosion of the re-attestation backlog.
-6. **MC decision-first metrics:** the primary GRC dashboard and procedure card expose counts of mapping decisions/gaps/reviews, never `coveragePercent`. The analytical percentage may remain in the bounded coverage projection for compatibility, but it is not a primary posture/compliance shorthand.
-7. **AP closure integrity:** primary projections consume `readyForReview` and `closed`; the legacy `done` alias may remain only for backward compatibility and must never count as verified closure or drive primary UI semantics.
-8. **Mutation frontier:** the convergence model must kill 100% of the expanded failure families, including RN verification without provenance, silent DEMO governed-field rewrite, percentage shortcut, non-idempotent DEMO refinement and legacy-done-as-closed. After finite M, exact M+1000 must add zero genuinely new normalized family.
-9. **Exact-head CI:** success is accepted only when the final PR SHA reports every required ICTC status successful, including runtime diagnostic and exact-head verdict.
+1. **Authority minimization:** zero new semantic/runtime owners in the hardening cycle; fixes extend canonical owners.
+2. **RN closed universe:** every new/revised mission persists exactly the four RN source classes; subsets and extra classes fail closed.
+3. **RN classification integrity:** `sourceClass` may resolve compatible independent evidence but may never create it. Type-backed signals outrank host-only ambiguity. A guideline does not become Italian binding law merely because jurisdiction is Italy; a vendor release note cannot become EU law by labeling itself so.
+4. **RN verification provenance:** a source cannot become `verified` without independently supported class, publishing authority and reconstructable reference (URL, identifier or preserved contribution). The basis remains attached to the decision.
+5. **DEMO idempotence:** a second `applyDemoRealityContext()` after convergence produces deep-equal state. Target: 700/700 stable records.
+6. **AO governed-field integrity:** DEMO `sourceAuthority` migration increments version exactly once, records a migration edge and recomputes canonical digest. Pre-existing due state is preserved; otherwise the DEMO persona re-attests the new version explicitly.
+7. **MC decision-first metrics:** primary dashboard/procedure card expose mapping decision/gap/review counts, never `coveragePercent`; analytical percentage may remain only in bounded compatibility projection.
+8. **AP closure integrity:** primary projections consume `readyForReview` and `closed`; legacy `done` is compatibility-only and never means verified closure.
+9. **Mutation frontier:** all **20** declared failure families must be killed; finite M followed by exact M+1000 must add zero genuinely new normalized family.
+10. **Exact-head CI:** final SHA must report every required ICTC status successful, including runtime diagnostic and exact-head verdict.
 
 ## Challenging success metrics
 
-- Procedure ontology separation: **7/7**, zero collapsed object/decision/evidence contracts.
-- Primary decision contexts: **<= 1 primary action** each.
-- RN write-path coverage: **3/3** paths (scheduled AI, human contribution + AI enrichment, manual observation) use the same closed-world filter; mission universe persistence **100%**.
-- RN verified-source provenance: **100%** of newly verified candidates have class + authority + reconstructable reference.
-- DEMO procedure fidelity: **700/700** records pass native ontology checks; **100/100 AO** records preserve version/digest/attestation semantics after authority rebase.
-- DEMO replay stability: **0 state differences** after the second refinement pass.
-- MC primary surfaces: **0 percentage shortcuts**; decision/gap/review counts only.
-- AP primary surfaces: **0 consumers of legacy `counts.done`**; closure count includes only explicitly verified `closed` records.
-- Mutation testing: **100% kill rate** over all declared families.
+- Procedure ontology separation: **7/7**; collapsed object/decision/evidence contracts: **0**.
+- Primary actions per decision context: **<=1**.
+- RN write-path coverage: **3/3** (scheduled AI, human contribution + AI enrichment, manual observation).
+- RN mission source universe persistence: **100% exact-four**.
+- RN verified-source basis: **100% independent class evidence + authority + reconstructable reference**.
+- RN label-laundering survivors: **0**.
+- DEMO procedure fidelity: **700/700** records.
+- AO migration integrity: **100/100** version/digest/attestation semantics; silent governed-field rebases: **0**.
+- DEMO replay differences on second pass: **0**.
+- MC primary percentage shortcuts: **0**.
+- AP primary consumers of legacy `counts.done`: **0**; closure count includes only explicit `closed`.
+- Mutation testing: **100% kill rate over 20 families**.
 - Novelty holdout: **0 new normalized signatures in exact N+1000**.
 - Parallel semantic owners introduced by hardening: **0**.
 - Exact-head required status failures: **0**.
 
-## Development checklist
+## Development and control checklist
 
-- Start from authority matrix and existing owners; no parallel runtime owner.
-- Reuse procedure guidance, procedure finetuning, surface primitives, control anchors, canonical demo seed and reality-context layers.
-- Add a new contract only where it ratchets a responsibility that existing contracts do not close.
-- Prefer presentation projections over raw-storage reads.
-- Any demo refinement must use native normalizers or bounded presentation metadata and must preserve synthetic provenance.
-- Add static checks before runtime change.
-- Add hostile mutation families for ontology collapse, primary-action duplication, authority promotion, demo contamination, missing source authority, state conflation and silent cross-process decision transfer.
-- Verify every mutation of an AO governed identity field against object version, digest, change history and re-attestation semantics; preserve a pre-existing due state, otherwise re-attest the new version explicitly.
-- Verify RN at intake, AI normalization, persistence and human source-decision boundaries; do not trust a model-provided `sourceClass` as sufficient verification evidence.
-- Keep analytical compatibility fields out of primary decision semantics when they compress distinct states into a score or percentage.
-- Keep legacy AP `done` readable but project it as review-pending until explicit verification.
-- Run convergence discovery, compress equivalent signatures, then N+1000 no-novelty.
-- Keep browser server-backed journey coverage for all selected surfaces and regression coverage for RC/AR.
-- Do not weaken a checker to make a product change pass.
+- Start from authority matrix and existing owners; never create a parallel semantic owner for convenience.
+- Prefer bounded projections over raw storage reads and keep writes persistence/readback/receipt aware.
+- Keep AI proposed-only; never let its labels, confidence or summaries become human authority.
+- Run RN validation at mission scope, AI normalization, contribution enrichment, manual observation and human source-decision boundaries.
+- Do not trust `sourceClass` alone: require independent metadata/provenance; prefer type-backed evidence over ambiguous host-only evidence.
+- Keep public jurisprudence/case mining bounded to public information without personal data; do not infer legal applicability from collection.
+- Verify every AO governed-field mutation against version, digest, change history and attestation posture.
+- Keep analytical compatibility fields out of primary decision semantics when they collapse distinct states into a percentage/score.
+- Keep legacy AP `done` readable only as review-pending until explicit verification.
+- Preserve terminal negative outcomes; presentation must not force remediation solely because a state is negative.
+- Add hostile mutants for every new finding before accepting the fix.
+- Run discovery, compress equivalent signatures, then exact N+1000 no-novelty.
+- Keep server-backed browser journey coverage and RC/AR regression protection.
+- Never weaken a failing checker to make a product change pass.
 - Re-check all visible CI contexts on the exact final SHA after every hardening commit.
 
 ## Cleanup/minimization rule
 
-A new layer is accepted only if removing it reintroduces a measured failure family and if its responsibility cannot be absorbed by an existing owner. Duplicate vocabulary, duplicate status semantics, duplicate demo context and duplicate presentation ownership are removal targets.
+A new layer is accepted only if removing it reintroduces a measured failure family and if its responsibility cannot be absorbed by an existing owner. Duplicate vocabulary, status semantics, demo context and presentation ownership are removal targets.
 
 ## Evidence boundary
 
-All scenario counts are deterministic engineering pressure, not human usability sessions, legal opinions, independent assurance or proof of absence of defects outside the declared model.
+Scenario counts are deterministic repository-bounded engineering pressure, not human usability sessions, legal opinions, independent assurance, certification or proof of absence of defects outside the declared model.
