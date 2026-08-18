@@ -10,7 +10,8 @@ def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c i
 def _publish_failure_phase(exc):
     token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
     if not token or len(sha)!=40 or not repo:return
-    detail=_slug(f'{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
+    line=traceback.extract_tb(exc.__traceback__)[-1].lineno if exc.__traceback__ else 0
+    detail=_slug(f'{type(exc).__name__}-L{line}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
     body=json.dumps({'state':'failure','context':f'ictc/browser-1-6-failure/{_slug(PHASE)}/{detail}','description':f'UI/UX 1.6 {PHASE}: {type(exc).__name__}'[:140]}).encode()
     req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
     try: urllib.request.urlopen(req,timeout=8).read()
