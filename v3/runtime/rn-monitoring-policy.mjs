@@ -55,10 +55,11 @@ export function assertRnClosedUniverse(value){
   return[...RN_SOURCE_CLASSES];
 }
 export function rnClassificationEvidence(item={}){
-  const explicit=bounded(item.sourceClass,200),signals=evidenceFor(item),supported=RN_SOURCE_CLASSES.filter(c=>signals.get(c).length>0);
-  if(RN_SOURCE_CLASSES.includes(explicit))return signals.get(explicit).length?{sourceClass:explicit,evidence:[...signals.get(explicit)],ambiguous:supported.length>1}:null;
-  if(supported.length!==1)return null;
-  const sourceClass=supported[0];return{sourceClass,evidence:[...signals.get(sourceClass)],ambiguous:false};
+  const explicit=bounded(item.sourceClass,200),signals=evidenceFor(item),supported=RN_SOURCE_CLASSES.filter(c=>signals.get(c).length>0),typeBacked=supported.filter(c=>signals.get(c).some(e=>e.startsWith('type:')));
+  if(RN_SOURCE_CLASSES.includes(explicit))return signals.get(explicit).length?{sourceClass:explicit,evidence:[...signals.get(explicit)],ambiguous:supported.length>1,typeBacked:signals.get(explicit).some(e=>e.startsWith('type:'))}:null;
+  const candidates=typeBacked.length?typeBacked:supported;
+  if(candidates.length!==1)return null;
+  const sourceClass=candidates[0];return{sourceClass,evidence:[...signals.get(sourceClass)],ambiguous:supported.length>1,typeBacked:typeBacked.length===1};
 }
 export function inferRnSourceClass(item={}){return rnClassificationEvidence(item)?.sourceClass||null;}
 function rnProvenanceReference(item={}){const sourceUrl=bounded(item.sourceUrl,4000);if(sourceUrl)return{kind:'source-url',value:sourceUrl};const identifier=bounded(item.identifier,500);if(identifier)return{kind:'identifier',value:identifier};const contributionId=bounded(item.origin?.contributionId,300);if(contributionId)return{kind:'preserved-contribution',value:contributionId};return null;}
