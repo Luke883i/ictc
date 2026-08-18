@@ -81,7 +81,7 @@
 .ux-card-meta-secondary{margin-block-start:.5rem}.ux-card-meta-secondary>summary{font-size:.9rem}
 .ux-utility-banner{padding:.65rem 1rem!important;box-shadow:none!important}.ux-utility-banner strong{font-size:1rem!important}.ux-utility-banner p{margin:.15rem 0 0!important}
 .ux-progressive-panel>details>summary{font-weight:700;cursor:pointer}.ux-progressive-panel>details>div{margin-block-start:.75rem}
-.ux-decision-note{display:grid;gap:.2rem;padding:.7rem .8rem;border-inline-start:3px solid currentColor;background:color-mix(in srgb,currentColor 4%,transparent);margin:.6rem 0}.ux-decision-note small{opacity:.72}.ux-decision-note b{font-size:1rem}
+.ux-decision-note{display:grid;gap:.2rem;padding:.7rem .8rem;border-inline-start:3px solid currentColor;margin:.6rem 0}.ux-decision-note small{opacity:.72}.ux-decision-note b{font-size:1rem}
 .ux-terminal-note{font-size:.92rem;opacity:.82;margin:.55rem 0}
 .ux-dialog-form{display:grid;gap:.85rem}.ux-dialog-form label{display:grid;gap:.35rem}.ux-dialog-form textarea,.ux-dialog-form select{inline-size:100%}.ux-dialog-actions{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap}
 .ux-hidden-legacy{display:none!important}.ux-epistemic-entry{margin-block-start:1rem}.ux-epistemic-entry p{max-inline-size:72ch}
