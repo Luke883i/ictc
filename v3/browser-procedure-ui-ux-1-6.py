@@ -38,6 +38,18 @@ def target_heights(scope): return scope.locator('button:visible,summary:visible'
 def assert_targets(scope,label):
     small=[x for x in target_heights(scope) if x['h']<43.5]; assert not small,(label,small[:20])
 def revision(page): return int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+def close_plan(page):
+    close=page.locator('#planDialog [aria-label="Chiudi"]')
+    if close.count(): close.click()
+    else: page.keyboard.press('Escape')
+def ensure_monitoring_card(page):
+    global PHASE
+    missions=page.locator('#missionsList .mission-card')
+    if missions.count()>0:return missions
+    PHASE='RN-seed-monitoring'
+    form=page.locator('#missionForm');expect(form).to_be_visible();before=revision(page)
+    page.evaluate("""()=>{const f=document.querySelector('#missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
+    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before);close_plan(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
 
 try:
     with sync_playwright() as pw:
@@ -56,7 +68,7 @@ try:
         no_overflow(page)
 
         PHASE='RN-open-process'
-        open_process(page,'RN-01');expect(page.locator('#monitoringView')).to_be_visible();missions=page.locator('#missionsList .mission-card');assert missions.count()>0
+        open_process(page,'RN-01');expect(page.locator('#monitoringView')).to_be_visible();missions=ensure_monitoring_card(page);assert missions.count()>0
         for i in range(min(missions.count(),12)):
             PHASE=f'RN-card-{i}'
             card=missions.nth(i);assert_at_most_one_primary(card,f'RN-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri monitoraggio' in primary.inner_text();assert card.locator('[data-run-mission]:visible,[data-pause-mission]:visible,[data-resume-mission]:visible').count()==0
@@ -64,9 +76,7 @@ try:
         PHASE='RN-overflow';no_overflow(page)
         PHASE='RN-open-plan';missions.first.locator('.ux-primary').click();expect(page.locator('#planDialog')).to_be_visible()
         PHASE='RN-plan-actions';assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible').count()<=1
-        close=page.locator('#planDialog [aria-label="Chiudi"]')
-        if close.count(): close.click()
-        else: page.keyboard.press('Escape')
+        close_plan(page)
 
         PHASE='EC-sequentiality'
         open_process(page,'EC-01');expect(page.locator('#incidentsView')).to_be_visible();cases=page.locator('#incidentList .incident-card');assert cases.count()>0
