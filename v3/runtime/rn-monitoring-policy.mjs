@@ -6,72 +6,72 @@ export const RN_SOURCE_CLASSES = Object.freeze([
 ]);
 
 export const RN_MINING_POLICY = Object.freeze({
-  id: 'RN-01-source-universe-v1',
-  closedWorld: true,
-  sourceClasses: RN_SOURCE_CLASSES,
-  personalDataRule: 'Public jurisprudence/case mining must exclude personal data from extracted candidate content.',
-  authorityRule: 'Prefer official EU/Italian institutional sources for normative facts and competent-authority measures.',
-  epistemicRule: 'Return candidate observations with source links and explicit limitations; never establish legal applicability, legal interpretation or compliance.'
+  id:'RN-01-source-universe-v2',
+  closedWorld:true,
+  sourceClasses:RN_SOURCE_CLASSES,
+  personalDataRule:'Public jurisprudence/case mining must exclude personal data from extracted candidate content.',
+  authorityRule:'Prefer official EU/Italian institutional sources for normative facts and competent-authority measures.',
+  epistemicRule:'Return candidate observations with source links and explicit limitations; never establish legal applicability, legal interpretation or compliance.'
 });
 
-const JURISPRUDENCE_CLASS='public-jurisprudence-and-case-information-without-personal-data';
+const EU='binding-eu-law',IT='binding-italian-law',AUTH='competent-authority-decisions',CASE='public-jurisprudence-and-case-information-without-personal-data';
+const EU_TYPES=new Set(['regulation','directive','treaty','eu-decision']);
+const IT_TYPES=new Set(['law','legislative-decree','decree-law','decree','constitution']);
+const AUTH_TYPES=new Set(['authority-decision','deliberation','provision','regulatory-decision']);
+const CASE_TYPES=new Set(['case-law','judgment','ruling','sentence']);
 function bounded(value,max=40000){return String(value??'').trim().slice(0,max);}
+function urlHost(value){try{return new URL(bounded(value,4000)).hostname.toLowerCase().replace(/^www\./,'');}catch{return'';}}
+function hostMatches(host,domains){return domains.some(domain=>host===domain||host.endsWith(`.${domain}`));}
+function evidenceFor(item={}){
+  const type=bounded(item.documentType,100).toLowerCase(),changeType=bounded(item.changeType,100).toLowerCase(),jurisdiction=bounded(item.jurisdiction,300).toLowerCase(),authority=bounded(item.authority,500).toLowerCase(),host=urlHost(item.sourceUrl),signals=new Map(RN_SOURCE_CLASSES.map(c=>[c,[]]));
+  const add=(c,v)=>signals.get(c).push(v);
+  const euJur=/(unione europea|european union|\beu\b)/.test(jurisdiction),itJur=/(italia|italy|italiana)/.test(jurisdiction);
+  const euAuthority=/(unione europea|european union|eur-lex|commissione europea|european commission|parlamento europeo|european parliament|consiglio dell.?unione|council of the european union)/.test(authority);
+  const itAuthority=/(normattiva|gazzetta ufficiale|repubblica italiana|presidenza del consiglio|ministero|camera dei deputati|senato della repubblica|parlamento italiano)/.test(authority);
+  const competentAuthority=/(garante|agenzia per la cybersicurezza|\bacn\b|\banac\b|\bagcm\b|\bagcom\b|banca d.?italia|\bconsob\b|\bivass\b)/.test(authority);
+  const courtAuthority=/(corte di cassazione|consiglio di stato|corte costituzionale|tribunale|corte di giustizia|court of justice|giustizia amministrativa)/.test(authority);
+  const euHost=hostMatches(host,['europa.eu']),eurLex=hostMatches(host,['eur-lex.europa.eu']),itLawHost=hostMatches(host,['normattiva.it','gazzettaufficiale.it']),itInstitutional=hostMatches(host,['governo.it','camera.it','senato.it']),authorityHost=hostMatches(host,['garanteprivacy.it','acn.gov.it','anac.it','agcm.it','agcom.it','bancaditalia.it','consob.it','ivass.it']),courtHost=hostMatches(host,['cortedicassazione.it','giustizia-amministrativa.it','giustiziaamministrativa.it','cortecostituzionale.it','curia.europa.eu']);
+  if(EU_TYPES.has(type)&&(euJur||euAuthority||euHost))add(EU,`type:${type}+eu-context`);
+  if(IT_TYPES.has(type)&&(itJur||itAuthority||itLawHost||itInstitutional))add(IT,`type:${type}+it-context`);
+  if((AUTH_TYPES.has(type)||changeType==='authority-decision')&&(competentAuthority||authorityHost))add(AUTH,`type:${type||changeType}+competent-authority`);
+  if((CASE_TYPES.has(type)||changeType==='case-law')&&(courtAuthority||courtHost||eurLex))add(CASE,`type:${type||changeType}+court-source`);
+  if(itLawHost)add(IT,`host:${host}`);
+  if(authorityHost)add(AUTH,`host:${host}`);
+  if(courtHost)add(CASE,`host:${host}`);
+  if(eurLex){add(EU,`host:${host}:normative-or-case`);add(CASE,`host:${host}:normative-or-case`);}
+  return signals;
+}
 export function normalizeRnSourceClasses(value,{defaultAll=true}={}){
-  const input=Array.isArray(value)?value:value==null?[]:[value];
-  const unique=[...new Set(input.map(v=>bounded(v,200)).filter(Boolean))];
-  const invalid=unique.filter(v=>!RN_SOURCE_CLASSES.includes(v));
+  const input=Array.isArray(value)?value:value==null?[]:[value],unique=[...new Set(input.map(v=>bounded(v,200)).filter(Boolean))],invalid=unique.filter(v=>!RN_SOURCE_CLASSES.includes(v));
   if(invalid.length)throw Object.assign(new Error(`Classe fonte RN-01 non consentita: ${invalid.join(', ')}`),{status:400,code:'rn-source-class-invalid',details:{invalid,allowed:RN_SOURCE_CLASSES}});
-  if(!unique.length&&defaultAll)return [...RN_SOURCE_CLASSES];
+  if(!unique.length&&defaultAll)return[...RN_SOURCE_CLASSES];
   if(!unique.length)throw Object.assign(new Error('Seleziona almeno una classe fonte RN-01'),{status:400,code:'rn-source-class-required'});
   return unique;
 }
 export function assertRnClosedUniverse(value){
-  if(value==null||Array.isArray(value)&&value.length===0)return [...RN_SOURCE_CLASSES];
-  const normalized=normalizeRnSourceClasses(value,{defaultAll:false});
-  const same=normalized.length===RN_SOURCE_CLASSES.length&&RN_SOURCE_CLASSES.every(item=>normalized.includes(item));
+  if(value==null||Array.isArray(value)&&value.length===0)return[...RN_SOURCE_CLASSES];
+  const normalized=normalizeRnSourceClasses(value,{defaultAll:false}),same=normalized.length===RN_SOURCE_CLASSES.length&&RN_SOURCE_CLASSES.every(item=>normalized.includes(item));
   if(!same)throw Object.assign(new Error('RN-01 sorveglia tutte e sole le quattro classi di fonte dichiarate; il perimetro non e restringibile per classe.'),{status:400,code:'rn-source-universe-fixed',details:{required:RN_SOURCE_CLASSES,received:normalized}});
-  return [...RN_SOURCE_CLASSES];
+  return[...RN_SOURCE_CLASSES];
 }
-
-export function inferRnSourceClass(item={}){
-  const explicit=bounded(item.sourceClass,200);
-  if(RN_SOURCE_CLASSES.includes(explicit))return explicit;
-  const type=bounded(item.documentType,100).toLowerCase(),jurisdiction=bounded(item.jurisdiction,300).toLowerCase(),authority=bounded(item.authority,500).toLowerCase(),changeType=bounded(item.changeType,100).toLowerCase();
-  if(type==='case-law'||changeType==='case-law')return JURISPRUDENCE_CLASS;
-  if(type==='authority-decision')return'competent-authority-decisions';
-  if(['regulation','directive','treaty'].includes(type)||/(unione europea|european union|\beu\b)/.test(jurisdiction))return'binding-eu-law';
-  if(['law','legislative-decree','decree','constitution'].includes(type)||/(italia|italy|italiana)/.test(jurisdiction))return'binding-italian-law';
-  if(type==='decision'||/(garante|\bacn\b|agenzia nazionale|autorità|authority)/.test(authority))return'competent-authority-decisions';
-  return null;
+export function rnClassificationEvidence(item={}){
+  const explicit=bounded(item.sourceClass,200),signals=evidenceFor(item),supported=RN_SOURCE_CLASSES.filter(c=>signals.get(c).length>0);
+  if(RN_SOURCE_CLASSES.includes(explicit))return signals.get(explicit).length?{sourceClass:explicit,evidence:[...signals.get(explicit)],ambiguous:supported.length>1}:null;
+  if(supported.length!==1)return null;
+  const sourceClass=supported[0];return{sourceClass,evidence:[...signals.get(sourceClass)],ambiguous:false};
 }
-
-function rnProvenanceReference(item={}){
-  const sourceUrl=bounded(item.sourceUrl,4000);if(sourceUrl)return{kind:'source-url',value:sourceUrl};
-  const identifier=bounded(item.identifier,500);if(identifier)return{kind:'identifier',value:identifier};
-  const contributionId=bounded(item.origin?.contributionId,300);if(contributionId)return{kind:'preserved-contribution',value:contributionId};
-  return null;
-}
+export function inferRnSourceClass(item={}){return rnClassificationEvidence(item)?.sourceClass||null;}
+function rnProvenanceReference(item={}){const sourceUrl=bounded(item.sourceUrl,4000);if(sourceUrl)return{kind:'source-url',value:sourceUrl};const identifier=bounded(item.identifier,500);if(identifier)return{kind:'identifier',value:identifier};const contributionId=bounded(item.origin?.contributionId,300);if(contributionId)return{kind:'preserved-contribution',value:contributionId};return null;}
 export function rnVerificationBasis(item={}){
-  const sourceClass=inferRnSourceClass(item),authority=bounded(item.authority,500),reference=rnProvenanceReference(item);
-  return{sourceClass,authority:authority||null,reference,privacyReviewRequired:sourceClass===JURISPRUDENCE_CLASS,verifiable:Boolean(sourceClass&&authority&&reference)};
+  const classification=rnClassificationEvidence(item),sourceClass=classification?.sourceClass||null,authority=bounded(item.authority,500),reference=rnProvenanceReference(item);
+  return{sourceClass,classificationEvidence:classification?.evidence||[],authority:authority||null,reference,privacyReviewRequired:sourceClass===CASE,verifiable:Boolean(sourceClass&&classification?.evidence?.length&&authority&&reference)};
 }
 export function assertRnVerifiableSource(item={}){
   const basis=rnVerificationBasis(item);
-  if(!basis.sourceClass)throw Object.assign(new Error('La fonte non appartiene a una classe RN-01 verificabile'),{status:409,code:'rn-source-class-unverified'});
+  if(!basis.sourceClass||!basis.classificationEvidence.length)throw Object.assign(new Error('La classe RN-01 deve essere sostenuta da metadati o provenienza indipendenti, non dalla sola etichetta proposta'),{status:409,code:'rn-source-class-unverified'});
   if(!basis.authority)throw Object.assign(new Error('Indica l’autorità o il soggetto che ha pubblicato la fonte prima della verifica'),{status:409,code:'rn-source-authority-required'});
   if(!basis.reference)throw Object.assign(new Error('La verifica richiede un riferimento ricostruibile: URL, identificativo oppure contributo originale preservato'),{status:409,code:'rn-source-reference-required'});
   return basis;
 }
-
-export function rnMiningPrompt(basePrompt,mission={}){
-  const sourceClasses=assertRnClosedUniverse(mission.sourceClasses);
-  const custom=bounded(mission.promptOverride,40000);
-  return [bounded(basePrompt,40000),'ICTC_RN01_POLICY:',`Closed source universe: ${sourceClasses.join(', ')}.`,RN_MINING_POLICY.personalDataRule,RN_MINING_POLICY.authorityRule,RN_MINING_POLICY.epistemicRule,custom?`Additional human-authored constraints: ${custom}`:''].filter(Boolean).join('\n\n');
-}
-
-export function normalizeRnDiscoveredItem(item,mission={}){
-  assertRnClosedUniverse(mission.sourceClasses);
-  const sourceClass=inferRnSourceClass(item);
-  if(!sourceClass)return null;
-  return {...item,sourceClass};
-}
+export function rnMiningPrompt(basePrompt,mission={}){const sourceClasses=assertRnClosedUniverse(mission.sourceClasses),custom=bounded(mission.promptOverride,40000);return[bounded(basePrompt,40000),'ICTC_RN01_POLICY:',`Closed source universe: ${sourceClasses.join(', ')}.`,RN_MINING_POLICY.personalDataRule,RN_MINING_POLICY.authorityRule,RN_MINING_POLICY.epistemicRule,custom?`Additional human-authored constraints: ${custom}`:''].filter(Boolean).join('\n\n');}
+export function normalizeRnDiscoveredItem(item,mission={}){assertRnClosedUniverse(mission.sourceClasses);const classification=rnClassificationEvidence(item);if(!classification)return null;return{...item,sourceClass:classification.sourceClass,rnClassificationEvidence:classification.evidence};}
