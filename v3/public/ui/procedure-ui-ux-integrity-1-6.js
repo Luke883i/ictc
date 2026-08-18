@@ -2,7 +2,7 @@ import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
 
 const OWNER='procedure-ui-ux-1-6';
-let installed=false,timer=null;
+let installed=false,timer=null,incidentObserver=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
 function ensureAccessibilityOverrides(){
@@ -55,6 +55,15 @@ function enforceMappingReference(){
     const card=button.closest('article');if(card&&!card.querySelector('[data-uiux-incomplete-mapping-note]')){const note=document.createElement('p');note.className='ux-terminal-note';note.dataset.uiuxIncompleteMappingNote='true';note.textContent='Manca il riferimento requisito: nessuna decisione di perimetro può essere registrata su questa proposta.';card.querySelector('footer')?.before(note);}
   }
 }
+function ensureIncidentWorkspaceLifecycle(){
+  const workspace=$('#incidentWorkspace');if(!workspace||incidentObserver)return;
+  incidentObserver=new MutationObserver(records=>{
+    if(workspace.open&&records.some(record=>record.attributeName==='open')){
+      document.dispatchEvent(new CustomEvent('ictc:surface-changed',{detail:{source:OWNER,overlay:'incidentWorkspace'}}));
+    }
+  });
+  incidentObserver.observe(workspace,{attributes:true,attributeFilter:['open']});
+}
 function stampDialogContexts(){
   const contexts=[['#uiuxScopeDialog','coverage','scope'],['#uiuxMappingDialog','coverage','map'],['#uiuxIncompleteMappingDialog','coverage','map'],['#uiuxActionVerifyDialog','actions','verify'],['#uiuxActionStateDialog','actions','execute']];
   for(const [selector,process,stage] of contexts){const dialog=$(selector);if(!dialog)continue;dialog.dataset.uiuxOwner=OWNER;dialog.dataset.uiuxProcess=process;dialog.dataset.uiuxPhase=stage;}
@@ -87,10 +96,10 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
