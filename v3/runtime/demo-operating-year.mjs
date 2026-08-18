@@ -1,4 +1,4 @@
-export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.0.0';
+export const DEMO_OPERATING_YEAR_SCHEMA_VERSION='1.0.1';
 export const DEMO_COMPANY_CONTEXT=Object.freeze({
   name:'Meccanica Selene S.r.l. · DEMO',
   legalForm:'S.r.l.',
@@ -102,7 +102,7 @@ export function isOperatingYearRecord(procedureId,record,index){
 const monthForIndex=(procedureId,index)=>1+((index*7+procedureId.length*3)%12);
 function phaseForMonth(month){const normalized=month>=7?month:month+12;if(normalized<=9)return'Q1';if(normalized<=12)return'Q2';if(normalized<=15)return'Q3';return'Q4';}
 function dateForMonth(month,index){const year=month>=7?2025:2026;const day=5+((index*11)%21);return`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}
-export function operatingYearContext(procedureId,record,index){const showcase=isOperatingYearRecord(procedureId,record,index),month=monthForIndex(procedureId,index),phase=phaseForMonth(month);return Object.freeze({schemaVersion:DEMO_OPERATING_YEAR_SCHEMA_VERSION,id:'meccanica-selene-year-one',cohort:showcase?'operating-year':'stress-corpus',showcase,month,phase,contextDate:dateForMonth(month,index),referenceDate:DEMO_COMPANY_CONTEXT.operatingYear.referenceDate,company:DEMO_COMPANY_CONTEXT.name,stressOnly:!showcase,claimBoundary:showcase?'Record sintetico plausibile nel racconto di un anno di uso; non prova che una PMI reale produrrebbe esattamente questo record.':'Fixture sintetica di stress: utile alla falsificazione, non deve essere presentata come esempio positivo di adozione o copertura.'});}
+export function operatingYearContext(procedureId,record,index){if(procedureId==='objects'&&record?.attributes&&Object.prototype.hasOwnProperty.call(record.attributes,'company'))record.attributes.company=DEMO_COMPANY_CONTEXT.name;const showcase=isOperatingYearRecord(procedureId,record,index),month=monthForIndex(procedureId,index),phase=phaseForMonth(month);return Object.freeze({schemaVersion:DEMO_OPERATING_YEAR_SCHEMA_VERSION,id:'meccanica-selene-year-one',cohort:showcase?'operating-year':'stress-corpus',showcase,month,phase,contextDate:dateForMonth(month,index),referenceDate:DEMO_COMPANY_CONTEXT.operatingYear.referenceDate,company:DEMO_COMPANY_CONTEXT.name,stressOnly:!showcase,claimBoundary:showcase?'Record sintetico plausibile nel racconto di un anno di uso; non prova che una PMI reale produrrebbe esattamente questo record.':'Fixture sintetica di stress: utile alla falsificazione, non deve essere presentata come esempio positivo di adozione o copertura.'});}
 
 export const YEAR_ONE_DOD=Object.freeze({
   durationMonths:12,
