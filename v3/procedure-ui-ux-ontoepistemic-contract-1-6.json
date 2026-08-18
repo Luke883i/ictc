@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.6.0",
+  "authority": "procedure-ui-ux-ontoepistemic-finetuning",
+  "scope": ["RN-01", "EC-01", "AO-01", "MC-01", "AP-01"],
+  "intent": "Ogni procedura deve essere percepita come un processo operativo guidato e non come un cruscotto di dati. Ogni superficie deve chiarire dove sono, quale oggetto sto governando, quale decisione umana e' richiesta adesso, quale prova restera' e quale singolo passo viene dopo.",
+  "evidenceBoundary": "Questo contratto e le saturazioni sono evidenza ingegneristica repository-bounded. Non sono user research, prova di usabilita' sul campo, parere legale, attestazione di compliance o assurance indipendente.",
+  "globalDoD": {
+    "surfaceInventoryCoverageMin": 0.99,
+    "singlePresentationOwnerPerDecisionSurface": true,
+    "primaryActionsMax": 1,
+    "materialQuestionsMax": 1,
+    "primaryFactsMax": 4,
+    "technicalDetailMode": "progressive-disclosure",
+    "primaryCtaVerbFirst": true,
+    "genericDrilldownForbidden": true,
+    "rawAtomCountPrimaryForbidden": true,
+    "aiMayBePrimaryDecisionAuthority": false,
+    "crossProcedureAuthorityTransfer": false,
+    "fakeCtaSurvivors": 0,
+    "orphanRuntimeDecisions": 0,
+    "outOfPhasePrimaryCtaSurvivors": 0,
+    "touchTargetPxMin": 44,
+    "focusIndicatorRequired": true,
+    "motionReductionRequired": true,
+    "perProcedureMutations": 100000,
+    "crossProcedureMutations": 100000,
+    "totalMutations": 600000,
+    "mutationKillRate": 1,
+    "noveltyHoldout": 1000,
+    "compressionHoldout": 1000,
+    "novelFailureFamilies": 0,
+    "safeCompressionSurvivorsAfterFrontier": 0
+  },
+  "abstractionDoD": {
+    "L0-purpose": ["La superficie ha un lavoro aziendale riconoscibile.", "Se rimossa, un utente perde una decisione, una prova o un orientamento necessario; altrimenti va compressa o eliminata."],
+    "L1-ontology": ["L'oggetto governato appartiene esattamente a una procedura.", "Un link cross-process non cambia la natura dell'oggetto."],
+    "L2-epistemic": ["Fatto, proposta AI, decisione umana, evidenza e limite sono distinguibili.", "Registrato non significa verificato, applicabile, efficace o chiuso."],
+    "L3-sequence": ["Ogni fase propone al massimo una decisione primaria.", "Le azioni non valide per lo stato corrente non sono CTA primarie."],
+    "L4-runtime": ["Ogni CTA mutante punta a un endpoint/handler reale e produce persistence, readback e receipt.", "Una decisione runtime necessaria non resta orfana dalla UI."],
+    "L5-language": ["CTA in italiano, verb-first e comprensibile senza conoscere codici interni.", "Sono vietate label generiche come Drilldown, Apri quando non specificano l'oggetto, o sigle non spiegate come decisione."],
+    "L6-cognitive": ["Massimo quattro fatti prima della decisione.", "AI trace, hash, revisioni, atomi, cronologie e alternative sono progressive detail."],
+    "L7-aesthetic": ["Un solo punto di accento visivo primario per card/dialog.", "Target interattivi >=44px, focus visibile, righe CTA non sovraccariche, griglie che non impongono quattro card dense su desktop standard."],
+    "L8-cross-procedure": ["Gli handoff creano lavoro di review, non decisioni target.", "EP-01 resta sotto Postura ICTC e non appare come ottavo Processo di Compliance."],
+    "L9-falsification": ["100.000 mutazioni per ciascuna delle cinque procedure e 100.000 trasversali devono essere uccise.", "Dopo M+1000 nessuna nuova famiglia normalizzata; dopo N+1000 nessuna ulteriore compressione sicura senza perdita di un invariante."]
+  },
+  "procedures": {
+    "RN-01": {
+      "id": "monitoring",
+      "businessProcess": "Sorvegliare fonti pubbliche ammesse, verificare una fonte osservata e decidere se generare lavoro di impatto senza decidere automaticamente applicabilita'.",
+      "governedObject": "configurazione di monitoraggio e osservazione di fonte pubblica nel closed world RN",
+      "stages": ["scope", "ingest", "observe", "verify-source", "assess-impact"],
+      "surfaces": [
+        {"id":"rn-entry","selector":"#monitoringView .procedure-frame, #monitoringView .hero","purpose":"orientare al processo","phase":"scope","primaryQuestion":"Che cosa devo sorvegliare o verificare?","primaryCta":"Programma monitoraggio o aggiungi materiale, mai entrambe come CTA concorrenti","runtimeRead":"/api/bootstrap","writes":[],"proof":"nessuna","necessity":"required"},
+        {"id":"rn-monitor-list","selector":"#missionsList","purpose":"mostrare monitoraggi configurati e loro stato","phase":"observe","primaryQuestion":"Questo monitoraggio richiede una decisione ora?","primaryCta":"Apri monitoraggio","runtimeRead":"/api/bootstrap.missions","writes":[],"proof":"mission evidence dossier","necessity":"required"},
+        {"id":"rn-plan-review","selector":"#planDialog","purpose":"verificare o amministrare un piano","phase":"scope","primaryQuestion":"Il piano proposto e' accettabile per questo perimetro?","primaryCta":"Attiva/Riprendi/Riprova solo quando lo stato lo richiede","runtimeRead":"/api/bootstrap.missions","writes":["/api/missions/:id/activate","/api/missions/:id/revise","/api/missions/:id/pause","/api/missions/:id/resume","/api/missions/:id/run"],"proof":"mission receipt + evidence dossier","necessity":"required"},
+        {"id":"rn-material-intake","selector":"#contributionDialog","purpose":"conservare materiale originale prima dell'analisi","phase":"ingest","primaryQuestion":"Quale materiale originale vuoi conservare?","primaryCta":"Conserva materiale","runtimeRead":"/api/bootstrap.contributions","writes":["/api/contributions"],"proof":"contribution receipt","necessity":"required"},
+        {"id":"rn-source-queue","selector":"#catalogList","purpose":"selezionare la prossima fonte candidata da verificare","phase":"verify-source","primaryQuestion":"Quale fonte candidata richiede review?","primaryCta":"Apri fonte candidata","runtimeRead":"/api/bootstrap.catalog","writes":[],"proof":"source evidence dossier","necessity":"required"},
+        {"id":"rn-source-decision","selector":"#sourceDialog","purpose":"separare osservazione, proposta AI e decisione umana sulla fonte","phase":"verify-source","primaryQuestion":"Provenienza, classe, autorita' e riferimento consentono di verificare questa fonte?","primaryCta":"Verifica fonte","runtimeRead":"/api/bootstrap.catalog","writes":["/api/catalog/:id/decision"],"proof":"source decision receipt","necessity":"required"}
+      ]
+    },
+    "EC-01": {
+      "id": "incidents",
+      "businessProcess": "Preservare un accadimento, chiarire gli unknown una domanda alla volta, confermare una formulazione e chiudere il fascicolo senza trasformare severita' o analisi in conclusioni legali.",
+      "governedObject": "caso evento con narrativa originale immutabile e conoscenza progressiva",
+      "stages": ["capture", "clarify", "formulate", "handoff", "close"],
+      "surfaces": [
+        {"id":"ec-entry","selector":"#incidentsView .procedure-frame, #incidentsView .hero","purpose":"iniziare dal fatto osservato","phase":"capture","primaryQuestion":"Che cosa e' successo?","primaryCta":"Registra evento","runtimeRead":"/api/bootstrap","writes":[],"proof":"nessuna","necessity":"required"},
+        {"id":"ec-intake","selector":"#incidentDialog","purpose":"registrare narrativa originale, awareness time e allegati","phase":"capture","primaryQuestion":"Quali fatti sono noti adesso?","primaryCta":"Registra evento","runtimeRead":"/api/bootstrap.incidents","writes":["/api/incidents/intake"],"proof":"original digest + receipt","necessity":"required"},
+        {"id":"ec-case-list","selector":"#incidentList","purpose":"selezionare il caso che richiede lavoro","phase":"clarify","primaryQuestion":"Quale caso ha una prossima informazione o decisione aperta?","primaryCta":"Apri caso","runtimeRead":"/api/bootstrap.incidents","writes":[],"proof":"incident dossier","necessity":"required"},
+        {"id":"ec-next-question","selector":"#incidentWorkspace .question-compass","purpose":"risolvere un solo unknown materiale","phase":"clarify","primaryQuestion":"Qual e' la prossima informazione che cambia la decidibilita'?","primaryCta":"Conferma o correggi","runtimeRead":"/api/bootstrap.incidents.nextQuestion","writes":["/api/incidents/:id/answers"],"proof":"versioned answer","necessity":"required"},
+        {"id":"ec-formulation","selector":"#incidentWorkspace","purpose":"creare e confermare una formulazione senza riscrivere l'originale","phase":"formulate","primaryQuestion":"Questa formulazione aggiunge qualcosa non provato?","primaryCta":"Invia versione corrente","runtimeRead":"/api/bootstrap.incidents.formulationVersions","writes":["/api/incidents/:id/draft","/api/incidents/:id/formulation","/api/incidents/:id/submit"],"proof":"formulation version + receipt","necessity":"required"},
+        {"id":"ec-close","selector":"#incidentWorkspace","purpose":"chiudere con motivo e limiti residui","phase":"close","primaryQuestion":"Perche' il fascicolo puo' terminare anche se esiste lavoro downstream?","primaryCta":"Chiudi caso","runtimeRead":"/api/bootstrap.incidents","writes":["/api/incidents/:id/close"],"proof":"closure disposition","necessity":"required"}
+      ]
+    },
+    "AO-01": {
+      "id": "objects",
+      "businessProcess": "Governare identita' organizzative che meritano owner, fonte autorevole, versione, relazioni e riattestazione senza replicare una CMDB o inventariare evidenze/requisiti.",
+      "governedObject": "identita' organizzativa stabile e governata",
+      "stages": ["identify", "validate", "operate", "reattest", "retire"],
+      "surfaces": [
+        {"id":"ao-entry","selector":"[data-procedure-id=objects], #grcWorkspace","purpose":"orientare al registro governato","phase":"identify","primaryQuestion":"Quale identita' merita governance qui?","primaryCta":"Verifica inventario","runtimeRead":"/api/bootstrap.grc.objects","writes":[],"proof":"nessuna","necessity":"required"},
+        {"id":"ao-create","selector":"[data-grc-form=object]","purpose":"registrare un candidato, non attivarlo implicitamente","phase":"identify","primaryQuestion":"Esiste una identita' stabile con owner e fonte ricostruibili?","primaryCta":"Registra candidato","runtimeRead":"/api/bootstrap.grc.objects.taxonomy","writes":["/api/grc/objects"],"proof":"create receipt","necessity":"required"},
+        {"id":"ao-candidate-card","selector":"#grcWorkspace .grc-list > article","purpose":"validare o escludere un candidato","phase":"validate","primaryQuestion":"Identita', fonte e owner sono sufficienti per attivarlo?","primaryCta":"Conferma oggetto","runtimeRead":"/api/bootstrap.grc.objects.objects","writes":["/api/grc/objects/:id/review"],"proof":"review + activation attestation","necessity":"required"},
+        {"id":"ao-active-card","selector":"#grcWorkspace .grc-list > article","purpose":"mostrare i quattro fatti governanti e il prossimo riesame","phase":"operate","primaryQuestion":"Questa versione necessita riattestazione?","primaryCta":"Riesamina oggetto solo quando necessario","runtimeRead":"/api/bootstrap.grc.objects.objects","writes":["/api/grc/objects/:id/attest"],"proof":"attestation + version digest","necessity":"required"},
+        {"id":"ao-evidence","selector":"[data-grc-evidence]","purpose":"ispezionare prova senza trasformarla in oggetto","phase":"reattest","primaryQuestion":"Quale prova sostiene questa versione?","primaryCta":"Apri dossier come azione secondaria","runtimeRead":"/api/evidence/grc-object/:id.zip","writes":[],"proof":"evidence dossier","necessity":"supporting"}
+      ]
+    },
+    "MC-01": {
+      "id": "coverage",
+      "businessProcess": "Dichiarare un universo normativo/framework, decidere il perimetro umano e poi mappare concetti a supporti governati mantenendo distinti applicabilita', mapping, gap ed efficacia.",
+      "governedObject": "concetto/requisito dichiarato e decisione di mapping",
+      "stages": ["declare", "scope", "understand", "map", "review"],
+      "surfaces": [
+        {"id":"mc-entry","selector":"[data-procedure-id=coverage], #grcWorkspace","purpose":"orientare a scope e mapping","phase":"declare","primaryQuestion":"Quale concetto dichiarato stai valutando?","primaryCta":"Valuta norme e controlli","runtimeRead":"/api/bootstrap.grc.coverage","writes":[],"proof":"nessuna","necessity":"required"},
+        {"id":"mc-kpis","selector":"#grcWorkspace .grc-kpis","purpose":"mostrare decisioni discrete, non uno score","phase":"review","primaryQuestion":"Quante decisioni restano aperte e quanti gap sono espliciti?","primaryCta":"nessuna","runtimeRead":"/api/bootstrap.grc.coverage","writes":[],"proof":"projection counts","necessity":"supporting"},
+        {"id":"mc-create","selector":"[data-grc-form=mapping]","purpose":"registrare una proposta di mapping","phase":"map","primaryQuestion":"Quale target governato sostiene il concetto?","primaryCta":"Registra proposta","runtimeRead":"/api/bootstrap.grc.objects","writes":["/api/grc/mappings"],"proof":"proposal receipt","necessity":"required"},
+        {"id":"mc-requirement-scope","selector":"[data-uiux-scope-decision]","purpose":"decidere applicabilita'/perimetro prima del mapping","phase":"scope","primaryQuestion":"Questo requisito e' nel perimetro dichiarato e perche'?","primaryCta":"Decidi perimetro","runtimeRead":"/api/bootstrap.requirementScopes","writes":["/api/standards/requirement-scope"],"proof":"human requirement-scope decision","necessity":"required"},
+        {"id":"mc-mapping-decision","selector":"[data-uiux-mapping-decision]","purpose":"decidere mapped/gap/rejected solo dopo scope compatibile","phase":"map","primaryQuestion":"La proposta e' un mapping supportato, un gap o va rifiutata?","primaryCta":"Decidi mapping","runtimeRead":"/api/bootstrap.grc.coverage.mappings","writes":["/api/grc/mappings/:id/decision"],"proof":"mapping decision receipt","necessity":"required"},
+        {"id":"mc-concept-detail","selector":".finetune-concept-drilldown","purpose":"offrire atomi concettuali solo come dettaglio progressivo","phase":"understand","primaryQuestion":"Quale concetto minimo sto comprendendo?","primaryCta":"nessuna","runtimeRead":"/api/bootstrap.standards","writes":[],"proof":"concept version","necessity":"supporting"}
+      ]
+    },
+    "AP-01": {
+      "id": "actions",
+      "businessProcess": "Trasformare un'origine in un impegno adottato, eseguirlo, inviarlo a verifica e chiuderlo solo dopo verifica umana con evidenza.",
+      "governedObject": "impegno operativo di remediation/governance",
+      "stages": ["propose", "adopt", "execute", "complete", "verify", "close"],
+      "surfaces": [
+        {"id":"ap-entry","selector":"[data-procedure-id=actions], #grcWorkspace","purpose":"orientare agli impegni","phase":"propose","primaryQuestion":"Quale impegno richiede una decisione ora?","primaryCta":"Gestisci remediation","runtimeRead":"/api/bootstrap.grc.actions","writes":[],"proof":"nessuna","necessity":"required"},
+        {"id":"ap-create","selector":"[data-grc-form=action]","purpose":"registrare una proposta senza adottarla implicitamente","phase":"propose","primaryQuestion":"Perche' esiste questa azione e quale esito atteso avra'?","primaryCta":"Registra azione","runtimeRead":"/api/bootstrap.grc.actions","writes":["/api/grc/actions"],"proof":"create receipt","necessity":"required"},
+        {"id":"ap-adopt","selector":"[data-action-adopt]","purpose":"adottare priorita', owner e scadenza umanamente","phase":"adopt","primaryQuestion":"Chi si impegna a fare cosa, entro quando e perche'?","primaryCta":"Adotta azione","runtimeRead":"/api/bootstrap.grc.actions.actions","writes":["/api/grc/actions/:id/adopt"],"proof":"adoption decision","necessity":"required"},
+        {"id":"ap-execute","selector":"[data-action-progress]","purpose":"esporre solo la transizione coerente con lo stato","phase":"execute","primaryQuestion":"Qual e' il prossimo stato operativo lecito?","primaryCta":"Avvia / Invia a verifica / Riprendi, uno solo per stato","runtimeRead":"/api/bootstrap.grc.actions.actions","writes":["/api/grc/actions/:id/progress"],"proof":"progress update","necessity":"required"},
+        {"id":"ap-verify","selector":"[data-uiux-action-verify]","purpose":"rendere raggiungibile la verifica runtime reale","phase":"verify","primaryQuestion":"L'evidenza dimostra l'esito atteso o serve rilavorazione?","primaryCta":"Verifica risultato","runtimeRead":"/api/bootstrap.grc.actions.actions","writes":["/api/grc/actions/:id/verify"],"proof":"verification with evidence refs","necessity":"required"},
+        {"id":"ap-evidence","selector":"[data-grc-evidence]","purpose":"ispezionare il dossier senza confonderlo con chiusura","phase":"verify","primaryQuestion":"Quale prova sostiene la verifica?","primaryCta":"Apri dossier come azione secondaria","runtimeRead":"/api/evidence/action/:id.zip","writes":[],"proof":"evidence dossier","necessity":"supporting"}
+      ]
+    }
+  },
+  "crossCuttingFindings": [
+    {"id":"fake-mc-na-mapping","kind":"fake-semantic","kill":"Rimuovere N.A. dal mapping e usare /api/standards/requirement-scope."},
+    {"id":"orphan-ap-verification","kind":"runtime-orphan","kill":"Esporre /api/grc/actions/:id/verify per ready-for-review."},
+    {"id":"rn-card-action-fanout","kind":"out-of-phase","kill":"Una sola CTA primaria nella lista; gestione eccezionale in disclosure/dialog."},
+    {"id":"ap-dual-progress","kind":"out-of-phase","kill":"Derivare CTA dallo stato; mai Avvia e Completa insieme."},
+    {"id":"mc-primary-coverage-percent","kind":"epistemic-shortcut","kill":"Mostrare conteggi discreti decided/gap/unresolved/not-applicable, non percentuale primaria."},
+    {"id":"ep-eighth-process","kind":"ontology-presentation","kill":"EP-01 vive sotto Postura ICTC, non nel hub dei sette processi."},
+    {"id":"ep-raw-count-dominance","kind":"cognitive-overload","kill":"Atomi, revisioni, hash e raw restano dettaglio tecnico progressivo."},
+    {"id":"generic-drilldown","kind":"language","kill":"Ogni CTA nomina l'oggetto o l'azione: Apri caso, Apri monitoraggio, Dettagli tecnici."},
+    {"id":"ai-primary-path","kind":"authority","kill":"AI e' sempre opzione/proposta secondaria rispetto alla decisione umana."}
+  ]
+}
