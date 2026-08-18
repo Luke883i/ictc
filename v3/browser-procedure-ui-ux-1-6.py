@@ -1,4 +1,4 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
@@ -6,9 +6,19 @@ ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'
 
+def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:72] or 'unknown'
+def _publish_failure_phase():
+    token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
+    if not token or len(sha)!=40 or not repo:return
+    body=json.dumps({'state':'failure','context':f'ictc/browser-1-6-failure/{_slug(PHASE)}','description':f'procedure UI/UX 1.6 failed at {PHASE}'[:140]}).encode()
+    req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+    try: urllib.request.urlopen(req,timeout=8).read()
+    except Exception: pass
+
 def fail(exc):
     payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
     (ART/'browser-procedure-ui-ux-1-6-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
+    _publish_failure_phase()
     print(f'::error title=browser-procedure-ui-ux-1-6::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
@@ -57,7 +67,7 @@ try:
             card=missions.nth(i);assert_at_most_one_primary(card,f'RN-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri monitoraggio' in primary.inner_text();assert card.locator('[data-run-mission]:visible,[data-pause-mission]:visible,[data-resume-mission]:visible').count()==0
         assert_targets(page.locator('#monitoringView'),'RN');no_overflow(page)
         missions.first.locator('.ux-primary').click();expect(page.locator('#planDialog')).to_be_visible();assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible').count()<=1
-        close=page.locator('#planDialog [aria-label="Chiudi"]');
+        close=page.locator('#planDialog [aria-label="Chiudi"]')
         if close.count(): close.click()
         else: page.keyboard.press('Escape')
 
@@ -90,7 +100,7 @@ try:
         open_process(page,'AP-01');expect(page.locator('#grcWorkspace')).to_be_visible();actions=page.locator('#grcWorkspace .grc-list > article');assert actions.count()>0
         allowed={'Adotta azione','Avvia lavoro','Invia a verifica','Riprendi lavoro','Verifica risultato'}
         for i in range(min(actions.count(),25)):
-            card=actions.nth(i);assert_at_most_one_primary(card,f'AP-card-{i}');p=card.locator('.ux-primary:visible');
+            card=actions.nth(i);assert_at_most_one_primary(card,f'AP-card-{i}');p=card.locator('.ux-primary:visible')
             if p.count(): assert p.inner_text().strip() in allowed,(i,p.inner_text())
         assert page.locator('#grcWorkspace [data-action-progress]').count()==0
         verify=page.locator('#grcWorkspace [data-uiux-action-verify]');assert verify.count()>0,'year-one AP cohort must include a ready-for-review example'
