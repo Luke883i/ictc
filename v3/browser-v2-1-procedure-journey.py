@@ -253,6 +253,11 @@ try:
         PHASE = 'epistemic-explore'
         processes(page).click()
         meta = page.locator('#epistemicMetaCard')
+        expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+        expect(meta).not_to_be_visible()
+        assert meta.evaluate('e=>e.parentElement?.id') == 'proofView'
+        page.locator('.service-nav [data-service="proof"]').click()
+        expect(page.locator('#proofView')).to_be_visible()
         expect(meta).to_be_visible()
         meta.locator('[data-service="epistemic"]').click()
         expect(page.locator('#epistemicView')).to_be_visible()
@@ -322,7 +327,7 @@ try:
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'epistemicEntrySurface':'Postura ICTC','exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
             'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+progressive-epistemic-exploration'
         }
