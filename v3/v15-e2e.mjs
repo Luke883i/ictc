@@ -7,7 +7,7 @@ try {
   assert.equal((await h.request('PUT','/api/admin/settings',{},'user','alice')).status,403);
   let r=await h.ok('POST','/api/missions/draft',{objective:'Official EU and Italian information-security sources',cadence:168});
   const mission=r.body.mission.id; assert.equal(r.body.mission.state,'needs-plan'); assert.ok(r.body.raw.receipt.hash);
-  r=await h.ok('POST','/api/contributions',{links:['https://secret.example/private-source'],text:'Official decision to verify',note:'Private contributor note'},'user','alice');
+  r=await h.ok('POST','/api/contributions',{links:['https://eur-lex.europa.eu/eli/dir/2022/2555/oj'],text:'Official decision to verify',note:'Private contributor note'},'user','alice');
   const contribution=r.body.raw.result.id; assert.equal(r.body.raw.result.state,'recorded'); assert.ok(r.body.warning);
   r=await h.ok('POST','/api/incidents/intake',{originalNarrative:'Phishing alert still active on customer email',awarenessAt:new Date().toISOString()},'user','alice');
   const incident=r.body.incident.id; assert.ok(r.body.warning); assert.ok(r.body.incident.originalNarrative.includes('Phishing'));
@@ -38,12 +38,12 @@ try {
   b=await h.bootstrap(); const decided=b.body.catalog.find(item=>item.id===source.id); assert.equal(decided.decisions.at(-1).observationSha256.length,64);
   const evidence=await fetch(`${h.base}/api/evidence/incident/${incident}`,{headers:h.identity('admin','test-admin')}); const bundle=await evidence.json(); assert.equal(bundle.integrity.ok,true); assert.equal(bundle.related.formulations.length,2); assert.equal(bundle.manifest.subjectSha256.length,64);
   const forbidden=await fetch(`${h.base}/api/evidence/contribution/${contribution}`,{headers:h.identity('user','bob')}); assert.equal(forbidden.status,404);
-  const contributedSource=b.body.catalog.find(item=>(item.observations||[]).some(obs=>obs.origin?.contributionId===contribution)); assert.ok(contributedSource);
+  const contributedSource=b.body.catalog.find(item=>(item.observations||[]).some(obs=>obs.origin?.contributionId===contribution)); assert.ok(contributedSource); assert.equal(contributedSource.sourceClass,'binding-eu-law');
   const publicEvidence=await fetch(`${h.base}/api/evidence/catalog/${contributedSource.id}`,{headers:h.identity('user','bob')}); assert.equal(publicEvidence.status,200); const publicBundle=await publicEvidence.json(); const serialized=JSON.stringify(publicBundle);
   assert.equal(publicBundle.related.contributions.length,0); assert.equal(publicBundle.related.restrictedContributionCount,1);
-  for(const secret of ['Official decision to verify','alice']) assert.equal(serialized.includes(secret),false,`catalog evidence leaked ${secret}`);
+  for(const secret of ['Official decision to verify','alice','Private contributor note']) assert.equal(serialized.includes(secret),false,`catalog evidence leaked ${secret}`);
   const replay='fixed-command'; await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); r=await h.ok('POST','/api/contributions',{text:'Idempotent material'},'user','alice',{commandId:replay}); assert.equal(r.body.raw.replayed,true);
   b=await h.bootstrap('user','alice'); r=await h.request('POST','/api/contributions',{text:'Stale'},'user','alice',{refresh:false,expectedRevision:b.body.revision-1}); assert.equal(r.body.code,'revision-conflict');
   b=await h.bootstrap(); assert.equal(b.body.integrity.ok,true); assert.ok(b.body.integrity.events>=25);
-  console.log(`v15-e2e: ok (${b.body.integrity.events} audited writes, recovery, authority, privacy, versions, evidence, reasoned closure)`);
+  console.log(`v15-e2e: ok (${b.body.integrity.events} audited writes, RN-bound contribution privacy, recovery, authority, versions, evidence, reasoned closure)`);
 } finally { await h.close(); }
