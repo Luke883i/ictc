@@ -7,10 +7,11 @@ BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'
 
 def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:72] or 'unknown'
-def _publish_failure_phase():
+def _publish_failure_phase(exc):
     token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
     if not token or len(sha)!=40 or not repo:return
-    body=json.dumps({'state':'failure','context':f'ictc/browser-1-6-failure/{_slug(PHASE)}','description':f'procedure UI/UX 1.6 failed at {PHASE}'[:140]}).encode()
+    detail=_slug(f'{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
+    body=json.dumps({'state':'failure','context':f'ictc/browser-1-6-failure/{_slug(PHASE)}/{detail}','description':f'UI/UX 1.6 {PHASE}: {type(exc).__name__}'[:140]}).encode()
     req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
     try: urllib.request.urlopen(req,timeout=8).read()
     except Exception: pass
@@ -18,7 +19,7 @@ def _publish_failure_phase():
 def fail(exc):
     payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
     (ART/'browser-procedure-ui-ux-1-6-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
-    _publish_failure_phase()
+    _publish_failure_phase(exc)
     print(f'::error title=browser-procedure-ui-ux-1-6::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
@@ -30,19 +31,12 @@ def open_process(page,code):
     card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click(); page.wait_for_timeout(100)
     page.wait_for_function("()=>document.documentElement.dataset.ictcUiUxFinetuning==='1.6.0'&&document.documentElement.dataset.ictcUiUxIntegrity==='1.6.1'")
 
-def primary_count(scope):
-    return scope.locator('.ux-primary:visible').count()
-
+def primary_count(scope): return scope.locator('.ux-primary:visible').count()
 def assert_at_most_one_primary(scope,label):
     count=primary_count(scope); assert count<=1,(label,count,scope.inner_text()[:1200])
-
-def target_heights(scope):
-    return scope.locator('button:visible,summary:visible').evaluate_all('xs=>xs.map(x=>({text:(x.textContent||x.getAttribute("aria-label")||"").trim(),h:x.getBoundingClientRect().height})).filter(x=>x.text)')
-
+def target_heights(scope): return scope.locator('button:visible,summary:visible').evaluate_all('xs=>xs.map(x=>({text:(x.textContent||x.getAttribute("aria-label")||"").trim(),h:x.getBoundingClientRect().height})).filter(x=>x.text)')
 def assert_targets(scope,label):
-    small=[x for x in target_heights(scope) if x['h']<43.5]
-    assert not small,(label,small[:20])
-
+    small=[x for x in target_heights(scope) if x['h']<43.5]; assert not small,(label,small[:20])
 def revision(page): return int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
 
 try:
@@ -61,12 +55,15 @@ try:
         meta=page.locator('#epistemicMetaCard'); expect(meta).not_to_be_visible(); assert meta.evaluate('e=>e.parentElement?.id')=='proofView'
         no_overflow(page)
 
-        PHASE='RN-list-minimality'
+        PHASE='RN-open-process'
         open_process(page,'RN-01');expect(page.locator('#monitoringView')).to_be_visible();missions=page.locator('#missionsList .mission-card');assert missions.count()>0
         for i in range(min(missions.count(),12)):
+            PHASE=f'RN-card-{i}'
             card=missions.nth(i);assert_at_most_one_primary(card,f'RN-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri monitoraggio' in primary.inner_text();assert card.locator('[data-run-mission]:visible,[data-pause-mission]:visible,[data-resume-mission]:visible').count()==0
-        assert_targets(page.locator('#monitoringView'),'RN');no_overflow(page)
-        missions.first.locator('.ux-primary').click();expect(page.locator('#planDialog')).to_be_visible();assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible').count()<=1
+        PHASE='RN-targets';assert_targets(page.locator('#monitoringView'),'RN')
+        PHASE='RN-overflow';no_overflow(page)
+        PHASE='RN-open-plan';missions.first.locator('.ux-primary').click();expect(page.locator('#planDialog')).to_be_visible()
+        PHASE='RN-plan-actions';assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible').count()<=1
         close=page.locator('#planDialog [aria-label="Chiudi"]')
         if close.count(): close.click()
         else: page.keyboard.press('Escape')
