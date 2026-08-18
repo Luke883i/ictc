@@ -44,7 +44,7 @@ The PR is merge-ready only when these stronger ratchets also hold:
 2. **RN closed universe:** every newly created or revised mission persists exactly the four RN-01 source classes. Subsets and extra classes fail closed.
 3. **RN verification provenance:** a catalog candidate cannot become `verified` without a source class, an identified publishing authority and a reconstructable reference (source URL, identifier or preserved human contribution). The verification basis remains attached to the decided source.
 4. **DEMO idempotence:** after one successful normalization pass, a second `applyDemoRealityContext()` produces deep-equal state. Target: 700/700 records stable on replay.
-5. **AO governed-field integrity:** changing DEMO `sourceAuthority` increments the object version exactly once, records a synthetic migration edge in `changeHistory`, recomputes the canonical version digest and makes active objects due for re-attestation. Target: 100/100 AO records version-safe, zero silent digest rebases.
+5. **AO governed-field integrity:** changing DEMO `sourceAuthority` increments the object version exactly once, records a synthetic migration edge in `changeHistory` and recomputes the canonical version digest. If the previous object was already due, that due state is preserved; otherwise the DEMO persona explicitly re-attests the new version. Target: 100/100 AO records version-safe, zero silent digest rebases and no artificial explosion of the re-attestation backlog.
 6. **MC decision-first metrics:** the primary GRC dashboard and procedure card expose counts of mapping decisions/gaps/reviews, never `coveragePercent`. The analytical percentage may remain in the bounded coverage projection for compatibility, but it is not a primary posture/compliance shorthand.
 7. **AP closure integrity:** primary projections consume `readyForReview` and `closed`; the legacy `done` alias may remain only for backward compatibility and must never count as verified closure or drive primary UI semantics.
 8. **Mutation frontier:** the convergence model must kill 100% of the expanded failure families, including RN verification without provenance, silent DEMO governed-field rewrite, percentage shortcut, non-idempotent DEMO refinement and legacy-done-as-closed. After finite M, exact M+1000 must add zero genuinely new normalized family.
@@ -56,7 +56,7 @@ The PR is merge-ready only when these stronger ratchets also hold:
 - Primary decision contexts: **<= 1 primary action** each.
 - RN write-path coverage: **3/3** paths (scheduled AI, human contribution + AI enrichment, manual observation) use the same closed-world filter; mission universe persistence **100%**.
 - RN verified-source provenance: **100%** of newly verified candidates have class + authority + reconstructable reference.
-- DEMO procedure fidelity: **700/700** records pass native ontology checks; **100/100 AO** records preserve version/digest semantics after authority rebase.
+- DEMO procedure fidelity: **700/700** records pass native ontology checks; **100/100 AO** records preserve version/digest/attestation semantics after authority rebase.
 - DEMO replay stability: **0 state differences** after the second refinement pass.
 - MC primary surfaces: **0 percentage shortcuts**; decision/gap/review counts only.
 - AP primary surfaces: **0 consumers of legacy `counts.done`**; closure count includes only explicitly verified `closed` records.
@@ -74,7 +74,7 @@ The PR is merge-ready only when these stronger ratchets also hold:
 - Any demo refinement must use native normalizers or bounded presentation metadata and must preserve synthetic provenance.
 - Add static checks before runtime change.
 - Add hostile mutation families for ontology collapse, primary-action duplication, authority promotion, demo contamination, missing source authority, state conflation and silent cross-process decision transfer.
-- Verify every mutation of an AO governed identity field against object version, digest, change history and re-attestation semantics.
+- Verify every mutation of an AO governed identity field against object version, digest, change history and re-attestation semantics; preserve a pre-existing due state, otherwise re-attest the new version explicitly.
 - Verify RN at intake, AI normalization, persistence and human source-decision boundaries; do not trust a model-provided `sourceClass` as sufficient verification evidence.
 - Keep analytical compatibility fields out of primary decision semantics when they compress distinct states into a score or percentage.
 - Keep legacy AP `done` readable but project it as review-pending until explicit verification.
