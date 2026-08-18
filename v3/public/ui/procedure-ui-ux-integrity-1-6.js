@@ -2,7 +2,7 @@ import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
 
 const OWNER='procedure-ui-ux-1-6';
-let installed=false,timer=null,incidentObserver=null;
+let installed=false,timer=null,incidentObserver=null,epistemicObserver=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
 function ensureAccessibilityOverrides(){
@@ -64,6 +64,15 @@ function ensureIncidentWorkspaceLifecycle(){
   });
   incidentObserver.observe(workspace,{attributes:true,attributeFilter:['open']});
 }
+function normalizeEpistemicChips(){
+  const view=$('#epistemicView');if(!view)return;
+  for(const chip of view.querySelectorAll('.surface-chip'))if(/atomi nella pagina/i.test(chip.textContent||'')){chip.title=chip.textContent;chip.textContent='Traccia disponibile';}
+}
+function ensureEpistemicLifecycle(){
+  const view=$('#epistemicView');if(!view)return;normalizeEpistemicChips();if(epistemicObserver)return;
+  epistemicObserver=new MutationObserver(()=>normalizeEpistemicChips());
+  epistemicObserver.observe(view,{childList:true,subtree:true});
+}
 function enforceActionVerifySemantics(){
   const dialog=$('#uiuxActionVerifyDialog'),decision=dialog?.querySelector('select[name="decision"]'),field=dialog?.querySelector('[data-uiux-self-review]'),input=field?.querySelector('input[name="selfReviewAcknowledged"]');
   if(!dialog||!decision||!field||!input)return;
@@ -103,10 +112,10 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();enforceActionVerifySemantics();
+  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();
   document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
   document.addEventListener('ictc:surface-changed',schedule);
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
