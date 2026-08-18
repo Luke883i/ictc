@@ -39,6 +39,9 @@ def target_heights(scope): return scope.locator('button:visible,summary:visible'
 def assert_targets(scope,label):
     small=[x for x in target_heights(scope) if x['h']<43.5]; assert not small,(label,small[:20])
 def revision(page): return int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+def wait_revision_advance(page,before):
+    page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before)
+    return revision(page)
 def close_plan(page):
     close=page.locator('#planDialog [aria-label="Chiudi"]')
     if close.count(): close.click()
@@ -59,7 +62,26 @@ def ensure_monitoring_card(page):
     form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible();before=revision(page)
     page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
     PHASE='RN-seed-submit'
-    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before);close_plan(page);close_scheduler(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();wait_revision_advance(page,before);close_plan(page);close_scheduler(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+def ensure_action_ready_for_review(page):
+    global PHASE
+    verify=page.locator('#grcWorkspace [data-uiux-action-verify]')
+    if verify.count()>0:return verify
+    done=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="done"]')
+    if done.count()==0:
+        start=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="in-progress"]')
+        if start.count()==0:
+            PHASE='AP-materialize-adopted-action'
+            adopt=page.locator('#grcWorkspace [data-action-adopt]').first
+            expect(adopt).to_be_visible()
+            before=revision(page);adopt.click();decision=page.locator('#grcDecisionDialog');expect(decision).to_be_visible();decision.locator('textarea[name="reason"]').fill('Browser 1.6: adozione esplicita per verificare il ciclo AP fino al checkpoint di review.');decision.locator('button[type="submit"]').click();expect(decision).not_to_be_visible();wait_revision_advance(page,before)
+            start=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="in-progress"]')
+        PHASE='AP-materialize-in-progress'
+        expect(start.first).to_be_visible();before=revision(page);start.first.click();wait_revision_advance(page,before)
+        done=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="done"]')
+    PHASE='AP-materialize-ready-for-review'
+    expect(done.first).to_be_visible();before=revision(page);done.first.click();wait_revision_advance(page,before)
+    verify=page.locator('#grcWorkspace [data-uiux-action-verify]');expect(verify.first).to_be_visible();return verify
 
 try:
     with sync_playwright() as pw:
@@ -120,8 +142,9 @@ try:
             card=actions.nth(i);assert_at_most_one_primary(card,f'AP-card-{i}');p=card.locator('.ux-primary:visible')
             if p.count(): assert p.inner_text().strip() in allowed,(i,p.inner_text())
         assert page.locator('#grcWorkspace [data-action-progress]').count()==0
-        verify=page.locator('#grcWorkspace [data-uiux-action-verify]');assert verify.count()>0,'year-one AP cohort must include a ready-for-review example'
-        before=revision(page);verify.first.click();dialog=page.locator('#uiuxActionVerifyDialog');expect(dialog).to_be_visible();expect(dialog).to_contain_text('Completato non significa chiuso');dialog.locator('select[name="decision"]').select_option('rework');dialog.locator('textarea[name="reason"]').fill('Browser 1.6: evidenza non sufficiente, il lavoro torna in esecuzione.');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before)
+        verify=ensure_action_ready_for_review(page)
+        PHASE='AP-verify-rework'
+        before=revision(page);verify.first.click();dialog=page.locator('#uiuxActionVerifyDialog');expect(dialog).to_be_visible();expect(dialog).to_contain_text('Completato non significa chiuso');dialog.locator('select[name="decision"]').select_option('rework');dialog.locator('textarea[name="reason"]').fill('Browser 1.6: evidenza non sufficiente, il lavoro torna in esecuzione.');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();wait_revision_advance(page,before)
         assert_targets(page.locator('#grcWorkspace'),'AP');no_overflow(page)
 
         PHASE='EP-posture-only'
