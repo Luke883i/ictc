@@ -17,10 +17,10 @@ assert.equal(contract.commonPrimitives.length,5);assert.ok(contract.cognitiveInv
 for(const token of ['Governa','Decisione umana','Prova che resta','Limite del processo'])assert.ok(execUi.includes(token),token);
 for(const token of ['monitoring','incidents','objects','coverage','actions'])assert.ok(finetuneUi.includes(token),`finetune ${token}`);
 for(const token of ['RN-01 · contributore AI schedulato','data-rn-scheduler-form-slot'])assert.ok(rnUi.includes(token),token);
-for(const token of ['identity','source','owner','attest'])assert.ok(aoUi.toLowerCase().includes(token),`AO ${token}`);
+const aoLower=aoUi.toLowerCase();for(const token of ['identità','sourceauthority','owner','attest'])assert.ok(aoLower.includes(token),`AO ${token}`);
 assert.ok(active.includes('installProcedureFinetuning'));assert.ok(active.includes('installRnSchedulerDialog'));assert.ok(active.includes('installAoAuditorFacts'));
 assert.ok(styles.includes('procedure-finetuning-1-4.css'));assert.ok(styles.includes('procedure-executive-harmonization-1-5.css'));
 for(const token of ['binding-eu-law','binding-italian-law','competent-authority-decisions','public-jurisprudence-and-case-information-without-personal-data','closureRequiresHumanVerification','conceptAtom','auditorReadPath'])assert.ok(demoOntology.includes(token),`demo ontology ${token}`);
-for(const forbidden of ['Microsoft 365','ERP cloud','Clienti strategici','Fornitori critici','Backup e DR'])assert.equal(/RN_SOURCES[\s\S]*/.test(demoOntology)&&demoOntology.slice(demoOntology.indexOf('RN_SOURCES'),demoOntology.indexOf('AO_AUTHORITY')).includes(forbidden),false,`RN source contamination ${forbidden}`);
+const rnBlock=demoOntology.slice(demoOntology.indexOf('RN_SOURCES'),demoOntology.indexOf('AO_AUTHORITY'));for(const forbidden of ['Microsoft 365','ERP cloud','Clienti strategici','Fornitori critici','Backup e DR'])assert.equal(rnBlock.includes(forbidden),false,`RN source contamination ${forbidden}`);
 assert.match(demoOntology,/demoProcedureOntologyViolations/);assert.match(demoOntology,/ensureDemoProcedureOntology/);
 console.log(JSON.stringify({ok:true,control:'PROCEDURE-INTENT-CONVERGENCE',procedures:7,commonPrimitives:contract.commonPrimitives.map(x=>x.id),demoOntology:true,noNoveltyHoldout:contract.globalDoD.noNoveltyHoldout}));
