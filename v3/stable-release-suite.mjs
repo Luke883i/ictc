@@ -11,6 +11,8 @@ const STABLE=Object.freeze([
   'v3/procedure-compliance-onto-epistemic-saturation.mjs',
   'v3/procedure-executive-harmonization-check.mjs',
   'v3/procedure-executive-harmonization-saturation.mjs',
+  'v3/procedure-intent-convergence-check.mjs',
+  'v3/procedure-intent-convergence-saturation.mjs',
   'v3/v1-stable-experience-saturation.mjs',
   'v3/v1-stable-process-hardening-check.mjs'
 ]);
