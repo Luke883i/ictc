@@ -42,14 +42,23 @@ def close_plan(page):
     close=page.locator('#planDialog [aria-label="Chiudi"]')
     if close.count(): close.click()
     else: page.keyboard.press('Escape')
+def close_scheduler(page):
+    dialog=page.locator('#jobDialog')
+    if dialog.get_attribute('open') is not None:
+        close=dialog.locator('[aria-label="Chiudi configurazione job"]');
+        if close.count(): close.click()
+        else: page.keyboard.press('Escape')
 def ensure_monitoring_card(page):
     global PHASE
     missions=page.locator('#missionsList .mission-card')
     if missions.count()>0:return missions
-    PHASE='RN-seed-monitoring'
-    form=page.locator('#missionForm');expect(form).to_be_visible();before=revision(page)
-    page.evaluate("""()=>{const f=document.querySelector('#missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
-    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before);close_plan(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+    PHASE='RN-seed-open-scheduler'
+    trigger=page.locator('#monitoringView [data-rn-open-scheduler]');expect(trigger).to_be_visible();trigger.click();expect(page.locator('#jobDialog')).to_be_visible()
+    PHASE='RN-seed-monitoring-form'
+    form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible();before=revision(page)
+    page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
+    PHASE='RN-seed-submit'
+    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before);close_plan(page);close_scheduler(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
 
 try:
     with sync_playwright() as pw:
