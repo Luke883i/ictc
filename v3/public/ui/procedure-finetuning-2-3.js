@@ -34,7 +34,7 @@ function ensureRnContributionOptIn(){
   const details=document.createElement('details');
   details.className='procedure-progressive-option';
   details.dataset.rnAiOptin='';
-  details.innerHTML='<summary>Analisi facoltativa</summary><label class="check"><input name="analyzeWithAi" type="checkbox"> Analizza ora con AI</label><p class="microcopy">Se non selezioni questa opzione, ICTC conserva soltanto l’originale. Potrai chiedere l’analisi in seguito.</p>';
+  details.innerHTML='<summary>Analisi facoltativa</summary><label class="check" for="rnAnalyzeWithAi"><input id="rnAnalyzeWithAi" name="analyzeWithAi" type="checkbox" aria-label="Analizza ora con AI"> Analizza ora con AI</label><p class="microcopy">Se non selezioni questa opzione, ICTC conserva soltanto l’originale. Potrai chiedere l’analisi in seguito.</p>';
   body.append(details);
   const submit=form.querySelector('button[type="submit"]');
   const sync=()=>{if(submit)submit.textContent=form.elements.analyzeWithAi?.checked?'Conserva e analizza':'Conserva materiale';};
