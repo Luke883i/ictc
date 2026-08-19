@@ -42,6 +42,11 @@ function ensureRnContributionOptIn(){
   sync();
 }
 
+function ensureRnSchedulerAccessibleNames(){
+  const prompt=$('#missionForm [name="promptOverride"]');
+  if(prompt&&!prompt.getAttribute('aria-label'))prompt.setAttribute('aria-label','Istruzioni specifiche per il monitoraggio');
+}
+
 async function submitContribution(form){
   const data=new FormData(form);
   const button=form.querySelector('button[type="submit"]');
@@ -98,6 +103,7 @@ function removeRiskAiRatingControl(){
 function enhance(){
   ensureStyle();
   ensureRnContributionOptIn();
+  ensureRnSchedulerAccessibleNames();
   simplifyIncidentIntake();
   removeRiskAiRatingControl();
   document.documentElement.dataset.procedureFinetuning='2.3';
