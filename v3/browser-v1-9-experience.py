@@ -1,11 +1,21 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 P={'RN-01':'monitoring','EC-01':'incidents','AO-01':'grc','MC-01':'grc','AP-01':'grc','RC-01':'grc','AR-01':'grc'}
 BUTTON_LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta norme e controlli','AP-01':'Gestisci remediation','RC-01':'Valuta rischi','AR-01':'Gestisci questionari'}
+def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:72] or 'unknown'
+def _publish_failure_phase(exc):
+ token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
+ if not token or len(sha)!=40 or not repo:return
+ line=traceback.extract_tb(exc.__traceback__)[-1].lineno if exc.__traceback__ else 0
+ detail=_slug(f'{type(exc).__name__}-L{line}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
+ body=json.dumps({'state':'failure','context':f'ictc/browser-v1-9-failure/{_slug(PHASE)}/{detail}','description':f'Browser 1.9 {PHASE}: {type(exc).__name__}'[:140]}).encode()
+ req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+ try: urllib.request.urlopen(req,timeout=8).read()
+ except Exception: pass
 def fail(e):
- payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-9-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-v1-9::{PHASE}: {type(e).__name__}: {e}',flush=True)
+ payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-9-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); _publish_failure_phase(e); print(f'::error title=browser-v1-9::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def processes(page): return page.locator('.service-nav [data-service="processes"]')
 def openp(page,code):
  processes(page).click(); c=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(c).to_be_visible(); expect(c.locator(':scope > footer .primary')).to_have_count(1); c.locator(':scope > footer .primary').click(); page.wait_for_timeout(120)
@@ -39,7 +49,7 @@ try:
    PHASE=f'seven:{code}'; openp(page,code); expect(page.locator('html')).to_have_attribute('data-ictc-surface',surface); f=page.locator('.procedure-frame[data-procedure-frame="canonical-1-9"]:visible'); expect(f).to_have_count(1); expect(f.locator('.procedure-purpose')).not_to_be_empty(); expect(f).not_to_contain_text('Scopo del processo'); expect(f.locator('.procedure-primary')).to_have_count(1); assert page.locator(f'#{surface}View > .workspace-return:visible').count()==0; named(page); painted(page); page.screenshot(path=str(ART/f'ux-v19-{code.lower()}.png'),full_page=True); seen.append(code)
   PHASE='contribution-dialog'; openp(page,'RN-01'); page.locator('.procedure-frame:visible .procedure-primary').click(); expect(page.locator('#contributionDialog')).to_be_visible(); one_scroll_owner(page,'#contributionDialog'); body_locked(page); named(page); painted(page,'#contributionDialog'); page.screenshot(path=str(ART/'ux-v19-contribution-dialog.png'),full_page=True); page.locator('#contributionDialog button[aria-label="Chiudi"]').click()
   PHASE='incident-intake'; openp(page,'EC-01'); page.locator('.procedure-frame:visible .procedure-primary').click(); expect(page.locator('#incidentDialog')).to_be_visible(); one_scroll_owner(page,'#incidentDialog'); body_locked(page); ratio=page.evaluate("()=>{const p=document.querySelector('#incidentDialog .prompt-field').getBoundingClientRect(),b=document.querySelector('#incidentDialog .dialog-body').getBoundingClientRect();return p.width/b.width}"); assert ratio>=.55,ratio; expect(page.locator('#incidentDialog [data-market-event-fields]')).to_be_attached(); assert page.locator('#incidentDialog aside [data-market-event-fields]').count()==1; named(page); painted(page,'#incidentDialog'); page.screenshot(path=str(ART/'ux-v19-incident-intake.png'),full_page=True); page.locator('#incidentDialog textarea[name="originalNarrative"]').fill('Evento osservato durante il test di polish; nessuna conclusione sostanziale viene inferita.'); page.locator('#incidentDialog input[name="awarenessAt"]').fill('2026-08-10T12:00'); page.locator('#incidentDialog button[type="submit"]').click(); expect(page.locator('#incidentDialog')).not_to_be_visible(); page.wait_for_timeout(180)
-  PHASE='incident-card-painted'; card=page.locator('#incidentList .incident-card').first; expect(card).to_be_visible(); painted(page,'#incidentList'); expect(card.locator('[data-open-incident]')).to_have_text('Apri'); card.locator('[data-open-incident]').click(); expect(page.locator('#incidentWorkspace')).to_be_visible(); one_scroll_owner(page,'#incidentWorkspace'); body_locked(page); named(page); painted(page,'#incidentWorkspace'); ifq=page.locator('#incidentWorkspace .question-compass')
+  PHASE='incident-card-painted'; card=page.locator('#incidentList .incident-card').first; expect(card).to_be_visible(); painted(page,'#incidentList'); expect(card.locator('[data-open-incident]')).to_have_text('Apri caso'); card.locator('[data-open-incident]').click(); expect(page.locator('#incidentWorkspace')).to_be_visible(); one_scroll_owner(page,'#incidentWorkspace'); body_locked(page); named(page); painted(page,'#incidentWorkspace'); ifq=page.locator('#incidentWorkspace .question-compass')
   if ifq.count() and ifq.is_visible():
    expect(ifq.locator('.refined-question-why')).to_be_attached(); qtop=page.locator('#incidentWorkspace #questionValue').evaluate('e=>e.getBoundingClientRect().top'); assert qtop<850,qtop
   page.screenshot(path=str(ART/'ux-v19-incident-workspace.png'),full_page=True); page.locator('#incidentWorkspace button[aria-label="Chiudi"]').click()

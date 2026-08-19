@@ -125,7 +125,10 @@ def epistemic_network_coverage(page,role,expected_ids):
 def audit_ep(page,role,vp,width,expected_ids,revision):
     page.locator('.service-nav [data-service="processes"]').click(); meta=page.locator('#epistemicMetaCard')
     if role in ('admin','auditor'):
-        expect(meta).to_be_visible(); meta.locator('[data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible()
+        expect(meta).not_to_be_visible()
+        parent=meta.evaluate('e=>e.parentElement?.id')
+        if parent!='proofView': anomaly('epistemic-entry-parent',role,vp,'EP-01',parent,'proofView')
+        page.locator('.service-nav [data-service="proof"]').click(); expect(page.locator('#proofView')).to_be_visible(); expect(meta).to_be_visible(); meta.locator('[data-service="epistemic"]').click(); expect(page.locator('#epistemicView')).to_be_visible()
         page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision)
         current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role)
         expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])})
@@ -159,7 +162,7 @@ try:
                 for proc in PROCEDURES: audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
                 audit_proof(page,role,vp,width); audit_ep(page,role,vp,width,list(registry.keys()),revision); ctx.close()
         unique={x['signature']:x for x in anomalies}
-        report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+visual-grace-lexical-epistemic-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'}
+        report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+visual-grace-lexical-epistemic-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'epistemicEntrySurface':'Postura ICTC','boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'}
         (ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
         if anomalies:
             for x in list(unique.values())[:40]: print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
