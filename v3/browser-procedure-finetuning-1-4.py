@@ -1,6 +1,6 @@
 import json, os, pathlib, runpy, urllib.request
 ROOT=pathlib.Path(__file__).resolve().parent
-SCRIPTS=['browser-procedure-finetuning-1-4-base.py','browser-procedure-executive-harmonization-1-5.py','browser-surface-truth-2-5.py']
+SCRIPTS=['browser-procedure-finetuning-1-4-base.py','browser-procedure-executive-harmonization-1-5.py','browser-surface-truth-rn-controls-2-5.py','browser-surface-truth-2-5.py']
 def post_failure(script,error):
  token=os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN'); repo=os.environ.get('GITHUB_REPOSITORY'); sha=os.environ.get('HEAD_SHA') or os.environ.get('GITHUB_SHA')
  if not token or not repo or not sha: return
