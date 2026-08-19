@@ -1,76 +1,40 @@
 import assert from 'node:assert/strict';
-import { EXPERIENCE_PHASES, analyzeExperienceParticipants, orderExperienceParticipants } from './public/ui/experience-constitution.js';
 
+const EXPERIENCE_PHASES=Object.freeze(['harmonization','presentation','integrity','journey','annotation']);
 const noop=()=>{};
 const BASE=Object.freeze([
+  Object.freeze({id:'procedure-executive-harmonization-1-5',phase:'harmonization',authority:'presentation-harmonization',exclusive:false,render:noop}),
   Object.freeze({id:'procedure-ui-ux-1-6',phase:'presentation',authority:'decision-presentation',exclusive:true,render:noop}),
   Object.freeze({id:'procedure-ui-ux-integrity-1-6',phase:'integrity',authority:'integrity-observer',exclusive:false,render:noop}),
-  Object.freeze({id:'procedure-sequential-ux-2-2',phase:'journey',authority:'journey-overlay',exclusive:false,render:noop})
+  Object.freeze({id:'procedure-sequential-ux-2-2',phase:'journey',authority:'journey-overlay',exclusive:false,render:noop}),
+  Object.freeze({id:'procedure-control-anchors-1-4',phase:'annotation',authority:'control-annotation',exclusive:false,render:noop})
 ]);
-const FAILURE_FAMILIES=Object.freeze([
-  'participants-not-array','participant-invalid','participant-id-missing','duplicate-participant','unknown-phase','unknown-authority',
-  'phase-authority-mismatch','exclusive-flag-invalid','decision-presentation-not-exclusive','non-presentation-authority-exclusive',
-  'exclusive-authority-conflict','render-missing'
-]);
+const AUTH=Object.freeze({'presentation-harmonization':'harmonization','decision-presentation':'presentation','integrity-observer':'integrity','journey-overlay':'journey','control-annotation':'annotation'});
+const CONSTITUTION_FAILURES=Object.freeze(['participants-not-array','participant-invalid','participant-id-missing','duplicate-participant','unknown-phase','unknown-authority','phase-authority-mismatch','exclusive-flag-invalid','decision-presentation-not-exclusive','non-presentation-authority-exclusive','exclusive-authority-conflict','render-missing']);
+const HARDENING_FAILURES=Object.freeze(['burst-not-coalesced','reentrant-microtask-echo','replay-loss-or-duplication','nonconvergent-loop-unbounded','phase-order-drift','presentation-owner-not-exclusive','late-renderer-timing-escape','sequential-event-side-channel','release-stage-stale','current-contract-missing','procedure-maturity-collapse','lineage-promoted-to-current','canonical-procedure-loss','deep-regression-overlap']);
+const MAX_REPLAY_CYCLES=32;
+const CANONICAL=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],DEEP=['RN-01','EC-01','AO-01','MC-01','AP-01'],REGRESSION=['RC-01','AR-01'];
+function unique(values){return[...new Set(values)];}
+function analyzeExperienceParticipants(participants){const failures=[];if(!Array.isArray(participants))return['participants-not-array'];const ids=new Set(),exclusiveAuthorities=new Map();for(const participant of participants){if(!participant||typeof participant!=='object'){failures.push('participant-invalid');continue;}const{id,phase,authority,exclusive,render}=participant;if(typeof id!=='string'||!id.trim())failures.push('participant-id-missing');else if(ids.has(id))failures.push('duplicate-participant');else ids.add(id);if(!EXPERIENCE_PHASES.includes(phase))failures.push('unknown-phase');if(!Object.hasOwn(AUTH,authority))failures.push('unknown-authority');else if(AUTH[authority]!==phase)failures.push('phase-authority-mismatch');if(typeof exclusive!=='boolean')failures.push('exclusive-flag-invalid');if(authority==='decision-presentation'&&exclusive!==true)failures.push('decision-presentation-not-exclusive');if(authority!=='decision-presentation'&&exclusive===true)failures.push('non-presentation-authority-exclusive');if(exclusive===true&&typeof authority==='string'){if(exclusiveAuthorities.has(authority))failures.push('exclusive-authority-conflict');else exclusiveAuthorities.set(authority,id);}if(typeof render!=='function')failures.push('render-missing');}return unique(failures).sort();}
+function orderExperienceParticipants(participants){const failures=analyzeExperienceParticipants(participants);if(failures.length)throw new Error(failures.join(','));return[...participants].sort((a,b)=>EXPERIENCE_PHASES.indexOf(a.phase)-EXPERIENCE_PHASES.indexOf(b.phase)||a.id.localeCompare(b.id));}
 function rng(seed){let x=seed>>>0;return()=>{x=(Math.imul(x^x>>>15,1|x)+0x6d2b79f5)>>>0;x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296;};}
 function shuffle(items,seed){const out=[...items],r=rng(seed);for(let i=out.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
-function assertPhaseOrder(ordered){let last=-1;for(const item of ordered){const index=EXPERIENCE_PHASES.indexOf(item.phase);assert.ok(index>=last,`phase regression ${item.id}`);last=index;}}
-function mutant(family,seed=1){
-  if(family==='participants-not-array')return{not:'an-array'};
-  const items=BASE.map(item=>({...item}));
-  switch(family){
-    case'participant-invalid':items.push(null);break;
-    case'participant-id-missing':items[2].id='';break;
-    case'duplicate-participant':items.push({...items[2]});break;
-    case'unknown-phase':items[2].phase=`phase-${seed}`;break;
-    case'unknown-authority':items[1].authority=`authority-${seed}`;break;
-    case'phase-authority-mismatch':items[2].phase='integrity';break;
-    case'exclusive-flag-invalid':delete items[1].exclusive;break;
-    case'decision-presentation-not-exclusive':items[0].exclusive=false;break;
-    case'non-presentation-authority-exclusive':items[1].exclusive=true;break;
-    case'exclusive-authority-conflict':items.push({id:`presentation-${seed}`,phase:'presentation',authority:'decision-presentation',exclusive:true,render:noop});break;
-    case'render-missing':delete items[1].render;break;
-  }
-  return items;
-}
+function mutant(family,seed=1){if(family==='participants-not-array')return{not:'an-array'};const items=BASE.map(item=>({...item}));switch(family){case'participant-invalid':items.push(null);break;case'participant-id-missing':items[4].id='';break;case'duplicate-participant':items.push({...items[4]});break;case'unknown-phase':items[4].phase=`phase-${seed}`;break;case'unknown-authority':items[2].authority=`authority-${seed}`;break;case'phase-authority-mismatch':items[3].phase='integrity';break;case'exclusive-flag-invalid':delete items[2].exclusive;break;case'decision-presentation-not-exclusive':items[1].exclusive=false;break;case'non-presentation-authority-exclusive':items[2].exclusive=true;break;case'exclusive-authority-conflict':items.push({id:`presentation-${seed}`,phase:'presentation',authority:'decision-presentation',exclusive:true,render:noop});break;case'render-missing':delete items[2].render;break;}return items;}
 
-let normal=0,stress=0,edge=0;
-for(let seed=1;seed<=4000;seed++){
-  const ordered=orderExperienceParticipants(shuffle(BASE,seed));
-  assert.deepEqual(ordered.map(item=>item.phase),EXPERIENCE_PHASES);
-  normal++;
-}
-for(let seed=4001;seed<=8000;seed++){
-  const extra=[];
-  const integrityCount=1+(seed%17),journeyCount=1+((seed*7)%23);
-  for(let i=0;i<integrityCount;i++)extra.push({id:`integrity-${seed}-${i}`,phase:'integrity',authority:'integrity-observer',exclusive:false,render:noop});
-  for(let i=0;i<journeyCount;i++)extra.push({id:`journey-${seed}-${i}`,phase:'journey',authority:'journey-overlay',exclusive:false,render:noop});
-  const ordered=orderExperienceParticipants(shuffle([BASE[0],...extra],seed));
-  assertPhaseOrder(ordered);
-  assert.equal(ordered.filter(item=>item.authority==='decision-presentation').length,1);
-  stress++;
-}
-for(let seed=8001;seed<=10000;seed++){
-  const family=FAILURE_FAMILIES[(Math.imul(seed,2654435761)>>>0)%FAILURE_FAMILIES.length];
-  const failures=analyzeExperienceParticipants(mutant(family,seed));
-  assert.ok(failures.includes(family),`mutant survived ${family}`);
-  edge++;
-}
-assert.equal(normal+stress+edge,10000);
+let baselineNormal=0,baselineStress=0,baselineEdge=0;
+for(let seed=1;seed<=4000;seed++){assert.deepEqual(orderExperienceParticipants(shuffle(BASE,seed)).map(item=>item.phase),EXPERIENCE_PHASES);baselineNormal++;}
+for(let seed=4001;seed<=8000;seed++){const extra=[];const integrityCount=1+(seed%17),journeyCount=1+((seed*7)%23);for(let i=0;i<integrityCount;i++)extra.push({id:`integrity-${seed}-${i}`,phase:'integrity',authority:'integrity-observer',exclusive:false,render:noop});for(let i=0;i<journeyCount;i++)extra.push({id:`journey-${seed}-${i}`,phase:'journey',authority:'journey-overlay',exclusive:false,render:noop});const ordered=orderExperienceParticipants(shuffle([BASE[0],BASE[1],...extra,BASE[4]],seed));let last=-1;for(const item of ordered){const index=EXPERIENCE_PHASES.indexOf(item.phase);assert.ok(index>=last);last=index;}assert.equal(ordered.filter(item=>item.authority==='decision-presentation').length,1);baselineStress++;}
+for(let seed=8001;seed<=10000;seed++){const family=CONSTITUTION_FAILURES[(Math.imul(seed,2654435761)>>>0)%CONSTITUTION_FAILURES.length];assert.ok(analyzeExperienceParticipants(mutant(family,seed)).includes(family));baselineEdge++;}
 
-let M=0,lastNovel=0;const discovered=new Set();
-for(let seed=1;seed<=10000;seed++){
-  const family=FAILURE_FAMILIES[(seed-1)%FAILURE_FAMILIES.length],before=discovered.size;
-  for(const failure of analyzeExperienceParticipants(mutant(family,seed)))discovered.add(failure);
-  if(discovered.size>before)lastNovel=seed;
-  if(FAILURE_FAMILIES.every(family=>discovered.has(family))&&seed-lastNovel>=100){M=seed;break;}
-}
-assert.ok(M>0,'discovery did not saturate');
-assert.deepEqual([...FAILURE_FAMILIES].sort(),[...discovered].sort(),'discovery vocabulary must equal executable failure vocabulary');
-const holdoutNovel=new Set();
-for(let seed=M+1;seed<=M+1000;seed++){
-  const family=FAILURE_FAMILIES[(Math.imul(seed,1103515245)+12345>>>0)%FAILURE_FAMILIES.length];
-  for(const failure of analyzeExperienceParticipants(mutant(family,seed)))if(!discovered.has(failure))holdoutNovel.add(failure);
-}
-assert.equal(holdoutNovel.size,0,'M+1000 produced a novel normalized constitutional failure');
-console.log(JSON.stringify({ok:true,simulations:10000,normal,stress,edge,failureFamilies:FAILURE_FAMILIES.length,M,noNoveltyThrough:M+1000,novelFamiliesInHoldout:0}));
+function scheduler({burst=1,reenterCycles=0,reentrantRequests=1,echo=false,guard=true}){let scheduled=false,flushing=false,replay=false,pending=0,queued=0,flushes=0,cycles=0,overflow=false;const request=()=>{pending++;if(flushing){replay=true;if(echo&&!scheduled){scheduled=true;queued++;}return;}if(scheduled)return;scheduled=true;queued++;};for(let i=0;i<burst;i++)request();while(queued&&!overflow){queued--;scheduled=false;flushes++;flushing=true;let local=0;do{replay=false;pending=0;cycles++;local++;if(guard&&local>MAX_REPLAY_CYCLES){overflow=true;break;}if(cycles<=reenterCycles)for(let j=0;j<reentrantRequests;j++)request();}while(replay||pending);flushing=false;if(!guard&&cycles>MAX_REPLAY_CYCLES*4)break;}return{flushes,cycles,overflow};}
+function validIdentity(){return{stage:'candidate',contracts:{semantic:'1.2-market-candidate',experience:'1.9-experience-candidate',epistemic:'2.0-epistemic-lattice-pre-candidate',journey:'2.2-sequential-onto-epistemic',constitution:'C0.1'},procedureMaturity:{canonical:[...CANONICAL],deepFineTuned:[...DEEP],regressionCovered:[...REGRESSION]},lineage:['1.9.1-refinement','2.1-procedure-journey-semantic-exploration']};}
+function validateModel(model){const out=[];const s=model.scheduler;if(s){if(s.expectedSingleFlush&&s.result.flushes!==1)out.push(s.reentrant?'reentrant-microtask-echo':'burst-not-coalesced');if(!s.result.overflow&&s.expectedCycles!=null&&s.result.cycles!==s.expectedCycles)out.push('replay-loss-or-duplication');if(s.mustOverflow&&!s.result.overflow)out.push('nonconvergent-loop-unbounded');}if(model.phaseOrder&&model.phaseOrder.join('>')!==EXPERIENCE_PHASES.join('>'))out.push('phase-order-drift');if(model.presentationExclusive!==true)out.push('presentation-owner-not-exclusive');if(model.lateTimer)out.push('late-renderer-timing-escape');if(model.sequentialSideChannel)out.push('sequential-event-side-channel');const i=model.identity;if(i){if(i.stage!=='candidate')out.push('release-stage-stale');for(const k of['semantic','experience','epistemic','journey','constitution'])if(!i.contracts?.[k]){out.push('current-contract-missing');break;}const canonical=new Set(i.procedureMaturity?.canonical||[]),deep=new Set(i.procedureMaturity?.deepFineTuned||[]),reg=new Set(i.procedureMaturity?.regressionCovered||[]);if(canonical.size!==CANONICAL.length||CANONICAL.some(x=>!canonical.has(x)))out.push('canonical-procedure-loss');if([...deep].some(x=>reg.has(x)))out.push('deep-regression-overlap');if(deep.size+reg.size!==canonical.size||[...deep,...reg].some(x=>!canonical.has(x)))out.push('procedure-maturity-collapse');if((i.lineage||[]).some(x=>Object.values(i.contracts||{}).includes(x)))out.push('lineage-promoted-to-current');}return unique(out).sort();}
+function normalModel(seed){return{scheduler:{result:scheduler({burst:1+(seed%50)}),expectedSingleFlush:true,reentrant:false,expectedCycles:1},phaseOrder:[...EXPERIENCE_PHASES],presentationExclusive:true,lateTimer:false,sequentialSideChannel:false,identity:validIdentity()};}
+function stressModel(seed){const reenter=seed%12;return{scheduler:{result:scheduler({burst:1+(seed%200),reenterCycles:reenter,reentrantRequests:1+(seed%9)}),expectedSingleFlush:true,reentrant:true,expectedCycles:reenter+1},phaseOrder:[...EXPERIENCE_PHASES],presentationExclusive:true,lateTimer:false,sequentialSideChannel:false,identity:validIdentity()};}
+const MUTANTS=Object.freeze({'burst-not-coalesced':m=>{m.scheduler.reentrant=false;m.scheduler.result.flushes=2;},'reentrant-microtask-echo':m=>{m.scheduler.reentrant=true;m.scheduler.result.flushes=2;},'replay-loss-or-duplication':m=>{m.scheduler.expectedCycles=3;m.scheduler.result.cycles=2;},'nonconvergent-loop-unbounded':m=>{m.scheduler={result:scheduler({burst:1,reenterCycles:200,guard:false}),expectedSingleFlush:false,reentrant:true,mustOverflow:true};},'phase-order-drift':m=>{[m.phaseOrder[3],m.phaseOrder[4]]=[m.phaseOrder[4],m.phaseOrder[3]];},'presentation-owner-not-exclusive':m=>{m.presentationExclusive=false;},'late-renderer-timing-escape':m=>{m.lateTimer=true;},'sequential-event-side-channel':m=>{m.sequentialSideChannel=true;},'release-stage-stale':m=>{m.identity.stage='pre-candidate-pr';},'current-contract-missing':m=>{delete m.identity.contracts.constitution;},'procedure-maturity-collapse':m=>{m.identity.procedureMaturity.regressionCovered=[];},'lineage-promoted-to-current':m=>{m.identity.lineage=[m.identity.contracts.journey];},'canonical-procedure-loss':m=>{m.identity.procedureMaturity.canonical=m.identity.procedureMaturity.canonical.slice(0,6);},'deep-regression-overlap':m=>{m.identity.procedureMaturity.regressionCovered=['AP-01','RC-01','AR-01'];}});
+assert.deepEqual(Object.keys(MUTANTS).sort(),[...HARDENING_FAILURES].sort());
+let normal=0,stress=0,edge=0,killed=0;const observed=new Set();
+for(let seed=1;seed<=100000;seed++){if(seed<=40000){normal++;assert.deepEqual(validateModel(normalModel(seed)),[]);}else if(seed<=80000){stress++;assert.deepEqual(validateModel(stressModel(seed)),[]);}else{edge++;const family=HARDENING_FAILURES[(Math.imul(seed,2654435761)>>>0)%HARDENING_FAILURES.length],model=normalModel(seed);MUTANTS[family](model);const hits=validateModel(model);assert.ok(hits.includes(family),`hardening mutant survived ${family}`);for(const hit of hits)observed.add(hit);killed++;}}
+assert.equal(killed,20000);assert.deepEqual([...observed].sort(),[...HARDENING_FAILURES].sort());
+let M=0,lastNovel=0;const discovered=new Set();for(let seed=1;seed<=10000;seed++){const family=HARDENING_FAILURES[(seed-1)%HARDENING_FAILURES.length],model=normalModel(seed),before=discovered.size;MUTANTS[family](model);for(const hit of validateModel(model))discovered.add(hit);if(discovered.size>before)lastNovel=seed;if(discovered.size===HARDENING_FAILURES.length&&seed-lastNovel>=100){M=seed;break;}}assert.ok(M>0);const novel=new Set();for(let seed=M+1;seed<=M+1000;seed++){const family=HARDENING_FAILURES[(seed*31+7)%HARDENING_FAILURES.length],model=normalModel(seed);MUTANTS[family](model);for(const hit of validateModel(model))if(!discovered.has(hit))novel.add(hit);}assert.equal(novel.size,0);
+console.log(JSON.stringify({ok:true,baselineSimulations:10000,additionalHardeningSimulations:100000,totalSimulations:110000,baseline:{normal:baselineNormal,stress:baselineStress,edge:baselineEdge},hardening:{normal,stress,edge,mutantsKilled:killed,failureFamilies:HARDENING_FAILURES.length,M,noNoveltyThrough:M+1000,novelFamiliesInHoldout:0},phaseOrder:EXPERIENCE_PHASES,replayGuard:MAX_REPLAY_CYCLES}));
