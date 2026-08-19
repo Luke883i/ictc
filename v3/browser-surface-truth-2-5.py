@@ -8,7 +8,7 @@ def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c i
 def publish_failure(e):
  token=os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN');repo=os.environ.get('GITHUB_REPOSITORY');sha=os.environ.get('HEAD_SHA') or os.environ.get('GITHUB_SHA')
  if not token or not repo or not sha:return
- detail=_slug(f'{type(e).__name__}-{str(e).splitlines()[0] if str(e) else 'error'}')[:52]
+ detail=_slug(f"{type(e).__name__}-{str(e).splitlines()[0] if str(e) else 'error'}")[:52]
  body=json.dumps({'state':'failure','context':f'ictc/browser-2-5-failure/{_slug(PHASE)}/{detail}','description':f'SurfaceTruth 2.5 {PHASE}: {type(e).__name__}'[:140]}).encode()
  req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
  try:urllib.request.urlopen(req,timeout=8).read()
@@ -29,7 +29,7 @@ def snapshot(page,name,selector):
  assert result['fakeVisible']==0,(name,'fake visible',result['fakeVisible'])
  assert result['unknownCritical']==0,(name,'unknown critical',result['unknownCritical'])
  assert not result['smallTargets'],(name,'small targets',result['smallTargets'][:12])
- assert not result['unnamed'],(name,'unnamed controls', result['unnamed'][:12])
+ if result['unnamed']: raise AssertionError(f"unnamed:{result['unnamed'][0]}:{name}:{','.join(result['unnamed'][:4])}")
  assert result['maxDisclosureDepth']<2,(name,'disclosure depth',result['maxDisclosureDepth'])
  INVENTORY.append({'name':name,'selector':selector,'coverage':coverage,'criticalCoverage':critical_coverage,**result})
  return result
