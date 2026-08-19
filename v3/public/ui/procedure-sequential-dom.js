@@ -73,7 +73,10 @@ export function ensureQueueWindow(host,selector='article',{id,label='elementi',b
     const remaining=Math.max(0,matching.length-limit);ui.more.hidden=remaining===0;ui.more.textContent=remaining?`Mostra altri ${Math.min(budget,remaining)}`:'Mostra altri';
   };
   if(ui.tools.dataset.seqQueueBound!=='true'){
-    ui.tools.dataset.seqQueueBound='true';ui.search.addEventListener('input',()=>refresh(true));ui.stateSelect.addEventListener('change',()=>refresh(true));ui.more.addEventListener('click',()=>{ui.tools.dataset.seqQueueLimit=String(Number(ui.tools.dataset.seqQueueLimit||budget)+budget);refresh(false);});
+    ui.tools.dataset.seqQueueBound='true';
+    ui.search.addEventListener('input',event=>{refresh(true);event.stopPropagation();});
+    ui.stateSelect.addEventListener('change',event=>{refresh(true);event.stopPropagation();});
+    ui.more.addEventListener('click',()=>{ui.tools.dataset.seqQueueLimit=String(Number(ui.tools.dataset.seqQueueLimit||budget)+budget);refresh(false);});
   }
   refresh(false);
 }
