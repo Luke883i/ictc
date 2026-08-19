@@ -258,9 +258,12 @@ try:
         close_dialog(page, '#contributionDialog')
         secondary = page.locator('#monitoringView .procedure-frame .procedure-secondary')
         if secondary.count():
+            PHASE = 'rn-scheduler-open'
             secondary.click()
-            expect(page.locator('#monitoringView [data-procedure-entry-utility] #missionForm')).to_be_visible()
-            snapshot(page, 'RN-utility', '#monitoringView [data-procedure-entry-utility]')
+            expect(page.locator('#jobDialog')).to_be_visible()
+            expect(page.locator('#jobDialog #missionForm')).to_be_visible()
+            snapshot(page, 'dialog:rn-scheduler', '#jobDialog')
+            close_dialog(page, '#jobDialog')
 
         PHASE = 'incidents'
         open_process(page, 'EC-01')
