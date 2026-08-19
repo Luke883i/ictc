@@ -1,14 +1,12 @@
 import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
+import { registerExperienceParticipant } from './experience-lifecycle.js';
 
 const OWNER='procedure-ui-ux-1-6';
-let installed=false,timer=null,incidentObserver=null,epistemicObserver=null;
+const PARTICIPANT='procedure-ui-ux-integrity-1-6';
+let installed=false,incidentObserver=null,epistemicObserver=null;
 
 function slug(value){return String(value||'interaction').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'interaction';}
-function ensureAccessibilityOverrides(){
-  if($('#procedureUiUx16IntegrityStyles'))return;
-  const style=document.createElement('style');style.id='procedureUiUx16IntegrityStyles';style.textContent=`#monitoringView button,#monitoringView summary,#monitoringView a.secondary,#incidentsView button,#incidentsView summary,#incidentsView a.secondary,#grcWorkspace button,#grcWorkspace summary,#grcWorkspace a.secondary,#planDialog button,#planDialog summary,#planDialog a.secondary,#sourceDialog button,#sourceDialog summary,#sourceDialog a.secondary,#incidentWorkspace button,#incidentWorkspace summary,#incidentWorkspace a.secondary,#uiuxScopeDialog button,#uiuxScopeDialog summary,#uiuxScopeDialog a.secondary,#uiuxMappingDialog button,#uiuxMappingDialog summary,#uiuxMappingDialog a.secondary,#uiuxIncompleteMappingDialog button,#uiuxIncompleteMappingDialog summary,#uiuxIncompleteMappingDialog a.secondary,#uiuxActionVerifyDialog button,#uiuxActionVerifyDialog summary,#uiuxActionVerifyDialog a.secondary,#uiuxActionStateDialog button,#uiuxActionStateDialog summary,#uiuxActionStateDialog a.secondary,[data-uiux-owner="${OWNER}"] button,[data-uiux-owner="${OWNER}"] summary,[data-uiux-owner="${OWNER}"] a.secondary{min-height:44px!important;min-block-size:44px!important;box-sizing:border-box}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}}`;document.head.append(style);
-}
 function ensureRuntimeActor(){
   if(!state.data)return;
   const actor={id:`local-${state.role}`,role:state.role};
@@ -112,13 +110,9 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureAccessibilityOverrides();ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
-function schedule(){clearTimeout(timer);timer=setTimeout(enforce,0);}
+function enforce(){ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 export function installProcedureUiUxIntegrity(){
-  if(installed)return;installed=true;ensureAccessibilityOverrides();ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();
-  document.addEventListener('ictc:rendered',()=>{ensureRuntimeActor();schedule();});
-  document.addEventListener('ictc:surface-changed',schedule);
+  if(installed)return;installed=true;ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();
+  registerExperienceParticipant({id:PARTICIPANT,phase:'integrity',authority:'integrity-observer',exclusive:false,render:enforce});
   document.addEventListener('click',event=>{const button=event.target.closest?.('[data-uiux-reject-incomplete]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const dialog=ensureRejectDialog();dialog.dataset.mappingId=button.dataset.uiuxRejectIncomplete;dialog.querySelector('form').reset();dialog.showModal();dialog.querySelector('textarea')?.focus();},true);
-  document.addEventListener('toggle',schedule,true);
-  schedule();
 }

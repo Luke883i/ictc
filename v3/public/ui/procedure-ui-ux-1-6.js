@@ -1,5 +1,6 @@
 import { $, api, esc, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
+import { registerExperienceParticipant, requestExperienceLifecycle } from './experience-lifecycle.js';
 
 const VERSION='1.6.0';
 const OWNER='procedure-ui-ux-1-6';
@@ -32,42 +33,6 @@ function mark(host,process,phase='overview'){
 }
 function alreadyTuned(node){return node?.dataset?.uiuxApplied===VERSION;}
 function finishTuning(node){if(node)node.dataset.uiuxApplied=VERSION;return node;}
-function ensureStyles(){
-  if($('#procedureUiUx16Styles'))return;
-  const style=document.createElement('style');
-  style.id='procedureUiUx16Styles';
-  style.textContent=`
-    :root{--ictc-uiux-focus:3px solid currentColor}
-    [data-uiux-owner="${OWNER}"] button,[data-uiux-owner="${OWNER}"] summary,[data-uiux-owner="${OWNER}"] a.secondary{min-block-size:44px}
-    [data-uiux-owner="${OWNER}"] button:focus-visible,[data-uiux-owner="${OWNER}"] summary:focus-visible,[data-uiux-owner="${OWNER}"] a:focus-visible{outline:var(--ictc-uiux-focus);outline-offset:3px}
-    .ux-primary{font-weight:750}
-    .ux-secondary-actions{margin-block-start:.65rem;border-top:1px solid color-mix(in srgb,currentColor 14%,transparent);padding-block-start:.35rem}
-    .ux-secondary-actions>summary,.ux-technical-detail>summary{cursor:pointer;font-weight:650;list-style-position:inside}
-    .ux-secondary-actions[open]>.ux-secondary-stack,.ux-technical-detail[open]>.ux-secondary-stack{display:flex;flex-wrap:wrap;gap:.5rem;margin-block-start:.55rem}
-    .ux-card-meta-secondary{margin-block-start:.5rem}
-    .ux-card-meta-secondary>summary{font-size:.9rem}
-    .ux-utility-banner{padding:.65rem 1rem!important;box-shadow:none!important}
-    .ux-utility-banner strong{font-size:1rem!important}.ux-utility-banner p{margin:.15rem 0 0!important}
-    .ux-progressive-panel>details>summary{font-weight:700;cursor:pointer}.ux-progressive-panel>details>div{margin-block-start:.75rem}
-    .ux-decision-note{display:grid;gap:.2rem;padding:.7rem .8rem;border-inline-start:3px solid currentColor;background:color-mix(in srgb,currentColor 4%,transparent);margin:.6rem 0}
-    .ux-decision-note small{opacity:.72}.ux-decision-note b{font-size:1rem}
-    .ux-terminal-note{font-size:.92rem;opacity:.82;margin:.55rem 0}
-    .ux-dialog-form{display:grid;gap:.85rem}.ux-dialog-form label{display:grid;gap:.35rem}.ux-dialog-form textarea,.ux-dialog-form select{inline-size:100%}
-    .ux-dialog-actions{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap}
-    .ux-hidden-legacy{display:none!important}
-    .ux-epistemic-entry{margin-block-start:1rem}
-    .ux-epistemic-entry p{max-inline-size:72ch}
-    .mission-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,30rem),1fr))!important}
-    .mission-card h3,.incident-card h3,.grc-list article h3{max-inline-size:40ch}
-    .mission-card .card-actions,.incident-card .card-actions,.grc-list article footer{align-items:center}
-    .finetune-compass>div,.finetune-compass>p{max-inline-size:72ch}
-    .epistemic-shell .surface-mode-switch,.epistemic-shell .epistemic-filter-group{gap:.5rem}
-    .epistemic-shell .surface-raw{max-block-size:24rem;overflow:auto}
-    @media(max-width:860px){.mission-grid{grid-template-columns:1fr!important}.ux-dialog-actions{justify-content:stretch}.ux-dialog-actions>*{inline-size:100%}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-  `;
-  document.head.append(style);
-}
 function makePrimary(node,label){
   if(!node)return null;
   node.textContent=label||node.textContent;
@@ -389,7 +354,7 @@ function tuneEpistemic(){
 function ensureDialogs(){ensureScopeDialog();ensureMappingDialog();ensureActionVerifyDialog();ensureActionStateDialog();}
 function bindCustomActions(){
   document.addEventListener('click',async event=>{
-    if(event.target.closest?.('[data-open-plan],[data-open-source],[data-open-incident]'))setTimeout(schedule,0);
+    if(event.target.closest?.('[data-open-plan],[data-open-source],[data-open-incident]'))requestExperienceLifecycle('procedure-dialog-open');
     const scope=event.target.closest?.('[data-uiux-scope-decision]');if(scope){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureScopeDialog();dialog.dataset.mappingId=scope.dataset.uiuxScopeDecision;dialog.dataset.requirementRef=scope.dataset.requirementRef||'';const form=dialog.querySelector('form.dialog-shell');form.reset();dialog.showModal();form.querySelector('select,textarea')?.focus();return;}
     const map=event.target.closest?.('[data-uiux-mapping-decision]');if(map){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureMappingDialog();dialog.dataset.mappingId=map.dataset.uiuxMappingDecision;dialog.querySelector('form.dialog-shell').reset();dialog.showModal();return;}
     const verify=event.target.closest?.('[data-uiux-action-verify]');if(verify){event.preventDefault();event.stopImmediatePropagation();const item=byState(state.data?.grc?.actions?.actions,verify.dataset.uiuxActionVerify),dialog=ensureActionVerifyDialog(),form=dialog.querySelector('form.dialog-shell');dialog.dataset.actionId=verify.dataset.uiuxActionVerify;form.reset();const self=item?.completedBy&&item.completedBy===state.data?.actor?.id,field=form.querySelector('[data-uiux-self-review]');if(field){field.hidden=!self;field.querySelector('input').required=Boolean(self);}dialog.showModal();return;}
@@ -399,19 +364,14 @@ function bindCustomActions(){
 }
 function render(){
   if(!state.data)return;
-  ensureStyles();
   tuneMonitoring();
   tuneIncidents();
   tuneGrc();
   tuneEpistemic();
   document.documentElement.dataset.ictcUiUxFinetuning=VERSION;
 }
-function schedule(){queueMicrotask(()=>queueMicrotask(render));}
 export function installProcedureUiUxFinetuning(){
   if(installed)return;installed=true;
-  ensureStyles();ensureDialogs();bindCustomActions();
-  document.addEventListener('ictc:rendered',schedule);
-  document.addEventListener('ictc:surface-changed',schedule);
-  document.addEventListener('toggle',event=>{if(event.target.closest?.('#planDialog,#sourceDialog,#incidentWorkspace'))schedule();},true);
-  schedule();
+  ensureDialogs();bindCustomActions();
+  registerExperienceParticipant({id:OWNER,phase:'presentation',authority:'decision-presentation',exclusive:true,render});
 }
