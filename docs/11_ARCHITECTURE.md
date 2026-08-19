@@ -27,27 +27,37 @@ Home · Processi · procedure · Postura · EP-01
 
 `package.json` e `ictc.sh` convergono su `v3/server.mjs`. `docs/authority-matrix.yaml` dichiara i proprietari canonici; `node v3/authority-contract-check.mjs` ne falsifica il drift.
 
-## Composizione UI costituzionale C0
+## Composizione UI costituzionale C0.1
 
-`v3/public/app.js` possiede un solo entrypoint di composizione: `installActiveExperience()`. `v3/public/ui/active-experience.js` installa gli enhancer e registra i tre partecipanti finali del lifecycle corrente:
+`v3/public/app.js` possiede un solo entrypoint di composizione: `installActiveExperience()`. `v3/public/ui/active-experience.js` installa gli enhancer e registra le responsabilità finali del lifecycle corrente:
 
 ```text
 base/native enhancers
+        ↓
+harmonization  procedure-executive-harmonization-1-5
         ↓
 presentation   procedure-ui-ux-1-6
         ↓
 integrity      procedure-ui-ux-integrity-1-6
         ↓
 journey        procedure-sequential-ux-2-2
+        ↓
+annotation     procedure-control-anchors-1-4
 ```
 
-Le fasi e le classi di authority sono dichiarate in `v3/public/ui/experience-constitution.js`; `v3/public/ui/experience-lifecycle.js` è l'unico orchestratore della convergenza finale. Un singolo microtask può coalescere eventi sincroni, ma **non determina la precedenza semantica**: la precedenza deriva esclusivamente da `presentation → integrity → journey`. I participant non possono usare profondità di microtask/timer per diventare owner impliciti.
+Le fasi e le classi di authority sono dichiarate in `v3/public/ui/experience-constitution.js`; `v3/public/ui/experience-lifecycle.js` è l'unico orchestratore della convergenza finale. Un singolo microtask può coalescere eventi sincroni, ma **non determina la precedenza semantica**: la precedenza deriva esclusivamente da `harmonization → presentation → integrity → journey → annotation`.
 
-`procedure-ui-ux-1-6` resta l'unico `decision-presentation` esclusivo. `procedure-ui-ux-integrity-1-6` è un `integrity-observer`; `procedure-sequential-ux-2-2` è `journey-overlay`. Journey può guidare e, dove già previsto dal contratto RN, collegare il runtime user-owned, ma non acquisisce per questo authority sulle decisioni MC/AP/AO delegate agli owner canonici.
+La reentrancy è esplicita: una richiesta di convergenza generata durante un flush produce un replay nello stesso flush e non un secondo microtask tardivo. Il lifecycle fallisce chiuso dopo 32 replay se i participant non convergono. Il vecchio side channel `ictc:sequential-rendered` non è più necessario: gli anchor sono l'ultima fase costituzionale.
+
+`procedure-executive-harmonization-1-5` normalizza frame e linguaggio senza diventare decision owner. `procedure-ui-ux-1-6` resta l'unico `decision-presentation` esclusivo. `procedure-ui-ux-integrity-1-6` è un `integrity-observer`; `procedure-sequential-ux-2-2` è `journey-overlay`; `procedure-control-anchors-1-4` annota intent, authority ed evidence effect senza creare decisioni o write authority.
 
 Gli stili finali 1.6 sono nel foglio esterno `v3/public/ui-convergence.css`; i vecchi tentativi di `<style>` inline sono rimossi perché incompatibili con la CSP `style-src 'self'` e duplicavano regole già esterne.
 
-Questo C0 è deliberatamente semantics-preserving sulle procedure: le successive mutazioni verticali di RN/EC/AO/MC/AP/RC/AR possono proseguire indipendentemente; una nuova responsabilità orizzontale di composizione deve invece entrare nel lifecycle dichiarato anziché aggiungere un installer top-level o un nuovo livello temporale.
+C0.1 governa i **final participant**. Alcuni enhancer storici non finali conservano scheduling locale per interaction mechanics; questo non può ridefinire la precedenza finale e resta debito da comprimere nelle rispettive slice. Le successive mutazioni verticali di RN/EC/AO/MC/AP/RC/AR possono proseguire indipendentemente; una nuova responsabilità orizzontale di composizione deve invece entrare nel lifecycle dichiarato.
+
+## Identità di release
+
+`v3/release-identity.json` schema 2.0 è l'autorità cross-documenti della candidate corrente. Separa `productVersion`, `releaseStage`, contratti correnti, maturità delle sette procedure e assurance profile dalla `lineage` informativa. Una generazione storica può restare un rail di regressione senza diventare per concatenazione parte dell'identità corrente.
 
 ## Persistenza
 
