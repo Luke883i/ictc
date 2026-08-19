@@ -1,10 +1,17 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta norme e controlli','AP-01':'Gestisci remediation'}
+def post_phase_failure(e):
+ token=os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN'); repo=os.environ.get('GITHUB_REPOSITORY'); sha=os.environ.get('HEAD_SHA') or os.environ.get('GITHUB_SHA')
+ if not token or not repo or not sha: return
+ payload=json.dumps({'state':'failure','context':f'ictc/browser-phase/procedure-finetuning-{PHASE}','description':f'{PHASE}: {type(e).__name__}'}).encode()
+ req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=payload,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+ try: urllib.request.urlopen(req,timeout=10).read()
+ except Exception as status_error: print(f'warning: cannot publish browser phase failure: {status_error}',flush=True)
 def fail(e):
- payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-procedure-finetuning-1-4-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-procedure-finetuning::{PHASE}: {type(e).__name__}: {e}',flush=True)
+ payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-procedure-finetuning-1-4-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); post_phase_failure(e); print(f'::error title=browser-procedure-finetuning::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def open_process(page,code):
  page.locator('.service-nav [data-service="processes"]').click(); card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); expect(card.locator('.finetune-card-nature')).to_be_visible(); expect(card.locator('.finetune-card-decision')).to_be_visible(); button=card.locator(':scope > footer .procedure-primary'); expect(button).to_have_text(LABELS[code]); button.click(); page.wait_for_timeout(180)
 def no_orphans(page,root):
