@@ -1,14 +1,18 @@
 export const EXPERIENCE_ROOT=Object.freeze({id:'active-experience',installer:'installActiveExperience'});
-export const EXPERIENCE_PHASES=Object.freeze(['presentation','integrity','journey']);
+export const EXPERIENCE_PHASES=Object.freeze(['harmonization','presentation','integrity','journey','annotation']);
 export const EXPERIENCE_AUTHORITIES=Object.freeze({
+  'presentation-harmonization':'harmonization',
   'decision-presentation':'presentation',
   'integrity-observer':'integrity',
-  'journey-overlay':'journey'
+  'journey-overlay':'journey',
+  'control-annotation':'annotation'
 });
 export const EXPECTED_EXPERIENCE_PARTICIPANTS=Object.freeze([
+  Object.freeze({id:'procedure-executive-harmonization-1-5',phase:'harmonization',authority:'presentation-harmonization',exclusive:false}),
   Object.freeze({id:'procedure-ui-ux-1-6',phase:'presentation',authority:'decision-presentation',exclusive:true}),
   Object.freeze({id:'procedure-ui-ux-integrity-1-6',phase:'integrity',authority:'integrity-observer',exclusive:false}),
-  Object.freeze({id:'procedure-sequential-ux-2-2',phase:'journey',authority:'journey-overlay',exclusive:false})
+  Object.freeze({id:'procedure-sequential-ux-2-2',phase:'journey',authority:'journey-overlay',exclusive:false}),
+  Object.freeze({id:'procedure-control-anchors-1-4',phase:'annotation',authority:'control-annotation',exclusive:false})
 ]);
 
 function unique(values){return[...new Set(values)];}

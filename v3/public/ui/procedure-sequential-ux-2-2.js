@@ -19,7 +19,6 @@ function renderAll(){
   renderMc();
   renderAp();
   document.documentElement.dataset.seqUx='2.2';
-  document.dispatchEvent(new CustomEvent('ictc:sequential-rendered',{detail:{service:state.service,authority:'journey-overlay'}}));
 }
 
 export function installSequentialProcedureUx(){
