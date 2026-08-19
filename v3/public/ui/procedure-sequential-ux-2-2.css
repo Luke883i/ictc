@@ -1,0 +1,10 @@
+:root[data-seq-ux="2.2"] .seq-guide{margin:0 0 1.25rem;padding:.9rem 1rem;border:1px solid var(--line,#d9dee8);border-radius:1rem;background:var(--surface,#fff)}
+:root[data-seq-ux="2.2"] .seq-guide .seq-purpose{display:block;max-width:72ch;margin-bottom:.75rem;font-weight:650;line-height:1.45}
+:root[data-seq-ux="2.2"] .seq-guide ol{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;list-style:none;padding:0;margin:0}
+:root[data-seq-ux="2.2"] .seq-guide li{display:flex;gap:.45rem;align-items:center;font-size:.86rem;line-height:1.25}
+:root[data-seq-ux="2.2"] .seq-guide li span{display:grid;place-items:center;min-width:1.55rem;height:1.55rem;border:1px solid currentColor;border-radius:999px;font-size:.75rem}
+:root[data-seq-ux="2.2"] .seq-overflow{grid-column:1/-1;margin-top:.75rem}
+:root[data-seq-ux="2.2"] .seq-overflow>summary{cursor:pointer;font-weight:650}
+:root[data-seq-ux="2.2"] .seq-overflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem;padding-top:1rem}
+:root[data-seq-ux="2.2"] button.seq-primary{font-weight:700}
+@media (max-width:900px){:root[data-seq-ux="2.2"] .seq-guide ol{grid-template-columns:1fr}:root[data-seq-ux="2.2"] .seq-guide li{min-height:2rem}}
