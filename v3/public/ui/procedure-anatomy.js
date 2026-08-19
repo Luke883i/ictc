@@ -121,6 +121,7 @@ function renderOne(id) {
   if (!host || !current || !row) return;
 
   host.querySelector(':scope > [data-procedure-anatomy]')?.remove();
+  host.querySelector(':scope > [data-procedure-standard-applications]')?.remove();
   const asOf = state.data?.projectionContext?.asOf;
   const access = current.accessPolicy?.[state.role] || current.access?.[state.role] || current.adapter?.userScope || 'actor-visible';
   const decisions = decisionCount(id);
@@ -137,13 +138,14 @@ function renderOne(id) {
       <div><small>Versioni registrate</small><strong>${esc(versions)}</strong></div>
     </div>
     <div class="procedure-anatomy-epistemic" aria-label="Legenda epistemica">${epistemicLegend()}</div>
-    ${benchmarkMarkup(id)}
     <p>${esc(current.claimBoundary)}</p>
     <div class="procedure-anatomy-actions"><button type="button" data-service="proof" aria-label="Apri Postura ICTC per ${esc(procedureLabel)}">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
 
   const anchor = workAnchor(host);
   if (anchor) anchor.after(box);
   else host.append(box);
+  const standards = benchmarkMarkup(id);
+  if (standards) box.insertAdjacentHTML('afterend', standards);
 }
 
 function render() {
