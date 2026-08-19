@@ -20,7 +20,7 @@ function menuFor(button) {
   const details = document.createElement('details');
   details.className = 'evidence-export-menu';
   details.dataset.evidenceBase = base;
-  details.innerHTML = `<summary class="secondary" aria-label="Scarica fascicolo in un formato">Fascicolo</summary><div role="group" aria-label="Formati fascicolo">${FORMATS.map(([format, label]) => `<button type="button" data-evidence-download="${format}">${label}</button>`).join('')}</div>`;
+  details.innerHTML = `<summary class="secondary" aria-label="Scarica fascicolo in un formato">Fascicolo</summary><div role="group" aria-label="Formati fascicolo">${FORMATS.map(([format, label]) => `<button type="button" data-evidence-download="${format}" aria-label="Scarica fascicolo: ${label}">${label}</button>`).join('')}</div>`;
   button.replaceWith(details);
   return details;
 }
