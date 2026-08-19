@@ -21,6 +21,7 @@
 .procedure-compare-original{order:2}.procedure-linear-review>section{order:1}.procedure-confirmation-block{display:flex!important;align-items:flex-start;gap:.6rem;min-width:0;max-width:100%;box-sizing:border-box;padding:.75rem;border:1px solid var(--line,#dce4ef);border-radius:12px;background:var(--surface,#fff)}
 .procedure-confirmation-block input{flex:0 0 auto;margin-top:.15rem}
 .incident-case-title{display:grid;gap:.35rem;min-width:0;max-width:100%}.incident-case-title span{font-weight:700}.incident-case-title small{font-weight:500;color:var(--muted,#64748b)}
+.executive-frame-disclosure>summary,.executive-boundary>summary{min-height:44px!important;min-block-size:44px!important;display:flex;align-items:center;box-sizing:border-box;cursor:pointer}
 #incidentWorkspace .dialog-shell{grid-template-rows:auto minmax(0,1fr) auto}
 #incidentWorkspace .dialog-body{overscroll-behavior:contain}
 #incidentWorkspace #workspaceActions.procedure-action-rail{background:var(--surface,#fff);padding:.7rem 1rem;margin:0}
