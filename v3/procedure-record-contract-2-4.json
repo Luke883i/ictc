@@ -1,0 +1,35 @@
+{
+  "schemaVersion":"2.4.0",
+  "authority":"procedure-record-onto-epistemic-contract",
+  "scope":["monitoring","incidents","objects","coverage","actions","risks","assurance"],
+  "primitive":"procedure-record-card",
+  "invariants":{
+    "cardFamiliesMax":1,
+    "primaryActionsMax":1,
+    "supportActionsMax":3,
+    "factsMax":4,
+    "technicalDefaultOpen":false,
+    "routineActionsInsideDisclosureMax":0,
+    "evidenceMixedWithDecisionMax":0,
+    "rawIdsAsPrimaryContentMax":0,
+    "rawEnumsAsPrimaryContentMax":0,
+    "titleAuthorityRequired":true,
+    "singleScrollOwner":true,
+    "mappingScopeSeparate":true,
+    "completionClosureSeparate":true,
+    "aiDecisionAuthority":false,
+    "evidenceEqualsTruth":false,
+    "listItemsBeforeSearchFacet":12,
+    "minimumControlPx":44
+  },
+  "epistemicOrder":["identity","state","summary","facts","decision","support","evidence","details"],
+  "procedures":{
+    "monitoring":{"code":"RN-01","titleAuthority":["human","derived-legacy"],"titleField":"jobName","fallback":"objective","facts":["state","cadence","nextRun","planVersion"],"primaryIntent":"open-monitor","queue":"sources","localInvariant":"observed-source-is-not-verified-source"},
+    "incidents":{"code":"EC-01","titleAuthority":["human","derived-legacy"],"titleField":"caseTitle","fallback":"originalNarrative","facts":["state","awarenessAt","versionCount","nextStep"],"primaryIntent":"continue-case","queue":"cases","localInvariant":"original-facts-formulation-remain-distinct"},
+    "objects":{"code":"AO-01","titleAuthority":["human"],"titleField":"name","facts":["type","criticality","owner","attestationDueAt"],"primaryIntent":"state-checkpoint","queue":"inventory","localInvariant":"registry-does-not-prove-real-world-completeness"},
+    "coverage":{"code":"MC-01","titleAuthority":["source-authority","derived-legacy"],"titleField":"requirementRef","fallback":"requirementLabel","facts":["scope","mappingState","targetCount","proposalSource"],"primaryIntent":"scope-before-mapping","queue":"requirements","localInvariant":"scope-mapping-compliance-are-distinct"},
+    "actions":{"code":"AP-01","titleAuthority":["human"],"titleField":"title","facts":["priority","owner","origin","nextStep"],"primaryIntent":"state-checkpoint","queue":"remediation","localInvariant":"done-is-not-closed"},
+    "risks":{"code":"RC-01","titleAuthority":["human"],"titleField":"title","facts":["reviewState","humanRating","objectCount","controlCount"],"primaryIntent":"human-review","queue":"risks","localInvariant":"ai-never-rates-risk"},
+    "assurance":{"code":"AR-01","titleAuthority":["human"],"titleField":"title","facts":["state","source","questionCount"],"primaryIntent":"state-checkpoint","queue":"assurance-cases","localInvariant":"request-original-and-approved-answer-remain-distinct"}
+  }
+}

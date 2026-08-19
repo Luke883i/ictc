@@ -3,6 +3,8 @@ import { CURRENT_RUNTIME, CURRENT_SEMANTIC } from './current-release-suite.mjs';
 import { ASSURANCE_COVERAGE_CONTRACT } from './assurance-risk-model.mjs';
 await import('./procedure-finetuning-2-3-check.mjs');
 await import('./procedure-finetuning-2-3-saturation.mjs');
+await import('./procedure-record-contract-2-4-check.mjs');
+await import('./procedure-record-saturation-2-4.mjs');
 const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
 const ci=await readFile(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
 const postMerge=await readFile(new URL('../.github/workflows/post-merge-evidence.yml',import.meta.url),'utf8');
@@ -20,4 +22,4 @@ check(new Set(CURRENT_SEMANTIC).size===CURRENT_SEMANTIC.length,'semantic suite c
 check(new Set(CURRENT_RUNTIME).size===CURRENT_RUNTIME.length,'runtime suite contains duplicate check paths');
 for(const [family,contract] of Object.entries(ASSURANCE_COVERAGE_CONTRACT)){const suite=contract.mode==='runtime'?CURRENT_RUNTIME:CURRENT_SEMANTIC;check(contract.candidates.some(path=>suite.includes(path)),`assurance coverage family missing from ${contract.mode} suite: ${family}`);}
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,procedureFineTuningContract:'2.3.0'}));
+console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,procedureFineTuningContract:'2.4.0'}));
