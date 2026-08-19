@@ -1,377 +1,60 @@
-import { $, api, esc, notify, showReceipt, state } from './common.js';
+import { $, api, esc, filesPayload, notify, openDialog, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
+import { renderIncidentWorkspace } from './workspaces.js';
 import { registerExperienceParticipant, requestExperienceLifecycle } from './experience-lifecycle.js';
 
-const VERSION='1.6.0';
+const VERSION='2.4.0';
 const OWNER='procedure-ui-ux-1-6';
 let installed=false;
 
-const IT_LABELS=Object.freeze({
-  monitoring:'Monitoraggio normativo e fonti',
-  incidents:'Eventi e quasi incidenti',
-  objects:'Inventario governato',
-  coverage:'Standard, requisiti e mapping',
-  actions:'Azioni correttive'
-});
-
-function activeGrc(){
-  let value=state.activeProcessId||'';
-  try{value=value||localStorage.getItem('ictc-grc-process')||'';}catch{}
-  return value;
-}
+const IT_LABELS=Object.freeze({monitoring:'Monitoraggio normativo e fonti',incidents:'Eventi e quasi incidenti',objects:'Inventario governato',coverage:'Standard, requisiti e mapping',actions:'Azioni correttive',risks:'Rischi di compliance',assurance:'Assurance e autovalutazione'});
+const STATE_LABELS=Object.freeze({candidate:'Da validare',active:'Attivo',rejected:'Escluso',retired:'Ritirato',draft:'Bozza',paused:'In pausa','needs-plan':'Da pianificare',proposed:'Da adottare',mapped:'Mappato',gap:'Gap','not-applicable':'Fuori perimetro',open:'Aperta','in-progress':'In corso',blocked:'Bloccata','ready-for-review':'Da verificare',closed:'Chiusa',done:'Completata',cancelled:'Annullata',reviewed:'Validato',intake:'In ingresso',review:'Da approvare',approved:'Approvata',clarifying:'In chiarimento',submitted:'Inviato',low:'Basso',medium:'Medio',high:'Alto',critical:'Critico'});
+function ensureStyle(){if(document.querySelector('link[data-procedure-record-24]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/procedure-record-primitives-2-4.css';link.dataset.procedureRecord24='';document.head.append(link);}
+function activeGrc(){let value=state.activeProcessId||'';try{value=value||localStorage.getItem('ictc-grc-process')||'';}catch{}return value;}
 function byState(list,id){return(list||[]).find(item=>item.id===id)||null;}
-function mark(host,process,phase='overview'){
-  if(!host)return;
-  host.dataset.uiuxOwner=OWNER;
-  host.dataset.uiuxVersion=VERSION;
-  host.dataset.uiuxProcess=process;
-  host.dataset.uiuxPhase=phase;
-  host.dataset.uiuxPrimaryActionMax='1';
-  host.dataset.uiuxMaterialQuestionMax='1';
-  host.dataset.uiuxPrimaryFactsMax='4';
-  host.dataset.uiuxTechnicalDetail='progressive-disclosure';
-}
+function humanState(value){return STATE_LABELS[value]||String(value||'—').replaceAll('-',' ');}
+function compactDate(value){if(!value)return'Non pianificata';const date=new Date(value);return Number.isNaN(date.valueOf())?'Non pianificata':new Intl.DateTimeFormat('it-IT',{dateStyle:'medium'}).format(date);}
+function short(value,max=110){const text=String(value||'').trim().replace(/\s+/g,' ');return text.length<=max?text:`${text.slice(0,max-1).trimEnd()}…`;}
+function cadence(hours){const n=Number(hours||0);if(n===24)return'Ogni giorno';if(n===168)return'Ogni 7 giorni';if(n===720)return'Ogni mese';return n?`Ogni ${n} ore`:'Frequenza non definita';}
+function mark(host,process,phase='overview'){if(!host)return;host.dataset.uiuxOwner=OWNER;host.dataset.uiuxVersion=VERSION;host.dataset.uiuxProcess=process;host.dataset.uiuxPhase=phase;host.dataset.uiuxPrimaryActionMax='1';host.dataset.uiuxMaterialQuestionMax='1';host.dataset.uiuxPrimaryFactsMax='4';host.dataset.uiuxTechnicalDetail='progressive-disclosure';}
 function alreadyTuned(node){return node?.dataset?.uiuxApplied===VERSION;}
 function finishTuning(node){if(node)node.dataset.uiuxApplied=VERSION;return node;}
-function makePrimary(node,label){
-  if(!node)return null;
-  node.textContent=label||node.textContent;
-  node.classList.add('primary','ux-primary');
-  node.classList.remove('secondary','link-button');
-  node.dataset.uiuxPrimary='true';
-  return node;
-}
-function makeSecondary(node,label){
-  if(!node)return null;
-  if(label)node.textContent=label;
-  node.classList.remove('primary','ux-primary');
-  node.classList.add('secondary');
-  delete node.dataset.uiuxPrimary;
-  return node;
-}
-function disclosure(container,nodes,summary='Altre azioni'){
-  const movable=[...new Set((nodes||[]).filter(Boolean))].filter(node=>node.isConnected&&node.parentElement===container);
-  if(!movable.length)return null;
-  let details=container.querySelector(':scope > details.ux-secondary-actions');
-  if(!details){
-    details=document.createElement('details');
-    details.className='ux-secondary-actions';
-    details.innerHTML=`<summary>${esc(summary)}</summary><div class="ux-secondary-stack"></div>`;
-    container.append(details);
-  }
-  const stack=details.querySelector('.ux-secondary-stack');
-  for(const node of movable){makeSecondary(node);stack.append(node);}
-  return details;
-}
-function progressivePanel(panel,label){
-  if(!panel||panel.dataset.uiuxProgressive==='true')return;
-  const children=[...panel.childNodes];
-  const details=document.createElement('details');
-  details.className='ux-technical-detail';
-  const summary=document.createElement('summary');summary.textContent=label;
-  const body=document.createElement('div');body.className='ux-progressive-body';
-  for(const child of children)body.append(child);
-  details.append(summary,body);panel.append(details);
-  panel.classList.add('ux-progressive-panel');panel.dataset.uiuxProgressive='true';
-}
-async function write(action,success){
-  try{
-    const result=await action();
-    showReceipt(result);
-    await refresh();
-    if(success)notify(success);
-    return result;
-  }catch(error){
-    if(error.code==='revision-conflict')await refresh().catch(()=>{});
-    notify(error.message,true);
-    return null;
-  }
-}
-function ensureDialog(id,title,body){
-  let dialog=$(`#${id}`);
-  if(dialog)return dialog;
-  dialog=document.createElement('dialog');dialog.id=id;dialog.className='dialog';
-  dialog.innerHTML=`<form method="dialog" class="dialog-shell"><header><div><p class="eyebrow">Decisione umana</p><h2>${esc(title)}</h2></div><button type="button" data-uiux-close aria-label="Chiudi">×</button></header><div class="dialog-body">${body}</div><footer class="ux-dialog-actions"><button type="button" data-uiux-close>Annulla</button><button class="primary ux-primary" type="submit">Registra decisione</button></footer></form>`;
-  document.body.append(dialog);
-  for(const close of dialog.querySelectorAll('[data-uiux-close]'))close.addEventListener('click',()=>dialog.close());
-  return dialog;
-}
-
-function tuneMonitoringList(){
-  const host=$('#monitoringView');if(!host)return;
-  mark(host,'monitoring','observe');
-  const sectionHeading=[...host.querySelectorAll('.section-head h2')].find(h=>/Piani di monitoraggio/i.test(h.textContent));
-  if(sectionHeading)sectionHeading.textContent='Monitoraggi';
-  const count=$('#missionCount');if(count)count.setAttribute('aria-label',`${count.textContent} monitoraggi visibili`);
-  const missions=[...(state.data?.missions||[])].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
-  const cards=[...host.querySelectorAll('#missionsList .mission-card')];
-  cards.forEach((card,index)=>{
-    const mission=missions[index];if(!mission||alreadyTuned(card))return;
-    mark(card,'monitoring',mission.state);
-    const actions=card.querySelector('.card-actions');if(!actions)return;
-    const open=actions.querySelector('[data-open-plan]');
-    if(open)makePrimary(open,'Apri monitoraggio');
-    const others=[...actions.children].filter(node=>node!==open);
-    for(const node of others){
-      if(node.matches?.('[data-run-mission]'))node.textContent='Esegui controllo adesso';
-      if(node.matches?.('[data-pause-mission]'))node.textContent='Sospendi monitoraggio';
-      if(node.matches?.('[data-resume-mission]'))node.textContent='Riprendi monitoraggio';
-      if(node.matches?.('[data-download-evidence]'))node.textContent='Apri dossier';
-    }
-    disclosure(actions,others,'Gestisci e consulta prove');
-    const meta=card.querySelector('.card-meta');
-    if(meta&&!meta.querySelector(':scope > details.ux-card-meta-secondary')){
-      const spans=[...meta.querySelectorAll(':scope > span')];
-      const technical=spans.filter(span=>/^v\d+/i.test(span.textContent.trim())||/^Ogni\s/i.test(span.textContent.trim()));
-      if(technical.length){
-        const details=document.createElement('details');details.className='ux-card-meta-secondary ux-technical-detail';details.innerHTML='<summary>Frequenza e versione</summary><div class="ux-secondary-stack"></div>';
-        const stack=details.querySelector('.ux-secondary-stack');for(const span of technical)stack.append(span);meta.append(details);
-      }
-    }
-    finishTuning(card);
-  });
-  const ai=$('#aiSetup');
-  if(ai){ai.classList.add('ux-utility-banner');const button=ai.querySelector('button');if(button)makeSecondary(button,'Configura AI opzionale');const strong=ai.querySelector('strong');if(strong)strong.textContent='AI opzionale per mining e analisi';}
-}
-function tunePlanDialog(){
-  const dialog=$('#planDialog'),mission=byState(state.data?.missions,state.activeMissionId);if(!dialog||!mission||!dialog.open)return;
-  mark(dialog,'monitoring',mission.state);
-  const actions=$('#planActions');if(!actions)return;
-  for(const b of actions.querySelectorAll('button'))makeSecondary(b);
-  let primary=null;
-  if(mission.state==='draft')primary=actions.querySelector('[data-activate-mission]');
-  else if(mission.state==='paused')primary=actions.querySelector('[data-resume-mission]');
-  else if(mission.state==='needs-plan')primary=actions.querySelector('[data-revise-mission]');
-  if(primary){
-    const label=mission.state==='draft'?'Attiva monitoraggio':mission.state==='paused'?'Riprendi monitoraggio':'Riprova pianificazione';
-    makePrimary(primary,label);
-  }
-  for(const b of actions.querySelectorAll('[data-run-mission]'))b.textContent='Esegui controllo adesso';
-  for(const b of actions.querySelectorAll('[data-pause-mission]'))b.textContent='Sospendi monitoraggio';
-  for(const b of actions.querySelectorAll('[data-revise-mission]'))if(b!==primary)b.textContent='Rigenera piano';
-  for(const b of actions.querySelectorAll('[data-download-evidence]'))b.textContent='Apri dossier';
-  disclosure(actions,[...actions.children].filter(node=>node!==primary&&node.tagName!=='DETAILS'),mission.state==='active'?'Azioni eccezionali e prove':'Alternative e prove');
-  const trace=[...dialog.querySelectorAll('.lens-panel')].find(panel=>/Traccia AI/i.test(panel.querySelector('.eyebrow')?.textContent||''));
-  progressivePanel(trace,'Traccia tecnica AI');
-}
-function tuneSourceDialog(){
-  const dialog=$('#sourceDialog'),item=byState(state.data?.catalog,state.activeSourceId);if(!dialog||!item||!dialog.open)return;
-  mark(dialog,'monitoring','verify-source');
-  const facts=[...dialog.querySelectorAll('.source-facts .fact-box')];
-  for(const box of facts){
-    const label=box.querySelector('span');
-    if(/Confidenza AI/i.test(label?.textContent||'')){label.textContent='Classe proposta';const value=box.querySelector('b');if(value)value.textContent=item.sourceClass||'Da classificare';}
-  }
-  for(const panel of dialog.querySelectorAll('.lens-panel')){
-    const eyebrow=panel.querySelector('.eyebrow')?.textContent||'';
-    if(/Suggerimento AI/i.test(eyebrow))progressivePanel(panel,'Sintesi e rilevanza proposte dall’AI');
-    if(/Traccia AI/i.test(eyebrow))progressivePanel(panel,'Traccia tecnica AI');
-  }
-  const actions=$('#sourceActions');if(actions){
-    const verify=actions.querySelector('[data-source-decision="verified"]');if(verify)makePrimary(verify,'Verifica fonte');
-    const reject=actions.querySelector('[data-source-decision="rejected"]');if(reject)makeSecondary(reject,'Escludi fonte');
-    const dossier=actions.querySelector('[data-download-evidence]');if(dossier)dossier.textContent='Apri dossier';
-    disclosure(actions,[reject,dossier].filter(Boolean),'Alternative e prove');
-  }
-}
+function makePrimary(node,label){if(!node)return null;if(label)node.textContent=label;node.classList.add('primary','ux-primary');node.classList.remove('secondary','link-button');node.dataset.uiuxPrimary='true';return node;}
+function makeSecondary(node,label){if(!node)return null;if(label)node.textContent=label;node.classList.remove('primary','ux-primary');node.classList.add('secondary');delete node.dataset.uiuxPrimary;return node;}
+function progressivePanel(panel,label){if(!panel||panel.dataset.uiuxProgressive==='true')return;const children=[...panel.childNodes];const details=document.createElement('details');details.className='ux-technical-detail';const summary=document.createElement('summary');summary.textContent=label;const body=document.createElement('div');body.className='ux-progressive-body';for(const child of children)body.append(child);details.append(summary,body);panel.append(details);panel.classList.add('ux-progressive-panel');panel.dataset.uiuxProgressive='true';}
+function unwrapLegacyActions(container){if(!container)return;for(const details of [...container.querySelectorAll(':scope > details.ux-secondary-actions')]){const stack=details.querySelector(':scope > .ux-secondary-stack');for(const child of [...stack?.children||[]])container.insertBefore(child,details);details.remove();}}
+function actionRail(container,{primary=null,support=[],evidence=[]}={}){if(!container)return;unwrapLegacyActions(container);container.classList.add('procedure-action-rail');const uniqueSupport=[...new Set(support.filter(Boolean))].filter(x=>x!==primary&&!evidence.includes(x));for(const node of container.querySelectorAll('button,a')){if(node!==primary&&!uniqueSupport.includes(node)&&!evidence.includes(node))makeSecondary(node);}if(primary)makePrimary(primary,primary.textContent);for(const node of uniqueSupport)makeSecondary(node);for(const node of evidence.filter(Boolean)){makeSecondary(node);node.classList.add('procedure-evidence-action');node.dataset.procedureEvidence='true';}const overflow=container.querySelector(':scope > details.procedure-action-overflow');if(overflow)overflow.remove();if(uniqueSupport.length>3){const details=document.createElement('details');details.className='procedure-action-overflow';details.innerHTML='<summary>Altre azioni</summary><div class="procedure-action-overflow-body"></div>';const slot=details.querySelector('div');for(const node of uniqueSupport.slice(3))slot.append(node);container.append(details);}}
+function setSummary(card,text){let node=card.querySelector(':scope > .procedure-record-summary');if(!text){node?.remove();return;}if(!node){node=document.createElement('p');node.className='procedure-record-summary';const header=card.querySelector(':scope > header,:scope > .card-head');header?.after(node);}node.textContent=short(text,220);}
+function setFacts(card,facts=[]){let host=card.querySelector(':scope > .procedure-record-facts');if(!host){host=document.createElement('div');host.className='procedure-record-facts';const actions=card.querySelector(':scope > .card-actions,:scope > footer');actions?card.insertBefore(host,actions):card.append(host);}host.innerHTML=facts.filter(x=>x?.value!=null&&String(x.value).trim()).slice(0,4).map(x=>`<span class="surface-chip" data-record-fact="${esc(x.id)}"><small>${esc(x.label)}</small><b>${esc(x.value)}</b></span>`).join('');}
+function prepareCard(card,{process,phase,title,titleAuthority='human',summary='',facts=[]}){if(!card)return;mark(card,process,phase);card.classList.add('procedure-record-card');card.dataset.recordFamily='procedure-record-card';card.dataset.recordTitleAuthority=titleAuthority;const h=card.querySelector('h3');if(h&&title)h.textContent=title;setSummary(card,summary);setFacts(card,facts);const legacy=card.querySelector(':scope > .card-meta');if(legacy)legacy.classList.add('procedure-record-legacy-meta');return card;}
+function ensureDialog(id,title,body){let dialog=$(`#${id}`);if(dialog)return dialog;dialog=document.createElement('dialog');dialog.id=id;dialog.className='dialog';dialog.innerHTML=`<form method="dialog" class="dialog-shell"><header><div><p class="eyebrow">Decisione umana</p><h2>${esc(title)}</h2></div><button type="button" data-uiux-close aria-label="Chiudi">×</button></header><div class="dialog-body">${body}</div><footer class="ux-dialog-actions"><button type="button" data-uiux-close>Annulla</button><button class="primary ux-primary" type="submit">Registra decisione</button></footer></form>`;document.body.append(dialog);for(const close of dialog.querySelectorAll('[data-uiux-close]'))close.addEventListener('click',()=>dialog.close());return dialog;}
+async function write(action,success){try{const result=await action();showReceipt(result);await refresh();if(success)notify(success);return result;}catch(error){if(error.code==='revision-conflict')await refresh().catch(()=>{});notify(error.message,true);return null;}}
+function dedupeActions(container,selector){const nodes=[...container.querySelectorAll(selector)];for(const node of nodes.slice(1))node.remove();return nodes[0]||null;}
+function tuneMonitoringList(){const host=$('#monitoringView');if(!host)return;mark(host,'monitoring','observe');const heading=[...host.querySelectorAll('.section-head h2')].find(h=>/Piani di monitoraggio|Ricerche configurate|Ricerche disponibili|Monitoraggi/i.test(h.textContent));if(heading)heading.textContent='Monitoraggi';const missions=[...(state.data?.missions||[])].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));const cards=[...host.querySelectorAll('#missionsList .mission-card')];cards.forEach((card,index)=>{const item=missions[index];if(!item)return;const title=item.jobName||short(item.objective,78)||'Monitoraggio senza titolo';prepareCard(card,{process:'monitoring',phase:item.state,title,titleAuthority:item.jobName?'human':'derived-legacy',summary:item.jobName&&item.objective!==item.jobName?item.objective:'',facts:[{id:'state',label:'Stato',value:humanState(item.state)},{id:'cadence',label:'Frequenza',value:cadence(item.cadenceHours)},{id:'next',label:'Prossimo',value:compactDate(item.nextRunAt)},{id:'version',label:'Piano',value:`v${item.planVersion||0}`} ]});const actions=card.querySelector('.card-actions');if(!actions)return;const open=dedupeActions(actions,'[data-open-plan]');if(open)open.textContent='Apri monitoraggio';const run=actions.querySelector('[data-run-mission]');if(run)run.textContent='Esegui controllo adesso';const pause=actions.querySelector('[data-pause-mission]');if(pause)pause.textContent='Sospendi monitoraggio';const resume=actions.querySelector('[data-resume-mission]');if(resume)resume.textContent='Riprendi monitoraggio';const dossier=actions.querySelector('[data-download-evidence]');if(dossier)dossier.textContent='Apri dossier';actionRail(actions,{primary:open,support:[run,pause,resume],evidence:[dossier]});finishTuning(card);});const catalogSection=$('#catalogList')?.closest('.section-block')||$('#catalogList')?.parentElement;const catalogTitle=catalogSection?.querySelector('.section-head h2');if(catalogTitle)catalogTitle.textContent='Fonti';const catalogCopy=catalogSection?.querySelector('.section-head p:not(.eyebrow)');if(catalogCopy)catalogCopy.textContent='Risultati dei monitoraggi e dei materiali acquisiti. Una fonte entra nel catalogo accettato soltanto dopo una decisione umana.';const contribute=$('#contributionList')?.closest('aside')||$('#contributionList')?.parentElement;if(contribute){const h=contribute.querySelector('h2');if(h)h.textContent='Materiali acquisiti';const p=contribute.querySelector('p:not(.eyebrow)');if(p)p.textContent='Originali conservati. Possono produrre una fonte candidata, ma non sono fonti verificate.';const recent=$('#contributionList .eyebrow');if(recent)recent.textContent='Materiali acquisiti';}const ai=$('#aiSetup');if(ai){ai.classList.add('ux-utility-banner');const button=ai.querySelector('button');if(button)makeSecondary(button,'Configura AI opzionale');const strong=ai.querySelector('strong');if(strong)strong.textContent='AI opzionale per mining e analisi';}}
+function tunePlanDialog(){const dialog=$('#planDialog'),item=byState(state.data?.missions,state.activeMissionId);if(!dialog||!item||!dialog.open)return;mark(dialog,'monitoring',item.state);const actions=$('#planActions');if(!actions)return;const activate=actions.querySelector('[data-activate-mission]'),resume=actions.querySelector('[data-resume-mission]'),revise=actions.querySelector('[data-revise-mission]'),run=actions.querySelector('[data-run-mission]'),pause=actions.querySelector('[data-pause-mission]'),dossier=actions.querySelector('[data-download-evidence]');let primary=item.state==='draft'?activate:item.state==='paused'?resume:item.state==='needs-plan'?revise:item.state==='active'?run:null;if(activate)activate.textContent='Attiva monitoraggio';if(resume)resume.textContent='Riprendi monitoraggio';if(revise)revise.textContent=item.state==='needs-plan'?'Riprova pianificazione':'Rigenera piano';if(run)run.textContent='Esegui controllo adesso';if(pause)pause.textContent='Sospendi monitoraggio';if(dossier)dossier.textContent='Apri dossier';actionRail(actions,{primary,support:[revise,run,pause,resume,activate].filter(x=>x&&x!==primary),evidence:[dossier]});const trace=[...dialog.querySelectorAll('.lens-panel')].find(panel=>/Traccia AI/i.test(panel.querySelector('.eyebrow')?.textContent||''));progressivePanel(trace,'Traccia tecnica AI');}
+function tuneSourceDialog(){const dialog=$('#sourceDialog'),item=byState(state.data?.catalog,state.activeSourceId);if(!dialog||!item||!dialog.open)return;mark(dialog,'monitoring','verify-source');for(const panel of dialog.querySelectorAll('.lens-panel')){const label=panel.querySelector('.eyebrow')?.textContent||'';if(/Suggerimento AI|Proposta del modello/i.test(label))progressivePanel(panel,'Sintesi e rilevanza proposte dall’AI');if(/Traccia AI|Traccia del modello/i.test(label))progressivePanel(panel,'Traccia tecnica AI');}const actions=$('#sourceActions');if(!actions)return;const verify=actions.querySelector('[data-source-decision="verified"]'),reject=actions.querySelector('[data-source-decision="rejected"]'),dossier=actions.querySelector('[data-download-evidence]');if(verify)verify.textContent='Accetta nel catalogo';if(reject)reject.textContent='Escludi dal catalogo';if(dossier)dossier.textContent='Apri dossier';actionRail(actions,{primary:verify,support:[reject],evidence:[dossier]});}
 function tuneMonitoring(){tuneMonitoringList();tunePlanDialog();tuneSourceDialog();}
-
-function tuneIncidents(){
-  const host=$('#incidentsView');if(!host)return;mark(host,'incidents','case-work');
-  const incidents=[...(state.data?.incidents||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
-  [...host.querySelectorAll('#incidentList .incident-card')].forEach((card,index)=>{
-    const item=incidents[index];if(!item||alreadyTuned(card))return;mark(card,'incidents',item.state);
-    const actions=card.querySelector('.card-actions');if(!actions)return;
-    const open=actions.querySelector('[data-open-incident]');if(open)makePrimary(open,'Apri caso');
-    const dossier=actions.querySelector('[data-download-evidence]');if(dossier)dossier.textContent='Apri dossier';
-    disclosure(actions,[dossier].filter(Boolean),'Prove');
-    finishTuning(card);
-  });
-  const workspace=$('#incidentWorkspace');if(!workspace||!workspace.open)return;mark(workspace,'incidents',byState(state.data?.incidents,state.activeIncidentId)?.state||'review');
-  for(const panel of workspace.querySelectorAll('.lens-panel')){
-    const label=panel.querySelector('.eyebrow')?.textContent||'';
-    if(/Analisi AI/i.test(label))progressivePanel(panel,'Analisi AI proposta');
-    else if(/Traccia AI/i.test(label))progressivePanel(panel,'Traccia tecnica AI');
-    else if(/Conferme umane/i.test(label))progressivePanel(panel,'Conferme registrate');
-    else if(/Versioni/i.test(label))progressivePanel(panel,'Cronologia versioni');
-  }
-  const actions=$('#workspaceActions');if(!actions)return;
-  for(const b of actions.querySelectorAll('button'))makeSecondary(b);
-  let primary=actions.querySelector('[data-submit-incident]')||actions.querySelector('[data-close-incident]')||actions.querySelector('[data-save-manual]')||null;
-  if(primary){
-    if(primary.matches('[data-submit-incident]'))makePrimary(primary,'Conferma e invia caso');
-    else if(primary.matches('[data-close-incident]'))makePrimary(primary,'Chiudi caso');
-    else makePrimary(primary,'Salva versione manuale');
-  }
-  const generate=actions.querySelector('[data-generate-draft]');if(generate)generate.textContent='Chiedi una bozza all’AI';
-  disclosure(actions,[...actions.children].filter(node=>node!==primary&&node.tagName!=='DETAILS'),'Alternative e prove');
-}
-
-function tuneObjects(root,p){
-  if(!root||!p)return;mark(root,'objects','registry');
-  const cards=[...root.querySelectorAll('.grc-list > article')];
-  cards.forEach((card,index)=>{
-    const item=p.objects?.[index];if(!item||alreadyTuned(card))return;mark(card,'objects',item.status);
-    const footer=card.querySelector('footer');if(!footer)return;
-    for(const b of footer.querySelectorAll('button'))makeSecondary(b);
-    const validate=footer.querySelector('[data-object-review="active"]');
-    const reject=footer.querySelector('[data-object-review="rejected"]');
-    const attest=footer.querySelector('[data-object-attest]');
-    const dossier=footer.querySelector('[data-grc-evidence]');
-    let primary=null;
-    if(item.status==='candidate'&&validate)primary=makePrimary(validate,'Conferma oggetto');
-    else if(item.status==='active'&&attest){
-      const due=Date.parse(item.attestationDueAt||'');
-      if(!Number.isNaN(due)&&due<=Date.now())primary=makePrimary(attest,'Riesamina oggetto');
-      else attest.textContent='Riesamina prima della scadenza';
-    }
-    if(reject)reject.textContent='Escludi dal registro';if(dossier)dossier.textContent='Apri dossier';
-    disclosure(footer,[reject,attest,dossier].filter(node=>node&&node!==primary),'Alternative e prove');
-    const facts=card.querySelector('.finetune-object-facts');if(facts){const legacy=[...card.children].find(node=>node.tagName==='P'&&!node.classList.contains('quiet'));if(legacy)legacy.classList.add('ux-hidden-legacy');}
-    finishTuning(card);
-  });
-}
-function setCoverageKpis(root,p){
-  const kpis=[...root.querySelectorAll('.grc-kpis .grc-kpi')];if(kpis.length<3)return;
-  const values=[['Decisioni registrate',p.decided??0,`${p.declared??0} elementi dichiarati`],['Gap',p.gaps??0,'decisioni esplicite'],['Da decidere',p.unresolved??0,'nessuna inferenza automatica'],['Fuori perimetro',p.notApplicable??0,'decisioni di scope']];
-  kpis.slice(0,4).forEach((card,index)=>{const row=values[index];if(!row)return;card.querySelector('small').textContent=row[0];card.querySelector('strong').textContent=String(row[1]);let span=card.querySelector('span');if(!span){span=document.createElement('span');card.append(span);}span.textContent=row[2];});
-  root.dataset.uiuxCoveragePercentagePrimary='false';
-}
-function ensureScopeDialog(){
-  const dialog=ensureDialog('uiuxScopeDialog','Decidi il perimetro del requisito',`<div class="ux-dialog-form" data-uiux-scope-form><label>Decisione<select name="decision" required><option value="applicable">Nel perimetro</option><option value="not-applicable">Fuori perimetro</option><option value="deferred">Rinvia decisione</option><option value="unknown">Informazioni insufficienti</option></select></label><label>Motivazione<textarea name="reason" rows="5" required placeholder="Perche' questa decisione e' appropriata nel perimetro dichiarato?"></textarea></label><p class="boundary">La decisione di perimetro non e' un mapping e non prova compliance o efficacia.</p></div>`);
-  if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';
-  dialog.querySelector('form.dialog-shell').addEventListener('submit',async event=>{
-    event.preventDefault();const form=dialog.querySelector('form.dialog-shell'),data=new FormData(form),requirementRef=dialog.dataset.requirementRef||'';
-    if(!requirementRef)return notify('Riferimento requisito mancante',true);
-    const result=await write(()=>api('/api/standards/requirement-scope',{method:'POST',body:JSON.stringify({requirementRef,decision:data.get('decision'),reason:data.get('reason')})}),'Decisione di perimetro registrata');
-    if(result)dialog.close();
-  });
-  return dialog;
-}
-function ensureMappingDialog(){
-  const dialog=ensureDialog('uiuxMappingDialog','Decidi il mapping',`<div class="ux-dialog-form" data-uiux-mapping-form><label>Decisione<select name="decision" required><option value="mapped">Conferma mapping</option><option value="gap">Registra gap</option><option value="rejected">Rifiuta proposta</option></select></label><label>Motivazione<textarea name="reason" rows="5" required placeholder="Quale evidenza o limite sostiene la decisione?"></textarea></label><p class="boundary">Mapped significa collegamento umano a target governati; non dimostra efficacia o compliance.</p></div>`);
-  if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';
-  dialog.querySelector('form.dialog-shell').addEventListener('submit',async event=>{
-    event.preventDefault();const form=dialog.querySelector('form.dialog-shell'),data=new FormData(form),id=dialog.dataset.mappingId||'';
-    if(!id)return notify('Mapping non disponibile',true);
-    const result=await write(()=>api(`/api/grc/mappings/${id}/decision`,{method:'POST',body:JSON.stringify({decision:data.get('decision'),reason:data.get('reason')})}),'Decisione mapping registrata');
-    if(result)dialog.close();
-  });
-  return dialog;
-}
-function tuneCoverage(root,p){
-  if(!root||!p)return;mark(root,'coverage','mapping');setCoverageKpis(root,p);
-  const cards=[...root.querySelectorAll('.grc-list > article')];
-  cards.forEach((card,index)=>{
-    const item=p.mappings?.[index];if(!item||alreadyTuned(card))return;mark(card,'coverage',item.state);
-    const footer=card.querySelector('footer');if(!footer)return;
-    for(const legacy of footer.querySelectorAll('[data-mapping-decision]'))legacy.remove();
-    const dossier=footer.querySelector('[data-grc-evidence]');if(dossier){makeSecondary(dossier,'Apri dossier');}
-    if(item.state==='proposed'&&state.role==='admin'){
-      const scope=item.requirementScope?.decision||null;
-      const button=document.createElement('button');button.type='button';button.className='primary ux-primary';
-      if(scope==='applicable'){
-        button.dataset.uiuxMappingDecision=item.id;button.textContent='Decidi mapping';
-      }else{
-        button.dataset.uiuxScopeDecision=item.id;button.dataset.requirementRef=item.requirementRef||'';
-        button.textContent=scope==='not-applicable'?'Rivedi perimetro':scope==='deferred'?'Riprendi decisione di perimetro':'Decidi perimetro';
-      }
-      footer.prepend(button);
-      if(scope==='not-applicable'){
-        const note=document.createElement('p');note.className='ux-terminal-note';note.textContent='Fuori perimetro: nessuna decisione di mapping e\' richiesta finche\' il perimetro non cambia.';card.querySelector('footer')?.before(note);
-      }
-    }
-    disclosure(footer,[dossier].filter(Boolean),'Prove');
-    finishTuning(card);
-  });
-}
-function ensureActionVerifyDialog(){
-  const dialog=ensureDialog('uiuxActionVerifyDialog','Verifica il risultato dell’azione',`<div class="ux-dialog-form" data-uiux-action-verify-form><label>Esito<select name="decision" required><option value="closed">Chiudi: risultato verificato</option><option value="rework">Riapri: serve rilavorazione</option></select></label><label>Motivazione<textarea name="reason" rows="5" required placeholder="Che cosa hai verificato e con quale limite?"></textarea></label><label>Riferimenti evidenza<textarea name="evidenceRefs" rows="4" placeholder="URL o EvidenceRef, uno per riga"></textarea></label><label class="check" data-uiux-self-review hidden><input type="checkbox" name="selfReviewAcknowledged"> Ho completato io il lavoro: confermo esplicitamente la self-review tracciata.</label><p class="boundary">Completato non significa chiuso. La chiusura richiede verifica umana ed evidenza risolvibile.</p></div>`);
-  if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';
-  dialog.querySelector('form.dialog-shell').addEventListener('submit',async event=>{
-    event.preventDefault();const form=dialog.querySelector('form.dialog-shell'),data=new FormData(form),id=dialog.dataset.actionId||'',decision=data.get('decision'),evidenceRefs=String(data.get('evidenceRefs')||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean),selfReview=form.querySelector('[name="selfReviewAcknowledged"]')?.checked===true;
-    if(decision==='closed'&&!evidenceRefs.length)return notify('Per chiudere serve almeno un riferimento evidenza',true);
-    const result=await write(()=>api(`/api/grc/actions/${id}/verify`,{method:'POST',body:JSON.stringify({decision,reason:data.get('reason'),evidenceRefs,selfReviewAcknowledged:selfReview})}),'Verifica azione registrata');
-    if(result)dialog.close();
-  });
-  return dialog;
-}
-function ensureActionStateDialog(){
-  const dialog=ensureDialog('uiuxActionStateDialog','Registra un cambio di stato',`<div class="ux-dialog-form" data-uiux-action-state-form><p data-uiux-action-state-copy></p><label>Motivazione<textarea name="note" rows="4" required></textarea></label><p class="boundary">Un cambio di stato operativo non equivale a verifica del risultato.</p></div>`);
-  if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';
-  dialog.querySelector('form.dialog-shell').addEventListener('submit',async event=>{
-    event.preventDefault();const form=dialog.querySelector('form.dialog-shell'),data=new FormData(form),id=dialog.dataset.actionId||'',next=dialog.dataset.nextState||'';
-    const result=await write(()=>api(`/api/grc/actions/${id}/progress`,{method:'POST',body:JSON.stringify({state:next,note:data.get('note')})}),'Stato azione registrato');if(result)dialog.close();
-  });
-  return dialog;
-}
-function tuneActions(root,p){
-  if(!root||!p)return;mark(root,'actions','action-lifecycle');
-  const cards=[...root.querySelectorAll('.grc-list > article')];
-  cards.forEach((card,index)=>{
-    const item=p.actions?.[index];if(!item||alreadyTuned(card))return;mark(card,'actions',item.state);
-    const footer=card.querySelector('footer');if(!footer)return;
-    for(const b of footer.querySelectorAll('button'))makeSecondary(b);
-    const dossier=footer.querySelector('[data-grc-evidence]');if(dossier)dossier.textContent='Apri dossier';
-    const ai=footer.querySelector('[data-action-ai]');if(ai)ai.textContent='Chiedi priorita'+' all’AI';
-    const adopt=footer.querySelector('[data-action-adopt]');
-    for(const progress of [...footer.querySelectorAll('[data-action-progress]')])progress.remove();
-    let primary=null;
-    if(item.state==='proposed'&&adopt)primary=makePrimary(adopt,'Adotta azione');
-    else if(item.state==='open'){
-      primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='in-progress';primary.textContent='Avvia lavoro';footer.prepend(primary);makePrimary(primary);
-    }else if(item.state==='in-progress'){
-      primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='done';primary.textContent='Invia a verifica';footer.prepend(primary);makePrimary(primary);
-      const blocked=document.createElement('button');blocked.type='button';blocked.dataset.uiuxActionState=item.id;blocked.dataset.nextState='blocked';blocked.textContent='Segnala blocco';footer.append(blocked);makeSecondary(blocked);
-    }else if(item.state==='blocked'){
-      primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='in-progress';primary.textContent='Riprendi lavoro';footer.prepend(primary);makePrimary(primary);
-    }else if(item.state==='ready-for-review'){
-      primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionVerify=item.id;primary.textContent='Verifica risultato';footer.prepend(primary);makePrimary(primary);
-    }
-    const cancellable=['open','in-progress','blocked','ready-for-review'].includes(item.state);
-    let cancel=null;if(cancellable){cancel=document.createElement('button');cancel.type='button';cancel.dataset.uiuxActionState=item.id;cancel.dataset.nextState='cancelled';cancel.textContent='Annulla azione';footer.append(cancel);makeSecondary(cancel);}
-    disclosure(footer,[ai,dossier,cancel,...footer.querySelectorAll('[data-uiux-action-state]')].filter(node=>node&&node!==primary),'Alternative e prove');
-    finishTuning(card);
-  });
-}
-function tuneGrc(){
-  const root=$('#grcWorkspace'),id=activeGrc(),grc=state.data?.grc;if(!root||!grc)return;
-  if(id==='objects')tuneObjects(root,grc.objects);
-  else if(id==='coverage')tuneCoverage(root,grc.coverage);
-  else if(id==='actions')tuneActions(root,grc.actions);
-}
-
-function tuneEpistemic(){
-  const card=$('#epistemicMetaCard'),proof=$('#proofView');
-  if(card&&proof&&card.parentElement!==proof){card.classList.add('ux-epistemic-entry');card.querySelector('h2')&&(card.querySelector('h2').textContent='Dettagli epistemici');const button=card.querySelector('[data-service="epistemic"]');if(button)button.textContent='Apri dettagli epistemici';proof.append(card);}
-  const view=$('#epistemicView');if(!view)return;mark(view,'cross-cutting','technical-inspection');
-  for(const chip of view.querySelectorAll('.surface-chip'))if(/atomi nella pagina/i.test(chip.textContent)){chip.title=chip.textContent;chip.textContent='Traccia disponibile';}
-  for(const cluster of view.querySelectorAll('[data-explore-procedure]')){
-    const id=cluster.dataset.exploreProcedure,label=IT_LABELS[id]||id||'Trasversale';const span=cluster.querySelector('span');if(span)span.textContent=label;const small=cluster.querySelector('small');if(small)small.textContent='Apri traccia';
-  }
-}
-
+function ensureIncidentTitleField(){const form=$('#incidentForm');if(!form||form.elements.caseTitle)return;const narrative=form.elements.originalNarrative?.closest('label');if(!narrative)return;const label=document.createElement('label');label.className='incident-case-title';label.innerHTML='<span>Titolo del caso <small>consigliato</small></span><input name="caseTitle" maxlength="160" placeholder="Es. Accesso anomalo alla casella amministrativa">';narrative.before(label);}
+function linearizeIncidentReview(workspace){const review=workspace.querySelector('.draft-review');if(!review||review.dataset.uiuxLinear==='true')return;review.dataset.uiuxLinear='true';review.classList.add('procedure-linear-review');const first=review.querySelector(':scope > section:first-child');if(first){const details=document.createElement('details');details.className='ux-technical-detail procedure-compare-original';details.innerHTML='<summary>Confronta con originale</summary><div class="ux-progressive-body"></div>';details.querySelector('div').append(first);review.prepend(details);}const confirm=workspace.querySelector('.confirm-row');if(confirm)confirm.classList.add('procedure-confirmation-block');}
+function tuneIncidents(){const host=$('#incidentsView');if(!host)return;mark(host,'incidents','case-work');ensureIncidentTitleField();const incidents=[...(state.data?.incidents||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));[...host.querySelectorAll('#incidentList .incident-card')].forEach((card,index)=>{const item=incidents[index];if(!item)return;const title=item.caseTitle||short(item.originalNarrative,78)||'Caso senza titolo';prepareCard(card,{process:'incidents',phase:item.state,title,titleAuthority:item.caseTitle?'human':'derived-legacy',summary:item.caseTitle?item.originalNarrative:'',facts:[{id:'state',label:'Stato',value:humanState(item.state)},{id:'awareness',label:'Conoscenza',value:compactDate(item.awarenessAt)},{id:'versions',label:'Versioni',value:String((item.formulationVersions||[]).length)},{id:'next',label:'Prossimo',value:item.nextQuestion?'Chiarimento':'Verifica formulazione'}]});const actions=card.querySelector('.card-actions');if(!actions)return;const open=actions.querySelector('[data-open-incident]'),dossier=actions.querySelector('[data-download-evidence]');if(open)open.textContent='Apri caso';if(dossier)dossier.textContent='Apri dossier';actionRail(actions,{primary:open,evidence:[dossier]});finishTuning(card);});const workspace=$('#incidentWorkspace'),item=byState(state.data?.incidents,state.activeIncidentId);if(!workspace||!workspace.open||!item)return;mark(workspace,'incidents',item.state||'review');if(item.caseTitle){const title=$('#workspaceTitle');if(title)title.textContent=item.caseTitle;}linearizeIncidentReview(workspace);for(const panel of workspace.querySelectorAll('.lens-panel')){const label=panel.querySelector('.eyebrow')?.textContent||'';if(/Analisi AI/i.test(label))progressivePanel(panel,'Analisi AI proposta');else if(/Traccia AI/i.test(label))progressivePanel(panel,'Traccia tecnica AI');else if(/Conferme umane/i.test(label))progressivePanel(panel,'Conferme registrate');else if(/Versioni/i.test(label))progressivePanel(panel,'Cronologia versioni');}const actions=$('#workspaceActions');if(!actions)return;const submit=actions.querySelector('[data-submit-incident]'),close=actions.querySelector('[data-close-incident]'),manual=actions.querySelector('[data-save-manual]'),save=actions.querySelector('[data-save-formulation]'),generate=actions.querySelector('[data-generate-draft]'),dossier=actions.querySelector('[data-download-evidence]');let primary=submit||close||manual||save||null;if(primary){if(primary===submit)primary.textContent='Conferma e invia caso';else if(primary===close)primary.textContent='Chiudi caso';else if(primary===manual)primary.textContent='Salva versione manuale';else primary.textContent='Salva nuova versione';}if(generate)generate.textContent='Chiedi una bozza all’AI';if(dossier)dossier.textContent='Scarica evidenza';actionRail(actions,{primary,support:[manual,save,generate,close].filter(x=>x&&x!==primary),evidence:[dossier]});}
+function ensureAoFilters(root){const list=root.querySelector('.grc-list');if(!list||root.querySelector('[data-procedure-queue-tools="objects"]'))return;const tools=document.createElement('div');tools.className='procedure-queue-tools surface-toolbar';tools.dataset.procedureQueueTools='objects';tools.innerHTML='<input type="search" data-seq-ao-search placeholder="Cerca per titolo, tipo, owner o fonte"><select data-seq-ao-filter><option value="">Tutti gli stati</option><option value="candidate">Da validare</option><option value="active">Attivi</option><option value="due">Da riesaminare</option></select>';list.before(tools);}
+function filterAo(root){const query=String(root.querySelector('[data-seq-ao-search]')?.value||'').trim().toLowerCase(),filter=root.querySelector('[data-seq-ao-filter]')?.value||'';for(const card of root.querySelectorAll('.grc-list > article')){const status=card.dataset.recordState||'',due=card.dataset.recordDue==='true',matchesText=!query||card.textContent.toLowerCase().includes(query),matchesState=!filter||status===filter||(filter==='due'&&due);card.hidden=!(matchesText&&matchesState);}}
+function tuneObjects(root,p){if(!root||!p)return;mark(root,'objects','registry');ensureAoFilters(root);const cards=[...root.querySelectorAll('.grc-list > article')];cards.forEach((card,index)=>{const item=p.objects?.[index];if(!item)return;const due=Date.parse(item.attestationDueAt||''),dueNow=item.status==='active'&&!Number.isNaN(due)&&due<=Date.now();card.dataset.recordState=item.status||'';card.dataset.recordDue=String(dueNow);prepareCard(card,{process:'objects',phase:item.status,title:item.name||'Oggetto senza titolo',titleAuthority:'human',summary:item.description||'',facts:[{id:'type',label:'Tipo',value:String(item.type||'').replaceAll('-',' ')},{id:'criticality',label:'Criticità',value:humanState(item.criticality)},{id:'owner',label:'Responsabile',value:item.owner||item.ownerRef?.displayName||'Da assegnare'},{id:'review',label:'Riesame',value:item.attestationDueAt?compactDate(item.attestationDueAt):'Da definire'}]});for(const legacy of card.querySelectorAll(':scope > p:not(.procedure-record-summary),:scope > .finetune-object-facts'))legacy.classList.add('ux-hidden-legacy');const footer=card.querySelector('footer');if(!footer)return;const validate=footer.querySelector('[data-object-review="active"]'),reject=footer.querySelector('[data-object-review="rejected"]'),attest=footer.querySelector('[data-object-attest]'),dossier=footer.querySelector('[data-grc-evidence]');let primary=item.status==='candidate'?validate:dueNow?attest:null;if(validate)validate.textContent='Conferma oggetto';if(reject)reject.textContent='Escludi dal registro';if(attest)attest.textContent=dueNow?'Riesamina oggetto':'Riesamina prima della scadenza';if(dossier)dossier.textContent='Apri dossier';actionRail(footer,{primary,support:[reject,attest].filter(x=>x&&x!==primary),evidence:[dossier]});finishTuning(card);});filterAo(root);}
+function setCoverageKpis(root,p){const kpis=[...root.querySelectorAll('.grc-kpis .grc-kpi')];if(kpis.length<3)return;const values=[['Decisioni registrate',p.decided??0,`${p.declared??0} elementi dichiarati`],['Gap',p.gaps??0,'decisioni esplicite'],['Da decidere',p.unresolved??0,'nessuna inferenza automatica'],['Fuori perimetro',p.notApplicable??0,'decisioni di scope']];kpis.slice(0,4).forEach((card,index)=>{const row=values[index];if(!row)return;const small=card.querySelector('small'),strong=card.querySelector('strong');if(small)small.textContent=row[0];if(strong)strong.textContent=String(row[1]);let span=card.querySelector('span');if(!span){span=document.createElement('span');card.append(span);}span.textContent=row[2];});root.dataset.uiuxCoveragePercentagePrimary='false';}
+function ensureScopeDialog(){const dialog=ensureDialog('uiuxScopeDialog','Decidi il perimetro del requisito','<div class="ux-dialog-form" data-uiux-scope-form><label>Decisione<select name="decision" required><option value="applicable">Nel perimetro</option><option value="not-applicable">Fuori perimetro</option><option value="deferred">Rinvia decisione</option><option value="unknown">Informazioni insufficienti</option></select></label><label>Motivazione<textarea name="reason" rows="5" required></textarea></label><p class="boundary">La decisione di perimetro non è un mapping e non prova compliance o efficacia.</p></div>');if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';dialog.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget),requirementRef=dialog.dataset.requirementRef||'';if(!requirementRef)return notify('Riferimento requisito mancante',true);const result=await write(()=>api('/api/standards/requirement-scope',{method:'POST',body:JSON.stringify({requirementRef,decision:data.get('decision'),reason:data.get('reason')})}),'Decisione di perimetro registrata');if(result)dialog.close();});return dialog;}
+function ensureMappingDialog(){const dialog=ensureDialog('uiuxMappingDialog','Decidi il mapping','<div class="ux-dialog-form" data-uiux-mapping-form><label>Decisione<select name="decision" required><option value="mapped">Conferma mapping</option><option value="gap">Registra gap</option><option value="rejected">Rifiuta proposta</option></select></label><label>Motivazione<textarea name="reason" rows="5" required></textarea></label><p class="boundary">Mapped significa collegamento umano a target governati; non dimostra efficacia o compliance.</p></div>');if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';dialog.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget),id=dialog.dataset.mappingId||'';if(!id)return notify('Mapping non disponibile',true);const result=await write(()=>api(`/api/grc/mappings/${id}/decision`,{method:'POST',body:JSON.stringify({decision:data.get('decision'),reason:data.get('reason')})}),'Decisione mapping registrata');if(result)dialog.close();});return dialog;}
+function tuneCoverage(root,p){if(!root||!p)return;mark(root,'coverage','mapping');setCoverageKpis(root,p);const cards=[...root.querySelectorAll('.grc-list > article')];cards.forEach((card,index)=>{const item=p.mappings?.[index];if(!item)return;const scope=item.requirementScope?.decision||'unknown';prepareCard(card,{process:'coverage',phase:item.state,title:item.requirementRef||item.requirementLabel||'Requisito senza riferimento',titleAuthority:item.requirementRef?'source-authority':'derived-legacy',summary:item.rationale||item.requirementLabel||'',facts:[{id:'scope',label:'Perimetro',value:humanState(scope)},{id:'mapping',label:'Mapping',value:humanState(item.state)},{id:'targets',label:'Target',value:String((item.targetIds||[]).length)},{id:'source',label:'Origine',value:item.proposalSource==='ai'?'Proposta AI':'Inserimento umano'}]});const footer=card.querySelector('footer');if(!footer)return;for(const legacy of footer.querySelectorAll('[data-mapping-decision]'))legacy.remove();let primary=footer.querySelector('[data-uiux-scope-decision],[data-uiux-mapping-decision]');if(!primary&&item.state==='proposed'&&state.role==='admin'){primary=document.createElement('button');primary.type='button';if(scope==='applicable'){primary.dataset.uiuxMappingDecision=item.id;primary.textContent='Decidi mapping';}else{primary.dataset.uiuxScopeDecision=item.id;primary.dataset.requirementRef=item.requirementRef||'';primary.textContent=scope==='deferred'?'Riprendi decisione di perimetro':scope==='not-applicable'?'Rivedi perimetro':'Decidi perimetro';}footer.prepend(primary);}const dossier=footer.querySelector('[data-grc-evidence]');if(dossier)dossier.textContent='Apri dossier';actionRail(footer,{primary,evidence:[dossier]});finishTuning(card);});}
+function ensureActionVerifyDialog(){const dialog=ensureDialog('uiuxActionVerifyDialog','Verifica il risultato dell’azione','<div class="ux-dialog-form" data-uiux-action-verify-form><label>Esito<select name="decision" required><option value="closed">Chiudi: risultato verificato</option><option value="rework">Riapri: serve rilavorazione</option></select></label><label>Motivazione<textarea name="reason" rows="5" required></textarea></label><label>Riferimenti evidenza<textarea name="evidenceRefs" rows="4"></textarea></label><label class="check" data-uiux-self-review hidden><input type="checkbox" name="selfReviewAcknowledged"> Ho completato io il lavoro: confermo esplicitamente la self-review tracciata.</label><p class="boundary">Completato non significa chiuso. La chiusura richiede verifica umana ed evidenza risolvibile.</p></div>');if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';dialog.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,data=new FormData(form),id=dialog.dataset.actionId||'',decision=data.get('decision'),evidenceRefs=String(data.get('evidenceRefs')||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean),selfReview=form.querySelector('[name="selfReviewAcknowledged"]')?.checked===true;if(decision==='closed'&&!evidenceRefs.length)return notify('Per chiudere serve almeno un riferimento evidenza',true);const result=await write(()=>api(`/api/grc/actions/${id}/verify`,{method:'POST',body:JSON.stringify({decision,reason:data.get('reason'),evidenceRefs,selfReviewAcknowledged:selfReview})}),'Verifica azione registrata');if(result)dialog.close();});return dialog;}
+function ensureActionStateDialog(){const dialog=ensureDialog('uiuxActionStateDialog','Registra un cambio di stato','<div class="ux-dialog-form"><p data-uiux-action-state-copy></p><label>Motivazione<textarea name="note" rows="4" required></textarea></label><p class="boundary">Un cambio di stato operativo non equivale a verifica del risultato.</p></div>');if(dialog.dataset.uiuxBound)return dialog;dialog.dataset.uiuxBound='true';dialog.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget),id=dialog.dataset.actionId||'',next=dialog.dataset.nextState||'';const result=await write(()=>api(`/api/grc/actions/${id}/progress`,{method:'POST',body:JSON.stringify({state:next,note:data.get('note')})}),'Stato azione registrato');if(result)dialog.close();});return dialog;}
+function resolveOrigin(item){const raw=item.origin?.label||item.origin?.title||item.sourceLabel||item.sourceRef||item.originId||item.origin?.id||'';if(raw&&!/^(demo-)?(mission|incident|mapping|risk|source|action)-/i.test(raw))return short(raw,80);const ids=[raw,item.originId,item.sourceRef,item.origin?.id].filter(Boolean);const pools=[state.data?.missions,state.data?.incidents,state.data?.grc?.coverage?.mappings,state.data?.grc?.risks?.risks];for(const id of ids)for(const pool of pools||[]){const found=(pool||[]).find(x=>x.id===id);if(found)return short(found.jobName||found.caseTitle||found.title||found.requirementLabel||found.objective||found.originalNarrative,80);}return raw||'Origine da consultare nel dossier';}
+function actionNext(value){return({proposed:'Decidi se adottare l’impegno',open:'Avvia il lavoro assegnato','in-progress':'Invia il risultato a verifica',blocked:'Risolvi il blocco o riprendi il lavoro','ready-for-review':'Verifica evidenza e risultato',closed:'Chiusura verificata',cancelled:'Azione annullata'}[value]||'Comprendi origine e prossimo passo');}
+function tuneActions(root,p){if(!root||!p)return;mark(root,'actions','action-lifecycle');const cards=[...root.querySelectorAll('.grc-list > article')];cards.forEach((card,index)=>{const item=p.actions?.[index];if(!item)return;prepareCard(card,{process:'actions',phase:item.state,title:item.title||'Azione senza titolo',titleAuthority:'human',summary:item.priorityRationale||item.proposedRationale||item.description||'',facts:[{id:'priority',label:'Priorità',value:item.priority?`P${item.priority}`:`P${item.proposedPriority||'—'} proposta`},{id:'owner',label:'Responsabile',value:item.owner||item.ownerRef?.displayName||'Da assegnare'},{id:'origin',label:'Origine',value:resolveOrigin(item)},{id:'next',label:'Prossimo',value:actionNext(item.state)}]});for(const legacy of card.querySelectorAll(':scope > p:not(.procedure-record-summary),:scope > .finetune-action-next'))legacy.classList.add('ux-hidden-legacy');const footer=card.querySelector('footer');if(!footer)return;for(const progress of [...footer.querySelectorAll('[data-action-progress]')])progress.remove();const adopt=footer.querySelector('[data-action-adopt]'),ai=footer.querySelector('[data-action-ai]'),dossier=footer.querySelector('[data-grc-evidence]');let primary=null;if(item.state==='proposed'&&adopt){adopt.textContent='Adotta azione';primary=adopt;}else if(item.state==='open'){primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='in-progress';primary.textContent='Avvia lavoro';footer.prepend(primary);}else if(item.state==='in-progress'){primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='done';primary.textContent='Invia a verifica';footer.prepend(primary);}else if(item.state==='blocked'){primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionQuick=item.id;primary.dataset.nextState='in-progress';primary.textContent='Riprendi lavoro';footer.prepend(primary);}else if(item.state==='ready-for-review'){primary=document.createElement('button');primary.type='button';primary.dataset.uiuxActionVerify=item.id;primary.textContent='Verifica risultato';footer.prepend(primary);}const support=[];if(ai){ai.textContent='Chiedi priorità all’AI';support.push(ai);}if(item.state==='in-progress'){const blocked=document.createElement('button');blocked.type='button';blocked.dataset.uiuxActionState=item.id;blocked.dataset.nextState='blocked';blocked.textContent='Segnala blocco';footer.append(blocked);support.push(blocked);}if(['open','in-progress','blocked','ready-for-review'].includes(item.state)){const cancel=document.createElement('button');cancel.type='button';cancel.dataset.uiuxActionState=item.id;cancel.dataset.nextState='cancelled';cancel.textContent='Annulla azione';footer.append(cancel);support.push(cancel);}if(dossier)dossier.textContent='Apri dossier';actionRail(footer,{primary,support,evidence:[dossier]});finishTuning(card);});}
+function tuneRisks(root,p){if(!root||!p)return;mark(root,'risks','risk-review');const cards=[...root.querySelectorAll('.grc-list > article')];cards.forEach((card,index)=>{const item=p.risks?.[index];if(!item)return;const review=item.reviews?.at(-1);prepareCard(card,{process:'risks',phase:review?'reviewed':'proposed',title:item.title||'Scenario senza titolo',titleAuthority:'human',summary:review?.reason||item.description||'',facts:[{id:'state',label:'Stato',value:review?'Valutato':'Da valutare'},{id:'rating',label:'Rating umano',value:review?`${review.likelihood}×${review.impact}`:'Non assegnato'},{id:'objects',label:'Oggetti',value:String((item.objectIds||[]).length)},{id:'controls',label:'Controlli',value:String((item.controlIds||[]).length)}]});const footer=card.querySelector('footer');if(!footer)return;const reviewButton=footer.querySelector('[data-risk-review]'),dossier=footer.querySelector('[data-grc-evidence]');if(reviewButton)reviewButton.textContent='Valuta rischio';if(dossier)dossier.textContent='Apri dossier';actionRail(footer,{primary:reviewButton,evidence:[dossier]});finishTuning(card);});}
+function tuneAssurance(root,p){if(!root||!p)return;mark(root,'assurance','assurance-review');const cards=[...root.querySelectorAll('.grc-list > article')];cards.forEach((card,index)=>{const item=p.cases?.[index];if(!item)return;prepareCard(card,{process:'assurance',phase:item.state,title:item.title||'Richiesta senza titolo',titleAuthority:'human',summary:item.requestText||'',facts:[{id:'state',label:'Stato',value:humanState(item.state)},{id:'source',label:'Origine',value:item.source||'Non indicata'},{id:'questions',label:'Quesiti',value:String(item.aiProposal?.questions?.length||0)}]});const technical=card.querySelector(':scope > details');if(technical){technical.classList.add('ux-technical-detail');const summary=technical.querySelector('summary');if(summary)summary.textContent='Richiesta e bozza';}const footer=card.querySelector('footer');if(!footer)return;const propose=footer.querySelector('[data-assurance-propose]'),approve=footer.querySelector('[data-assurance-approve]'),dossier=footer.querySelector('[data-grc-evidence]');if(propose)propose.textContent='Prepara bozza AI';if(approve)approve.textContent='Approva risposte';if(dossier)dossier.textContent='Apri dossier';actionRail(footer,{primary:approve||propose,evidence:[dossier]});finishTuning(card);});}
+function tuneGrc(){const root=$('#grcWorkspace'),id=activeGrc(),grc=state.data?.grc;if(!root||!grc)return;if(id==='objects')tuneObjects(root,grc.objects);else if(id==='coverage')tuneCoverage(root,grc.coverage);else if(id==='actions')tuneActions(root,grc.actions);else if(id==='risks')tuneRisks(root,grc.risks);else if(id==='assurance')tuneAssurance(root,grc.assurance);}
+function tuneEpistemic(){const card=$('#epistemicMetaCard'),proof=$('#proofView');if(card&&proof&&card.parentElement!==proof){card.classList.add('ux-epistemic-entry');const title=card.querySelector('h2');if(title)title.textContent='Dettagli epistemici';const button=card.querySelector('[data-service="epistemic"]');if(button)button.textContent='Apri dettagli epistemici';proof.append(card);}const view=$('#epistemicView');if(!view)return;mark(view,'cross-cutting','technical-inspection');for(const chip of view.querySelectorAll('.surface-chip'))if(/atomi nella pagina/i.test(chip.textContent)){chip.title=chip.textContent;chip.textContent='Traccia disponibile';}for(const cluster of view.querySelectorAll('[data-explore-procedure]')){const label=IT_LABELS[cluster.dataset.exploreProcedure]||cluster.dataset.exploreProcedure||'Trasversale';const span=cluster.querySelector('span');if(span)span.textContent=label;}}
+async function submitTitledIncident(form){const title=String(form.elements.caseTitle?.value||'').trim();if(!title)return false;const data=new FormData(form),button=form.querySelector('button[type="submit"]');button.disabled=true;let attachments;try{attachments=await filesPayload(form.elements.files);}catch(error){button.disabled=false;notify(error.message,true);return true;}const result=await write(()=>api('/api/incidents/intake',{method:'POST',body:JSON.stringify({caseTitle:title,originalNarrative:data.get('originalNarrative'),awarenessAt:new Date(data.get('awarenessAt')).toISOString(),attachments})}),null);button.disabled=false;if(!result)return true;form.closest('dialog')?.close();state.activeIncidentId=result.incident.id;renderIncidentWorkspace();openDialog('incidentWorkspace');notify(result.warning?`Evento registrato; analisi AI non riuscita: ${result.warning}`:'Evento registrato e analizzato');return true;}
 function ensureDialogs(){ensureScopeDialog();ensureMappingDialog();ensureActionVerifyDialog();ensureActionStateDialog();}
-function bindCustomActions(){
-  document.addEventListener('click',async event=>{
-    if(event.target.closest?.('[data-open-plan],[data-open-source],[data-open-incident]'))requestExperienceLifecycle('procedure-dialog-open');
-    const scope=event.target.closest?.('[data-uiux-scope-decision]');if(scope){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureScopeDialog();dialog.dataset.mappingId=scope.dataset.uiuxScopeDecision;dialog.dataset.requirementRef=scope.dataset.requirementRef||'';const form=dialog.querySelector('form.dialog-shell');form.reset();dialog.showModal();form.querySelector('select,textarea')?.focus();return;}
-    const map=event.target.closest?.('[data-uiux-mapping-decision]');if(map){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureMappingDialog();dialog.dataset.mappingId=map.dataset.uiuxMappingDecision;dialog.querySelector('form.dialog-shell').reset();dialog.showModal();return;}
-    const verify=event.target.closest?.('[data-uiux-action-verify]');if(verify){event.preventDefault();event.stopImmediatePropagation();const item=byState(state.data?.grc?.actions?.actions,verify.dataset.uiuxActionVerify),dialog=ensureActionVerifyDialog(),form=dialog.querySelector('form.dialog-shell');dialog.dataset.actionId=verify.dataset.uiuxActionVerify;form.reset();const self=item?.completedBy&&item.completedBy===state.data?.actor?.id,field=form.querySelector('[data-uiux-self-review]');if(field){field.hidden=!self;field.querySelector('input').required=Boolean(self);}dialog.showModal();return;}
-    const quick=event.target.closest?.('[data-uiux-action-quick]');if(quick){event.preventDefault();event.stopImmediatePropagation();await write(()=>api(`/api/grc/actions/${quick.dataset.uiuxActionQuick}/progress`,{method:'POST',body:JSON.stringify({state:quick.dataset.nextState,note:quick.dataset.nextState==='done'?'Lavoro completato e inviato a verifica':'Transizione operativa registrata dalla superficie guidata'})}),'Stato azione aggiornato');return;}
-    const actionState=event.target.closest?.('[data-uiux-action-state]');if(actionState){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureActionStateDialog();dialog.dataset.actionId=actionState.dataset.uiuxActionState;dialog.dataset.nextState=actionState.dataset.nextState;const form=dialog.querySelector('form.dialog-shell');form.reset();const copy=form.querySelector('[data-uiux-action-state-copy]');copy.textContent=actionState.dataset.nextState==='cancelled'?'Spiega perche'+' l’azione viene annullata.':'Descrivi il blocco operativo prima di registrarlo.';dialog.showModal();return;}
-  },true);
-}
-function render(){
-  if(!state.data)return;
-  tuneMonitoring();
-  tuneIncidents();
-  tuneGrc();
-  tuneEpistemic();
-  document.documentElement.dataset.ictcUiUxFinetuning=VERSION;
-}
-export function installProcedureUiUxFinetuning(){
-  if(installed)return;installed=true;
-  ensureDialogs();bindCustomActions();
-  registerExperienceParticipant({id:OWNER,phase:'presentation',authority:'decision-presentation',exclusive:true,render});
-}
+function bindCustomActions(){document.addEventListener('submit',event=>{if(event.target?.id!=='incidentForm')return;if(!String(event.target.elements.caseTitle?.value||'').trim())return;event.preventDefault();event.stopImmediatePropagation();void submitTitledIncident(event.target);},true);document.addEventListener('input',event=>{if(event.target.matches?.('[data-seq-ao-search]'))filterAo($('#grcWorkspace'));});document.addEventListener('change',event=>{if(event.target.matches?.('[data-seq-ao-filter]'))filterAo($('#grcWorkspace'));});document.addEventListener('click',async event=>{if(event.target.closest?.('[data-open-plan],[data-open-source],[data-open-incident]'))requestExperienceLifecycle('procedure-dialog-open');const scope=event.target.closest?.('[data-uiux-scope-decision]');if(scope){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureScopeDialog();dialog.dataset.mappingId=scope.dataset.uiuxScopeDecision;dialog.dataset.requirementRef=scope.dataset.requirementRef||'';dialog.querySelector('form').reset();dialog.showModal();return;}const map=event.target.closest?.('[data-uiux-mapping-decision]');if(map){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureMappingDialog();dialog.dataset.mappingId=map.dataset.uiuxMappingDecision;dialog.querySelector('form').reset();dialog.showModal();return;}const verify=event.target.closest?.('[data-uiux-action-verify]');if(verify){event.preventDefault();event.stopImmediatePropagation();const item=byState(state.data?.grc?.actions?.actions,verify.dataset.uiuxActionVerify),dialog=ensureActionVerifyDialog(),form=dialog.querySelector('form');dialog.dataset.actionId=verify.dataset.uiuxActionVerify;form.reset();const self=item?.completedBy&&item.completedBy===state.data?.actor?.id,field=form.querySelector('[data-uiux-self-review]');if(field){field.hidden=!self;field.querySelector('input').required=Boolean(self);}dialog.showModal();return;}const quick=event.target.closest?.('[data-uiux-action-quick]');if(quick){event.preventDefault();event.stopImmediatePropagation();await write(()=>api(`/api/grc/actions/${quick.dataset.uiuxActionQuick}/progress`,{method:'POST',body:JSON.stringify({state:quick.dataset.nextState,note:quick.dataset.nextState==='done'?'Lavoro completato e inviato a verifica':'Transizione operativa registrata dalla superficie guidata'})}),'Stato azione aggiornato');return;}const actionState=event.target.closest?.('[data-uiux-action-state]');if(actionState){event.preventDefault();event.stopImmediatePropagation();const dialog=ensureActionStateDialog();dialog.dataset.actionId=actionState.dataset.uiuxActionState;dialog.dataset.nextState=actionState.dataset.nextState;const form=dialog.querySelector('form');form.reset();const copy=form.querySelector('[data-uiux-action-state-copy]');if(copy)copy.textContent=actionState.dataset.nextState==='cancelled'?'Spiega perché l’azione viene annullata.':'Descrivi il blocco operativo prima di registrarlo.';dialog.showModal();return;}},true);}
+function render(){if(!state.data)return;tuneMonitoring();tuneIncidents();tuneGrc();tuneEpistemic();document.documentElement.dataset.ictcUiUxFinetuning=VERSION;}
+export function installProcedureUiUxFinetuning(){if(installed)return;installed=true;ensureStyle();ensureDialogs();bindCustomActions();registerExperienceParticipant({id:OWNER,phase:'presentation',authority:'decision-presentation',exclusive:true,render});}
