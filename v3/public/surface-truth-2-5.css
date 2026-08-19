@@ -1,0 +1,7 @@
+/* SurfaceTruth 2.5: cognitive disclosure and accessibility primitives. */
+:where(.surface-information-detail,.ictc-manifest-detail,.dialog-information-value details,.executive-boundary,.ux-technical-detail)>summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+:where(.surface-information-purpose,.procedure-decision-frame,.procedure-frame-copy,.dialog-information-value) :where(p,dd){max-width:76ch}
+[data-cognitive-level="technical"]{overflow-wrap:anywhere}
+.procedure-entry-utility{display:grid;gap:1rem;min-width:0;max-width:100%;margin:0 0 1rem}
+.procedure-entry-utility:empty{display:none}
+.procedure-entry-utility>*{min-width:0;max-width:100%;box-sizing:border-box}
