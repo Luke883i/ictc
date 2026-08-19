@@ -5,3 +5,4 @@
 .procedure-entry-utility{display:grid;gap:1rem;min-width:0;max-width:100%;margin:0 0 1rem}
 .procedure-entry-utility:empty{display:none}
 .procedure-entry-utility>*{min-width:0;max-width:100%;box-sizing:border-box}
+:where(label:has(>input[type="checkbox"]),label:has(>input[type="radio"])){min-height:44px;display:flex;align-items:center;gap:.5rem;cursor:pointer}
