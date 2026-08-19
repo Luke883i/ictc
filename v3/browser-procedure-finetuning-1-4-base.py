@@ -39,8 +39,8 @@ try:
   PHASE='mobile-hub-overflow'; no_overflow(m)
   PHASE='mobile-open-ao'; open_process(m,'AO-01')
   PHASE='mobile-ao-overflow'; no_overflow(m)
-  PHASE='mobile-facts'; expect(m.locator('.procedure-record-facts').first).to_be_visible()
-  PHASE='mobile-search'; expect(m.locator('[data-seq-ao-search]')).to_be_visible(); m.screenshot(path=str(ART/'ux-finetune-mobile-ao.png'),full_page=True); mobile.close()
+  PHASE='mobile-facts'; expect(m.locator('#grcWorkspace .grc-list > article.procedure-record-card .procedure-record-facts').first).to_be_visible()
+  PHASE='mobile-search'; expect(m.locator('#grcWorkspace [data-seq-ao-search]')).to_be_visible(); m.screenshot(path=str(ART/'ux-finetune-mobile-ao.png'),full_page=True); mobile.close()
   out={'ok':True,'profile':'procedure-finetuning-2.4-compatible','procedures':list(LABELS),'controlAnchors':'all-visible-selected-process-controls','rn':{'sourceClasses':4,'schedulerDialog':'jobDialog','closedSourceUniverse':True,'scheduledAiBoundary':True},'ec':{'singleQuestionOrientation':True,'humanCaseTitle':True},'ao':{'sharedRecordFacts':True,'searchFacet':True},'mc':{'frameworksWithConceptDrilldown':21,'opaqueDrilldown':True},'ap':{'sharedOriginAndNextFacts':True},'mobileOverflow':False,'evidenceClass':'E2 server-backed browser; not human usability, legal review or independent assurance'}; (ART/'browser-procedure-finetuning-1-4.json').write_text(json.dumps(out,indent=2),encoding='utf8'); print('browser-procedure-finetuning-2.4: complete',flush=True); ctx.close(); browser.close()
 except BaseException as e:
  fail(e); traceback.print_exc(); raise
