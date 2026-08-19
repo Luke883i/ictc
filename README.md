@@ -13,7 +13,7 @@ I sette Processi di Compliance sono:
 | Codice | Processo di Compliance | Oggetto operativo |
 |---|---|---|
 | RN-01 | Monitoraggio normativo | monitoraggi, fonti, requisiti e decisioni di fonte |
-| EC-01 | Eventi e segnalazioni | fatti originari, chiarimenti, formulazioni e stato evento |
+| EC-01 | Eventi e segnalazioni | fatti originati, chiarimenti, formulazioni e stato evento |
 | AO-01 | Inventario | sistemi e oggetti nel perimetro |
 | MC-01 | Controlli e copertura | standard, requisiti e proposte di mapping |
 | AP-01 | Azioni correttive | azioni, owner, scadenze e stato |
@@ -28,7 +28,7 @@ Ogni processo può creare un record iniziale compatibile in un altro processo tr
 
 L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia → Limite**: prima dice in quale Processo di Compliance sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
 
-La composizione UI corrente ha un solo root applicativo (`installActiveExperience`). Le responsabilità finali delle procedure sono ordinate da un contratto costituzionale esplicito **presentation → integrity → journey**: l'ordine non può dipendere dal numero di microtask/timer. Presentation può possedere la decisione visuale; integrity osserva e rinforza invarianti; journey guida senza creare una seconda autorità decisionale. Il contratto è descritto in `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md`.
+La composizione UI corrente ha un solo root applicativo (`installActiveExperience`). Il contratto **C0.1** ordina le responsabilità finali come **harmonization → presentation → integrity → journey → annotation**. L'ordine non dipende da timer, profondità di microtask o side-channel tardivi: harmonization normalizza frame e linguaggio; presentation possiede in modo esclusivo la decisione visuale; integrity rinforza invarianti; journey guida senza creare una seconda authority decisionale; annotation classifica intent, authority ed effetto probatorio dei controlli dopo il journey. Il lifecycle coalesca gli eventi, tratta la reentrancy come replay nello stesso flush e fallisce chiuso se non converge. Il contratto è descritto in `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md`.
 
 Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio. All'interno di ciascun Processo di Compliance lo stesso subject non viene contato due volte nel totale di attenzione soltanto perché appartiene anche a una sottocategoria, per esempio `ready-for-review` o `review-due`.
 
@@ -119,7 +119,7 @@ Oppure senza apertura automatica del browser:
 
 La modalità demo usa di default `.ictc/demo-runtime-v2` e gli stessi owner, normalizzatori, SQLite store e projection del prodotto standard. Non esiste un database demo parallelo. Il corpus sottostante mantiene **700 record primari di stress — 100 per ciascuno dei sette Processi di Compliance —** più record sintetici di contesto, ma tali record non costituiscono il racconto positivo dell'adozione. La vista positiva corrente è il cohort **operating-year** di Meccanica Selene, dal **1 luglio 2025 al 30 giugno 2026**, selezionato con densità non uniforme coerente con la natura di ciascuna procedura; i record rimanenti sono marcati `stress-corpus` e servono alla falsificazione.
 
-Nel cohort operating-year i conteggi attesi sono RN 8, EC 17, AO 60, MC 34, AP 25, RC 20 e AR 13. Il fine-tuning sequenziale profondo corrente riguarda RN/EC/AO/MC/AP; RC e AR restano procedure business canoniche e continuano a essere coperte dai rail di regressione mentre maturano le rispettive slice verticali.
+Nel cohort operating-year i conteggi attesi sono RN 8, EC 17, AO 60, MC 34, AP 25, RC 20 e AR 13. Il **deep fine-tuning RN/EC/AO/MC/AP** è il profilo verticale più profondo corrente; **RC e AR restano regression-covered** e procedure business canoniche mentre maturano le rispettive slice verticali. Questa differenza di maturità è esplicita e non riduce il catalogo business da sette a cinque procedure.
 
 In demo:
 
@@ -181,7 +181,7 @@ node v3/visual-grace-lexical-epistemic-saturation.mjs
 
 I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
 
-Il profilo C0 esegue **10.000 scenari** fra casi normali, stress ed edge sul contratto di composizione, misura famiglie normalizzate di failure e richiede un holdout esatto **M+1000** senza nuova famiglia. Il numero di scenari è un parametro di esecuzione, non una probabilità di difetto né una misura autonoma di assurance.
+Il profilo C0.1 conserva **10.000 scenari baseline** e aggiunge **100.000 ulteriori simulazioni**: 40.000 casi normali, 40.000 stress re-entranti e 20.000 edge mutant. Le 14 failure family aggiuntive raggiungono **M=114** e un holdout esatto fino a **1114 = M+1000** non produce nuove famiglie normalizzate; tutti i 20.000 mutant edge campionati vengono uccisi. Il numero di scenari, il mutation kill rate e il no-novelty sono parametri di falsificazione bounded, non probabilità di correttezza né assurance indipendente.
 
 Il profilo demo-outcome esegue 10.000 scenari con seed pseudocasuale univoco e riproducibile attraverso classi di stress dichiarate, più 10.000 mutazioni negative. La convergenza e l'holdout dimostrano soltanto che, nel vocabolario e negli operatori testati, non emerge una nuova classe normalizzata: non sono una prova di rappresentatività universale delle PMI italiane o di correttezza sostanziale dei singoli giudizi di compliance.
 
@@ -189,18 +189,19 @@ Nel profilo Onto-Compliance storico, `M+100` significa nessuna nuova signature m
 
 ## Identità della candidate
 
-`v3/release-identity.json` è la fonte cross-documenti. Le dimensioni restano separate perché descrivono contratti diversi:
+`v3/release-identity.json` schema 2.0 è la fonte cross-documenti. Distingue ciò che è **corrente** dalla lineage storica:
 
-- package: `1.8.0`;
-- semantica: `1.2-market-candidate`;
-- esperienza: `1.9-experience-candidate`;
-- refinement: `1.9.1-pre-candidate`;
-- profilo epistemico: `2.0-epistemic-lattice-pre-candidate`;
-- journey/convergenza: `2.1-procedure-journey-semantic-exploration-pre-candidate`;
-- design/assurance Onto-Compliance: `1.0-candidate`;
-- visual grace / lexical / epistemic assurance: `1.0-candidate`.
+- product version: `1.8.0`;
+- release stage: `candidate`;
+- semantic contract: `1.2-market-candidate`;
+- experience contract: `1.9-experience-candidate`;
+- epistemic contract: `2.0-epistemic-lattice-pre-candidate`;
+- journey contract: `2.2-sequential-onto-epistemic`;
+- constitution contract: `C0.1`;
+- assurance profile Onto-Compliance Horizon: `1.0` candidate;
+- assurance profile Visual Grace / Lexical / Epistemic: `1.0` candidate.
 
-C0 non aggiunge un'ulteriore edition di prodotto: è un **contratto costituzionale di composizione** che de-stratifica gli owner correnti senza cambiare l'identità business delle procedure.
+La lineage conserva refinement `1.9.1-pre-candidate`, journey `2.1-procedure-journey-semantic-exploration-pre-candidate` e constitution `C0` come storia informativa, non come identità corrente concatenata.
 
 ## Sviluppo e documentazione
 
@@ -212,11 +213,11 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
 - `docs/TESTING.md` — suite e falsificatori;
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
-- `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md` — root, fasi, authority e regole per le successive mutazioni delle procedure;
+- `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md` — C0.1: root, fasi, authority, reentrancy e regole per le successive mutazioni delle procedure;
 - `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
 - `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova della Postura e stop M+10000;
 - `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
-- `docs/PR60_GLOBAL_DOD.md` — convergenza Journey 2.1 già materializzata;
+- `docs/PR60_GLOBAL_DOD.md` — convergenza Journey 2.1 già materializzata, mantenuta come lineage/regressione;
 - `SECURITY.md` — boundary e responsabilità di deployment.
 
 La documentazione storica rimane utile per tracciabilità progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.

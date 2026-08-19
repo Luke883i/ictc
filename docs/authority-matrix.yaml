@@ -1,4 +1,4 @@
-version: 4
+version: 5
 surfaces:
   product_intent:
     authority: docs/00_PROMPT_CLARIFICATION.md
@@ -41,6 +41,10 @@ surfaces:
     authority: v3/public/ui/experience-constitution.js
   ui_lifecycle_runtime:
     authority: v3/public/ui/experience-lifecycle.js
+  ui_presentation_harmonization:
+    authority: v3/public/ui/procedure-executive-harmonization-1-5.js
+    phase: harmonization
+    classification: non-exclusive-presentation-normalizer
   ui_decision_presentation:
     authority: v3/public/ui/procedure-ui-ux-1-6.js
     phase: presentation
@@ -53,10 +57,16 @@ surfaces:
     authority: v3/public/ui/procedure-sequential-ux-2-2.js
     phase: journey
     classification: non-competing-overlay
+  ui_control_annotation:
+    authority: v3/public/ui/procedure-control-anchors-1-4.js
+    phase: annotation
+    classification: non-competing-metadata-owner
   launcher:
     authority: ictc.sh
   package_contract:
     authority: package.json
+  release_identity:
+    authority: v3/release-identity.json
   generated_artifacts:
     authority: scripts/
     classification: derived
@@ -70,7 +80,10 @@ rules:
   - runtime documentation must not claim append-only canonical state or historical reconstructibility unless executable proof establishes it
   - a change to a declared runtime authority requires authority-contract evidence on the same commit
   - app.js may install exactly one UI composition root
-  - current procedure presentation, integrity and journey participants must register through ui_lifecycle_runtime
-  - participant precedence is defined by the explicit phase order presentation -> integrity -> journey, never by timer, timeout or microtask depth
-  - decision-presentation is exclusive; integrity observers and journey overlays may not become competing decision-presentation owners
+  - current final procedure harmonization, presentation, integrity, journey and annotation responsibilities must converge through ui_lifecycle_runtime
+  - participant precedence is defined by the explicit phase order harmonization -> presentation -> integrity -> journey -> annotation, never by timer, timeout, side-channel event or microtask depth
+  - decision-presentation is exclusive; harmonization, integrity, journey and annotation may not become competing decision-presentation owners
+  - annotation may classify controls and evidence effects but may not create business decisions or runtime write authority
+  - reentrant lifecycle requests must replay inside the current flush and the lifecycle must fail closed on non-convergence
   - current runtime UI contracts must be reachable through the canonical npm test gate; dedicated workflows may be diagnostic but not parallel PR authorities
+  - release_identity distinguishes current contracts and maturity from informational lineage; lineage must not be promoted to current identity
