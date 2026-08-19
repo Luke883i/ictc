@@ -10,6 +10,7 @@ const inventory=JSON.parse(read('uiux-onto-epistemic-surface-inventory.json'));
 const overlayFiles=['public/ui/procedure-sequential-ux-2-2.js','public/ui/procedure-sequential-dom.js','public/ui/procedure-sequential-rn-ec.js','public/ui/procedure-sequential-rn-owner.js','public/ui/procedure-sequential-ao-mc.js','public/ui/procedure-sequential-ap.js'];
 const ui=overlayFiles.map(read).join('\n');
 const app=read('public/app.js');
+const active=read('public/ui/active-experience.js');
 const ownerRuntime=read('runtime/user-monitoring.mjs');
 const coverage=read('runtime/coverage-semantics.mjs');
 const aoOwner=read('public/ui/ao-auditor-facts-1-4.js');
@@ -27,9 +28,12 @@ assert.deepEqual(mcMappingOptions({targetIds:['obj-1']},[]).map(x=>x.value),['ga
 assert.deepEqual(mcMappingOptions({targetIds:['obj-1']},['obj-1']).map(x=>x.value),['mapped','gap']);
 assert.deepEqual(validateDecisionSurface({primaryActions:2}),['duplicate-primary-action']);
 
-assert.ok(app.indexOf('installActiveExperience();')<app.indexOf('installSequentialProcedureUx();'),'2.2 must layer on the canonical active experience');
-assert.ok(ui.includes("queueMicrotask(()=>queueMicrotask(()=>queueMicrotask(renderAll)))"),'2.2 must run after the 1.6 double-microtask presentation owner');
-assert.ok(ui.includes("authority:'journey-overlay'"),'2.2 must identify itself as a non-authoritative overlay');
+assert.match(app,/installActiveExperience\(\)/);
+assert.doesNotMatch(app,/installSequentialProcedureUx|procedure-sequential-ux-2-2/,'2.2 must not be a second app composition root');
+assert.match(active,/installSequentialProcedureUx/,'2.2 must be composed by the canonical active experience');
+assert.match(active,/installProcedureUiUxFinetuning,installProcedureUiUxIntegrity,installSequentialProcedureUx/,'constitutional order must be presentation -> integrity -> journey');
+assert.ok(ui.includes("phase:'journey'")&&ui.includes("authority:'journey-overlay'"),'2.2 must register as non-authoritative journey phase');
+assert.equal(ui.includes('queueMicrotask'),false,'2.2 must not depend on timing to follow the canonical presentation owner');
 
 assert.ok(ui.includes('/api/user/monitors'));
 assert.ok(ownerRuntime.includes('assertRnClosedUniverse')&&ownerRuntime.includes('sourceClasses:assertRnClosedUniverse'));
@@ -41,7 +45,7 @@ assert.ok(coverage.includes('latestRequirementScope(state,m.requirementRef)'));
 assert.equal(coverage.includes('m.requirementRef||m.requirementLabel'),false,'coverage projection must not resurrect requirementLabel fallback');
 
 assert.ok(ui.includes("import { api, esc, notify")&&ui.includes("esc(mission.objective||'')")&&ui.includes("esc((mission.sourceHints||[]).join(', '))")&&ui.includes("esc(mission.promptOverride||'')"));
-assert.ok(ui.includes('ictc:sequential-rendered')&&anchors.includes('ictc:sequential-rendered'),'canonical journey owner must re-anchor late overlay controls');
+assert.ok(ui.includes('ictc:sequential-rendered')&&anchors.includes('ictc:sequential-rendered'),'canonical journey owner must re-anchor journey controls');
 assert.equal(ui.includes('seqDecisionDialog'),false,'2.2 must not create a second generic decision dialog');
 assert.equal(ui.includes('epistemicMetaCard'),false,'EP posture is already owned by merged 1.6 and must not be moved twice');
 
@@ -53,4 +57,4 @@ for(const [id,p] of Object.entries(inventory.procedures)){
   for(const surface of p.surfaces){assert.ok(surface.governedObject&&surface.purpose&&surface.materialQuestion&&surface.claimBoundary,`incomplete surface spec ${surface.id}`);assert.ok(Array.isArray(surface.runtimeWrites),`runtimeWrites missing ${surface.id}`);}
 }
 
-console.log(JSON.stringify({ok:true,procedures:5,surfaces:surfaces.length,primaryActionBudget:1,progressiveListBudget:GLOBAL_UX_DOD.listItemsBeforeProgressiveDisclosure,newWriteOwner:'user-monitoring-only',delegatedOwners:['procedure-ui-ux-1-6','ao-auditor-facts-1-4'],journeyAnchorOwner:'procedure-control-anchors-1-4'}));
+console.log(JSON.stringify({ok:true,procedures:5,surfaces:surfaces.length,primaryActionBudget:1,progressiveListBudget:GLOBAL_UX_DOD.listItemsBeforeProgressiveDisclosure,newWriteOwner:'user-monitoring-only',delegatedOwners:['procedure-ui-ux-1-6','ao-auditor-facts-1-4'],journeyAnchorOwner:'procedure-control-anchors-1-4',compositionRoot:'active-experience',timingAuthority:'none'}));

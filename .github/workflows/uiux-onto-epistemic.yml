@@ -1,51 +1,17 @@
-name: UIUX onto-epistemic fine-tuning
+name: UIUX onto-epistemic replay (manual)
 on:
-  pull_request:
-    paths:
-      - 'v3/public/app.js'
-      - 'v3/public/ui/procedure-sequential-*.js'
-      - 'v3/public/ui/procedure-sequential-*.css'
-      - 'v3/public/ui/procedure-control-anchors-1-4-base.js'
-      - 'v3/uiux-onto-epistemic-*.mjs'
-      - 'v3/uiux-onto-epistemic-surface-inventory.json'
-      - 'v3/runtime/user-monitoring.mjs'
-      - 'docs/UIUX_ONTO_EPISTEMIC_FINETUNING_DOD_2026-08-18.md'
-      - '.github/workflows/uiux-onto-epistemic.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  uiux-onto-epistemic:
+  uiux-onto-epistemic-replay:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.16.0'
-      - name: JavaScript and runtime syntax
-        run: |
-          for file in \
-            v3/public/app.js \
-            v3/public/ui/procedure-control-anchors-1-4-base.js \
-            v3/public/ui/procedure-sequential-policy.js \
-            v3/public/ui/procedure-sequential-dom.js \
-            v3/public/ui/procedure-sequential-rn-ec.js \
-            v3/public/ui/procedure-sequential-rn-owner.js \
-            v3/public/ui/procedure-sequential-ao-mc.js \
-            v3/public/ui/procedure-sequential-ap.js \
-            v3/public/ui/procedure-sequential-ux-2-2.js \
-            v3/runtime/user-monitoring.mjs \
-            v3/uiux-onto-epistemic-check.mjs \
-            v3/uiux-onto-epistemic-saturation.mjs; do
-            node --check "$file"
-          done
-      - name: Onto-epistemic UI contract
-        run: node v3/uiux-onto-epistemic-check.mjs
-      - name: 100k mutation and convergence saturation
-        run: node v3/uiux-onto-epistemic-saturation.mjs
       - name: Install repository dependencies
         run: npm ci --ignore-scripts
-      - name: Current semantic regression
-        run: npm run test:current:semantic
-      - name: Current runtime regression
-        run: npm run test:current:runtime
+      - name: Replay canonical current gate
+        run: npm test
