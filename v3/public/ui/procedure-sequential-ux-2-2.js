@@ -1,10 +1,12 @@
 import { state } from './common.js';
+import { registerExperienceParticipant } from './experience-lifecycle.js';
 import { renderAo, renderMc } from './procedure-sequential-ao-mc.js';
 import { renderAp } from './procedure-sequential-ap.js';
 import { ensureStyle } from './procedure-sequential-dom.js';
 import { renderEc, renderRn } from './procedure-sequential-rn-ec.js';
 import { handleOwnerClick, handleOwnerSubmit, isOwnerMissionSubmit, renderRnOwner } from './procedure-sequential-rn-owner.js';
 
+const PARTICIPANT='procedure-sequential-ux-2-2';
 let installed=false;
 
 function renderAll(){
@@ -20,16 +22,10 @@ function renderAll(){
   document.dispatchEvent(new CustomEvent('ictc:sequential-rendered',{detail:{service:state.service,authority:'journey-overlay'}}));
 }
 
-// 1.6 uses a double microtask to remain the canonical decision presentation owner.
-// The third microtask lets 2.2 add only non-authoritative journey structure afterwards.
-function schedule(){queueMicrotask(()=>queueMicrotask(()=>queueMicrotask(renderAll)));}
-
 export function installSequentialProcedureUx(){
   if(installed)return;
   installed=true;
-  document.addEventListener('ictc:rendered',schedule);
-  document.addEventListener('ictc:surface-changed',schedule);
-  document.addEventListener('toggle',event=>{if(event.target?.id==='planDialog')schedule();},true);
+  registerExperienceParticipant({id:PARTICIPANT,phase:'journey',authority:'journey-overlay',exclusive:false,render:renderAll});
   document.addEventListener('submit',event=>{
     if(!isOwnerMissionSubmit(event))return;
     event.preventDefault();event.stopImmediatePropagation();void handleOwnerSubmit(event.target);
@@ -38,5 +34,4 @@ export function installSequentialProcedureUx(){
     const owner=event.target.closest?.('[data-seq-owner-monitor]');if(!owner)return;
     event.preventDefault();event.stopImmediatePropagation();void handleOwnerClick(owner);
   },true);
-  schedule();
 }

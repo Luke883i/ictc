@@ -27,6 +27,28 @@ Home · Processi · procedure · Postura · EP-01
 
 `package.json` e `ictc.sh` convergono su `v3/server.mjs`. `docs/authority-matrix.yaml` dichiara i proprietari canonici; `node v3/authority-contract-check.mjs` ne falsifica il drift.
 
+## Composizione UI costituzionale C0
+
+`v3/public/app.js` possiede un solo entrypoint di composizione: `installActiveExperience()`. `v3/public/ui/active-experience.js` installa gli enhancer e registra i tre partecipanti finali del lifecycle corrente:
+
+```text
+base/native enhancers
+        ↓
+presentation   procedure-ui-ux-1-6
+        ↓
+integrity      procedure-ui-ux-integrity-1-6
+        ↓
+journey        procedure-sequential-ux-2-2
+```
+
+Le fasi e le classi di authority sono dichiarate in `v3/public/ui/experience-constitution.js`; `v3/public/ui/experience-lifecycle.js` è l'unico orchestratore della convergenza finale. Un singolo microtask può coalescere eventi sincroni, ma **non determina la precedenza semantica**: la precedenza deriva esclusivamente da `presentation → integrity → journey`. I participant non possono usare profondità di microtask/timer per diventare owner impliciti.
+
+`procedure-ui-ux-1-6` resta l'unico `decision-presentation` esclusivo. `procedure-ui-ux-integrity-1-6` è un `integrity-observer`; `procedure-sequential-ux-2-2` è `journey-overlay`. Journey può guidare e, dove già previsto dal contratto RN, collegare il runtime user-owned, ma non acquisisce per questo authority sulle decisioni MC/AP/AO delegate agli owner canonici.
+
+Gli stili finali 1.6 sono nel foglio esterno `v3/public/ui-convergence.css`; i vecchi tentativi di `<style>` inline sono rimossi perché incompatibili con la CSP `style-src 'self'` e duplicavano regole già esterne.
+
+Questo C0 è deliberatamente semantics-preserving sulle procedure: le successive mutazioni verticali di RN/EC/AO/MC/AP/RC/AR possono proseguire indipendentemente; una nuova responsabilità orizzontale di composizione deve invece entrare nel lifecycle dichiarato anziché aggiungere un installer top-level o un nuovo livello temporale.
+
 ## Persistenza
 
 `SqliteStatePersistence` apre `state.sqlite`, abilita WAL, `synchronous=FULL` e foreign keys. Il current snapshot è mutabile: una nuova revisione sostituisce il payload della riga snapshot. Audit, SubjectVersion ed EpistemicStep sono invece registrati in strutture append-oriented e verificati durante lettura/persistenza.

@@ -6,6 +6,9 @@ const contract=JSON.parse(await read('./procedure-ui-ux-ontoepistemic-contract-1
 const ui=await read('./public/ui/procedure-ui-ux-1-6.js');
 const integrity=await read('./public/ui/procedure-ui-ux-integrity-1-6.js');
 const active=await read('./public/ui/active-experience.js');
+const constitution=await read('./public/ui/experience-constitution.js');
+const lifecycle=await read('./public/ui/experience-lifecycle.js');
+const css=await read('./public/ui-convergence.css');
 const grc=await read('./public/ui/grc-workspace-base.js');
 const actionsRuntime=await read('./runtime/risk-action-fidelity.mjs');
 const actionModel=await read('./runtime/grc-actions.mjs');
@@ -35,19 +38,31 @@ for(const code of contract.scope){
 assert.ok(covered/surfaceCount>=0.99,`surface census ${covered}/${surfaceCount}`);
 assert.equal(new Set(contract.crossCuttingFindings.map(x=>x.id)).size,contract.crossCuttingFindings.length,'finding ids must be unique');
 
+// C0 preserves the 1.6 decision owner but removes temporal authority. The stable
+// contract now follows the explicit presentation -> integrity -> journey phases.
 assert.match(active,/installProcedureUiUxFinetuning/,'active experience must install the 1.6 presentation owner');
 assert.match(active,/installProcedureUiUxIntegrity/,'active experience must install the 1.6 integrity guard');
-assert.match(active,/installVisualEpistemicRuntime,installProcedureUiUxFinetuning,installProcedureUiUxIntegrity\]\)/,'1.6 authority family must run last after legacy enhancers');
+assert.match(active,/installVisualEpistemicRuntime,installProcedureUiUxFinetuning,installProcedureUiUxIntegrity,installSequentialProcedureUx\]\)/,'C0 must compose current procedure UI participants under the active root');
+assert.match(constitution,/Object\.freeze\(\['presentation','integrity','journey'\]\)/,'C0 phase order must be explicit');
+assert.match(ui,/phase:'presentation',authority:'decision-presentation',exclusive:true/,'1.6 presentation must declare exclusive decision-presentation authority');
+assert.match(integrity,/phase:'integrity',authority:'integrity-observer',exclusive:false/,'1.6 integrity must be a non-exclusive observer');
+assert.doesNotMatch(ui,/queueMicrotask|setTimeout\(schedule/,'presentation authority must not depend on event-loop depth');
+assert.doesNotMatch(integrity,/queueMicrotask|setTimeout\(enforce|setTimeout\(schedule/,'integrity authority must not depend on event-loop depth');
+assert.equal((lifecycle.match(/queueMicrotask\(/g)||[]).length,1,'only the lifecycle may coalesce a render with one microtask');
 assert.match(ui,/const OWNER='procedure-ui-ux-1-6'/);
-assert.match(integrity,/const OWNER='procedure-ui-ux-1-6'/,'integrity guard must share the same logical presentation authority');
+assert.match(integrity,/const OWNER='procedure-ui-ux-1-6'/,'integrity guard must retain the same logical presentation family for DOM markers');
 assert.match(ui,/uiuxPrimaryActionMax/);
-assert.match(ui,/44px/);
-assert.match(ui,/focus-visible/);
-assert.match(ui,/prefers-reduced-motion/);
-assert.match(ui,/30rem/,'mission grid must avoid four dense desktop columns');
+assert.match(css,/Procedure UI\/UX 1\.6: CSP-safe final presentation geometry/);
+assert.match(css,/44px/);
+assert.match(css,/focus-visible/);
+assert.match(css,/prefers-reduced-motion/);
+assert.match(css,/30rem/,'mission grid must avoid four dense desktop columns');
+assert.doesNotMatch(ui,/document\.createElement\('style'\)|document\.createElement\("style"\)/,'1.6 must not inject CSP-blocked inline style');
+assert.doesNotMatch(integrity,/document\.createElement\('style'\)|document\.createElement\("style"\)/,'integrity must not inject CSP-blocked inline style');
 assert.doesNotMatch(ui,/>Drilldown</i,'generic Drilldown CTA forbidden in new owner');
-assert.ok(ui.includes('alreadyTuned')&&ui.includes('finishTuning'),'presentation owner must be idempotent across repeated render/surface events');
-assert.ok(ui.includes("[data-open-plan],[data-open-source],[data-open-incident]"),'dialog opening must schedule post-render convergence');
+assert.ok(ui.includes('alreadyTuned')&&ui.includes('finishTuning'),'presentation owner must be idempotent across repeated lifecycle runs');
+assert.ok(ui.includes("[data-open-plan],[data-open-source],[data-open-incident]"),'dialog opening must request lifecycle convergence');
+assert.ok(ui.includes("requestExperienceLifecycle('procedure-dialog-open')"),'dialog convergence must use the constitutional lifecycle');
 
 for(const token of ['Apri monitoraggio','Gestisci e consulta prove','Azioni eccezionali e prove','Classe proposta','Sintesi e rilevanza proposte dall’AI'])assert.ok(ui.includes(token),`RN UI contract missing ${token}`);
 assert.ok(render.includes('data-run-mission')&&workspaces.includes('data-run-mission'),'RN base actions remain real runtime affordances before phase compression');
@@ -82,4 +97,4 @@ assert.ok(ui.includes("chip.textContent='Traccia disponibile'"),'raw atom count 
 
 for(const id of ['fake-mc-na-mapping','orphan-ap-verification','ep-eighth-process'])assert.ok(contract.crossCuttingFindings.some(x=>x.id===id),`missing falsifier ${id}`);
 
-console.log(JSON.stringify({ok:true,control:'PROCEDURE-UI-UX-ONTOEPISTEMIC-1-6-1',procedures:contract.scope.length,surfaces:surfaceCount,surfaceCoverage:covered/surfaceCount,fakeCtaSurvivors:0,orphanRuntimeDecisions:0,primaryActionsMax:1,primaryFactsMax:4,runtimeIntegrityGuards:2}));
+console.log(JSON.stringify({ok:true,control:'PROCEDURE-UI-UX-ONTOEPISTEMIC-1-6-1+C0',procedures:contract.scope.length,surfaces:surfaceCount,surfaceCoverage:covered/surfaceCount,fakeCtaSurvivors:0,orphanRuntimeDecisions:0,primaryActionsMax:1,primaryFactsMax:4,runtimeIntegrityGuards:2,compositionRoot:'active-experience',phaseOrder:['presentation','integrity','journey']}));

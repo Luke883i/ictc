@@ -25,11 +25,15 @@ npm run release:check
 | Runtime current | `npm run test:current:runtime` | persistenza, readback, authorization, evidence, E2E runtime |
 | Candidate corrente | `npm test` | semantic + runtime current |
 | Release | `npm run release:check` | stable rail + candidate corrente |
+| C0 constitution | `node v3/experience-constitution-check.mjs` | singolo composition root, phase/authority ownership, assenza timing-as-authority, CSP-safe styling, gate authority |
+| C0 saturation | `node v3/experience-constitution-saturation.mjs` | 10.000 casi normal/stress/edge + discovery M e holdout M+1000 |
 | Authority | `node v3/authority-contract-check.mjs` | ownership dichiarata vs runtime |
 | Docs commands | `node v3/docs-command-contract-check.mjs` | comandi normativi esistenti |
 | Docs AS-IS | `node v3/documentation-authority-check.mjs` | drift persistence/release/testing/security/onboarding |
 | PR60 UX language | `node v3/ux-language-polish-check.mjs` | copy, progressive disclosure, target geometry, refresh ownership, receipt print boundary |
 | PR60 saturation | `node v3/pr60-convergence-saturation.mjs` | fault model source-bound + M+100 no-novelty |
+
+Il contratto C0 e i check onto-epistemici 2.2 sono inclusi direttamente in `CURRENT_SEMANTIC`; non dipendono da un workflow PR dedicato. `.github/workflows/uiux-onto-epistemic.yml` resta solo come replay manuale del gate canonico e non costituisce una seconda autorità di accettazione.
 
 ## Browser journey
 
@@ -56,6 +60,8 @@ Il fascicolo oggetto-specifico mantiene lo stesso perimetro di autorizzazione de
 ## Saturation
 
 I saturation runner usano scenari pseudo-casuali, fault injection e holdout con seed distinto. Un risultato senza nuove firme nello spazio generato è **bounded evidence**, non prova universale di assenza di difetti. I compression/simplification mutant devono dimostrare che la rimozione di una responsabilità necessaria reintroduce almeno un'anomalia osservabile.
+
+C0 esegue 10.000 scenari deterministici: 4.000 permutazioni normali, 4.000 stress con molti participant non esclusivi e un solo decision-presentation owner, 2.000 edge mutant. La discovery procede da 1 a M sulle failure family costituzionali normalizzate e richiede poi un holdout esatto M+1000 senza nuova family. Il numero di scenari non è una probabilità di correttezza e non aumenta il grado E2 dell'evidenza repository-bounded.
 
 Le suite storiche possono usare M+1000. La saturation specifica PR60 implementa la richiesta **M+100**: costruisce il profilo target leggendo i sorgenti correnti, esegue 12.000 scenari di discovery con fault mutators, definisce M come l'ultimo scenario che introduce una nuova signature normalizzata misurata e verifica altri 100 scenari holdout con seed distinto. `0 newNormalizedSignatures` significa no-novelty entro quel modello misurato, non assenza globale di difetti.
 

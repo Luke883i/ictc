@@ -1,4 +1,4 @@
-version: 3
+version: 4
 surfaces:
   product_intent:
     authority: docs/00_PROMPT_CLARIFICATION.md
@@ -34,6 +34,25 @@ surfaces:
     authority: v3/ai.mjs
   public_ui:
     authority: v3/public/
+  ui_composition_root:
+    authority: v3/public/ui/active-experience.js
+    classification: exclusive
+  ui_lifecycle_contract:
+    authority: v3/public/ui/experience-constitution.js
+  ui_lifecycle_runtime:
+    authority: v3/public/ui/experience-lifecycle.js
+  ui_decision_presentation:
+    authority: v3/public/ui/procedure-ui-ux-1-6.js
+    phase: presentation
+    classification: exclusive-presentation-owner
+  ui_integrity_observer:
+    authority: v3/public/ui/procedure-ui-ux-integrity-1-6.js
+    phase: integrity
+    classification: non-business-authority
+  ui_journey_overlay:
+    authority: v3/public/ui/procedure-sequential-ux-2-2.js
+    phase: journey
+    classification: non-competing-overlay
   launcher:
     authority: ictc.sh
   package_contract:
@@ -50,3 +69,8 @@ rules:
   - mutable canonical state and append-only audit ledger are separate authorities
   - runtime documentation must not claim append-only canonical state or historical reconstructibility unless executable proof establishes it
   - a change to a declared runtime authority requires authority-contract evidence on the same commit
+  - app.js may install exactly one UI composition root
+  - current procedure presentation, integrity and journey participants must register through ui_lifecycle_runtime
+  - participant precedence is defined by the explicit phase order presentation -> integrity -> journey, never by timer, timeout or microtask depth
+  - decision-presentation is exclusive; integrity observers and journey overlays may not become competing decision-presentation owners
+  - current runtime UI contracts must be reachable through the canonical npm test gate; dedicated workflows may be diagnostic but not parallel PR authorities

@@ -6,7 +6,7 @@ ICTC non è una certificazione, un parere legale, un auditor autonomo né un sec
 
 ## Il prodotto, oggi
 
-La navigazione canonica è **Oggi / Processi di Compliance / Postura ICTC**. Da Processi di Compliance, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
+La navigazione canonica è **Oggi / Processi di Compliance / Postura ICTC**. Da **Postura ICTC**, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
 
 I sette Processi di Compliance sono:
 
@@ -27,6 +27,8 @@ Ogni processo può creare un record iniziale compatibile in un altro processo tr
 ## Come leggere ICTC
 
 L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia → Limite**: prima dice in quale Processo di Compliance sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+
+La composizione UI corrente ha un solo root applicativo (`installActiveExperience`). Le responsabilità finali delle procedure sono ordinate da un contratto costituzionale esplicito **presentation → integrity → journey**: l'ordine non può dipendere dal numero di microtask/timer. Presentation può possedere la decisione visuale; integrity osserva e rinforza invarianti; journey guida senza creare una seconda autorità decisionale. Il contratto è descritto in `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md`.
 
 Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio. All'interno di ciascun Processo di Compliance lo stesso subject non viene contato due volte nel totale di attenzione soltanto perché appartiene anche a una sottocategoria, per esempio `ready-for-review` o `review-due`.
 
@@ -103,7 +105,7 @@ Questa modalità **non inserisce dati demo**. È la modalità da usare per uno s
 
 ### Modalità demo PMI
 
-Avvia ICTC con il dataset sintetico **Officine Aurora S.r.l. · DEMO**:
+Avvia ICTC con il dataset sintetico **Meccanica Selene S.r.l. · DEMO**:
 
 ```bash
 ./ictc.sh demo
@@ -115,7 +117,9 @@ Oppure senza apertura automatica del browser:
 ./ictc.sh demo --no-open
 ```
 
-La modalità demo usa di default `.ictc/demo-runtime-v2` e gli stessi owner, normalizzatori, SQLite store e projection del prodotto standard. Non esiste un database demo parallelo. Il seed v2 crea 700 record primari — 100 per ciascuno dei sette Processi di Compliance — più record sintetici di contesto per uso organizzativo degli standard e scope dei requisiti.
+La modalità demo usa di default `.ictc/demo-runtime-v2` e gli stessi owner, normalizzatori, SQLite store e projection del prodotto standard. Non esiste un database demo parallelo. Il corpus sottostante mantiene **700 record primari di stress — 100 per ciascuno dei sette Processi di Compliance —** più record sintetici di contesto, ma tali record non costituiscono il racconto positivo dell'adozione. La vista positiva corrente è il cohort **operating-year** di Meccanica Selene, dal **1 luglio 2025 al 30 giugno 2026**, selezionato con densità non uniforme coerente con la natura di ciascuna procedura; i record rimanenti sono marcati `stress-corpus` e servono alla falsificazione.
+
+Nel cohort operating-year i conteggi attesi sono RN 8, EC 17, AO 60, MC 34, AP 25, RC 20 e AR 13. Il fine-tuning sequenziale profondo corrente riguarda RN/EC/AO/MC/AP; RC e AR restano procedure business canoniche e continuano a essere coperte dai rail di regressione mentre maturano le rispettive slice verticali.
 
 In demo:
 
@@ -161,6 +165,10 @@ Per diagnosi mirata:
 ```bash
 npm run test:current:semantic
 npm run test:current:runtime
+node v3/experience-constitution-check.mjs
+node v3/experience-constitution-saturation.mjs
+node v3/uiux-onto-epistemic-check.mjs
+node v3/uiux-onto-epistemic-saturation.mjs
 node v3/demo-outcome-audit-check.mjs
 node v3/demo-outcome-saturation.mjs
 node v3/authority-contract-check.mjs
@@ -172,6 +180,8 @@ node v3/visual-grace-lexical-epistemic-saturation.mjs
 ```
 
 I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
+
+Il profilo C0 esegue **10.000 scenari** fra casi normali, stress ed edge sul contratto di composizione, misura famiglie normalizzate di failure e richiede un holdout esatto **M+1000** senza nuova famiglia. Il numero di scenari è un parametro di esecuzione, non una probabilità di difetto né una misura autonoma di assurance.
 
 Il profilo demo-outcome esegue 10.000 scenari con seed pseudocasuale univoco e riproducibile attraverso classi di stress dichiarate, più 10.000 mutazioni negative. La convergenza e l'holdout dimostrano soltanto che, nel vocabolario e negli operatori testati, non emerge una nuova classe normalizzata: non sono una prova di rappresentatività universale delle PMI italiane o di correttezza sostanziale dei singoli giudizi di compliance.
 
@@ -190,6 +200,8 @@ Nel profilo Onto-Compliance storico, `M+100` significa nessuna nuova signature m
 - design/assurance Onto-Compliance: `1.0-candidate`;
 - visual grace / lexical / epistemic assurance: `1.0-candidate`.
 
+C0 non aggiunge un'ulteriore edition di prodotto: è un **contratto costituzionale di composizione** che de-stratifica gli owner correnti senza cambiare l'identità business delle procedure.
+
 ## Sviluppo e documentazione
 
 **Se è la prima volta nel repository, parti da `docs/START_HERE.md`.** È una mappa verso gli owner correnti, non una nuova autorità.
@@ -200,6 +212,7 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
 - `docs/TESTING.md` — suite e falsificatori;
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
+- `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md` — root, fasi, authority e regole per le successive mutazioni delle procedure;
 - `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
 - `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova della Postura e stop M+10000;
 - `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
