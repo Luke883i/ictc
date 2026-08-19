@@ -29,6 +29,8 @@ const lifecycle=read('v3/public/ui/experience-lifecycle.js');
 const css=read('v3/public/ui-convergence.css');
 const current=read('v3/current-release-suite.mjs');
 const workflow=read('.github/workflows/uiux-onto-epistemic.yml');
+const uiStandard=read('.github/workflows/ui-standard.yml');
+const ci=read('.github/workflows/ci.yml');
 const pkg=JSON.parse(read('package.json'));
 const authority=read('docs/authority-matrix.yaml');
 
@@ -58,6 +60,10 @@ assert.match(lifecycle,/if\(flushing\)\{replay=true;return;\}/,'reentrant reques
 assert.match(lifecycle,/MAX_EXPERIENCE_REPLAY_CYCLES/);assert.match(lifecycle,/experience-lifecycle-nonconvergent/);assert.match(lifecycle,/Authority order is defined by EXPERIENCE_PHASES/);
 assert.doesNotMatch(presentation,/createElement\(['"]style['"]\)/,'presentation must not inject CSP-blocked inline CSS');assert.doesNotMatch(integrity,/createElement\(['"]style['"]\)/,'integrity must not inject CSP-blocked inline CSS');assert.match(css,/Procedure UI\/UX 1\.6: CSP-safe final presentation geometry/,'effective 1.6 styling must remain externally owned');
 for(const check of['v3/experience-constitution-check.mjs','v3/experience-constitution-saturation.mjs','v3/uiux-onto-epistemic-check.mjs','v3/uiux-onto-epistemic-saturation.mjs'])assert.ok(current.includes(`'${check}'`),`canonical current suite missing ${check}`);
-assert.doesNotMatch(workflow,/\bpull_request\s*:/,'dedicated UIUX workflow must not remain a second PR gate authority');assert.match(workflow,/workflow_dispatch\s*:/,'manual diagnostic replay must remain available');assert.equal(pkg.private,true,'package must be non-publishable by default');
+assert.doesNotMatch(workflow,/\bpull_request\s*:/,'dedicated UIUX workflow must not remain a second PR gate authority');assert.match(workflow,/workflow_dispatch\s*:/,'manual UIUX diagnostic replay must remain available');
+assert.doesNotMatch(uiStandard,/\bpull_request\s*:/,'historical ui-standard workflow must not remain a second PR gate authority');assert.match(uiStandard,/workflow_dispatch\s*:/,'manual ui-standard diagnostic replay must remain available');
+for(const browser of['v3/browser-pr60-polish.py','v3/browser-procedure-finetuning-1-4.py'])assert.ok(ci.includes(browser),`canonical browser rail missing migrated coverage: ${browser}`);
+assert.match(ci,/post_browser_failure/,'canonical browser rail must publish per-script failure provenance');
+assert.equal(pkg.private,true,'package must be non-publishable by default');
 for(const key of['ui_composition_root','ui_presentation_harmonization','ui_decision_presentation','ui_integrity_observer','ui_journey_overlay','ui_control_annotation'])assert.match(authority,new RegExp(`\\n  ${key}:`),`authority matrix missing ${key}`);
-console.log(JSON.stringify({ok:true,root:EXPERIENCE_ROOT.id,participants:EXPECTED_EXPERIENCE_PARTICIPANTS.length,phaseOrder:EXPECTED_EXPERIENCE_PARTICIPANTS.map(item=>item.phase),timingAuthority:'forbidden-in-final-participants',coalescingAuthority:'experience-lifecycle-only',replayGuard:MAX_EXPERIENCE_REPLAY_CYCLES,packagePrivate:true}));
+console.log(JSON.stringify({ok:true,root:EXPERIENCE_ROOT.id,participants:EXPECTED_EXPERIENCE_PARTICIPANTS.length,phaseOrder:EXPECTED_EXPERIENCE_PARTICIPANTS.map(item=>item.phase),timingAuthority:'forbidden-in-final-participants',coalescingAuthority:'experience-lifecycle-only',browserGateAuthority:'ci.yml/browser-journeys',manualDiagnostics:['uiux-onto-epistemic','ui-standard'],replayGuard:MAX_EXPERIENCE_REPLAY_CYCLES,packagePrivate:true}));

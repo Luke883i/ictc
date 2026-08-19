@@ -46,7 +46,7 @@ jobs:
           retention-days: 30
   browser-journeys:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 55
     permissions:
       contents: read
       statuses: write
@@ -59,7 +59,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-onto-compliance-v1.py v3/browser-procedure-ui-ux-1-6.py v3/browser-information-value.py v3/browser-risk-drilldown.py v3/browser-ao-activation.py
+        run: python -m py_compile v3/browser-v1-9-experience.py v3/browser-v2-epistemic.py v3/browser-ui-epistemic-convergence.py v3/browser-v2-1-procedure-journey.py v3/browser-convergent-kernel.py v3/browser-pr60-polish.py v3/browser-onto-compliance-v1.py v3/browser-procedure-finetuning-1-4.py v3/browser-procedure-finetuning-1-4-base.py v3/browser-procedure-executive-harmonization-1-5.py v3/browser-procedure-ui-ux-1-6.py v3/browser-information-value.py v3/browser-risk-drilldown.py v3/browser-ao-activation.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -102,7 +102,9 @@ jobs:
             v3/browser-v2-epistemic.py \
             v3/browser-ui-epistemic-convergence.py \
             v3/browser-v2-1-procedure-journey.py \
+            v3/browser-pr60-polish.py \
             v3/browser-onto-compliance-v1.py \
+            v3/browser-procedure-finetuning-1-4.py \
             v3/browser-procedure-ui-ux-1-6.py \
             v3/browser-information-value.py \
             v3/browser-risk-drilldown.py \
@@ -118,7 +120,9 @@ jobs:
             artifacts/browser-v2-epistemic*.json
             artifacts/browser-ui-epistemic-convergence*.json
             artifacts/browser-v2-1*.json
+            artifacts/browser-pr60*.json
             artifacts/browser-onto-compliance*.json
+            artifacts/browser-procedure-finetuning-1-4*.json
             artifacts/browser-procedure-ui-ux-1-6*.json
             artifacts/browser-information-value*.json
             artifacts/browser-risk-drilldown*.json
@@ -127,7 +131,9 @@ jobs:
             artifacts/ux-v20-*.png
             artifacts/ux-ui-epistemic-*.png
             artifacts/ux-v21-*.png
+            artifacts/ux-pr60-*.png
             artifacts/ux-och-v1-*.png
+            artifacts/ux-finetune-*.png
             artifacts/information-value-*.png
           if-no-files-found: warn
           retention-days: 30
