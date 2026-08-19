@@ -1,29 +1,31 @@
 /* Procedure record primitives 2.4: one record grammar, local semantic adapters. */
 :root{--procedure-record-gap:.7rem;--procedure-record-radius:18px;--procedure-record-readable:76ch}
-.procedure-record-card{display:grid;gap:var(--procedure-record-gap);min-width:0;border-radius:var(--procedure-record-radius);align-content:start}
+.procedure-record-card{display:grid;gap:var(--procedure-record-gap);min-width:0;width:100%;max-width:100%;box-sizing:border-box;border-radius:var(--procedure-record-radius);align-content:start;overflow-wrap:anywhere}
 .procedure-record-card :where(h3,.procedure-record-summary){max-width:var(--procedure-record-readable)}
+.procedure-record-card :where(header,footer,.procedure-record-summary,.procedure-record-facts,.procedure-action-rail){min-width:0;max-width:100%}
 .procedure-record-card h3{margin:.15rem 0;font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.2;letter-spacing:-.015em}
 .procedure-record-summary{margin:0;color:var(--muted,#64748b);line-height:1.45}
 .procedure-record-facts{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;min-width:0}
-.procedure-record-facts .surface-chip{display:inline-grid;grid-template-columns:auto auto;gap:.3rem;align-items:baseline;min-height:32px;padding:.25rem .65rem}
+.procedure-record-facts .surface-chip{display:inline-grid;grid-template-columns:auto auto;gap:.3rem;align-items:baseline;min-height:32px;max-width:100%;box-sizing:border-box;padding:.25rem .65rem}
 .procedure-record-facts .surface-chip small{font-size:.7rem;font-weight:700;color:var(--muted,#64748b)}
 .procedure-record-facts .surface-chip b{font-size:.78rem;min-width:0;overflow-wrap:anywhere}
 .procedure-record-legacy-meta{display:none!important}
-.procedure-action-rail{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;border-top:1px solid var(--line,#dce4ef);padding-top:.65rem;margin-top:.15rem}
+.procedure-action-rail{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;min-width:0;max-width:100%;border-top:1px solid var(--line,#dce4ef);padding-top:.65rem;margin-top:.15rem}
+.procedure-action-rail>*{min-width:0;max-width:100%;box-sizing:border-box}
 .procedure-action-rail>.procedure-evidence-action{margin-inline-start:auto}
 .procedure-action-overflow{flex-basis:100%;border-top:1px solid var(--line,#dce4ef);padding-top:.2rem}
 .procedure-action-overflow>summary{cursor:pointer;font-weight:700}
-.procedure-action-overflow-body{display:flex;gap:.5rem;flex-wrap:wrap;padding-top:.5rem}
-.procedure-queue-tools{margin:.5rem 0 .8rem}.procedure-queue-tools>input{flex:1 1 320px}.procedure-queue-tools>select{flex:0 1 220px}
-.procedure-linear-review{display:grid!important;grid-template-columns:1fr!important;gap:1rem!important}
-.procedure-compare-original{order:2}.procedure-linear-review>section{order:1}.procedure-confirmation-block{display:flex!important;align-items:flex-start;gap:.6rem;padding:.75rem;border:1px solid var(--line,#dce4ef);border-radius:12px;background:var(--surface,#fff)}
+.procedure-action-overflow-body{display:flex;gap:.5rem;flex-wrap:wrap;min-width:0;max-width:100%;padding-top:.5rem}
+.procedure-queue-tools{margin:.5rem 0 .8rem;min-width:0;max-width:100%;box-sizing:border-box;flex-wrap:wrap!important;overflow-x:visible!important}.procedure-queue-tools>input{flex:1 1 320px;min-width:0;max-width:100%}.procedure-queue-tools>select{flex:0 1 220px;min-width:0;max-width:100%}
+.procedure-linear-review{display:grid!important;grid-template-columns:1fr!important;gap:1rem!important;min-width:0;max-width:100%}
+.procedure-compare-original{order:2}.procedure-linear-review>section{order:1}.procedure-confirmation-block{display:flex!important;align-items:flex-start;gap:.6rem;min-width:0;max-width:100%;box-sizing:border-box;padding:.75rem;border:1px solid var(--line,#dce4ef);border-radius:12px;background:var(--surface,#fff)}
 .procedure-confirmation-block input{flex:0 0 auto;margin-top:.15rem}
-.incident-case-title{display:grid;gap:.35rem}.incident-case-title span{font-weight:700}.incident-case-title small{font-weight:500;color:var(--muted,#64748b)}
+.incident-case-title{display:grid;gap:.35rem;min-width:0;max-width:100%}.incident-case-title span{font-weight:700}.incident-case-title small{font-weight:500;color:var(--muted,#64748b)}
 #incidentWorkspace .dialog-shell{grid-template-rows:auto minmax(0,1fr) auto}
 #incidentWorkspace .dialog-body{overscroll-behavior:contain}
 #incidentWorkspace #workspaceActions.procedure-action-rail{background:var(--surface,#fff);padding:.7rem 1rem;margin:0}
-.grc-list>.procedure-record-card{padding:1rem 1.1rem;min-height:0}
+.grc-list>.procedure-record-card{width:100%;max-width:100%;box-sizing:border-box;padding:1rem 1.1rem;min-height:0}
 .grc-list>.procedure-record-card>header{display:grid;gap:.25rem}.grc-list>.procedure-record-card>header>small{display:none}
 .grc-list>.procedure-record-card>p.quiet{display:none}
-@media(max-width:720px){.procedure-action-rail{align-items:stretch}.procedure-action-rail>*{flex:1 1 180px}.procedure-action-rail>.procedure-evidence-action{margin-inline-start:0}.procedure-record-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.procedure-record-facts .surface-chip{min-width:0}}
-@media(max-width:460px){.procedure-record-facts{grid-template-columns:1fr}.procedure-action-rail>*{flex-basis:100%}}
+@media(max-width:720px){.procedure-action-rail{align-items:stretch}.procedure-action-rail>*{flex:1 1 180px}.procedure-action-rail>.procedure-evidence-action{margin-inline-start:0}.procedure-record-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.procedure-record-facts .surface-chip{min-width:0;width:100%}}
+@media(max-width:460px){.procedure-record-facts{grid-template-columns:1fr}.procedure-action-rail>*{flex-basis:100%}.procedure-queue-tools>*{flex:1 1 100%!important;width:100%;max-width:100%}}
