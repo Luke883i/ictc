@@ -63,6 +63,7 @@ export function createContributionHandler({ store, permissions }) {
       const links = uniqueStrings(input.links).map(normalizeUrl).filter(Boolean);
       const text = asString(input.text, 50_000);
       const note = asString(input.note, 5_000);
+      const analyzeWithAi = input.analyzeWithAi === true;
       const attachments = await store.saveAttachments(input.attachments || []);
       if (!links.length && !text && !attachments.length) {
         await store.deleteAttachments(attachments);
@@ -73,11 +74,11 @@ export function createContributionHandler({ store, permissions }) {
       let rawEnvelope;
       try {
         rawEnvelope = await store.mutate(actor, 'contribution.recorded', { type: 'contribution', id: contributionId }, {
-          links, text, note, attachmentDigests: attachments.map(item => item.sha256)
+          links, text, note, analyzeWithAi, attachmentDigests: attachments.map(item => item.sha256)
         }, draft => {
           const item = {
             id: contributionId, links, text, note, attachments, state: 'recorded', createdAt: now(), createdBy: actor.id,
-            enrichedAt: null, aiTrace: null, aiError: null, enrichmentAttempts: 0
+            enrichedAt: null, aiTrace: null, aiError: null, enrichmentAttempts: 0, aiRequested: analyzeWithAi
           };
           draft.contributions.push(item);
           return item;
@@ -86,6 +87,11 @@ export function createContributionHandler({ store, permissions }) {
       } catch (error) {
         await store.deleteAttachments(attachments);
         throw error;
+      }
+
+      if (!analyzeWithAi) {
+        json(response, rawEnvelope.replayed ? 200 : 201, { raw: rawEnvelope, enrichment: null, warning: null, aiRequested: false });
+        return true;
       }
 
       const recordedId = rawEnvelope.result.id;
@@ -103,7 +109,7 @@ export function createContributionHandler({ store, permissions }) {
           return contribution;
         }, derivedCommand(command, 'deferred'));
       }
-      json(response, rawEnvelope.replayed ? 200 : 201, { raw: rawEnvelope, enrichment: enrichmentEnvelope, warning });
+      json(response, rawEnvelope.replayed ? 200 : 201, { raw: rawEnvelope, enrichment: enrichmentEnvelope, warning, aiRequested: true });
       return true;
     }
 
@@ -113,7 +119,7 @@ export function createContributionHandler({ store, permissions }) {
       await bodyJson(request);
       const current = findContribution(store.snapshot(), params.id);
       ensureContributionOwner(actor, current);
-      if (current.state !== 'needs-enrichment') throw httpError(409, 'Il contributo non richiede un nuovo tentativo', 'state-conflict');
+      if (!['recorded', 'needs-enrichment'].includes(current.state)) throw httpError(409, 'Il contributo non può essere analizzato nello stato corrente', 'state-conflict');
       const envelope = await enrichOne(params.id, actor, commandFrom(request));
       json(response, 200, envelope);
       return true;
