@@ -89,8 +89,9 @@ function benchmarkMarkup(id) {
     const evidence = application.evidence || [];
     const alignment = alignmentLabels[application.alignment] || alignmentLabels.reference;
     const practice = application.practice || 'Pratica dichiarata nel catalogo standard ICTC.';
+    const accessibleName = name || application.ref || 'Riferimento standard applicato';
     return `<details class="procedure-standard-application" data-procedure-standard-application="${esc(application.ref)}">
-      <summary>
+      <summary aria-label="Dettaglio standard applicato: ${esc(accessibleName)}">
         <span class="procedure-standard-name">${esc(name)}</span>
         <span class="procedure-standard-meta">${esc(methodSteps.length)} passaggi · ${esc(alignment)}</span>
       </summary>
@@ -127,7 +128,7 @@ function renderOne(id) {
   const box = document.createElement('details');
   box.className = 'procedure-anatomy';
   box.dataset.procedureAnatomy = id;
-  box.innerHTML = `<summary><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
+  box.innerHTML = `<summary aria-label="Contesto e tracciabilità"><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
     <div class="procedure-anatomy-grid">
       <div><small>Ambito visibile</small><strong>${esc(scopeLabels[access] || access)}</strong></div>
       <div><small>Vista dati</small><strong>${asOf ? esc(new Date(asOf).toLocaleString('it-IT')) : 'corrente'}</strong></div>
