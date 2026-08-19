@@ -69,13 +69,16 @@ function simplifyIncidentIntake(){
   if(!body||body.dataset.finetune23==='true')return;
   body.dataset.finetune23='true';
   const aside=body.querySelector('aside');
-  if(aside&&!aside.closest('details')){
-    const details=document.createElement('details');
-    details.className='procedure-progressive-option';
-    details.innerHTML='<summary>Quando e quali elementi hai disponibili?</summary><div data-progressive-slot></div>';
-    aside.parentElement.insertBefore(details,aside);
-    details.querySelector('[data-progressive-slot]').append(aside);
-  }
+  if(!aside||aside.querySelector('[data-finetune23-incident-optional]'))return;
+  const optional=[...aside.children].filter(node=>node.matches?.('[data-market-event-dates],.dropzone,.evidence-note'));
+  if(!optional.length)return;
+  const details=document.createElement('details');
+  details.className='procedure-progressive-option';
+  details.dataset.finetune23IncidentOptional='';
+  details.innerHTML='<summary>Altri tempi ed elementi disponibili</summary><div data-progressive-slot></div>';
+  aside.insertBefore(details,optional[0]);
+  const slot=details.querySelector('[data-progressive-slot]');
+  for(const node of optional)slot.append(node);
 }
 
 function removeRiskAiRatingControl(){

@@ -8,7 +8,7 @@ try {
   let r=await h.ok('POST','/api/missions/draft',{objective:'Official EU and Italian information-security sources',cadence:168});
   const mission=r.body.mission.id; assert.equal(r.body.mission.state,'needs-plan'); assert.ok(r.body.raw.receipt.hash);
   r=await h.ok('POST','/api/contributions',{links:['https://eur-lex.europa.eu/eli/dir/2022/2555/oj'],text:'Official decision to verify',note:'Private contributor note'},'user','alice');
-  const contribution=r.body.raw.result.id; assert.equal(r.body.raw.result.state,'recorded'); assert.ok(r.body.warning);
+  const contribution=r.body.raw.result.id; assert.equal(r.body.raw.result.state,'recorded'); assert.equal(r.body.warning,null); assert.equal(r.body.aiRequested,false);
   r=await h.ok('POST','/api/incidents/intake',{originalNarrative:'Phishing alert still active on customer email',awarenessAt:new Date().toISOString()},'user','alice');
   const incident=r.body.incident.id; assert.ok(r.body.warning); assert.ok(r.body.incident.originalNarrative.includes('Phishing'));
   await h.ok('PUT','/api/admin/settings',{organization:{name:'E2E',scope:'Italy and EU',jurisdictions:['Italy','EU']},llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1/chat/completions`,model:'mock',apiKeyEnv:'ICTC_LLM_API_KEY'}});
