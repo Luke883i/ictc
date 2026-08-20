@@ -4,9 +4,9 @@ ICTC è un sistema operativo di compliance per registrare lavoro, decisioni, evi
 
 ICTC non è una certificazione, un parere legale, un auditor autonomo né un security perimeter. Un controllo presente, un mapping, un hash o un receipt non dimostrano da soli conformità, applicabilità, efficacia o sufficienza probatoria.
 
-## Il prodotto, oggi
+## Il prodotto
 
-La navigazione canonica è **Oggi / Processi di Compliance / Postura ICTC**. Da **Postura ICTC**, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
+La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**. Da **Evidenze ICTC**, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
 
 I sette Processi di Compliance sono:
 
@@ -32,7 +32,7 @@ La composizione UI corrente ha un solo root applicativo (`installActiveExperienc
 
 Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio. All'interno di ciascun Processo di Compliance lo stesso subject non viene contato due volte nel totale di attenzione soltanto perché appartiene anche a una sottocategoria, per esempio `ready-for-review` o `review-due`.
 
-**Postura ICTC** risponde, in quest'ordine, a quattro domande: cosa è osservabile, come ICTC lo dimostra, quale evidenza manca e cosa ICTC non conclude. Il metodo di prova è esplicito: **pratica → evidenza → limite**. Decisioni, runtime, requisiti esterni di deployment, standard dichiarati, riferimenti ed export sono livelli successivi.
+**Evidenze ICTC** risponde, in quest'ordine, a quattro domande: cosa è osservabile, come ICTC lo dimostra, quale evidenza manca e cosa ICTC non conclude. Il metodo di prova è esplicito: **pratica → evidenza → limite**. Decisioni, runtime, requisiti esterni di deployment, standard dichiarati, riferimenti ed export sono livelli successivi.
 
 Le mappature a benchmark e standard dichiarati — per esempio WCAG 2.2, WAI-ARIA APG, ISO 9241-210, ISO 37301, NIST CSF 2.0, NIST SSDF ed EU AI Act — descrivono pratiche adottate, evidenze disponibili e limiti. Non sono certificazioni, conclusioni di applicabilità, percentuali di conformità o assessment dell'organizzazione/deployment.
 
@@ -215,7 +215,7 @@ Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml
 - `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
 - `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md` — C0.1: root, fasi, authority, reentrancy e regole per le successive mutazioni delle procedure;
 - `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
-- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova della Postura e stop M+10000;
+- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova delle Evidenze ICTC e stop M+10000;
 - `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
 - `docs/PR60_GLOBAL_DOD.md` — convergenza Journey 2.1 già materializzata, mantenuta come lineage/regressione;
 - `SECURITY.md` — boundary e responsabilità di deployment.

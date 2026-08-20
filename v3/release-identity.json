@@ -3,31 +3,13 @@
   "product":"ICTC",
   "productVersion":"1.8.0",
   "releaseStage":"candidate",
-  "contracts":{
-    "semantic":"1.2-market-candidate",
-    "experience":"1.9-experience-candidate",
-    "epistemic":"2.0-epistemic-lattice-pre-candidate",
-    "journey":"2.2-sequential-onto-epistemic",
-    "constitution":"C0.1"
-  },
-  "procedureMaturity":{
-    "canonical":["RN-01","EC-01","AO-01","MC-01","AP-01","RC-01","AR-01"],
-    "deepFineTuned":["RN-01","EC-01","AO-01","MC-01","AP-01"],
-    "regressionCovered":["RC-01","AR-01"]
-  },
-  "assuranceProfiles":[
-    {"id":"onto-compliance-horizon","version":"1.0","status":"candidate"},
-    {"id":"visual-grace-lexical-epistemic","version":"1.0","status":"candidate"},
-    {"id":"procedure-authority-constitution","version":"C0.1","status":"current"}
-  ],
-  "lineage":{
-    "refinement":["1.9.1-pre-candidate"],
-    "journey":["2.1-procedure-journey-semantic-exploration-pre-candidate"],
-    "constitution":["C0"]
-  },
-  "navigation":{"home":"Oggi","processes":"Processi di Compliance","proof":"Postura ICTC","proofCompact":"Postura ICTC","epistemic":"Reticolo epistemico"},
+  "contracts":{"semantic":"1.2-market-candidate","experience":"1.9-experience-candidate","epistemic":"2.0-epistemic-lattice-pre-candidate","journey":"2.2-sequential-onto-epistemic","constitution":"C0.1"},
+  "procedureMaturity":{"canonical":["RN-01","EC-01","AO-01","MC-01","AP-01","RC-01","AR-01"],"deepFineTuned":["RN-01","EC-01","AO-01","MC-01","AP-01"],"regressionCovered":["RC-01","AR-01"]},
+  "assuranceProfiles":[{"id":"onto-compliance-horizon","version":"1.0","status":"candidate"},{"id":"visual-grace-lexical-epistemic","version":"1.0","status":"candidate"},{"id":"procedure-authority-constitution","version":"C0.1","status":"current"}],
+  "lineage":{"refinement":["1.9.1-pre-candidate"],"journey":["2.1-procedure-journey-semantic-exploration-pre-candidate"],"constitution":["C0"]},
+  "navigation":{"home":"Home","processes":"Processi di Compliance","proof":"Evidenze ICTC","proofCompact":"Evidenze ICTC","epistemic":"Reticolo epistemico"},
   "metaProcedures":[{"id":"epistemic-lattice","code":"EP-01","label":"Reticolo epistemico","businessProcess":false,"crossCutting":true}],
   "evidenceRepresentations":["pdf","xml","md","zip"],
-  "authorityBoundary":"Presentation, Onto-Compliance Horizon, visual/lexical/epistemic assurance, epistemic-lattice, posture and evidence formats do not create legal, compliance or security conclusions. AI derivations remain proposals; human decisions remain authoritative where required. Evidence exports are same-as-read representations of the canonical evidence dossier.",
-  "sourceOfTruth":"This file is the current cross-document release identity authority. Current contracts and procedure maturity are normative; lineage is informational history and must not be promoted to current identity by concatenation."
+  "authorityBoundary":"Presentation, Onto-Compliance Horizon, visual/lexical/epistemic assurance, epistemic-lattice, evidence surfaces and evidence formats do not create legal, compliance or security conclusions. AI derivations remain proposals; human decisions remain authoritative where required. Evidence exports are same-as-read representations of the canonical evidence dossier.",
+  "sourceOfTruth":"This file is the current cross-document release identity authority. Current contracts, navigation and procedure maturity are normative; lineage is informational history and must not be promoted to current identity by concatenation."
 }
