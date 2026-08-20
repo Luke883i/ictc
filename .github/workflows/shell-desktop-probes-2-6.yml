@@ -1,6 +1,8 @@
 name: shell-desktop-probes-2-6
 on: [pull_request, workflow_dispatch]
-permissions: {contents: read}
+permissions:
+  contents: read
+  statuses: write
 concurrency:
   group: shell-desktop-probes-2-6-${{ github.ref }}
   cancel-in-progress: true
@@ -31,6 +33,8 @@ jobs:
           ICTC_DESKTOP_PROBE: ${{ matrix.probe }}
           ICTC_PORT: 4838
           PORT: 4838
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -Eeuo pipefail
           export ICTC_NO_OPEN=1 ICTC_BASE_URL=http://127.0.0.1:4838 ICTC_STATE_DIR="$RUNNER_TEMP/ictc-desktop-${{ matrix.probe }}-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-desktop-${{ matrix.probe }}-runtime" ICTC_SCHEDULER_TICK_MS=100000
