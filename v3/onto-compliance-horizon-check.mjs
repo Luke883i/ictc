@@ -12,6 +12,8 @@ for(const forbidden of ["'In ordine'",'Nessuna attenzione aperta','<span>Process
 assert.ok(anatomy.includes('function workAnchor(')&&anatomy.includes('anchor.after(box)'),'technical anatomy must own placement after native work');
 assert.equal(anatomy.includes('host.prepend(box)'),false,'technical trace must not prepend ahead of native work');
 assert.ok(anatomy.includes('queueMicrotask(render)'),'anatomy rerender must converge in the current event turn');
+assert.ok(anatomy.includes('SURFACE_LABELS.proof'),'procedure anatomy must consume canonical proof-surface label authority');
+assert.equal(anatomy.includes('Postura ICTC'),false,'procedure anatomy must not reintroduce retired proof-surface naming');
 assert.ok(market.includes('procedure senza attenzione aperta'),'home summary implementation must use observational attention language');
 assert.equal(/processi in ordine|>In ordine</i.test(market),false,'home must not convert absence of attention into a favorable verdict');
 for(const token of ['market-scope-editor','scopeOptions(decision)',"decision===value?'selected':''",'f.scope?.reason'])assert.ok(market.includes(token),`coverage disclosure missing ${token}`);
