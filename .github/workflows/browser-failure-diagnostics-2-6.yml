@@ -37,13 +37,12 @@ jobs:
           import json,os,subprocess,pathlib,re
           p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
           d=json.loads(p.read_text()) if p.exists() else {}
-          phase=str(d.get('phase','unknown'))
-          anomalies=d.get('anomalies') or []
-          kind=str((anomalies[0] if anomalies else {}).get('kind','exception'))
-          surface=str((anomalies[0] if anomalies else {}).get('surface','unknown'))
-          slug=lambda s: re.sub(r'[^a-z0-9._-]+','-',s.lower()).strip('-')[:40]
-          context=f"ictc/onto-diag/{slug(kind)}-{slug(surface)}-{slug(phase)}"[:100]
-          payload=json.dumps({'state':'failure','context':context,'description':f'{kind} at {surface} / {phase}'})
+          phase=str(d.get('phase','unknown')); anomalies=d.get('anomalies') or []; first=anomalies[0] if anomalies else {}
+          kind=str(first.get('kind','exception')); surface=str(first.get('surface','unknown')); measured=first.get('measured') if isinstance(first.get('measured'),dict) else {}
+          missing='-'.join(str(x) for x in (measured.get('missing') or [])) or 'none'
+          slug=lambda s: re.sub(r'[^a-z0-9._-]+','-',s.lower()).strip('-')[:36]
+          context=f"ictc/onto-diag/{slug(kind)}-missing-{slug(missing)}"[:100]
+          payload=json.dumps({'state':'failure','context':context,'description':f'{kind}; missing={missing}; phase={phase}'})
           subprocess.run(['curl','-fsS','-X','POST','-H',f"Authorization: Bearer {os.environ['GH_TOKEN']}",'-H','Accept: application/vnd.github+json','-H','X-GitHub-Api-Version: 2022-11-28',f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/statuses/{os.environ['HEAD_SHA']}",'-d',payload],check=True)
           PY
           exit 1
@@ -75,13 +74,8 @@ jobs:
           if python -u v3/browser-shell-admin-demo-2-6.py; then exit 0; fi
           python - <<'PY'
           import json,os,subprocess,pathlib,re
-          p=pathlib.Path('artifacts/browser-shell-admin-demo-2-6-demo-error.json')
-          d=json.loads(p.read_text()) if p.exists() else {}
-          phase=str(d.get('phase','unknown'))
-          typ=str(d.get('type','exception'))
-          slug=lambda s: re.sub(r'[^a-z0-9._-]+','-',s.lower()).strip('-')[:45]
-          context=f"ictc/demo-diag/{slug(phase)}-{slug(typ)}"[:100]
-          payload=json.dumps({'state':'failure','context':context,'description':f'DEMO browser failure at {phase}: {typ}'})
+          p=pathlib.Path('artifacts/browser-shell-admin-demo-2-6-demo-error.json');d=json.loads(p.read_text()) if p.exists() else {};phase=str(d.get('phase','unknown'));typ=str(d.get('type','exception'));slug=lambda s: re.sub(r'[^a-z0-9._-]+','-',s.lower()).strip('-')[:45]
+          context=f"ictc/demo-diag/{slug(phase)}-{slug(typ)}"[:100];payload=json.dumps({'state':'failure','context':context,'description':f'DEMO browser failure at {phase}: {typ}'})
           subprocess.run(['curl','-fsS','-X','POST','-H',f"Authorization: Bearer {os.environ['GH_TOKEN']}",'-H','Accept: application/vnd.github+json','-H','X-GitHub-Api-Version: 2022-11-28',f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/statuses/{os.environ['HEAD_SHA']}",'-d',payload],check=True)
           PY
           exit 1
