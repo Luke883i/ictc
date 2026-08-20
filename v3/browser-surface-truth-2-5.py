@@ -20,18 +20,13 @@ def _slug(value):
     return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:64] or 'unknown'
 
 
-def publish_failure(exc):
+def _post_status(context, description):
     token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
     repo = os.environ.get('GITHUB_REPOSITORY')
     sha = os.environ.get('HEAD_SHA') or os.environ.get('GITHUB_SHA')
     if not token or not repo or not sha:
         return
-    detail = _slug(f"{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else 'error'}")[:52]
-    body = json.dumps({
-        'state': 'failure',
-        'context': f'ictc/browser-2-5-failure/{_slug(PHASE)}/{detail}',
-        'description': f'SurfaceTruth 2.5 {PHASE}: {type(exc).__name__}'[:140],
-    }).encode()
+    body = json.dumps({'state': 'failure', 'context': context[:100], 'description': description[:140]}).encode()
     request = urllib.request.Request(
         f'https://api.github.com/repos/{repo}/statuses/{sha}',
         data=body,
@@ -49,13 +44,21 @@ def publish_failure(exc):
         pass
 
 
+def publish_failure(exc):
+    detail = _slug(f"{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else 'error'}")[:52]
+    _post_status(
+        f'ictc/browser-2-5-failure/{_slug(PHASE)}/{detail}',
+        f'SurfaceTruth 2.5 {PHASE}: {type(exc).__name__}',
+    )
+
+
 def publish_violations():
-    global PHASE
-    previous = PHASE
     for violation in VIOLATIONS[:12]:
-        PHASE = f"census-{violation['name']}"
-        publish_failure(AssertionError(f"{violation['kind']}:{violation['detail']}"))
-    PHASE = previous
+        detail = _slug(f"{violation['kind']}-{violation['detail']}")[:52]
+        _post_status(
+            f"ictc/browser-2-5-failure/census-{_slug(violation['name'])}/{detail}",
+            f"SurfaceTruth 2.5 {violation['name']}: {violation['kind']}",
+        )
 
 
 def fail(exc):
@@ -83,6 +86,7 @@ def visible_root(page, selector):
 SNAPSHOT_JS = r"""
 (root, semantic) => {
   const nodes = [...root.querySelectorAll(semantic)];
+  const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
   const visible = e => {
     if (e.tagName === 'OPTION') return false;
     const s = getComputedStyle(e);
@@ -95,24 +99,41 @@ SNAPSHOT_JS = r"""
     if (e.tagName === 'SUMMARY' && e.parentElement?.tagName === 'DETAILS') return `${base}@details${classes(e.parentElement)}`;
     return base;
   };
-  const associatedLabel = e => {
-    if (!['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName)) return null;
+  const referencedText = ids => normalize(String(ids || '').split(/\s+/).filter(Boolean).map(id => document.getElementById(id)?.textContent || '').join(' '));
+  const labelText = label => {
+    if (!label) return '';
+    const clone = label.cloneNode(true);
+    for (const nested of clone.querySelectorAll('input,select,textarea,button,option')) nested.remove();
+    return normalize(clone.textContent);
+  };
+  const labelsFor = e => {
+    if (!['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName)) return [];
+    const native = e.labels ? [...e.labels] : [];
+    if (native.length) return native;
     if (e.id) {
       const explicit = document.querySelector(`label[for="${CSS.escape(e.id)}"]`);
-      if (explicit) return explicit;
+      if (explicit) return [explicit];
     }
-    return e.closest('label');
+    const implicit = e.closest('label');
+    return implicit ? [implicit] : [];
   };
-  const accessibleLabel = e => {
-    if (!['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName)) return '';
-    if (e.getAttribute('aria-label')) return e.getAttribute('aria-label');
-    const label = associatedLabel(e);
-    return label ? (label.innerText || '').trim() : '';
+  const accessibleName = e => {
+    const aria = normalize(e.getAttribute('aria-label'));
+    if (aria) return aria;
+    const labelledBy = referencedText(e.getAttribute('aria-labelledby'));
+    if (labelledBy) return labelledBy;
+    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName)) {
+      const labelled = normalize(labelsFor(e).map(labelText).filter(Boolean).join(' '));
+      if (labelled) return labelled;
+    }
+    const text = normalize(e.textContent);
+    if (text) return text;
+    return normalize(e.getAttribute('title'));
   };
   const effectiveTarget = e => {
-    if (e.matches('input[type="checkbox"],input[type="radio"]')) {
-      const label = associatedLabel(e);
-      if (label && visible(label)) return { node: label, rect: label.getBoundingClientRect(), via: 'label' };
+    if (e.matches('input[type="checkbox"],input[type="radio"],input[type="file"]')) {
+      const label = labelsFor(e).find(visible);
+      if (label) return { node: label, rect: label.getBoundingClientRect(), via: 'label' };
     }
     return { node: e, rect: e.getBoundingClientRect(), via: 'self' };
   };
@@ -122,8 +143,8 @@ SNAPSHOT_JS = r"""
     const truth = e.dataset.surfaceTruth || '';
     const confidence = Number(e.dataset.surfaceConfidence || 0);
     const text = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.tagName)
-      ? (accessibleLabel(e) || e.getAttribute('name') || e.getAttribute('placeholder') || '')
-      : (e.innerText || e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 160);
+      ? (accessibleName(e) || e.getAttribute('name') || e.getAttribute('placeholder') || '')
+      : normalize(e.innerText || e.textContent).slice(0, 160);
     return {
       key: key(e), tag: e.tagName.toLowerCase(), id: e.id || null, name: e.getAttribute('name'), text,
       visible: isVisible, kind, truth, authority: e.dataset.surfaceAuthority || '',
@@ -140,10 +161,8 @@ SNAPSHOT_JS = r"""
   }).filter(x => x.h < 43.5);
   const unnamed = [...root.querySelectorAll('button,a[href],input,select,textarea,summary')]
     .filter(visible)
-    .filter(e => {
-      if (['INPUT','SELECT','TEXTAREA'].includes(e.tagName)) return !accessibleLabel(e) && !e.getAttribute('aria-labelledby');
-      return !((e.innerText || '').trim() || e.getAttribute('aria-label') || e.getAttribute('aria-labelledby'));
-    }).map(key);
+    .filter(e => !accessibleName(e))
+    .map(key);
   const maxDepth = Math.max(0, ...[...root.querySelectorAll('details')].filter(visible).map(e => {
     let depth = 0, n = e;
     while ((n = n.parentElement)) if (n.tagName === 'DETAILS') depth += 1;
@@ -168,7 +187,9 @@ SNAPSHOT_JS = r"""
 
 
 def violation(name, kind, detail):
-    VIOLATIONS.append({'name': name, 'kind': kind, 'detail': str(detail)})
+    entry = {'name': name, 'kind': kind, 'detail': str(detail)}
+    if entry not in VIOLATIONS:
+        VIOLATIONS.append(entry)
 
 
 def snapshot(page, name, selector):
@@ -195,7 +216,7 @@ def snapshot(page, name, selector):
         violation(name, 'small-target', f"{item['key']}:{item['via']}:{item['h']:.1f}px")
     for item in result['unnamed']:
         violation(name, 'unnamed', item)
-    if result['maxDisclosureDepth'] >= 2:
+    if result['maxDisclosureDepth'] > 2:
         violation(name, 'disclosure-depth', result['maxDisclosureDepth'])
     INVENTORY.append({'name': name, 'selector': selector, 'coverage': coverage, 'criticalCoverage': critical_coverage, **result})
     return result
