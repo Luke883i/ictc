@@ -62,6 +62,13 @@ function ensureIncidentTemporalAccessibleNames(){
   }
 }
 
+function ensureIncidentWorkspaceAccessibleNames(){
+  const control=$('#incidentWorkspace #questionValue');
+  if(!control||control.getAttribute('aria-label'))return;
+  const incident=(state.data?.incidents||[]).find(item=>item.id===state.activeIncidentId);
+  control.setAttribute('aria-label',incident?.nextQuestion?.label||'Risposta al chiarimento');
+}
+
 async function submitContribution(form){
   const data=new FormData(form);
   const button=form.querySelector('button[type="submit"]');
@@ -122,6 +129,7 @@ function enhance(){
   ensureRnSchedulerAccessibleNames();
   ensureIncidentTemporalAccessibleNames();
   simplifyIncidentIntake();
+  ensureIncidentWorkspaceAccessibleNames();
   removeRiskAiRatingControl();
   document.documentElement.dataset.procedureFinetuning='2.3';
 }
