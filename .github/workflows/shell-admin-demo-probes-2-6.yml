@@ -1,0 +1,52 @@
+name: shell-admin-demo-probes-2-6
+on: [pull_request, workflow_dispatch]
+permissions: {contents: read}
+concurrency:
+  group: shell-admin-demo-probes-2-6-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  probe:
+    name: shell-probe-${{ matrix.mode }}-${{ matrix.probe }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {mode: standard, probe: desktop, port: 4830, expect_demo: '0'}
+          - {mode: standard, probe: admin, port: 4831, expect_demo: '0'}
+          - {mode: standard, probe: procedures, port: 4832, expect_demo: '0'}
+          - {mode: standard, probe: mobile, port: 4833, expect_demo: '0'}
+          - {mode: demo, probe: desktop, port: 4834, expect_demo: '1'}
+          - {mode: demo, probe: admin, port: 4835, expect_demo: '1'}
+          - {mode: demo, probe: mobile, port: 4836, expect_demo: '1'}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - run: python -m py_compile v3/browser-shell-admin-demo-probe-2-6.py
+      - name: Resolve Chromium
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$candidate")" >> "$GITHUB_ENV"; exit 0; fi
+          done
+          exit 1
+      - name: Run probe
+        shell: bash
+        env:
+          ICTC_EXPECT_DEMO: ${{ matrix.expect_demo }}
+          ICTC_BROWSER_PROBE: ${{ matrix.probe }}
+          ICTC_PORT: ${{ matrix.port }}
+          PORT: ${{ matrix.port }}
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_BASE_URL="http://127.0.0.1:${ICTC_PORT}" ICTC_STATE_DIR="$RUNNER_TEMP/ictc-${{ matrix.mode }}-${{ matrix.probe }}-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-${{ matrix.mode }}-${{ matrix.probe }}-runtime" ICTC_SCHEDULER_TICK_MS=100000 ICTC_DEMO_STARTUP_ATTEMPTS=900
+          if [[ "${ICTC_EXPECT_DEMO}" == '1' ]]; then ./ictc.sh demo --profile current --no-open; else ./ictc.sh start --profile current --no-open; fi
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-shell-admin-demo-probe-2-6.py
