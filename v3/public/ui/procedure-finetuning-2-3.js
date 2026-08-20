@@ -47,6 +47,21 @@ function ensureRnSchedulerAccessibleNames(){
   if(prompt&&!prompt.getAttribute('aria-label'))prompt.setAttribute('aria-label','Istruzioni specifiche per il monitoraggio');
 }
 
+function ensureIncidentTemporalAccessibleNames(){
+  const fields=[
+    ['occurredAt','ecOccurredAt','Quando è accaduto'],
+    ['detectedAt','ecDetectedAt','Quando è stato rilevato']
+  ];
+  for(const [name,id,labelText] of fields){
+    const input=$(`#incidentForm [name="${name}"]`);
+    if(!input)continue;
+    if(!input.id)input.id=id;
+    if(!input.getAttribute('aria-label'))input.setAttribute('aria-label',labelText);
+    const label=input.closest('label');
+    if(label&&!label.htmlFor)label.htmlFor=input.id;
+  }
+}
+
 async function submitContribution(form){
   const data=new FormData(form);
   const button=form.querySelector('button[type="submit"]');
@@ -72,6 +87,7 @@ function simplifyIncidentIntake(){
   const form=$('#incidentForm');
   const body=form?.querySelector('.dialog-body');
   if(!body||body.dataset.finetune23==='true')return;
+  ensureIncidentTemporalAccessibleNames();
   body.dataset.finetune23='true';
   const aside=body.querySelector('aside');
   if(!aside||aside.querySelector('[data-finetune23-incident-optional]'))return;
@@ -104,6 +120,7 @@ function enhance(){
   ensureStyle();
   ensureRnContributionOptIn();
   ensureRnSchedulerAccessibleNames();
+  ensureIncidentTemporalAccessibleNames();
   simplifyIncidentIntake();
   removeRiskAiRatingControl();
   document.documentElement.dataset.procedureFinetuning='2.3';
