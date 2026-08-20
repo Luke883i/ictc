@@ -2,6 +2,7 @@ import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
+GUIDANCE=json.loads((ROOT/'v3'/'procedure-executive-harmonization-contract-1-5.json').read_text(encoding='utf8'))
 def fail(exc):
  payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/'browser-information-value-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-information-value::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 def no_overflow(page):
@@ -24,7 +25,7 @@ try:
   PHASE='processes';open_view(page,'processes');expect(page.locator('#processesView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);expect(page.locator('#processesView .processes-head')).to_be_visible();no_overflow(page)
   PHASE='rn';open_process(page,'RN-01');expect(page.locator('#monitoringView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#monitoringView > .procedure-frame')).to_be_visible();expect(page.locator('#monitoringView > .hero')).to_be_hidden();expect(page.locator('#monitoringView [data-procedure-entry-utility="monitoring"]')).to_have_count(1);no_overflow(page)
   PHASE='ec';open_process(page,'EC-01');expect(page.locator('#incidentsView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#incidentsView > .procedure-frame')).to_be_visible();expect(page.locator('#incidentsView > .hero')).to_be_hidden();no_overflow(page)
-  boundaries={'AO-01':'completezza dell’ambiente reale','MC-01':'applicabilità','AP-01':'chiusura verificata','RC-01':'probabilità oggettive','AR-01':'assurance esterna'}
+  boundaries={code:GUIDANCE['processes'][code]['boundary'] for code in ['AO-01','MC-01','AP-01','RC-01','AR-01']}
   for code,needle in boundaries.items():
    PHASE=f'grc-{code}';open_process(page,code);expect(page.locator('#grcView [data-surface-information-value]')).to_have_count(0);frame=page.locator('#grcWorkspace > .procedure-frame');expect(frame).to_be_visible();boundary=page.locator('#grcWorkspace .executive-boundary');expect(boundary).to_be_visible();expect(boundary).to_contain_text(needle);no_overflow(page)
   PHASE='proof';open_view(page,'proof');assert_compact_brief(page,'proof','non sono certificazione')
