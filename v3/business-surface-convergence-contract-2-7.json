@@ -1,0 +1,66 @@
+{
+  "version": "2.7.0",
+  "name": "Business Surface Convergence",
+  "baseSha": "8a4beffdbd9123dc79d88bd2d08656ab7aa552bc",
+  "scope": ["navigation", "home", "procedure-hub", "monitoring", "incidents", "objects", "coverage", "actions", "risks", "assurance", "ictc-evidence", "global-chrome"],
+  "authority": {
+    "newFinalOwners": 0,
+    "semanticFinalizer": "v3/public/ui/business-surface-convergence-2-7.js",
+    "runtimeOwnersUnchanged": ["v3/public/ui/stable-shell.js", "v3/public/ui/procedure-frame.js", "v3/public/ui/grc-workspace.js", "v3/public/ui/actions.js", "v3/public/ui/workspaces.js"]
+  },
+  "globalDod": {
+    "G1": "Active navigation exposes Home, Processi di Compliance and Evidenze ICTC; Oggi and Postura ICTC are not active product labels.",
+    "G2": "Every landing exposes one concise orientation proposition and moves method, evidence and limits behind progressive disclosure where they are not immediately decision-relevant.",
+    "G3": "Every business procedure exposes a business purpose, human decision, evidence result, claim boundary and real primary action without repeating the same proposition in multiple visible layers.",
+    "G4": "All seven procedures share one record-card geometry and one procedure-card grammar while retaining procedure-local ontology and runtime ownership.",
+    "G5": "Home exposes at least six business-oriented metrics with inspectable origin and meaning and never presents them as compliance, maturity or risk scores.",
+    "G6": "Evidenze ICTC separates Summary, Decisions, Runtime, Deployment, Standards and Export into mutually exclusive tabs.",
+    "G7": "Primary actions remain connected to existing runtime effects, access policies and write routes; presentation introduces no write authority.",
+    "G8": "At 390px the active surfaces have no horizontal document overflow and interactive targets remain at least 44px.",
+    "G9": "Method 1 kills 10,000,000 semantic, ontological and expressive mutations for every target scope with no uncovered family.",
+    "G10": "Method 2 reaches a bounded semantic/compression frontier and then executes M+10,000 no-novelty probes and N+10,000 no-better-compression probes without a valid improvement." 
+  },
+  "localDod": {
+    "home": ["six business metrics", "metric origin disclosure", "one orientation paragraph", "no compliance score"],
+    "procedureHub": ["seven cards", "one visible purpose paragraph per card", "no h2/h3 inside cards", "progressive decision/evidence/boundary", "real entry action"],
+    "procedures": ["shared frame grammar", "shared record card", "procedure-local CTA", "human/read-only authority retained"],
+    "incidents": ["acceptance box visually explicit", "acceptance language distinguishes facts, unknowns and legal conclusions", "submit and close labels state business effect"],
+    "evidence": ["six ontological tabs", "one visible panel", "existing evidence controls retained"],
+    "chrome": ["light-blue header", "light-blue footer", "readable foreground", "44px targets"]
+  },
+  "intermediateDod": [
+    "navigation label -> surface title -> browser history remain semantically aligned",
+    "procedure hub -> procedure frame -> runtime action preserve the same procedure identity",
+    "home metric -> runtime projection -> disclosed origin remain traceable",
+    "record card -> subject type -> procedure adapter preserve ownership",
+    "incident formulation -> human confirmation -> submit preserves version binding",
+    "evidence tab -> existing evidence content preserves source and authority"
+  ],
+  "reticularDod": [
+    "No presentation node creates a new write route or substantive decision authority.",
+    "No metric can be read as a compliance verdict without crossing an explicit claim boundary.",
+    "No procedure can acquire another procedure's primary action, subject type or evidence meaning through the convergence layer.",
+    "No progressive disclosure may hide the action label, current state, human authority or required confirmation for a state transition."
+  ],
+  "metrics": {
+    "activeLegacyLabelsMax": 0,
+    "procedureCount": 7,
+    "visiblePurposeParagraphsPerProcedureCardMax": 1,
+    "headingLevel2Or3PerProcedureCardMax": 0,
+    "procedureProgressiveBriefs": 7,
+    "homeMetricCardsMin": 6,
+    "homeMetricOriginDisclosuresMin": 6,
+    "evidenceTabs": 6,
+    "evidenceVisiblePanels": 1,
+    "canonicalRecordProcedureFamilies": 7,
+    "touchTargetMinPx": 44,
+    "mobileWidthPx": 390,
+    "horizontalOverflowPxMax": 0,
+    "newFinalOwners": 0,
+    "method1MutationsPerTarget": 10000000,
+    "method1TargetCount": 12,
+    "method2NoNoveltyExtra": 10000,
+    "method2NoCompressibilityExtra": 10000
+  },
+  "claimBoundary": "These campaigns are deterministic repository-model falsification and bounded UI/runtime browser evidence. They are not human usability research, legal advice, proof of organizational compliance, certification, or universal aesthetic optimality."
+}
