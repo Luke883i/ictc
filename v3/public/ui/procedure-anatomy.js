@@ -89,8 +89,9 @@ function benchmarkMarkup(id) {
     const evidence = application.evidence || [];
     const alignment = alignmentLabels[application.alignment] || alignmentLabels.reference;
     const practice = application.practice || 'Pratica dichiarata nel catalogo standard ICTC.';
+    const accessibleName = name || application.ref || 'Riferimento standard applicato';
     return `<details class="procedure-standard-application" data-procedure-standard-application="${esc(application.ref)}">
-      <summary>
+      <summary aria-label="Dettaglio standard applicato: ${esc(accessibleName)}">
         <span class="procedure-standard-name">${esc(name)}</span>
         <span class="procedure-standard-meta">${esc(methodSteps.length)} passaggi · ${esc(alignment)}</span>
       </summary>
@@ -120,6 +121,7 @@ function renderOne(id) {
   if (!host || !current || !row) return;
 
   host.querySelector(':scope > [data-procedure-anatomy]')?.remove();
+  host.querySelector(':scope > [data-procedure-standard-applications]')?.remove();
   const asOf = state.data?.projectionContext?.asOf;
   const access = current.accessPolicy?.[state.role] || current.access?.[state.role] || current.adapter?.userScope || 'actor-visible';
   const decisions = decisionCount(id);
@@ -127,7 +129,8 @@ function renderOne(id) {
   const box = document.createElement('details');
   box.className = 'procedure-anatomy';
   box.dataset.procedureAnatomy = id;
-  box.innerHTML = `<summary><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
+  const procedureLabel = current.code || current.id || id;
+  box.innerHTML = `<summary aria-label="Contesto e tracciabilità"><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
     <div class="procedure-anatomy-grid">
       <div><small>Ambito visibile</small><strong>${esc(scopeLabels[access] || access)}</strong></div>
       <div><small>Vista dati</small><strong>${asOf ? esc(new Date(asOf).toLocaleString('it-IT')) : 'corrente'}</strong></div>
@@ -135,13 +138,14 @@ function renderOne(id) {
       <div><small>Versioni registrate</small><strong>${esc(versions)}</strong></div>
     </div>
     <div class="procedure-anatomy-epistemic" aria-label="Legenda epistemica">${epistemicLegend()}</div>
-    ${benchmarkMarkup(id)}
     <p>${esc(current.claimBoundary)}</p>
-    <div class="procedure-anatomy-actions"><button type="button" data-service="proof">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
+    <div class="procedure-anatomy-actions"><button type="button" data-service="proof" aria-label="Apri Postura ICTC per ${esc(procedureLabel)}">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
 
   const anchor = workAnchor(host);
   if (anchor) anchor.after(box);
   else host.append(box);
+  const standards = benchmarkMarkup(id);
+  if (standards) box.insertAdjacentHTML('afterend', standards);
 }
 
 function render() {

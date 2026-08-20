@@ -58,7 +58,7 @@ async function checkRuns(sha) {
   return payload.check_runs || [];
 }
 async function waitForRequiredChecks(sha, required) {
-  const waitMs = Math.max(0, Math.min(25 * 60_000, Number(process.env.ICTC_GOV_WAIT_MS || 20 * 60_000)));
+  const waitMs = Math.max(0, Math.min(60 * 60_000, Number(process.env.ICTC_GOV_WAIT_MS || 55 * 60_000)));
   const intervalMs = Math.max(1000, Math.min(30_000, Number(process.env.ICTC_GOV_POLL_MS || 10_000)));
   const deadline = Date.now() + waitMs;
   let result;

@@ -34,12 +34,54 @@ function ensureRnContributionOptIn(){
   const details=document.createElement('details');
   details.className='procedure-progressive-option';
   details.dataset.rnAiOptin='';
-  details.innerHTML='<summary>Analisi facoltativa</summary><label class="check"><input name="analyzeWithAi" type="checkbox"> Analizza ora con AI</label><p class="microcopy">Se non selezioni questa opzione, ICTC conserva soltanto l’originale. Potrai chiedere l’analisi in seguito.</p>';
+  details.innerHTML='<summary>Analisi facoltativa</summary><label class="check" for="rnAnalyzeWithAi"><input id="rnAnalyzeWithAi" name="analyzeWithAi" type="checkbox" aria-label="Analizza ora con AI"> Analizza ora con AI</label><p class="microcopy">Se non selezioni questa opzione, ICTC conserva soltanto l’originale. Potrai chiedere l’analisi in seguito.</p>';
   body.append(details);
   const submit=form.querySelector('button[type="submit"]');
   const sync=()=>{if(submit)submit.textContent=form.elements.analyzeWithAi?.checked?'Conserva e analizza':'Conserva materiale';};
   form.elements.analyzeWithAi?.addEventListener('change',sync);
   sync();
+}
+
+function ensureRnSchedulerAccessibleNames(){
+  const prompt=$('#missionForm [name="promptOverride"]');
+  if(prompt&&!prompt.getAttribute('aria-label'))prompt.setAttribute('aria-label','Istruzioni specifiche per il monitoraggio');
+}
+
+function ensureUploadAccessibleNames(){
+  const uploads=[
+    ['#contributionForm input[type="file"][name="files"]','rnContributionFiles','Documenti da allegare al materiale'],
+    ['#incidentForm input[type="file"][name="files"]','ecIncidentFiles','Elementi disponibili da allegare all evento']
+  ];
+  for(const [selector,id,labelText] of uploads){
+    const input=$(selector);
+    if(!input)continue;
+    if(!input.id)input.id=id;
+    if(!input.getAttribute('aria-label'))input.setAttribute('aria-label',labelText);
+    const label=input.closest('label');
+    if(label&&!label.htmlFor)label.htmlFor=input.id;
+  }
+}
+
+function ensureIncidentTemporalAccessibleNames(){
+  const fields=[
+    ['occurredAt','ecOccurredAt','Quando è accaduto'],
+    ['detectedAt','ecDetectedAt','Quando è stato rilevato']
+  ];
+  for(const [name,id,labelText] of fields){
+    const input=$(`#incidentForm [name="${name}"]`);
+    if(!input)continue;
+    if(!input.id)input.id=id;
+    if(!input.getAttribute('aria-label'))input.setAttribute('aria-label',labelText);
+    const label=input.closest('label');
+    if(label&&!label.htmlFor)label.htmlFor=input.id;
+  }
+}
+
+function ensureIncidentWorkspaceAccessibleNames(){
+  const control=$('#incidentWorkspace #questionValue');
+  if(!control||control.getAttribute('aria-label'))return;
+  const incident=(state.data?.incidents||[]).find(item=>item.id===state.activeIncidentId);
+  control.setAttribute('aria-label',incident?.nextQuestion?.label||'Risposta al chiarimento');
 }
 
 async function submitContribution(form){
@@ -67,6 +109,7 @@ function simplifyIncidentIntake(){
   const form=$('#incidentForm');
   const body=form?.querySelector('.dialog-body');
   if(!body||body.dataset.finetune23==='true')return;
+  ensureIncidentTemporalAccessibleNames();
   body.dataset.finetune23='true';
   const aside=body.querySelector('aside');
   if(!aside||aside.querySelector('[data-finetune23-incident-optional]'))return;
@@ -98,7 +141,11 @@ function removeRiskAiRatingControl(){
 function enhance(){
   ensureStyle();
   ensureRnContributionOptIn();
+  ensureRnSchedulerAccessibleNames();
+  ensureUploadAccessibleNames();
+  ensureIncidentTemporalAccessibleNames();
   simplifyIncidentIntake();
+  ensureIncidentWorkspaceAccessibleNames();
   removeRiskAiRatingControl();
   document.documentElement.dataset.procedureFinetuning='2.3';
 }

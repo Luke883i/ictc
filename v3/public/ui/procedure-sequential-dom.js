@@ -38,13 +38,14 @@ function queueTools(host,id,label){
   let tools=parent.querySelector(`[data-procedure-queue-tools="${id}"],[data-seq-queue-tools="${id}"]`);
   if(!tools){
     tools=document.createElement('div');tools.className='procedure-queue-tools surface-toolbar';tools.dataset.seqQueueTools=id;
-    tools.innerHTML=`<input type="search" data-seq-queue-search="${esc(id)}" placeholder="Cerca ${esc(label)}"><select data-seq-queue-state="${esc(id)}"><option value="">Tutti gli stati</option></select>`;
+    tools.innerHTML=`<input type="search" data-seq-queue-search="${esc(id)}" placeholder="Cerca ${esc(label)}" aria-label="Cerca ${esc(label)}"><select data-seq-queue-state="${esc(id)}" aria-label="Filtra ${esc(label)} per stato"><option value="">Tutti gli stati</option></select>`;
     host.before(tools);
   }else tools.dataset.seqQueueTools=id;
   let search=id==='objects'?tools.querySelector('[data-seq-ao-search]'):tools.querySelector(`[data-seq-queue-search="${id}"]`);
   let stateSelect=id==='objects'?tools.querySelector('[data-seq-ao-filter]'):tools.querySelector(`[data-seq-queue-state="${id}"]`);
   if(!search){search=document.createElement('input');search.type='search';search.dataset.seqQueueSearch=id;search.placeholder=`Cerca ${label}`;tools.prepend(search);}
   if(!stateSelect){stateSelect=document.createElement('select');stateSelect.dataset.seqQueueState=id;stateSelect.innerHTML='<option value="">Tutti gli stati</option>';tools.append(stateSelect);}
+  search.setAttribute('aria-label',`Cerca ${label}`);stateSelect.setAttribute('aria-label',`Filtra ${label} per stato`);
   let count=tools.querySelector('[data-seq-queue-count]');if(!count){count=document.createElement('span');count.className='surface-chip';count.dataset.seqQueueCount='';count.setAttribute('aria-live','polite');tools.append(count);}
   let more=tools.querySelector('[data-seq-queue-more]');if(!more){more=document.createElement('button');more.type='button';more.className='secondary';more.dataset.seqQueueMore=id;more.textContent='Mostra altri';tools.append(more);}
   annotateQueueControl(search,id,'filter-queue-text');annotateQueueControl(stateSelect,id,'filter-queue-state');annotateQueueControl(more,id,'expand-queue');
