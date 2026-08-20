@@ -1,0 +1,64 @@
+{
+  "version": "2.6.0",
+  "name": "Shell, Administration and Demo Context Convergence",
+  "scope": ["global-header", "procedure-header", "administration", "demo-context", "persistent-footer"],
+  "authority": {
+    "globalShell": "v3/public/ui/stable-shell.js",
+    "profileComposition": "v3/public/ui/active-experience.js",
+    "procedureHeader": "v3/public/ui/procedure-frame.js",
+    "administration": "v3/public/ui/admin-center.js",
+    "visualConvergence": "v3/public/shell-admin-demo-2-6.css"
+  },
+  "globalDod": {
+    "G1": "Header, procedure header, admin, demo context and footer expose one coherent visual and semantic hierarchy without adding a competing final presentation owner.",
+    "G2": "The active role, runtime state and DEMO state are distinguishable without being presented as compliance or readiness verdicts.",
+    "G3": "Administration has one primary navigation level and one scroll owner; only the selected administrative task is expanded by default.",
+    "G4": "DEMO context is compact in the header and expands only on explicit user request into an internal HTML dialog with granular provenance and claim boundaries.",
+    "G5": "Footer remains persistently visible, reserves layout space, respects safe areas and never becomes a decision surface.",
+    "G6": "All seven procedure headers share one native grammar and preserve procedure-local ontology while stating human/read-only authority without duplicating orientation." 
+  },
+  "limits": {
+    "headerPrimaryRowsDesktop": 1,
+    "headerPrimaryRowsMobile": 2,
+    "globalNavigationItems": 3,
+    "adminPrimarySections": 3,
+    "adminVisiblePrimarySections": 1,
+    "procedurePrimaryActions": 1,
+    "procedureVisiblePurposeParagraphs": 1,
+    "demoHeaderCards": 1,
+    "demoDialogs": 1,
+    "footerInstances": 1,
+    "scrollOwnersAdmin": 1,
+    "touchTargetMinPx": 44,
+    "desktopFooterMaxPx": 40,
+    "mobileFooterMaxPx": 48,
+    "dialogDisclosureDepthMax": 2
+  },
+  "epistemicInvariants": [
+    "demo-is-synthetic-context-not-business-truth",
+    "demo-coherence-is-not-compliance",
+    "runtime-connectivity-is-not-readiness",
+    "role-label-is-access-context-not-substantive-authority",
+    "admin-readiness-is-engineering-control-evidence-not-certification",
+    "procedure-attention-is-not-compliance-score",
+    "procedure-action-remains-human-or-read-only",
+    "footer-is-legal-navigation-not-evidence"
+  ],
+  "visualInvariants": [
+    "one-segmented-global-navigation",
+    "role-control-reads-as-profile-not-administration",
+    "demo-card-is-compact-and-non-alarming",
+    "no-second-demo-banner",
+    "procedure-header-no-decorative-dominance",
+    "admin-progressive-primary-navigation",
+    "one-admin-scroll-owner",
+    "footer-content-never-covered",
+    "mobile-no-horizontal-overflow",
+    "reduced-motion-safe"
+  ],
+  "campaigns": {
+    "semanticOperationalMutations": 10000000,
+    "aestheticOntologicalEpistemicMutations": 1000000,
+    "claimBoundary": "Deterministic repository-model falsification. Mutation volume is not a defect probability, usability study, aesthetic proof, legal opinion or independent assurance."
+  }
+}
