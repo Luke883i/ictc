@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0.0",
+  "control": "SHELL-ADMIN-DEMO-CONVERGENCE-2.6",
+  "scope": ["global-header", "procedure-headers", "administration", "demo-context", "persistent-footer"],
+  "baseSha": "85468d831f0983f2330430784f9599513b3d1820",
+  "authority": {
+    "newFinalOwners": 0,
+    "shell": "v3/public/ui/stable-shell.js",
+    "profile": "v3/public/ui/active-experience.js",
+    "procedureHeader": "v3/public/ui/procedure-frame.js",
+    "administration": "v3/public/ui/admin-center.js"
+  },
+  "targets": {
+    "globalNavigationItems": 3,
+    "adminPrimarySections": 3,
+    "adminVisibleSections": 1,
+    "procedureCount": 7,
+    "demoPermanentBanners": 0,
+    "demoHeaderCards": 1,
+    "demoInternalDialogs": 1,
+    "footerInstances": 1,
+    "touchTargetMinPx": 44,
+    "adminScrollOwners": 1,
+    "desktopHeaderRowsMax": 1,
+    "mobileHeaderRowsMax": 2
+  },
+  "mutationCampaign": {
+    "semanticOperational": 10000000,
+    "aestheticOntologicalEpistemic": 1000000,
+    "functionalFamilies": 80,
+    "aestheticFamilies": 40,
+    "claimBoundary": "Deterministic repository-model falsification; not human usability research, aesthetic proof, legal opinion or independent assurance."
+  },
+  "globalDod": "Exact-head GitHub Actions must complete without failure; pending or skipped checks are not represented as executed evidence."
+}
