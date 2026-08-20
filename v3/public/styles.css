@@ -24,3 +24,4 @@
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
+html[data-ictc-experience="market-1"] .stable-legal-footer{position:fixed;box-sizing:border-box}
