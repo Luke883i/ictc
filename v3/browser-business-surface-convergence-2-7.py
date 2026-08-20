@@ -10,7 +10,7 @@ def ready(page):
 def goto_processes(page):
  page.locator('.service-nav [data-service="processes"]').click();expect(page.locator('#processesView')).to_be_visible();page.wait_for_function("()=>document.querySelectorAll('#procedureHub .procedure-card[data-business-procedure-card=\"2.7\"]').length===7")
 def enter_procedure(page,pid):
- goto_processes(page);card=page.locator(f'#procedureHub .procedure-card[data-procedure-id="{pid}"]');expect(card).to_be_visible();entry=card.locator('.procedure-primary');assert_target(entry,f'{pid}-hub-entry');entry.click();copy={'monitoring':'#monitoringView','incidents':'#incidentsView'}.get(pid,'#grcWorkspace');expect(page.locator(copy)).to_be_visible();page.wait_for_function("pid=>document.querySelector(`[data-procedure-primary=\"${pid}\"]`)?.closest('.procedure-frame')?.dataset.businessProcedureFrame==='2.7'",pid);return page.locator(f'[data-procedure-primary="{pid}"]')
+ goto_processes(page);card=page.locator(f'#procedureHub .procedure-card[data-procedure-id="{pid}"]');expect(card).to_be_visible();entry=card.locator('.procedure-primary');assert_target(entry,f'{pid}-hub-entry');entry.click();copy={'monitoring':'#monitoringView','incidents':'#incidentsView'}.get(pid,'#grcWorkspace');expect(page.locator(copy)).to_be_visible();page.wait_for_function("pid=>document.querySelector(`[data-procedure-primary=\"${pid}\"]`)?.closest('.procedure-frame')?.dataset.businessProcedureFrame==='2.7'",arg=pid);return page.locator(f'[data-procedure-primary="{pid}"]')
 def light_blue(page,selector):
  rgb=page.locator(selector).evaluate("e=>(getComputedStyle(e).backgroundColor.match(/\\d+/g)||[]).slice(0,3).map(Number)");return len(rgb)==3 and min(rgb)>=200 and rgb[2]>=rgb[0]-10
 try:
@@ -29,12 +29,12 @@ try:
    if pid=='monitoring':expect(p.locator('#contributionDialog')).to_be_visible();p.locator('#contributionDialog [data-close="contributionDialog"]').click()
    elif pid=='incidents':expect(p.locator('#incidentDialog')).to_be_visible();p.locator('#incidentDialog [data-close="incidentDialog"]').click()
    else:
-    disclosure=p.locator('#grcPrimaryForm');expect(disclosure).to_be_visible();expect(disclosure).to_have_attribute('open','')
+    disclosure=p.locator('#grcPrimaryForm');expect(disclosure).to_be_visible();assert disclosure.evaluate('e=>e.open===true'),pid
   PHASE='record-cards'
   if DEMO:
    for pid in IDS:
     enter_procedure(p,pid);selector='#grcWorkspace .grc-list > article' if pid not in ['monitoring','incidents'] else ('#missionsList > article, #catalogList > article' if pid=='monitoring' else '#incidentList > article');records=p.locator(selector)
-    if records.count():p.wait_for_function("s=>[...document.querySelectorAll(s)].every(e=>e.dataset.canonicalRecordCard==='2.7')",selector)
+    if records.count():p.wait_for_function("s=>[...document.querySelectorAll(s)].every(e=>e.dataset.canonicalRecordCard==='2.7')",arg=selector)
   PHASE='evidence-tabs';p.locator('.service-nav [data-service="proof"]').click();expect(p.locator('#proofView')).to_be_visible();p.wait_for_selector('#proofContent:not([hidden])');p.wait_for_function("()=>document.querySelectorAll('#proofView [data-proof-tab]').length===6");tabs=p.locator('#proofView [data-proof-tab]');expect(tabs).to_have_count(6);expect(p.locator('#proofTitle')).to_have_text('Evidenze ICTC')
   for key in ['summary','decisions','runtime','deployment','standards','export']:
    p.locator(f'[data-proof-tab="{key}"]').click();expect(p.locator(f'[data-proof-panel="{key}"]')).to_be_visible();assert p.locator('#proofView [data-proof-panel]:visible').count()==1,key
