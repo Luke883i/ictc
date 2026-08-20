@@ -19,6 +19,7 @@ check(procedure.includes("procedureHeaderContract='2.6'"),'procedure header cont
 check(css.includes('.stable-legal-footer{left:0;right:0;bottom:0;z-index:75'),'footer persistence geometry missing');
 check(closure.includes('--shell-footer-reserve:44px')&&closure.includes('padding-bottom:calc(var(--shell-footer-reserve)')&&closure.includes('.stable-legal-footer{position:fixed!important;inset:auto 0 0 0!important;box-sizing:border-box}'),'footer reserve/persistence closure missing');
 check(closure.includes('.procedure-frame-kicker{font-size:.65rem!important}'),'procedure kicker readability closure missing');
+check(closure.includes('@media(max-width:900px) and (min-width:761px)')&&closure.includes('grid-template-areas:"brand . actions" "nav nav nav"')&&closure.includes('grid-template-columns:repeat(3,minmax(0,1fr));width:100%'),'tablet header non-overlap closure missing');
 check(css.includes('.procedure-frame::after{display:none!important}'),'procedure decorative dominance not removed');
 check(css.includes('.admin-content{min-height:0;overflow:auto'),'admin scroll owner CSS missing');
 check(css.includes('.service-nav button{min-height:44px'),'44px nav target missing');
