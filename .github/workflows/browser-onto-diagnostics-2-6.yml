@@ -60,11 +60,17 @@ jobs:
           low=message.lower(); op='unknown'
           for needle,label in [('locator.click','click'),('expect.to_be_visible','visible'),('to_be_visible','visible'),('to_have_attribute','attribute'),('wait_for','wait'),('evaluate','evaluate')]:
               if needle in low: op=label; break
+          reason='unknown'
+          for needle,label in [('intercepts pointer events','intercept'),('outside of the viewport','outside'),('not visible','not-visible'),('not stable','unstable'),('detached from the dom','detached'),('visible, enabled and stable','not-ready')]:
+              if needle in low: reason=label; break
+          blocker='none'
+          m=re.search(r'(<[^\n>]+[^\n]*>) intercepts pointer events',message,re.I)
+          if m: blocker=slug(m.group(1),30)
           locator='none'
           m=re.search(r'waiting for locator\(([^\n]+)',message,re.I)
-          if m: locator=slug(m.group(1),28)
-          context=f"ictc/onto-trace/line-{line}-{slug(op,16)}-{locator}"[:100]
-          payload=json.dumps({'state':'failure','context':context,'description':f'phase={phase}; line={line}; op={op}; message={message}'[:140]})
+          if m: locator=slug(m.group(1),24)
+          context=f"ictc/onto-trace/line-{line}-{slug(op,12)}-{reason}-{blocker}"[:100]
+          payload=json.dumps({'state':'failure','context':context,'description':f'phase={phase}; line={line}; op={op}; reason={reason}; blocker={blocker}; locator={locator}'[:140]})
           subprocess.run(['curl','-fsS','-X','POST','-H',f"Authorization: Bearer {os.environ['GH_TOKEN']}",'-H','Accept: application/vnd.github+json','-H','X-GitHub-Api-Version: 2022-11-28',f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/statuses/{os.environ['HEAD_SHA']}",'-d',payload],check=True)
           PY
           exit 1
