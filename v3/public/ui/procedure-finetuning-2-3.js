@@ -47,6 +47,21 @@ function ensureRnSchedulerAccessibleNames(){
   if(prompt&&!prompt.getAttribute('aria-label'))prompt.setAttribute('aria-label','Istruzioni specifiche per il monitoraggio');
 }
 
+function ensureUploadAccessibleNames(){
+  const uploads=[
+    ['#contributionForm input[type="file"][name="files"]','rnContributionFiles','Documenti da allegare al materiale'],
+    ['#incidentForm input[type="file"][name="files"]','ecIncidentFiles','Elementi disponibili da allegare all evento']
+  ];
+  for(const [selector,id,labelText] of uploads){
+    const input=$(selector);
+    if(!input)continue;
+    if(!input.id)input.id=id;
+    if(!input.getAttribute('aria-label'))input.setAttribute('aria-label',labelText);
+    const label=input.closest('label');
+    if(label&&!label.htmlFor)label.htmlFor=input.id;
+  }
+}
+
 function ensureIncidentTemporalAccessibleNames(){
   const fields=[
     ['occurredAt','ecOccurredAt','Quando è accaduto'],
@@ -127,6 +142,7 @@ function enhance(){
   ensureStyle();
   ensureRnContributionOptIn();
   ensureRnSchedulerAccessibleNames();
+  ensureUploadAccessibleNames();
   ensureIncidentTemporalAccessibleNames();
   simplifyIncidentIntake();
   ensureIncidentWorkspaceAccessibleNames();
