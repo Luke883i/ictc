@@ -1,43 +1,360 @@
 import { $, esc, state } from './common.js';
+import { SURFACE_LABELS } from './product-copy.js';
 
-const VERSION='2.7.0';
-const ROLE_HOME=Object.freeze({
-  admin:'Individua il lavoro aperto, entra nel processo giusto e porta ogni decisione a una traccia verificabile.',
-  user:'Vedi cosa richiede il tuo contributo e continua il lavoro nel processo corretto.',
-  auditor:'Consulta lavoro, decisioni ed evidenze nel perimetro accessibile, senza modificare lo stato.'
+const VERSION = '2.7.0';
+const ROLE_HOME = Object.freeze({
+  admin: 'Individua il lavoro aperto, entra nel processo giusto e porta ogni decisione a una traccia verificabile.',
+  user: 'Vedi cosa richiede il tuo contributo e continua il lavoro nel processo corretto.',
+  auditor: 'Consulta lavoro, decisioni ed evidenze nel perimetro accessibile, senza modificare lo stato.'
 });
-const PROCEDURES=Object.freeze({
-  monitoring:Object.freeze({title:'Monitoraggio normativo',purpose:'Raccogli fonti e governa i cambiamenti che possono richiedere una decisione.',decision:'Decidi quali fonti accettare e quale impatto richiede lavoro.',evidence:'Originale, piano, osservazioni e decisioni sulle fonti.',boundary:'Una fonte trovata non è automaticamente applicabile.',primary:'Aggiungi materiale',secondary:'Crea monitoraggio'}),
-  incidents:Object.freeze({title:'Incidenti e quasi incidenti',purpose:'Registra i fatti, chiarisci ciò che manca e governa invio e chiusura.',decision:'Conferma la formulazione e, quando competente, la chiusura.',evidence:'Originale, allegati, risposte, versioni e decisioni.',boundary:'ICTC non decide obblighi di notifica o rilevanza legale.',primary:'Registra evento'}),
-  objects:Object.freeze({title:'Inventario',purpose:'Mantieni il registro degli oggetti che contano per controlli, rischi e verifiche.',decision:'Conferma identità, responsabile, stato e riesame.',evidence:'Fonte, versione, responsabile, relazioni e attestazione.',boundary:'Il registro non prova la completezza dell’ambiente reale.',primary:'Aggiungi oggetto'}),
-  coverage:Object.freeze({title:'Standard e controlli',purpose:'Dichiara il perimetro e collega requisiti, controlli, gap ed evidenze.',decision:'Conferma applicabilità e mapping; distingui gap, esclusioni e irrisolti.',evidence:'Edizione, decisioni di scopo, mapping e riferimenti.',boundary:'Copertura non significa conformità o efficacia.',primary:'Aggiungi standard'}),
-  actions:Object.freeze({title:'Piano di azione',purpose:'Trasforma gap, rischi o incidenti in lavoro assegnato e verificabile.',decision:'Adotta priorità, assegna responsabilità e verifica la chiusura.',evidence:'Origine, responsabile, scadenza, aggiornamenti e prova di chiusura.',boundary:'Completato non significa verificato.',primary:'Crea azione'}),
-  risks:Object.freeze({title:'Rischi',purpose:'Valuta scenari di compliance e governa trattamento e riesame.',decision:'Determina rating, trattamento e riesame con giudizio umano.',evidence:'Scenario, rating motivato, controlli, azioni e data di riesame.',boundary:'Il rating è un giudizio di gestione, non una probabilità oggettiva.',primary:'Aggiungi scenario'}),
-  assurance:Object.freeze({title:'Questionari e verifiche',purpose:'Prepara risposte verificabili a richieste di audit, clienti o due diligence.',decision:'Approva la versione da consegnare e i limiti dichiarati.',evidence:'Richiesta originale, risposte, versione approvata ed evidenze collegate.',boundary:'Approvazione interna non è assurance o certificazione esterna.',primary:'Nuova richiesta'})
+const PROCEDURES = Object.freeze({
+  monitoring: Object.freeze({
+    purpose: 'Raccogli fonti e governa i cambiamenti che possono richiedere una decisione.',
+    decision: 'Decidi quali fonti accettare e quale impatto richiede lavoro.',
+    evidence: 'Originale, piano, osservazioni e decisioni sulle fonti.',
+    boundary: 'Una fonte trovata non è automaticamente applicabile.'
+  }),
+  incidents: Object.freeze({
+    purpose: 'Registra i fatti, chiarisci ciò che manca e governa invio e chiusura.',
+    decision: 'Conferma la formulazione e, quando competente, la chiusura.',
+    evidence: 'Originale, allegati, risposte, versioni e decisioni.',
+    boundary: 'ICTC non decide obblighi di notifica o rilevanza legale.'
+  }),
+  objects: Object.freeze({
+    purpose: 'Mantieni il registro degli oggetti che contano per controlli, rischi e verifiche.',
+    decision: 'Conferma identità, responsabile, stato e riesame.',
+    evidence: 'Fonte, versione, responsabile, relazioni e attestazione.',
+    boundary: 'Il registro non prova la completezza dell’ambiente reale.'
+  }),
+  coverage: Object.freeze({
+    purpose: 'Dichiara il perimetro e collega requisiti, controlli, gap ed evidenze.',
+    decision: 'Conferma applicabilità e mapping; distingui gap, esclusioni e irrisolti.',
+    evidence: 'Edizione, decisioni di scopo, mapping e riferimenti.',
+    boundary: 'Copertura non significa conformità o efficacia.'
+  }),
+  actions: Object.freeze({
+    purpose: 'Trasforma gap, rischi o incidenti in lavoro assegnato e verificabile.',
+    decision: 'Adotta priorità, assegna responsabilità e verifica la chiusura.',
+    evidence: 'Origine, responsabile, scadenza, aggiornamenti e prova di chiusura.',
+    boundary: 'Completato non significa verificato.'
+  }),
+  risks: Object.freeze({
+    purpose: 'Valuta scenari di compliance e governa trattamento e riesame.',
+    decision: 'Determina rating, trattamento e riesame con giudizio umano.',
+    evidence: 'Scenario, rating motivato, controlli, azioni e data di riesame.',
+    boundary: 'Il rating è un giudizio di gestione, non una probabilità oggettiva.'
+  }),
+  assurance: Object.freeze({
+    purpose: 'Prepara risposte verificabili a richieste di audit, clienti o due diligence.',
+    decision: 'Approva la versione da consegnare e i limiti dichiarati.',
+    evidence: 'Richiesta originale, risposte, versione approvata ed evidenze collegate.',
+    boundary: 'Approvazione interna non è assurance o certificazione esterna.'
+  })
 });
-const PROOF_TABS=Object.freeze([['summary','Sintesi'],['decisions','Decisioni'],['runtime','Runtime'],['deployment','Deployment'],['standards','Standard'],['export','Export']]);
-let installed=false,pending=false;
-function setText(node,value){if(node&&value!=null&&node.textContent!==String(value))node.textContent=String(value);}
-function registry(){return state.data?.procedureRegistry?.procedures||[];}
-function procedureMeta(id){return registry().find(item=>item.id===id)||null;}
-function processForSubject(type){return registry().find(item=>(item.adapter?.subjectTypes||[]).includes(type))||null;}
-function metric(label,value,meaning,origin,key){return `<article class="home-business-metric" data-metric-key="${esc(key)}"><span>${esc(label)}</span><strong>${esc(value)}</strong><p>${esc(meaning)}</p><details class="metric-explain"><summary aria-label="Origine della metrica ${esc(label)}">Origine</summary><small>${esc(origin)}</small></details></article>`;}
-function homeRows(){const summary=state.data?.procedureSummary;if(summary?.rows?.length)return summary.rows.map(row=>({id:row.id,attention:Number(row.attention||0)}));return(state.data?.procedures||[]).map(item=>({id:item.id,attention:Number(item.attentionCount||0)}));}
-function renderHome(){const root=$('#homeView'),pulse=$('#homePulse'),priorities=$('#homePriorities');if(!root||!pulse||!priorities||!state.data)return;root.dataset.businessLanding='home';setText(root.querySelector('#homeTitle'),'Porta il lavoro di compliance alla prossima decisione.');setText($('#homeSummary'),ROLE_HOME[state.role]||ROLE_HOME.user);const rows=homeRows(),server=state.data.procedureSummary,enabled=Number(server?.counts?.processes??state.data.experience?.procedurePolicy?.enabled?.length??registry().length),attention=Number(server?.counts?.attention??rows.reduce((sum,row)=>sum+row.attention,0)),healthy=Number(server?.counts?.healthy??rows.filter(row=>row.attention===0).length),withWork=rows.filter(row=>row.attention>0).length,decisions=state.data.decisions?.records||[],decisionProcesses=new Set(decisions.map(item=>processForSubject(item.subject?.type)?.id).filter(Boolean));pulse.dataset.businessDashboard='2.7';pulse.innerHTML=[metric('Processi attivi',enabled,'Processi disponibili nel perimetro corrente.','Registry procedure + policy di abilitazione.','enabled'),metric('Lavoro aperto',attention,'Elementi che richiedono verifica, decisione o completamento.','Somma delle code operative proiettate dai processi.','attention'),metric('Processi con lavoro',withWork,'Processi che hanno almeno un elemento aperto.','Righe della sintesi procedure con attenzione maggiore di zero.','with-work'),metric('Senza backlog',healthy,'Processi senza elementi aperti nella vista corrente.','Sintesi runtime dei processi senza attenzione aperta.','healthy'),metric('Decisioni registrate',decisions.length,'Decisioni umane visibili nel perimetro corrente.','Registro decisionale proiettato per ruolo e accesso.','decisions'),metric('Processi con decisioni',decisionProcesses.size,'Processi per cui esiste almeno una decisione visibile.','Tipi soggetto delle decisioni ricondotti al registry procedure.','decision-processes')].join('');const top=[...rows].filter(row=>row.attention>0).sort((a,b)=>b.attention-a.attention||a.id.localeCompare(b.id)).slice(0,4);priorities.dataset.businessPriorities='2.7';priorities.innerHTML=top.length?`<div class="home-priority-head"><strong>Dove intervenire</strong><button type="button" data-service="processes">Tutti i processi</button></div>${top.map(row=>{const meta=procedureMeta(row.id),copy=PROCEDURES[row.id],label=copy?.title||meta?.label||row.id,surface=meta?.adapter?.surface||row.id,attrs=surface==='grc'?`data-service="grc" data-grc-process="${esc(row.id)}"`:`data-service="${esc(surface)}"`;return `<button type="button" class="home-business-priority" ${attrs}><span>${esc(label)}</span><strong>${row.attention} aperti</strong><i aria-hidden="true">→</i></button>`;}).join('')}<p class="market-global-note">Sono carichi di lavoro, non punteggi di conformità.</p>`:`<div class="home-priority-clear"><span>Nessun lavoro aperto nella vista corrente.</span><button type="button" data-service="processes">Apri i processi</button></div>`;}
-function ensureProcessesBrief(){const head=$('#processesView .processes-head');if(!head)return;head.closest('#processesView')?.setAttribute('data-business-landing','processes');setText(head.querySelector('.eyebrow'),'Lavoro di compliance');setText(head.querySelector('h1'),'Processi di Compliance');setText(head.querySelector('h1 + p, h1 ~ p'),'Scegli il lavoro da governare. Ogni processo porta a una decisione umana e lascia una traccia verificabile.');if(head.querySelector('[data-processes-brief]'))return;const details=document.createElement('details');details.className='landing-brief';details.dataset.processesBrief='2.7';details.innerHTML='<summary>Come scegliere</summary><div><p><b>Parti dall’oggetto del lavoro.</b> Fonte o cambiamento, evento, oggetto, requisito, azione, rischio oppure richiesta di verifica.</p><p><b>Segui la decisione.</b> ICTC collega il passaggio umano a stato, evidenze e limite della conclusione.</p></div>';head.append(details);}
-function compactProcedureCards(){for(const card of document.querySelectorAll('#procedureHub .procedure-card[data-procedure-id]')){const id=card.dataset.procedureId,copy=PROCEDURES[id];if(!copy)continue;card.dataset.businessProcedureCard='2.7';card.dataset.businessEntryEffect='navigate';const heading=card.querySelector('h2,h3');if(heading){const strong=document.createElement('strong');strong.className='procedure-card-title';strong.textContent=copy.title;heading.replaceWith(strong);}setText(card.querySelector('.procedure-purpose'),copy.purpose);let details=card.querySelector(':scope > .procedure-card-brief');if(!details){details=document.createElement('details');details.className='procedure-card-brief';details.innerHTML='<summary>Decisione, evidenza e limite</summary><div class="procedure-card-brief-body"></div>';const footer=card.querySelector(':scope > footer');if(footer)card.insertBefore(details,footer);else card.append(details);}details.querySelector('.procedure-card-brief-body').innerHTML=`<p><b>Decisione.</b> ${esc(copy.decision)}</p><p><b>Evidenza.</b> ${esc(copy.evidence)}</p><p><b>Limite.</b> ${esc(copy.boundary)}</p>`;}}
-function compactProcedureFrames(){for(const frame of document.querySelectorAll('.procedure-frame[data-procedure-header-contract="2.6"]')){const primary=frame.querySelector('[data-procedure-primary]'),id=primary?.dataset.procedurePrimary,copy=PROCEDURES[id];if(!copy)continue;frame.dataset.businessProcedureFrame='2.7';setText(frame.querySelector('h1'),copy.title);setText(frame.querySelector('.procedure-purpose'),copy.purpose);if(primary&&state.role!=='auditor')setText(primary,copy.primary);const secondary=frame.querySelector('[data-procedure-secondary="monitoring-plan"]');if(secondary)setText(secondary,copy.secondary);const host=frame.querySelector('.procedure-frame-copy');if(host&&!host.querySelector('.procedure-frame-brief')){const details=document.createElement('details');details.className='procedure-frame-brief';details.innerHTML=`<summary>Perché questa azione</summary><p>${esc(copy.decision)} ${esc(copy.boundary)}</p>`;host.append(details);}}}
-function selectedGrc(){let saved='';try{saved=localStorage.getItem('ictc-grc-process')||'';}catch{}return state.activeProcessId||saved||'objects';}
-function markCards(selector,id){for(const card of document.querySelectorAll(selector)){if(card.matches('.empty')||card.tagName==='P')continue;card.dataset.canonicalRecordCard='2.7';card.dataset.procedureId=id;}}
-function normalizeRecordCards(){markCards('#missionsList > article, #missionsList > .mission-card','monitoring');markCards('#catalogList > article, #catalogList > .catalog-card','monitoring');markCards('#incidentList > article, #incidentList > .incident-card','incidents');const id=selectedGrc();if(PROCEDURES[id])markCards('#grcWorkspace .grc-list > article',id);}
-function refineGrcLanding(){const root=$('#grcWorkspace'),id=selectedGrc(),copy=PROCEDURES[id];if(!root||!copy)return;root.dataset.businessLanding=id;const frame=root.querySelector('.procedure-frame');if(frame)frame.dataset.businessProcedureFrame='2.7';const create=root.querySelector('#grcPrimaryForm > summary');if(create&&state.role!=='auditor')setText(create,copy.primary);}
-function refineNativeLanding(){const monitoring=$('#monitoringView'),incidents=$('#incidentsView');if(monitoring)monitoring.dataset.businessLanding='monitoring';if(incidents)incidents.dataset.businessLanding='incidents';const mHead=monitoring?.querySelector('.section-head h2');if(mHead&&/Piani di monitoraggio/i.test(mHead.textContent||''))setText(mHead,'Monitoraggi');const iHead=incidents?.querySelector('.section-head h2');if(iHead&&/Fascicoli evento/i.test(iHead.textContent||''))setText(iHead,'Eventi registrati');}
-function replaceCheckText(label,text){if(!label)return;const input=label.querySelector('input');if(!input)return;for(const node of [...label.childNodes])if(node!==input)node.remove();const span=document.createElement('span');span.textContent=text;label.append(span);}
-function refineIncidentAcceptance(){const workspace=$('#incidentWorkspace');if(!workspace)return;const label=workspace.querySelector('.confirm-row');if(label){label.classList.add('business-acceptance');label.dataset.incidentAcceptance='2.7';replaceCheckText(label,'Ho verificato che la versione descriva i fatti disponibili, distingua ciò che non è noto e non anticipi conclusioni legali.');}for(const h of workspace.querySelectorAll('h3'))if((h.textContent||'').trim()==='Verifica la versione corrente')setText(h,'Conferma la versione da inviare');for(const h of workspace.querySelectorAll('h4'))if((h.textContent||'').trim()==='Parole aggiunte')setText(h,'Differenze dall’originale');const submit=workspace.querySelector('[data-submit-incident]');if(submit)setText(submit,'Invia versione verificata');const close=workspace.querySelector('[data-close-incident]');if(close)setText(close,'Chiudi con motivazione');const closure=workspace.querySelector('.closure-inline');if(closure){const input=closure.querySelector('input');for(const node of [...closure.childNodes])if(node!==input)node.remove();const span=document.createElement('span');span.textContent='Motivo e limiti della chiusura';closure.prepend(span);}}
-function selectProofTab(root,key,focus=false){for(const button of root.querySelectorAll('[data-proof-tab]')){const active=button.dataset.proofTab===key;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;if(active&&focus)button.focus();}for(const panel of root.querySelectorAll('[data-proof-panel]'))panel.hidden=panel.dataset.proofPanel!==key;}
-function ensureProofTabs(){const root=$('#proofView'),content=$('#proofContent');if(!root||!content)return;root.dataset.businessLanding='evidence';setText(root.querySelector('.proof-head .eyebrow'),'Verifica del prodotto');setText(root.querySelector('#proofTitle'),'Evidenze ICTC');setText(root.querySelector('.proof-head #proofTitle + p'),'Distingui ciò che ICTC osserva, ciò che resta da provare e dove finisce la prova.');const note=root.querySelector('.proof-hero-note');if(note){setText(note.querySelector('b'),'Lettura verificabile');setText(note.querySelector('span'),'Fatto → evidenza → requisito esterno → limite');}if(content.querySelector('[data-proof-tablist]'))return;const snapshot=content.querySelector('.proof-snapshot'),reading=content.querySelector('.proof-reading-grid'),method=content.querySelector('.proof-method'),details=[...content.querySelectorAll(':scope > details.proof-section')];if(details.length<5)return;const tablist=document.createElement('div');tablist.className='proof-scope-tabs';tablist.dataset.proofTablist='2.7';tablist.setAttribute('role','tablist');tablist.setAttribute('aria-label','Ambiti delle evidenze ICTC');for(const [key,label] of PROOF_TABS){const button=document.createElement('button');button.type='button';button.dataset.proofTab=key;button.id=`proofTab-${key}`;button.setAttribute('role','tab');button.setAttribute('aria-controls',`proofPanel-${key}`);button.textContent=label;tablist.append(button);}const panels=new Map();for(const [key] of PROOF_TABS){const panel=document.createElement('section');panel.className='proof-scope-panel';panel.dataset.proofPanel=key;panel.id=`proofPanel-${key}`;panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',`proofTab-${key}`);panels.set(key,panel);}for(const node of[snapshot,reading,method])if(node)panels.get('summary').append(node);const keys=['decisions','runtime','deployment','standards','export'];details.forEach((detail,index)=>{const body=detail.querySelector('.proof-section-body');if(body)while(body.firstChild)panels.get(keys[index]).append(body.firstChild);detail.remove();});content.prepend(tablist);for(const [key] of PROOF_TABS)content.append(panels.get(key));selectProofTab(root,'summary');}
-function normalizeShellLabels(){const home=$('.service-nav [data-service="home"]'),proof=$('.service-nav [data-service="proof"]');setText(home,'Home');setText(proof,'Evidenze ICTC');if(proof)proof.setAttribute('aria-label','Evidenze ICTC');for(const node of document.querySelectorAll('[data-refined-compact-label], [data-proof-service]'))if((node.textContent||'').includes('Postura ICTC'))setText(node,'Evidenze ICTC');document.title='ICTC · Compliance operativa ed evidenze';}
-function apply(){pending=false;if(!document.body)return;normalizeShellLabels();renderHome();ensureProcessesBrief();compactProcedureCards();compactProcedureFrames();refineNativeLanding();refineGrcLanding();normalizeRecordCards();ensureProofTabs();refineIncidentAcceptance();document.documentElement.dataset.businessSurfaceConvergence=VERSION;}
-function schedule(){if(pending)return;pending=true;queueMicrotask(apply);}
-function bindTabs(){document.addEventListener('click',event=>{const tab=event.target.closest?.('[data-proof-tab]');if(!tab)return;event.preventDefault();selectProofTab($('#proofView'),tab.dataset.proofTab);});document.addEventListener('keydown',event=>{const tab=event.target.closest?.('[data-proof-tab]');if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;const buttons=[...tab.parentElement.querySelectorAll('[data-proof-tab]')],index=buttons.indexOf(tab);let next=index;if(event.key==='ArrowRight')next=(index+1)%buttons.length;if(event.key==='ArrowLeft')next=(index-1+buttons.length)%buttons.length;if(event.key==='Home')next=0;if(event.key==='End')next=buttons.length-1;event.preventDefault();selectProofTab($('#proofView'),buttons[next].dataset.proofTab,true);});}
-export function installBusinessSurfaceConvergence27(){if(installed)return;installed=true;bindTabs();for(const eventName of['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed'])document.addEventListener(eventName,schedule);schedule();}
+const PROOF_TABS = Object.freeze([
+  ['summary', 'Sintesi'],
+  ['decisions', 'Decisioni'],
+  ['runtime', 'Runtime'],
+  ['deployment', 'Deployment'],
+  ['standards', 'Standard'],
+  ['export', 'Export']
+]);
+let installed = false;
+let pending = false;
+
+function setText(node, value) {
+  if (node && value != null && node.textContent !== String(value)) node.textContent = String(value);
+}
+function registry() { return state.data?.procedureRegistry?.procedures || []; }
+function procedureMeta(id) { return registry().find(item => item.id === id) || null; }
+function processForSubject(type) { return registry().find(item => (item.adapter?.subjectTypes || []).includes(type)) || null; }
+function procedureLabel(id) { return procedureMeta(id)?.label || id; }
+function primaryAction(id) { return procedureMeta(id)?.ux?.primaryAction || ''; }
+function secondaryAction(id) { return procedureMeta(id)?.ux?.secondaryAction || ''; }
+function metric(label, value, meaning, origin, key) {
+  return `<article class="home-business-metric" data-metric-key="${esc(key)}"><span>${esc(label)}</span><strong>${esc(value)}</strong><p>${esc(meaning)}</p><details class="metric-explain"><summary aria-label="Origine della metrica ${esc(label)}">Origine</summary><small>${esc(origin)}</small></details></article>`;
+}
+function homeRows() {
+  const summary = state.data?.procedureSummary;
+  if (summary?.rows?.length) return summary.rows.map(row => ({ id: row.id, attention: Number(row.attention || 0) }));
+  return (state.data?.procedures || []).map(item => ({ id: item.id, attention: Number(item.attentionCount || 0) }));
+}
+function renderHome() {
+  const root = $('#homeView'), pulse = $('#homePulse'), priorities = $('#homePriorities');
+  if (!root || !pulse || !priorities || !state.data) return;
+  root.dataset.businessLanding = 'home';
+  setText(root.querySelector('#homeTitle'), 'Porta il lavoro di compliance alla prossima decisione.');
+  setText($('#homeSummary'), ROLE_HOME[state.role] || ROLE_HOME.user);
+  const rows = homeRows();
+  const server = state.data.procedureSummary;
+  const enabled = Number(server?.counts?.processes ?? state.data.experience?.procedurePolicy?.enabled?.length ?? registry().length);
+  const attention = Number(server?.counts?.attention ?? rows.reduce((sum, row) => sum + row.attention, 0));
+  const healthy = Number(server?.counts?.healthy ?? rows.filter(row => row.attention === 0).length);
+  const withWork = rows.filter(row => row.attention > 0).length;
+  const decisions = state.data.decisions?.records || [];
+  const decisionProcesses = new Set(decisions.map(item => processForSubject(item.subject?.type)?.id).filter(Boolean));
+  pulse.dataset.businessDashboard = '2.7';
+  pulse.innerHTML = [
+    metric('Processi attivi', enabled, 'Processi disponibili nel perimetro corrente.', 'Registry procedure + policy di abilitazione.', 'enabled'),
+    metric('Lavoro aperto', attention, 'Elementi che richiedono verifica, decisione o completamento.', 'Somma delle code operative proiettate dai processi.', 'attention'),
+    metric('Processi con lavoro', withWork, 'Processi che hanno almeno un elemento aperto.', 'Righe della sintesi procedure con attenzione maggiore di zero.', 'with-work'),
+    metric('Senza backlog', healthy, 'Processi senza elementi aperti nella vista corrente.', 'Sintesi runtime dei processi senza attenzione aperta.', 'healthy'),
+    metric('Decisioni registrate', decisions.length, 'Decisioni umane visibili nel perimetro corrente.', 'Registro decisionale proiettato per ruolo e accesso.', 'decisions'),
+    metric('Processi con decisioni', decisionProcesses.size, 'Processi per cui esiste almeno una decisione visibile.', 'Tipi soggetto delle decisioni ricondotti al registry procedure.', 'decision-processes')
+  ].join('');
+  const top = [...rows].filter(row => row.attention > 0).sort((a, b) => b.attention - a.attention || a.id.localeCompare(b.id)).slice(0, 4);
+  priorities.dataset.businessPriorities = '2.7';
+  priorities.innerHTML = top.length
+    ? `<div class="home-priority-head"><strong>Dove intervenire</strong><button type="button" data-service="processes">Tutti i processi</button></div>${top.map(row => {
+        const meta = procedureMeta(row.id);
+        const label = meta?.label || row.id;
+        const surface = meta?.adapter?.surface || row.id;
+        const attrs = surface === 'grc' ? `data-service="grc" data-grc-process="${esc(row.id)}"` : `data-service="${esc(surface)}"`;
+        return `<button type="button" class="home-business-priority" ${attrs}><span>${esc(label)}</span><strong>${row.attention} aperti</strong><i aria-hidden="true">→</i></button>`;
+      }).join('')}<p class="market-global-note">Sono carichi di lavoro, non punteggi di conformità.</p>`
+    : '<div class="home-priority-clear"><span>Nessun lavoro aperto nella vista corrente.</span><button type="button" data-service="processes">Apri i processi</button></div>';
+}
+function ensureProcessesBrief() {
+  const head = $('#processesView .processes-head');
+  if (!head) return;
+  head.closest('#processesView')?.setAttribute('data-business-landing', 'processes');
+  setText(head.querySelector('.eyebrow'), 'Lavoro di compliance');
+  setText(head.querySelector('h1'), SURFACE_LABELS.processes);
+  setText(head.querySelector('h1 + p, h1 ~ p'), 'Scegli il lavoro da governare. Ogni processo porta a una decisione umana e lascia una traccia verificabile.');
+  if (head.querySelector('[data-processes-brief]')) return;
+  const details = document.createElement('details');
+  details.className = 'landing-brief';
+  details.dataset.processesBrief = '2.7';
+  details.innerHTML = '<summary>Come scegliere</summary><div><p><b>Parti dall’oggetto del lavoro.</b> Fonte o cambiamento, evento, oggetto, requisito, azione, rischio oppure richiesta di verifica.</p><p><b>Segui la decisione.</b> ICTC collega il passaggio umano a stato, evidenze e limite della conclusione.</p></div>';
+  head.append(details);
+}
+function compactProcedureCards() {
+  for (const card of document.querySelectorAll('#procedureHub .procedure-card[data-procedure-id]')) {
+    const id = card.dataset.procedureId, copy = PROCEDURES[id], meta = procedureMeta(id);
+    if (!copy || !meta) continue;
+    card.dataset.businessProcedureCard = '2.7';
+    card.dataset.businessEntryEffect = 'navigate';
+    const heading = card.querySelector('h2,h3');
+    if (heading) {
+      const strong = document.createElement('strong');
+      strong.className = 'procedure-card-title';
+      strong.textContent = meta.label;
+      heading.replaceWith(strong);
+    } else setText(card.querySelector('.procedure-card-title'), meta.label);
+    setText(card.querySelector('.procedure-purpose'), copy.purpose);
+    let details = card.querySelector(':scope > .procedure-card-brief');
+    if (!details) {
+      details = document.createElement('details');
+      details.className = 'procedure-card-brief';
+      details.innerHTML = '<summary>Decisione, evidenza e limite</summary><div class="procedure-card-brief-body"></div>';
+      const footer = card.querySelector(':scope > footer');
+      if (footer) card.insertBefore(details, footer); else card.append(details);
+    }
+    details.querySelector('.procedure-card-brief-body').innerHTML = `<p><b>Decisione.</b> ${esc(copy.decision)}</p><p><b>Evidenza.</b> ${esc(copy.evidence)}</p><p><b>Limite.</b> ${esc(copy.boundary)}</p>`;
+  }
+}
+function compactProcedureFrames() {
+  for (const frame of document.querySelectorAll('.procedure-frame[data-procedure-header-contract="2.6"]')) {
+    const primary = frame.querySelector('[data-procedure-primary]');
+    const id = primary?.dataset.procedurePrimary, copy = PROCEDURES[id], meta = procedureMeta(id);
+    if (!copy || !meta) continue;
+    frame.dataset.businessProcedureFrame = '2.7';
+    setText(frame.querySelector('h1'), meta.label);
+    setText(frame.querySelector('.procedure-purpose'), copy.purpose);
+    if (primary && state.role !== 'auditor') setText(primary, primaryAction(id));
+    const secondary = frame.querySelector('[data-procedure-secondary="monitoring-plan"]');
+    if (secondary) setText(secondary, secondaryAction(id));
+    const host = frame.querySelector('.procedure-frame-copy');
+    if (host && !host.querySelector('.procedure-frame-brief')) {
+      const details = document.createElement('details');
+      details.className = 'procedure-frame-brief';
+      details.innerHTML = `<summary>Perché questa azione</summary><p>${esc(copy.decision)} ${esc(copy.boundary)}</p>`;
+      host.append(details);
+    }
+  }
+}
+function selectedGrc() {
+  let saved = '';
+  try { saved = localStorage.getItem('ictc-grc-process') || ''; } catch {}
+  return state.activeProcessId || saved || 'objects';
+}
+function markCards(selector, id) {
+  for (const card of document.querySelectorAll(selector)) {
+    if (card.matches('.empty') || card.tagName === 'P') continue;
+    card.dataset.canonicalRecordCard = '2.7';
+    card.dataset.procedureId = id;
+  }
+}
+function normalizeRecordCards() {
+  markCards('#missionsList > article, #missionsList > .mission-card', 'monitoring');
+  markCards('#catalogList > article, #catalogList > .catalog-card', 'monitoring');
+  markCards('#incidentList > article, #incidentList > .incident-card', 'incidents');
+  const id = selectedGrc();
+  if (PROCEDURES[id]) markCards('#grcWorkspace .grc-list > article', id);
+}
+function refineGrcLanding() {
+  const root = $('#grcWorkspace'), id = selectedGrc(), copy = PROCEDURES[id], meta = procedureMeta(id);
+  if (!root || !copy || !meta) return;
+  root.dataset.businessLanding = id;
+  const frame = root.querySelector('.procedure-frame');
+  if (frame) frame.dataset.businessProcedureFrame = '2.7';
+  const create = root.querySelector('#grcPrimaryForm > summary');
+  if (create && state.role !== 'auditor') setText(create, primaryAction(id));
+}
+function refineNativeLanding() {
+  const monitoring = $('#monitoringView'), incidents = $('#incidentsView');
+  if (monitoring) monitoring.dataset.businessLanding = 'monitoring';
+  if (incidents) incidents.dataset.businessLanding = 'incidents';
+  const mHead = monitoring?.querySelector('.section-head h2');
+  if (mHead && /Piani di monitoraggio/i.test(mHead.textContent || '')) setText(mHead, 'Monitoraggi');
+  const iHead = incidents?.querySelector('.section-head h2');
+  if (iHead && /Fascicoli evento/i.test(iHead.textContent || '')) setText(iHead, 'Eventi registrati');
+}
+function replaceCheckText(label, text) {
+  if (!label) return;
+  const input = label.querySelector('input');
+  if (!input) return;
+  for (const node of [...label.childNodes]) if (node !== input) node.remove();
+  const span = document.createElement('span');
+  span.textContent = text;
+  label.append(span);
+}
+function refineIncidentAcceptance() {
+  const workspace = $('#incidentWorkspace');
+  if (!workspace) return;
+  const label = workspace.querySelector('.confirm-row');
+  if (label) {
+    label.classList.add('business-acceptance');
+    label.dataset.incidentAcceptance = '2.7';
+    replaceCheckText(label, 'Ho verificato che la versione descriva i fatti disponibili, distingua ciò che non è noto e non anticipi conclusioni legali.');
+  }
+  for (const h of workspace.querySelectorAll('h3')) if ((h.textContent || '').trim() === 'Verifica la versione corrente') setText(h, 'Conferma la versione da inviare');
+  for (const h of workspace.querySelectorAll('h4')) if ((h.textContent || '').trim() === 'Parole aggiunte') setText(h, 'Differenze dall’originale');
+  const submit = workspace.querySelector('[data-submit-incident]');
+  if (submit) setText(submit, 'Invia versione verificata');
+  const close = workspace.querySelector('[data-close-incident]');
+  if (close) setText(close, 'Chiudi con motivazione');
+  const closure = workspace.querySelector('.closure-inline');
+  if (closure) {
+    const input = closure.querySelector('input');
+    for (const node of [...closure.childNodes]) if (node !== input) node.remove();
+    const span = document.createElement('span');
+    span.textContent = 'Motivo e limiti della chiusura';
+    closure.prepend(span);
+  }
+}
+function selectProofTab(root, key, focus = false) {
+  for (const button of root.querySelectorAll('[data-proof-tab]')) {
+    const active = button.dataset.proofTab === key;
+    button.setAttribute('aria-selected', String(active));
+    button.tabIndex = active ? 0 : -1;
+    if (active && focus) button.focus();
+  }
+  for (const panel of root.querySelectorAll('[data-proof-panel]')) panel.hidden = panel.dataset.proofPanel !== key;
+}
+function ensureProofTabs() {
+  const root = $('#proofView'), content = $('#proofContent');
+  if (!root || !content) return;
+  root.dataset.businessLanding = 'evidence';
+  setText(root.querySelector('.proof-head .eyebrow'), 'Verifica del prodotto');
+  setText(root.querySelector('#proofTitle'), SURFACE_LABELS.proof);
+  setText(root.querySelector('.proof-head #proofTitle + p'), 'Distingui ciò che ICTC osserva, ciò che resta da provare e dove finisce la prova.');
+  const note = root.querySelector('.proof-hero-note');
+  if (note) {
+    setText(note.querySelector('b'), 'Lettura verificabile');
+    setText(note.querySelector('span'), 'Fatto → evidenza → requisito esterno → limite');
+  }
+  if (content.querySelector('[data-proof-tablist]')) return;
+  const snapshot = content.querySelector('.proof-snapshot'), reading = content.querySelector('.proof-reading-grid'), method = content.querySelector('.proof-method');
+  const details = [...content.querySelectorAll(':scope > details.proof-section')];
+  if (details.length < 5) return;
+  const tablist = document.createElement('div');
+  tablist.className = 'proof-scope-tabs';
+  tablist.dataset.proofTablist = '2.7';
+  tablist.setAttribute('role', 'tablist');
+  tablist.setAttribute('aria-label', 'Ambiti delle evidenze ICTC');
+  for (const [key, label] of PROOF_TABS) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.proofTab = key;
+    button.id = `proofTab-${key}`;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-controls', `proofPanel-${key}`);
+    button.textContent = label;
+    tablist.append(button);
+  }
+  const panels = new Map();
+  for (const [key] of PROOF_TABS) {
+    const panel = document.createElement('section');
+    panel.className = 'proof-scope-panel';
+    panel.dataset.proofPanel = key;
+    panel.id = `proofPanel-${key}`;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', `proofTab-${key}`);
+    panels.set(key, panel);
+  }
+  for (const node of [snapshot, reading, method]) if (node) panels.get('summary').append(node);
+  const keys = ['decisions', 'runtime', 'deployment', 'standards', 'export'];
+  details.forEach((detail, index) => {
+    const body = detail.querySelector('.proof-section-body');
+    if (body) while (body.firstChild) panels.get(keys[index]).append(body.firstChild);
+    detail.remove();
+  });
+  content.prepend(tablist);
+  for (const [key] of PROOF_TABS) content.append(panels.get(key));
+  selectProofTab(root, 'summary');
+}
+function normalizeShellLabels() {
+  const home = $('.service-nav [data-service="home"]'), proof = $('.service-nav [data-service="proof"]');
+  setText(home, SURFACE_LABELS.home);
+  setText(proof, SURFACE_LABELS.proof);
+  if (proof) proof.setAttribute('aria-label', SURFACE_LABELS.proof);
+  document.title = 'ICTC · Compliance operativa ed evidenze';
+}
+function apply() {
+  pending = false;
+  if (!document.body) return;
+  normalizeShellLabels();
+  renderHome();
+  ensureProcessesBrief();
+  compactProcedureCards();
+  compactProcedureFrames();
+  refineNativeLanding();
+  refineGrcLanding();
+  normalizeRecordCards();
+  ensureProofTabs();
+  refineIncidentAcceptance();
+  document.documentElement.dataset.businessSurfaceConvergence = VERSION;
+}
+function schedule() {
+  if (pending) return;
+  pending = true;
+  queueMicrotask(apply);
+}
+function bindTabs() {
+  document.addEventListener('click', event => {
+    const tab = event.target.closest?.('[data-proof-tab]');
+    if (!tab) return;
+    event.preventDefault();
+    selectProofTab($('#proofView'), tab.dataset.proofTab);
+  });
+  document.addEventListener('keydown', event => {
+    const tab = event.target.closest?.('[data-proof-tab]');
+    if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    const buttons = [...tab.parentElement.querySelectorAll('[data-proof-tab]')], index = buttons.indexOf(tab);
+    let next = index;
+    if (event.key === 'ArrowRight') next = (index + 1) % buttons.length;
+    if (event.key === 'ArrowLeft') next = (index - 1 + buttons.length) % buttons.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = buttons.length - 1;
+    event.preventDefault();
+    selectProofTab($('#proofView'), buttons[next].dataset.proofTab, true);
+  });
+}
+export function installBusinessSurfaceConvergence27() {
+  if (installed) return;
+  installed = true;
+  bindTabs();
+  for (const eventName of ['ictc:rendered', 'ictc:surface-changed', 'ictc:context-changed', 'ictc:projection-committed']) document.addEventListener(eventName, schedule);
+  schedule();
+}
