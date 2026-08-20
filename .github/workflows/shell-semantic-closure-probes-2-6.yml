@@ -1,0 +1,32 @@
+name: shell-semantic-closure-probes-2-6
+on: [pull_request, workflow_dispatch]
+permissions: {contents: read}
+concurrency:
+  group: shell-semantic-closure-probes-2-6-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-closure:
+    name: shell-semantic-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: release-suite-check, cmd: 'node v3/current-release-suite-check.mjs'}
+          - {name: suite-closure, cmd: 'node v3/current-suite-closure-check.mjs'}
+          - {name: procedure-dod, cmd: 'node v3/procedure-dod-check.mjs'}
+          - {name: procedure-hooks, cmd: 'node v3/procedure-hooks-check.mjs'}
+          - {name: finetuning-1-4, cmd: 'node v3/procedure-finetuning-1-4-check.mjs'}
+          - {name: executive-dedup, cmd: 'node v3/executive-dedup-check.mjs'}
+          - {name: procedure-uiux-1-6, cmd: 'node v3/procedure-uiux-1-6-check.mjs'}
+          - {name: journey-2-1, cmd: 'node v3/procedure-journey-2-1-check.mjs'}
+          - {name: onto-epistemic, cmd: 'node v3/uiux-onto-epistemic-check.mjs'}
+          - {name: enterprise-boundary, cmd: 'node v3/enterprise-boundary-check.mjs'}
+          - {name: suite-claim, cmd: 'node v3/release-suite-claim-check.mjs'}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: ${{ matrix.cmd }}
