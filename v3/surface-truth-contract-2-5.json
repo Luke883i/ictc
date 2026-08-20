@@ -1,0 +1,59 @@
+{
+  "version": "2.5.0",
+  "name": "Surface Truth and Cognitive Disclosure",
+  "scope": {
+    "entrypoints": ["v3/public/index.html", "v3/public/app.js", "v3/public/ui/active-experience.js"],
+    "surfaces": ["home", "processes", "monitoring", "incidents", "grc", "proof", "epistemic", "admin", "settings"],
+    "procedures": ["monitoring", "incidents", "objects", "coverage", "actions", "risks", "assurance"]
+  },
+  "classification": {
+    "truth": ["runtime", "derived", "static", "compatibility", "fake", "unknown"],
+    "kind": ["title", "label", "summary", "fact", "status", "metric", "action", "input", "navigation", "disclosure", "evidence", "boundary", "empty", "technical", "text"],
+    "authority": ["human", "runtime", "source", "product", "policy", "ai-proposal", "navigation", "compatibility", "unknown"],
+    "cognitiveLevel": ["orientation", "decision", "evidence", "detail", "technical"],
+    "effect": ["none", "navigate", "edit", "disclose", "inspect", "write", "decide", "configure", "unknown"]
+  },
+  "confidence": {
+    "highConfidenceThreshold": 0.95,
+    "allVisibleHighConfidenceMin": 0.95,
+    "criticalHighConfidenceMin": 1.0
+  },
+  "limits": {
+    "visibleOrientationBlocksMax": 1,
+    "primaryActionsMax": 1,
+    "supportActionsMax": 3,
+    "primaryFactsMax": 4,
+    "preTaskExplanatoryParagraphsMax": 2,
+    "disclosureDepthMax": 2,
+    "visibleChoicesMax": 7,
+    "readingLineChMax": 80,
+    "touchTargetMinPx": 44,
+    "queueWindow": 12,
+    "liveRegionsMax": 2
+  },
+  "prohibitions": [
+    "fake-visible-surface",
+    "unknown-critical-surface",
+    "ai-decision-authority",
+    "scope-mapping-equivalence",
+    "mapping-compliance-equivalence",
+    "completion-closure-equivalence",
+    "risk-score-objectivity-claim",
+    "decision-inside-technical-disclosure",
+    "raw-id-primary-information",
+    "raw-enum-primary-information",
+    "placeholder-only-label",
+    "color-only-status",
+    "hidden-focusable-control",
+    "unbounded-large-queue"
+  ],
+  "dod": {
+    "D0_census": "Static active-import census and rendered browser census reconcile the active experience; every visible semantic node is inventoried.",
+    "D1_truth": "At least 95% of all visible semantic nodes and 100% of critical nodes have >=0.95 classification confidence; fake=0 and unknown critical=0.",
+    "D2_cognitive": "One orientation authority per surface; decision content precedes evidence/detail/technical material; disclosure depth <=2.",
+    "D3_interaction": "One primary action, at most three support actions, at most four primary facts, 44px targets, keyboard/accessibility names, bounded queue navigation.",
+    "D4_epistemic": "Runtime/derived/static/compatibility truth is explicit; AI is proposal-only; evidence and decision authority remain distinct; scope/mapping/compliance and completed/closed remain distinct.",
+    "D5_runtime": "No new presentation authority; primitives are idempotent under lifecycle replay and browser journeys preserve runtime effects.",
+    "D6_assurance": "10,000,000 deterministic unit semantic mutations are detected across compliance, GRC, cognitive ergonomics, accessibility, simplicity and progressive disclosure; exact-head CI is green."
+  }
+}
