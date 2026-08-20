@@ -12,6 +12,7 @@ ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 INVENTORY = []
+VIOLATIONS = []
 SEMANTIC = 'h1,h2,h3,h4,h5,h6,p,small,label,button,a[href],input,select,textarea,summary,dt,dd,th,td,legend,li,span,b,strong,em,option,[role="status"],[role="alert"],.surface-chip,.counter,.empty'
 
 
@@ -48,6 +49,15 @@ def publish_failure(exc):
         pass
 
 
+def publish_violations():
+    global PHASE
+    previous = PHASE
+    for violation in VIOLATIONS[:12]:
+        PHASE = f"census-{violation['name']}"
+        publish_failure(AssertionError(f"{violation['kind']}:{violation['detail']}"))
+    PHASE = previous
+
+
 def fail(exc):
     publish_failure(exc)
     payload = {
@@ -57,6 +67,7 @@ def fail(exc):
         'message': str(exc),
         'traceback': traceback.format_exc(),
         'snapshots': len(INVENTORY),
+        'violations': VIOLATIONS,
     }
     (ART / 'browser-procedure-finetuning-1-4-surface-truth-2-5-error.json').write_text(
         json.dumps(payload, indent=2, ensure_ascii=False), encoding='utf8'
@@ -156,24 +167,36 @@ SNAPSHOT_JS = r"""
 """
 
 
+def violation(name, kind, detail):
+    VIOLATIONS.append({'name': name, 'kind': kind, 'detail': str(detail)})
+
+
 def snapshot(page, name, selector):
     global PHASE
     PHASE = f'census-{name}'
     page.wait_for_timeout(40)
     result = page.locator(selector).evaluate(SNAPSHOT_JS, SEMANTIC)
-    assert result['visible'] > 0, (name, 'no visible semantic nodes')
-    coverage = result['high'] / result['visible']
-    critical_coverage = 1 if result['critical'] == 0 else result['criticalHigh'] / result['critical']
-    assert coverage >= .95, (name, 'coverage', coverage, result['unknownVisible'])
-    assert critical_coverage == 1, (name, 'critical coverage', critical_coverage, result['unknownCritical'])
-    assert result['fakeVisible'] == 0, (name, 'fake visible', result['fakeVisible'])
-    assert result['unknownCritical'] == 0, (name, 'unknown critical', result['unknownCritical'])
-    if result['smallTargets']:
-        first = result['smallTargets'][0]
-        raise AssertionError(f"small-target:{first['key']}:{first['via']}:{first['h']:.1f}px:{name}")
-    if result['unnamed']:
-        raise AssertionError(f"unnamed:{result['unnamed'][0]}:{name}:{','.join(result['unnamed'][:4])}")
-    assert result['maxDisclosureDepth'] < 2, (name, 'disclosure depth', result['maxDisclosureDepth'])
+    if result['visible'] <= 0:
+        violation(name, 'no-visible-semantic-nodes', selector)
+        coverage = 0
+        critical_coverage = 1
+    else:
+        coverage = result['high'] / result['visible']
+        critical_coverage = 1 if result['critical'] == 0 else result['criticalHigh'] / result['critical']
+    if coverage < .95:
+        violation(name, 'coverage', f"{coverage:.4f};unknown={result['unknownVisible']}")
+    if critical_coverage != 1:
+        violation(name, 'critical-coverage', f"{critical_coverage:.4f};unknown={result['unknownCritical']}")
+    if result['fakeVisible']:
+        violation(name, 'fake-visible', result['fakeVisible'])
+    if result['unknownCritical']:
+        violation(name, 'unknown-critical', result['unknownCritical'])
+    for item in result['smallTargets']:
+        violation(name, 'small-target', f"{item['key']}:{item['via']}:{item['h']:.1f}px")
+    for item in result['unnamed']:
+        violation(name, 'unnamed', item)
+    if result['maxDisclosureDepth'] >= 2:
+        violation(name, 'disclosure-depth', result['maxDisclosureDepth'])
     INVENTORY.append({'name': name, 'selector': selector, 'coverage': coverage, 'criticalCoverage': critical_coverage, **result})
     return result
 
@@ -353,7 +376,7 @@ try:
         unknown = sum(x['unknownVisible'] for x in INVENTORY)
         fake = sum(x['fakeVisible'] for x in INVENTORY)
         out = {
-            'ok': True,
+            'ok': not VIOLATIONS,
             'profile': 'surface-truth-cognitive-disclosure-2.5',
             'snapshots': len(INVENTORY),
             'visibleSemanticObjects': visible,
@@ -364,17 +387,30 @@ try:
             'criticalCoverage': critical_high / critical if critical else 1,
             'unknownVisible': unknown,
             'fakeVisible': fake,
+            'violationCount': len(VIOLATIONS),
+            'violations': VIOLATIONS,
             'procedures': ['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],
             'claimBoundary': 'Rendered census and cognitive-ergonomics proxies; not neuroscience experiment, human usability evidence, legal opinion, certification or deployment security assessment.',
             'inventory': INVENTORY,
         }
-        assert out['highConfidenceCoverage'] >= .95, out['highConfidenceCoverage']
-        assert out['criticalCoverage'] == 1, out['criticalCoverage']
-        assert fake == 0, fake
+        if out['highConfidenceCoverage'] < .95:
+            violation('aggregate', 'coverage', out['highConfidenceCoverage'])
+        if out['criticalCoverage'] != 1:
+            violation('aggregate', 'critical-coverage', out['criticalCoverage'])
+        if fake:
+            violation('aggregate', 'fake-visible', fake)
+        out['ok'] = not VIOLATIONS
+        out['violationCount'] = len(VIOLATIONS)
+        out['violations'] = VIOLATIONS
         (ART / 'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(
             json.dumps(out, indent=2, ensure_ascii=False), encoding='utf8'
         )
-        print(json.dumps({k: v for k, v in out.items() if k != 'inventory'}))
+        print(json.dumps({k: v for k, v in out.items() if k not in {'inventory','violations'}}))
+        if VIOLATIONS:
+            publish_violations()
+            PHASE = 'census-aggregate'
+            preview = '; '.join(f"{v['name']}:{v['kind']}:{v['detail']}" for v in VIOLATIONS[:8])
+            raise AssertionError(f"{len(VIOLATIONS)} census violations: {preview}")
         ctx.close()
         browser.close()
 except BaseException as exc:
