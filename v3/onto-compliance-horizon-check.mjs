@@ -21,9 +21,15 @@ for(const bp of ['@media(max-width:900px)','@media(max-width:820px)'])assert.ok(
 assert.ok(css.includes('.service-nav')&&css.includes('overflow-x:auto'),'tablet navigation must own overflow locally');
 assert.equal(css.includes('body{overflow-x:hidden}'),false,'document overflow must not be masked at body level');
 const imports=[...styles.matchAll(/@import\s+url\(['"]?([^)'"\s]+)['"]?\)/g)].map(match=>match[1]);
-assert.deepEqual(imports.slice(-5),['./onto-compliance-v1.css','./procedure-finetuning-1-4.css','./procedure-executive-harmonization-1-5.css','./visual-epistemic-runtime.css','./ui-convergence.css'],'executive harmonization must remain inside the Onto-Compliance horizon, above screenshot-derived visual semantics and below the final palette-neutral convergence resolver');
+const ordered=['./onto-compliance-v1.css','./procedure-finetuning-1-4.css','./procedure-executive-harmonization-1-5.css','./visual-epistemic-runtime.css'];
+for(let i=1;i<ordered.length;i++)assert.ok(imports.indexOf(ordered[i-1])>=0&&imports.indexOf(ordered[i])>imports.indexOf(ordered[i-1]),`Onto-Compliance horizon order drift: ${ordered[i-1]} -> ${ordered[i]}`);
+const shellIndex=imports.indexOf('./shell-admin-demo-2-6.css'),closureIndex=imports.indexOf('./shell-admin-demo-2-6-closure.css'),finalIndex=imports.indexOf('./ui-convergence.css');
+assert.ok(shellIndex>imports.indexOf('./visual-epistemic-runtime.css'),'shell/admin/demo convergence must remain inside the visual horizon');
+assert.equal(closureIndex,shellIndex+1,'shell/admin/demo closure must remain adjacent to its bounded layer');
+assert.equal(finalIndex,imports.length-1,'ui-convergence.css must remain the final cascade resolver');
+assert.ok(closureIndex<finalIndex,'shell/admin/demo geometry must resolve before final convergence');
 assert.doesNotMatch(convergence,/(?:^|[;{])\s*(?:color|background(?:-color)?)\s*:/m,'final UI convergence resolver must not create an independent palette authority');
 for(const token of ['[data-compact-row]','[data-compact-tabs]','surface-information-detail','ictc-manifest-detail'])assert.ok(convergence.includes(token),`final geometry convergence missing ${token}`);
 for(const token of ['Identity','Action','Work','Evidence / Trace','M+100','G+100','Rice'])assert.ok(doc.includes(token),`design convergence contract missing ${token}`);
 for(const token of ["'work':'#monitoringView > .section-block'","'work':'#incidentsView > .section-block'",'coverage-scope-editors-expanded-by-default','auditor-primary-leaves-process','epistemic-family-convergence','posture-proof-method-count'])assert.ok(browser.includes(token),`runtime visual audit missing ${token}`);
-console.log('onto-compliance-horizon-check: ok (canonical authority + procedure journey + executive harmonization + screenshot semantics + final convergence)');
+console.log('onto-compliance-horizon-check: ok (canonical authority + bounded shell convergence + final geometry resolver)');

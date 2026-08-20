@@ -111,16 +111,18 @@ def audit_proof(page,role,vp,width):
     if re.search(r'\b\d+(?:[.,]\d+)?\s*%',text): anomaly('posture-percentage-verdict',role,vp,'proof',re.findall(r'\b\d+(?:[.,]\d+)?\s*%',text),'no compliance/certainty percentage')
     no_overflow(page,role,vp,'proof'); one_h1(page,role,vp,'proof'); shot(page,role,vp,'proof',width)
 
-def epistemic_network_coverage(page,role,expected_ids):
-    seen=set(); offset=0; limit=200; pages=0
+def epistemic_network_coverage(page,role,known_ids):
+    seen=set(); offset=0; limit=200; pages=0; exhausted=False
     for pages in range(1,41):
         data=api_json(page,f'/api/epistemic-lattice?offset={offset}&limit={limit}',role)
         atoms=data.get('atoms',[])
         seen.update(str(a.get('procedureId')) for a in atoms if a.get('procedureId'))
         projection=data.get('projection',{})
-        if int(projection.get('fromRevision') or 0)<=1 or int(projection.get('toRevision') or 0)<=0: break
+        if int(projection.get('fromRevision') or 0)<=1 or int(projection.get('toRevision') or 0)<=0:
+            exhausted=True; break
         offset+=limit
-    return {'seen':sorted(seen),'missing':sorted(set(expected_ids)-seen),'pages':pages,'offset':offset}
+    known=set(known_ids); unknown=sorted(seen-known)
+    return {'seen':sorted(seen),'unknown':unknown,'pages':pages,'offset':offset,'exhausted':exhausted}
 
 def audit_ep(page,role,vp,width,expected_ids,revision):
     page.locator('.service-nav [data-service="processes"]').click(); meta=page.locator('#epistemicMetaCard')
@@ -136,7 +138,8 @@ def audit_ep(page,role,vp,width,expected_ids,revision):
         if actual_current!=expected_current: anomaly('epistemic-current-page-projection-mismatch',role,vp,'EP-01',actual_current,expected_current)
         if role not in network_coverage_checked:
             coverage=epistemic_network_coverage(page,role,expected_ids)
-            if coverage['missing']: anomaly('epistemic-seven-process-network-coverage',role,vp,'EP-01',coverage,sorted(expected_ids))
+            if coverage['unknown']: anomaly('epistemic-network-unknown-procedure',role,vp,'EP-01',coverage,sorted(expected_ids))
+            if not coverage['exhausted']: anomaly('epistemic-network-pagination-not-exhausted',role,vp,'EP-01',coverage,'walk reaches revision 1 within 40 pages')
             network_coverage_checked.add(role)
         no_overflow(page,role,vp,'EP-01'); one_h1(page,role,vp,'EP-01'); shot(page,role,vp,'EP-01',width)
     elif meta.count() and meta.is_visible(): anomaly('epistemic-meta-visible-to-user',role,vp,'processes',True,False)
