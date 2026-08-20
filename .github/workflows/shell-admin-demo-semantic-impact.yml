@@ -1,0 +1,34 @@
+name: shell-admin-demo-semantic-impact
+on: [pull_request, workflow_dispatch]
+permissions: {contents: read}
+concurrency:
+  group: shell-admin-demo-semantic-impact-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-impact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: syntax, cmd: 'node scripts/syntax-check.mjs'}
+          - {name: contract-2-6, cmd: 'node v3/shell-admin-demo-check-2-6.mjs'}
+          - {name: saturation-2-6, cmd: 'node v3/shell-admin-demo-saturation-2-6.mjs'}
+          - {name: demo-seed, cmd: 'node v3/demo-seed-contract-check.mjs'}
+          - {name: native-shell, cmd: 'node v3/native-shell-check.mjs'}
+          - {name: v1-9-experience, cmd: 'node v3/v1-9-experience-check.mjs'}
+          - {name: refined-product, cmd: 'node v3/refined-product-check.mjs'}
+          - {name: active-experience, cmd: 'node v3/ui-active-experience-audit.mjs'}
+          - {name: constitution, cmd: 'node v3/experience-constitution-check.mjs'}
+          - {name: procedure-contracts, cmd: 'node v3/procedure-contracts-check.mjs'}
+          - {name: ux-language, cmd: 'node v3/ux-language-polish-check.mjs'}
+          - {name: visual-grace, cmd: 'node v3/visual-grace-lexical-epistemic-check.mjs'}
+          - {name: visual-runtime, cmd: 'node v3/visual-epistemic-runtime-check.mjs'}
+    name: semantic-impact-${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: ${{ matrix.cmd }}
