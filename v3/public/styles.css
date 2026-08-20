@@ -20,6 +20,7 @@
 @import url('./procedure-executive-harmonization-1-5.css');
 @import url('./visual-epistemic-runtime.css');
 @import url('./ui-convergence.css');
+@import url('./shell-admin-demo-2-6.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
