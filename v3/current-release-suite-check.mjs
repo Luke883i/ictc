@@ -1,6 +1,10 @@
 import { access, readFile } from 'node:fs/promises';
 import { CURRENT_RUNTIME, CURRENT_SEMANTIC } from './current-release-suite.mjs';
 import { ASSURANCE_COVERAGE_CONTRACT } from './assurance-risk-model.mjs';
+await import('./semantic-closure-2-8-runtime-check.mjs');
+await import('./semantic-closure-2-8-causality-check.mjs');
+await import('./semantic-closure-2-8-ui-check.mjs');
+await import('./semantic-closure-2-8-saturation.mjs');
 await import('./procedure-finetuning-2-3-check.mjs');
 await import('./procedure-finetuning-2-3-saturation.mjs');
 await import('./procedure-record-contract-2-4-check.mjs');
@@ -26,4 +30,4 @@ check(new Set(CURRENT_SEMANTIC).size===CURRENT_SEMANTIC.length,'semantic suite c
 check(new Set(CURRENT_RUNTIME).size===CURRENT_RUNTIME.length,'runtime suite contains duplicate check paths');
 for(const [family,contract] of Object.entries(ASSURANCE_COVERAGE_CONTRACT)){const suite=contract.mode==='runtime'?CURRENT_RUNTIME:CURRENT_SEMANTIC;check(contract.candidates.some(path=>suite.includes(path)),`assurance coverage family missing from ${contract.mode} suite: ${family}`);}
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0'}));
+console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0',semanticClosureContract:'2.8.0'}));
