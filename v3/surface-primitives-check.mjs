@@ -1,33 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import './information-density-check.mjs';
-
-const read = path => readFile(new URL(path, import.meta.url), 'utf8');
-const [styles, css, js, active, frame] = await Promise.all([
-  read('./public/styles.css'),
-  read('./public/surface-primitives.css'),
-  read('./public/ui/surface-primitives.js'),
-  read('./public/ui/active-experience.js'),
-  read('./public/ui/procedure-frame.js')
-]);
-
-assert.ok(styles.includes("@import url('./surface-primitives.css');"), 'surface primitive css missing from canonical cascade');
-for (const token of ['.surface-canvas', '.surface-toolbar', '.surface-mode-switch', '.surface-data-region', '.surface-raw', '--surface-control-min:44px', 'prefers-reduced-motion']) {
-  assert.ok(css.includes(token), `surface primitive css missing ${token}`);
-}
-assert.ok(css.includes(':where(button,summary,[role="button"])'), 'canonical surface interactive target grammar missing');
-for (const surface of ['home', 'processes', 'monitoring', 'incidents', 'grc', 'proof', 'epistemic']) {
-  assert.ok(js.includes(`${surface}:`), `surface primitive root missing ${surface}`);
-}
-for (const token of ['surface-canvas', 'surface-panel', 'surface-toolbar', 'surface-data-region', 'ictcSurfacePrimitives', 'markCompactRows', 'surface-information-detail', 'ictc-manifest-detail', 'compactTabs']) {
-  assert.ok(js.includes(token), `surface primitive runtime missing ${token}`);
-}
-assert.ok(js.includes('applyPending=false'), 'surface primitive events must share a coalescing owner');
-assert.ok(js.includes('scheduleSurfacePrimitives'), 'surface primitive coalescer missing');
-assert.ok(js.includes("['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed']"), 'surface primitive event ownership drift');
-assert.ok(active.includes('INSTALL_ORDER'), 'active experience install order should be explicit and inspectable');
-assert.ok(active.includes('installSurfacePrimitives'), 'active experience does not install canonical surface primitives');
-for (const token of ['semanticSignals', 'metric.label', "entryLabel:readOnly?'Consulta':'Gestisci'", 'data-compact-row']) assert.ok(frame.includes(token), `canonical process compression missing ${token}`);
-for (const retired of ['<span>Processo di Compliance</span>', '<b>Scopo del processo</b>', '<small>da vedere</small>', '<small>registrazioni</small>', 'Nessuna attenzione aperta']) assert.equal(frame.includes(retired), false, `retired repeated process framing returned: ${retired}`);
-
-console.log('surface-primitives-check: ok (shared primitives + density saturation + horizontal-first rows + canonical process signals)');
+const read=path=>readFile(new URL(path,import.meta.url),'utf8');
+const [styles,css,js,active,frame]=await Promise.all([read('./public/styles.css'),read('./public/surface-primitives.css'),read('./public/ui/surface-primitives.js'),read('./public/ui/active-experience.js'),read('./public/ui/procedure-frame.js')]);
+assert.ok(styles.includes("@import url('./surface-primitives.css');"),'surface primitive css missing from canonical cascade');
+for(const token of ['.surface-canvas','.surface-toolbar','.surface-mode-switch','.surface-data-region','.surface-raw','--surface-control-min:44px','prefers-reduced-motion'])assert.ok(css.includes(token),`surface primitive css missing ${token}`);
+assert.ok(css.includes(':where(button,summary,[role="button"])'),'canonical surface interactive target grammar missing');
+for(const surface of ['home','processes','monitoring','incidents','grc','proof','epistemic'])assert.ok(js.includes(`${surface}:`),`surface primitive root missing ${surface}`);
+for(const token of ['surface-canvas','surface-panel','surface-toolbar','surface-data-region','ictcSurfacePrimitives','markCompactRows','surface-information-detail','ictc-manifest-detail','compactTabs','SURFACE_LABELS.home'])assert.ok(js.includes(token),`surface primitive runtime missing ${token}`);
+assert.equal(js.includes('data-service="home">Oggi</button>'),false,'proof context must consume canonical Home label instead of hardcoding retired Oggi');
+assert.ok(js.includes('applyPending=false'),'surface primitive events must share a coalescing owner');assert.ok(js.includes('scheduleSurfacePrimitives'),'surface primitive coalescer missing');assert.ok(js.includes("['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed']"),'surface primitive event ownership drift');assert.ok(active.includes('INSTALL_ORDER'),'active experience install order should be explicit and inspectable');assert.ok(active.includes('installSurfacePrimitives'),'active experience does not install canonical surface primitives');for(const token of ['semanticSignals','metric.label',"entryLabel:readOnly?'Consulta':'Gestisci'",'data-compact-row'])assert.ok(frame.includes(token),`canonical process compression missing ${token}`);for(const retired of ['<span>Processo di Compliance</span>','<b>Scopo del processo</b>','<small>da vedere</small>','<small>registrazioni</small>','Nessuna attenzione aperta'])assert.equal(frame.includes(retired),false,`retired repeated process framing returned: ${retired}`);console.log('surface-primitives-check: ok (shared primitives + canonical navigation authority + density saturation + horizontal-first rows + canonical process signals)');

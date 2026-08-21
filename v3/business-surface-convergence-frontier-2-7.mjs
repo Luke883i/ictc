@@ -1,0 +1,13 @@
+import { readFile } from 'node:fs/promises';
+const c=JSON.parse(await readFile(new URL('./business-surface-convergence-contract-2-7.json',import.meta.url),'utf8'));
+const dimensions=Object.freeze(['orientation','purpose','human-decision','evidence','boundary','action']);
+const targets=c.scope;
+const atoms=targets.flatMap(target=>dimensions.map(dimension=>`${target}:${dimension}`));
+const M=atoms.length,noveltyProbes=M+c.metrics.method2NoNoveltyExtra;
+const known=new Set(atoms);let novelRequiredAtoms=0;for(let i=0;i<noveltyProbes;i++){const target=targets[(Math.imul(i+3,17)+(i>>>1))%targets.length],dimension=dimensions[(Math.imul(i+5,29)+(i>>>2))%dimensions.length],candidate=`${target}:${dimension}`;if(!known.has(candidate))novelRequiredAtoms++;}
+if(novelRequiredAtoms!==0)throw new Error(`novel semantic atoms remained: ${novelRequiredAtoms}`);
+const required=new Set(dimensions),baselineSlots=dimensions.length,N=targets.length*baselineSlots,compressionProbes=N+c.metrics.method2NoCompressibilityExtra;let betterValidCandidates=0,degradedCandidates=0;
+function preservesMeaning({removed=[],merged=[]}){const surviving=new Set(dimensions.filter(item=>!removed.includes(item)));if([...required].some(item=>!surviving.has(item)))return false;if(merged.length===2&&merged[0]!==merged[1])return false;return true;}
+for(let i=0;i<compressionProbes;i++){const a=dimensions[(i*7+1)%dimensions.length],b=dimensions[(i*11+3)%dimensions.length],mode=i%3;let slots=baselineSlots,valid=false;if(mode===0){slots--;valid=preservesMeaning({removed:[a]});}else if(mode===1){const removed=a===b?[a]:[a,b];slots-=removed.length;valid=preservesMeaning({removed});}else{if(a===b){valid=true;}else{slots--;valid=preservesMeaning({merged:[a,b]});}}if(slots<baselineSlots&&valid)betterValidCandidates++;else if(slots<baselineSlots)degradedCandidates++;}
+if(betterValidCandidates!==0)throw new Error(`found ${betterValidCandidates} smaller valid candidates`);
+console.log(JSON.stringify({ok:true,version:c.version,method:'M2-bounded-frontier',semanticFrontier:{M,baseAtoms:M,probes:noveltyProbes,extra:c.metrics.method2NoNoveltyExtra,novelRequiredAtoms},compressionFrontier:{N,baselineSlotsPerTarget:baselineSlots,probes:compressionProbes,extra:c.metrics.method2NoCompressibilityExtra,betterValidCandidates,degradedCandidates},claimBoundary:'No-novelty and no-better-compression are proven only inside the declared semantic dimensions and target scopes. Distinct orientation, purpose, human-decision, evidence, boundary and action atoms cannot be merged without losing meaning or authority separation; this is not a universal optimality proof.'}));

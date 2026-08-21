@@ -29,7 +29,7 @@ try:
   for code,needle in boundaries.items():
    PHASE=f'grc-{code}';open_process(page,code);expect(page.locator('#grcView [data-surface-information-value]')).to_have_count(0);frame=page.locator('#grcWorkspace > .procedure-frame');expect(frame).to_be_visible();boundary=page.locator('#grcWorkspace .executive-boundary');expect(boundary).to_be_visible();expect(boundary).to_contain_text(needle);no_overflow(page)
   PHASE='proof';open_view(page,'proof');assert_compact_brief(page,'proof','non sono certificazione')
-  PHASE='epistemic';open_view(page,'epistemic');assert_compact_brief(page,'epistemic','non crea verità sostanziale')
+  PHASE='epistemic';open_view(page,'epistemic');assert_compact_brief(page,'epistemic','non crea applicabilità')
   PHASE='admin';open_view(page,'home');open_profile(page);page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click');admin=page.locator('#adminCenter');expect(admin).to_be_visible();note=admin.locator('[data-dialog-information-value="admin"]');expect(note).to_contain_text('Telemetria AI');expect(note.locator('summary')).to_have_text('Perché, prova e limite');page.keyboard.press('Escape')
   PHASE='settings';open_profile(page);page.locator('#stableProfileMenu #openSettings').dispatch_event('click');settings=page.locator('#settingsDialog');expect(settings).to_be_visible();note=settings.locator('[data-dialog-information-value="aiSettings"]');expect(note).to_contain_text('non rende i suoi output veri');expect(note.locator('summary')).to_have_text('Perché, prova e limite');page.keyboard.press('Escape')
   PHASE='mobile';

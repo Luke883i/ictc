@@ -12,6 +12,8 @@ for(const forbidden of ["'In ordine'",'Nessuna attenzione aperta','<span>Process
 assert.ok(anatomy.includes('function workAnchor(')&&anatomy.includes('anchor.after(box)'),'technical anatomy must own placement after native work');
 assert.equal(anatomy.includes('host.prepend(box)'),false,'technical trace must not prepend ahead of native work');
 assert.ok(anatomy.includes('queueMicrotask(render)'),'anatomy rerender must converge in the current event turn');
+assert.ok(anatomy.includes('SURFACE_LABELS.proof'),'procedure anatomy must consume canonical proof-surface label authority');
+assert.equal(anatomy.includes('Postura ICTC'),false,'procedure anatomy must not reintroduce retired proof-surface naming');
 assert.ok(market.includes('procedure senza attenzione aperta'),'home summary implementation must use observational attention language');
 assert.equal(/processi in ordine|>In ordine</i.test(market),false,'home must not convert absence of attention into a favorable verdict');
 for(const token of ['market-scope-editor','scopeOptions(decision)',"decision===value?'selected':''",'f.scope?.reason'])assert.ok(market.includes(token),`coverage disclosure missing ${token}`);
@@ -31,5 +33,5 @@ assert.ok(closureIndex<finalIndex,'shell/admin/demo geometry must resolve before
 assert.doesNotMatch(convergence,/(?:^|[;{])\s*(?:color|background(?:-color)?)\s*:/m,'final UI convergence resolver must not create an independent palette authority');
 for(const token of ['[data-compact-row]','[data-compact-tabs]','surface-information-detail','ictc-manifest-detail'])assert.ok(convergence.includes(token),`final geometry convergence missing ${token}`);
 for(const token of ['Identity','Action','Work','Evidence / Trace','M+100','G+100','Rice'])assert.ok(doc.includes(token),`design convergence contract missing ${token}`);
-for(const token of ["'work':'#monitoringView > .section-block'","'work':'#incidentsView > .section-block'",'coverage-scope-editors-expanded-by-default','auditor-primary-leaves-process','epistemic-family-convergence','posture-proof-method-count'])assert.ok(browser.includes(token),`runtime visual audit missing ${token}`);
+for(const token of ["'work':'#monitoringView > .section-block'","'work':'#incidentsView > .section-block'",'coverage-scope-editors-expanded-by-default','auditor-primary-leaves-process','epistemic-family-convergence','evidence-proof-method-count'])assert.ok(browser.includes(token),`runtime visual audit missing ${token}`);
 console.log('onto-compliance-horizon-check: ok (canonical authority + bounded shell convergence + final geometry resolver)');

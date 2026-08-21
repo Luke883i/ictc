@@ -1,0 +1,10 @@
+/* Business Surface Convergence 2.7 closure: canonical chrome palette only. */
+html[data-business-surface-convergence="2.7.0"] #stableLegalFooter,
+html[data-business-surface-convergence="2.7.0"] .stable-legal-footer{
+  background-color:var(--business-blue-100,#dcefff)!important;
+  background-image:linear-gradient(180deg,var(--business-blue-100,#dcefff),var(--business-blue-50,#eaf6ff))!important;
+  border-top-color:var(--business-blue-200,#bddff7)!important;
+  color:var(--business-ink,#153247)!important;
+}
+html[data-business-surface-convergence="2.7.0"] #stableLegalFooter a,
+html[data-business-surface-convergence="2.7.0"] .stable-legal-footer a{color:var(--business-blue-700,#14557f)!important;}

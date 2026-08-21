@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0.0",
+  "control": "BUSINESS-SURFACE-CONVERGENCE-2.7",
+  "baseSha": "8a4beffdbd9123dc79d88bd2d08656ab7aa552bc",
+  "targets": ["navigation", "home", "procedure-hub", "monitoring", "incidents", "objects", "coverage", "actions", "risks", "assurance", "ictc-evidence", "global-chrome"],
+  "method1": {"mutationsPerTarget": 10000000, "targetCount": 12, "requiredKilledPerTarget": 10000000},
+  "method2": {"semanticExtra": 10000, "compressionExtra": 10000, "requiredNovelAtoms": 0, "requiredBetterValidCompressions": 0},
+  "authority": {"newFinalOwners": 0, "writeRoutesChanged": 0, "accessPolicyChanged": 0, "procedureTransitionsChanged": 0},
+  "evidenceBoundary": "Bounded deterministic falsification plus browser/runtime checks; not independent assurance or universal usability proof."
+}

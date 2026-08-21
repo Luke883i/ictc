@@ -1,4 +1,5 @@
 import { esc, state } from './common.js';
+import { SURFACE_LABELS } from './product-copy.js';
 
 let installed = false;
 
@@ -130,6 +131,7 @@ function renderOne(id) {
   box.className = 'procedure-anatomy';
   box.dataset.procedureAnatomy = id;
   const procedureLabel = current.code || current.id || id;
+  const proofAction = `Apri ${SURFACE_LABELS.proof}`;
   box.innerHTML = `<summary aria-label="Contesto e tracciabilità"><span>Contesto e tracciabilità</span><small>${esc(decisions)} decisioni · ${esc(versions)} versioni</small></summary>
     <div class="procedure-anatomy-grid">
       <div><small>Ambito visibile</small><strong>${esc(scopeLabels[access] || access)}</strong></div>
@@ -139,7 +141,7 @@ function renderOne(id) {
     </div>
     <div class="procedure-anatomy-epistemic" aria-label="Legenda epistemica">${epistemicLegend()}</div>
     <p>${esc(current.claimBoundary)}</p>
-    <div class="procedure-anatomy-actions"><button type="button" data-service="proof" aria-label="Apri Postura ICTC per ${esc(procedureLabel)}">Apri Postura ICTC</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
+    <div class="procedure-anatomy-actions"><button type="button" data-service="proof" aria-label="${esc(proofAction)} per ${esc(procedureLabel)}">${esc(proofAction)}</button><small>L’AI assiste; non diventa autorità decisionale.</small></div>`;
 
   const anchor = workAnchor(host);
   if (anchor) anchor.after(box);

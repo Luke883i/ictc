@@ -95,6 +95,7 @@ jobs:
             echo "browser-journeys:start $script"
             if python -u "$script"; then echo "browser-journeys:pass $script"; return 0; fi
             post_browser_failure "$script"
+            FAILED_BROWSER_SCRIPT="$script" node scripts/browser-failure-provenance.mjs || true
             return 1
           }
           for script in \
@@ -140,6 +141,9 @@ jobs:
   epistemic-professional-browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    permissions:
+      contents: read
+      statuses: write
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -177,13 +181,21 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: Isolated server-backed EP-01 professional DEMO matrix
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -Eeuo pipefail
           trap './ictc.sh stop --profile current || true' EXIT
           export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=47561 PORT=47561 ICTC_SCHEDULER_TICK_MS=100000
-          python -u v3/browser-epistemic-professional-demo.py
-          cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-epistemic-professional-demo-server.log
+          status=0
+          python -u v3/browser-epistemic-professional-demo.py || status=$?
+          cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-epistemic-professional-demo-server.log || true
+          if [[ "$status" -ne 0 ]]; then
+            FAILED_BROWSER_SCRIPT='v3/browser-epistemic-professional-demo.py' node scripts/browser-failure-provenance.mjs || true
+            exit "$status"
+          fi
       - name: Stop DEMO runtime
         if: always()
         shell: bash
