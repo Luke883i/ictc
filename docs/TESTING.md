@@ -7,7 +7,7 @@ npm test
 npm run release:check
 ```
 
-`npm test` = semantic current + runtime current. I rail storici restano regressioni/diagnostica; non ridefiniscono `v3/release-identity.json`.
+`npm test` esegue `test:current`, cioè semantic current + runtime current. I rail storici restano regressioni/diagnostica; non ridefiniscono `v3/release-identity.json`.
 
 ## Closure 2.8
 
@@ -54,7 +54,7 @@ Compression mutant: rimuovere un owner/guard/binding necessario deve riaprire al
 
 ## Exact-head
 
-Il colore appartiene allo SHA eseguito. Dopo una correzione, il verde del commit precedente è genealogia. PR acceptance richiede gli artifact/check della PR HEAD corrente; `skipped` significa non eseguito, non passed.
+Il colore appartiene allo SHA eseguito. Dopo una correzione, il verde del commit precedente è genealogia. PR acceptance richiede gli artifact/check della exact PR HEAD corrente; `skipped` significa non eseguito, non passed.
 
 ## Browser / accessibilità
 
