@@ -16,5 +16,19 @@ let p=dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:0});a
 const business=reconcileReviewNeeds(state,{at:asOf,revision:1,context:{validAsOf:asOf,stateRevision:1},causeMode:'business',causation:'business-state-change'}),clock=reconcileReviewNeeds(state,{at:asOf,revision:1,context:{validAsOf:asOf,stateRevision:1},causeMode:'clock',causation:'clock-sweep'});assert.equal(business.created.length,5,'business reconciliation must materialize only dependency changes');assert.equal(clock.created.length,1,'clock sweep must materialize the due attestation separately');assert.equal(state.reviewNeeds.length,6);
 let inbox=canonicalReviewInbox(state,actor);assert.equal(inbox.dependencyReviewAuthority,'persisted-review-need-ledger');assert.equal(inbox.counts.reviewNeeded,6);const materialized=new Set(inbox.items.filter(x=>x.derived).map(x=>`${x.processId}:${x.subject.id}`));for(const key of['objects:obj-1','coverage:map-1','actions:act-1','risks:risk-1','assurance:assure-1','monitoring:src-1'])assert.ok(materialized.has(key),key);assert.ok(inbox.items.filter(x=>x.derived).every(x=>x.authority==='persisted-review-need-ledger'));
 object.attestationDueAt=future;mapping.decisions.at(-1).targetBindings=[{type:'grc-object',id:'obj-1',versionSha256:'v2'}];action.verifications.at(-1).evidenceBindings=[{scope:'internal',type:'grc-object',id:'obj-1',subjectVersionSha256:'v2'}];risk.reviews.at(-1).at='2026-05-01T00:00:00.000Z';assurance.approvedAnswers[0].evidenceBindings=[{scope:'internal',type:'grc-object',id:'obj-1',subjectVersionSha256:'v2'}];source.impactAssessments.at(-1).sourceObservationSha256=sha256(source.observations.at(-1));p=dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1});assert.equal(p.total,0,'candidate derivation clears when the current basis no longer triggers review');inbox=canonicalReviewInbox(state,actor);assert.equal(inbox.counts.reviewNeeded,6,'materialized review work remains open until a later human decision resolves it');
-risk.treatments.at(-1).reviewAt=past;p=dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1});assert.equal(p.total,1);assert.equal(p.items[0].processId,'risks');assert.equal(p.items[0].causes[0].kind,'scheduled-review-due');risk.treatments.at(-1).reviewAt=future;assert.equal(dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1}).total,0);
-console.log('dependency-review-check: ok (candidate derivation separate from persisted business/clock ReviewNeed authority)');
+
+// The March legacy treatment belongs to the prior assessment cycle and must not leak into the May review.
+risk.treatments.at(-1).reviewAt=past;
+p=dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1});
+assert.equal(p.total,0,'treatment preceding the current risk review must not create a scheduled review in the new cycle');
+
+// Legacy treatments without assessmentSha256 remain compatible only when they are temporally subsequent to the effective review.
+risk.treatments.push({decision:'mitigate',reason:'legacy current-cycle treatment',at:'2026-05-02T00:00:00.000Z',reviewAt:past});
+p=dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1});
+assert.equal(p.total,1);
+assert.equal(p.items[0].processId,'risks');
+assert.equal(p.items[0].causes[0].kind,'scheduled-review-due');
+risk.treatments.at(-1).reviewAt=future;
+assert.equal(dependencyReviewProjection(state,actor,{validAsOf:asOf,stateRevision:1}).total,0);
+
+console.log('dependency-review-check: ok (candidate derivation + persisted ReviewNeed authority + cycle-bound legacy treatment compatibility)');

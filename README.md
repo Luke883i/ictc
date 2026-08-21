@@ -1,145 +1,153 @@
-# ICTC
+# ICTC — Integrated Compliance Tower Control
 
-ICTC è un sistema operativo di compliance per registrare lavoro, decisioni, evidenze e relazioni attraverso **sette Processi di Compliance bounded**, mantenendo separati fatti registrati, proposte AI, review umane e conclusioni che richiedono autorità esterna.
+ICTC è un **sistema locale di governance della conoscenza di compliance**. Registra oggetti di lavoro, trasformazioni, decisioni umane, evidenze e relazioni attraverso sette Processi di Compliance bounded, preservando la differenza tra ciò che ICTC ha osservato, ciò che l'AI propone, ciò che una persona decide e ciò che richiederebbe autorità o assurance esterna.
 
-ICTC non è una certificazione, un parere legale, un auditor autonomo né un security perimeter. Un controllo presente, un mapping, un hash o un receipt non dimostrano da soli conformità, applicabilità, efficacia o sufficienza probatoria.
+La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**.
 
-## Il prodotto
+ICTC non è una certificazione, un parere legale, un auditor autonomo, un motore di verdetti di conformità né un security perimeter. Un mapping non prova conformità o efficacia; un hash non prova autenticità esterna; un rating di rischio non è una probabilità oggettiva; un'approvazione interna non è assurance indipendente.
 
-La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**. Da **Evidenze ICTC**, admin e auditor possono inoltre aprire **EP-01 · Reticolo epistemico**, una meta-procedura trasversale che non diventa un ottavo processo business.
+## Modello logico
 
-I sette Processi di Compliance sono:
+La regola costituzionale è: **registrare non significa concludere**. Il prodotto mantiene esplicitamente queste non-equivalenze:
 
-| Codice | Processo di Compliance | Oggetto operativo |
+```text
+osservato ≠ vero nel mondo
+proposto ≠ deciso
+mapping ≠ conformità / efficacia
+completato ≠ chiuso e verificato
+evidenza ≠ conclusione
+rating ≠ probabilità oggettiva
+approvazione interna ≠ assurance indipendente
+integrità software ≠ autenticità esterna
+CI verde ≠ deployment assurance
+```
+
+Il flusso cognitivo comune è:
+
+```text
+oggetto governato
+  → trasformazione registrata
+  → checkpoint umano quando richiesto
+  → decisione version-bound
+  → evidenza / receipt / limite
+  → ReviewNeed se cambia la base
+  → nuova decisione, senza riscrivere retroattivamente la precedente
+```
+
+ICTC mantiene tre reticoli distinti e correlati, che non devono collassare in un unico grafo onnisciente:
+
+1. **reticolo business** — handoff tra i sette processi; crea draft nativi, non trasferisce decisioni;
+2. **reticolo epistemico/versionale** — SubjectVersion, EpistemicStep, basis, producer e causalità;
+3. **reticolo evidenza/claim** — dossier, receipt, claim bounded e limitation.
+
+## I sette Processi di Compliance
+
+| Codice | Processo | Oggetto governato |
 |---|---|---|
-| RN-01 | Monitoraggio normativo | monitoraggi, fonti, requisiti e decisioni di fonte |
-| EC-01 | Eventi e segnalazioni | fatti originati, chiarimenti, formulazioni e stato evento |
-| AO-01 | Inventario | sistemi e oggetti nel perimetro |
-| MC-01 | Controlli e copertura | standard, requisiti e proposte di mapping |
-| AP-01 | Azioni correttive | azioni, owner, scadenze e stato |
-| RC-01 | Rischi compliance | rischi, valutazioni e trattamento |
-| AR-01 | Questionari e verifiche | casi di assurance, domande, risposte e review |
+| RN-01 | Monitoraggio normativo e fonti | fonti, cambiamenti e candidati da verificare |
+| EC-01 | Incidenti e quasi incidenti | fatti, formulazioni/versioni e decisioni su un evento |
+| AO-01 | Inventario di sistemi e oggetti | identità governate di sistemi, servizi, dati, fornitori, processi, policy e controlli |
+| MC-01 | Standard e Controlli | standard, requisiti, uso organizzativo, applicabilità e mapping |
+| AP-01 | Azioni correttive | impegni di remediation fino alla chiusura verificata |
+| RC-01 | Rischi di compliance | scenari, assessment inerenti/residui, trattamento e review |
+| AR-01 | Questionari e verifiche | richieste, response-set versionati, evidenze e limiti |
 
-Ogni processo può creare un record iniziale compatibile in un altro processo tramite il contratto cross-process, senza bypassare RBAC, policy o normalizzatore del target.
+**EP-01 · Reticolo epistemico** è cross-cutting e non diventa un ottavo processo business. Osserva la storia semantica registrata e le derivazioni bounded; non crea autorità business da inferenza.
 
-> Nota di compatibilità: identificatori tecnici storici come `procedureRegistry`, `procedureId`, nomi file `procedure-*` e campi API versionati restano invariati finché una migrazione esplicita non li sostituisce. Nel linguaggio utente e nella documentazione corrente il dominio business è **Processi di Compliance**.
+## Infrastruttura tecnologica AS-IS
 
-## Come leggere ICTC
+ICTC è intenzionalmente minimale e locale:
 
-L'esperienza distribuisce la complessità in strati. La superficie operativa segue l'ordine **Identità → Azione → Lavoro → Evidenza/Traccia → Limite**: prima dice in quale Processo di Compliance sei e quale compito puoi svolgere, poi mostra il lavoro nativo; contesto, tracciabilità, dati raw e limiti restano raggiungibili senza interrompere il task primario. Le transizioni visuali sono un enhancement: stato, History e semantica della navigazione restano indipendenti dal movimento e rispettano `prefers-reduced-motion`.
+```text
+browser
+  v3/public · HTML/CSS/JavaScript vanilla
+        ↓ HTTP JSON
+v3/server.mjs
+        ↓
+v3/runtime/* · domain · enterprise · ai
+        ↓
+v3/store.mjs
+        ↓
+v3/sqlite-state-persistence.mjs
+        ↓
+state.sqlite
+  snapshot          stato corrente per revisione
+  audit             ledger hash-linked
+  subject_payload   payload content-addressed
+  subject_version   storia semantica append-oriented
+  epistemic_step    causalità/autorità append-oriented
+        ↓
+canonical projections + write OutcomeEnvelope/receipt
+        ↓
+Home · Processi di Compliance · Evidenze ICTC · EP-01
+```
 
-La composizione UI corrente ha un solo root applicativo (`installActiveExperience`). Il contratto **C0.1** ordina le responsabilità finali come **harmonization → presentation → integrity → journey → annotation**. L'ordine non dipende da timer, profondità di microtask o side-channel tardivi: harmonization normalizza frame e linguaggio; presentation possiede in modo esclusivo la decisione visuale; integrity rinforza invarianti; journey guida senza creare una seconda authority decisionale; annotation classifica intent, authority ed effetto probatorio dei controlli dopo il journey. Il lifecycle coalesca gli eventi, tratta la reentrancy come replay nello stesso flush e fallisce chiuso se non converge. Il contratto è descritto in `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md`.
+Richiede Node.js `>=22.16.0`; il runtime canonico è ESM e usa `node:sqlite`. SQLite opera in WAL con `synchronous=FULL`. ICTC **non è un event store completo**: il current snapshot non viene ricostruito esclusivamente dall'audit ledger. `transactionAsOf` e `validAsOf` sono distinti nel ProjectionContext, ma la selezione storica transaction-time non è ancora implementata e fallisce chiusa.
 
-Un contatore di attenzione è un **segnale operativo**, non un giudizio favorevole: zero elementi da vedere significa soltanto che la proiezione corrente non espone attenzione aperta sotto quel contatore. Non significa conformità, efficacia, completezza o assenza di rischio. All'interno di ciascun Processo di Compliance lo stesso subject non viene contato due volte nel totale di attenzione soltanto perché appartiene anche a una sottocategoria, per esempio `ready-for-review` o `review-due`.
+Il default bind è `127.0.0.1:4173`. TLS, IdP, secret management, backup/restore, malware scanning, monitoring, HA e hardening host restano responsabilità del deployment.
 
-**Evidenze ICTC** risponde, in quest'ordine, a quattro domande: cosa è osservabile, come ICTC lo dimostra, quale evidenza manca e cosa ICTC non conclude. Il metodo di prova è esplicito: **pratica → evidenza → limite**. Decisioni, runtime, requisiti esterni di deployment, standard dichiarati, riferimenti ed export sono livelli successivi.
+## Semantic Closure 2.8
 
-Le mappature a benchmark e standard dichiarati — per esempio WCAG 2.2, WAI-ARIA APG, ISO 9241-210, ISO 37301, NIST CSF 2.0, NIST SSDF ed EU AI Act — descrivono pratiche adottate, evidenze disponibili e limiti. Non sono certificazioni, conclusioni di applicabilità, percentuali di conformità o assessment dell'organizzazione/deployment.
+La slice di consolidamento 2.8 chiude finding di secondo ordine senza introdurre nuovi owner:
 
-**EP-01 · Reticolo epistemico** presenta la stessa proiezione revision-bound in tre modi: `Esplora`, `Flat / raw`, `Proto-grafo`. In Esplora il percorso è **Quadro → Gruppi → Relazioni → Atomo**. Le letture AI restano visivamente e semanticamente separate dai record business.
+- **RC-01 multi-cycle**: una nuova review inerente apre un nuovo ciclo e non resta oscurata da un residual precedente; i nuovi trattamenti sono legati alla review corrente tramite digest. I trattamenti legacy privi di digest restano compatibili soltanto se temporalmente successivi alla review effettiva corrente.
+- **Evidenza esterna**: un URL solamente osservato resta registrabile ma non è `usable` come evidenza decisionale; per essere utilizzabile deve conservare `observedVersion` oppure un digest. ICTC non monitora autonomamente il contenuto remoto.
+- **RN-01 contract parity**: l'attivazione del piano resta un checkpoint umano esplicito ma non richiede una motivazione testuale inesistente nel runtime/UI.
+- **Causalità AI**: le action legacy note che producono output AI sono pin-nate a semantica `proposed`/producer AI; il forward contract resta `epistemicEffects` esplicito. In assenza di effect esplicito, una proposta legacy conserva una basis tecnica registrata tramite predecessor SubjectVersion o digest dell'input del comando.
+- **Handoff cross-process**: i 24 archi hanno predicate intent-specifici; la lineage è bounded (`maxDepth=8`) e blocca il ritorno verso un processo già visitato. Il draft target non eredita decisioni, rating, applicabilità, efficacia o sufficienza probatoria.
+- **UI C0.1**: `ictc:rendered`, `ictc:surface-changed`, `ictc:context-changed` e `ictc:projection-committed` convergono nel lifecycle costituzionale. Gli enhancer 2.7 restano compatibilità non-finale; C0.1 è l'ultimo converger semantico.
+- **OutcomeEnvelope**: il principio corrente è “nessuna entità raw di persistenza in UI”. Le letture usano canonical projections con authority/limits; le write restituiscono OutcomeEnvelope/receipt. Non ogni oggetto letto è letteralmente un envelope schema.
 
-Il profilo **Onto-Compliance Horizon v1** è un contratto di design e assurance: controlla che gerarchia visuale, Processo di Compliance dichiarato e autorità epistemica dicano la stessa cosa. Il profilo **Visual Grace / Lexical / Epistemic v1** aggiunge proporzione, leggibilità, lessico canonico e convergenza del reticolo come osservabili testabili. Nessuno dei due introduce un nuovo processo, score o verdetto di compliance.
+Il DoD completo, la matrice finding→invariante→falsificatore e i residual risk sono in `docs/SEMANTIC_CLOSURE_2_8_DOD.md`.
 
-## Autorità epistemica
+## Autorità e temporalità
 
-La regola centrale è semplice: **registrare non significa concludere**.
+Una mutazione serializzata dal `Store` può produrre SubjectVersion, semantic manifest, EpistemicStep, evento audit e receipt, poi persiste e verifica il readback. I binding servono a sapere **su quale versione** una decisione è stata presa. Se la base interna cambia, `ReviewNeed` apre nuovo lavoro di riesame; la decisione precedente resta nella storia invece di essere trasformata automaticamente in falsa o vera.
 
-- una osservazione descrive ciò che è stato acquisito;
-- una proposta AI resta `proposed`;
-- una review o decisione umana è registrata come azione distinta;
-- ogni statement conserva producer, input, timestamp, limiti e receipt quando previsti;
-- la sola presenza di evidenza non produce un verdetto legale o di compliance.
+Per RC-01 il ciclo corrente è determinato dalla review più recente tra inherent e residual. Un trattamento nuovo conserva `assessmentSha256`; una review successiva apre un nuovo ciclo e richiede un nuovo trattamento se necessario.
 
-L'AI è opzionale. In EP-01 l'inferenza richiede un'esplicita attivazione umana per ogni run; le derivazioni L1–L4 citano i basis atom e i riferimenti impiegati e non promuovono autonomamente stato umano.
+Per evidenze esterne la stabilità minima per un checkpoint probatorio è `observedVersion` o digest. Questo rende esplicita l'identità della base osservata; non prova autenticità, vigenza, completezza o sufficienza sostanziale della fonte.
 
-## Persistenza e integrità AS-IS
+## UI e costituzione C0.1
 
-Il runtime canonico è `v3/server.mjs`. La persistenza locale corrente è **SQLite** (`state.sqlite`) tramite `v3/sqlite-state-persistence.mjs`, con WAL, `synchronous=FULL` e foreign keys abilitate.
+`v3/public/ui/active-experience.js` è l'unico composition root. Le responsabilità finali seguono:
 
-Il modello distingue responsabilità diverse:
+```text
+harmonization → presentation → integrity → journey → annotation
+```
 
-- `snapshot`: stato canonico corrente, mutabile per revisione;
-- `audit`: ledger append-only hash-linked delle mutazioni;
-- `subject_payload`: payload content-addressed;
-- `subject_version`: versioni semantiche append-only;
-- `epistemic_step`: step epistemici append-only legati alla revisione/audit.
-
-Un vecchio `state.json`, se presente, è solo sorgente di import legacy e viene archiviato dopo la migrazione. ICTC non deve essere descritto come event store completo: lo snapshot corrente non è ricostruito esclusivamente dal ledger audit.
-
-I receipt e i binding di digest rilevano incoerenze entro il modello software verificato; non equivalgono a firma qualificata, trusted timestamp o non-ripudio contro un attore capace di riscrivere storage e catena.
+`presentation` possiede in modo esclusivo la decision-presentation. Il microtask è soltanto un confine di coalescing: non decide la precedenza. Il lifecycle gestisce reentrancy come replay e fallisce chiuso dopo 32 cicli non convergenti. Gli enhancer storici possono preparare DOM/meccaniche, ma ogni evento semantico coperto termina con la convergenza costituzionale.
 
 ## Evidenze ed export
 
-I fascicoli oggetto-specifici mantengono **lo stesso perimetro di lettura** (`same-as-read` nel contratto tecnico): un export non espande mai l'autorizzazione di lettura. Un'unica proiezione canonica alimenta:
+**Evidenze ICTC** segue la catena **pratica → evidenza → limite**. PDF, XML, Markdown e ZIP sono rappresentazioni dello stesso dossier autorizzato (`same-as-read`): un export non amplia RBAC o scope. Receipt, checksum e audit binding dimostrano proprietà del record software entro il modello ICTC; non equivalgono a firma qualificata, trusted timestamp, WORM o non-ripudio.
 
-- **PDF** stampabile con intestazione ICTC;
-- **XML** strutturato;
-- **Markdown** leggibile;
-- **ZIP** completo con JSON, graph, claims, decisioni, audit, receipt, PDF/XML/Markdown e checksum SHA-256.
+## AI
 
-Il receipt di tracciabilità (`lineage` nel formato tecnico) riporta, quando disponibili, revisione, timestamp, actor/role, subject, `previousHash`, event hash, digest input/result/state, semantic manifest ed epistemic-step binding. È evidenza tecnica di ciò che ICTC ha registrato, non attestazione della verità sostanziale del contenuto.
+L'AI è opzionale e non possiede autorità di review/decisione. Output di planning, analisi, mining e inferenza restano proposal/derivation bounded finché un checkpoint umano non produce una decisione autorizzata. Validità JSON, provenance e confidence non equivalgono a validità sostanziale.
 
 ## Avvio locale
 
-Richiede Node.js 22 o successivo. Installa una volta le dipendenze:
-
 ```bash
 npm ci
-```
-
-### Modalità standard
-
-Avvia ICTC sul runtime locale canonico `.ictc/runtime`:
-
-```bash
 ./ictc.sh start
 ```
 
-Per non aprire automaticamente il browser:
+Senza apertura browser:
 
 ```bash
 ./ictc.sh start --no-open
 ```
 
-Questa modalità **non inserisce dati demo**. È la modalità da usare per uno stato operativo reale o per una runtime vuota che vuoi popolare manualmente.
-
-### Modalità demo PMI
-
-Avvia ICTC con il dataset sintetico **Meccanica Selene S.r.l. · DEMO**:
+Demo sintetica Meccanica Selene S.r.l. · DEMO:
 
 ```bash
 ./ictc.sh demo
 ```
 
-Oppure senza apertura automatica del browser:
+La demo usa gli stessi owner/runtime/projection del prodotto e una runtime separata; i dati sono `synthetic-demo`. Il corpus contiene 700 record primari di stress (100 per processo). `demoAudit.verdict = coherent` significa coerenza degli invarianti del dataset sintetico, non conformità o assurance.
 
-```bash
-./ictc.sh demo --no-open
-```
-
-La modalità demo usa di default `.ictc/demo-runtime-v2` e gli stessi owner, normalizzatori, SQLite store e projection del prodotto standard. Non esiste un database demo parallelo. Il corpus sottostante mantiene **700 record primari di stress — 100 per ciascuno dei sette Processi di Compliance —** più record sintetici di contesto, ma tali record non costituiscono il racconto positivo dell'adozione. La vista positiva corrente è il cohort **operating-year** di Meccanica Selene, dal **1 luglio 2025 al 30 giugno 2026**, selezionato con densità non uniforme coerente con la natura di ciascuna procedura; i record rimanenti sono marcati `stress-corpus` e servono alla falsificazione.
-
-Nel cohort operating-year i conteggi attesi sono RN 8, EC 17, AO 60, MC 34, AP 25, RC 20 e AR 13. Il **deep fine-tuning RN/EC/AO/MC/AP** è il profilo verticale più profondo corrente; **RC e AR restano regression-covered** e procedure business canoniche mentre maturano le rispettive slice verticali. Questa differenza di maturità è esplicita e non riduce il catalogo business da sette a cinque procedure.
-
-In demo:
-
-- ogni business record è marcato `synthetic-demo`;
-- le decisioni umane sono attribuite a persone DEMO;
-- lo scheduler operativo è disabilitato, quindi i monitoraggi sintetici storici non avviano attività autonome;
-- il banner persistente dichiara sempre che dati e risultati sono sintetici;
-- admin e auditor ricevono nel bootstrap la projection read-only `demoAudit`, che verifica coerenza locale/intermedia/globale del dataset e dei contatori;
-- `demoAudit.verdict = coherent` significa soltanto che gli invarianti dichiarati del dataset sintetico risultano coerenti. Non significa conformità, applicabilità legale, efficacia dei controlli, certificazione o assurance indipendente.
-
-Sono mantenute anche due forme compatibili dello stesso avvio:
-
-```bash
-./ictc.sh start --demo-seed
-./ictc.sh start -demoseed
-```
-
-Non usare `ICTC_RUNTIME_DIR` per puntare il seed demo a una runtime reale esistente: il seed rifiuta uno stato business non-demo, ma la separazione delle directory resta una responsabilità operativa importante.
-
-### Operazioni sul launcher
+Comandi operativi:
 
 ```bash
 ./ictc.sh status
@@ -149,75 +157,32 @@ Non usare `ICTC_RUNTIME_DIR` per puntare il seed demo a una runtime reale esiste
 ./ictc.sh restart
 ```
 
-`ICTC_PORT`, `ICTC_HOST`, `ICTC_STATE_DIR` e `ICTC_RUNTIME_DIR` possono essere usati come override espliciti. Il server ascolta normalmente su `127.0.0.1:4173`. Un bind di rete richiede le condizioni di sicurezza previste dal runtime; TLS e protezione del deployment restano responsabilità dell'operatore.
-
 ## Verifica
 
-La suite corrente è la superficie normativa per la candidate in sviluppo:
+Superficie normativa corrente:
 
 ```bash
 npm test
 npm run release:check
 ```
 
-Per diagnosi mirata:
+Diagnosi mirata della closure 2.8:
 
 ```bash
-npm run test:current:semantic
-npm run test:current:runtime
-node v3/experience-constitution-check.mjs
-node v3/experience-constitution-saturation.mjs
-node v3/uiux-onto-epistemic-check.mjs
-node v3/uiux-onto-epistemic-saturation.mjs
-node v3/demo-outcome-audit-check.mjs
-node v3/demo-outcome-saturation.mjs
-node v3/authority-contract-check.mjs
-node v3/docs-command-contract-check.mjs
-node v3/onto-compliance-horizon-check.mjs
-node v3/onto-compliance-saturation.mjs
-node v3/visual-grace-lexical-epistemic-check.mjs
-node v3/visual-grace-lexical-epistemic-saturation.mjs
+node v3/semantic-closure-2-8-runtime-check.mjs
+node v3/semantic-closure-2-8-causality-check.mjs
+node v3/semantic-closure-2-8-ui-check.mjs
+node v3/semantic-closure-2-8-saturation.mjs
 ```
 
-I journey browser server-backed e gli artifact commit-bound sono eseguiti in GitHub Actions sullo stesso HEAD della PR. I saturation test producono evidenza bounded sullo spazio generato; non provano l'assenza universale di difetti.
+La saturation 2.8 modella deterministicamente **10.000.000 simulazioni multidimensionali** e **1.000.000 mutazioni negative** sulle famiglie dichiarate, richiede kill-rate 100% e usa le ultime 100.000 mutazioni come holdout no-novelty. È bounded evidence sul vocabolario di fault modellato: non prova che il vocabolario sia completo e non è assurance indipendente.
 
-Il profilo C0.1 conserva **10.000 scenari baseline** e aggiunge **100.000 ulteriori simulazioni**: 40.000 casi normali, 40.000 stress re-entranti e 20.000 edge mutant. Le 14 failure family aggiuntive raggiungono **M=114** e un holdout esatto fino a **1114 = M+1000** non produce nuove famiglie normalizzate; tutti i 20.000 mutant edge campionati vengono uccisi. Il numero di scenari, il mutation kill rate e il no-novelty sono parametri di falsificazione bounded, non probabilità di correttezza né assurance indipendente.
+## Candidate e maturità
 
-Il profilo demo-outcome esegue 10.000 scenari con seed pseudocasuale univoco e riproducibile attraverso classi di stress dichiarate, più 10.000 mutazioni negative. La convergenza e l'holdout dimostrano soltanto che, nel vocabolario e negli operatori testati, non emerge una nuova classe normalizzata: non sono una prova di rappresentatività universale delle PMI italiane o di correttezza sostanziale dei singoli giudizi di compliance.
+`v3/release-identity.json` resta l'autorità cross-documenti: product `1.8.0`, release stage `candidate`, semantic `1.2-market-candidate`, experience `1.9-experience-candidate`, epistemic `2.0-epistemic-lattice-pre-candidate`, journey `2.2-sequential-onto-epistemic`, constitution `C0.1`.
 
-Nel profilo Onto-Compliance storico, `M+100` significa nessuna nuova signature misurata nel holdout dichiarato e `G+100` nessuna ulteriore compressione sicura nello spazio di operatori dichiarato. Nel profilo Visual Grace / Lexical / Epistemic, ciascuna famiglia usa discovery pseudocasuale riproducibile e un holdout distinto **M+10000** senza nuova classe di anomalia normalizzata né violazione del target corrente. Questi stop non sono teoremi di correttezza, minimalità, gradevolezza universale o conformità.
-
-## Identità della candidate
-
-`v3/release-identity.json` schema 2.0 è la fonte cross-documenti. Distingue ciò che è **corrente** dalla lineage storica:
-
-- product version: `1.8.0`;
-- release stage: `candidate`;
-- semantic contract: `1.2-market-candidate`;
-- experience contract: `1.9-experience-candidate`;
-- epistemic contract: `2.0-epistemic-lattice-pre-candidate`;
-- journey contract: `2.2-sequential-onto-epistemic`;
-- constitution contract: `C0.1`;
-- assurance profile Onto-Compliance Horizon: `1.0` candidate;
-- assurance profile Visual Grace / Lexical / Epistemic: `1.0` candidate.
-
-La lineage conserva refinement `1.9.1-pre-candidate`, journey `2.1-procedure-journey-semantic-exploration-pre-candidate` e constitution `C0` come storia informativa, non come identità corrente concatenata.
+Il profilo di maturità corrente è **deep fine-tuning RN/EC/AO/MC/AP**; RC/AR restano `regressionCovered`. La closure 2.8 rafforza invarianti trasversali e RC, ma non finge una maturità verticale RC/AR non ancora raggiunta.
 
 ## Sviluppo e documentazione
 
-**Se è la prima volta nel repository, parti da `docs/START_HERE.md`.** È una mappa verso gli owner correnti, non una nuova autorità.
-
-Prima di cambiare un'autorità leggere `AGENTS.md` e `docs/authority-matrix.yaml`. Le guide operative principali sono:
-
-- `docs/START_HERE.md` — percorso minimo per orientarsi senza ricostruire la storia delle PR;
-- `docs/DEVELOPMENT.md` — sviluppo locale e flusso PR;
-- `docs/TESTING.md` — suite e falsificatori;
-- `docs/11_ARCHITECTURE.md` — AS-IS eseguibile e limiti;
-- `docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md` — C0.1: root, fasi, authority, reentrancy e regole per le successive mutazioni delle procedure;
-- `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — contratto visuale/ontologico/epistemico e stop M/G bounded;
-- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico canonico, grazia visuale, prova delle Evidenze ICTC e stop M+10000;
-- `docs/PROJECT_TRAJECTORY.md` — storia delle generazioni, non autorità runtime;
-- `docs/PR60_GLOBAL_DOD.md` — convergenza Journey 2.1 già materializzata, mantenuta come lineage/regressione;
-- `SECURITY.md` — boundary e responsabilità di deployment.
-
-La documentazione storica rimane utile per tracciabilità progettuale, ma in caso di conflitto l'autorità corrente è quella dichiarata in `docs/authority-matrix.yaml` e verificata dai gate eseguibili.
+**Se è la prima volta nel repository, parti da `docs/START_HERE.md`.** La mappa punta agli owner correnti e ai documenti AS-IS; non crea una nuova autorità.

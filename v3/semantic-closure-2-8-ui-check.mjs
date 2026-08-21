@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const active=await readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8');
+const lifecycle=await readFile(new URL('./public/ui/experience-lifecycle.js',import.meta.url),'utf8');
+const convergence=await readFile(new URL('./public/ui/business-surface-convergence-2-7.js',import.meta.url),'utf8');
+assert.match(active,/requestExperienceLifecycle\('active-experience-install'\)/,'initial convergence must be coalesced after non-final enhancer work');
+assert.doesNotMatch(active,/runExperienceLifecycle\('active-experience-install'\)/);
+for(const eventName of ['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed'])assert.ok(lifecycle.includes(`'${eventName}'`),`constitutional lifecycle missing ${eventName}`);
+assert.ok(convergence.includes('queueMicrotask(apply)'),'2.7 remains a non-final compatibility enhancer; this check requires the lifecycle to finalize after it');
+assert.ok(active.indexOf('installBusinessSurfaceConvergence27')<active.indexOf('installExperienceLifecycle()'),'non-final enhancer listeners must be registered before constitutional listeners');
+console.log('semantic-closure-2-8-ui-check: ok (projection commit + initial install always converge through C0.1 after non-final enhancers)');

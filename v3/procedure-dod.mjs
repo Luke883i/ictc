@@ -13,6 +13,15 @@ export const PROCEDURE_DOD=Object.freeze({
 });
 
 export const BUSINESS_PROCEDURE_IDS=Object.freeze(Object.keys(PROCEDURE_DOD));
-export const MEANINGFUL_HANDOFFS=Object.freeze(BUSINESS_PROCEDURE_IDS.flatMap(sourceProcedureId=>PROCEDURE_DOD[sourceProcedureId].handoffs.map(targetProcedureId=>Object.freeze({sourceProcedureId,targetProcedureId,predicate:'cross-procedure-draft-from'}))));
+const HANDOFF_PREDICATES=Object.freeze({
+ 'monitoring>objects':'observed-change-suggests-governed-object','monitoring>coverage':'observed-change-suggests-requirement-review','monitoring>actions':'observed-change-suggests-remediation','monitoring>risks':'observed-change-suggests-risk-review',
+ 'incidents>objects':'event-suggests-inventory-review','incidents>actions':'event-suggests-remediation','incidents>risks':'event-suggests-risk-review',
+ 'objects>monitoring':'governed-object-suggests-monitoring','objects>coverage':'governed-object-suggests-coverage-review','objects>actions':'governed-object-suggests-remediation','objects>risks':'governed-object-suggests-risk-review','objects>assurance':'governed-object-suggests-assurance-work',
+ 'coverage>objects':'requirement-mapping-suggests-object-review','coverage>actions':'coverage-gap-suggests-remediation','coverage>risks':'coverage-decision-suggests-risk-review','coverage>assurance':'coverage-decision-suggests-assurance-work',
+ 'actions>risks':'remediation-change-suggests-risk-review','actions>assurance':'remediation-change-suggests-assurance-work',
+ 'risks>actions':'risk-treatment-suggests-remediation','risks>assurance':'risk-review-suggests-assurance-work','risks>coverage':'risk-review-suggests-coverage-review',
+ 'assurance>actions':'assurance-gap-suggests-remediation','assurance>risks':'assurance-result-suggests-risk-review','assurance>coverage':'assurance-result-suggests-coverage-review'
+});
+export const MEANINGFUL_HANDOFFS=Object.freeze(BUSINESS_PROCEDURE_IDS.flatMap(sourceProcedureId=>PROCEDURE_DOD[sourceProcedureId].handoffs.map(targetProcedureId=>Object.freeze({sourceProcedureId,targetProcedureId,predicate:HANDOFF_PREDICATES[`${sourceProcedureId}>${targetProcedureId}`]||'cross-procedure-draft-from'}))));
 export function handoffTargets(sourceProcedureId){return MEANINGFUL_HANDOFFS.filter(x=>x.sourceProcedureId===sourceProcedureId).map(x=>x.targetProcedureId);}
 export function handoffRelation(sourceProcedureId,targetProcedureId){return MEANINGFUL_HANDOFFS.find(x=>x.sourceProcedureId===sourceProcedureId&&x.targetProcedureId===targetProcedureId)||null;}
