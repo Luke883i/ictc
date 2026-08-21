@@ -16,7 +16,11 @@ async function post(context,state,description){
 }
 function failureDetail(output){
   const lines=String(output||'').split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
-  return [...lines].reverse().find(line=>/AssertionError|ERR_ASSERTION|hardcode|unclassified|duplicate|outside|missing|drift|failed|must|remain|invalid|mismatch/i.test(line))||lines.at(-1)||'checker failed without diagnostic output';
+  const assertion=lines.find(line=>/^AssertionError\b.*?:/.test(line));
+  if(assertion)return assertion.replace(/^AssertionError\b(?:\s*\[[^\]]+\])?\s*:\s*/,'');
+  const explicit=lines.find(line=>/^(?:Error|TypeError|ReferenceError|RangeError|SyntaxError)\s*:/.test(line));
+  if(explicit)return explicit.replace(/^[^:]+:\s*/,'');
+  return [...lines].reverse().find(line=>/hardcode|unclassified|duplicate|outside|missing|drift|failed|must|remain|invalid|mismatch/i.test(line))||lines.at(-1)||'checker failed without diagnostic output';
 }
 
 if(outcome==='success'){
@@ -31,6 +35,6 @@ if(failedCheck){
   const output=`${rerun.stdout||''}\n${rerun.stderr||''}`;
   if(output.trim())process.stdout.write(output.endsWith('\n')?output:`${output}\n`);
   const detail=failureDetail(output||rerun.error?.message||rerun.signal||`exit ${rerun.status}`);
-  await post(`ictc/${rail}-detail/${checker}/${slug(detail,34)}`,'failure',detail);
+  await post(`ictc/${rail}-detail/${checker}/${slug(detail,46)}`,'failure',detail);
 }
 process.exit(1);

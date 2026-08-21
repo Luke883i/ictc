@@ -43,8 +43,10 @@ try:
   PHASE='actions'
   for pid in IDS:
    primary=enter_procedure(p,pid);expect(primary).to_be_visible();assert_target(primary,f'{pid}-frame-primary');primary.click()
-   if pid=='monitoring':expect(p.locator('#contributionDialog')).to_be_visible();p.locator('#contributionDialog [data-close="contributionDialog"]').click()
-   elif pid=='incidents':expect(p.locator('#incidentDialog')).to_be_visible();p.locator('#incidentDialog [data-close="incidentDialog"]').click()
+   if pid=='monitoring':
+    dialog=p.locator('#contributionDialog');expect(dialog).to_be_visible();p.keyboard.press('Escape');expect(dialog).not_to_be_visible()
+   elif pid=='incidents':
+    dialog=p.locator('#incidentDialog');expect(dialog).to_be_visible();p.keyboard.press('Escape');expect(dialog).not_to_be_visible()
    elif pid=='coverage':
     expect(p.locator('#grcWorkspace .market-section').first).to_be_visible();assert p.locator('#grcPrimaryForm').count()==0,'MC-01 must not revive the legacy mapping disclosure';expect(p.locator('#marketFrameworkGrid')).to_be_visible()
    else:
