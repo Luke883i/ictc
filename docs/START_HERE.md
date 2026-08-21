@@ -10,7 +10,7 @@ Questa è una mappa, non una nuova autorità.
 4. `docs/11_ARCHITECTURE.md` — AS-IS logico/tecnologico.
 5. `docs/02_EPISTEMIC_CONTRACT.md` — authority, version/basis, read/write UI boundary.
 6. `docs/SEMANTIC_CLOSURE_2_8_DOD.md` — finding di secondo ordine e DoD corrente della slice.
-7. `docs/TESTING.md` — falsificazione, mutation/saturation ed exact-head.
+7. `docs/TESTING.md` — falsificazione, mutation/saturation ed exact-head. Esegui `npm test` come verifica normativa corrente.
 
 Se serve ricostruire una PR storica per capire l'owner corrente, la documentazione/authority matrix ha un gap: correggi la mappa invece di aggiungere un secondo owner.
 
