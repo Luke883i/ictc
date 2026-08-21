@@ -2,6 +2,8 @@
 
 ICTC è un **sistema locale di governance della conoscenza di compliance**. Registra oggetti di lavoro, trasformazioni, decisioni umane, evidenze e relazioni attraverso sette Processi di Compliance bounded, preservando la differenza tra ciò che ICTC ha osservato, ciò che l'AI propone, ciò che una persona decide e ciò che richiederebbe autorità o assurance esterna.
 
+La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**.
+
 ICTC non è una certificazione, un parere legale, un auditor autonomo, un motore di verdetti di conformità né un security perimeter. Un mapping non prova conformità o efficacia; un hash non prova autenticità esterna; un rating di rischio non è una probabilità oggettiva; un'approvazione interna non è assurance indipendente.
 
 ## Modello logico
@@ -50,7 +52,7 @@ ICTC mantiene tre reticoli distinti e correlati, che non devono collassare in un
 | RC-01 | Rischi di compliance | scenari, assessment inerenti/residui, trattamento e review |
 | AR-01 | Questionari e verifiche | richieste, response-set versionati, evidenze e limiti |
 
-**EP-01 · Reticolo epistemico** è cross-cutting e non è un ottavo processo business. Osserva la storia semantica registrata e le derivazioni bounded; non crea autorità business da inferenza.
+**EP-01 · Reticolo epistemico** è cross-cutting e non diventa un ottavo processo business. Osserva la storia semantica registrata e le derivazioni bounded; non crea autorità business da inferenza.
 
 ## Infrastruttura tecnologica AS-IS
 
@@ -91,7 +93,7 @@ La slice di consolidamento 2.8 chiude finding di secondo ordine senza introdurre
 - **RC-01 multi-cycle**: una nuova review inerente apre un nuovo ciclo e non resta oscurata da un residual precedente; i nuovi trattamenti sono legati alla review corrente tramite digest. I trattamenti legacy privi di digest restano compatibili soltanto se temporalmente successivi alla review effettiva corrente.
 - **Evidenza esterna**: un URL solamente osservato resta registrabile ma non è `usable` come evidenza decisionale; per essere utilizzabile deve conservare `observedVersion` oppure un digest. ICTC non monitora autonomamente il contenuto remoto.
 - **RN-01 contract parity**: l'attivazione del piano resta un checkpoint umano esplicito ma non richiede una motivazione testuale inesistente nel runtime/UI.
-- **Causalità AI**: le action legacy note che producono output AI sono pin-nate a semantica `proposed`/producer AI; il forward contract resta `epistemicEffects` esplicito.
+- **Causalità AI**: le action legacy note che producono output AI sono pin-nate a semantica `proposed`/producer AI; il forward contract resta `epistemicEffects` esplicito. In assenza di effect esplicito, una proposta legacy conserva una basis tecnica registrata tramite predecessor SubjectVersion o digest dell'input del comando.
 - **Handoff cross-process**: i 24 archi hanno predicate intent-specifici; la lineage è bounded (`maxDepth=8`) e blocca il ritorno verso un processo già visitato. Il draft target non eredita decisioni, rating, applicabilità, efficacia o sufficienza probatoria.
 - **UI C0.1**: `ictc:rendered`, `ictc:surface-changed`, `ictc:context-changed` e `ictc:projection-committed` convergono nel lifecycle costituzionale. Gli enhancer 2.7 restano compatibilità non-finale; C0.1 è l'ultimo converger semantico.
 - **OutcomeEnvelope**: il principio corrente è “nessuna entità raw di persistenza in UI”. Le letture usano canonical projections con authority/limits; le write restituiscono OutcomeEnvelope/receipt. Non ogni oggetto letto è letteralmente un envelope schema.
@@ -177,19 +179,10 @@ La saturation 2.8 modella deterministicamente **10.000.000 simulazioni multidime
 
 ## Candidate e maturità
 
-`v3/release-identity.json` resta l'autorità cross-documenti: product `1.8.0`, release stage `candidate`, semantic `1.2-market-candidate`, experience `1.9-experience-candidate`, epistemic `2.0-epistemic-lattice-pre-candidate`, journey `2.2-sequential-onto-epistemic`, constitution `C0.1`. RN/EC/AO/MC/AP sono `deepFineTuned`; RC/AR restano `regressionCovered`. La closure 2.8 rafforza invarianti trasversali e RC, ma non finge una maturità verticale RC/AR non ancora raggiunta.
+`v3/release-identity.json` resta l'autorità cross-documenti: product `1.8.0`, release stage `candidate`, semantic `1.2-market-candidate`, experience `1.9-experience-candidate`, epistemic `2.0-epistemic-lattice-pre-candidate`, journey `2.2-sequential-onto-epistemic`, constitution `C0.1`.
+
+Il profilo di maturità corrente è **deep fine-tuning RN/EC/AO/MC/AP**; RC/AR restano `regressionCovered`. La closure 2.8 rafforza invarianti trasversali e RC, ma non finge una maturità verticale RC/AR non ancora raggiunta.
 
 ## Sviluppo e documentazione
 
-Parti da `docs/START_HERE.md`, poi leggi `AGENTS.md` e `docs/authority-matrix.yaml` prima di cambiare un owner. Fonti AS-IS principali:
-
-- `docs/11_ARCHITECTURE.md` — infrastruttura logica/tecnologica e boundary;
-- `docs/02_EPISTEMIC_CONTRACT.md` — separazioni epistemiche e read/write boundary;
-- `docs/SEMANTIC_CLOSURE_2_8_DOD.md` — finding, DoD, metriche, saturation e residual risk;
-- `docs/TESTING.md` — suite, mutation/saturation e exact-head rule;
-- `docs/DEVELOPMENT.md` — workflow di modifica/PR;
-- `docs/decisions/ADR-001-outcome-envelope-ui.md` — interpretazione corrente del boundary UI;
-- `SECURITY.md` — security/deployment boundary;
-- `docs/PROJECT_TRAJECTORY.md` — lineage storica, non runtime authority.
-
-In caso di conflitto prevalgono owner eseguibili e `docs/authority-matrix.yaml`; i documenti storici non possono promuovere una capacità che il runtime corrente non possiede.
+**Se è la prima volta nel repository, parti da `docs/START_HERE.md`.** La mappa punta agli owner correnti e ai documenti AS-IS; non crea una nuova autorità.

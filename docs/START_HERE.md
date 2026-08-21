@@ -42,3 +42,8 @@ Business: **Processi di Compliance**. EP-01 è cross-cutting, non ottavo process
 
 I documenti storici conservano lineage e contesto, ma non sono autorità corrente.
 La data più recente non crea authority da sola.
+
+## Riferimenti di assurance e design
+
+- `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — gerarchia, processo dichiarato e autorità epistemica.
+- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico, proporzioni visuali e metodo pratica/evidenza/limite.
