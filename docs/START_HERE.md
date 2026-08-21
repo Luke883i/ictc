@@ -1,58 +1,43 @@
-# START HERE — orientamento sviluppatore ICTC
+# START HERE — orientamento ICTC
 
-Questa pagina è una **mappa**, non una nuova autorità. Serve a evitare che un nuovo manutentore debba ricostruire l'AS-IS leggendo la cronologia delle PR o tutti i documenti storici.
+Questa è una mappa, non una nuova authority.
 
-## Percorso da 5 minuti
+## Percorso minimo
 
-1. Leggi `README.md` per capire prodotto, sette **Processi di Compliance**, Postura ICTC, EP-01, persistenza ed export.
-2. Leggi `AGENTS.md` per i vincoli epistemici che nessuna modifica può aggirare.
-3. Apri `docs/authority-matrix.yaml` per individuare l'owner eseguibile prima di cambiare runtime, UI o dati.
-4. Leggi `docs/11_ARCHITECTURE.md` per snapshot, audit, versioni, binding e limiti dell'AS-IS.
-5. Esegui `npm test`; usa `docs/TESTING.md` solo quando devi diagnosticare o aggiungere un falsificatore.
+1. `README.md` — identità del prodotto, sette processi, tre reticoli, stack e boundary.
+2. `AGENTS.md` — invarianti epistemici globali.
+3. `docs/authority-matrix.yaml` — owner eseguibili.
+4. `docs/11_ARCHITECTURE.md` — AS-IS logico/tecnologico.
+5. `docs/02_EPISTEMIC_CONTRACT.md` — authority, version/basis, read/write UI boundary.
+6. `docs/SEMANTIC_CLOSURE_2_8_DOD.md` — finding di secondo ordine e DoD corrente della slice.
+7. `docs/TESTING.md` — falsificazione, mutation/saturation ed exact-head.
 
-Se questi cinque passaggi non bastano a capire dove intervenire, la documentazione o l'authority matrix hanno un gap: correggi prima quel gap, non creare un owner parallelo.
+Se serve ricostruire una PR storica per capire l'owner corrente, la documentazione/authority matrix ha un gap: correggi la mappa invece di aggiungere un secondo owner.
 
-## Vocabolario corrente
+## Vocabolario
 
-Nel linguaggio utente e nella documentazione AS-IS usa **Processi di Compliance** / **Processo di Compliance**. Identificatori tecnici storici come `procedureRegistry`, `procedureId` e nomi file `procedure-*` sono compatibilità interna, non il nome del dominio mostrato all'utente. La superficie di assurance si chiama **Postura ICTC**. EP-01 resta una meta-procedura cross-cutting e non un ottavo processo business.
+Business: **Processi di Compliance**. EP-01 è cross-cutting, non ottavo processo. Evidenze ICTC non è una pagina di score. `procedure*` resta naming tecnico compatibile. OutcomeEnvelope va inteso secondo l'ADR amended: canonical read projections + write envelope/receipt, mai raw storage UI.
 
-## Devo cambiare…
+## Dove intervenire
 
-| Obiettivo | Parti da | Verifica minima |
+| Obiettivo | Owner/partenza | Falsificazione minima |
 |---|---|---|
-| una regola di autorità/runtime | `docs/authority-matrix.yaml` + owner sotto `v3/` | `node v3/authority-contract-check.mjs` + `npm test` |
-| un Processo di Compliance | registry/adapter/policy del processo | contract/policy check + journey server-backed pertinente |
-| navigazione o UI condivisa | `v3/public/ui/active-experience.js`, router e primitive esistenti | static UI gate + browser journey |
-| gerarchia visuale, semantica di stato o proporzioni | `docs/ONTO_COMPLIANCE_HORIZON_V1.md` + `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` | static gate + browser atlas |
-| lessico user-facing | `v3/public/ui/product-copy.js` + owner della superficie | `node v3/visual-grace-lexical-epistemic-check.mjs` + browser atlas |
-| Postura ICTC o Reticolo epistemico | projection/owner esistente, poi renderer | authority/epistemic gate + browser |
-| fascicoli/export | canonical evidence graph/dossier | evidence export/auth check; nessun ampliamento di lettura |
-| persistenza | `v3/sqlite-state-persistence.mjs` | durability/integrity/runtime suite |
-| AI | `docs/10_LOCAL_AI_CONTRACT.md` + provider/policy owner | AI/network policy; output sempre `proposed` |
-| CI/release | `.github/workflows/`, current release suite, release identity | exact-head checks e artifact sullo stesso SHA |
-
-## Come leggere la Postura ICTC
-
-Postura ICTC non è una pagina di score. Per ogni promessa cerca la catena **pratica → evidenza → limite**. Le mappature a standard/benchmark dichiarati descrivono pratiche ed evidenze selezionate; non diventano certificazioni, valutazioni di conformità, legal applicability o assessment del deployment.
+| runtime/authority | authority matrix + runtime owner | targeted check + current suite |
+| procedure | contract/adapter/policy + native runtime | contract/runtime/journey |
+| rischio RC | `grc-risks` + dependency review | multi-cycle closure check |
+| evidence ref | `reference-contract` | reference + integration check |
+| cross-process | `procedure-dod` + `cross-procedure-create` | typed edge/lineage check |
+| epistemic causality | `epistemic-step` + write metadata | causality check |
+| shared UI | active experience + C0.1 lifecycle | constitution/UI exact-head |
+| persistence | Store + SQLite persistence | durability/integrity |
+| docs | README + AS-IS docs | documentation authority |
 
 ## Ordine delle fonti
 
-Quando due testi sembrano divergere, non scegliere quello più recente per data o PR. Usa questo ordine:
+1. owner eseguibile + authority matrix;
+2. global/local AGENTS constraints;
+3. architecture/epistemic/security/testing/development AS-IS;
+4. candidate DoD;
+5. trajectory e documenti storici.
 
-1. contratto eseguibile e owner dichiarato in `docs/authority-matrix.yaml`;
-2. `AGENTS.md` per i limiti epistemici e di governance;
-3. `docs/11_ARCHITECTURE.md`, `docs/TESTING.md`, `docs/DEVELOPMENT.md`, `SECURITY.md` per spiegare l'AS-IS;
-4. documenti di candidate/DoD, inclusi `docs/ONTO_COMPLIANCE_HORIZON_V1.md` e `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md`, per il lavoro in corso;
-5. documenti storici e trajectory come lineage progettuale, non come autorità corrente.
-
-## Prima della PR
-
-- modifica l'owner esistente invece di aggiungere un secondo owner;
-- rendi esplicito l'impatto epistemico;
-- per una modifica visuale verifica che gerarchia, ruolo e linguaggio non implichino autorità più forte dei dati;
-- aggiungi un falsificatore che fallisca se il nuovo contratto regredisce;
-- esegui `npm test` e i browser journey pertinenti;
-- descrivi residui e non-goal senza trasformare test o receipt in conclusioni legali/compliance;
-- considera valido il verde solo sull'exact HEAD che verrà revisionato.
-
-Per il flusso operativo completo: `docs/DEVELOPMENT.md`. Per il profilo Onto-Compliance: `docs/ONTO_COMPLIANCE_HORIZON_V1.md`. Per grazia visuale, lessico e convergenza epistemica: `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md`. Per la baseline Journey 2.1: `docs/PR60_GLOBAL_DOD.md`. Per la storia: `docs/PROJECT_TRAJECTORY.md`.
+La data più recente non crea authority da sola.

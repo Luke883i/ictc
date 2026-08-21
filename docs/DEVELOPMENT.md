@@ -1,8 +1,6 @@
-# Sviluppo locale
+# Sviluppo ICTC
 
 ## Setup
-
-Richiede Node.js 22 o successivo. Il launcher canonico è `ictc.sh`; l'entrypoint applicativo resta `v3/server.mjs`.
 
 ```bash
 git clone https://github.com/Luke883i/ictc.git
@@ -12,24 +10,22 @@ npm ci
 ./ictc.sh start --no-open
 ```
 
-Per fermare o diagnosticare il runtime: `./ictc.sh stop`, `./ictc.sh status`, `./ictc.sh doctor`.
+Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 
 ## Prima di modificare
 
-1. Leggere `AGENTS.md`.
-2. Identificare l'owner in `docs/authority-matrix.yaml`.
-3. Separare runtime authority, projection, presentation e documentazione derivata.
-4. Preferire estensione di un owner esistente a un nuovo layer parallelo.
-5. Per una write, definire persistence/readback/receipt e il refresh delle proiezioni dipendenti.
-6. Per AI, mantenere `proposed` fino a una azione umana autorizzata.
-7. Per export, mantenere `same-as-read` e claim boundary.
-8. Per UI, riusare primitive, un solo primary action e progressive disclosure.
+1. Leggi `AGENTS.md` e `docs/authority-matrix.yaml`.
+2. Identifica oggetto governato, authority owner e claim boundary.
+3. Formula il bug come invariante falsificabile, non come desiderio UI.
+4. Cerca la correzione nel proprietario esistente; un nuovo layer richiede prova che nessun owner corrente possa assorbirla.
+5. Per temporalità, lega la decisione alla basis/versione e definisci cosa accade quando cambia.
+6. Per external evidence, distingui “osservata” da “version-bound/usable”.
+7. Per AI, preferisci `metadata.epistemicEffects`; non usare action naming come nuova authority.
+8. Per cross-process, conserva draft semantics, typed predicate e bounded lineage.
+9. Per UI condivisa, C0.1 deve restare l'ultimo converger semantico.
+10. Aggiorna README/architecture/contract se cambia il significato di un concetto pubblico.
 
-## Persistenza di sviluppo
-
-La SOT locale usa `state.sqlite` sotto `ICTC_RUNTIME_DIR` (o runtime directory predefinita). I test runtime devono usare directory isolate. Non modificare il database dell'utente per preparare fixture. Un `state.json` è legacy import input, non lo storage corrente da editare.
-
-## Ciclo locale canonico
+## Ciclo canonico
 
 ```bash
 npm run check
@@ -37,22 +33,23 @@ node v3/authority-contract-check.mjs
 node v3/docs-command-contract-check.mjs
 node v3/documentation-authority-check.mjs
 npm test
-```
-
-Per una candidate usare anche:
-
-```bash
 npm run release:check
 ```
 
-I browser journey completi girano in GitHub Actions e devono essere letti sull'exact PR HEAD.
+Per closure 2.8 esegui anche i quattro check `semantic-closure-2-8-*` elencati in `docs/TESTING.md`.
 
-## Branch e commit
+## Commit
 
-Usare branch brevi (`agent/`, `feat/`, `fix/`, `docs/`). I commit dovrebbero avere una responsabilità falsificabile: contratto, runtime, UI, hardening, test, documentazione. Non combinare una correzione del prodotto con un allentamento del test che la rileva.
+Branch breve, mai push diretto su `main`. Commit semanticamente atomici: runtime, causalità, UI constitution, falsificazione, documentazione. Non mischiare fix con l'allentamento del test che lo rileva.
 
 ## Pull request
 
-La PR dichiara problema, journey, impatto epistemico, schema/API, DoD, verifiche, non-obiettivi, residual risk e rollback. Se un check fallisce, correggere la causa sul nuovo commit e rieseguire exact-head; non usare il verde di un SHA precedente.
+La PR deve dichiarare base/head, problema, invariant, epistemic impact, compatibility, DoD, test, residual risk e rollback. Una campagna di simulazioni va descritta con operatori/failure family/holdout, non come “milioni di prove = corretto”.
 
-La governance GOV-01F resta compensativa finché GitHub non riporta branch protection server-side attiva.
+## Persistenza
+
+Usa runtime directory isolate nei test. `state.sqlite` è la SOT locale; `state.json` è solo legacy import input. Non editare lo storage reale dell'utente per costruire fixture.
+
+## Definizione di done
+
+Una slice è done quando: causa chiusa nel proprietario corretto, falsificatore presente, documentazione AS-IS coerente, nessuna authority widening, compatibilità/residui dichiarati e exact PR HEAD verde. “Done slice” non significa production ready.
