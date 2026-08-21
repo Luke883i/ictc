@@ -35,7 +35,7 @@ I sette processi condividono registry/policy/adapter/projection context, ma mant
 
 ## Persistenza e temporalità
 
-`snapshot` è current state mutabile per revisione. `audit`, `subject_version` ed `epistemic_step` sono append-oriented. Il ledger audit non basta da solo a ricostruire ogni stato storico: ICTC non è un event store completo.
+`snapshot` è current state mutabile per revisione. `audit` è append-only e hash-linked; `subject_version` è append-only per occurrence semantiche; `epistemic_step` è append-only per la causalità registrata. Queste strutture non trasformano lo snapshot in una projection ricostruita esclusivamente dagli eventi: **ICTC non è oggi un event store completo**.
 
 `ProjectionContext` distingue `transactionAsOf` e `validAsOf`. La selezione storica transaction-time non è implementata; richieste non supportate devono fallire chiuse.
 
@@ -63,7 +63,7 @@ La lineage ha depth massima 8 e rifiuta un target già presente tra i processi v
 
 ## EpistemicStep
 
-EpistemicStep separa initiator, executor e producer. `metadata.epistemicEffects` è il forward write contract. Una compatibility registry pin-na le action AI legacy note a `proposed` e producer AI per evitare classificazioni errate durante la migrazione; il fallback da action name resta debito esplicito e non è la destinazione architetturale.
+EpistemicStep separa initiator, executor e producer. `metadata.epistemicEffects` è il forward write contract. Una compatibility registry pin-na le action AI legacy note a `proposed` e producer AI per evitare classificazioni errate durante la migrazione. In assenza di effect esplicito, una proposta legacy conserva almeno una basis tecnica registrata: predecessor SubjectVersion quando esiste, altrimenti digest dell'input del comando. Questa basis tecnica preserva lineage e non valida la correttezza sostanziale della proposta. Il fallback da action name resta debito esplicito e non è la destinazione architetturale.
 
 ## UI constitution C0.1
 
