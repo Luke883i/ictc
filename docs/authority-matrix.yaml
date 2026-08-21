@@ -1,4 +1,4 @@
-version: 5
+version: 6
 surfaces:
   product_intent:
     authority: docs/00_PROMPT_CLARIFICATION.md
@@ -10,6 +10,12 @@ surfaces:
     authority: docs/11_ARCHITECTURE.md
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
+  semantic_foundation_vocabulary:
+    authority: v3/public/ui/semantic-foundation-model.js
+    classification: executable-lexical-contract
+  semantic_foundation_actions:
+    authority: v3/public/ui/semantic-foundation-actions.js
+    classification: executable-human-action-contract
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
   api:
@@ -74,6 +80,9 @@ rules:
   - generated artifacts are never hand-edited
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
+  - enduser_language defines the human-facing policy; semantic_foundation_vocabulary and semantic_foundation_actions implement it and may not widen legal or decision authority
+  - work scope, legal applicability, mapping, control effectiveness and conformity are distinct axes and may not be collapsed by presentation or annotation
+  - semantic human-action metadata is applied through ui_control_annotation after decision presentation and may not mutate business state or rewrite the exclusive presentation authority
   - package.json scripts.start and ictc.sh must resolve to runtime_entrypoint
   - runtime_store_adapter may add runtime-only persistence/storage hardening but must extend runtime_state and may not become a second business write authority
   - mutable canonical state and append-only audit ledger are separate authorities
@@ -83,7 +92,7 @@ rules:
   - current final procedure harmonization, presentation, integrity, journey and annotation responsibilities must converge through ui_lifecycle_runtime
   - participant precedence is defined by the explicit phase order harmonization -> presentation -> integrity -> journey -> annotation, never by timer, timeout, side-channel event or microtask depth
   - decision-presentation is exclusive; harmonization, integrity, journey and annotation may not become competing decision-presentation owners
-  - annotation may classify controls and evidence effects but may not create business decisions or runtime write authority
+  - annotation may classify controls, human-action semantics and evidence effects but may not create business decisions or runtime write authority
   - reentrant lifecycle requests must replay inside the current flush and the lifecycle must fail closed on non-convergence
   - current runtime UI contracts must be reachable through the canonical npm test gate; dedicated workflows may be diagnostic but not parallel PR authorities
   - release_identity distinguishes current contracts and maturity from informational lineage; lineage must not be promoted to current identity
