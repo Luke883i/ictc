@@ -5,6 +5,8 @@ import { PROCEDURE_LANGUAGE, AUDIT_CLOSURE } from './public/ui/semantic-foundati
 
 const failures=[];const check=(condition,message)=>{if(!condition)failures.push(message);};
 const importance=new Set(IMPORTANCE_DIMENSIONS.map(x=>x.id));
+const canonical=JSON.parse(await readFile(new URL('./procedure-contracts-1-3.json',import.meta.url),'utf8'));
+const canonicalById=new Map((canonical.procedures||[]).map(x=>[x.id,x]));
 check(Object.keys(BUSINESS_GLOSSARY).length>=15,'shared business glossary too small');
 check(Object.keys(PROCEDURE_LANGUAGE).length===7,'semantic foundation must cover exactly seven business processes');
 check(MATERIAL_ACTION_COUNT===19,'material human-action contract drift');
@@ -27,6 +29,8 @@ for(const [id,spec] of Object.entries(HUMAN_ACTIONS)){
 for(const [id,p] of Object.entries(PROCEDURE_LANGUAGE)){
   for(const field of ['code','label','governs','question','evidence','boundary'])check(Boolean(p[field]),`procedure ${id} missing ${field}`);
   check(boundaryGuard.test(p.boundary),`procedure ${id} boundary is not explicit`);
+  const authority=canonicalById.get(id);check(Boolean(authority),`procedure ${id} missing canonical registry authority`);
+  if(authority){check(p.code===authority.code,`procedure ${id} code diverges from canonical registry`);check(p.label===authority.label,`procedure ${id} label diverges from canonical registry`);}
 }
 check(/non significa giuridicamente non applicabile/i.test(HUMAN_ACTIONS['mapping.na'].boundary),'work-scope vs legal applicability separation drift');
 check(/non equivale a notifica/i.test(HUMAN_ACTIONS['incident.submit'].boundary),'internal incident submit vs external notification separation drift');
@@ -46,9 +50,11 @@ check(controls.includes("phase:'annotation'")&&controls.includes('annotateSemant
 check(controls.includes('control-annotation-change'),'conditional decision binding must replay annotation on selection change');
 check(runtime.includes('[data-uiux-action-quick][data-next-state="done"]')||JSON.stringify(HUMAN_ACTION_BINDINGS).includes('data-uiux-action-quick'),'AP-01 final generated CTA binding missing');
 check(!/annotateNode\([^}]+textContent\s*=/.test(runtime),'annotation metadata must not compete with exclusive visible presentation');
+check(!runtime.includes("label(frame.querySelector('h1')"),'semantic foundation must not rewrite canonical procedure identity');
+check(!runtime.includes("label(root.querySelector('#proofTitle')"),'semantic foundation must not rewrite canonical Evidenze ICTC identity');
 check(admin.includes('#adminCenter [data-admin-view="overview"]'),'procedure policy panel must belong to one Admin view');
 check(admin.includes('loadedPolicy=new Map')&&admin.includes('loadedPolicy=new Map(procedures.map'),'procedure policy diff must bind to loaded response');
 check(admin.includes('if(renderImpact()===0)'),'procedure policy no-op write must fail closed');
 check(!admin.includes('window.confirm'),'procedure policy impact must use structured in-UI confirmation');
 
-if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,glossaryTerms:Object.keys(BUSINESS_GLOSSARY).length,processes:Object.keys(PROCEDURE_LANGUAGE).length,materialActions:MATERIAL_ACTION_COUNT,importanceDimensions:IMPORTANCE_DIMENSIONS.length,auditFindings:AUDIT_CLOSURE.totalFindings,uiTopology:'constitutional-annotation'}));
+if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,glossaryTerms:Object.keys(BUSINESS_GLOSSARY).length,processes:Object.keys(PROCEDURE_LANGUAGE).length,materialActions:MATERIAL_ACTION_COUNT,importanceDimensions:IMPORTANCE_DIMENSIONS.length,auditFindings:AUDIT_CLOSURE.totalFindings,uiTopology:'constitutional-annotation',identityAuthority:'canonical-procedure-registry+Evidenze-ICTC'}));
