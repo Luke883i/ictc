@@ -1,14 +1,17 @@
 # Semantic Closure 2.8 — audit consolidato, DoD e falsificazione
 
-Status: candidate slice
+Status: merged / repository-accepted
 Date: 2026-08-21
-Base: `main@a38db0261fb1298fda6617bcc7ab6f3f7a1dae75`
+Original base: `main@a38db0261fb1298fda6617bcc7ab6f3f7a1dae75`
+Accepted PR: `#95`
+Accepted PR head: `351bdd535fd83a4fba5e92b3927dedd8dbe44724`
+Merge commit on main: `a7ad0a60f07321347f8c6d9bf0c5396ba80c4d68`
 
 ## Scopo
 
 La slice converte finding di secondo ordine in invarianti riusabili. Non aggiunge un nuovo processo, un nuovo owner o un nuovo motore di verità. La compressione target è: **meno eccezioni semantiche, più binding espliciti, più fail-closed, meno dipendenza da ordine implicito o nomi accidentali**.
 
-`done` in questo documento significa **closure della slice**. Non significa production readiness, conformità legale, fine dello sviluppo o maturità verticale completa di RC/AR.
+`accepted` in questo documento significa closure della slice al livello repository sulla PR HEAD osservata. Non significa production readiness, conformità legale, deployment assurance, fine dello sviluppo o maturità verticale completa di RC/AR.
 
 ## Finding consolidati e decisione
 
@@ -36,7 +39,7 @@ La slice converte finding di secondo ordine in invarianti riusabili. Non aggiung
 - **G6 Constitutional convergence** — ogni evento semantico della UI termina nel lifecycle C0.1.
 - **G7 Documentation parity** — README, architecture, epistemic contract, ADR, testing e development descrivono lo stesso AS-IS.
 - **G8 Falsification** — 10.000.000 simulation cases + 1.000.000 mutants; 100% kill nel vocabolario dichiarato; holdout 100.000 senza famiglia nuova.
-- **G9 Exact-head acceptance** — la slice è promuovibile solo se i check della PR HEAD corrente sono verdi; un SHA precedente non soddisfa il DoD.
+- **G9 Exact-head acceptance** — la slice è accettata sul commit HEAD effettivamente eseguito in CI, non su uno SHA precedente.
 
 ## DoD intermedi
 
@@ -152,7 +155,11 @@ Nessun arco business, EpistemicStep o EvidenceRef può da solo trasformare propo
 
 La saturation non prova che questa lista sia completa. La metrica utile è la capacità dei falsificatori di uccidere mutazioni indipendenti, non il numero assoluto di iterazioni.
 
-## Checklist di accettazione
+## Evidenza di accettazione repository
+
+La PR #95 HEAD `351bdd535fd83a4fba5e92b3927dedd8dbe44724` è stata osservata con tutti i dieci contesti di accettazione in `success`: stable diagnostic, semantic diagnostic, runtime diagnostic, contract/audit, runtime E2E, browser journeys, epistemic professional browser, launcher smoke, exact-head CI e actions census. Il merge commit `a7ad0a60...` non sostituisce quell'evidenza exact-head.
+
+## Checklist di accettazione — risultato storico
 
 - [x] branch da exact main base
 - [x] fix temporal/evidence senza nuovo owner
@@ -163,9 +170,7 @@ La saturation non prova che questa lista sia completa. La metrica utile è la ca
 - [x] saturation 10M + 1M codificata nel gate current
 - [x] README rifatto come mappa logica + tecnologica
 - [x] architecture/epistemic/ADR/testing/development allineati
-- [ ] exact-head GitHub Actions green sulla PR materializzata
-
-L'ultimo punto non può essere anticipato: diventa `x` solo sul commit HEAD effettivamente eseguito in CI.
+- [x] exact-head GitHub Actions green sulla PR #95 HEAD
 
 ## Residual risk / prossime slice
 
@@ -177,6 +182,8 @@ Non vengono nascosti:
 - La selezione transaction-time storica non è implementata.
 - `business-surface-convergence-2-7` resta enhancer di compatibilità non-finale; una futura compressione può assorbirne le responsabilità nei participant canonici, ma non è necessario creare un nuovo owner.
 - La current release suite conserva molti rail storici. `v3/release-identity.json` resta l'autorità della candidate; la compressione fisica dei rail può essere una slice separata per non mescolare semantic closure e rimozione regressioni.
+
+Runtime Stabilization 2.9 consuma una parte del debito causale e di gate topology qui dichiarato, senza riscrivere retroattivamente il significato della closure 2.8.
 
 ## Rollback
 

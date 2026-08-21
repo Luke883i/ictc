@@ -8,7 +8,7 @@ for(const action of ['monitoring.mission.planned','monitoring.run.completed','in
   const step=buildEpistemicStep({id:`e-${action}`,revision:2,at:'2026-08-21T00:00:00.000Z',action,actorId:'local-admin',role:'admin',subject:version.subject,inputSha256:'b'.repeat(64)},[version],[]);
   assert.deepEqual(step.effects[0].families,['proposed']);
   assert.deepEqual(step.effects[0].producerRef,{type:'service',id:'ai-provider'});
-  assert.equal(step.effects[0].classificationSource,'legacy-action-registry');
+  assert.equal(step.effects[0].classificationSource,'compatibility-action-registry');
   assert.deepEqual(step.effects[0].basisRefs,[{subjectVersionId:'sv-0'}],'legacy AI proposal must retain a recorded predecessor basis when available');
 }
 const firstOccurrence=buildEpistemicStep({id:'e-first-ai',revision:1,at:'2026-08-21T00:00:00.000Z',action:'incident.analyzed',actorId:'local-admin',role:'admin',subject:{type:'incident',id:'i1'},inputSha256:'c'.repeat(64)},[{id:'sv-first',subject:{type:'incident',id:'i1'},payloadSha256:'d'.repeat(64),revision:1}],[]);
