@@ -1,6 +1,6 @@
 # START HERE — orientamento ICTC
 
-Questa è una mappa, non una nuova authority.
+Questa è una mappa, non una nuova autorità.
 
 ## Percorso minimo
 
@@ -40,4 +40,5 @@ Business: **Processi di Compliance**. EP-01 è cross-cutting, non ottavo process
 4. candidate DoD;
 5. trajectory e documenti storici.
 
+I documenti storici conservano lineage e contesto, ma non sono autorità corrente.
 La data più recente non crea authority da sola.
