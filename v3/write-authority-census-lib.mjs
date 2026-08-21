@@ -1,5 +1,5 @@
 import path from 'node:path';
-const NON_PRODUCTION_SUFFIX=/(?:-check|-audit|-stress|-model|saturation(?:-[^.]+)?)\.mjs$/i;
+const NON_PRODUCTION_SUFFIX=/(?:-saturation(?:-[^.]+)?|-(?:check|audit|stress|model|frontier)(?:-[0-9][a-z0-9.-]*)?)\.mjs$/i;
 const NON_PRODUCTION_EXACT=new Set(['semantic-closure-census.mjs','semantic-closure-dod.mjs','semantic-integrity-root-check.mjs','current-release-suite-check.mjs']);
 export function isProductionSource(name){const normalized=String(name||'').replaceAll('\\','/'),base=path.posix.basename(normalized);if(!normalized.startsWith('v3/'))return false;if(NON_PRODUCTION_SUFFIX.test(base)||NON_PRODUCTION_EXACT.has(base)||/^browser-/i.test(base))return false;return /\.(?:mjs|js)$/i.test(base);}
 export function extractMutatingRoutePatterns(text=''){if(!/\bstore\.mutate\s*\(/.test(text))return[];const out=new Set(),patterns=[/pathname\s*===\s*['"]([^'"]+)['"]/g,/routeMatch\(\s*pathname\s*,\s*['"]([^'"]+)['"]/g];for(const pattern of patterns)for(const match of String(text).matchAll(pattern))if(String(match[1]).startsWith('/api/'))out.add(match[1]);return[...out].sort();}
