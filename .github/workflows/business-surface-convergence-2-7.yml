@@ -1,6 +1,8 @@
 name: ictc-business-surface-convergence-2-7
 on: [pull_request, workflow_dispatch]
-permissions: {contents: read}
+permissions:
+  contents: read
+  statuses: write
 concurrency:
   group: ictc-business-surface-convergence-2-7-${{ github.ref }}
   cancel-in-progress: true
@@ -49,6 +51,8 @@ jobs:
           ICTC_EXPECT_DEMO: ${{ matrix.expect_demo }}
           ICTC_PORT: ${{ matrix.port }}
           PORT: ${{ matrix.port }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -Eeuo pipefail
           export ICTC_NO_OPEN=1 ICTC_BASE_URL="http://127.0.0.1:${ICTC_PORT}" ICTC_STATE_DIR="$RUNNER_TEMP/ictc-business-${{ matrix.mode }}-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-business-${{ matrix.mode }}-runtime" ICTC_SCHEDULER_TICK_MS=100000 ICTC_DEMO_STARTUP_ATTEMPTS=900

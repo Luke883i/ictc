@@ -1,6 +1,15 @@
-import json,os,pathlib,traceback
+import json,os,pathlib,traceback,urllib.request
 from playwright.sync_api import expect,sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');DEMO=os.environ.get('ICTC_EXPECT_DEMO','0')=='1';MODE='demo' if DEMO else 'standard';PHASE='init';IDS=['monitoring','incidents','objects','coverage','actions','risks','assurance']
+def _slug(value):return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:64] or 'unknown'
+def publish_failure(exc):
+ token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
+ if not token or len(sha)!=40 or not repo:return
+ detail=_slug(f'{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:40]
+ body=json.dumps({'state':'failure','context':f'ictc/business-surface-2-7-failure/{MODE}/{_slug(PHASE)}/{detail}','description':f'2.7 {MODE} {PHASE}: {type(exc).__name__}'[:140]}).encode()
+ req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+ try:urllib.request.urlopen(req,timeout=8).read()
+ except Exception:pass
 def no_overflow(page,label):
  m=page.evaluate('()=>({inner:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth})');assert max(m['doc'],m['body'])<=m['inner']+1,(label,m)
 def assert_target(locator,label):
@@ -49,4 +58,4 @@ try:
   PHASE='mobile';mctx=browser.new_context(viewport={'width':390,'height':844});mctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");m=mctx.new_page();m.set_default_timeout(30000);m.goto(BASE,wait_until='networkidle');ready(m);no_overflow(m,'home-390');expect(m.locator('#homePulse .home-business-metric')).to_have_count(6);goto_processes(m);no_overflow(m,'processes-390');m.locator('.service-nav [data-service="proof"]').click();expect(m.locator('#proofView')).to_be_visible();m.wait_for_function("()=>document.querySelectorAll('#proofView [data-proof-tab]').length===6");no_overflow(m,'evidence-390');m.screenshot(path=str(ART/f'business-surface-convergence-2-7-{MODE}.png'),full_page=True);mctx.close()
   out={'ok':True,'profile':'business-surface-convergence-2.7','mode':MODE,'homeMetrics':metrics.count(),'procedureCards':cards.count(),'evidenceTabs':tabs.count(),'actionsProbed':len(IDS),'coverageUsesNativeStandardSurface':True,'mobileWidth':390,'claimBoundary':'Server-backed browser evidence of structure, action reachability and responsive geometry; not human usability research, legal compliance, certification or universal aesthetic proof.'};(ART/f'browser-business-surface-convergence-2-7-{MODE}.json').write_text(json.dumps(out,indent=2,ensure_ascii=False));print(json.dumps(out,ensure_ascii=False));ctx.close();browser.close()
 except BaseException as exc:
- (ART/f'browser-business-surface-convergence-2-7-{MODE}-error.json').write_text(json.dumps({'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()},indent=2,ensure_ascii=False));raise
+ payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/f'browser-business-surface-convergence-2-7-{MODE}-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False));publish_failure(exc);raise
