@@ -71,11 +71,12 @@ v3/store.mjs
 v3/sqlite-state-persistence.mjs
         ↓
 state.sqlite
-  snapshot          stato corrente per revisione
+  snapshot          stato corrente per revisione + cache replay recente
   audit             ledger hash-linked
   subject_payload   payload content-addressed
   subject_version   storia semantica append-oriented
   epistemic_step    causalità/autorità append-oriented
+  command_result    autorità durevole di replay/idempotenza comando
         ↓
 canonical projections + write OutcomeEnvelope/receipt
         ↓
@@ -98,7 +99,18 @@ La slice di consolidamento 2.8 chiude finding di secondo ordine senza introdurre
 - **UI C0.1**: `ictc:rendered`, `ictc:surface-changed`, `ictc:context-changed` e `ictc:projection-committed` convergono nel lifecycle costituzionale. Gli enhancer 2.7 restano compatibilità non-finale; C0.1 è l'ultimo converger semantico.
 - **OutcomeEnvelope**: il principio corrente è “nessuna entità raw di persistenza in UI”. Le letture usano canonical projections con authority/limits; le write restituiscono OutcomeEnvelope/receipt. Non ogni oggetto letto è letteralmente un envelope schema.
 
-Il DoD completo, la matrice finding→invariante→falsificatore e i residual risk sono in `docs/SEMANTIC_CLOSURE_2_8_DOD.md`.
+Il record di closure accettata è in `docs/SEMANTIC_CLOSURE_2_8_DOD.md`.
+
+## Runtime Stabilization 2.9
+
+La stabilizzazione 2.9 consuma debito runtime reso misurabile dalla costituzione senza introdurre un nuovo owner:
+
+- **Replay durevole**: `commandResults` resta una cache snapshot bounded a 500 entry, mentre `command_result` in SQLite conserva l'autorità di replay/idempotenza oltre l'eviction della cache e attraverso il riavvio del runtime.
+- **Authority conservation**: il nome di una action sconosciuta non può più produrre `decided` o `attested`; le compatibilità decisive sono enumerate solo quando preservano il comportamento pre-2.9. Nuova autorità semantica richiede `metadata.epistemicEffects` esplicito.
+- **AI fail-safe**: output AI noti privi di token `.ai.` — inclusi monitoring job, workbench planning/run e contribution enrichment — sono classificati `proposed` con producer `ai-provider`; un nome AI sconosciuto può solo degradare a `proposed`, mai a human authority.
+- **Gate provenance**: i gate versionati 2.3–2.9 sono membri diretti della current release suite, così il fallimento è attribuito al falsificatore reale e non a un wrapper con side effect.
+
+Il DoD, il vocabolario di mutazione e i limiti della slice sono in `docs/RUNTIME_STABILIZATION_2_9_DOD.md`.
 
 ## Autorità e temporalità
 
@@ -175,13 +187,21 @@ node v3/semantic-closure-2-8-ui-check.mjs
 node v3/semantic-closure-2-8-saturation.mjs
 ```
 
-La saturation 2.8 modella deterministicamente **10.000.000 simulazioni multidimensionali** e **1.000.000 mutazioni negative** sulle famiglie dichiarate, richiede kill-rate 100% e usa le ultime 100.000 mutazioni come holdout no-novelty. È bounded evidence sul vocabolario di fault modellato: non prova che il vocabolario sia completo e non è assurance indipendente.
+Diagnosi mirata della stabilizzazione 2.9:
+
+```bash
+node v3/runtime-stabilization-semantic-check.mjs
+node v3/runtime-stabilization-command-ledger-check.mjs
+node v3/runtime-stabilization-2-9-saturation.mjs
+```
+
+La saturation 2.9 modella deterministicamente **10.000.000 scenari** e **1.000.000 mutazioni negative** sulle sei famiglie dichiarate, con le ultime 100.000 mutazioni come holdout no-novelty. Il kill-rate del modello è una bounded evidence del vocabolario implementato, non una probabilità di correttezza, una prova di completezza, assurance indipendente o deployment assurance.
 
 ## Candidate e maturità
 
 `v3/release-identity.json` resta l'autorità cross-documenti: product `1.8.0`, release stage `candidate`, semantic `1.2-market-candidate`, experience `1.9-experience-candidate`, epistemic `2.0-epistemic-lattice-pre-candidate`, journey `2.2-sequential-onto-epistemic`, constitution `C0.1`.
 
-Il profilo di maturità corrente è **deep fine-tuning RN/EC/AO/MC/AP**; RC/AR restano `regressionCovered`. La closure 2.8 rafforza invarianti trasversali e RC, ma non finge una maturità verticale RC/AR non ancora raggiunta.
+Il profilo di maturità corrente è **deep fine-tuning RN/EC/AO/MC/AP**; RC/AR restano `regressionCovered`. Le closure 2.8/2.9 rafforzano invarianti trasversali e runtime, ma non fingono una maturità verticale RC/AR non ancora raggiunta.
 
 ## Sviluppo e documentazione
 

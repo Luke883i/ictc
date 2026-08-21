@@ -6,7 +6,7 @@ Base: `main@a7ad0a60f07321347f8c6d9bf0c5396ba80c4d68`
 
 ## Objective
 
-Consume the measurable runtime debt exposed by Semantic Closure 2.8 without adding business owners or a new constitutional layer. The target lattice is minimal: durable command identity, non-promotional epistemic fallback, explicit bounded compatibility semantics, and directly attributable current-release gates.
+Consume the measurable runtime debt exposed by Semantic Closure 2.8 without adding business owners or a new constitutional layer. The target lattice is minimal: durable command identity, non-promotional epistemic fallback, authority-conserving compatibility semantics, and directly attributable current-release gates.
 
 `done` here means repository/runtime stabilization of these invariants. It does not mean legal/compliance assurance, external deployment assurance, historical transaction-time reconstruction, remote evidence drift monitoring, or RC/AR vertical deep fine-tuning.
 
@@ -15,16 +15,16 @@ Consume the measurable runtime debt exposed by Semantic Closure 2.8 without addi
 | Finding | Root cause | Stabilization | Falsifier |
 |---|---|---|---|
 | command replay expires after 500 entries | `commandResults` was both cache and replay authority | append-only SQLite `command_result`; snapshot remains 500-entry cache; cache miss resolves durable ledger | `runtime-stabilization-command-ledger-check.mjs` |
-| action-name can mint human authority | regex promoted unknown `review/decide/approve/...` names | unknown names now fail safe to `observed`; only declared effects or exact compatibility entries can produce `decided/attested` | `runtime-stabilization-semantic-check.mjs` |
+| action-name can mint human authority | regex promoted unknown `review/decide/approve/...` names | unknown names now fail safe to `observed`; only declared effects or exact authority-preserving compatibility entries can produce `decided/attested` | `runtime-stabilization-semantic-check.mjs` |
 | AI output can collapse to observed | AI producers without `.ai.` token were outside the 2.8 exact registry | exact proposed/`ai-provider` compatibility entries for monitoring job, workbench run/planning, contribution enrichment and known incident flows | semantic check + saturation |
-| human validation can collapse to observed | `validated` was not in legacy regex | exact human decision compatibility entry for dashboard insight validation | semantic check |
+| compatibility migration can widen authority | replacing regex with an exact registry can accidentally classify previously-observed names as decisions | registry preserves pre-2.9 decisive/attested behavior; names such as `insight.human.validated`, `review.need.resolved` and `catalog.source.impact.assessed` remain observed until explicit effects declare otherwise | semantic check |
 | versioned acceptance gates lose provenance | 2.3–2.8 gates were side-effect imports of `current-release-suite-check` | direct membership in semantic/runtime suites; suite check now verifies direct attribution | `current-release-suite-check.mjs` |
 | current release profile omits closure generation | profile ended at C0.1 | profile now names Semantic Closure 2.8 and Runtime Stabilization 2.9 | current suite output |
 | 2.8 DoD remained candidate after merge | documentation state drift | 2.8 document moved to merged/accepted repository state | documentation review |
 
 ## Global DoD
 
-- G1 — exactly seven business processes remain; no new business/persistence/UI owner.
+- G1 — exactly seven business processes remain; no new business/persistence/UI owner and no authority widening from migration.
 - G2 — a command id that left the 500-entry snapshot cache still resolves to the original durable receipt and cannot execute its mutation again.
 - G3 — command id reuse by a different actor/action fails closed.
 - G4 — unknown action naming alone can never produce `decided` or `attested`.
@@ -61,6 +61,7 @@ The 10M/1M figures are deterministic model-level falsification counts over this 
 
 - exact compatibility registry is bounded and inspectable;
 - unknown human-looking verbs fail to `observed`;
+- exact decisive/attested entries preserve behavior already implied by the pre-2.9 fallback instead of inventing new authority;
 - AI-looking fallback may lower-bound only to `proposed`, never to human authority;
 - compatibility is not the target authoring API: new materially epistemic writes should declare `metadata.epistemicEffects`.
 
@@ -75,6 +76,7 @@ The 10M/1M figures are deterministic model-level falsification counts over this 
 | Metric | Target |
 |---|---:|
 | new business owners | 0 |
+| authority widening from compatibility migration | 0 |
 | snapshot replay cache | 500 max |
 | durable command retention | append-only within SQLite lifecycle |
 | replay after cache eviction | 100% for commands recorded by 2.9+ |
@@ -103,10 +105,12 @@ Not hidden by this slice:
 - [x] branch created from exact base `a7ad0a60...`
 - [x] durable replay authority separated from bounded cache
 - [x] unknown action-name human promotion removed
+- [x] compatibility migration checked for zero authority widening
 - [x] uncovered AI-producing actions pinned to proposed/AI producer
 - [x] deterministic 10M simulations + 1M mutation model added
 - [x] versioned suite gates made directly attributable
 - [x] release profile includes 2.8 + 2.9
+- [x] README infrastructure/verification parity updated
 - [x] 2.8 documentation state drift corrected in this PR
 - [ ] exact-head GitHub Actions green on materialized PR
 
