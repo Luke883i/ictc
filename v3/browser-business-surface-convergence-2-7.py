@@ -5,7 +5,7 @@ def _slug(value):return ''.join(c if c.isalnum() or c in '._-' else '-' for c in
 def publish_failure(exc):
  token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
  if not token or len(sha)!=40 or not repo:return
- detail=_slug(f'{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:40]
+ detail=_slug(f'{type(exc).__name__}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:64]
  body=json.dumps({'state':'failure','context':f'ictc/business-surface-2-7-failure/{MODE}/{_slug(PHASE)}/{detail}','description':f'2.7 {MODE} {PHASE}: {type(exc).__name__}'[:140]}).encode()
  req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
  try:urllib.request.urlopen(req,timeout=8).read()
@@ -20,14 +20,22 @@ def goto_processes(page):
  page.locator('.service-nav [data-service="processes"]').click();expect(page.locator('#processesView')).to_be_visible();page.wait_for_function("()=>document.querySelectorAll('#procedureHub .procedure-card[data-business-procedure-card=\"2.7\"]').length===7")
 def enter_procedure(page,pid):
  goto_processes(page);card=page.locator(f'#procedureHub .procedure-card[data-procedure-id="{pid}"]');expect(card).to_be_visible();entry=card.locator('.procedure-primary');assert_target(entry,f'{pid}-hub-entry');entry.click();copy={'monitoring':'#monitoringView','incidents':'#incidentsView'}.get(pid,'#grcWorkspace');expect(page.locator(copy)).to_be_visible();page.wait_for_function("pid=>document.querySelector(`[data-procedure-primary=\"${pid}\"]`)?.closest('.procedure-frame')?.dataset.businessProcedureFrame==='2.7'",arg=pid);return page.locator(f'[data-procedure-primary="{pid}"]')
-def light_blue(page,selector):
- rgb=page.locator(selector).evaluate("e=>(getComputedStyle(e).backgroundColor.match(/\\d+/g)||[]).slice(0,3).map(Number)");return len(rgb)==3 and min(rgb)>=200 and rgb[2]>=rgb[0]-10
+def background(page,selector):return page.locator(selector).evaluate("e=>getComputedStyle(e).backgroundColor")
+def light_blue_value(value):
+ nums=[int(x) for x in __import__('re').findall(r'\d+',value)[:3]];return len(nums)==3 and min(nums)>=200 and nums[2]>=nums[0]-10
+def assert_navigation(page):
+ home=page.locator('.service-nav [data-service="home"]');proof=page.locator('.service-nav [data-service="proof"]')
+ expect(home).to_have_text('Home');expect(proof).to_have_text('Evidenze ICTC')
+ old_home=page.locator('.service-nav').get_by_text('Oggi',exact=True).count();old_proof=page.locator('.service-nav').get_by_text('Postura ICTC',exact=True).count()
+ assert old_home==0,f'legacy-home-label-count={old_home}';assert old_proof==0,f'legacy-proof-label-count={old_proof}'
+ top=background(page,'.topbar');foot=background(page,'#stableLegalFooter')
+ assert light_blue_value(top),f'topbar-background={top}';assert light_blue_value(foot),f'footer-background={foot}'
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");p=ctx.new_page();p.set_default_timeout(30000);p.goto(BASE,wait_until='networkidle');ready(p)
-  PHASE='navigation';expect(p.locator('.service-nav [data-service="home"]')).to_have_text('Home');expect(p.locator('.service-nav [data-service="proof"]')).to_have_text('Evidenze ICTC');assert p.locator('.service-nav').get_by_text('Oggi',exact=True).count()==0;assert p.locator('.service-nav').get_by_text('Postura ICTC',exact=True).count()==0;assert light_blue(p,'.topbar');assert light_blue(p,'#stableLegalFooter')
+  PHASE='navigation';assert_navigation(p)
   PHASE='home';metrics=p.locator('#homePulse .home-business-metric');expect(metrics).to_have_count(6);expect(p.locator('#homePulse .metric-explain')).to_have_count(6);no_overflow(p,'home-desktop')
   PHASE='procedure-hub';goto_processes(p);cards=p.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7)
   for pid in IDS:
