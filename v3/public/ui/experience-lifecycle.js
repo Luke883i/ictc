@@ -52,7 +52,11 @@ export function requestExperienceLifecycle(reason='requested'){
 export function installExperienceLifecycle(){
   if(lifecycleInstalled)return;
   lifecycleInstalled=true;
+  // Non-final enhancers are installed before this listener. Their coalesced work therefore runs first;
+  // the constitutional lifecycle is always the final converger for every semantic projection/surface event.
   document.addEventListener('ictc:rendered',()=>requestExperienceLifecycle('ictc:rendered'));
   document.addEventListener('ictc:surface-changed',()=>requestExperienceLifecycle('ictc:surface-changed'));
+  document.addEventListener('ictc:context-changed',()=>requestExperienceLifecycle('ictc:context-changed'));
+  document.addEventListener('ictc:projection-committed',()=>requestExperienceLifecycle('ictc:projection-committed'));
   document.addEventListener('toggle',()=>requestExperienceLifecycle('toggle'),true);
 }
