@@ -9,7 +9,7 @@ async function json(url,options={}){const response=await fetch(url,{...options,h
 async function checkRuns(){const out=[];for(let page=1;page<=10;page++){const payload=await json(`${api}/repos/${repository}/commits/${sha}/check-runs?filter=latest&per_page=100&page=${page}`);const rows=payload.check_runs||[];out.push(...rows);if(rows.length<100)break;}return out;}
 function conclusionState(run){if(run.status!=='completed')return'pending';return['success','neutral','skipped'].includes(run.conclusion)?'success':'failure';}
 function slug(value){return String(value||'check').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,58)||'check';}
-async function post(context,state,description){await json(`${api}/repos/${repository}/statuses/${sha}`,{method:'POST',body:JSON.stringify({state,context,description:String(description).slice(0,140)})});}
+async function post(context,state,description,targetUrl=''){const body={state,context,description:String(description).slice(0,140)};if(targetUrl)body.target_url=targetUrl;await json(`${api}/repos/${repository}/statuses/${sha}`,{method:'POST',body:JSON.stringify(body)});}
 const started=Date.now(),deadline=started+timeoutMs;let previousSignature='',stablePolls=0,last=[];
 await post('ictc/actions-census','pending','enumerating exact-head GitHub Actions check-runs');
 while(true){
@@ -17,7 +17,7 @@ while(true){
   const signature=runs.map(run=>`${run.id}:${run.name}:${run.status}:${run.conclusion||''}`).sort().join('|');
   stablePolls=signature===previousSignature?stablePolls+1:0;previousSignature=signature;
   const failures=runs.filter(run=>conclusionState(run)==='failure'),pending=runs.filter(run=>conclusionState(run)==='pending');
-  for(const run of failures)await post(`ictc/check-failure/${run.id}-${slug(run.name)}`,'failure',`${run.name}: ${run.conclusion||'failure'}`);
+  for(const run of failures)await post(`ictc/check-failure/${run.id}-${slug(run.name)}`,'failure',`${run.name}: ${run.conclusion||'failure'}`,run.details_url||run.html_url||'');
   const observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
   if(settled||Date.now()>=deadline)break;
   await post('ictc/actions-census','pending',`exact head: ${runs.length} checks, ${failures.length} failed, ${pending.length} pending`);
