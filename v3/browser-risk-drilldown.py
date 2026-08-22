@@ -56,11 +56,19 @@ try:
         assert risk_id in cell['riskIds'],cell
         assert any(item.get('riskId')==risk_id for item in after['reviewed'])
 
-        PHASE='ui-grid'
+        PHASE='ui-risk-analysis-progressive'
         open_risks(page)
-        cells=page.locator('#grcWorkspace .risk-map .risk-cell')
+        analysis=page.locator('#grcWorkspace details[data-composition-detail="risk-analysis"]')
+        expect(analysis).to_have_count(1)
+        expect(analysis).not_to_have_attribute('open','')
+        analysis.locator(':scope > summary').click()
+        expect(analysis).to_have_attribute('open','')
+
+        PHASE='ui-grid'
+        cells=analysis.locator('.risk-map .risk-cell')
         expect(cells).to_have_count(25)
         target=cells.nth(19)
+        expect(target).to_be_visible()
         assert target.evaluate('(el)=>el.tagName')=='DETAILS','human-rated 4x5 cell must be drillable'
 
         PHASE='ui-cell-drilldown'
@@ -81,7 +89,7 @@ try:
 
         PHASE='bounded-semantics'
         assert not errors,errors
-        payload={'ok':True,'profile':'risk-human-matrix-drilldown+semantic-composition-3.1','riskId':risk_id,'cell':{'likelihood':4,'impact':5},'cells':25,'humanReviewed':True,'aggregateProjection':True,'canonicalProcedureFrame':True,'retiredContextStripAbsent':True,'claimBoundary':'Browser E2E proves projection/drilldown wiring for an explicit human review; it does not establish objective probability, legal applicability, offence classification, control effectiveness or compliance.'}
+        payload={'ok':True,'profile':'risk-human-matrix-drilldown+semantic-composition-3.1','riskId':risk_id,'cell':{'likelihood':4,'impact':5},'cells':25,'humanReviewed':True,'riskAnalysisProgressive':True,'aggregateProjection':True,'canonicalProcedureFrame':True,'retiredContextStripAbsent':True,'claimBoundary':'Browser E2E proves projection/drilldown wiring for an explicit human review; it does not establish objective probability, legal applicability, offence classification, control effectiveness or compliance.'}
         (ART/'browser-risk-drilldown.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
         print('browser-risk-drilldown: complete',flush=True)
         ctx.close(); browser.close()
