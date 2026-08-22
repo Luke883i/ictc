@@ -6,15 +6,15 @@ import path from 'node:path';
 
 const ROOT=path.dirname(fileURLToPath(import.meta.url)),ART=path.join(ROOT,'..','artifacts');mkdirSync(ART,{recursive:true});
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
-const [frame,anatomy,market,css,primitiveCss,epistemicCss,contracts,meta,doc]=await Promise.all([
-  read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-anatomy.js'),read('./public/ui/procedure-market-ux.js'),read('./public/onto-compliance-v1.css'),read('./public/surface-primitives.css'),read('./public/epistemic-lattice.css'),read('./procedure-contracts-1-2.json'),read('./runtime/meta-procedure-contracts.mjs'),read('../docs/ONTO_COMPLIANCE_HORIZON_V1.md')
+const [frame,anatomy,market,stable,css,primitiveCss,epistemicCss,contracts,meta,doc]=await Promise.all([
+  read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-anatomy.js'),read('./public/ui/procedure-market-ux.js'),read('./public/ui/stable-shell.js'),read('./public/onto-compliance-v1.css'),read('./public/surface-primitives.css'),read('./public/epistemic-lattice.css'),read('./procedure-contracts-1-2.json'),read('./runtime/meta-procedure-contracts.mjs'),read('../docs/ONTO_COMPLIANCE_HORIZON_V1.md')
 ]);
 const registry=JSON.parse(contracts).procedures,controlMin=Number((primitiveCss.match(/--surface-control-min:(\d+)px/)||[])[1]||0);
 const sourceProfile={
   businessProcedures:registry.length,
   ep01CrossCutting:meta.includes("businessProcess:false")&&meta.includes("code:'EP-01'"),
-  attentionObservational:frame.includes('semanticSignals')&&frame.includes('metric.label')&&!frame.includes("'In ordine'")&&!frame.includes('Nessuna attenzione aperta'),
-  homeAttentionObservational:market.includes('procedure senza attenzione aperta')&&!/processi in ordine/i.test(market),
+  attentionObservational:!frame.includes('semanticSignals')&&stable.includes('function attentionMetric')&&stable.includes('function normalizedReason')&&!frame.includes("'In ordine'")&&!frame.includes('Nessuna attenzione aperta'),
+  homeAttentionObservational:stable.includes('Richiede il tuo intervento')&&stable.includes('Nessuna attività richiede intervento nella vista corrente.')&&stable.includes('.slice(0,5)')&&!/processi in ordine/i.test(stable),
   auditorProcedureBound:frame.includes("readOnly=state.role==='auditor'")&&frame.includes("actionLabel:readOnly?'Consulta registrazioni'")&&frame.includes('openReadSurface(id)')&&!frame.includes("navigateSurface('proof')"),
   traceOwners:(anatomy.includes('anchor.after(box)')?1:0)+(frame.includes('placeTechnicalContext')?1:0),
   traceAfterWork:anatomy.includes('function workAnchor(')&&anatomy.includes('anchor.after(box)')&&!anatomy.includes('host.prepend(box)'),
@@ -74,6 +74,6 @@ const G=COMPRESSIONS.length,UNSAFE_COMPRESSIONS=Object.freeze(['remove-claim-bou
 const degradations={'remove-claim-boundary':'hierarchyDrift','merge-proposed-with-recorded':'proposedAuthorityBlur','hide-native-work':'hierarchyDrift','remove-role-distinction':'auditorContextEscape','drop-local-overflow-owner':'tabletOverflowRisk','shrink-target':'smallTarget','drop-procedure-identity':'procedureRegistryDrift','remove-scope-reason':'scopeEditorAmbiguity','merge-ep01-into-business':'ep01BusinessLeak','remove-trace-owner':'traceAuthorityDrift'};
 const gr=rng(0x0c6f100),rejected=[];let safeAfterG=0;for(let i=0;i<100;i++){const op=pick(gr,UNSAFE_COMPRESSIONS),degradation=degradations[op];if(!degradation)safeAfterG++;else rejected.push({index:G+i+1,operator:op,degrades:degradation});}
 assert.equal(safeAfterG,0,'G+100 found an unclassified/safe additional compression in declared operator space');
-const out={ok:true,profile:'onto-compliance-horizon-v1-t-m-plus-100-g-plus-100',sourceProfile,dimensions:perDimension,mutants:mutantResults,compression:{accepted:COMPRESSIONS.map(x=>x.id),G,holdout:100,safeAdditionalCompressions:safeAfterG,rejected},claimBoundary:'Bounded source-derived engineering evidence over the declared visual/ontological/epistemic fault and compression operators. Per-dimension M+100 and G+100 do not prove absence of unknown defects or mathematical UI minimality; Rice-style global semantic correctness is not claimed.'};
+const out={ok:true,profile:'onto-compliance-horizon-v1-t-m-plus-100-g-plus-100',sourceProfile,attentionAuthority:'stable-shell+procedure-frame',dimensions:perDimension,mutants:mutantResults,compression:{accepted:COMPRESSIONS.map(x=>x.id),G,holdout:100,safeAdditionalCompressions:safeAfterG,rejected},claimBoundary:'Bounded source-derived engineering evidence over the declared visual/ontological/epistemic fault and compression operators. Per-dimension M+100 and G+100 do not prove absence of unknown defects or mathematical UI minimality; Rice-style global semantic correctness is not claimed.'};
 writeFileSync(path.join(ART,'onto-compliance-saturation.json'),JSON.stringify(out,null,2));
 console.log(`onto-compliance-saturation: ok (T=${Object.keys(DIMENSIONS).length}, each=M+100, G=${G}, G+100 safe=${safeAfterG})`);
