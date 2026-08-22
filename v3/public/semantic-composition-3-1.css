@@ -54,7 +54,7 @@
 #grcWorkspace .grc-list>article footer{margin-top:.35rem!important}
 #grcWorkspace .grc-kpis{margin:0!important;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr))!important}
 .composition-detail{border-top:1px solid var(--line);padding-top:.25rem}
-.composition-detail>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:.86rem;font-weight:700}
+.composition-detail>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:.86rem;font-weight:700}
 .composition-detail>[data-composition-detail-body]{padding:.3rem 0 .5rem}
 #proofView .proof-head{padding:.6rem 0!important;margin:0!important}
 #proofView .proof-head .eyebrow,#proofView .proof-hero-note{display:none!important}
@@ -64,7 +64,9 @@
 #proofView details.proof-section{margin:.4rem 0!important}
 #proofView details.proof-section[open]>summary{margin-bottom:.35rem}
 #proofView .evidence-decision{padding:.6rem .7rem!important}
-#epistemicView .procedure-frame-operate,#epistemicView #epistemicSummary,#epistemicView #epistemicCompression{display:none!important}
+#epistemicView .procedure-frame-operate{display:none!important}
+#epistemicView #epistemicSummary,#epistemicView #epistemicCompression{margin:0!important}
+#epistemicView details[data-composition-detail="epistemic-technical"]{margin-top:.45rem}
 #epistemicView .epistemic-claim-boundary{margin:.2rem 0!important}
 #epistemicView .surface-toolbar{margin:.35rem 0!important;padding:.45rem!important}
 #epistemicView .epistemic-overview,#epistemicView .epistemic-layout{gap:.55rem!important}
@@ -90,7 +92,7 @@ dialog details.advanced:not([open]),dialog [data-information-role="technical"]:n
 @media(prefers-reduced-motion:reduce){[data-semantic-composition="3.1.0"]{scroll-behavior:auto}}
 .finetune-compass,.seq-guide,#procedureHub .finetune-card-nature,#procedureHub .finetune-card-decision{display:none!important}
 .procedure-decision-frame{margin:.45rem 0 0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
-.composition-process-context>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:.84rem;font-weight:700}
+.composition-process-context>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:.84rem;font-weight:700}
 .composition-process-context>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem .8rem;padding:.35rem 0 .55rem}
 .composition-process-context p{margin:0;font-size:.82rem;line-height:1.35}
 @media(max-width:700px){.composition-process-context>div{grid-template-columns:1fr}}
