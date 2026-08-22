@@ -43,30 +43,24 @@ def openp(page, code):
     processes(page).click()
     card = page.locator(f'#procedureHub [data-process-code="{code}"]')
     expect(card).to_be_visible()
+    pid = PROCS[code]
+    expect(card).to_have_attribute('data-procedure-id', pid)
     card.locator(':scope > footer .primary').click()
     page.wait_for_timeout(80)
-    expect(page.locator('[data-surface-context-strip]:visible')).to_contain_text(code)
+    frame = page.locator('.procedure-frame:visible')
+    expect(frame).to_have_count(1)
+    expect(frame.locator('.procedure-frame-code')).to_have_text(code)
+    expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
     return card
-
-def projected_signals(item):
-    metrics = [metric for metric in item.get('metrics', []) if isinstance(metric.get('value'), (int, float)) and float(metric.get('value')) > 0]
-    attention = [metric for metric in metrics if metric.get('severity') in ('attention', 'critical')]
-    return (attention or metrics)[:2]
 
 def verify_process_projection(page, code, pid, rev):
     processes(page).click()
     check_surface_revision(page, '#processesView', rev)
     card = page.locator(f'#procedureHub [data-process-code="{code}"]')
     expect(card).to_be_visible()
-    data = bootstrap(page)
-    item = next(x for x in data.get('procedures', []) if x.get('id') == pid)
-    expected = projected_signals(item)
-    signals = card.locator('.procedure-signals .procedure-signal')
-    assert signals.count() == len(expected), (code, signals.count(), expected)
-    for index, metric in enumerate(expected):
-        rendered = signals.nth(index)
-        assert int(rendered.locator('b').inner_text()) == int(metric.get('value')), (code, index, metric)
-        assert rendered.locator('small').inner_text().strip() == str(metric.get('label') or metric.get('id')), (code, index, metric)
+    expect(card).to_have_attribute('data-procedure-id', pid)
+    expect(card.locator('.procedure-signals .procedure-signal')).to_have_count(0)
+    expect(card.locator(':scope > footer .procedure-primary')).to_be_visible()
     no_overflow(page)
 
 def fill_user(locator, value, phase):
@@ -277,9 +271,10 @@ try:
         atom = page.locator('[data-explore-atom]').first
         expect(atom).to_be_visible(); atom.click()
         expect(page.locator('.epistemic-atom-readable')).to_be_visible()
-        expect(page.locator('[data-surface-context-strip]:visible')).to_contain_text('Atomo')
+        expect(page.locator('.epistemic-level-nav')).to_contain_text('Atomo')
+        expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
         page.locator('[data-epistemic-level="overview"]').click()
-        expect(page.locator('[data-surface-context-strip]:visible')).to_contain_text('Quadro')
+        expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
 
         PHASE = 'same-digest-expert-modes'
         digest_before = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
@@ -322,12 +317,13 @@ try:
 
         assert not errors, errors
         out = {
-            'ok':True,'profile':'2.1-procedure-journey-exploration-pre-candidate',
+            'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1',
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'epistemicEntrySurface':'Postura ICTC','exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'epistemicEntrySurface':'Evidenze ICTC','exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
             'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+progressive-epistemic-exploration'
         }
