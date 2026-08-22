@@ -2,13 +2,14 @@ import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
+PROCESS_SURFACES={'RN-01':('#monitoringView','monitoring'),'EC-01':('#incidentsView','incidents'),'AO-01':('#grcWorkspace','objects'),'MC-01':('#grcWorkspace','coverage'),'AP-01':('#grcWorkspace','actions'),'RC-01':('#grcWorkspace','risks'),'AR-01':('#grcWorkspace','assurance')}
 def fail(exc):
  payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/'browser-information-value-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-information-value::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 def no_overflow(page):
  m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})');assert max(m['html'],m['body'])<=m['inner']+1,m
 def open_view(page,view):page.goto(f'{BASE}/?view={view}',wait_until='networkidle')
 def open_process(page,code):
- open_view(page,'processes');card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();page.wait_for_timeout(180)
+ open_view(page,'processes');card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();selector,surface=PROCESS_SURFACES[code];page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.surface&&document.documentElement.dataset.semanticComposition==='3.1.0');}",arg={'selector':selector,'surface':surface})
 def assert_above_fold(page,selector,budget=360):
  box=page.locator(selector).first.bounding_box();assert box and box['y']<budget,{'selector':selector,'box':box,'budget':budget}
 def open_profile(page):
