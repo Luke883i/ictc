@@ -6,6 +6,7 @@ const primitives=await readFile(new URL('./public/ui/surface-primitives.js',impo
 const truth=await readFile(new URL('./public/ui/surface-truth-2-5.js',import.meta.url),'utf8');
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const infoBrowser=await readFile(new URL('./browser-information-value.py',import.meta.url),'utf8');
+const composition=await readFile(new URL('./public/ui/semantic-composition-runtime.js',import.meta.url),'utf8');
 const census=await runStaticSurfaceCensus();
 const issues=[];const check=(ok,msg)=>{if(!ok)issues.push(msg);};
 check(contract.version==='2.5.0','surface truth contract version drift');
@@ -21,11 +22,13 @@ check(active.includes("./surface-truth-2-5.js")&&active.includes('installSurface
 const installOrder=active.slice(active.indexOf('const INSTALL_ORDER'));
 check(installOrder.indexOf('installSurfaceTruth25')>=0&&installOrder.indexOf('installSurfaceTruth25')<installOrder.indexOf('installStableShell'),'SurfaceTruth seed census must install before active renderers');
 check(truth.includes("VERSION='2.5.0'")&&!truth.includes('registerExperienceParticipant')&&!truth.includes('surface-census'),'SurfaceTruth must remain a passive census observer, not an experience authority');
-check(primitives.includes('PROCEDURE_INFORMATION_SURFACES')&&primitives.includes('Perché, prova e limite'),'surface information must use the compact disclosure grammar');
+check(truth.includes('MutationObserver')&&truth.includes('GENERATED_ROOTS'),'SurfaceTruth must classify composition-generated semantic nodes');
+check(primitives.includes('retireInjectedNarrative')&&!primitives.includes('SURFACE_INFORMATION'),'shared primitives must be structural-only under Semantic Composition 3.1');
+check(composition.includes('compactHome')&&composition.includes('compactGrc')&&composition.includes('compactProof')&&composition.includes('compactEpistemic'),'Semantic Composition must own all-surface information hierarchy');
 check(wrapper.includes("browser-surface-truth-2-5.py"),'canonical browser wrapper must execute rendered surface census');
-check(infoBrowser.includes("procedureBriefsVisible':False")&&infoBrowser.includes('legacyNativeHeroesVisible'),'information-value acceptance must ratchet cognitive compression');
+check(infoBrowser.includes("profile':'semantic-composition-3.1'")&&infoBrowser.includes("'surfaceCoverage'")&&infoBrowser.includes("'homeNumericDashboard':False")&&infoBrowser.includes("'technicalDefaultOpen':False"),'information-value acceptance must ratchet 3.1 all-surface compression');
 check(census.ok,'static active-import census contains unresolved dynamic imports');
 check(census.activeModules>=25,`active import closure unexpectedly small: ${census.activeModules}`);
 check(census.writerFiles>=12,`active UI writer census unexpectedly small: ${census.writerFiles}`);
 check(census.staticSemanticObjects>=60,`static semantic seed unexpectedly small: ${census.staticSemanticObjects}`);
-if(issues.length){console.error(JSON.stringify({ok:false,issues,census},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,version:contract.version,census:{activeModules:census.activeModules,writerFiles:census.writerFiles,staticSemanticObjects:census.staticSemanticObjects},confidence:contract.confidence,dod:Object.keys(contract.dod)}));
+if(issues.length){console.error(JSON.stringify({ok:false,issues,census},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,version:contract.version,census:{activeModules:census.activeModules,writerFiles:census.writerFiles,staticSemanticObjects:census.staticSemanticObjects},confidence:contract.confidence,dod:Object.keys(contract.dod),informationAuthority:'semantic-composition-3.1',truthAuthority:'passive-surface-truth-2.5'}));
