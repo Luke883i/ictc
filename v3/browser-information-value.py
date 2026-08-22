@@ -11,7 +11,10 @@ def open_view(page,view):page.goto(f'{BASE}/?view={view}',wait_until='networkidl
 def open_process(page,code):
  open_view(page,'processes');card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();selector,surface=PROCESS_SURFACES[code];page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.surface&&document.documentElement.dataset.semanticComposition==='3.1.0');}",arg={'selector':selector,'surface':surface})
 def assert_above_fold(page,selector,budget=360):
- box=page.locator(selector).first.bounding_box();assert box and box['y']<budget,{'selector':selector,'box':box,'budget':budget}
+ global PHASE
+ box=page.locator(selector).first.bounding_box()
+ if box and box['y']>=budget:PHASE=f"{PHASE}-y{round(box['y'])}-b{budget}"
+ assert box and box['y']<budget,{'selector':selector,'box':box,'budget':budget}
 def open_profile(page):
  menu=page.locator('#stableProfileMenu');expect(menu.locator(':scope > summary')).to_be_visible();
  if menu.get_attribute('open') is None:menu.locator(':scope > summary').click()
@@ -33,7 +36,7 @@ try:
    PHASE=f'grc-{code}-status-closed';expect(status).not_to_have_attribute('open','')
    PHASE=f'grc-{code}-decision-count';decision=page.locator('#grcWorkspace .procedure-decision-frame .composition-process-context');expect(decision).to_have_count(1)
    PHASE=f'grc-{code}-decision-closed';expect(decision).not_to_have_attribute('open','')
-   PHASE=f'grc-{code}-order';order=page.evaluate("()=>{const b=document.querySelector('#grcWorkspace .grc-body'),l=b?.querySelector('.grc-list'),k=b?.querySelector('details[data-composition-detail=\"process-status\"]');return !!(b&&l&&k&&[...b.children].indexOf(l)<[...b.children].indexOf(k));}");assert order,code
+   PHASE=f'grc-{code}-order';order=page.evaluate("()=>{const b=document.querySelector('#grcWorkspace .grc-body'),l=b?.querySelector('.grc-list'),k=b?.querySelector('details[data-composition-detail=\"process-status\"]');return !!(b&&l&&k&&l.parentElement===b&&k.parentElement===b&&[...b.children].indexOf(l)<[...b.children].indexOf(k));}");assert order,code
    PHASE=f'grc-{code}-above-fold';assert_above_fold(page,'#grcWorkspace .grc-list',430)
    PHASE=f'grc-{code}-overflow';no_overflow(page)
   PHASE='proof';open_view(page,'proof');expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');expect(page.locator('#proofView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#proofContent')).to_be_visible();decision=page.locator('#proofContent > details.proof-section').filter(has_text='Decisioni e tracciabilità');expect(decision).to_have_attribute('open','');expect(page.locator('#proofContent > details[data-composition-detail="proof-reading"]')).not_to_have_attribute('open','');no_overflow(page)
