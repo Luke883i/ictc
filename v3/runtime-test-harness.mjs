@@ -9,9 +9,29 @@ export async function runtimeHarness(prefix='ictc-test') {
   const dir=await mkdtemp(path.join(os.tmpdir(),`${prefix}-`));
   const apiPort=5400+(process.pid%200), aiPort=5700+(process.pid%200);
   const base=`http://127.0.0.1:${apiPort}`; let server,mock,revision=0,seq=0;
-  const spawnOne=(args,env)=>spawn(process.execPath,args,{cwd:root,env:{...process.env,...env},stdio:['ignore','pipe','pipe']});
+  const spawnOne=(args,env)=>{
+    const child=spawn(process.execPath,args,{cwd:root,env:{...process.env,...env},stdio:['ignore','pipe','pipe'],windowsHide:true});
+    child.stdout?.resume();child.stderr?.resume();
+    return child;
+  };
   const wait=async url=>{for(let i=0;i<120;i++){try{if((await fetch(url)).ok)return;}catch{}await new Promise(r=>setTimeout(r,60));}throw new Error(`timeout ${url}`);};
-  const stop=async child=>{if(!child||child.killed)return;child.kill('SIGTERM');await new Promise(resolve=>{child.once('exit',resolve);setTimeout(()=>{child.kill('SIGKILL');resolve();},1200).unref();});};
+  const stop=async child=>{
+    if(!child)return;
+    const running=()=>child.exitCode===null&&child.signalCode===null;
+    if(running()){
+      await new Promise((resolve,reject)=>{
+        let forceTimer,failTimer,settled=false;
+        const cleanup=()=>{clearTimeout(forceTimer);clearTimeout(failTimer);child.off('close',done);child.off('error',failed);};
+        const done=()=>{if(settled)return;settled=true;cleanup();resolve();};
+        const failed=error=>{if(settled)return;settled=true;cleanup();reject(error);};
+        child.once('close',done);child.once('error',failed);
+        forceTimer=setTimeout(()=>{if(running())child.kill('SIGKILL');},1200);forceTimer.unref();
+        failTimer=setTimeout(()=>failed(new Error(`child ${child.pid||'unknown'} did not close after termination`)),5000);failTimer.unref();
+        child.kill('SIGTERM');
+      });
+    }
+    child.stdout?.destroy();child.stderr?.destroy();
+  };
   const identity=(role='admin',actor=`test-${role}`)=>({'x-ictc-role':role,'x-ictc-actor-id':actor});
   const bootstrap=async(role='admin',actor=`test-${role}`)=>{const r=await fetch(`${base}/api/bootstrap`,{headers:identity(role,actor)});const body=await r.json();revision=body.revision;return {status:r.status,body,headers:r.headers};};
   const request=async(method,url,body={},role='admin',actor=`test-${role}`,opts={})=>{if(opts.refresh!==false)await bootstrap(role,actor);const r=await fetch(`${base}${url}`,{method,headers:{'content-type':'application/json',...identity(role,actor),'x-ictc-command-id':opts.commandId||`${prefix}-${++seq}`,'x-ictc-expected-revision':String(opts.expectedRevision??revision)},body:JSON.stringify(body)});return {status:r.status,body:await r.json().catch(()=>({})),headers:r.headers};};
