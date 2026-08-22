@@ -29,7 +29,7 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section[d
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary{min-height:56px}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-workspace-interpretation{background:var(--color-surface-subtle)}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-snapshot{grid-template-columns:repeat(4,minmax(0,1fr))}
-html[data-native-semantic-lattice="3.2.0"] #epistemicView .surface-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.7rem;border:1px solid var(--color-border);border-radius:14px;background:#fff}
+html[data-native-semantic-lattice="3.2.0"] #epistemicView .surface-toolbar{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.7rem;border:1px solid var(--color-border);border-radius:14px;background:#fff}
 html[data-native-semantic-lattice="3.2.0"] #epistemicView #epistemicModeHost{min-height:300px}
 html[data-native-semantic-lattice="3.2.0"] #epistemicView details[data-epistemic-workspace="rules"]{margin-top:.7rem;border-top:1px solid var(--color-border)}
 html[data-native-semantic-lattice="3.2.0"] #epistemicView details[data-epistemic-workspace="rules"]>summary{min-height:44px;display:flex;align-items:center;font-weight:750;cursor:pointer}
