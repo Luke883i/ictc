@@ -5,13 +5,14 @@ Questa pagina è la mappa canonica per un informatico che entra nel repository. 
 ## Percorso minimo: 15 minuti
 
 1. `README.md` — prodotto, sette processi, stack, limiti e runtime corrente.
-2. `docs/authority-matrix.yaml` — chi possiede cosa: runtime, UI, linguaggio, persistenza e test.
-3. `docs/11_ARCHITECTURE.md` — architettura AS-IS e flussi browser → runtime → SQLite.
-4. `docs/02_EPISTEMIC_CONTRACT.md` — versioni, basis, authority, read/write boundary.
-5. `docs/SEMANTIC_COMPOSITION_3_1_DOD.md` — gerarchia UI/UX corrente, coverage di tutte le superfici e falsificazione 3.1.
-6. `docs/TESTING.md` — gate canonici, mutation/saturation ed exact-head CI.
-7. `docs/DEVELOPMENT.md` — flusso di sviluppo e convenzioni operative.
-8. `docs/DOCUMENTATION_STANDARD.md` — classi documentali, navigazione current/lineage e DoD di presa in carico.
+2. `AGENTS.md` — invarianti epistemici e vincoli globali di sviluppo.
+3. `docs/authority-matrix.yaml` — chi possiede cosa: runtime, UI, linguaggio, persistenza e test.
+4. `docs/11_ARCHITECTURE.md` — architettura AS-IS e flussi browser → runtime → SQLite.
+5. `docs/02_EPISTEMIC_CONTRACT.md` — versioni, basis, authority, read/write boundary.
+6. `docs/SEMANTIC_COMPOSITION_3_1_DOD.md` — gerarchia UI/UX corrente, coverage di tutte le superfici e falsificazione 3.1.
+7. `docs/TESTING.md` — gate canonici, mutation/saturation ed exact-head CI.
+8. `docs/DEVELOPMENT.md` — flusso di sviluppo e convenzioni operative.
+9. `docs/DOCUMENTATION_STANDARD.md` — classi documentali, navigazione current/lineage e DoD di presa in carico.
 
 Per il linguaggio end-user usa `docs/03_ENDUSER_LANGUAGE.md`; per i sette processi usa il registry eseguibile e non documenti storici di singole PR.
 
@@ -43,7 +44,7 @@ Coverage obbligatoria: Home, elenco Processi, RN-01, EC-01, AO-01, MC-01, AP-01,
 4. DoD della slice corrente;
 5. documenti storici e audit di lineage.
 
-La data più recente non crea authority da sola. Se per capire l'owner corrente serve ricostruire una vecchia PR, la mappa è incompleta: correggere la mappa invece di aggiungere un secondo owner.
+I documenti storici conservano lineage ma non sono autorità corrente. La data più recente non crea authority da sola. Se per capire l'owner corrente serve ricostruire una vecchia PR, la mappa è incompleta: correggere la mappa invece di aggiungere un secondo owner.
 
 ## Verifica minima prima di una modifica
 
