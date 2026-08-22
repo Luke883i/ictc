@@ -1,0 +1,41 @@
+import { readFile } from 'node:fs/promises';
+import { COMPOSITION_INVARIANTS, COMPOSITION_METRICS, INFORMATION_ROLES, PROCEDURE_COMPOSITION, SEMANTIC_COMPOSITION_VERSION, SURFACE_BLUEPRINTS } from './public/ui/semantic-composition-model.js';
+const read=path=>readFile(new URL(path,import.meta.url),'utf8');
+const [active,runtime,stable,frame,primitives,legacy,visual,styles,css,authority,language,start]=await Promise.all([
+  read('./public/ui/active-experience.js'),read('./public/ui/semantic-composition-runtime.js'),read('./public/ui/stable-shell.js'),read('./public/ui/procedure-frame.js'),read('./public/ui/surface-primitives.js'),read('./public/ui/business-surface-convergence-2-7.js'),read('./public/ui/visual-epistemic-runtime.js'),read('./public/styles.css'),read('./public/semantic-composition-3-1.css'),read('../docs/authority-matrix.yaml'),read('../docs/03_ENDUSER_LANGUAGE.md'),read('../docs/START_HERE.md')
+]);
+const failures=[];const check=(condition,message)=>{if(!condition)failures.push(message);};
+check(SEMANTIC_COMPOSITION_VERSION==='3.1.0','composition version drift');
+check(Object.keys(PROCEDURE_COMPOSITION).length===7,'procedure composition must cover exactly seven business processes');
+check(Object.keys(SURFACE_BLUEPRINTS).length===13,'surface composition must cover all declared top-level/configuration surfaces');
+for(const id of ['home','processes','monitoring','incidents','objects','coverage','actions','risks','assurance','proof','epistemic','admin','aiSettings'])check(Boolean(SURFACE_BLUEPRINTS[id]),`surface blueprint missing ${id}`);
+check(INFORMATION_ROLES.length===9,'information-role taxonomy drift');
+check(COMPOSITION_INVARIANTS.length===22,'composition invariant census drift');
+check(COMPOSITION_METRICS.operationalReach===1&&COMPOSITION_METRICS.mutationKillRate===1,'success metric target drift');
+const object=/fon(t|te)|requisit|azion|risch|evidenz|decision|controll|event|questionar|sistem|serviz|dat|fornitor|process|policy/i;
+const verb=/raccoglie|registra|mantiene|trasforma|gestisce|collega|riduce|rende|esplora|ricostruisci/i;
+for(const [id,row] of Object.entries(PROCEDURE_COMPOSITION)){check(object.test(row.purpose),`procedure ${id} purpose lacks governed object`);check(verb.test(`${row.purpose} ${row.value}`),`procedure ${id} copy lacks operational verb`);check(Boolean(row.basis)&&Boolean(row.value)&&Boolean(row.primary),`procedure ${id} composition fields incomplete`);}
+for(const fn of ['compactHome','compactProcesses','compactNative','compactGrc','compactProof','compactEpistemic','compactAdmin','compactAiSettings','compactDialogs'])check(runtime.includes(`function ${fn}`),`surface adapter missing ${fn}`);
+check(runtime.includes('LEGACY_NOISE'),'legacy narrative retirement missing');
+check(!runtime.includes('MutationObserver'),'composition owner must not depend on DOM mutation observation');
+check(stable.includes("textContent='Attività di compliance'"),'Home must be a work landing');
+check(stable.includes('pulse.replaceChildren();pulse.hidden=true'),'numeric Home dashboard must be retired');
+check(!/metric\(['"]Processi attivi/.test(stable),'numeric Home dashboard constructor returned');
+check(stable.includes('Richiede il tuo intervento'),'Home attention hierarchy missing');
+check(frame.includes('PROCEDURE_COMPOSITION'),'procedure frame must consume composition authority');
+check(frame.includes('data-procedure-frame-variant="row"'),'process catalogue must use row composition');
+check(!frame.includes('semanticSignals'),'procedure header must not render a numeric signal wall');
+check(!primitives.includes('ICTC_MANIFEST')&&!primitives.includes('SURFACE_INFORMATION'),'shared primitives must not inject explanatory copy');
+check(primitives.includes('retireInjectedNarrative'),'primitive retirement guard missing');
+check(!legacy.includes('home-business-metric')&&!legacy.includes('procedureCopy('),'2.7 compatibility bridge still owns visible business copy');
+check(!visual.includes('createTreeWalker')&&!visual.includes('MutationObserver')&&!visual.includes('replaceExact'),'visual compatibility bridge still rewrites visible language');
+const installOrder=active.match(/const INSTALL_ORDER=Object\.freeze\(\[([^\]]+)\]\);/)?.[1]||'';
+check(installOrder.indexOf('installSemanticFoundation')>=0&&installOrder.indexOf('installSemanticComposition')>installOrder.indexOf('installSemanticFoundation'),'composition must install after semantic foundation');
+check(active.indexOf('installSemanticComposition')<active.indexOf('installExperienceLifecycle()'),'composition must prepare surfaces before constitutional lifecycle');
+const imports=[...styles.matchAll(/@import\s+url\(['"]?([^)'"\s]+)['"]?\)/g)].map(m=>m[1]);
+check(imports.at(-1)==='./semantic-composition-3-1.css','semantic composition must be final cascade compression layer');
+for(const token of ['#homeView #homePulse','grid-template-areas:"code title action"','.finetune-compass,.seq-guide','details[data-composition-detail="process-status"]','#adminCenter #adminMetrics','#epistemicView #epistemicCompression','max-width:390px'])check(css.includes(token),`composition css missing ${token}`);
+check(authority.includes('ui_information_composition')&&authority.includes('semantic-composition-runtime.js'),'authority matrix missing information-composition owner');
+check(language.includes('Regola di sostanza e gerarchia 3.1'),'end-user language policy missing composition rule');
+check(start.includes('Semantic Composition 3.1'),'engineering navigation missing current composition slice');
+if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,version:SEMANTIC_COMPOSITION_VERSION,surfaces:Object.keys(SURFACE_BLUEPRINTS).length,procedures:Object.keys(PROCEDURE_COMPOSITION).length,informationRoles:INFORMATION_ROLES.length,invariants:COMPOSITION_INVARIANTS.length,homeDashboard:'retired',copyOwners:{primitives:'structural-only',business27:'compatibility-only',visualRuntime:'compatibility-only',composition:'exclusive-information-hierarchy'}}));
