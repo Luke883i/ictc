@@ -28,7 +28,7 @@ def open_rn(page):
 def assert_evidence_first(page):
  expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');expect(page.locator('.proof-semantic-qualifier')).to_have_count(0);expect(page.locator('#proofView [data-proof-tab]')).to_have_count(0)
  decisions=page.locator('#proofContent > details.proof-section[data-information-role="evidence"]');expect(decisions).to_have_count(1);expect(decisions).to_have_attribute('open','');expect(decisions.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità')
- reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]');expect(reading).to_have_count(1);assert reading.get_attribute('open') is None;expect(reading.locator(':scope > summary')).to_have_text('Criteri di lettura e sintesi tecnica');expect(page.locator('#proofMethodTitle')).to_be_hidden();min_height(page,'#proofContent > details[data-composition-detail="proof-reading"] > summary');no_overflow(page);return reading
+ reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]');expect(reading).to_have_count(1);assert reading.get_attribute('open') is None;expect(reading.locator(':scope > summary b')).to_have_text('Criteri di lettura e sintesi tecnica');expect(page.locator('#proofMethodTitle')).to_be_hidden();min_height(page,'#proofContent > details[data-composition-detail="proof-reading"] > summary');no_overflow(page);return reading
 
 try:
  with sync_playwright() as pw:
