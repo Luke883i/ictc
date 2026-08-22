@@ -44,7 +44,7 @@
 #aiSetup{display:none!important}
 #grcWorkspace>.grc-head{display:none!important}
 #grcWorkspace .grc-body{display:flex;flex-direction:column;gap:.55rem;margin-top:0!important}
-#grcWorkspace .grc-list{order:1;display:grid;gap:.45rem}
+#grcWorkspace .grc-list{display:grid;gap:.45rem}
 #grcWorkspace #grcPrimaryForm{order:2;margin:0}
 #grcWorkspace details[data-composition-detail="process-status"]{order:3}
 #grcWorkspace details[data-composition-detail="risk-analysis"]{order:4}

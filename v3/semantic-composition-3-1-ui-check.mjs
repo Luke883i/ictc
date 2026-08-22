@@ -19,6 +19,7 @@ check(runtime.includes('metrics.hidden=true')&&runtime.includes("'technical-cont
 check(runtime.includes('paragraphs.slice(1).forEach(node=>node.hidden=true)'),'dialog header narrative budget missing');
 check(css.includes('#grcWorkspace>.grc-head{display:none!important}')&&css.includes('#grcWorkspace .grc-body{display:flex;flex-direction:column;gap:.55rem;margin-top:0!important}'),'GRC duplicate in-surface chrome must retire so canonical procedure identity lands directly on work');
 check(css.includes('.procedure-frame-copy{display:grid;gap:.12rem;min-width:0}')&&css.includes('.procedure-frame .procedure-purpose{margin:.1rem 0 0!important;max-width:none!important'),'procedure frame purpose must use the available identity column instead of creating process-specific vertical drift');
+check(!css.includes('#grcWorkspace .grc-list{order:'),'GRC work visual order must follow semantic DOM order; flex order cannot move secondary context ahead of work');
 for(const bp of ['max-width:760px','max-width:390px'])check(css.includes(bp),`responsive breakpoint missing ${bp}`);
 check(css.includes('.composition-detail>summary{cursor:pointer;min-height:44px')&&css.includes('.composition-process-context>summary{cursor:pointer;min-height:44px'),'composition disclosure touch targets must remain >=44px');
 check(!/(?:^|[;{])\s*(?:color|background-color)\s*:/m.test(css),'composition layer must not create an independent palette authority');
