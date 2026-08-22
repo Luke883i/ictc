@@ -44,11 +44,9 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '${{ matrix.node }}'
-          cache: npm
       - run: npm ci --ignore-scripts
       - name: Current runtime suite on supported matrix
         id: runtime-suite
-        continue-on-error: true
         run: npm run test:current:runtime
       - name: Publish portability exact-head provenance
         if: always()
@@ -59,6 +57,3 @@ jobs:
           RAIL_OUTCOME: ${{ steps.runtime-suite.outcome }}
           RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
         run: node scripts/release-failure-provenance.mjs
-      - name: Preserve fail-closed portability verdict
-        if: steps.runtime-suite.outcome == 'failure'
-        run: node -e "process.exit(1)"
