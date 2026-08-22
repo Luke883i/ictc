@@ -29,6 +29,9 @@ jobs:
       - name: Enterprise readiness evidence-envelope fixture
         run: node v3/enterprise-readiness-check.mjs
   runtime-portability:
+    permissions:
+      contents: read
+      statuses: write
     strategy:
       fail-fast: false
       matrix:
@@ -44,4 +47,18 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Current runtime suite on supported matrix
+        id: runtime-suite
+        continue-on-error: true
         run: npm run test:current:runtime
+      - name: Publish portability exact-head provenance
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          FAILED_CHECK: ${{ steps.runtime-suite.outputs.failed_check }}
+          RAIL_OUTCOME: ${{ steps.runtime-suite.outcome }}
+          RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
+        run: node scripts/release-failure-provenance.mjs
+      - name: Preserve fail-closed portability verdict
+        if: steps.runtime-suite.outcome == 'failure'
+        run: node -e "process.exit(1)"
