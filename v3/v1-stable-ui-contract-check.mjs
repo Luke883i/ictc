@@ -20,7 +20,7 @@ check('router-owned',/window\.addEventListener\('click'/.test(router)&&/isContex
 check('history-owned',/history\.(?:pushState|replaceState)|history\[mode/.test(router),'surface router must own browser history projection');
 check('experience-edition',/EXPERIENCE_EDITION='1\.9-experience-candidate'/.test(shell)&&/ictcExperience='market-1'/.test(shell),'canonical shell edition/experience drift');
 check('native-shell-guard',/assertNativeShell/.test(shell)&&/\['home','processes','proof'\]/.test(shell),'native shell must fail closed on canonical surfaces');
-check('home-bounded',/homePulse/.test(shell)&&/homePriorities/.test(shell)&&/non (?:sono punteggi di )?conformità[\s\S]{0,40}maturità/i.test(shell),'home must keep bounded attention and anti-overclaim copy');
+check('home-bounded',/homePulse/.test(shell)&&/homePriorities/.test(shell)&&/pulse\.replaceChildren\(\);pulse\.hidden=true/.test(shell)&&/homeWorkQueue='3\.1'/.test(shell)&&/slice\(0,5\)/.test(shell)&&/Richiede il tuo intervento/.test(shell),'home must expose a bounded work queue and retire the numeric dashboard');
 check('legal-footer',/stableLegalFooter/.test(shell)&&/MIT/.test(shell)&&/Repository/.test(shell)&&/Condizioni/.test(shell),'official shell legal footer contract missing');
 check('trusted-identity',/identityMode==='trusted-header'/.test(enterprise)&&/roleControl\.hidden=trustedIdentity\(\)/.test(enterprise),'trusted identity must suppress local role switching');
 check('no-header-export',!globalTools.includes('downloadCurrentView'),'export must not live in permanent header');

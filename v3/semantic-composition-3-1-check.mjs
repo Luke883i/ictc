@@ -14,7 +14,7 @@ check(COMPOSITION_INVARIANTS.length===22,'composition invariant census drift');
 check(COMPOSITION_METRICS.operationalReach===1&&COMPOSITION_METRICS.mutationKillRate===1,'success metric target drift');
 const object=/fon(t|te)|requisit|azion|risch|evidenz|decision|controll|event|questionar|sistem|serviz|dat|fornitor|process|policy/i;
 const verb=/raccoglie|registra|mantiene|trasforma|gestisce|collega|riduce|rende|esplora|ricostruisci/i;
-for(const [id,row] of Object.entries(PROCEDURE_COMPOSITION)){check(object.test(row.purpose),`procedure ${id} purpose lacks governed object`);check(verb.test(`${row.purpose} ${row.value}`),`procedure ${id} copy lacks operational verb`);check(Boolean(row.basis)&&Boolean(row.value)&&Boolean(row.primary),`procedure ${id} composition fields incomplete`);}
+for(const [id,row] of Object.entries(PROCEDURE_COMPOSITION)){check(object.test(row.purpose),`procedure ${id} purpose lacks governed object`);check(verb.test(`${row.purpose} ${row.value}`),`procedure ${id} copy lacks operational verb`);check(Boolean(row.basis)&&Boolean(row.value)&&Boolean(row.primary)&&Boolean(row.entry),`procedure ${id} composition fields incomplete`);}
 for(const fn of ['compactHome','compactProcesses','compactNative','compactGrc','compactProof','compactEpistemic','compactAdmin','compactAiSettings','compactDialogs'])check(runtime.includes(`function ${fn}`),`surface adapter missing ${fn}`);
 check(runtime.includes('LEGACY_NOISE'),'legacy narrative retirement missing');
 check(!runtime.includes('MutationObserver'),'composition owner must not depend on DOM mutation observation');
