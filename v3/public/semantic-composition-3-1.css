@@ -28,11 +28,11 @@
 .procedure-frame{padding:.55rem 0 .6rem!important;margin:0!important;min-height:0!important}
 .procedure-frame .procedure-back{margin-bottom:.3rem!important}
 .procedure-frame-main{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;align-items:end}
-.procedure-frame-copy{display:grid;gap:.12rem}
+.procedure-frame-copy{display:grid;gap:.12rem;min-width:0}
 .procedure-frame-kicker{margin:0!important;font-size:.74rem!important}
 .procedure-frame-kicker .procedure-frame-authority{display:none!important}
 .procedure-frame h1{margin:0!important;font-size:clamp(1.4rem,2.2vw,1.9rem)!important;line-height:1.05}
-.procedure-frame .procedure-purpose{margin:.1rem 0 0!important;max-width:var(--composition-reading);font-size:.9rem!important;line-height:1.35}
+.procedure-frame .procedure-purpose{margin:.1rem 0 0!important;max-width:none!important;font-size:.9rem!important;line-height:1.35}
 .procedure-frame .procedure-signals{display:none!important}
 .procedure-frame-actions{margin:0!important}
 .surface-context-strip,.ictc-manifest,[data-surface-information-value],.procedure-frame-brief,.procedure-card-brief,.proof-semantic-qualifier{display:none!important}
