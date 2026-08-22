@@ -1,49 +1,60 @@
-# START HERE — orientamento ICTC
+# START HERE — presa in carico ICTC
 
-Questa è una mappa, non una nuova autorità.
+Questa pagina è la mappa canonica per un informatico che entra nel repository. È una mappa, non una nuova autorità.
 
-## Percorso minimo
+## Percorso minimo: 15 minuti
 
-1. `README.md` — identità del prodotto, sette processi, tre reticoli, stack e boundary.
-2. `AGENTS.md` — invarianti epistemici globali.
-3. `docs/authority-matrix.yaml` — owner eseguibili.
-4. `docs/11_ARCHITECTURE.md` — AS-IS logico/tecnologico.
-5. `docs/02_EPISTEMIC_CONTRACT.md` — authority, version/basis, read/write UI boundary.
-6. `docs/SEMANTIC_CLOSURE_2_8_DOD.md` — finding di secondo ordine e DoD corrente della slice.
-7. `docs/TESTING.md` — falsificazione, mutation/saturation ed exact-head. Esegui `npm test` come verifica normativa corrente.
+1. `README.md` — prodotto, sette processi, stack, limiti e runtime corrente.
+2. `AGENTS.md` — invarianti epistemici e vincoli globali di sviluppo.
+3. `docs/authority-matrix.yaml` — chi possiede cosa: runtime, UI, linguaggio, persistenza e test.
+4. `docs/11_ARCHITECTURE.md` — architettura AS-IS e flussi browser → runtime → SQLite.
+5. `docs/02_EPISTEMIC_CONTRACT.md` — versioni, basis, authority, read/write boundary.
+6. `docs/SEMANTIC_COMPOSITION_3_1_DOD.md` — gerarchia UI/UX corrente, coverage di tutte le superfici e falsificazione 3.1.
+7. `docs/TESTING.md` — gate canonici, mutation/saturation ed exact-head CI.
+8. `docs/DEVELOPMENT.md` — flusso di sviluppo e convenzioni operative.
+9. `docs/DOCUMENTATION_STANDARD.md` — classi documentali, navigazione current/lineage e DoD di presa in carico.
 
-Se serve ricostruire una PR storica per capire l'owner corrente, la documentazione/authority matrix ha un gap: correggi la mappa invece di aggiungere un secondo owner.
+Per il linguaggio end-user usa `docs/03_ENDUSER_LANGUAGE.md`; per i sette processi usa il registry eseguibile e non documenti storici di singole PR.
 
-## Vocabolario
+## Mappa degli owner correnti
 
-Business: **Processi di Compliance**. EP-01 è cross-cutting, non ottavo processo. Evidenze ICTC non è una pagina di score. `procedure*` resta naming tecnico compatibile. OutcomeEnvelope va inteso secondo l'ADR amended: canonical read projections + write envelope/receipt, mai raw storage UI.
-
-## Dove intervenire
-
-| Obiettivo | Owner/partenza | Falsificazione minima |
+| Se devi cambiare | Parti da | Non creare |
 |---|---|---|
-| runtime/authority | authority matrix + runtime owner | targeted check + current suite |
-| procedure | contract/adapter/policy + native runtime | contract/runtime/journey |
-| rischio RC | `grc-risks` + dependency review | multi-cycle closure check |
-| evidence ref | `reference-contract` | reference + integration check |
-| cross-process | `procedure-dod` + `cross-procedure-create` | typed edge/lineage check |
-| epistemic causality | `epistemic-step` + write metadata | causality check |
-| shared UI | active experience + C0.1 lifecycle | constitution/UI exact-head |
-| persistence | Store + SQLite persistence | durability/integrity |
-| docs | README + AS-IS docs | documentation authority |
+| composizione e gerarchia UI | `semantic-composition-model.js` + `semantic-composition-runtime.js` | un nuovo post-render copy rewriter |
+| decision presentation | `procedure-ui-ux-1-6.js` / C0.1 | una seconda presentation authority |
+| linguaggio business | `03_ENDUSER_LANGUAGE.md` + Semantic Foundation | label locali divergenti |
+| processo | registry/adapter/policy + runtime nativo | un ottavo processo business |
+| azione umana | `semantic-foundation-actions.js` + annotation C0.1 | write authority nel browser |
+| evidenza | evidence/reference contracts | equivalenza evidenza = conclusione |
+| persistenza | Store + SQLite persistence | un secondo business store |
+| API | `docs/openapi.yaml` + handler runtime | endpoint UI-only paralleli |
+| test/release | current release suite + CI | un gate PR alternativo |
+
+## Semantic Composition 3.1
+
+La regola UI corrente è **work first, explanation on demand**. Le primitive comuni classificano identity, context, attention, decision, action, evidence, consequence, boundary e technical; ogni superficie applica poi un adapter coerente con la propria natura.
+
+Coverage obbligatoria: Home, elenco Processi, RN-01, EC-01, AO-01, MC-01, AP-01, RC-01, AR-01, Evidenze ICTC, EP-01, Admin e Configurazione AI/dialoghi. Una nuova superficie non è completa finché non entra nel census 3.1 e nei mutation gate.
 
 ## Ordine delle fonti
 
 1. owner eseguibile + authority matrix;
-2. global/local AGENTS constraints;
-3. architecture/epistemic/security/testing/development AS-IS;
-4. candidate DoD;
-5. trajectory e documenti storici.
+2. AGENTS/invarianti globali e locali;
+3. architecture, epistemic contract, end-user language, testing/development;
+4. DoD della slice corrente;
+5. documenti storici e audit di lineage.
 
-I documenti storici conservano lineage e contesto, ma non sono autorità corrente.
-La data più recente non crea authority da sola.
+I documenti storici conservano lineage ma non sono autorità corrente. La data più recente non crea authority da sola. Se per capire l'owner corrente serve ricostruire una vecchia PR, la mappa è incompleta: correggere la mappa invece di aggiungere un secondo owner.
 
-## Riferimenti di assurance e design
+## Verifica minima prima di una modifica
 
-- `docs/ONTO_COMPLIANCE_HORIZON_V1.md` — gerarchia, processo dichiarato e autorità epistemica.
-- `docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md` — lessico, proporzioni visuali e metodo pratica/evidenza/limite.
+```bash
+npm test
+npm run release:check
+node v3/semantic-composition-3-1-check.mjs
+node v3/semantic-composition-3-1-ui-check.mjs
+node v3/documentation-composition-3-1-check.mjs
+node v3/semantic-composition-3-1-saturation.mjs
+```
+
+Per modifiche UI verificare anche il browser journey `v3/browser-information-value.py` e la exact-head CI.

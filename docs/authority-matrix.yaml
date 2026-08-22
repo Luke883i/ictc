@@ -1,4 +1,4 @@
-version: 6
+version: 7
 surfaces:
   product_intent:
     authority: docs/00_PROMPT_CLARIFICATION.md
@@ -8,6 +8,9 @@ surfaces:
     authority: docs/04_USER_JOURNEYS.md
   architecture:
     authority: docs/11_ARCHITECTURE.md
+  documentation_navigation:
+    authority: docs/DOCUMENTATION_STANDARD.md
+    classification: current-documentation-standard
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:
@@ -16,6 +19,12 @@ surfaces:
   semantic_foundation_actions:
     authority: v3/public/ui/semantic-foundation-actions.js
     classification: executable-human-action-contract
+  ui_information_composition:
+    authority: v3/public/ui/semantic-composition-runtime.js
+    contract: v3/public/ui/semantic-composition-model.js
+    dod: docs/SEMANTIC_COMPOSITION_3_1_DOD.md
+    classification: exclusive-information-hierarchy
+    scope: all-user-visible-surfaces
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
   api:
@@ -81,6 +90,10 @@ rules:
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
   - enduser_language defines the human-facing policy; semantic_foundation_vocabulary and semantic_foundation_actions implement it and may not widen legal or decision authority
+  - ui_information_composition owns information hierarchy and compression across every user-visible surface; adapters may specialize hierarchy but may not redefine canonical process identity or business state
+  - shared UI primitives are structural and accessibility helpers; they may not inject manifesto, purpose, why, evidence or boundary narratives into every surface
+  - each landing exposes at most one primary purpose sentence before operational work; technical and methodological context is progressive by default
+  - comparable repeated business records use row/list grammar before card-wall grammar; metrics are secondary unless they change attention or a decision
   - work scope, legal applicability, mapping, control effectiveness and conformity are distinct axes and may not be collapsed by presentation or annotation
   - semantic human-action metadata is applied through ui_control_annotation after decision presentation and may not mutate business state or rewrite the exclusive presentation authority
   - package.json scripts.start and ictc.sh must resolve to runtime_entrypoint

@@ -1,6 +1,7 @@
 import { $, api, notify, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
 import { registerExperienceParticipant } from './experience-lifecycle.js';
+import { applySemanticComposition } from './semantic-composition-runtime.js';
 
 const OWNER='procedure-ui-ux-1-6';
 const PARTICIPANT='procedure-ui-ux-integrity-1-6';
@@ -110,7 +111,7 @@ function stampJourneyAnchors(){
     }
   }
 }
-function enforce(){ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
+function enforce(){ensureRuntimeActor();enforceCoveragePosture();enforceMappingReference();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();applySemanticComposition();stampJourneyAnchors();document.documentElement.dataset.ictcUiUxIntegrity='1.6.1';}
 export function installProcedureUiUxIntegrity(){
   if(installed)return;installed=true;ensureRejectDialog();ensureRuntimeActor();ensureIncidentWorkspaceLifecycle();ensureEpistemicLifecycle();enforceActionVerifySemantics();
   registerExperienceParticipant({id:PARTICIPANT,phase:'integrity',authority:'integrity-observer',exclusive:false,render:enforce});

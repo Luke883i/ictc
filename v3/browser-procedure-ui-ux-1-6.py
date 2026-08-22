@@ -12,7 +12,7 @@ def _publish_failure_phase(exc):
     if not token or len(sha)!=40 or not repo:return
     line=traceback.extract_tb(exc.__traceback__)[-1].lineno if exc.__traceback__ else 0
     detail=_slug(f'{type(exc).__name__}-L{line}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
-    body=json.dumps({'state':'failure','context':f'ictc/browser-2-4-failure/{_slug(PHASE)}/{detail}','description':f'UI/UX 2.4 {PHASE}: {type(exc).__name__}'[:140]}).encode()
+    body=json.dumps({'state':'failure','context':f'ictc/browser-2-4-failure/{_slug(PHASE)}/{detail}','description':f'UI/UX 3.1 {PHASE}: {type(exc).__name__}'[:140]}).encode()
     req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
     try: urllib.request.urlopen(req,timeout=8).read()
     except Exception: pass
@@ -21,14 +21,14 @@ def fail(exc):
     payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
     (ART/'browser-procedure-ui-ux-1-6-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
     _publish_failure_phase(exc)
-    print(f'::error title=browser-procedure-ui-ux-2-4::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
+    print(f'::error title=browser-procedure-ui-ux-3-1::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
     m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
     assert max(m['html'],m['body'])<=m['inner']+1,m
 
 def wait_owner(page):
-    page.wait_for_function("()=>document.documentElement.dataset.ictcUiUxFinetuning==='2.4.0'&&document.documentElement.dataset.ictcUiUxIntegrity==='1.6.1'")
+    page.wait_for_function("()=>document.documentElement.dataset.ictcUiUxFinetuning==='2.4.0'&&document.documentElement.dataset.ictcUiUxIntegrity==='1.6.1'&&document.documentElement.dataset.semanticComposition==='3.1.0'")
 
 def open_process(page,code):
     page.locator('.service-nav [data-service="processes"]').click()
@@ -75,9 +75,8 @@ def ensure_action_ready_for_review(page):
         start=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="in-progress"]')
         if start.count()==0:
             PHASE='AP-materialize-adopted-action'
-            adopt=page.locator('#grcWorkspace [data-action-adopt]').first
-            expect(adopt).to_be_visible()
-            before=revision(page);adopt.click();decision=page.locator('#grcDecisionDialog');expect(decision).to_be_visible();decision.locator('textarea[name="reason"]').fill('Browser 2.4: adozione esplicita per verificare il ciclo AP fino al checkpoint di review.');decision.locator('button[type="submit"]').click();expect(decision).not_to_be_visible();wait_revision_advance(page,before)
+            adopt=page.locator('#grcWorkspace [data-action-adopt]').first;expect(adopt).to_be_visible()
+            before=revision(page);adopt.click();decision=page.locator('#grcDecisionDialog');expect(decision).to_be_visible();decision.locator('textarea[name="reason"]').fill('Browser 3.1: adozione esplicita per verificare il ciclo AP fino al checkpoint di review.');decision.locator('button[type="submit"]').click();expect(decision).not_to_be_visible();wait_revision_advance(page,before)
             start=page.locator('#grcWorkspace [data-uiux-action-quick][data-next-state="in-progress"]')
         PHASE='AP-materialize-in-progress'
         expect(start.first).to_be_visible();before=revision(page);start.first.click();wait_revision_advance(page,before)
@@ -96,41 +95,36 @@ try:
         page=ctx.new_page();page.set_default_timeout(30000);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
 
         PHASE='bootstrap-owner'
-        page.goto(BASE+'/?view=processes',wait_until='networkidle')
-        wait_owner(page)
+        page.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(page)
         expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
-        meta=page.locator('#epistemicMetaCard'); expect(meta).not_to_be_visible(); assert meta.evaluate('e=>e.parentElement?.id')=='proofView'
-        no_overflow(page)
+        meta=page.locator('#epistemicMetaCard');expect(meta).not_to_be_visible();assert meta.evaluate('e=>e.parentElement?.id')=='proofView';no_overflow(page)
 
         PHASE='RN-open-process'
         open_process(page,'RN-01');expect(page.locator('#monitoringView')).to_be_visible();missions=ensure_monitoring_card(page);assert missions.count()>0
         for i in range(min(missions.count(),12)):
-            PHASE=f'RN-card-{i}'
-            card=missions.nth(i);assert_at_most_one_primary(card,f'RN-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri monitoraggio' in primary.inner_text();support=card.locator('[data-run-mission]:visible,[data-pause-mission]:visible,[data-resume-mission]:visible');assert support.count()<=3;assert card.locator(':scope > .card-actions > details.ux-secondary-actions').count()==0;assert card.locator('.procedure-record-facts').count()==1
-        PHASE='RN-targets';assert_targets(page.locator('#monitoringView'),'RN')
-        PHASE='RN-overflow';no_overflow(page)
+            PHASE=f'RN-card-{i}';card=missions.nth(i);assert_at_most_one_primary(card,f'RN-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri monitoraggio' in primary.inner_text();support=card.locator('[data-run-mission]:visible,[data-pause-mission]:visible,[data-resume-mission]:visible');assert support.count()<=3;assert card.locator(':scope > .card-actions > details.ux-secondary-actions').count()==0;assert card.locator('.procedure-record-facts').count()==1
+        PHASE='RN-targets';assert_targets(page.locator('#monitoringView'),'RN');PHASE='RN-overflow';no_overflow(page)
         PHASE='RN-open-plan';missions.first.locator('.ux-primary').click();expect(page.locator('#planDialog')).to_be_visible()
-        PHASE='RN-plan-actions';assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible,#planActions [data-resume-mission]:visible,#planActions [data-revise-mission]:visible').count()<=3;assert page.locator('#planActions .procedure-evidence-action:visible').count()<=1
-        close_plan(page)
+        PHASE='RN-plan-actions';assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible,#planActions [data-resume-mission]:visible,#planActions [data-revise-mission]:visible').count()<=3;assert page.locator('#planActions .procedure-evidence-action:visible').count()<=1;close_plan(page)
 
         PHASE='EC-sequentiality'
         open_process(page,'EC-01');expect(page.locator('#incidentsView')).to_be_visible();cases=page.locator('#incidentList .incident-card');assert cases.count()>0
         for i in range(min(cases.count(),12)):
             card=cases.nth(i);assert_at_most_one_primary(card,f'EC-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri caso' in primary.inner_text();assert card.locator('.procedure-record-facts').count()==1
-        cases.first.locator('.ux-primary').click();expect(page.locator('#incidentWorkspace')).to_be_visible();assert_at_most_one_primary(page.locator('#workspaceActions'),'EC-workspace-actions');assert page.locator('#incidentWorkspace .lens-panel.ux-progressive-panel').count()>=1;assert_targets(page.locator('#incidentWorkspace'),'EC-workspace');no_overflow(page)
-        page.locator('#incidentWorkspace button[aria-label="Chiudi"]').click()
+        cases.first.locator('.ux-primary').click();expect(page.locator('#incidentWorkspace')).to_be_visible();assert_at_most_one_primary(page.locator('#workspaceActions'),'EC-workspace-actions');assert page.locator('#incidentWorkspace .lens-panel.ux-progressive-panel').count()>=1;assert_targets(page.locator('#incidentWorkspace'),'EC-workspace');no_overflow(page);page.locator('#incidentWorkspace button[aria-label="Chiudi"]').click()
 
         PHASE='AO-governed-identity'
         open_process(page,'AO-01');expect(page.locator('#grcWorkspace')).to_be_visible();objects=page.locator('#grcWorkspace .grc-list > article');assert objects.count()>0
         expect(page.locator('#grcWorkspace [data-seq-ao-search]')).to_be_visible();expect(page.locator('#grcWorkspace [data-seq-ao-filter]')).to_be_visible()
-        for i in range(min(objects.count(),16)):
-            assert_at_most_one_primary(objects.nth(i),f'AO-card-{i}');assert objects.nth(i).locator('.procedure-record-facts').count()==1
-        assert page.locator('#grcWorkspace [data-object-review="active"]:visible').count()<=1 or objects.count()>1
-        assert_targets(page.locator('#grcWorkspace'),'AO');no_overflow(page)
+        for i in range(min(objects.count(),16)): assert_at_most_one_primary(objects.nth(i),f'AO-card-{i}');assert objects.nth(i).locator('.procedure-record-facts').count()==1
+        assert page.locator('#grcWorkspace [data-object-review="active"]:visible').count()<=1 or objects.count()>1;assert_targets(page.locator('#grcWorkspace'),'AO');no_overflow(page)
 
         PHASE='MC-scope-before-mapping'
-        open_process(page,'MC-01');expect(page.locator('#grcWorkspace')).to_be_visible();labels=[x.strip() for x in page.locator('#grcWorkspace .grc-kpis .grc-kpi small').all_inner_texts()]
-        assert labels[:4]==['Decisioni registrate','Gap','Da decidere','Fuori perimetro'],labels
+        open_process(page,'MC-01');expect(page.locator('#grcWorkspace')).to_be_visible()
+        status_detail=page.locator('#grcWorkspace details[data-composition-detail="process-status"]');expect(status_detail).to_have_count(1);expect(status_detail).not_to_have_attribute('open','')
+        expect(status_detail.locator('.grc-kpis')).to_have_count(1);status_detail.locator(':scope > summary').click();expect(status_detail).to_have_attribute('open','')
+        labels=[x.strip() for x in status_detail.locator('.grc-kpis .grc-kpi small').all_inner_texts()];assert labels[:4]==['Decisioni registrate','Gap','Da decidere','Fuori perimetro'],labels
+        status_detail.locator(':scope > summary').click();expect(status_detail).not_to_have_attribute('open','')
         form=page.locator('#grcWorkspace [data-grc-form="mapping"]');expect(form).to_have_count(1);requirement_ref=form.locator('[name="requirementRef"]');assert requirement_ref.get_attribute('required') is not None
         assert page.locator('#grcWorkspace [data-mapping-decision]').count()==0
         mappings=page.locator('#grcWorkspace .grc-list > article')
@@ -147,19 +141,16 @@ try:
             card=actions.nth(i);assert_at_most_one_primary(card,f'AP-card-{i}');p=card.locator('.ux-primary:visible');assert card.locator('.procedure-record-facts').count()==1
             if p.count(): assert p.inner_text().strip() in allowed,(i,p.inner_text())
         assert page.locator('#grcWorkspace [data-action-progress]').count()==0
-        verify=ensure_action_ready_for_review(page)
-        PHASE='AP-verify-rework'
-        before=revision(page);verify.first.click();dialog=page.locator('#uiuxActionVerifyDialog');expect(dialog).to_be_visible();expect(dialog).to_contain_text('Completato non significa chiuso');dialog.locator('select[name="decision"]').select_option('rework');dialog.locator('textarea[name="reason"]').fill('Browser 2.4: evidenza non sufficiente, il lavoro torna in esecuzione.');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();wait_revision_advance(page,before)
-        assert_targets(page.locator('#grcWorkspace'),'AP');no_overflow(page)
+        verify=ensure_action_ready_for_review(page);PHASE='AP-verify-rework';before=revision(page);verify.first.click();dialog=page.locator('#uiuxActionVerifyDialog');expect(dialog).to_be_visible();expect(dialog).to_contain_text('Completato non significa chiuso');dialog.locator('select[name="decision"]').select_option('rework');dialog.locator('textarea[name="reason"]').fill('Browser 3.1: evidenza non sufficiente, il lavoro torna in esecuzione.');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();wait_revision_advance(page,before);assert_targets(page.locator('#grcWorkspace'),'AP');no_overflow(page)
 
-        PHASE='EP-posture-only'
-        page.locator('.service-nav [data-service="processes"]').click();expect(meta).not_to_be_visible();assert meta.evaluate('e=>e.parentElement?.id')=='proofView';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(meta).to_be_visible();expect(meta.locator('[data-service="epistemic"]')).to_contain_text('Apri dettagli epistemici');meta.locator('[data-service="epistemic"]').click();expect(page.locator('#epistemicView')).to_be_visible();assert '2970 atomi nella pagina' not in page.locator('#epistemicView').inner_text();expect(page.locator('#epistemicView .surface-chip').filter(has_text='Traccia disponibile').first).to_be_visible();no_overflow(page)
+        PHASE='EP-evidence-entry'
+        page.locator('.service-nav [data-service="processes"]').click();expect(meta).not_to_be_visible();assert meta.evaluate('e=>e.parentElement?.id')=='proofView';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(meta).to_be_visible();entry=meta.locator('[data-service="epistemic"]');expect(entry).to_be_visible();assert entry.inner_text().strip();entry.click();expect(page.locator('#epistemicView')).to_be_visible();expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze');assert '2970 atomi nella pagina' not in page.locator('#epistemicView').inner_text();expect(page.locator('#epistemicView .surface-chip').filter(has_text='Traccia disponibile').first).to_be_visible();no_overflow(page)
 
         PHASE='mobile-minimality'
         mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(m);open_process(m,'RN-01');assert m.locator('#missionsList .mission-card').count()>0;assert m.locator('#missionsList .mission-card').first.locator('.ux-primary:visible').count()==1;no_overflow(m);mc.close()
 
         assert not errors,errors
-        report={'ok':True,'profile':'procedure-record-ontoepistemic-2.4-browser','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcCoveragePercentagePrimary':False,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Postura ICTC','epistemicBusinessProcessCards':7,'touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
-        (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-2-4: complete',flush=True);ctx.close();browser.close()
+        report={'ok':True,'profile':'procedure-record-ontoepistemic-3.1-browser','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcProcessStatusProgressive':True,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Evidenze ICTC','epistemicDestination':'Relazioni tra decisioni, fonti ed evidenze','touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
+        (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-3.1: complete',flush=True);ctx.close();browser.close()
 except BaseException as exc:
     fail(exc);traceback.print_exc();raise

@@ -32,6 +32,18 @@ Prima di presentare una formulazione prescrittiva come rilevante per il lavoro, 
 
 ICTC puo registrare che un testo contiene una prescrizione o che una persona ha assunto una decisione di applicabilita. Non deve trasformare automaticamente un testo normativo in obbligo applicabile, scadenza legale, dovere di notifica, responsabilita, violazione o conclusione di conformita.
 
+## Regola di sostanza e gerarchia 3.1
+
+Ogni landing parla prima di **cosa viene fatto, su quale oggetto e quale decisione o lavoro ne deriva**. Claim astratti come “gestione consapevole”, “trasparenza”, “governance integrata” o “vista epistemica” non sono purpose sufficienti se non descrivono un effetto osservabile.
+
+Ogni elemento iniziale deve appartenere a una classe informativa: identity, context, attention, decision, action, evidence, consequence, boundary oppure technical. Se non aiuta a capire, decidere o agire nel livello corrente, viene eliminato, aggregato o spostato in progressive disclosure.
+
+Il “perche” deve distinguere quattro fondamenti: **obbligo identificato**, **obbligo da valutare**, **esigenza organizzativa**, **opportunita di controllo**. La UI non promuove automaticamente una fonte o un requisito a obbligo legalmente applicabile.
+
+Il valore deve essere concreto: riduzione di lavoro manuale, tracciabilita, identificazione di gap, evidenza riutilizzabile, collegamento tra fonte e lavoro aziendale, responsabilita esplicita, prevenzione di decisioni incoerenti, riuso di informazioni verificate, dipendenze rese visibili o attivazione di lavoro downstream.
+
+Nelle landing: una sola identita canonica, al massimo una frase di sostanza prima del lavoro, una sola CTA primaria per contesto. Metriche, metodo, boundary ripetuti, trace, digest, raw, producer e dettagli tecnici sono secondari salvo che siano necessari alla decisione corrente.
+
 ## Azioni umane materiali
 
 Una CTA che modifica uno stato o produce una decisione deve rendere ricostruibili almeno: oggetto, effetto, autorita richiesta, evidenza attesa, reversibilita e rilevanza. Le dimensioni di rilevanza correnti sono giuridico-regolatoria, sociale, etica, organizzativa, operativa, probatoria ed eventuale effetto esterno.

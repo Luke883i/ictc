@@ -1,5 +1,5 @@
 name: ictc-business-surface-convergence-2-7
-on: [pull_request, workflow_dispatch]
+on: [workflow_dispatch]
 permissions:
   contents: read
   statuses: write
