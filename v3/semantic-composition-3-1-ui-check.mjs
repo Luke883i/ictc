@@ -17,6 +17,7 @@ check(epistemicExperience.includes("new CustomEvent('ictc:context-changed'")&&ep
 check(runtime.includes("ensureDisclosure(frame,'epistemic-boundary'"),'EP-01 boundary must remain progressively available');
 check(runtime.includes('metrics.hidden=true')&&runtime.includes("'technical-controls'"),'Admin technical metrics must be progressive');
 check(runtime.includes('paragraphs.slice(1).forEach(node=>node.hidden=true)'),'dialog header narrative budget missing');
+check(css.includes('#grcWorkspace>.grc-head>.workspace-return,#grcWorkspace>.grc-head>div{display:none!important}')&&css.includes('#grcWorkspace>.grc-head>nav{display:flex!important')&&css.includes('#grcWorkspace>.grc-head>nav button{min-height:44px'),'GRC canonical identity must retire duplicate header copy/back while retaining accessible process navigation');
 for(const bp of ['max-width:760px','max-width:390px'])check(css.includes(bp),`responsive breakpoint missing ${bp}`);
 check(css.includes('.composition-detail>summary{cursor:pointer;min-height:44px')&&css.includes('.composition-process-context>summary{cursor:pointer;min-height:44px'),'composition disclosure touch targets must remain >=44px');
 check(!/(?:^|[;{])\s*(?:color|background-color)\s*:/m.test(css),'composition layer must not create an independent palette authority');
