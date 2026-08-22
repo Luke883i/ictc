@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
-const [runtime,stable,frame,harmonization,css,browser]=await Promise.all([read('./public/ui/semantic-composition-runtime.js'),read('./public/ui/stable-shell.js'),read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-executive-harmonization-1-5.js'),read('./public/semantic-composition-3-1.css'),read('./browser-information-value.py')]);
+const [runtime,stable,frame,harmonization,epistemicExperience,css,browser]=await Promise.all([read('./public/ui/semantic-composition-runtime.js'),read('./public/ui/stable-shell.js'),read('./public/ui/procedure-frame.js'),read('./public/ui/procedure-executive-harmonization-1-5.js'),read('./public/ui/epistemic-experience.js'),read('./public/semantic-composition-3-1.css'),read('./browser-information-value.py')]);
 const failures=[];const check=(condition,message)=>{if(!condition)failures.push(message);};
 check(stable.includes('.slice(0,5)'),'Home attention queue must be bounded');
 check(stable.includes('severityRank(attentionMetric'),'Home ordering must prefer semantic severity before volume');
@@ -13,6 +13,7 @@ check(runtime.includes("ensureDisclosure(body,'process-status'")&&runtime.includ
 check(runtime.includes('decisions.open=true'),'Evidence must open human decision/evidence work before technical summary');
 check(runtime.includes("ensureDisclosure(content,'proof-reading'"),'Proof summary/method must be secondary');
 check(runtime.includes("ensureDisclosure(host,'epistemic-technical'")&&runtime.includes("'Dettagli tecnici della proiezione'")&&!runtime.includes("root.querySelector('#epistemicCompression')?.remove()"),'EP-01 technical projection must be preserved under progressive disclosure');
+check(epistemicExperience.includes("new CustomEvent('ictc:context-changed'")&&epistemicExperience.includes("context:'epistemic-compression'")&&epistemicExperience.indexOf("context:'epistemic-compression'")>epistemicExperience.indexOf('box.innerHTML='),'EP-01 async compression render must explicitly hand off to composition/lifecycle convergence');
 check(runtime.includes("ensureDisclosure(frame,'epistemic-boundary'"),'EP-01 boundary must remain progressively available');
 check(runtime.includes('metrics.hidden=true')&&runtime.includes("'technical-controls'"),'Admin technical metrics must be progressive');
 check(runtime.includes('paragraphs.slice(1).forEach(node=>node.hidden=true)'),'dialog header narrative budget missing');
@@ -20,4 +21,4 @@ for(const bp of ['max-width:760px','max-width:390px'])check(css.includes(bp),`re
 check(css.includes('.composition-detail>summary{cursor:pointer;min-height:44px')&&css.includes('.composition-process-context>summary{cursor:pointer;min-height:44px'),'composition disclosure touch targets must remain >=44px');
 check(!/(?:^|[;{])\s*(?:color|background-color)\s*:/m.test(css),'composition layer must not create an independent palette authority');
 for(const phase of ['home','processes','rn','ec','grc-AO-01','grc-MC-01','grc-AP-01','grc-RC-01','grc-AR-01','proof','epistemic','admin','settings','mobile'])check(browser.includes(`PHASE='${phase}'`)||browser.includes(`PHASE=f'${phase.split('-')[0]}-{code}'`)||browser.includes(phase),`browser composition coverage missing ${phase}`);
-if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,home:'attention-first',processes:'row-catalogue',procedures:'work-before-context',proof:'decision-evidence-first',epistemic:'relationships-first+technical-preserved-progressively',admin:'attention-first',dialogs:'one-intro-budget',responsive:['760','390']}));
+if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,home:'attention-first',processes:'row-catalogue',procedures:'work-before-context',proof:'decision-evidence-first',epistemic:'relationships-first+async-technical-preserved-progressively',admin:'attention-first',dialogs:'one-intro-budget',responsive:['760','390']}));
