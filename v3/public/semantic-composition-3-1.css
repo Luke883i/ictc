@@ -1,0 +1,96 @@
+/* Semantic Composition 3.1 — hierarchy, compression and progressive disclosure. */
+:root{--composition-reading:70ch;--composition-row:58px;--composition-head-gap:.35rem}
+[data-semantic-composition="3.1.0"]{scroll-margin-top:84px}
+#homeView .home-hero{display:block!important;min-height:0!important;padding-block:.75rem!important}
+#homeView .home-intro{max-width:none!important}
+#homeView .home-intro>.eyebrow{display:none!important}
+#homeView #homeTitle{max-width:24ch;margin:.1rem 0 .25rem;font-size:clamp(1.65rem,3vw,2.5rem);line-height:1.02}
+#homeView #homeSummary{max-width:var(--composition-reading);margin:0 0 .75rem;font-size:.98rem;line-height:1.42}
+#homeView #homePulse,#homeView .home-next,#homeView .home-overview-grid,#homeView .home-journey-panel{display:none!important}
+#homePriorities{display:grid;gap:.45rem;margin-top:.2rem}
+#homePriorities .home-priority-head{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin:.1rem 0 .2rem}
+#homePriorities .home-priority-head strong,#homePriorities .home-priority-head span{font-size:1rem}
+#homePriorities .home-business-priority,#homePriorities>[data-service]{min-height:var(--composition-row);padding:.65rem .8rem;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;text-align:left}
+#homePriorities .home-business-priority small{display:block;margin-top:.15rem;opacity:.78}
+#homePriorities .market-global-note{display:none!important}
+#processesView .processes-head{padding:.7rem 0 .45rem!important;margin:0!important}
+#processesView .processes-head .eyebrow,#processesView .landing-brief{display:none!important}
+#processesView .processes-head h1{margin:0 0 .2rem;font-size:clamp(1.55rem,2.5vw,2.15rem)}
+#processesView .processes-head p{max-width:var(--composition-reading);margin:0;font-size:.94rem}
+#procedureHub{display:grid!important;grid-template-columns:1fr!important;gap:.35rem!important}
+#procedureHub .procedure-card{display:grid!important;grid-template-columns:5.2rem minmax(0,1fr) auto;grid-template-areas:"code title action" "code purpose action";align-items:center;gap:.05rem .8rem;min-height:72px;padding:.55rem .7rem!important;border-radius:10px!important}
+#procedureHub .procedure-card>header{grid-area:code;margin:0!important}
+#procedureHub .procedure-card>h2,#procedureHub .procedure-card>.procedure-card-title{grid-area:title;margin:0!important;font-size:1rem!important}
+#procedureHub .procedure-card>.procedure-purpose{grid-area:purpose;margin:0!important;font-size:.84rem;line-height:1.3;max-width:75ch}
+#procedureHub .procedure-card>footer{grid-area:action;margin:0!important}
+#procedureHub .procedure-card .procedure-signals,#procedureHub .procedure-card details{display:none!important}
+#procedureHub .procedure-card .procedure-primary{white-space:nowrap}
+.procedure-frame{padding:.55rem 0 .6rem!important;margin:0!important;min-height:0!important}
+.procedure-frame .procedure-back{margin-bottom:.3rem!important}
+.procedure-frame-main{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;align-items:end}
+.procedure-frame-copy{display:grid;gap:.12rem}
+.procedure-frame-kicker{margin:0!important;font-size:.74rem!important}
+.procedure-frame-kicker .procedure-frame-authority{display:none!important}
+.procedure-frame h1{margin:0!important;font-size:clamp(1.4rem,2.2vw,1.9rem)!important;line-height:1.05}
+.procedure-frame .procedure-purpose{margin:.1rem 0 0!important;max-width:var(--composition-reading);font-size:.9rem!important;line-height:1.35}
+.procedure-frame .procedure-signals{display:none!important}
+.procedure-frame-actions{margin:0!important}
+.surface-context-strip,.ictc-manifest,[data-surface-information-value],.procedure-frame-brief,.procedure-card-brief,.proof-semantic-qualifier{display:none!important}
+#monitoringView>.section-block,#incidentsView>.section-block,#grcWorkspace .grc-body{margin-top:.45rem!important}
+.section-head{margin-bottom:.35rem!important;gap:.5rem!important}
+.section-head .eyebrow{display:none!important}
+.section-head h2{margin:0!important;font-size:1.08rem!important}
+.section-head p:not([data-essential-copy]){font-size:.82rem;line-height:1.3;margin:.15rem 0 0}
+#aiSetup{display:none!important}
+#grcWorkspace .grc-body{display:flex;flex-direction:column;gap:.55rem}
+#grcWorkspace .grc-list{order:1;display:grid;gap:.45rem}
+#grcWorkspace #grcPrimaryForm{order:2;margin:0}
+#grcWorkspace details[data-composition-detail="process-status"]{order:3}
+#grcWorkspace details[data-composition-detail="risk-analysis"]{order:4}
+#grcWorkspace .grc-list>article{padding:.65rem .75rem!important;border-radius:10px!important}
+#grcWorkspace .grc-list>article header{gap:.25rem!important}
+#grcWorkspace .grc-list>article h3{font-size:1rem!important;margin:.1rem 0!important}
+#grcWorkspace .grc-list>article p{margin:.25rem 0!important;font-size:.85rem;line-height:1.32}
+#grcWorkspace .grc-list>article footer{margin-top:.35rem!important}
+#grcWorkspace .grc-kpis{margin:0!important;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr))!important}
+.composition-detail{border-top:1px solid var(--line);padding-top:.25rem}
+.composition-detail>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:.86rem;font-weight:700}
+.composition-detail>[data-composition-detail-body]{padding:.3rem 0 .5rem}
+#proofView .proof-head{padding:.6rem 0!important;margin:0!important}
+#proofView .proof-head .eyebrow,#proofView .proof-hero-note{display:none!important}
+#proofView #proofTitle{margin:0 0 .2rem;font-size:clamp(1.5rem,2.5vw,2rem)}
+#proofView .proof-head #proofTitle+p{max-width:var(--composition-reading);margin:0;font-size:.92rem}
+#proofView .proof-snapshot,#proofView .proof-reading-grid,#proofView .proof-method{margin:0!important}
+#proofView details.proof-section{margin:.4rem 0!important}
+#proofView details.proof-section[open]>summary{margin-bottom:.35rem}
+#proofView .evidence-decision{padding:.6rem .7rem!important}
+#epistemicView .procedure-frame-operate,#epistemicView #epistemicSummary,#epistemicView #epistemicCompression{display:none!important}
+#epistemicView .epistemic-claim-boundary{margin:.2rem 0!important}
+#epistemicView .surface-toolbar{margin:.35rem 0!important;padding:.45rem!important}
+#epistemicView .epistemic-overview,#epistemicView .epistemic-layout{gap:.55rem!important}
+#epistemicView .epistemic-explore-panel{padding:.6rem .7rem!important}
+#epistemicView .epistemic-explore-panel .eyebrow{display:none!important}
+#epistemicView .surface-chip{font-size:.75rem}
+#adminCenter .admin-head{padding:.65rem .8rem!important}
+#adminCenter .admin-head .eyebrow,#adminCenter #adminMetrics,#adminCenter .admin-nav-boundary{display:none!important}
+#adminCenter .admin-head-copy h2{margin:0 0 .15rem!important}
+#adminCenter .admin-head-copy p{margin:0!important;max-width:var(--composition-reading);font-size:.88rem}
+#adminCenter .admin-view-head{padding:.4rem 0!important;margin:0 0 .35rem!important}
+#adminCenter .admin-view-head .eyebrow{display:none!important}
+#adminCenter .admin-view-head h3{margin:0 0 .15rem!important;font-size:1.1rem}
+#adminCenter .admin-panel{padding:.65rem .75rem!important}
+#adminCenter details[data-composition-detail="technical-controls"]{width:100%}
+.dialog-shell>header{padding-block:.65rem!important}
+.dialog-shell>header .eyebrow{font-size:.72rem!important;margin:0 0 .1rem!important}
+.dialog-shell>header h2{margin:.05rem 0 .15rem!important}
+.dialog-shell>header p:not(.eyebrow){max-width:var(--composition-reading);margin:0!important;font-size:.86rem;line-height:1.35}
+dialog details.advanced:not([open]),dialog [data-information-role="technical"]:not([open]){contain:content}
+@media(max-width:760px){#procedureHub .procedure-card{grid-template-columns:4.6rem minmax(0,1fr);grid-template-areas:"code title" "purpose purpose" "action action";gap:.2rem .5rem}#procedureHub .procedure-card>footer{justify-content:flex-start!important}.procedure-frame-main{grid-template-columns:1fr}.procedure-frame-actions{justify-content:flex-start!important}#homePriorities .home-business-priority,#homePriorities>[data-service]{grid-template-columns:1fr;gap:.35rem}}
+@media(max-width:390px){#homeView #homeTitle{font-size:1.55rem}#procedureHub .procedure-card{grid-template-columns:1fr;grid-template-areas:"code" "title" "purpose" "action";min-height:0}.procedure-frame{padding-top:.4rem!important}}
+@media(prefers-reduced-motion:reduce){[data-semantic-composition="3.1.0"]{scroll-behavior:auto}}
+.finetune-compass,.seq-guide,#procedureHub .finetune-card-nature,#procedureHub .finetune-card-decision{display:none!important}
+.procedure-decision-frame{margin:.45rem 0 0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.composition-process-context>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:.84rem;font-weight:700}
+.composition-process-context>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem .8rem;padding:.35rem 0 .55rem}
+.composition-process-context p{margin:0;font-size:.82rem;line-height:1.35}
+@media(max-width:700px){.composition-process-context>div{grid-template-columns:1fr}}
