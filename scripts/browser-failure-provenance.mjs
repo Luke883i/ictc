@@ -21,8 +21,8 @@ async function candidateArtifact(base){
 }
 const base=path.basename(script,path.extname(script))||'browser';
 const artifact=await candidateArtifact(base);
-if(!artifact){await post(`ictc/browser-detail/${slug(base)}/no-artifact`,'browser failed; no structured error artifact found');process.exit(0);}
-let payload={};try{payload=JSON.parse(await readFile(artifact,'utf8'));}catch(error){await post(`ictc/browser-detail/${slug(base)}/invalid-artifact`,error.message);process.exit(0);}
-const phase=slug(payload.phase||'unknown',34),type=slug(payload.type||'Error',28),message=String(payload.message||`${type} in ${phase}`);
-await post(`ictc/browser-detail/${slug(base,34)}/${phase}/${type}`,`${phase}: ${type}: ${message}`);
+if(!artifact){await post(`ictc/browser-detail/${slug(base,20)}/no-artifact`,'browser failed; no structured error artifact found');process.exit(0);}
+let payload={};try{payload=JSON.parse(await readFile(artifact,'utf8'));}catch(error){await post(`ictc/browser-detail/${slug(base,20)}/invalid-artifact`,error.message);process.exit(0);}
+const phase=slug(payload.phase||'unknown',20),type=slug(payload.type||'Error',14),message=String(payload.message||`${type} in ${phase}`),messageSlug=slug(message,20);
+await post(`ictc/browser-detail/${slug(base,20)}/${phase}/${type}/${messageSlug}`,`${phase}: ${type}: ${message}`);
 console.log(JSON.stringify({browser:base,artifact,phase,type,message:message.slice(0,180)}));
