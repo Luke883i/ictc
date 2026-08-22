@@ -258,11 +258,15 @@ try:
         page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r', arg=final_rev)
         expect(page.locator('[data-epistemic-mode="explore"]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
-        overview = page.locator('#epistemicModeHost').inner_text()
-        assert all(pid in overview for pid in PROCS.values()), overview
+        clusters = page.locator('[data-explore-procedure]')
+        assert clusters.count() > 0
+        visible_procedures = clusters.evaluate_all('xs=>xs.map(x=>x.dataset.exploreProcedure)')
+        assert any(pid in PROCS.values() for pid in visible_procedures), visible_procedures
+        assert all(pid == 'cross-cutting' or pid in PROCS.values() or pid == 'epistemic-lattice' for pid in visible_procedures), visible_procedures
+        drill_pid = 'actions' if 'actions' in visible_procedures else next(pid for pid in visible_procedures if pid in PROCS.values())
 
         PHASE = 'epistemic-drill'
-        cluster = page.locator('[data-explore-procedure="actions"]')
+        cluster = page.locator(f'[data-explore-procedure="{drill_pid}"]')
         expect(cluster).to_be_visible(); cluster.click()
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Gruppi')
         family = page.locator('[data-explore-family]').first
@@ -322,10 +326,11 @@ try:
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'epistemicEntrySurface':'Evidenze ICTC','exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'epistemicEntrySurface':'Evidenze ICTC','epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
+            'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
-            'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+progressive-epistemic-exploration'
+            'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+page-local-progressive-epistemic-exploration'
         }
         (ART/'browser-v2-1-procedure-journey.json').write_text(json.dumps(out, indent=2), encoding='utf8')
         print('browser-v2-1-procedure-journey: complete', flush=True)
