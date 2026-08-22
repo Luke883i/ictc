@@ -13,7 +13,11 @@ def open_process(page,code):
 def no_overflow(page):
  m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})');assert max(m['html'],m['body'])<=m['inner']+1,m
 def click_mode(page,mode):
- button=page.locator(f'[data-epistemic-mode="{mode}"]');expect(button).to_be_visible();expect(button).to_be_enabled();target=button.evaluate("""e=>{e.scrollIntoView({block:'center',inline:'nearest'});const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,under=document.elementFromPoint(x,y),owner=under?.closest?.('[data-epistemic-mode]');return{x,y,width:r.width,height:r.height,inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,owner:owner?.dataset.epistemicMode||null,under:under?.tagName||null};}""");assert target['inViewport'] and target['owner']==mode,target;button.click()
+ global PHASE
+ button=page.locator(f'[data-epistemic-mode="{mode}"]');expect(button).to_be_visible();expect(button).to_be_enabled();target=button.evaluate("""e=>{e.scrollIntoView({block:'center',inline:'nearest'});const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,under=document.elementFromPoint(x,y),owner=under?.closest?.('[data-epistemic-mode]'),style=under?getComputedStyle(under):null;return{owner:owner?.dataset.epistemicMode||null,underId:under?.id||'',underClass:typeof under?.className==='string'?under.className:'',underTag:under?.tagName||'',pointerEvents:style?.pointerEvents||'',zIndex:style?.zIndex||'',x,y,inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight};}""")
+ if not (target['inViewport'] and target['owner']==mode):
+  identity=target['underId'] or (target['underClass'].split()[0] if target['underClass'] else '') or target['underTag'] or 'unknown';PHASE=f'mode-covered-{identity}'[:48];raise AssertionError(f"covered-by={identity};owner={target['owner']};pointer={target['pointerEvents']};z={target['zIndex']};x={target['x']};y={target['y']}")
+ button.click()
 def selected_node(page):
  return page.evaluate("()=>[...document.querySelectorAll('.epistemic-node-list button')].find(b=>b.getAttribute('aria-pressed')==='true')?.dataset.epistemicNode||null")
 def graph_ready(page):
