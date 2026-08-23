@@ -1,7 +1,8 @@
-version: 8
+version: 9
 surfaces:
   product_intent:
-    authority: docs/00_PROMPT_CLARIFICATION.md
+    authority: docs/PRODUCT.md
+    classification: current-product-authority
   epistemic_contract:
     authority: docs/02_EPISTEMIC_CONTRACT.md
   user_journeys:
@@ -9,8 +10,18 @@ surfaces:
   architecture:
     authority: docs/11_ARCHITECTURE.md
   documentation_navigation:
-    authority: docs/DOCUMENTATION_STANDARD.md
-    classification: current-documentation-standard
+    authority: docs/START_HERE.md
+    policy: docs/DOCUMENTATION_STANDARD.md
+    classification: current-documentation-routing
+  documentation_registry:
+    authority: docs/documentation-manifest.json
+    classification: machine-readable-authority-registry
+  documentation_runtime:
+    authority: scripts/documentation-lattice-check.mjs
+    model: scripts/documentation-lattice-lib.mjs
+    saturation: scripts/documentation-lattice-saturation.mjs
+    dod: docs/DOCUMENTATION_RUNTIME_1_0_DOD.md
+    classification: executable-documentation-contract
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:
@@ -89,6 +100,9 @@ surfaces:
     classification: derived
 rules:
   - generated artifacts are never hand-edited
+  - documentation lifecycle and authority topics are registered in docs/documentation-manifest.json; the registry may not replace substantive product, architecture, epistemic, UI or runtime owners
+  - source-input, roadmap, lineage and generated documents may not become current authority by filename recency, PR recency or implicit reference
+  - docs/PRODUCT.md is the only current product-intent authority; prompts and TO-BE documents are inputs or roadmap
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
   - enduser_language defines the human-facing policy; semantic_foundation_vocabulary and semantic_foundation_actions implement it and may not widen legal or decision authority
@@ -112,6 +126,7 @@ rules:
   - annotation may classify controls, human-action semantics and evidence effects but may not create business decisions or runtime write authority
   - reentrant lifecycle requests must replay inside the current flush and the lifecycle must fail closed on non-convergence
   - current runtime UI contracts must be reachable through the canonical npm test gate; dedicated workflows may be diagnostic but not parallel PR authorities
+  - documentation_runtime must be reachable through the canonical semantic current npm test gate
   - browser test processes are observational and do not hold commit-status write authority; aggregate CI/census publishers own exact-head status verdicts
   - release_identity distinguishes current contracts and maturity from informational lineage; lineage must not be promoted to current identity
-  - model-vocabulary trial counts must not be represented as code mutation executions, browser sessions, or independent assurance
+  - model-vocabulary trial counts must not be represented as code mutation executions, browser sessions, contributor studies, or independent assurance
