@@ -89,3 +89,20 @@ jobs:
           RAIL_OUTCOME: ${{ steps.runtime-suite.outcome }}
           RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
         run: node scripts/release-failure-provenance.mjs
+      - name: Enforce Windows runtime process quiescence
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $nodes = @(Get-Process node -ErrorAction SilentlyContinue)
+          if ($nodes.Count -gt 0) {
+            $ids = ($nodes | ForEach-Object { $_.Id }) -join ','
+            Write-Host "Residual Node processes after runtime rail: $ids"
+            $nodes | Stop-Process -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 750
+          }
+          $remaining = @(Get-Process node -ErrorAction SilentlyContinue)
+          if ($remaining.Count -gt 0) {
+            $ids = ($remaining | ForEach-Object { $_.Id }) -join ','
+            throw "Residual Node processes survived explicit quiescence: $ids"
+          }
+          Write-Host 'Windows runtime process quiescence: clean'
