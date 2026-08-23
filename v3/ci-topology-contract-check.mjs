@@ -7,6 +7,8 @@ const browser=await readFile(new URL('../scripts/browser-failure-provenance.mjs'
 const census=await readFile(new URL('./actions-census.mjs',import.meta.url),'utf8');
 const ci=await readFile(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
 const deautopoiesis=await readFile(new URL('../.github/workflows/deautopoiesis-closure.yml',import.meta.url),'utf8');
+const shellLineageWorkflow=await readFile(new URL('../.github/workflows/shell-admin-demo-probes-2-6.yml',import.meta.url),'utf8');
+const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe-2-6.py',import.meta.url),'utf8');
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
@@ -25,6 +27,9 @@ check(ci.includes("BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.
 check(ci.includes("post_status 'ictc/browser-journeys' \"$BROWSER_RESULT\" \"$BROWSER_FAILED_SCRIPT\""),'authoritative browser status must carry bounded first-failure provenance');
 check(ci.includes("'ictc/exact-head-ci'"),'CI must retain one exact-head aggregate verdict');
 check(census.includes("'ictc/actions-census'"),'census must retain one exact-head Actions verdict');
+check(shellLineageWorkflow.includes('--profile current'),'shell/admin/DEMO lineage probes must exercise the canonical current profile');
+check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'historical shell/admin/DEMO probe running against current must synchronize on current native semantic authority');
+check(!shellLineageProbe.includes("wait_for_function(\"()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'\")"),'historical experience edition must not be the current lineage readiness oracle');
 
 const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');
 const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');
@@ -44,4 +49,4 @@ check(deautopoiesis.includes('Checkout exact head without post-action'),'deautop
 check(deautopoiesis.includes('Select hosted Node toolcache without post-action'),'deautopoiesis must select hosted Node without post-actions');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',portabilityVerdictBoundary:'runtime+owned-quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false,windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',shellLineageReadiness:'native-semantic-authority',portabilityVerdictBoundary:'runtime+owned-quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false,windowsNodeOwnership:'baseline-scoped'}));

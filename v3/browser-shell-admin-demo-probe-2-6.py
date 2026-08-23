@@ -6,7 +6,7 @@ PROBE=os.environ.get('ICTC_BROWSER_PROBE','desktop')
 
 def load(page):
     page.goto(BASE,wait_until='networkidle')
-    page.wait_for_function("()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'")
+    page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&!!document.querySelector('#stableProfileMenu')")
 
 def open_admin(page):
     menu=page.locator('#stableProfileMenu');expect(menu).to_be_visible();menu.locator(':scope > summary').click()
