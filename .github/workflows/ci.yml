@@ -227,50 +227,34 @@ jobs:
     needs: [contract-and-audit, runtime-e2e, browser-journeys, epistemic-professional-browser, launcher-smoke]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    permissions:
-      contents: read
-      statuses: write
     env:
-      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       CONTRACT_RESULT: ${{ needs['contract-and-audit'].result }}
       RUNTIME_RESULT: ${{ needs['runtime-e2e'].result }}
       BROWSER_RESULT: ${{ needs['browser-journeys'].result }}
       BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.failed_script }}
       PROFESSIONAL_RESULT: ${{ needs['epistemic-professional-browser'].result }}
       LAUNCHER_RESULT: ${{ needs['launcher-smoke'].result }}
-      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Publish exact-head CI verdict
+      - name: Assert exact-head CI verdict
         shell: bash
         run: |
           set -Eeuo pipefail
-          post_status() {
-            local context="$1" result="$2" detail="${3:-}" state='failure' description target=''
-            [[ "$result" == 'success' ]] && state='success'
-            description="job result: $result"
-            if [[ -n "$detail" ]]; then
-              description="$description · $(basename "$detail")"
-              target="https://github.com/$GITHUB_REPOSITORY/blob/$HEAD_SHA/$detail"
-            fi
-            local payload
-            if [[ -n "$target" ]]; then
-              payload=$(printf '{"state":"%s","context":"%s","description":"%s","target_url":"%s"}' "$state" "$context" "$description" "$target")
-            else
-              payload=$(printf '{"state":"%s","context":"%s","description":"%s"}' "$state" "$context" "$description")
-            fi
-            curl -fsS -X POST \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H 'Accept: application/vnd.github+json' \
-              -H 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
-              -d "$payload" >/dev/null
-            [[ "$state" == 'success' ]]
+          failed=0
+          echo '## ICTC exact-head CI verdict' >> "$GITHUB_STEP_SUMMARY"
+          check_job() {
+            local name="$1" result="$2"
+            printf -- '- %s: `%s`\n' "$name" "$result" >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$result" != 'success' ]]; then failed=1; fi
           }
-          overall='success'
-          post_status 'ictc/contract-and-audit' "$CONTRACT_RESULT" || overall='failure'
-          post_status 'ictc/runtime-e2e' "$RUNTIME_RESULT" || overall='failure'
-          post_status 'ictc/browser-journeys' "$BROWSER_RESULT" "$BROWSER_FAILED_SCRIPT" || overall='failure'
-          post_status 'ictc/epistemic-professional-browser' "$PROFESSIONAL_RESULT" || overall='failure'
-          post_status 'ictc/launcher-smoke' "$LAUNCHER_RESULT" || overall='failure'
-          post_status 'ictc/exact-head-ci' "$overall" || true
-          exit 0
+          check_job 'contract-and-audit' "$CONTRACT_RESULT"
+          check_job 'runtime-e2e' "$RUNTIME_RESULT"
+          check_job 'browser-journeys' "$BROWSER_RESULT"
+          check_job 'epistemic-professional-browser' "$PROFESSIONAL_RESULT"
+          check_job 'launcher-smoke' "$LAUNCHER_RESULT"
+          if [[ -n "$BROWSER_FAILED_SCRIPT" ]]; then
+            printf '\nFirst browser failure: `%s`\n' "$BROWSER_FAILED_SCRIPT" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ "$failed" -ne 0 ]]; then
+            echo 'One or more required exact-head CI jobs did not succeed.' >&2
+            exit 1
+          fi

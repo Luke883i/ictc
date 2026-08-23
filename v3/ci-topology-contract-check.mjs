@@ -12,6 +12,7 @@ const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
+const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
 
 check(!release.includes('-failure/'),'release provenance must not create failure fan-out contexts');
 check(!release.includes('-detail/'),'release provenance must keep failure detail inside the authoritative rail status/log');
@@ -24,8 +25,12 @@ check(!/statuses:\s*write/.test(professionalBrowserJob),'professional browser te
 check(browserJourneyJob.includes('failed_script: ${{ steps.canonical-browser.outputs.failed_script }}'),'browser job must export one first-failure diagnostic without acquiring status authority');
 check(browserJourneyJob.includes('echo "failed_script=$script" >> "$GITHUB_OUTPUT"'),'browser runner must record the first failing subtest in its job output');
 check(ci.includes("BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.failed_script }}"),'CI verdict must consume browser first-failure provenance');
-check(ci.includes("post_status 'ictc/browser-journeys' \"$BROWSER_RESULT\" \"$BROWSER_FAILED_SCRIPT\""),'authoritative browser status must carry bounded first-failure provenance');
-check(ci.includes("'ictc/exact-head-ci'"),'CI must retain one exact-head aggregate verdict');
+check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
+check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
+check(!ciVerdictJob.includes('post_status'),'CI verdict must rely on the native GitHub job conclusion');
+check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY'),'CI verdict must retain bounded human-readable failure provenance');
+check(ciVerdictJob.includes("if [[ \"$result\" != 'success' ]]"),'CI verdict must treat every non-success dependency result as failure');
+check(ciVerdictJob.includes('exit 1'),'CI verdict must fail closed when any required job is not successful');
 check(census.includes("'ictc/actions-census'"),'census must retain one exact-head Actions verdict');
 check(shellLineageWorkflow.includes('--profile current'),'shell/admin/DEMO lineage probes must exercise the canonical current profile');
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'historical shell/admin/DEMO probe running against current must synchronize on current native semantic authority');
@@ -48,4 +53,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'job-output-and-summary',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
