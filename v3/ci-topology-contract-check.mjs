@@ -20,11 +20,20 @@ check(!browser.includes('/statuses/'),'browser provenance must be observational 
 check(!census.includes('ictc/check-failure/'),'actions census must publish one authoritative census status, not one status per failed check');
 check(!ci.includes('ictc/browser-failure/'),'browser CI must not publish per-script failure statuses');
 check(!wrapper.includes('/statuses/'),'browser subtest wrapper must not publish per-subtest statuses');
-check(!/statuses:\s*write/.test(browserJourneyJob),'browser test job must not hold commit-status write authority');
+check(!/statuses:\s*write/.test(browserJourneyJob),'browser test matrix must not hold commit-status write authority');
 check(!/statuses:\s*write/.test(professionalBrowserJob),'professional browser test job must not hold commit-status write authority');
-check(browserJourneyJob.includes('failed_script: ${{ steps.canonical-browser.outputs.failed_script }}'),'browser job must export one first-failure diagnostic without acquiring status authority');
-check(browserJourneyJob.includes('echo "failed_script=$script" >> "$GITHUB_OUTPUT"'),'browser runner must record the first failing subtest in its job output');
-check(ci.includes("BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.failed_script }}"),'CI verdict must consume browser first-failure provenance');
+check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser checks must expose the exact script in the native check-run name');
+check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete all journeys after an individual failure');
+check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay explicitly bounded');
+check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===11,'canonical browser matrix must retain all eleven existing journeys');
+check(!browserJourneyJob.includes('GH_TOKEN:'),'browser matrix must not receive a GitHub token for commit-status publication');
+check(!browserJourneyJob.includes('HEAD_SHA:'),'browser matrix must not receive commit status target metadata');
+check(browserJourneyJob.includes('python -u "${{ matrix.script }}"'),'browser matrix must execute only the isolated declared journey');
+check(browserJourneyJob.includes('FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs'),'failed browser checks must retain structured log/artifact provenance');
+check(browserJourneyJob.includes('name: ictc-browser-${{ matrix.id }}'),'browser artifacts must be isolated per matrix member');
+check(ci.includes("BROWSER_RESULT: ${{ needs['browser-journeys'].result }}"),'CI verdict must consume the aggregate browser matrix conclusion');
+check(census.includes("const browserSourcePrefix='browser / ';"),'actions census must understand native browser check source provenance');
+check(census.includes('/blob/${sha}/${browserSource}'),'actions census must link a failed browser check to its exact test source');
 check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
 check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
 check(!ciVerdictJob.includes('post_status'),'CI verdict must rely on the native GitHub job conclusion');
@@ -53,4 +62,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'job-output-and-summary',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
