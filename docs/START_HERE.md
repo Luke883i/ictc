@@ -7,8 +7,8 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
 2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
 3. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
-4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali.
-5. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite.
+4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
+5. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
 6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
 7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
 8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente.
