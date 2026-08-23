@@ -90,6 +90,7 @@ jobs:
           RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
         run: node scripts/release-failure-provenance.mjs
       - name: Enforce Windows runtime process quiescence
+        id: windows-quiescence
         if: always() && runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -106,3 +107,11 @@ jobs:
             throw "Residual Node processes survived explicit quiescence: $ids"
           }
           Write-Host 'Windows runtime process quiescence: clean'
+      - name: Publish Windows quiescence exact-head provenance
+        if: always() && runner.os == 'Windows'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RAIL_OUTCOME: ${{ steps.windows-quiescence.outcome }}
+          RAIL: portability-quiescence-${{ matrix.os }}-node${{ matrix.node }}
+        run: node scripts/release-failure-provenance.mjs
