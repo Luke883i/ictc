@@ -11,9 +11,9 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 5. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
 6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
 7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
-8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente.
+8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
 9. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
-10. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale.
+10. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
 Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti.
 
@@ -63,7 +63,7 @@ Processi di Compliance è un catalogo di capability eterogenee e usa una matrice
 - **roadmap**: futuro intenzionale, non comportamento corrente;
 - **generated**: evidenza derivata, mai hand-edited.
 
-`00_PROMPT_CLARIFICATION.md` è source-input. `01_TO_BE_IDEA.md` e `ROADMAP.md` sono roadmap. Il DoD di una slice possiede soltanto il contratto della slice dichiarata e non ridefinisce implicitamente product/architecture authority.
+I documenti storici classificati come lineage non sono autorità corrente. `00_PROMPT_CLARIFICATION.md` è source-input. `01_TO_BE_IDEA.md` e `ROADMAP.md` sono roadmap. Il DoD di una slice possiede soltanto il contratto della slice dichiarata e non ridefinisce implicitamente product/architecture authority.
 
 ## Verifica minima
 
