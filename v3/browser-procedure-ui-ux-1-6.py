@@ -19,6 +19,12 @@ def no_overflow(page):
 def wait_owner(page):
     page.wait_for_function("()=>document.documentElement.dataset.ictcUiUxFinetuning==='2.4.0'&&document.documentElement.dataset.ictcUiUxIntegrity==='1.6.1'&&document.documentElement.dataset.semanticComposition==='3.1.0'")
 
+def api_status(page,path,role='admin',method='GET',body=None):
+    return page.evaluate("""async a=>{const h={'content-type':'application/json','x-ictc-role':a.role,'x-ictc-actor-id':'browser-'+a.role};if(a.method!=='GET'){const b=await fetch('/api/bootstrap',{headers:h});const j=await b.json();h['x-ictc-command-id']='cmd-uiux-'+Date.now()+'-'+Math.random().toString(16).slice(2);h['x-ictc-expected-revision']=String(j.revision||0);}const r=await fetch(a.path,{method:a.method,headers:h,body:a.body?JSON.stringify(a.body):undefined});let payload={};try{payload=await r.json()}catch{}return{status:r.status,payload}}""",{'path':path,'role':role,'method':method,'body':body})
+
+def refresh_processes(page):
+    page.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(page);expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+
 def open_process(page,code):
     page.locator('.service-nav [data-service="processes"]').click()
     card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click()
@@ -70,6 +76,20 @@ def ensure_incident_card(page):
     trigger=page.locator('#incidentsView .procedure-frame:visible .procedure-primary').first;expect(trigger).to_be_visible();trigger.click();dialog=page.locator('#incidentDialog');expect(dialog).to_be_visible()
     PHASE='EC-seed-incident-form'
     before=revision(page);dialog.locator('textarea[name="originalNarrative"]').fill('Evento isolato per verificare il percorso UI/UX senza dipendenze da journey precedenti.');dialog.locator('input[name="awarenessAt"]').fill('2026-08-10T12:30');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();wait_revision_advance(page,before);page.wait_for_function("()=>document.querySelectorAll('#incidentList .incident-card').length>0");return page.locator('#incidentList .incident-card')
+def ensure_ao_object(page):
+    global PHASE
+    PHASE='AO-seed-bootstrap';bootstrap=api_status(page,'/api/bootstrap');assert bootstrap['status']==200,bootstrap
+    objects=bootstrap['payload'].get('grc',{}).get('objects',{}).get('objects',[])
+    if objects:return
+    PHASE='AO-seed-object';created=api_status(page,'/api/grc/objects',method='POST',body={'type':'control','name':'Controllo isolato UI UX 1.6','owner':'local-admin','sourceAuthority':'ICTC browser test','externalReference':'CTRL-UIUX-1-6'});assert created['status']==201,created
+    PHASE='AO-seed-refresh';refresh_processes(page)
+def ensure_ap_action(page):
+    global PHASE
+    PHASE='AP-seed-bootstrap';bootstrap=api_status(page,'/api/bootstrap');assert bootstrap['status']==200,bootstrap
+    actions=bootstrap['payload'].get('grc',{}).get('actions',{}).get('actions',[])
+    if actions:return
+    PHASE='AP-seed-action';created=api_status(page,'/api/grc/actions',method='POST',body={'title':'Azione isolata UI UX 1.6','description':'Azione minima per falsificare il ciclo di stato AP in una run browser isolata.'});assert created['status']==201,created
+    PHASE='AP-seed-refresh';refresh_processes(page)
 def ensure_action_ready_for_review(page):
     global PHASE
     verify=page.locator('#grcWorkspace [data-uiux-action-verify]')
@@ -99,8 +119,7 @@ try:
         page=ctx.new_page();page.set_default_timeout(30000);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
 
         PHASE='bootstrap-owner'
-        page.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(page)
-        expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+        refresh_processes(page)
         meta=page.locator('#epistemicMetaCard');expect(meta).not_to_be_visible();assert meta.evaluate('e=>e.parentElement?.id')=='proofView';no_overflow(page)
 
         PHASE='RN-open-process'
@@ -117,7 +136,7 @@ try:
             card=cases.nth(i);assert_at_most_one_primary(card,f'EC-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri caso' in primary.inner_text();assert card.locator('.procedure-record-facts').count()==1
         cases.first.locator('.ux-primary').click();expect(page.locator('#incidentWorkspace')).to_be_visible();assert_at_most_one_primary(page.locator('#workspaceActions'),'EC-workspace-actions');assert page.locator('#incidentWorkspace .lens-panel.ux-progressive-panel').count()>=1;assert_targets(page.locator('#incidentWorkspace'),'EC-workspace');no_overflow(page);page.locator('#incidentWorkspace button[aria-label="Chiudi"]').click()
 
-        PHASE='AO-governed-identity'
+        ensure_ao_object(page);PHASE='AO-governed-identity'
         open_process(page,'AO-01');expect(page.locator('#grcWorkspace')).to_be_visible();objects=page.locator('#grcWorkspace .grc-list > article');assert objects.count()>0
         expect(page.locator('#grcWorkspace [data-seq-ao-search]')).to_be_visible();expect(page.locator('#grcWorkspace [data-seq-ao-filter]')).to_be_visible()
         for i in range(min(objects.count(),16)): assert_at_most_one_primary(objects.nth(i),f'AO-card-{i}');assert objects.nth(i).locator('.procedure-record-facts').count()==1
@@ -138,7 +157,7 @@ try:
         for i in range(incomplete.count()): assert 'Rifiuta proposta incompleta' in incomplete.nth(i).inner_text()
         assert_targets(page.locator('#grcWorkspace'),'MC');no_overflow(page)
 
-        PHASE='AP-state-aware-and-verify'
+        ensure_ap_action(page);PHASE='AP-state-aware-and-verify'
         open_process(page,'AP-01');expect(page.locator('#grcWorkspace')).to_be_visible();actions=page.locator('#grcWorkspace .grc-list > article');assert actions.count()>0
         allowed={'Adotta azione','Avvia lavoro','Invia a verifica','Riprendi lavoro','Verifica risultato'}
         for i in range(min(actions.count(),25)):
@@ -154,7 +173,7 @@ try:
         mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(m);open_process(m,'RN-01');assert m.locator('#missionsList .mission-card').count()>0;assert m.locator('#missionsList .mission-card').first.locator('.ux-primary:visible').count()==1;no_overflow(m);mc.close()
 
         assert not errors,errors
-        report={'ok':True,'profile':'procedure-record-ontoepistemic-3.1-browser+isolated-fixtures','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'isolatedState':True,'primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcProcessStatusProgressive':True,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Evidenze ICTC','epistemicDestination':'Relazioni tra decisioni, fonti ed evidenze','touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
+        report={'ok':True,'profile':'procedure-record-ontoepistemic-3.1-browser+isolated-fixtures','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'isolatedState':True,'fixtureAuthority':'public-api-if-empty','primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcProcessStatusProgressive':True,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Evidenze ICTC','epistemicDestination':'Relazioni tra decisioni, fonti ed evidenze','touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
         (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-3.1: complete',flush=True);ctx.close();browser.close()
 except BaseException as exc:
     fail(exc);traceback.print_exc();raise

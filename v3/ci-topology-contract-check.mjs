@@ -61,6 +61,15 @@ check(lineage16.includes("expect(page.locator('#planDialog')).to_be_visible();ex
 check(!lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'UI/UX 1.6 RN fixture must not invent scheduler auto-close behavior absent from the runtime');
 check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
 check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
+check(lineage16.includes('def api_status(page,path,role=\'admin\',method=\'GET\',body=None):'),'UI/UX 1.6 GRC fixture setup must use the public HTTP contract');
+check(lineage16.includes("'x-ictc-expected-revision'"),'UI/UX 1.6 GRC writes must preserve optimistic revision authority');
+check(lineage16.includes('def ensure_ao_object(page):'),'UI/UX 1.6 must own a minimal AO fixture for isolated state');
+check(lineage16.includes("api_status(page,'/api/grc/objects',method='POST'"),'UI/UX 1.6 AO fixture must be created through the public GRC API');
+check(lineage16.includes("ensure_ao_object(page);PHASE='AO-governed-identity'"),'UI/UX 1.6 AO assertions must consume the owned isolated fixture');
+check(lineage16.includes('def ensure_ap_action(page):'),'UI/UX 1.6 must own a minimal AP fixture for isolated state');
+check(lineage16.includes("api_status(page,'/api/grc/actions',method='POST'"),'UI/UX 1.6 AP fixture must be created through the public GRC API');
+check(lineage16.includes("ensure_ap_action(page);PHASE='AP-state-aware-and-verify'"),'UI/UX 1.6 AP assertions must consume the owned isolated fixture');
+check(lineage16.includes("'fixtureAuthority':'public-api-if-empty'"),'UI/UX 1.6 evidence must declare idempotent public-API fixture authority');
 
 check(informationValue.includes('def wait_view_owner(page,view):'),'3.2 information-value oracle must have one semantic readiness primitive');
 check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')"),'3.2 information-value oracle must synchronize on the local Proof owner');
@@ -111,4 +120,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',rnDraftTransitionAuthority:'runtime-open-plan+explicit-test-cleanup',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',rnDraftTransitionAuthority:'runtime-open-plan+explicit-test-cleanup',grcFixtureAuthority:'public-api-if-empty+optimistic-revision',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
