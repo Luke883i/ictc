@@ -1,26 +1,15 @@
-import json, os, pathlib, traceback, urllib.request
+import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'
-
-def _slug(value): return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'unknown')).strip('-')[:72] or 'unknown'
-def _publish_failure_phase(exc):
-    token=os.environ.get('GH_TOKEN','');sha=os.environ.get('HEAD_SHA','');repo=os.environ.get('GITHUB_REPOSITORY','')
-    if not token or len(sha)!=40 or not repo:return
-    line=traceback.extract_tb(exc.__traceback__)[-1].lineno if exc.__traceback__ else 0
-    detail=_slug(f'{type(exc).__name__}-L{line}-{str(exc).splitlines()[0] if str(exc) else "error"}')[:54]
-    body=json.dumps({'state':'failure','context':f'ictc/browser-2-4-failure/{_slug(PHASE)}/{detail}','description':f'UI/UX 3.1 {PHASE}: {type(exc).__name__}'[:140]}).encode()
-    req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
-    try: urllib.request.urlopen(req,timeout=8).read()
-    except Exception: pass
+PROCESS_SURFACES={'RN-01':('#monitoringView','monitoring'),'EC-01':('#incidentsView','incidents'),'AO-01':('#grcWorkspace','objects'),'MC-01':('#grcWorkspace','coverage'),'AP-01':('#grcWorkspace','actions')}
 
 def fail(exc):
     payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
     (ART/'browser-procedure-ui-ux-1-6-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
-    _publish_failure_phase(exc)
     print(f'::error title=browser-procedure-ui-ux-3-1::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
@@ -32,7 +21,9 @@ def wait_owner(page):
 
 def open_process(page,code):
     page.locator('.service-nav [data-service="processes"]').click()
-    card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click(); page.wait_for_timeout(100)
+    card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click()
+    selector,surface=PROCESS_SURFACES[code]
+    page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.surface&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0');}",arg={'selector':selector,'surface':surface})
     wait_owner(page)
 
 def primary_count(scope): return scope.locator('.ux-primary:visible').count()
