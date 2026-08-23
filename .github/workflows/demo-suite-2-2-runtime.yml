@@ -1,0 +1,65 @@
+name: Demo Suite 2.2 Runtime Semantic
+
+on:
+  pull_request:
+    paths:
+      - 'v3/demo/demo-suite-2-2-fixture-*.b64'
+      - 'v3/runtime/demo-suite-2-2*.mjs'
+      - 'v3/demo-suite-2-2-module-load-check.mjs'
+      - 'v3/demo-suite-2-2-runtime-semantic-check.mjs'
+      - 'v3/demo-suite-2-2-runtime-store-check.mjs'
+      - 'docs/DEMO_SUITE_2_2_RUNTIME_SEMANTIC.md'
+      - '.github/workflows/demo-suite-2-2-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  syntax:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: node scripts/syntax-check.mjs
+
+  module-load:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node v3/demo-suite-2-2-module-load-check.mjs
+
+  native-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: node v3/demo-suite-2-2-runtime-semantic-check.mjs
+
+  runtime-store:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: RuntimeStore materialization + restart/idempotence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node v3/demo-suite-2-2-runtime-store-check.mjs
