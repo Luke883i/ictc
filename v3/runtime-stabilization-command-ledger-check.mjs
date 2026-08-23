@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Store } from './store.mjs';
+import { cleanupTempDir } from './runtime-temp-cleanup.mjs';
 
 const root=await mkdtemp(path.join(tmpdir(),'ictc-runtime-stabilization-'));
 const actor={id:'runtime-stabilization',role:'admin',permissions:[]};
@@ -35,5 +36,5 @@ try{
   reopened.close();
   console.log('runtime-stabilization-command-ledger-check: ok (502 commands, bounded cache, durable replay + restart + conflict)');
 }finally{
-  await rm(root,{recursive:true,force:true});
+  await cleanupTempDir(root);
 }
