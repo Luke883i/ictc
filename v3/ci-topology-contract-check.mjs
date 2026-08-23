@@ -11,6 +11,7 @@ const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
 check(!release.includes('-failure/')&&!release.includes('-detail/'),'release provenance must not create status fan-out');
 check(!browser.includes('/statuses/'),'browser provenance must be observational only');
+check(browser.includes('GITHUB_STEP_SUMMARY')&&browser.includes('ICTC_BROWSER_PHASE='),'browser provenance must publish bounded phase evidence through the native check summary');
 check(!/statuses:\s*write/.test(ci),'canonical CI must not hold commit-status write authority');
 check(!/statuses:\s*write/.test(deautopoiesis),'deautopoiesis must not hold commit-status write authority');
 check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 must not hold commit-status write authority');
@@ -30,6 +31,7 @@ check(census.includes("const aggregateChecks=new Set(['ci-verdict'])"),'census m
 check(census.includes('function failureRank(run)')&&census.includes('function rankedFailures(runs)'),'census must rank root failures deterministically');
 check(census.includes("if(name.startsWith(browserSourcePrefix))return 0")&&census.includes('if(aggregateChecks.has(name))return 2'),'census must prefer browser leaves over aggregate verdicts');
 check(census.includes('/blob/${sha}/${browserSource}'),'failed browser leaf must link to its exact-head source');
+check(census.includes('function diagnosticPhase(run)')&&census.includes('run?.output?.summary')&&census.includes('?phase=${encodeURIComponent(phase)}'),'census must preserve native browser phase provenance in its single status target');
 check(census.includes("allGreen:failures.length===0&&pending.length===0"),'census acceptance must remain fail-closed over all observed exact-head checks');
 check(uiux.includes("dataset.nativeSemanticLattice==='3.2.0'"),'UI/UX oracle must synchronize on current semantic authority');
 check(uiux.includes("r.dataset.localCompositionOwner===x.owner")&&uiux.includes("'grc-workspace-3-2.js'"),'UI/UX checks must preserve declared local owner authority');
@@ -73,4 +75,4 @@ check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e
 check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe must execute the current profile');
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant+final-c01+geometry-owner',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',informationValueOwnership:'information-architecture+declared-owner+monotonic-final-c01-cycle',informationValueProcedureLifecycleAuthority:'delegated',informationValueGeometryAuthority:'delegated',browserReadiness:'c01-cycle-after-replay-exhaustion+surface-invariant',readinessMutationGate:10000,productCiMutationGate:'1m+1m',statefulJourneyAuthority:'supported-ui-forms',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,browserFailureProvenance:'native-summary+phase-target',historicalUiOracle:'read-only+empty-populated-tolerant+final-c01+geometry-owner',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',informationValueOwnership:'information-architecture+declared-owner+monotonic-final-c01-cycle',informationValueProcedureLifecycleAuthority:'delegated',informationValueGeometryAuthority:'delegated',browserReadiness:'c01-cycle-after-replay-exhaustion+surface-invariant',readinessMutationGate:10000,productCiMutationGate:'1m+1m',statefulJourneyAuthority:'supported-ui-forms',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));

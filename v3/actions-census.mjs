@@ -27,11 +27,19 @@ function conclusionState(run){
   if(run.status!=='completed')return'pending';
   return['success','neutral','skipped'].includes(run.conclusion)?'success':'failure';
 }
+function diagnosticPhase(run){
+  const text=`${run?.output?.title||''}\n${run?.output?.summary||''}\n${run?.output?.text||''}`;
+  const match=text.match(/ICTC_BROWSER_PHASE=([A-Za-z0-9._:-]+)/);
+  return match?.[1]||'';
+}
 function sourceTarget(run){
   const name=String(run?.name||'');
   if(name.startsWith(browserSourcePrefix)){
     const browserSource=name.slice(browserSourcePrefix.length).trim();
-    if(/^v3\/browser-[A-Za-z0-9._/-]+\.py$/.test(browserSource))return `https://github.com/${repository}/blob/${sha}/${browserSource}`;
+    if(/^v3\/browser-[A-Za-z0-9._/-]+\.py$/.test(browserSource)){
+      const base=`https://github.com/${repository}/blob/${sha}/${browserSource}`,phase=diagnosticPhase(run);
+      return phase?`${base}?phase=${encodeURIComponent(phase)}`:base;
+    }
   }
   return run?.details_url||run?.html_url||'';
 }
@@ -73,12 +81,13 @@ const rows=last.map(run=>({
   conclusion:run.conclusion||null,
   detailsUrl:run.details_url||run.html_url||null,
   sourceUrl:sourceTarget(run)||null,
+  diagnosticPhase:diagnosticPhase(run)||null,
   failureRank:failureRank(run),
   startedAt:run.started_at||null,
   completedAt:run.completed_at||null,
   state:conclusionState(run)
 }));
-const failures=rows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=rows.filter(row=>row.state==='pending'),report={schemaVersion:'1.4.0',authority:'github-check-runs-exact-head',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,failureCount:failures.length,pendingCount:pending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
+const failures=rows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=rows.filter(row=>row.state==='pending'),report={schemaVersion:'1.5.0',authority:'github-check-runs-exact-head',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,failureCount:failures.length,pendingCount:pending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});
 await writeFile(new URL('../artifacts/actions-census.json',import.meta.url),JSON.stringify(report,null,2));
 
@@ -87,7 +96,7 @@ if(report.allGreen){
   console.log(JSON.stringify(report));
   process.exit(0);
 }
-const roots=failures.slice(0,3).map(row=>row.name).join(', '),suffix=roots?` — ${roots}`:'';
+const roots=failures.slice(0,3).map(row=>row.diagnosticPhase?`${row.name}@${row.diagnosticPhase}`:row.name).join(', '),suffix=roots?` — ${roots}`:'';
 await post('failure',`exact head: ${failures.length} failed, ${pending.length} pending of ${rows.length}${suffix}`,failures[0]?.sourceUrl||failures[0]?.detailsUrl||'');
 console.error(JSON.stringify(report));
 process.exit(1);
