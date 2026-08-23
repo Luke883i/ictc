@@ -31,6 +31,22 @@ def open_rn(page):
     card.locator(':scope > footer .primary').click()
     page.wait_for_function("()=>{const r=document.querySelector('#monitoringView');return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface==='monitoring'&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0')}")
 
+def close_plan(page):
+    dialog=page.locator('#planDialog')
+    if dialog.get_attribute('open') is None:return
+    close=dialog.locator('[aria-label="Chiudi"]')
+    if close.count():close.click()
+    else:page.keyboard.press('Escape')
+    expect(dialog).not_to_be_visible()
+
+def close_scheduler(page):
+    dialog=page.locator('#jobDialog')
+    if dialog.get_attribute('open') is None:return
+    close=dialog.locator('[aria-label="Chiudi configurazione job"]')
+    if close.count():close.click()
+    else:page.keyboard.press('Escape')
+    expect(dialog).not_to_be_visible()
+
 def ensure_rn_evidence_menu(page):
     global PHASE
     open_rn(page)
@@ -43,7 +59,8 @@ def ensure_rn_evidence_menu(page):
     form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible()
     page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('jobName','PR60 isolated evidence fixture');set('objective','Monitorare fonti pubbliche normative per produrre un fascicolo evidenze isolato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
     PHASE='evidence-seed-submit'
-    form.locator('button[type="submit"]').click();expect(page.locator('#jobDialog')).not_to_be_visible()
+    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)
+    PHASE='evidence-seed-materialized'
     page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0&&!!document.querySelector('.evidence-export-menu')")
     menu=page.locator('.evidence-export-menu:visible').first;expect(menu).to_be_visible();return menu
 

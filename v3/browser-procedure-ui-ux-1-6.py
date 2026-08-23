@@ -37,9 +37,19 @@ def wait_revision_advance(page,before):
     page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=before)
     return revision(page)
 def close_plan(page):
-    close=page.locator('#planDialog [aria-label="Chiudi"]')
+    dialog=page.locator('#planDialog')
+    if dialog.get_attribute('open') is None:return
+    close=dialog.locator('[aria-label="Chiudi"]')
     if close.count(): close.click()
     else: page.keyboard.press('Escape')
+    expect(dialog).not_to_be_visible()
+def close_scheduler(page):
+    dialog=page.locator('#jobDialog')
+    if dialog.get_attribute('open') is None:return
+    close=dialog.locator('[aria-label="Chiudi configurazione job"]')
+    if close.count(): close.click()
+    else: page.keyboard.press('Escape')
+    expect(dialog).not_to_be_visible()
 def ensure_monitoring_card(page):
     global PHASE
     missions=page.locator('#missionsList .mission-card')
@@ -50,7 +60,8 @@ def ensure_monitoring_card(page):
     form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible();before=revision(page)
     page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('jobName','UI UX 1.6 isolated monitoring fixture');set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
     PHASE='RN-seed-submit'
-    form.locator('button[type="submit"]').click();expect(page.locator('#jobDialog')).not_to_be_visible();wait_revision_advance(page,before);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page);wait_revision_advance(page,before)
+    PHASE='RN-seed-materialized';page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
 def ensure_incident_card(page):
     global PHASE
     cases=page.locator('#incidentList .incident-card')

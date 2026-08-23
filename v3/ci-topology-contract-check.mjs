@@ -10,6 +10,7 @@ const deautopoiesis=await readFile(new URL('../.github/workflows/deautopoiesis-c
 const shellLineageWorkflow=await readFile(new URL('../.github/workflows/shell-admin-demo-probes-2-6.yml',import.meta.url),'utf8');
 const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe-2-6.py',import.meta.url),'utf8');
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
+const actions=await readFile(new URL('./public/ui/actions.js',import.meta.url),'utf8');
 const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
 const lineage16=await readFile(new URL('./browser-procedure-ui-ux-1-6.py',import.meta.url),'utf8');
 const informationValue=await readFile(new URL('./browser-information-value.py',import.meta.url),'utf8');
@@ -41,19 +42,23 @@ check(ci.includes("BROWSER_RESULT: ${{ needs['browser-journeys'].result }}"),'CI
 check(census.includes("const browserSourcePrefix='browser / ';"),'actions census must understand native browser check source provenance');
 check(census.includes('/blob/${sha}/${browserSource}'),'actions census must link a failed browser check to its exact test source');
 
+check(actions.includes("state.activeMissionId=result.mission.id;renderPlanDialog();openDialog('planDialog')"),'RN draft runtime must materialize and open the plan dialog after mission creation');
+check(!actions.includes("closeDialog('jobDialog')"),'RN draft runtime must not silently close the scheduler unless that transition is intentionally redesigned');
+
 check(!pr60.includes('/statuses/'),'PR60 browser oracle must not publish commit statuses');
 check(!pr60.includes('urllib.request'),'PR60 browser oracle must not retain dead GitHub status transport');
 check(pr60.includes("dataset.nativeSemanticLattice==='3.2.0'"),'PR60 browser oracle must synchronize on current native semantic authority');
 check(pr60.includes("localCompositionOwner==='proof-workspace-3-2.js'"),'PR60 browser oracle must wait for the current local Proof owner');
 check(pr60.includes('def ensure_rn_evidence_menu(page):'),'PR60 browser oracle must own its RN evidence fixture setup');
 check(pr60.includes("set('jobName','PR60 isolated evidence fixture')"),'PR60 RN fixture must satisfy the current required job profile contract');
-check(pr60.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'PR60 RN fixture must follow the current admin draft transition');
-check(!pr60.includes("expect(page.locator('#planDialog')).to_be_visible();close_plan"),'PR60 RN fixture must not expect the retired submit-to-plan transition');
+check(pr60.includes("expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)"),'PR60 RN fixture must follow the canonical nested draft-to-plan transition and close both dialogs explicitly');
+check(!pr60.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'PR60 RN fixture must not invent scheduler auto-close behavior absent from the runtime');
 check(pr60.includes("[data-rn-open-scheduler]"),'PR60 browser oracle must create the minimum RN fixture through a supported UI entrypoint when state is empty');
 check(pr60.includes('if menu.count(): return menu'),'PR60 browser oracle must preserve existing state while remaining isolated-state safe');
 
 check(lineage16.includes("set('jobName','UI UX 1.6 isolated monitoring fixture')"),'UI/UX 1.6 RN fixture must satisfy the current required job profile contract');
-check(lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'UI/UX 1.6 RN fixture must follow the current admin draft transition');
+check(lineage16.includes("expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)"),'UI/UX 1.6 RN fixture must follow the canonical nested draft-to-plan transition and close both dialogs explicitly');
+check(!lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'UI/UX 1.6 RN fixture must not invent scheduler auto-close behavior absent from the runtime');
 check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
 check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
 
@@ -106,4 +111,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',rnDraftTransitionAuthority:'runtime-open-plan+explicit-test-cleanup',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
