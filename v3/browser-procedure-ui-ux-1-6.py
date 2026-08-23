@@ -41,15 +41,16 @@ def wait_process_catalogue(page):
     if experience_cycle(page)==0:wait_experience_cycle(page,0)
 
 def open_process(page,code):
+    global PHASE
     before=experience_cycle(page)
-    page.locator('.service-nav [data-service="processes"]').click()
-    wait_process_catalogue(page)
+    PHASE=f'{code}-return-catalogue';page.locator('.service-nav [data-service="processes"]').click()
+    PHASE=f'{code}-catalogue-ready';wait_process_catalogue(page)
     if experience_cycle(page)>before:before=experience_cycle(page)
-    card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click()
-    wait_experience_cycle(page,before)
+    PHASE=f'{code}-entry-click';card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click()
+    PHASE=f'{code}-c01-cycle';wait_experience_cycle(page,before)
     selector,surface,owner=PROCESS_SURFACES[code]
-    page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.compositionSurface===x.surface&&r.dataset.localCompositionOwner===x.owner);}",arg={'selector':selector,'surface':surface,'owner':owner})
-    page.wait_for_function(PROCESS_READY[code])
+    PHASE=f'{code}-local-owner';page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.compositionSurface===x.surface&&r.dataset.localCompositionOwner===x.owner);}",arg={'selector':selector,'surface':surface,'owner':owner})
+    PHASE=f'{code}-projection-ready';page.wait_for_function(PROCESS_READY[code])
 
 def assert_at_most_one_primary(scope,label):
     count=scope.locator('.ux-primary:visible').count();assert count<=1,(label,count,scope.inner_text()[:1200])
@@ -91,15 +92,15 @@ try:
         PHASE='catalogue-cardinality';expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
         PHASE='catalogue-epistemic-secondary';meta=page.locator('#epistemicMetaCard');expect(meta).to_have_count(1);expect(meta).not_to_be_visible();assert meta.evaluate('e=>e.parentElement?.id')=='proofView'
         PHASE='catalogue-overflow';no_overflow(page)
-        PHASE='RN-context-tolerant';open_process(page,'RN-01');missions=page.locator('#missionsList .mission-card')
+        PHASE='RN-context-tolerant';open_process(page,'RN-01');PHASE='RN-context-tolerant';missions=page.locator('#missionsList .mission-card')
         if missions.count():assert_record_cards(missions,'RN',{'Apri monitoraggio'},12)
         else:expect(page.locator('#monitoringView [data-rn-open-scheduler]')).to_be_visible()
         assert_targets(page.locator('#monitoringView'),'RN');no_overflow(page)
-        PHASE='EC-context-tolerant';open_process(page,'EC-01');cases=page.locator('#incidentList .incident-card')
+        PHASE='EC-context-tolerant';open_process(page,'EC-01');PHASE='EC-context-tolerant';cases=page.locator('#incidentList .incident-card')
         if cases.count():assert_record_cards(cases,'EC',{'Apri caso'},12)
         else:expect(page.locator('#incidentsView .procedure-frame:visible .procedure-primary')).to_be_visible()
         assert_targets(page.locator('#incidentsView'),'EC');no_overflow(page)
-        PHASE='AO-context-tolerant';open_process(page,'AO-01');workspace=page.locator('#grcWorkspace');assert_queue_context(workspace,'objects');objects=workspace.locator('.grc-list > article');assert_record_cards(objects,'AO');assert workspace.locator('[data-object-review="active"]:visible').count()<=max(1,objects.count());assert_targets(workspace,'AO');no_overflow(page)
+        PHASE='AO-context-tolerant';open_process(page,'AO-01');PHASE='AO-context-tolerant';workspace=page.locator('#grcWorkspace');assert_queue_context(workspace,'objects');objects=workspace.locator('.grc-list > article');assert_record_cards(objects,'AO');assert workspace.locator('[data-object-review="active"]:visible').count()<=max(1,objects.count());assert_targets(workspace,'AO');no_overflow(page)
         PHASE='MC-navigation';open_process(page,'MC-01');workspace=page.locator('#grcWorkspace');status_detail=workspace.locator('details[data-composition-detail="process-status"]')
         PHASE='MC-status-default';expect(status_detail).to_have_count(1);expect(status_detail).not_to_have_attribute('open','');expect(status_detail.locator('.grc-kpis')).to_have_count(1)
         PHASE='MC-status-user-open';status_detail.locator(':scope > summary').click();expect(status_detail).to_have_attribute('open','')
@@ -111,9 +112,9 @@ try:
         PHASE='MC-cards';mappings=workspace.locator('.grc-list > article');assert_primary_cards(mappings,'MC')
         PHASE='MC-touch';assert_targets(workspace,'MC')
         PHASE='MC-overflow';no_overflow(page)
-        PHASE='AP-context-tolerant';open_process(page,'AP-01');workspace=page.locator('#grcWorkspace');assert_queue_context(workspace,'actions');actions=workspace.locator('.grc-list > article');allowed={'Adotta azione','Avvia lavoro','Invia a verifica','Riprendi lavoro','Verifica risultato'};assert_record_cards(actions,'AP',allowed,25);assert workspace.locator('[data-action-progress]').count()==0;assert_targets(workspace,'AP');no_overflow(page)
+        PHASE='AP-context-tolerant';open_process(page,'AP-01');PHASE='AP-context-tolerant';workspace=page.locator('#grcWorkspace');assert_queue_context(workspace,'actions');actions=workspace.locator('.grc-list > article');allowed={'Adotta azione','Avvia lavoro','Invia a verifica','Riprendi lavoro','Verifica risultato'};assert_record_cards(actions,'AP',allowed,25);assert workspace.locator('[data-action-progress]').count()==0;assert_targets(workspace,'AP');no_overflow(page)
         PHASE='proof-to-ep-navigation';before=experience_cycle(page);proof_entry=page.locator('.service-nav [data-service="proof"]');expect(proof_entry).to_be_visible();proof_entry.click();wait_view_owner(page,'#proofView','proof-workspace-3-2.js',before);expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');meta=page.locator('#epistemicMetaCard');expect(meta).to_be_visible();expect(meta.locator('[data-service="epistemic"]')).to_be_visible();command=page.locator('#globalCommandTrigger');expect(command).to_be_visible();command.click();dialog=page.locator('#globalCommandDialog');expect(dialog).to_be_visible();search=page.locator('#globalSearch');expect(search).to_be_visible();search.fill('Reticolo epistemico');ep_entry=page.locator('#globalSearchResults [data-global-id="epistemic"][data-global-service="epistemic"]');expect(ep_entry).to_be_visible();before=experience_cycle(page);ep_entry.click();wait_view_owner(page,'#epistemicView','epistemic-workspace-3-2.js',before);expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze');assert '2970 atomi nella pagina' not in page.locator('#epistemicView').inner_text();no_overflow(page)
-        PHASE='mobile-context-tolerant';mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.set_default_timeout(30000);mobile_writes=[];m.on('request',lambda req:mobile_writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None);m.goto(BASE+'/?view=processes',wait_until='domcontentloaded');wait_process_catalogue(m);open_process(m,'RN-01');mobile_missions=m.locator('#missionsList .mission-card')
+        PHASE='mobile-context-tolerant';mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.set_default_timeout(30000);mobile_writes=[];m.on('request',lambda req:mobile_writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None);m.goto(BASE+'/?view=processes',wait_until='domcontentloaded');wait_process_catalogue(m);open_process(m,'RN-01');PHASE='mobile-context-tolerant';mobile_missions=m.locator('#missionsList .mission-card')
         if mobile_missions.count():assert_at_most_one_primary(mobile_missions.first,'RN-mobile-card')
         else:expect(m.locator('#monitoringView [data-rn-open-scheduler]')).to_be_visible()
         no_overflow(m);assert not mobile_writes,mobile_writes;mc.close()
