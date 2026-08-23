@@ -71,8 +71,8 @@ assert.ok(!browser.includes('ictcUiUxIntegrity'),'current oracle regressed to hi
 assert.ok(!browser.includes('PROCESS_READY='),'current oracle regressed to per-procedure readiness reconstruction');
 assert.ok(!browser.includes('bounding_box('),'information-value oracle must not own pixel/fold geometry');
 assert.ok(!browser.includes('gridTemplateColumns'),'information-value oracle must not own CSS grid track serialization');
+assert.ok(!browser.includes('no_overflow(')&&!browser.includes('scrollWidth'),'information-value oracle must delegate overflow/geometry to dedicated UI gates');
 assert.ok(browser.includes("'geometryAuthority':'dedicated-ui-and-responsive-gates'"),'information-value evidence must declare geometry authority boundary');
-assert.ok(browser.includes('no_overflow('),'information-value oracle must retain user-observable document overflow falsification');
 
 let killed=0,staleBooleanFalsePositives=0,geometryFalseNegativesKilled=0;
 const counts=Object.fromEntries(FAMILIES.map(family=>[family,0]));
@@ -108,5 +108,6 @@ console.log(JSON.stringify({
   validContextVariations:2000,
   readinessAuthority:'monotonic-final-c01-cycle+declared-owner+surface+observable-projection',
   geometryAuthority:'dedicated-ui-and-responsive-gates',
+  semanticOracleGeometry:false,
   transportQuiescenceAuthority:false,
 }));
