@@ -16,21 +16,35 @@ permissions:
   statuses: write
 
 jobs:
-  runtime-semantic:
-    runs-on: ubuntu-latest
+  syntax:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: node scripts/syntax-check.mjs
+
+  native-replay:
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '22.16.0'
-          cache: npm
+        with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Syntax check
-        run: node scripts/syntax-check.mjs
-      - name: DEMO Suite 2.2 native replay contract
-        run: node v3/demo-suite-2-2-runtime-semantic-check.mjs
-      - name: DEMO Suite 2.2 RuntimeStore materialization
+      - run: node v3/demo-suite-2-2-runtime-semantic-check.mjs
+
+  runtime-store:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: RuntimeStore materialization + restart/idempotence
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
