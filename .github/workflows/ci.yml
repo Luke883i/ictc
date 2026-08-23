@@ -49,6 +49,8 @@ jobs:
     timeout-minutes: 55
     permissions:
       contents: read
+    outputs:
+      failed_script: ${{ steps.canonical-browser.outputs.failed_script }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -71,6 +73,7 @@ jobs:
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
       - name: Canonical Experience + Epistemic + Procedure Journey + Onto-Compliance
+        id: canonical-browser
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -87,6 +90,7 @@ jobs:
             local script="$1"
             echo "browser-journeys:start $script"
             if python -u "$script"; then echo "browser-journeys:pass $script"; return 0; fi
+            echo "failed_script=$script" >> "$GITHUB_OUTPUT"
             FAILED_BROWSER_SCRIPT="$script" node scripts/browser-failure-provenance.mjs || true
             return 1
           }
@@ -231,6 +235,7 @@ jobs:
       CONTRACT_RESULT: ${{ needs['contract-and-audit'].result }}
       RUNTIME_RESULT: ${{ needs['runtime-e2e'].result }}
       BROWSER_RESULT: ${{ needs['browser-journeys'].result }}
+      BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.failed_script }}
       PROFESSIONAL_RESULT: ${{ needs['epistemic-professional-browser'].result }}
       LAUNCHER_RESULT: ${{ needs['launcher-smoke'].result }}
       GH_TOKEN: ${{ github.token }}
@@ -240,10 +245,19 @@ jobs:
         run: |
           set -Eeuo pipefail
           post_status() {
-            local context="$1" result="$2" state='failure'
+            local context="$1" result="$2" detail="${3:-}" state='failure' description target=''
             [[ "$result" == 'success' ]] && state='success'
+            description="job result: $result"
+            if [[ -n "$detail" ]]; then
+              description="$description · $(basename "$detail")"
+              target="https://github.com/$GITHUB_REPOSITORY/blob/$HEAD_SHA/$detail"
+            fi
             local payload
-            payload=$(printf '{"state":"%s","context":"%s","description":"job result: %s"}' "$state" "$context" "$result")
+            if [[ -n "$target" ]]; then
+              payload=$(printf '{"state":"%s","context":"%s","description":"%s","target_url":"%s"}' "$state" "$context" "$description" "$target")
+            else
+              payload=$(printf '{"state":"%s","context":"%s","description":"%s"}' "$state" "$context" "$description")
+            fi
             curl -fsS -X POST \
               -H "Authorization: Bearer $GH_TOKEN" \
               -H 'Accept: application/vnd.github+json' \
@@ -255,7 +269,7 @@ jobs:
           overall='success'
           post_status 'ictc/contract-and-audit' "$CONTRACT_RESULT" || overall='failure'
           post_status 'ictc/runtime-e2e' "$RUNTIME_RESULT" || overall='failure'
-          post_status 'ictc/browser-journeys' "$BROWSER_RESULT" || overall='failure'
+          post_status 'ictc/browser-journeys' "$BROWSER_RESULT" "$BROWSER_FAILED_SCRIPT" || overall='failure'
           post_status 'ictc/epistemic-professional-browser' "$PROFESSIONAL_RESULT" || overall='failure'
           post_status 'ictc/launcher-smoke' "$LAUNCHER_RESULT" || overall='failure'
           post_status 'ictc/exact-head-ci' "$overall" || true

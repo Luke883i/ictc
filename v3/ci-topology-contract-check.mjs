@@ -19,12 +19,22 @@ check(!ci.includes('ictc/browser-failure/'),'browser CI must not publish per-scr
 check(!wrapper.includes('/statuses/'),'browser subtest wrapper must not publish per-subtest statuses');
 check(!/statuses:\s*write/.test(browserJourneyJob),'browser test job must not hold commit-status write authority');
 check(!/statuses:\s*write/.test(professionalBrowserJob),'professional browser test job must not hold commit-status write authority');
+check(browserJourneyJob.includes('failed_script: ${{ steps.canonical-browser.outputs.failed_script }}'),'browser job must export one first-failure diagnostic without acquiring status authority');
+check(browserJourneyJob.includes('echo "failed_script=$script" >> "$GITHUB_OUTPUT"'),'browser runner must record the first failing subtest in its job output');
+check(ci.includes("BROWSER_FAILED_SCRIPT: ${{ needs['browser-journeys'].outputs.failed_script }}"),'CI verdict must consume browser first-failure provenance');
+check(ci.includes("post_status 'ictc/browser-journeys' \"$BROWSER_RESULT\" \"$BROWSER_FAILED_SCRIPT\""),'authoritative browser status must carry bounded first-failure provenance');
 check(ci.includes("'ictc/exact-head-ci'"),'CI must retain one exact-head aggregate verdict');
 check(census.includes("'ictc/actions-census'"),'census must retain one exact-head Actions verdict');
 
+const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');
+const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');
 const quiescence=deautopoiesis.indexOf('- name: Enforce Windows runtime process quiescence');
 const portabilityVerdict=deautopoiesis.indexOf('- name: Publish portability exact-head verdict');
-check(quiescence>=0&&portabilityVerdict>quiescence,'portability verdict must be published after Windows quiescence');
+check(baseline>=0&&runtime>baseline&&quiescence>runtime&&portabilityVerdict>quiescence,'Windows portability order must be baseline -> runtime -> owned quiescence -> verdict');
+check(deautopoiesis.includes('ictc-node-baseline.json'),'Windows quiescence must persist an explicit pre-runtime Node baseline');
+check(deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish baseline processes from test-owned residuals');
+check(deautopoiesis.includes('Residual ICTC-owned Node processes'),'Windows quiescence diagnostics must identify only test-owned residual processes');
+check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the hosted runner');
 check(deautopoiesis.includes("steps.windows-quiescence.outcome == 'success'"),'Windows quiescence must contribute to the authoritative portability verdict');
 check(deautopoiesis.includes('RAIL: false-closure'),'false-closure firewall must publish one authoritative rail verdict');
 check(!deautopoiesis.includes('portability-quiescence-'),'quiescence must not create an independent status rail');
@@ -34,4 +44,4 @@ check(deautopoiesis.includes('Checkout exact head without post-action'),'deautop
 check(deautopoiesis.includes('Select hosted Node toolcache without post-action'),'deautopoiesis must select hosted Node without post-actions');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only',portabilityVerdictBoundary:'runtime+quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false}));
+console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',portabilityVerdictBoundary:'runtime+owned-quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false,windowsNodeOwnership:'baseline-scoped'}));
