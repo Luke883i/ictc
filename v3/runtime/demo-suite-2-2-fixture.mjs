@@ -1,0 +1,21 @@
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { gunzipSync } from 'node:zlib';
+
+export const DEMO_SUITE_22_VERSION='2.2';
+export const DEMO_SUITE_22_ENV='ICTC_DEMO_SUITE';
+export const DEMO_SUITE_22_EXPECTED_DIGEST='4266e20a3a89efe65d9e1d050b81fbaaccbccd378e81f28b8e26d0a51c46d61e';
+export const DEMO_SUITE_22_FIXTURE_INTEGRITY=Object.freeze({parts:12,encodedBytes:60792,encodedSha256:'266717d889408848d0c9a308964fa807bd6ae907119551ae2fca131b34ab7909',gzipBytes:45593,gzipSha256:'b582f7b24773ab854cfb4d2a61d68b432c17311d36c4cf47d8ba0cf96a4a652f',jsonBytes:757277,jsonSha256:'462761889d5ef74abf97993fbc37f2eb664b72ff87d10dffe7af956e5a22162a'});
+const PARTS=Array.from({length:DEMO_SUITE_22_FIXTURE_INTEGRITY.parts},(_,index)=>String(index+1).padStart(2,'0'));
+const sha=value=>createHash('sha256').update(value).digest('hex');
+const fail=(code,message,details)=>{throw Object.assign(new Error(message),{code,details});};
+const encoded=(await Promise.all(PARTS.map(part=>readFile(new URL(`../demo/demo-suite-2-2-fixture-${part}.b64`,import.meta.url),'utf8')))).join('').replace(/\s+/g,'');
+if(Buffer.byteLength(encoded)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedBytes||sha(encoded)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedSha256)fail('demo-suite-2-2-fixture-encoded-integrity','Fixture DEMO 2.2 base64 incompleta o alterata',{actualBytes:Buffer.byteLength(encoded),expectedBytes:DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedBytes,actualSha256:sha(encoded),expectedSha256:DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedSha256});
+const compressed=Buffer.from(encoded,'base64');
+if(compressed.length!==DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipBytes||sha(compressed)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipSha256)fail('demo-suite-2-2-fixture-gzip-integrity','Fixture DEMO 2.2 compressa non coincide con il blob verificato',{actualBytes:compressed.length,expectedBytes:DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipBytes,actualSha256:sha(compressed),expectedSha256:DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipSha256});
+const json=gunzipSync(compressed);
+if(json.length!==DEMO_SUITE_22_FIXTURE_INTEGRITY.jsonBytes||sha(json)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.jsonSha256)fail('demo-suite-2-2-fixture-json-integrity','Manifest DEMO 2.2 decompresso non coincide con il corpus verificato',{actualBytes:json.length,expectedBytes:DEMO_SUITE_22_FIXTURE_INTEGRITY.jsonBytes,actualSha256:sha(json),expectedSha256:DEMO_SUITE_22_FIXTURE_INTEGRITY.jsonSha256});
+export const DEMO_SUITE_22_MANIFEST=Object.freeze(JSON.parse(json.toString('utf8')));
+if(DEMO_SUITE_22_MANIFEST.id!=='ictc-demo-suite-2-2-candidate'||DEMO_SUITE_22_MANIFEST.records?.length!==188)fail('demo-suite-2-2-fixture-contract','Manifest DEMO 2.2 non rispetta identità/cardinalità canoniche',{id:DEMO_SUITE_22_MANIFEST.id,records:DEMO_SUITE_22_MANIFEST.records?.length});
+export const DEMO_SUITE_22_ID=DEMO_SUITE_22_MANIFEST.id;
+export const DEMO_SUITE_22_SCENARIO=Object.freeze({...structuredClone(DEMO_SUITE_22_MANIFEST),records:undefined});
