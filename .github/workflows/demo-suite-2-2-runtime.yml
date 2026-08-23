@@ -1,0 +1,31 @@
+name: Demo Suite 2.2 Runtime Semantic
+
+on:
+  pull_request:
+    paths:
+      - 'v3/demo/demo-suite-2-2-fixture-*.b64'
+      - 'v3/runtime/demo-suite-2-2*.mjs'
+      - 'v3/demo-suite-2-2-runtime-semantic-check.mjs'
+      - 'v3/demo-suite-2-2-runtime-store-check.mjs'
+      - 'docs/DEMO_SUITE_2_2_RUNTIME_SEMANTIC.md'
+      - '.github/workflows/demo-suite-2-2-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-semantic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Syntax check
+        run: node scripts/syntax-check.mjs
+      - name: DEMO Suite 2.2 native replay contract
+        run: node v3/demo-suite-2-2-runtime-semantic-check.mjs
+      - name: DEMO Suite 2.2 RuntimeStore materialization
+        run: node v3/demo-suite-2-2-runtime-store-check.mjs
