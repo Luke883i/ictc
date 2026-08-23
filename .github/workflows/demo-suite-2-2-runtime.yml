@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: read
-  statuses: write
 
 jobs:
   syntax:
@@ -35,10 +34,7 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: node v3/demo-suite-2-2-module-load-check.mjs
+      - run: node v3/demo-suite-2-2-module-load-check.mjs
 
   native-replay:
     runs-on: ubuntu-24.04
@@ -59,7 +55,4 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: RuntimeStore materialization + restart/idempotence
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node v3/demo-suite-2-2-runtime-store-check.mjs

@@ -12,6 +12,9 @@ const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
 const lineage16=await readFile(new URL('./browser-procedure-ui-ux-1-6.py',import.meta.url),'utf8');
+const demo22Workflow=await readFile(new URL('../.github/workflows/demo-suite-2-2-runtime.yml',import.meta.url),'utf8');
+const demo22Load=await readFile(new URL('./demo-suite-2-2-module-load-check.mjs',import.meta.url),'utf8');
+const demo22Store=await readFile(new URL('./demo-suite-2-2-runtime-store-check.mjs',import.meta.url),'utf8');
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
@@ -53,6 +56,18 @@ check(lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()
 check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
 check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
 
+check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 workflow must use native check conclusions only');
+check(!demo22Workflow.includes('GH_TOKEN:'),'DEMO 2.2 checks must not receive GitHub status-write credentials');
+check(!demo22Workflow.includes('HEAD_SHA:'),'DEMO 2.2 checks must not receive commit-status target metadata');
+for(const job of ['syntax:','module-load:','native-replay:','runtime-store:'])check(demo22Workflow.includes(`\n  ${job}`),`DEMO 2.2 native job missing: ${job}`);
+check(!demo22Load.includes('/statuses/'),'DEMO 2.2 module-load check must fail through its native check-run');
+check(!demo22Load.includes('GH_TOKEN'),'DEMO 2.2 module-load check must not contain GitHub status transport');
+check(demo22Load.includes('process.exitCode=1'),'DEMO 2.2 module-load check must fail natively on the first bad stage');
+check(!demo22Store.includes('/statuses/'),'DEMO 2.2 RuntimeStore check must fail through its native check-run');
+check(!demo22Store.includes('GH_TOKEN'),'DEMO 2.2 RuntimeStore check must not contain GitHub status transport');
+check(demo22Store.includes("console.error('demo-suite-2-2-runtime-store: '+stage+' failed',error);"),'DEMO 2.2 RuntimeStore failure provenance must retain the failing stage in the native log');
+check(demo22Store.includes('throw error;'),'DEMO 2.2 RuntimeStore check must rethrow and fail natively');
+
 check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
 check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
 check(!ciVerdictJob.includes('post_status'),'CI verdict must rely on the native GitHub job conclusion');
@@ -81,4 +96,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',pr60FixtureAuthority:'self-seeded-current-owner',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
