@@ -259,6 +259,6 @@ try {
   console.log(`enterprise-t-runtime-stress: ok (cases=${output.stressCount}, detected-gaps=${output.detectedGapCount}, result=${output.result})`);
   store.close();
 } finally {
-  await rm(root, { recursive: true, force: true });
-  await rm(tamperRoot, { recursive: true, force: true });
+  await rm(root, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
+  await rm(tamperRoot, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
 }
