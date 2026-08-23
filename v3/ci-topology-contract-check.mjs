@@ -12,6 +12,7 @@ const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
 const lineage16=await readFile(new URL('./browser-procedure-ui-ux-1-6.py',import.meta.url),'utf8');
+const informationValue=await readFile(new URL('./browser-information-value.py',import.meta.url),'utf8');
 const demo22Workflow=await readFile(new URL('../.github/workflows/demo-suite-2-2-runtime.yml',import.meta.url),'utf8');
 const demo22Load=await readFile(new URL('./demo-suite-2-2-module-load-check.mjs',import.meta.url),'utf8');
 const demo22Store=await readFile(new URL('./demo-suite-2-2-runtime-store-check.mjs',import.meta.url),'utf8');
@@ -56,6 +57,15 @@ check(lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()
 check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
 check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
 
+check(informationValue.includes('def wait_view_owner(page,view):'),'3.2 information-value oracle must have one semantic readiness primitive');
+check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')"),'3.2 information-value oracle must synchronize on the local Proof owner');
+check(informationValue.includes("'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"),'3.2 information-value oracle must synchronize on the local EP owner');
+check(informationValue.includes("owner='grc-workspace-3-2.js' if selector=='#grcWorkspace' else None"),'3.2 information-value oracle must synchronize shared GRC roots on their local owner');
+check(informationValue.includes("localCompositionOwner==='admin-workspace-3-2.js'"),'3.2 information-value oracle must wait for the local Admin owner');
+check(informationValue.includes("r.open&&r.dataset.nativeSemanticLattice==='3.2.0'"),'3.2 information-value oracle must wait for dialog semantic convergence');
+check(!informationValue.includes('wait_for_timeout('),'3.2 information-value oracle must not use time sleeps as semantic readiness');
+check(informationValue.includes("PHASE=f'grc-{code}-decision-count'"),'3.2 information-value oracle must retain granular root-failure provenance');
+
 check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 workflow must use native check conclusions only');
 check(!demo22Workflow.includes('GH_TOKEN:'),'DEMO 2.2 checks must not receive GitHub status-write credentials');
 check(!demo22Workflow.includes('HEAD_SHA:'),'DEMO 2.2 checks must not receive commit-status target metadata');
@@ -96,4 +106,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
