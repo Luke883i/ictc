@@ -4,7 +4,7 @@ const failures=[];
 const check=(condition,message)=>{if(!condition)failures.push(message);};
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
 
-const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,informationValue,shellLineageWorkflow,shellLineageProbe]=await Promise.all([
+const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,finetuningBase,informationValue,shellLineageWorkflow,shellLineageProbe]=await Promise.all([
   read('../scripts/release-failure-provenance.mjs'),
   read('../scripts/browser-failure-provenance.mjs'),
   read('./actions-census.mjs'),
@@ -13,6 +13,7 @@ const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,informati
   read('../.github/workflows/demo-suite-2-2-runtime.yml'),
   read('./browser-procedure-ui-ux-1-6.py'),
   read('./browser-v2-1-procedure-journey.py'),
+  read('./browser-procedure-finetuning-1-4-base.py'),
   read('./browser-information-value.py'),
   read('../.github/workflows/shell-admin-demo-probes-2-6.yml'),
   read('./browser-shell-admin-demo-probe-2-6.py'),
@@ -50,12 +51,16 @@ check(census.includes("if(name.startsWith(browserSourcePrefix))return 0")&&censu
 check(census.includes('/blob/${sha}/${browserSource}'),'failed browser leaf must link to its exact-head source');
 check(census.includes("allGreen:failures.length===0&&pending.length===0"),'census acceptance must remain fail-closed over all observed exact-head checks');
 
-// Runtime/UI boundary: historical presentation oracle is read-only and context-tolerant; stateful creation belongs to the dedicated journey.
+// Runtime/UI boundary: historical presentation oracles are read-only and context-tolerant; stateful creation belongs to the dedicated journey.
 check(uiux.includes("dataset.nativeSemanticLattice==='3.2.0'"),'UI/UX oracle must synchronize on current semantic authority');
 check(uiux.includes("localCompositionOwner===x.owner")&&uiux.includes("'grc-workspace-3-2.js'"),'GRC UI/UX checks must wait for the current local owner');
 check(!uiux.includes('wait_for_timeout('),'UI/UX oracle must not use fixed sleeps for semantic readiness');
 check(!uiux.includes('/api/grc/objects')&&!uiux.includes('/api/grc/actions'),'historical UI/UX oracle must not seed GRC business records directly');
 check(uiux.includes("'readOnly':True")&&uiux.includes("'emptyAndPopulatedStateTolerant':True"),'UI/UX evidence must declare read-only context tolerance');
+check(!finetuningBase.includes('/api/grc/objects')&&!finetuningBase.includes('/api/grc/actions'),'historical finetuning oracle must not seed GRC business records directly');
+check(finetuningBase.includes('def optional_record_facts(cards,needles):'),'finetuning lineage must make record-specific presentation checks conditional on records being present');
+check(finetuningBase.includes("PHASE='read-only-boundary';assert not writes,writes"),'finetuning lineage must enforce a no-business-write boundary');
+check(finetuningBase.includes("'readOnly':True")&&finetuningBase.includes("'emptyAndPopulatedStateTolerant':True"),'finetuning evidence must declare read-only empty/populated-state tolerance');
 check(v21.includes('submit_grc(page')&&v21.includes("'AO-01'")&&v21.includes("'AP-01'"),'dedicated stateful journey must retain AO/AP creation coverage');
 check(v21.includes('[data-grc-form=\"{FORM_TYPES[pid]}\"]'),'stateful GRC coverage must exercise supported UI forms rather than test-only domain injection');
 
@@ -76,4 +81,4 @@ check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe mu
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant',statefulJourneyAuthority:'supported-ui-forms',semanticReadiness:'native-owner+surface',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant',historicalFinetuningOracle:'read-only+empty-populated-tolerant',statefulJourneyAuthority:'supported-ui-forms',semanticReadiness:'native-owner+surface',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
