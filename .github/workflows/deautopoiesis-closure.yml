@@ -57,9 +57,25 @@ jobs:
           git fetch --no-tags --depth=1 origin $env:HEAD_SHA
           git checkout --detach FETCH_HEAD
           git remote set-url origin "https://github.com/${{ github.repository }}.git"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Node (non-Windows)
+        if: runner.os != 'Windows'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '${{ matrix.node }}'
+      - name: Select hosted Node toolcache without post-action (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          NODE_MAJOR: ${{ matrix.node }}
+        run: |
+          $nodeRoot = Join-Path $env:RUNNER_TOOL_CACHE 'node'
+          $versionDir = Get-ChildItem $nodeRoot -Directory | Where-Object { $_.Name -like "$env:NODE_MAJOR.*" } | Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1
+          if (-not $versionDir) { throw "Node $env:NODE_MAJOR is not present in RUNNER_TOOL_CACHE" }
+          $nodeDir = Join-Path $versionDir.FullName 'x64'
+          if (-not (Test-Path (Join-Path $nodeDir 'node.exe'))) { throw "Node executable missing from $nodeDir" }
+          $nodeDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & (Join-Path $nodeDir 'node.exe') --version
+          & (Join-Path $nodeDir 'npm.cmd') --version
       - run: npm ci --ignore-scripts
       - name: Current runtime suite on supported matrix
         id: runtime-suite
