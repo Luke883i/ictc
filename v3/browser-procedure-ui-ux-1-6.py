@@ -86,7 +86,11 @@ try:
         if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
         page=ctx.new_page();page.set_default_timeout(30000);errors=[];writes=[];page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda req:writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None)
-        PHASE='catalogue';page.goto(BASE+'/?view=processes',wait_until='domcontentloaded');wait_process_catalogue(page);expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);expect(page.locator('#epistemicMetaCard')).to_have_count(0);no_overflow(page)
+        PHASE='catalogue-navigation';page.goto(BASE+'/?view=processes',wait_until='domcontentloaded')
+        PHASE='catalogue-readiness';wait_process_catalogue(page)
+        PHASE='catalogue-cardinality';expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+        PHASE='catalogue-legacy-meta';expect(page.locator('#epistemicMetaCard')).to_have_count(0)
+        PHASE='catalogue-overflow';no_overflow(page)
         PHASE='RN-context-tolerant';open_process(page,'RN-01');missions=page.locator('#missionsList .mission-card')
         if missions.count():assert_record_cards(missions,'RN',{'Apri monitoraggio'},12)
         else:expect(page.locator('#monitoringView [data-rn-open-scheduler]')).to_be_visible()
