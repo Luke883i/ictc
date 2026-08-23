@@ -4,6 +4,7 @@ const token=process.env.GITHUB_TOKEN||'',repository=process.env.GITHUB_REPOSITOR
 const selfNames=new Set(String(process.env.ICTC_CENSUS_SELF_NAMES||'actions-census').split(',').map(x=>x.trim()).filter(Boolean));
 const timeoutMs=Math.max(60_000,Math.min(70*60_000,Number(process.env.ICTC_CENSUS_TIMEOUT_MS||60*60_000))),pollMs=Math.max(5_000,Math.min(30_000,Number(process.env.ICTC_CENSUS_POLL_MS||15_000))),minObserveMs=Math.max(30_000,Math.min(5*60_000,Number(process.env.ICTC_CENSUS_MIN_OBSERVE_MS||90_000)));
 const browserSourcePrefix='browser / ';
+const diagnosticPrefixes=Object.freeze(['diagnostic / ']);
 const aggregateChecks=new Set(['ci-verdict']);
 
 if(!token||!repository||!/^[0-9a-f]{40}$/i.test(sha))throw new Error('GITHUB_TOKEN, GITHUB_REPOSITORY and exact HEAD_SHA are required');
@@ -26,6 +27,10 @@ async function checkRuns(){
 function conclusionState(run){
   if(run.status!=='completed')return'pending';
   return['success','neutral','skipped'].includes(run.conclusion)?'success':'failure';
+}
+function authority(run){
+  const name=String(run?.name||'');
+  return diagnosticPrefixes.some(prefix=>name.startsWith(prefix))?'diagnostic':'required';
 }
 function diagnosticPhase(run){
   const text=`${run?.output?.title||''}\n${run?.output?.summary||''}\n${run?.output?.text||''}`;
@@ -50,7 +55,7 @@ function failureRank(run){
   return 1;
 }
 function rankedFailures(runs){
-  return runs.filter(run=>conclusionState(run)==='failure').sort((a,b)=>failureRank(a)-failureRank(b)||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0));
+  return runs.filter(run=>authority(run)==='required'&&conclusionState(run)==='failure').sort((a,b)=>failureRank(a)-failureRank(b)||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0));
 }
 async function post(state,description,targetUrl=''){
   const body={state,context:'ictc/actions-census',description:String(description).slice(0,140)};
@@ -65,18 +70,20 @@ await post('pending','enumerating exact-head GitHub Actions check-runs');
 while(true){
   const all=await checkRuns(),runs=all.filter(run=>!selfNames.has(run.name));
   last=runs;
-  const signature=runs.map(run=>`${run.id}:${run.name}:${run.status}:${run.conclusion||''}`).sort().join('|');
+  const signature=runs.map(run=>`${run.id}:${run.name}:${run.status}:${run.conclusion||''}:${authority(run)}`).sort().join('|');
   stablePolls=signature===previousSignature?stablePolls+1:0;
   previousSignature=signature;
-  const failures=rankedFailures(runs),pending=runs.filter(run=>conclusionState(run)==='pending'),observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
+  const required=runs.filter(run=>authority(run)==='required'),failures=rankedFailures(required),pending=required.filter(run=>conclusionState(run)==='pending'),diagnostic=runs.filter(run=>authority(run)==='diagnostic'),observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
   if(settled||Date.now()>=deadline)break;
-  await post('pending',`exact head: ${runs.length} checks, ${failures.length} failed, ${pending.length} pending`,sourceTarget(failures[0]));
+  const diagnosticPending=diagnostic.filter(run=>conclusionState(run)==='pending').length;
+  await post('pending',`required: ${required.length} checks, ${failures.length} failed, ${pending.length} pending; diagnostic pending ${diagnosticPending}`,sourceTarget(failures[0]));
   await new Promise(resolve=>setTimeout(resolve,pollMs));
 }
 
 const rows=last.map(run=>({
   id:run.id,
   name:run.name,
+  authority:authority(run),
   status:run.status,
   conclusion:run.conclusion||null,
   detailsUrl:run.details_url||run.html_url||null,
@@ -87,16 +94,17 @@ const rows=last.map(run=>({
   completedAt:run.completed_at||null,
   state:conclusionState(run)
 }));
-const failures=rows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=rows.filter(row=>row.state==='pending'),report={schemaVersion:'1.5.0',authority:'github-check-runs-exact-head',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,failureCount:failures.length,pendingCount:pending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
+const requiredRows=rows.filter(row=>row.authority==='required'),diagnosticRows=rows.filter(row=>row.authority==='diagnostic');
+const failures=requiredRows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=requiredRows.filter(row=>row.state==='pending'),diagnosticFailures=diagnosticRows.filter(row=>row.state==='failure'),diagnosticPending=diagnosticRows.filter(row=>row.state==='pending'),report={schemaVersion:'1.6.0',authority:'github-check-runs-exact-head',acceptanceAuthority:'required-checks-only',diagnosticPolicy:'reported-not-gating',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,requiredCheckCount:requiredRows.length,diagnosticCheckCount:diagnosticRows.length,failureCount:failures.length,pendingCount:pending.length,diagnosticFailureCount:diagnosticFailures.length,diagnosticPendingCount:diagnosticPending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});
 await writeFile(new URL('../artifacts/actions-census.json',import.meta.url),JSON.stringify(report,null,2));
 
 if(report.allGreen){
-  await post('success',`all ${rows.length} exact-head Actions checks completed without failure`);
+  await post('success',`all ${requiredRows.length} required exact-head checks completed without failure; diagnostics ${diagnosticRows.length}`);
   console.log(JSON.stringify(report));
   process.exit(0);
 }
 const roots=failures.slice(0,3).map(row=>row.diagnosticPhase?`${row.name}@${row.diagnosticPhase}`:row.name).join(', '),suffix=roots?` — ${roots}`:'';
-await post('failure',`exact head: ${failures.length} failed, ${pending.length} pending of ${rows.length}${suffix}`,failures[0]?.sourceUrl||failures[0]?.detailsUrl||'');
+await post('failure',`required exact head: ${failures.length} failed, ${pending.length} pending of ${requiredRows.length}${suffix}`,failures[0]?.sourceUrl||failures[0]?.detailsUrl||'');
 console.error(JSON.stringify(report));
 process.exit(1);
