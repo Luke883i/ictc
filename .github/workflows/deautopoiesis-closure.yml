@@ -11,6 +11,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   false-closure-firewall:
+    permissions:
+      contents: read
+      statuses: write
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -21,13 +24,26 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Audit remediation registry cannot self-close external gates
+        id: audit-remediation
         run: node v3/audit-remediation-closure-check.mjs
       - name: One-million hostile seeded closure simulations
+        id: adversarial-closure
         run: node v3/deautopoiesis-adversarial-saturation.mjs
       - name: Operational storage authority
+        id: storage-authority
         run: node v3/operations-storage-authority-check.mjs
       - name: Enterprise readiness evidence-envelope fixture
+        id: enterprise-readiness
         run: node v3/enterprise-readiness-check.mjs
+      - name: Publish false-closure rail verdict
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RAIL: false-closure
+          RAIL_OUTCOME: ${{ steps.audit-remediation.outcome == 'success' && steps.adversarial-closure.outcome == 'success' && steps.storage-authority.outcome == 'success' && steps.enterprise-readiness.outcome == 'success' && 'success' || 'failure' }}
+          FAILED_CHECK: ${{ steps.audit-remediation.outcome == 'failure' && 'v3/audit-remediation-closure-check.mjs' || steps.adversarial-closure.outcome == 'failure' && 'v3/deautopoiesis-adversarial-saturation.mjs' || steps.storage-authority.outcome == 'failure' && 'v3/operations-storage-authority-check.mjs' || steps.enterprise-readiness.outcome == 'failure' && 'v3/enterprise-readiness-check.mjs' || '' }}
+        run: node scripts/release-failure-provenance.mjs
   runtime-portability:
     permissions:
       contents: read
@@ -80,16 +96,8 @@ jobs:
       - name: Current runtime suite on supported matrix
         id: runtime-suite
         run: npm run test:current:runtime
-      - name: Publish portability exact-head provenance
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          FAILED_CHECK: ${{ steps.runtime-suite.outputs.failed_check }}
-          RAIL_OUTCOME: ${{ steps.runtime-suite.outcome }}
-          RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
-        run: node scripts/release-failure-provenance.mjs
       - name: Enforce Windows runtime process quiescence
+        id: windows-quiescence
         if: always() && runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -106,3 +114,12 @@ jobs:
             throw "Residual Node processes survived explicit quiescence: $ids"
           }
           Write-Host 'Windows runtime process quiescence: clean'
+      - name: Publish portability exact-head verdict
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          FAILED_CHECK: ${{ steps.runtime-suite.outputs.failed_check }}
+          RAIL_OUTCOME: ${{ steps.runtime-suite.outcome == 'success' && (runner.os != 'Windows' || steps.windows-quiescence.outcome == 'success') && 'success' || 'failure' }}
+          RAIL: portability-${{ matrix.os }}-node${{ matrix.node }}
+        run: node scripts/release-failure-provenance.mjs
