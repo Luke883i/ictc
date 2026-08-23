@@ -10,6 +10,7 @@ const deautopoiesis=await readFile(new URL('../.github/workflows/deautopoiesis-c
 const shellLineageWorkflow=await readFile(new URL('../.github/workflows/shell-admin-demo-probes-2-6.yml',import.meta.url),'utf8');
 const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe-2-6.py',import.meta.url),'utf8');
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
+const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
@@ -34,6 +35,15 @@ check(browserJourneyJob.includes('name: ictc-browser-${{ matrix.id }}'),'browser
 check(ci.includes("BROWSER_RESULT: ${{ needs['browser-journeys'].result }}"),'CI verdict must consume the aggregate browser matrix conclusion');
 check(census.includes("const browserSourcePrefix='browser / ';"),'actions census must understand native browser check source provenance');
 check(census.includes('/blob/${sha}/${browserSource}'),'actions census must link a failed browser check to its exact test source');
+
+check(!pr60.includes('/statuses/'),'PR60 browser oracle must not publish commit statuses');
+check(!pr60.includes('urllib.request'),'PR60 browser oracle must not retain dead GitHub status transport');
+check(pr60.includes("dataset.nativeSemanticLattice==='3.2.0'"),'PR60 browser oracle must synchronize on current native semantic authority');
+check(pr60.includes("localCompositionOwner==='proof-workspace-3-2.js'"),'PR60 browser oracle must wait for the current local Proof owner');
+check(pr60.includes('def ensure_rn_evidence_menu(page):'),'PR60 browser oracle must own its RN evidence fixture setup');
+check(pr60.includes("[data-rn-open-scheduler]"),'PR60 browser oracle must create the minimum RN fixture through a supported UI entrypoint when state is empty');
+check(pr60.includes('if menu.count(): return menu'),'PR60 browser oracle must preserve existing state while remaining isolated-state safe');
+
 check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
 check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
 check(!ciVerdictJob.includes('post_status'),'CI verdict must rely on the native GitHub job conclusion');
@@ -62,4 +72,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,pr60FixtureAuthority:'self-seeded-current-owner',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
