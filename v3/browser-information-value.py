@@ -7,8 +7,8 @@ BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'
 
 PROCESS_SURFACES={
- 'RN-01':('#monitoringView','monitoring','procedure-frame.js'),
- 'EC-01':('#incidentsView','incidents','procedure-frame.js'),
+ 'RN-01':('#monitoringView','monitoring',None),
+ 'EC-01':('#incidentsView','incidents',None),
  'AO-01':('#grcWorkspace','objects','grc-workspace-3-2.js'),
  'MC-01':('#grcWorkspace','coverage','grc-workspace-3-2.js'),
  'AP-01':('#grcWorkspace','actions','grc-workspace-3-2.js'),
@@ -16,8 +16,8 @@ PROCESS_SURFACES={
  'AR-01':('#grcWorkspace','assurance','grc-workspace-3-2.js'),
 }
 VIEW_OWNERS={
- 'home':('#homeView','stable-shell.js'),
- 'processes':('#processesView','procedure-frame.js'),
+ 'home':('#homeView',None),
+ 'processes':('#processesView',None),
  'proof':('#proofView','proof-workspace-3-2.js'),
  'epistemic':('#epistemicView','epistemic-workspace-3-2.js'),
 }
@@ -39,7 +39,7 @@ def no_overflow(page):
 
 def wait_view_owner(page,view):
  selector,owner=VIEW_OWNERS[view]
- page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.localCompositionOwner===x.owner);}",arg={'selector':selector,'owner':owner})
+ page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&(!x.owner||r.dataset.localCompositionOwner===x.owner));}",arg={'selector':selector,'owner':owner})
  page.wait_for_function(VIEW_READY[view])
 
 def open_view(page,view):
@@ -47,7 +47,7 @@ def open_view(page,view):
  wait_view_owner(page,view)
 
 def wait_process_projection(page,selector,surface,owner):
- page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.compositionSurface===x.surface&&r.dataset.localCompositionOwner===x.owner);}",arg={'selector':selector,'surface':surface,'owner':owner})
+ page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.compositionSurface===x.surface&&(!x.owner||r.dataset.localCompositionOwner===x.owner));}",arg={'selector':selector,'surface':surface,'owner':owner})
  if selector=='#grcWorkspace':
   page.wait_for_function("()=>{const r=document.querySelector('#grcWorkspace'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2\"]'),l=r?.querySelector('.grc-list');return !!(f&&f.offsetParent!==null&&l&&l.offsetParent!==null);}")
  else:
@@ -141,7 +141,7 @@ try:
 
   PHASE='read-only-boundary';assert not writes,writes
   PHASE='page-errors';assert not errors,errors
-  out={'ok':True,'profile':'native-semantic-lattice-3.2','surfaceCoverage':['home','processes','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','proof','epistemic','admin','settings'],'semanticReadiness':'owner+observable-projection','transportQuiescenceDependency':False,'globalRuntimeLocalAdapters':0,'processCatalogue':'matrix-responsive','homeNumericDashboard':False,'proof':'decisions-first','epistemic':'search-first','technicalDefaultOpen':False,'mobileWidths':[390,320],'mobileOverflow':False,'writeCount':len(writes),'claimBoundary':'Rendered hierarchy/compression evidence only; not human comprehension research, legal compliance, accessibility certification or deployment security.'}
+  out={'ok':True,'profile':'native-semantic-lattice-3.2','surfaceCoverage':['home','processes','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','proof','epistemic','admin','settings'],'semanticReadiness':'declared-owner-if-present+observable-projection','transportQuiescenceDependency':False,'globalRuntimeLocalAdapters':0,'processCatalogue':'matrix-responsive','homeNumericDashboard':False,'proof':'decisions-first','epistemic':'search-first','technicalDefaultOpen':False,'mobileWidths':[390,320],'mobileOverflow':False,'writeCount':len(writes),'claimBoundary':'Rendered hierarchy/compression evidence only; not human comprehension research, legal compliance, accessibility certification or deployment security.'}
   (ART/'browser-information-value.json').write_text(json.dumps(out,indent=2),encoding='utf8');print('browser-information-value-3.2: complete');ctx.close();browser.close()
 except BaseException as exc:
  fail(exc);traceback.print_exc();raise

@@ -5,25 +5,11 @@ const check=(condition,message)=>{if(!condition)failures.push(message);};
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
 
 const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,finetuningBase,sequentialDom,informationValue,shellLineageWorkflow,shellLineageProbe]=await Promise.all([
-  read('../scripts/release-failure-provenance.mjs'),
-  read('../scripts/browser-failure-provenance.mjs'),
-  read('./actions-census.mjs'),
-  read('../.github/workflows/ci.yml'),
-  read('../.github/workflows/deautopoiesis-closure.yml'),
-  read('../.github/workflows/demo-suite-2-2-runtime.yml'),
-  read('./browser-procedure-ui-ux-1-6.py'),
-  read('./browser-v2-1-procedure-journey.py'),
-  read('./browser-procedure-finetuning-1-4-base.py'),
-  read('./public/ui/procedure-sequential-dom.js'),
-  read('./browser-information-value.py'),
-  read('../.github/workflows/shell-admin-demo-probes-2-6.yml'),
-  read('./browser-shell-admin-demo-probe-2-6.py'),
+  read('../scripts/release-failure-provenance.mjs'),read('../scripts/browser-failure-provenance.mjs'),read('./actions-census.mjs'),read('../.github/workflows/ci.yml'),read('../.github/workflows/deautopoiesis-closure.yml'),read('../.github/workflows/demo-suite-2-2-runtime.yml'),read('./browser-procedure-ui-ux-1-6.py'),read('./browser-v2-1-procedure-journey.py'),read('./browser-procedure-finetuning-1-4-base.py'),read('./public/ui/procedure-sequential-dom.js'),read('./browser-information-value.py'),read('../.github/workflows/shell-admin-demo-probes-2-6.yml'),read('./browser-shell-admin-demo-probe-2-6.py'),
 ]);
-
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
-
 check(!release.includes('-failure/')&&!release.includes('-detail/'),'release provenance must not create status fan-out');
 check(!browser.includes('/statuses/'),'browser provenance must be observational only');
 check(!/statuses:\s*write/.test(ci),'canonical CI must not hold commit-status write authority');
@@ -31,7 +17,6 @@ check(!/statuses:\s*write/.test(deautopoiesis),'deautopoiesis must not hold comm
 check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 must not hold commit-status write authority');
 check(!ciVerdictJob.includes('/statuses/')&&!ciVerdictJob.includes('post_status'),'CI verdict must fail through its native check-run');
 check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY')&&ciVerdictJob.includes('exit 1'),'CI verdict must retain bounded diagnostics and fail closed');
-
 check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser native check name must expose its source script');
 check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete sibling journeys after a leaf failure');
 check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay bounded');
@@ -41,14 +26,12 @@ check(!browserJourneyJob.includes('GH_TOKEN:')&&!browserJourneyJob.includes('HEA
 check(browserJourneyJob.includes('ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-state"'),'browser matrix must isolate persistent state by member');
 check(browserJourneyJob.includes('ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-runtime"'),'browser matrix must isolate runtime state by member');
 check(browserJourneyJob.includes('python -u "${{ matrix.script }}"'),'browser matrix must execute only its declared leaf journey');
-
 check(census.includes("context:'ictc/actions-census'"),'census must retain one exact-head acceptance status');
 check(census.includes("const aggregateChecks=new Set(['ci-verdict'])"),'census must identify the canonical aggregate verdict');
 check(census.includes('function failureRank(run)')&&census.includes('function rankedFailures(runs)'),'census must rank root failures deterministically');
 check(census.includes("if(name.startsWith(browserSourcePrefix))return 0")&&census.includes('if(aggregateChecks.has(name))return 2'),'census must prefer browser leaves over aggregate verdicts');
 check(census.includes('/blob/${sha}/${browserSource}'),'failed browser leaf must link to its exact-head source');
 check(census.includes("allGreen:failures.length===0&&pending.length===0"),'census acceptance must remain fail-closed over all observed exact-head checks');
-
 check(uiux.includes("dataset.nativeSemanticLattice==='3.2.0'"),'UI/UX oracle must synchronize on current semantic authority');
 check(uiux.includes("localCompositionOwner===x.owner")&&uiux.includes("'grc-workspace-3-2.js'"),'GRC UI/UX checks must wait for the current local owner');
 check(!uiux.includes('wait_for_timeout('),'UI/UX oracle must not use fixed sleeps for semantic readiness');
@@ -62,20 +45,18 @@ check(sequentialDom.includes("search=tools.querySelector(`[data-seq-queue-search
 check(sequentialDom.includes("if(id==='objects'){search.dataset.seqAoSearch='';stateSelect.dataset.seqAoFilter='';}"),'AO queue must alias the canonical controls instead of creating duplicate search/filter pairs');
 check(v21.includes('submit_grc(page')&&v21.includes("'AO-01'")&&v21.includes("'AP-01'"),'dedicated stateful journey must retain AO/AP creation coverage');
 check(v21.includes('[data-grc-form=\"{FORM_TYPES[pid]}\"]'),'stateful GRC coverage must exercise supported UI forms rather than test-only domain injection');
-
 check(informationValue.includes('def wait_view_owner(page,view):'),'information-value oracle must use a semantic readiness primitive');
-check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')")&&informationValue.includes("'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"),'information-value oracle must bind current local owners');
+check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')")&&informationValue.includes("'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"),'information-value oracle must bind only surfaces with declared local owners');
+check(informationValue.includes("'home':('#homeView',None)")&&informationValue.includes("'processes':('#processesView',None)"),'information-value oracle must not invent local owners for shell/catalogue views');
+check(informationValue.includes("'RN-01':('#monitoringView','monitoring',None)")&&informationValue.includes("'EC-01':('#incidentsView','incidents',None)"),'information-value oracle must not invent local owners for native RN/EC roots');
+check((informationValue.match(/!x\.owner\|\|r\.dataset\.localCompositionOwner===x\.owner/g)||[]).length>=2,'information-value readiness must require ownership only where the runtime declares it');
 check(!informationValue.includes('wait_for_timeout('),'information-value oracle must not use fixed sleeps');
-
-const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');
-const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');
-const quiescence=deautopoiesis.indexOf('- name: Enforce Windows runtime process quiescence');
+const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');const quiescence=deautopoiesis.indexOf('- name: Enforce Windows runtime process quiescence');
 check(baseline>=0&&runtime>baseline&&quiescence>runtime,'Windows portability order must be baseline -> runtime -> owned quiescence');
 check(deautopoiesis.includes('ictc-node-baseline.json')&&deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish pre-existing Node processes from test-owned residuals');
 check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the runner');
 check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803')&&deautopoiesis.includes('actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38'),'deautopoiesis actions must stay pinned');
 check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe must execute the current profile');
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
-
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',statefulJourneyAuthority:'supported-ui-forms',semanticReadiness:'native-owner+surface',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',informationValueOwnership:'declared-owner-only+observable-projection',statefulJourneyAuthority:'supported-ui-forms',semanticReadiness:'native-owner+surface',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
