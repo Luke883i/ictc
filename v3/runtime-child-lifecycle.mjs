@@ -17,17 +17,17 @@ export async function closeChildProcess(child,{graceMs=1200,timeoutMs=5000}={}){
       let forceTimer,failTimer,settled=false;
       const cleanup=()=>{
         clearTimeout(forceTimer);clearTimeout(failTimer);
-        child.off('close',done);child.off('error',failed);
+        child.off('exit',done);child.off('close',done);child.off('error',failed);
       };
       const done=()=>{if(settled)return;settled=true;cleanup();resolve();};
       const failed=error=>{if(settled)return;settled=true;cleanup();reject(error);};
-      child.once('close',done);child.once('error',failed);
+      child.once('exit',done);child.once('close',done);child.once('error',failed);
       if(!childIsRunning(child)){done();return;}
       forceTimer=setTimeout(()=>{
         if(!childIsRunning(child))return;
         try{child.kill('SIGKILL');}catch(error){failed(error);}
       },graceMs);
-      failTimer=setTimeout(()=>failed(new Error(`child ${child.pid||'unknown'} did not close after ${timeoutMs}ms`)),timeoutMs);
+      failTimer=setTimeout(()=>failed(new Error(`child ${child.pid||'unknown'} did not exit after ${timeoutMs}ms`)),timeoutMs);
       try{child.kill('SIGTERM');}catch(error){failed(error);}
     });
   }
