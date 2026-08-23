@@ -256,6 +256,7 @@ jobs:
           retention-days: 30
 
   ci-verdict:
+    name: diagnostic / ci-verdict
     if: always()
     needs: [contract-and-audit, runtime-e2e, browser-journeys, epistemic-professional-browser, launcher-smoke]
     runs-on: ubuntu-24.04
@@ -267,12 +268,13 @@ jobs:
       PROFESSIONAL_RESULT: ${{ needs['epistemic-professional-browser'].result }}
       LAUNCHER_RESULT: ${{ needs['launcher-smoke'].result }}
     steps:
-      - name: Assert exact-head CI verdict
+      - name: Summarize canonical CI leaves
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
           failed=0
-          echo '## ICTC exact-head CI verdict' >> "$GITHUB_STEP_SUMMARY"
+          echo '## ICTC canonical CI leaf summary' >> "$GITHUB_STEP_SUMMARY"
           check_job() {
             local name="$1" result="$2"
             printf -- '- %s: `%s`\n' "$name" "$result" >> "$GITHUB_STEP_SUMMARY"
@@ -284,6 +286,6 @@ jobs:
           check_job 'epistemic-professional-browser' "$PROFESSIONAL_RESULT"
           check_job 'launcher-smoke' "$LAUNCHER_RESULT"
           if [[ "$failed" -ne 0 ]]; then
-            echo 'One or more required exact-head CI jobs did not succeed.' >&2
+            echo 'One or more canonical leaf jobs did not succeed; exact-head acceptance belongs to ictc/actions-census.' >&2
             exit 1
           fi
