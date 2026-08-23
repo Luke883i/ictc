@@ -18,9 +18,14 @@ export function registerExperienceParticipant(participant){
 export function registeredExperienceParticipants(){return orderExperienceParticipants([...participants.values()]);}
 export function assertRegisteredExperienceConstitution(){return assertExpectedExperienceParticipants([...participants.values()]);}
 function invalidateScheduledLifecycle(){if(!scheduled)return;scheduled=false;scheduleEpoch++;}
+function publishConvergence(){
+  if(typeof document==='undefined'||!document.documentElement)return;
+  document.documentElement.dataset.experienceCycle=String(cycle);
+  document.dispatchEvent(new CustomEvent('ictc:experience-converged',{detail:Object.freeze({cycle})}));
+}
 export function runExperienceLifecycle(reason='manual'){
   pendingReasons.add(reason);
-  if(flushing){replay=true;return;}
+  if(flushing){replay=true;return cycle;}
   invalidateScheduledLifecycle();
   let replayCycles=0;
   while(true){
@@ -39,6 +44,8 @@ export function runExperienceLifecycle(reason='manual'){
     }finally{flushing=false;}
     if(!replay&&!pendingReasons.size)break;
   }
+  publishConvergence();
+  return cycle;
 }
 export function requestExperienceLifecycle(reason='requested'){
   pendingReasons.add(reason);
