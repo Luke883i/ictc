@@ -1,0 +1,33 @@
+import {readFile,stat} from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel} from './documentation-lattice-lib.mjs';
+const root=path.resolve(process.argv[2]||process.cwd());
+const read=async p=>readFile(path.join(root,p),'utf8');
+const exists=async p=>{try{await stat(path.join(root,p));return true}catch{return false}};
+const manifest=JSON.parse(await read('docs/documentation-manifest.json'));
+const docs=manifest.documents||[]; const failures=[]; const check=(c,m)=>{if(!c)failures.push(m)};
+check(manifest.schemaVersion==='1.0.0','manifest schemaVersion');
+check(new Set(docs.map(d=>d.id)).size===docs.length,'duplicate document id');
+check(new Set(docs.map(d=>d.path)).size===docs.length,'duplicate document path');
+const authoritative=docs.filter(d=>d.authoritative);
+const topics=authoritative.map(d=>d.authorityTopic).filter(Boolean);
+check(new Set(topics).size===topics.length,'duplicate authority topic');
+for(const d of docs){check(ALLOWED_LIFECYCLES.has(d.lifecycle),`invalid lifecycle ${d.path}`);check(ALLOWED_MODES.has(d.mode),`invalid mode ${d.path}`);check(await exists(d.path),`missing manifest path ${d.path}`);if(['lineage','source-input','roadmap','generated'].includes(d.lifecycle))check(!d.authoritative,`non-current lifecycle is authoritative ${d.path}`)}
+for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
+for(const axis of Object.values(manifest.versionAxes||{}))check(await exists(axis.owner),`missing version-axis owner ${axis.owner}`);
+const start=await read('docs/START_HERE.md'), readme=await read('README.md'), authority=await read('docs/authority-matrix.yaml'), bug=await read('.github/ISSUE_TEMPLATE/bug.yml'), pr=await read('.github/PULL_REQUEST_TEMPLATE.md'), support=await read('SUPPORT.md'), testing=await read('docs/TESTING.md'), development=await read('docs/DEVELOPMENT.md'), pkg=JSON.parse(await read('package.json'));
+const linkTargets=new Map();
+function localTargets(rel,text){const out=[];for(const m of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){const href=m[1].trim();if(!href||/^(https?:|mailto:|#)/.test(href))continue;const clean=href.split('#')[0];out.push(path.normalize(path.join(path.dirname(rel),clean)))}return out}
+for(const d of docs.filter(d=>d.path.endsWith('.md'))){const text=await read(d.path);const targets=localTargets(d.path,text);linkTargets.set(d.path,targets);for(const t of targets)check(await exists(t),`broken local link ${d.path} -> ${t}`)}
+async function depthFromStart(target){if(target==='docs/START_HERE.md')return 0;let frontier=['docs/START_HERE.md'];const seen=new Set(frontier);for(let depth=1;depth<=2;depth++){const next=[];for(const src of frontier){for(const t of linkTargets.get(src)||[]){if(t===target)return depth;if(!seen.has(t)&&linkTargets.has(t)){seen.add(t);next.push(t)}}}frontier=next}return Infinity}
+let maxAuthorityDepth=0;for(const d of authoritative){const depth=await depthFromStart(d.path);if(depth!==Infinity)maxAuthorityDepth=Math.max(maxAuthorityDepth,depth);check(depth<=2,`authority not reachable <=2 links: ${d.path}`)}
+const product=docs.find(d=>d.authorityTopic==='product_intent');const prompt=docs.find(d=>d.path==='docs/00_PROMPT_CLARIFICATION.md');
+const productText=await read('docs/PRODUCT.md');
+const model={entrypoint:manifest.entrypoint,productAuthority:product?.path,promptLifecycle:prompt?.lifecycle,promptAuthoritative:prompt?.authoritative===true,uniqueIds:new Set(docs.map(d=>d.id)).size===docs.length,uniquePaths:new Set(docs.map(d=>d.path)).size===docs.length,uniqueTopics:new Set(topics).size===topics.length,currentLifecycleSound:docs.filter(d=>['lineage','source-input','roadmap','generated'].includes(d.lifecycle)).every(d=>!d.authoritative),maxAuthorityDepth,brokenLinks:failures.filter(x=>x.startsWith('broken local link')).length,productVersion:manifest.versionAxes?.product?.value,uiVersion:manifest.versionAxes?.uiComposition?.value,journey:manifest.versionAxes?.journey?.value,constitution:manifest.versionAxes?.constitution?.value,documentationVersion:manifest.versionAxes?.documentation?.value,processCount:(productText.match(/\| (RN|EC|AO|MC|AP|RC|AR)-01 \|/g)||[]).length,ep01BusinessProcess:!/EP-01[^\n]*non [èe] un ottavo processo/i.test(productText),globalUiRuntime:authority.includes('global semantic annotation runtime may classify metadata but may not rewrite business copy')?'annotation-only':'other',capabilityGrammar:authority.includes('heterogeneous business capabilities may use the 3 -> 2 -> 1 capability matrix')?'matrix':'other',prTemplate:await exists('.github/PULL_REQUEST_TEMPLATE.md'),issueConfig:await exists('.github/ISSUE_TEMPLATE/config.yml'),securityPolicy:await exists('SECURITY.md'),supportPolicy:await exists('SUPPORT.md'),governance:await exists('GOVERNANCE.md'),codeowners:await exists('.github/CODEOWNERS'),bugInvitesVulnerability:/Security or authorization/.test(bug),supportRoutesSecurity:support.includes('SECURITY.md'),prAuthority:pr.includes('## Affected authority'),prBoundary:pr.includes('## Claim boundary'),prTests:pr.includes('## Tests and falsification'),prDocs:pr.includes('## Documentation'),packageDocsCheck:Boolean(pkg.scripts?.['docs:check']),semanticRailIncludesDocs:String(pkg.scripts?.['test:current:semantic']||'').includes('docs:check'),testingCurrent32:/Native Semantic Lattice 3\.2/.test(testing),testingPromotes28:/^## Closure 2\.8/m.test(testing),developmentCurrent32:/3\.2/.test(development),developmentPromotes28:/Per closure 2\.8/.test(development),externalSettingsNotSelfCertified:Array.isArray(manifest.externalAcceptance)&&manifest.externalAcceptance.length>=2};
+for(const m of validateDocumentationModel(model))failures.push(`model:${m}`);
+check(/product_intent:\s*\n\s*authority: docs\/PRODUCT\.md/.test(authority),'authority matrix product_intent drift');
+check(/documentation_registry:\s*\n\s*authority: docs\/documentation-manifest\.json/.test(authority),'authority matrix documentation registry missing');
+check(readme.includes('docs/START_HERE.md'),'README front door missing docs/START_HERE.md');
+if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1)}
+console.log(JSON.stringify({ok:true,documents:docs.length,authorityTopics:topics.length,maxAuthorityDepth,versionAxes:manifest.versionAxes,communitySurfaces:manifest.communitySurfaces,externalAcceptance:manifest.externalAcceptance},null,2));
