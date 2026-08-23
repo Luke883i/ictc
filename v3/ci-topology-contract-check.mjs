@@ -8,6 +8,7 @@ const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,finetunin
 ]);
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
+const informationDiagnosticJob=ci.match(/\n  information-value-diagnostic:\n([\s\S]*?)\n  ci-verdict:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
 check(!release.includes('-failure/')&&!release.includes('-detail/'),'release provenance must not create status fan-out');
 check(!browser.includes('/statuses/'),'browser provenance must be observational only');
@@ -20,12 +21,17 @@ check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY')&&ciVerdictJob.includes('exit 
 check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser native check name must expose its source script');
 check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete sibling journeys after a leaf failure');
 check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay bounded');
-check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===11,'canonical browser matrix must retain eleven declared journeys');
+check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===10,'canonical required browser matrix must retain ten non-overlapping journeys');
+check(!browserJourneyJob.includes('browser-information-value.py'),'information-value must not remain a duplicate required browser authority');
 check(!/statuses:\s*write/.test(browserJourneyJob)&&!/statuses:\s*write/.test(professionalBrowserJob),'browser jobs must not hold status-write authority');
 check(!browserJourneyJob.includes('GH_TOKEN:')&&!browserJourneyJob.includes('HEAD_SHA:'),'browser matrix must not receive status publication metadata');
 check(browserJourneyJob.includes('ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-state"'),'browser matrix must isolate persistent state by member');
 check(browserJourneyJob.includes('ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-runtime"'),'browser matrix must isolate runtime state by member');
 check(browserJourneyJob.includes('python -u "${{ matrix.script }}"'),'browser matrix must execute only its declared leaf journey');
+check(informationDiagnosticJob.includes('name: diagnostic / information-value-3-2')&&informationDiagnosticJob.includes('continue-on-error: true'),'information-value must remain observational evidence without duplicate verdict authority');
+check(informationDiagnosticJob.includes('python -u v3/browser-information-value.py')&&informationDiagnosticJob.includes('exit 0'),'information-value diagnostic must still execute and preserve evidence without gating exact-head acceptance');
+check(informationDiagnosticJob.includes('ICTC_STATE_DIR="$RUNNER_TEMP/ictc-information-value-state"')&&informationDiagnosticJob.includes('ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-information-value-runtime"'),'information-value diagnostic must remain state-isolated');
+check(!ciVerdictJob.includes('information-value-diagnostic'),'canonical CI verdict must not depend on the observational information-value diagnostic');
 check(census.includes("context:'ictc/actions-census'"),'census must retain one exact-head acceptance status');
 check(census.includes("const aggregateChecks=new Set(['ci-verdict'])"),'census must identify the canonical aggregate verdict');
 check(census.includes('function failureRank(run)')&&census.includes('function rankedFailures(runs)'),'census must rank root failures deterministically');
@@ -42,6 +48,7 @@ check(!uiux.includes('/api/grc/objects')&&!uiux.includes('/api/grc/actions'),'hi
 check(uiux.includes("PHASE='read-only-boundary';assert not writes,writes"),'UI/UX oracle must enforce a no-business-write boundary');
 check(uiux.includes("'readOnly':True")&&uiux.includes("'emptyAndPopulatedStateTolerant':True"),'UI/UX evidence must declare read-only context tolerance');
 check(uiux.includes('def no_overflow(page):')&&uiux.includes('no_overflow(page)'),'dedicated UI oracle must own user-observable overflow falsification');
+check(uiux.includes("#procedureHub .procedure-card")&&uiux.includes("PHASE='EP-evidence-entry'"),'required UI/UX oracle must retain catalogue and Proof-to-EP browser coverage after information-value delegation');
 check(!finetuningBase.includes('/api/grc/objects')&&!finetuningBase.includes('/api/grc/actions'),'historical finetuning oracle must not seed GRC business records directly');
 check(finetuningBase.includes('def optional_record_facts(cards,needles):'),'finetuning lineage must make record-specific presentation checks conditional on records being present');
 check(finetuningBase.includes("PHASE='read-only-boundary';assert not writes,writes"),'finetuning lineage must enforce a no-business-write boundary');
@@ -54,7 +61,7 @@ check(experienceLifecycle.includes('dataset.experienceCycle=String(cycle)')&&exp
 check(experienceLifecycle.includes('publishConvergence();')&&experienceLifecycle.indexOf('publishConvergence();')>experienceLifecycle.indexOf('if(!replay&&!pendingReasons.size)break'),'convergence publication must occur after replay exhaustion');
 check(informationValue.includes('def wait_experience_cycle(page,before=0):')&&informationValue.includes('dataset.experienceCycle'),'information-value oracle must synchronize on the monotonic C0.1 cycle');
 for(const owner of ["'home':('#homeView','stable-shell.js')","'processes':('#processesView','procedure-frame.js')","'proof':('#proofView','proof-workspace-3-2.js')","'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"])check(informationValue.includes(owner),`information-value must retain declared owner ${owner}`);
-check(informationValue.includes("PROCEDURE_CODES=('RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01')")&&informationValue.includes('def assert_capability_matrix(page):'),'information-value must cover all seven capabilities at catalogue authority');
+check(informationValue.includes("PROCEDURE_CODES=('RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01')")&&informationValue.includes('def assert_capability_matrix(page):'),'information-value diagnostic must cover all seven capabilities at catalogue authority');
 check(informationValue.includes("'procedureLifecycleAuthority':'dedicated-uiux-and-stateful-journeys'"),'information-value must declare procedure lifecycle delegation');
 check(!informationValue.includes('PROCESS_READY=')&&!informationValue.includes('def open_process('),'information-value must not duplicate procedure lifecycle or readiness ownership');
 check(!informationValue.includes('ictcUiUxIntegrity'),'information-value current oracle must not use historical UIUX markers as readiness authority');
@@ -62,6 +69,7 @@ check(!informationValue.includes('!x.owner||'),'information-value oracle must no
 check(!informationValue.includes('wait_for_timeout('),'information-value oracle must not use fixed sleeps');
 check(!informationValue.includes('no_overflow(')&&!informationValue.includes('scrollWidth')&&!informationValue.includes('bounding_box('),'information-value oracle must not own geometry/overflow');
 check(informationValue.includes("'geometryAuthority':'dedicated-ui-and-responsive-gates'"),'information-value evidence must declare delegated geometry authority');
+check(shellLineageProbe.includes("elif PROBE=='admin'")&&shellLineageProbe.includes("elif PROBE=='procedures'")&&shellLineageProbe.includes("elif PROBE=='mobile'"),'shell compatibility rail must retain admin, catalogue and mobile coverage');
 check(currentSemantic32.includes("'v3/experience-readiness-3-2-saturation.mjs'"),'current semantic 3.2 rail must execute the readiness mutation gate');
 check(currentSemantic32.includes("'v3/product-ci-coevolution-3-2.mjs'"),'current semantic 3.2 rail must execute the product/CI coevolution mutation gate');
 check(readinessSaturation.includes('seed<=10000')&&readinessSaturation.includes('mutantsKilled:killed')&&readinessSaturation.includes('stale-integrity-marker'),'readiness saturation must kill 10,000 deterministic context/timing mutants including stale-marker false positives');
@@ -75,4 +83,4 @@ check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e
 check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe must execute the current profile');
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,browserFailureProvenance:'native-summary+phase-target',historicalUiOracle:'read-only+empty-populated-tolerant+final-c01+geometry-owner',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',informationValueOwnership:'information-architecture+declared-owner+monotonic-final-c01-cycle',informationValueProcedureLifecycleAuthority:'delegated',informationValueGeometryAuthority:'delegated',browserReadiness:'c01-cycle-after-replay-exhaustion+surface-invariant',readinessMutationGate:10000,productCiMutationGate:'1m+1m',statefulJourneyAuthority:'supported-ui-forms',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,requiredBrowserJourneys:10,informationValueExecution:'diagnostic-non-authoritative',browserFailureProvenance:'native-summary+phase-target',historicalUiOracle:'read-only+empty-populated-tolerant+final-c01+geometry-owner',historicalFinetuningOracle:'read-only+empty-populated-tolerant',aoQueueControlAuthority:'single-canonical-pair+legacy-alias',informationValueOwnership:'information-architecture+declared-owner+monotonic-final-c01-cycle',informationValueProcedureLifecycleAuthority:'delegated',informationValueGeometryAuthority:'delegated',browserReadiness:'c01-cycle-after-replay-exhaustion+surface-invariant',readinessMutationGate:10000,productCiMutationGate:'1m+1m',statefulJourneyAuthority:'supported-ui-forms',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));
