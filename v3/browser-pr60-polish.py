@@ -53,7 +53,7 @@ def ensure_rn_evidence_menu(page):
     expect(trigger).to_be_visible();trigger.click();expect(page.locator('#jobDialog')).to_be_visible()
     PHASE='evidence-seed-monitoring-form'
     form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible()
-    page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative per produrre un fascicolo evidenze isolato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
+    page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('jobName','PR60 isolated evidence fixture');set('objective','Monitorare fonti pubbliche normative per produrre un fascicolo evidenze isolato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
     PHASE='evidence-seed-submit'
     form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();close_plan(page);close_scheduler(page)
     page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0&&!!document.querySelector('.evidence-export-menu')")
