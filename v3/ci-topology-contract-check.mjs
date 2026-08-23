@@ -34,19 +34,18 @@ check(!shellLineageProbe.includes("wait_for_function(\"()=>document.documentElem
 const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');
 const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');
 const quiescence=deautopoiesis.indexOf('- name: Enforce Windows runtime process quiescence');
-const portabilityVerdict=deautopoiesis.indexOf('- name: Publish portability exact-head verdict');
-check(baseline>=0&&runtime>baseline&&quiescence>runtime&&portabilityVerdict>quiescence,'Windows portability order must be baseline -> runtime -> owned quiescence -> verdict');
+check(baseline>=0&&runtime>baseline&&quiescence>runtime,'Windows portability order must be baseline -> runtime -> owned quiescence');
 check(deautopoiesis.includes('ictc-node-baseline.json'),'Windows quiescence must persist an explicit pre-runtime Node baseline');
 check(deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish baseline processes from test-owned residuals');
 check(deautopoiesis.includes('Residual ICTC-owned Node processes'),'Windows quiescence diagnostics must identify only test-owned residual processes');
 check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the hosted runner');
-check(deautopoiesis.includes("steps.windows-quiescence.outcome == 'success'"),'Windows quiescence must contribute to the authoritative portability verdict');
-check(deautopoiesis.includes('RAIL: false-closure'),'false-closure firewall must publish one authoritative rail verdict');
-check(!deautopoiesis.includes('portability-quiescence-'),'quiescence must not create an independent status rail');
-check(!deautopoiesis.includes('uses: actions/checkout@'),'verdict-publishing deautopoiesis jobs must avoid checkout post-actions after the authoritative verdict');
-check(!deautopoiesis.includes('uses: actions/setup-node@'),'verdict-publishing deautopoiesis jobs must avoid setup/cache post-actions after the authoritative verdict');
-check(deautopoiesis.includes('Checkout exact head without post-action'),'deautopoiesis must use explicit exact-head checkout without post-actions');
-check(deautopoiesis.includes('Select hosted Node toolcache without post-action'),'deautopoiesis must select hosted Node without post-actions');
+check(!/statuses:\s*write/.test(deautopoiesis),'deautopoiesis must not acquire commit-status write authority');
+check(!deautopoiesis.includes('release-failure-provenance.mjs'),'deautopoiesis native check-runs must be the sole rail verdict authority');
+check(!deautopoiesis.includes('continue-on-error:'),'deautopoiesis must fail natively on any required gate failure');
+check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803'),'deautopoiesis must use the pinned canonical checkout action');
+check(deautopoiesis.includes('actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38'),'deautopoiesis must use the pinned canonical Node setup action');
+check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability matrix must bind Node setup to the declared matrix version');
+check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',shellLineageReadiness:'native-semantic-authority',portabilityVerdictBoundary:'runtime+owned-quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false,windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only-with-first-failure-output',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
