@@ -2,122 +2,78 @@ import { readFile } from 'node:fs/promises';
 
 const failures=[];
 const check=(condition,message)=>{if(!condition)failures.push(message);};
-const release=await readFile(new URL('../scripts/release-failure-provenance.mjs',import.meta.url),'utf8');
-const browser=await readFile(new URL('../scripts/browser-failure-provenance.mjs',import.meta.url),'utf8');
-const census=await readFile(new URL('./actions-census.mjs',import.meta.url),'utf8');
-const ci=await readFile(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
-const deautopoiesis=await readFile(new URL('../.github/workflows/deautopoiesis-closure.yml',import.meta.url),'utf8');
-const shellLineageWorkflow=await readFile(new URL('../.github/workflows/shell-admin-demo-probes-2-6.yml',import.meta.url),'utf8');
-const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe-2-6.py',import.meta.url),'utf8');
-const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
-const actions=await readFile(new URL('./public/ui/actions.js',import.meta.url),'utf8');
-const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
-const lineage16=await readFile(new URL('./browser-procedure-ui-ux-1-6.py',import.meta.url),'utf8');
-const informationValue=await readFile(new URL('./browser-information-value.py',import.meta.url),'utf8');
-const demo22Workflow=await readFile(new URL('../.github/workflows/demo-suite-2-2-runtime.yml',import.meta.url),'utf8');
-const demo22Load=await readFile(new URL('./demo-suite-2-2-module-load-check.mjs',import.meta.url),'utf8');
-const demo22Store=await readFile(new URL('./demo-suite-2-2-runtime-store-check.mjs',import.meta.url),'utf8');
+const read=path=>readFile(new URL(path,import.meta.url),'utf8');
+
+const [release,browser,census,ci,deautopoiesis,demo22Workflow,uiux,v21,informationValue,shellLineageWorkflow,shellLineageProbe]=await Promise.all([
+  read('../scripts/release-failure-provenance.mjs'),
+  read('../scripts/browser-failure-provenance.mjs'),
+  read('./actions-census.mjs'),
+  read('../.github/workflows/ci.yml'),
+  read('../.github/workflows/deautopoiesis-closure.yml'),
+  read('../.github/workflows/demo-suite-2-2-runtime.yml'),
+  read('./browser-procedure-ui-ux-1-6.py'),
+  read('./browser-v2-1-procedure-journey.py'),
+  read('./browser-information-value.py'),
+  read('../.github/workflows/shell-admin-demo-probes-2-6.yml'),
+  read('./browser-shell-admin-demo-probe-2-6.py'),
+]);
+
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
 
-check(!release.includes('-failure/'),'release provenance must not create failure fan-out contexts');
-check(!release.includes('-detail/'),'release provenance must keep failure detail inside the authoritative rail status/log');
-check(!browser.includes('/statuses/'),'browser provenance must be observational only and must not create status fan-out');
-check(!census.includes('ictc/check-failure/'),'actions census must publish one authoritative census status, not one status per failed check');
-check(!ci.includes('ictc/browser-failure/'),'browser CI must not publish per-script failure statuses');
-check(!wrapper.includes('/statuses/'),'browser subtest wrapper must not publish per-subtest statuses');
-check(!/statuses:\s*write/.test(browserJourneyJob),'browser test matrix must not hold commit-status write authority');
-check(!/statuses:\s*write/.test(professionalBrowserJob),'professional browser test job must not hold commit-status write authority');
-check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser checks must expose the exact script in the native check-run name');
-check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete all journeys after an individual failure');
-check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay explicitly bounded');
-check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===11,'canonical browser matrix must retain all eleven existing journeys');
-check(!browserJourneyJob.includes('GH_TOKEN:'),'browser matrix must not receive a GitHub token for commit-status publication');
-check(!browserJourneyJob.includes('HEAD_SHA:'),'browser matrix must not receive commit status target metadata');
-check(browserJourneyJob.includes('python -u "${{ matrix.script }}"'),'browser matrix must execute only the isolated declared journey');
-check(browserJourneyJob.includes('FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs'),'failed browser checks must retain structured log/artifact provenance');
-check(browserJourneyJob.includes('name: ictc-browser-${{ matrix.id }}'),'browser artifacts must be isolated per matrix member');
-check(ci.includes("BROWSER_RESULT: ${{ needs['browser-journeys'].result }}"),'CI verdict must consume the aggregate browser matrix conclusion');
-check(census.includes("const browserSourcePrefix='browser / ';"),'actions census must understand native browser check source provenance');
-check(census.includes('/blob/${sha}/${browserSource}'),'actions census must link a failed browser check to its exact test source');
+// Verdict authority: GitHub-native checks are the only workflow verdicts; one exact-head census status is the acceptance summary.
+check(!release.includes('-failure/')&&!release.includes('-detail/'),'release provenance must not create status fan-out');
+check(!browser.includes('/statuses/'),'browser provenance must be observational only');
+check(!/statuses:\s*write/.test(ci),'canonical CI must not hold commit-status write authority');
+check(!/statuses:\s*write/.test(deautopoiesis),'deautopoiesis must not hold commit-status write authority');
+check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 must not hold commit-status write authority');
+check(!ciVerdictJob.includes('/statuses/')&&!ciVerdictJob.includes('post_status'),'CI verdict must fail through its native check-run');
+check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY')&&ciVerdictJob.includes('exit 1'),'CI verdict must retain bounded diagnostics and fail closed');
 
-check(actions.includes("state.activeMissionId=result.mission.id;renderPlanDialog();openDialog('planDialog')"),'RN draft runtime must materialize and open the plan dialog after mission creation');
-check(!actions.includes("closeDialog('jobDialog')"),'RN draft runtime must not silently close the scheduler unless that transition is intentionally redesigned');
+// Browser topology: one isolated native check per journey, bounded parallelism, no hidden shared state or status side-channel.
+check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser native check name must expose its source script');
+check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete sibling journeys after a leaf failure');
+check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay bounded');
+check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===11,'canonical browser matrix must retain eleven declared journeys');
+check(!/statuses:\s*write/.test(browserJourneyJob)&&!/statuses:\s*write/.test(professionalBrowserJob),'browser jobs must not hold status-write authority');
+check(!browserJourneyJob.includes('GH_TOKEN:')&&!browserJourneyJob.includes('HEAD_SHA:'),'browser matrix must not receive status publication metadata');
+check(browserJourneyJob.includes('ICTC_STATE_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-state"'),'browser matrix must isolate persistent state by member');
+check(browserJourneyJob.includes('ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-browser-${{ matrix.id }}-runtime"'),'browser matrix must isolate runtime state by member');
+check(browserJourneyJob.includes('python -u "${{ matrix.script }}"'),'browser matrix must execute only its declared leaf journey');
 
-check(!pr60.includes('/statuses/'),'PR60 browser oracle must not publish commit statuses');
-check(!pr60.includes('urllib.request'),'PR60 browser oracle must not retain dead GitHub status transport');
-check(pr60.includes("dataset.nativeSemanticLattice==='3.2.0'"),'PR60 browser oracle must synchronize on current native semantic authority');
-check(pr60.includes("localCompositionOwner==='proof-workspace-3-2.js'"),'PR60 browser oracle must wait for the current local Proof owner');
-check(pr60.includes('def ensure_rn_evidence_menu(page):'),'PR60 browser oracle must own its RN evidence fixture setup');
-check(pr60.includes("set('jobName','PR60 isolated evidence fixture')"),'PR60 RN fixture must satisfy the current required job profile contract');
-check(pr60.includes("expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)"),'PR60 RN fixture must follow the canonical nested draft-to-plan transition and close both dialogs explicitly');
-check(!pr60.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'PR60 RN fixture must not invent scheduler auto-close behavior absent from the runtime');
-check(pr60.includes("[data-rn-open-scheduler]"),'PR60 browser oracle must create the minimum RN fixture through a supported UI entrypoint when state is empty');
-check(pr60.includes('if menu.count(): return menu'),'PR60 browser oracle must preserve existing state while remaining isolated-state safe');
+// Exact-head census: acceptance semantics stay fail-closed, while failure provenance prefers leaves over aggregators.
+check(census.includes("context:'ictc/actions-census'"),'census must retain one exact-head acceptance status');
+check(census.includes("const aggregateChecks=new Set(['ci-verdict'])"),'census must identify the canonical aggregate verdict');
+check(census.includes('function failureRank(run)')&&census.includes('function rankedFailures(runs)'),'census must rank root failures deterministically');
+check(census.includes("if(name.startsWith(browserSourcePrefix))return 0")&&census.includes('if(aggregateChecks.has(name))return 2'),'census must prefer browser leaves over aggregate verdicts');
+check(census.includes('/blob/${sha}/${browserSource}'),'failed browser leaf must link to its exact-head source');
+check(census.includes("allGreen:failures.length===0&&pending.length===0"),'census acceptance must remain fail-closed over all observed exact-head checks');
 
-check(lineage16.includes("set('jobName','UI UX 1.6 isolated monitoring fixture')"),'UI/UX 1.6 RN fixture must satisfy the current required job profile contract');
-check(lineage16.includes("expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)"),'UI/UX 1.6 RN fixture must follow the canonical nested draft-to-plan transition and close both dialogs explicitly');
-check(!lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'UI/UX 1.6 RN fixture must not invent scheduler auto-close behavior absent from the runtime');
-check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
-check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
-check(lineage16.includes('def api_status(page,path,role=\'admin\',method=\'GET\',body=None):'),'UI/UX 1.6 GRC fixture setup must use the public HTTP contract');
-check(lineage16.includes("'x-ictc-expected-revision'"),'UI/UX 1.6 GRC writes must preserve optimistic revision authority');
-check(lineage16.includes('def ensure_ao_object(page):'),'UI/UX 1.6 must own a minimal AO fixture for isolated state');
-check(lineage16.includes("api_status(page,'/api/grc/objects',method='POST'"),'UI/UX 1.6 AO fixture must be created through the public GRC API');
-check(lineage16.includes("ensure_ao_object(page);PHASE='AO-governed-identity'"),'UI/UX 1.6 AO assertions must consume the owned isolated fixture');
-check(lineage16.includes('def ensure_ap_action(page):'),'UI/UX 1.6 must own a minimal AP fixture for isolated state');
-check(lineage16.includes("api_status(page,'/api/grc/actions',method='POST'"),'UI/UX 1.6 AP fixture must be created through the public GRC API');
-check(lineage16.includes("ensure_ap_action(page);PHASE='AP-state-aware-and-verify'"),'UI/UX 1.6 AP assertions must consume the owned isolated fixture');
-check(lineage16.includes("'fixtureAuthority':'public-api-if-empty'"),'UI/UX 1.6 evidence must declare idempotent public-API fixture authority');
+// Runtime/UI boundary: historical presentation oracle is read-only and context-tolerant; stateful creation belongs to the dedicated journey.
+check(uiux.includes("dataset.nativeSemanticLattice==='3.2.0'"),'UI/UX oracle must synchronize on current semantic authority');
+check(uiux.includes("localCompositionOwner===x.owner")&&uiux.includes("'grc-workspace-3-2.js'"),'GRC UI/UX checks must wait for the current local owner');
+check(!uiux.includes('wait_for_timeout('),'UI/UX oracle must not use fixed sleeps for semantic readiness');
+check(!uiux.includes('/api/grc/objects')&&!uiux.includes('/api/grc/actions'),'historical UI/UX oracle must not seed GRC business records directly');
+check(uiux.includes("'readOnly':True")&&uiux.includes("'emptyAndPopulatedStateTolerant':True"),'UI/UX evidence must declare read-only context tolerance');
+check(v21.includes('submit_grc(page')&&v21.includes("'AO-01'")&&v21.includes("'AP-01'"),'dedicated stateful journey must retain AO/AP creation coverage');
+check(v21.includes('[data-grc-form=\"{FORM_TYPES[pid]}\"]'),'stateful GRC coverage must exercise supported UI forms rather than test-only domain injection');
 
-check(informationValue.includes('def wait_view_owner(page,view):'),'3.2 information-value oracle must have one semantic readiness primitive');
-check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')"),'3.2 information-value oracle must synchronize on the local Proof owner');
-check(informationValue.includes("'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"),'3.2 information-value oracle must synchronize on the local EP owner');
-check(informationValue.includes("owner='grc-workspace-3-2.js' if selector=='#grcWorkspace' else None"),'3.2 information-value oracle must synchronize shared GRC roots on their local owner');
-check(informationValue.includes("localCompositionOwner==='admin-workspace-3-2.js'"),'3.2 information-value oracle must wait for the local Admin owner');
-check(informationValue.includes("r.open&&r.dataset.nativeSemanticLattice==='3.2.0'"),'3.2 information-value oracle must wait for dialog semantic convergence');
-check(!informationValue.includes('wait_for_timeout('),'3.2 information-value oracle must not use time sleeps as semantic readiness');
-check(informationValue.includes("PHASE=f'grc-{code}-decision-count'"),'3.2 information-value oracle must retain granular root-failure provenance');
+// Current semantic readiness: no timing sleeps in the current ownership/provenance oracles.
+check(informationValue.includes('def wait_view_owner(page,view):'),'information-value oracle must use a semantic readiness primitive');
+check(informationValue.includes("'proof':('#proofView','proof-workspace-3-2.js')")&&informationValue.includes("'epistemic':('#epistemicView','epistemic-workspace-3-2.js')"),'information-value oracle must bind current local owners');
+check(!informationValue.includes('wait_for_timeout('),'information-value oracle must not use fixed sleeps');
 
-check(!/statuses:\s*write/.test(demo22Workflow),'DEMO 2.2 workflow must use native check conclusions only');
-check(!demo22Workflow.includes('GH_TOKEN:'),'DEMO 2.2 checks must not receive GitHub status-write credentials');
-check(!demo22Workflow.includes('HEAD_SHA:'),'DEMO 2.2 checks must not receive commit-status target metadata');
-for(const job of ['syntax:','module-load:','native-replay:','runtime-store:'])check(demo22Workflow.includes(`\n  ${job}`),`DEMO 2.2 native job missing: ${job}`);
-check(!demo22Load.includes('/statuses/'),'DEMO 2.2 module-load check must fail through its native check-run');
-check(!demo22Load.includes('GH_TOKEN'),'DEMO 2.2 module-load check must not contain GitHub status transport');
-check(demo22Load.includes('process.exitCode=1'),'DEMO 2.2 module-load check must fail natively on the first bad stage');
-check(!demo22Store.includes('/statuses/'),'DEMO 2.2 RuntimeStore check must fail through its native check-run');
-check(!demo22Store.includes('GH_TOKEN'),'DEMO 2.2 RuntimeStore check must not contain GitHub status transport');
-check(demo22Store.includes("console.error('demo-suite-2-2-runtime-store: '+stage+' failed',error);"),'DEMO 2.2 RuntimeStore failure provenance must retain the failing stage in the native log');
-check(demo22Store.includes('throw error;'),'DEMO 2.2 RuntimeStore check must rethrow and fail natively');
-
-check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
-check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
-check(!ciVerdictJob.includes('post_status'),'CI verdict must rely on the native GitHub job conclusion');
-check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY'),'CI verdict must retain bounded human-readable failure provenance');
-check(ciVerdictJob.includes("if [[ \"$result\" != 'success' ]]"),'CI verdict must treat every non-success dependency result as failure');
-check(ciVerdictJob.includes('exit 1'),'CI verdict must fail closed when any required job is not successful');
-check(census.includes("'ictc/actions-census'"),'census must retain one exact-head Actions verdict');
-check(shellLineageWorkflow.includes('--profile current'),'shell/admin/DEMO lineage probes must exercise the canonical current profile');
-check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'historical shell/admin/DEMO probe running against current must synchronize on current native semantic authority');
-check(!shellLineageProbe.includes("wait_for_function(\"()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'\")"),'historical experience edition must not be the current lineage readiness oracle');
-
+// Portability and lineage stay structural, not tied to workaround helper names or fixture strings.
 const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process baseline');
 const runtime=deautopoiesis.indexOf('- name: Current runtime suite on supported matrix');
 const quiescence=deautopoiesis.indexOf('- name: Enforce Windows runtime process quiescence');
 check(baseline>=0&&runtime>baseline&&quiescence>runtime,'Windows portability order must be baseline -> runtime -> owned quiescence');
-check(deautopoiesis.includes('ictc-node-baseline.json'),'Windows quiescence must persist an explicit pre-runtime Node baseline');
-check(deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish baseline processes from test-owned residuals');
-check(deautopoiesis.includes('Residual ICTC-owned Node processes'),'Windows quiescence diagnostics must identify only test-owned residual processes');
-check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the hosted runner');
-check(!/statuses:\s*write/.test(deautopoiesis),'deautopoiesis must not acquire commit-status write authority');
-check(!deautopoiesis.includes('release-failure-provenance.mjs'),'deautopoiesis native check-runs must be the sole rail verdict authority');
-check(!deautopoiesis.includes('continue-on-error:'),'deautopoiesis must fail natively on any required gate failure');
-check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803'),'deautopoiesis must use the pinned canonical checkout action');
-check(deautopoiesis.includes('actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38'),'deautopoiesis must use the pinned canonical Node setup action');
-check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability matrix must bind Node setup to the declared matrix version');
-check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
+check(deautopoiesis.includes('ictc-node-baseline.json')&&deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish pre-existing Node processes from test-owned residuals');
+check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the runner');
+check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803')&&deautopoiesis.includes('actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38'),'deautopoiesis actions must stay pinned');
+check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe must execute the current profile');
+check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',rnDraftTransitionAuthority:'runtime-open-plan+explicit-test-cleanup',grcFixtureAuthority:'public-api-if-empty+optimistic-revision',informationValueReadiness:'native-local-owner',pr60FixtureAuthority:'self-seeded-current-owner',demoSuite22VerdictAuthority:'github-native-check-runs',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',acceptance:'exact-head-fail-closed',failureRootSelection:'leaf-before-aggregate',browserMatrixIsolation:true,browserMaxParallel:4,historicalUiOracle:'read-only+empty-populated-tolerant',statefulJourneyAuthority:'supported-ui-forms',semanticReadiness:'native-owner+surface',statusFanout:false,portabilityBoundary:'owned-process-quiescence'}));

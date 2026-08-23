@@ -4,6 +4,7 @@ const token=process.env.GITHUB_TOKEN||'',repository=process.env.GITHUB_REPOSITOR
 const selfNames=new Set(String(process.env.ICTC_CENSUS_SELF_NAMES||'actions-census').split(',').map(x=>x.trim()).filter(Boolean));
 const timeoutMs=Math.max(60_000,Math.min(70*60_000,Number(process.env.ICTC_CENSUS_TIMEOUT_MS||60*60_000))),pollMs=Math.max(5_000,Math.min(30_000,Number(process.env.ICTC_CENSUS_POLL_MS||15_000))),minObserveMs=Math.max(30_000,Math.min(5*60_000,Number(process.env.ICTC_CENSUS_MIN_OBSERVE_MS||90_000)));
 const browserSourcePrefix='browser / ';
+const aggregateChecks=new Set(['ci-verdict']);
 
 if(!token||!repository||!/^[0-9a-f]{40}$/i.test(sha))throw new Error('GITHUB_TOKEN, GITHUB_REPOSITORY and exact HEAD_SHA are required');
 const headers={accept:'application/vnd.github+json',authorization:`Bearer ${token}`,'x-github-api-version':'2022-11-28','content-type':'application/json'};
@@ -34,6 +35,15 @@ function sourceTarget(run){
   }
   return run?.details_url||run?.html_url||'';
 }
+function failureRank(run){
+  const name=String(run?.name||'');
+  if(name.startsWith(browserSourcePrefix))return 0;
+  if(aggregateChecks.has(name))return 2;
+  return 1;
+}
+function rankedFailures(runs){
+  return runs.filter(run=>conclusionState(run)==='failure').sort((a,b)=>failureRank(a)-failureRank(b)||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0));
+}
 async function post(state,description,targetUrl=''){
   const body={state,context:'ictc/actions-census',description:String(description).slice(0,140)};
   if(targetUrl)body.target_url=targetUrl;
@@ -50,7 +60,7 @@ while(true){
   const signature=runs.map(run=>`${run.id}:${run.name}:${run.status}:${run.conclusion||''}`).sort().join('|');
   stablePolls=signature===previousSignature?stablePolls+1:0;
   previousSignature=signature;
-  const failures=runs.filter(run=>conclusionState(run)==='failure'),pending=runs.filter(run=>conclusionState(run)==='pending'),observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
+  const failures=rankedFailures(runs),pending=runs.filter(run=>conclusionState(run)==='pending'),observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
   if(settled||Date.now()>=deadline)break;
   await post('pending',`exact head: ${runs.length} checks, ${failures.length} failed, ${pending.length} pending`,sourceTarget(failures[0]));
   await new Promise(resolve=>setTimeout(resolve,pollMs));
@@ -63,11 +73,12 @@ const rows=last.map(run=>({
   conclusion:run.conclusion||null,
   detailsUrl:run.details_url||run.html_url||null,
   sourceUrl:sourceTarget(run)||null,
+  failureRank:failureRank(run),
   startedAt:run.started_at||null,
   completedAt:run.completed_at||null,
   state:conclusionState(run)
 }));
-const failures=rows.filter(row=>row.state==='failure'),pending=rows.filter(row=>row.state==='pending'),report={schemaVersion:'1.3.0',authority:'github-check-runs-exact-head',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,failureCount:failures.length,pendingCount:pending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
+const failures=rows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=rows.filter(row=>row.state==='pending'),report={schemaVersion:'1.4.0',authority:'github-check-runs-exact-head',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,failureCount:failures.length,pendingCount:pending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});
 await writeFile(new URL('../artifacts/actions-census.json',import.meta.url),JSON.stringify(report,null,2));
 
