@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   runtime-semantic:
@@ -23,9 +24,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.16.0'
+          cache: npm
+      - run: npm ci --ignore-scripts
       - name: Syntax check
         run: node scripts/syntax-check.mjs
       - name: DEMO Suite 2.2 native replay contract
         run: node v3/demo-suite-2-2-runtime-semantic-check.mjs
       - name: DEMO Suite 2.2 RuntimeStore materialization
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node v3/demo-suite-2-2-runtime-store-check.mjs
