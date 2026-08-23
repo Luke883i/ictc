@@ -8,9 +8,6 @@ VIEWPORTS=[('mobile',390,844),('tablet',768,1024),('desktop',1280,900),('wide',1
 ROLES=['admin','auditor']
 PHASE='init'; anomalies=[]
 
-def selectorish(el):
-    return el
-
 def open_epistemic(page):
     page.locator('.service-nav [data-service="processes"]').click()
     meta=page.locator('#epistemicMetaCard')
@@ -27,7 +24,8 @@ def measure(page):
     return page.evaluate("""()=>{
       const inner=innerWidth, html=document.documentElement.scrollWidth, body=document.body.scrollWidth;
       const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&+s.opacity!==0&&r.width>0&&r.height>0};
-      const name=e=>{const id=e.id?`#${e.id}`:'';const cls=typeof e.className==='string'&&e.className.trim()?'.'+e.className.trim().split(/\\s+/).slice(0,3).join('.'):'';return `${e.tagName.toLowerCase()}${id}${cls}`.slice(0,110)};
+      const baseName=e=>{const id=e.id?`#${e.id}`:'';const cls=typeof e.className==='string'&&e.className.trim()?'.'+e.className.trim().split(/\\s+/).slice(0,3).join('.'):'';return `${e.tagName.toLowerCase()}${id}${cls}`};
+      const name=e=>{const attrs=[...e.attributes].filter(a=>a.name.startsWith('data-')).slice(0,3).map(a=>`[${a.name}${a.value?`=${a.value}`:''}]`).join('');const text=(e.innerText||e.textContent||'').trim().replace(/\\s+/g,' ').slice(0,36);const parent=e.parentElement?baseName(e.parentElement):'';return `${baseName(e)}${attrs}${text?`:${text}`:''}${parent?`@${parent}`:''}`.slice(0,220)};
       const offenders=[...document.querySelectorAll('#epistemicView, #epistemicView *')].filter(visible).map(e=>{const r=e.getBoundingClientRect();return {selector:name(e),left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1),clientWidth:e.clientWidth,scrollWidth:e.scrollWidth,overRight:+Math.max(0,r.right-inner).toFixed(1),overLeft:+Math.max(0,-r.left).toFixed(1),overflowX:getComputedStyle(e).overflowX,minWidth:getComputedStyle(e).minWidth,maxWidth:getComputedStyle(e).maxWidth,whiteSpace:getComputedStyle(e).whiteSpace};}).filter(x=>x.overRight>1||x.overLeft>1).sort((a,b)=>(b.overRight+b.overLeft)-(a.overRight+a.overLeft)).slice(0,8);
       return {innerWidth:inner,html,body,delta:Math.max(html,body)-inner,offenders};
     }""")
