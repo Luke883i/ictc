@@ -17,11 +17,32 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '22'
-          cache: npm
+      - name: Checkout exact head without post-action
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -Eeuo pipefail
+          git init .
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$HEAD_SHA"
+          git checkout --detach FETCH_HEAD
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+      - name: Select hosted Node 22 without post-action
+        shell: bash
+        env:
+          NODE_MAJOR: '22'
+        run: |
+          set -Eeuo pipefail
+          node_root="$RUNNER_TOOL_CACHE/node"
+          version_dir="$(find "$node_root" -mindepth 1 -maxdepth 1 -type d -name "$NODE_MAJOR.*" -printf '%f\n' | sort -V -r | head -n1)"
+          [[ -n "$version_dir" ]] || { echo "Node $NODE_MAJOR is not present in RUNNER_TOOL_CACHE" >&2; exit 1; }
+          node_dir="$node_root/$version_dir/x64/bin"
+          [[ -x "$node_dir/node" ]] || { echo "Node executable missing from $node_dir" >&2; exit 1; }
+          echo "$node_dir" >> "$GITHUB_PATH"
+          "$node_dir/node" --version
+          "$node_dir/npm" --version
       - run: npm ci --ignore-scripts
       - name: Audit remediation registry cannot self-close external gates
         id: audit-remediation
@@ -56,11 +77,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 35
     steps:
-      - name: Checkout exact head (non-Windows)
+      - name: Checkout exact head without post-action (Ubuntu)
         if: runner.os != 'Windows'
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -Eeuo pipefail
+          git init .
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$HEAD_SHA"
+          git checkout --detach FETCH_HEAD
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
       - name: Checkout exact head without post-action (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -73,11 +102,21 @@ jobs:
           git fetch --no-tags --depth=1 origin $env:HEAD_SHA
           git checkout --detach FETCH_HEAD
           git remote set-url origin "https://github.com/${{ github.repository }}.git"
-      - name: Setup Node (non-Windows)
+      - name: Select hosted Node toolcache without post-action (Ubuntu)
         if: runner.os != 'Windows'
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '${{ matrix.node }}'
+        shell: bash
+        env:
+          NODE_MAJOR: ${{ matrix.node }}
+        run: |
+          set -Eeuo pipefail
+          node_root="$RUNNER_TOOL_CACHE/node"
+          version_dir="$(find "$node_root" -mindepth 1 -maxdepth 1 -type d -name "$NODE_MAJOR.*" -printf '%f\n' | sort -V -r | head -n1)"
+          [[ -n "$version_dir" ]] || { echo "Node $NODE_MAJOR is not present in RUNNER_TOOL_CACHE" >&2; exit 1; }
+          node_dir="$node_root/$version_dir/x64/bin"
+          [[ -x "$node_dir/node" ]] || { echo "Node executable missing from $node_dir" >&2; exit 1; }
+          echo "$node_dir" >> "$GITHUB_PATH"
+          "$node_dir/node" --version
+          "$node_dir/npm" --version
       - name: Select hosted Node toolcache without post-action (Windows)
         if: runner.os == 'Windows'
         shell: pwsh

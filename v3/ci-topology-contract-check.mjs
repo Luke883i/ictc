@@ -28,6 +28,10 @@ check(quiescence>=0&&portabilityVerdict>quiescence,'portability verdict must be 
 check(deautopoiesis.includes("steps.windows-quiescence.outcome == 'success'"),'Windows quiescence must contribute to the authoritative portability verdict');
 check(deautopoiesis.includes('RAIL: false-closure'),'false-closure firewall must publish one authoritative rail verdict');
 check(!deautopoiesis.includes('portability-quiescence-'),'quiescence must not create an independent status rail');
+check(!deautopoiesis.includes('uses: actions/checkout@'),'verdict-publishing deautopoiesis jobs must avoid checkout post-actions after the authoritative verdict');
+check(!deautopoiesis.includes('uses: actions/setup-node@'),'verdict-publishing deautopoiesis jobs must avoid setup/cache post-actions after the authoritative verdict');
+check(deautopoiesis.includes('Checkout exact head without post-action'),'deautopoiesis must use explicit exact-head checkout without post-actions');
+check(deautopoiesis.includes('Select hosted Node toolcache without post-action'),'deautopoiesis must select hosted Node without post-actions');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only',portabilityVerdictBoundary:'runtime+quiescence',falseClosureVerdict:true}));
+console.log(JSON.stringify({ok:true,topology:'one-authoritative-status-per-rail',fanoutStatuses:false,browserStatusAuthority:'orchestrator-only',portabilityVerdictBoundary:'runtime+quiescence+no-post-actions',falseClosureVerdict:true,postVerdictActions:false}));
