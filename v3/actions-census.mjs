@@ -6,6 +6,7 @@ const timeoutMs=Math.max(60_000,Math.min(70*60_000,Number(process.env.ICTC_CENSU
 const browserSourcePrefix='browser / ';
 const diagnosticPrefixes=Object.freeze(['diagnostic / ']);
 const aggregateChecks=new Set(['ci-verdict']);
+const annotationPhaseCache=new Map();
 
 if(!token||!repository||!/^[0-9a-f]{40}$/i.test(sha))throw new Error('GITHUB_TOKEN, GITHUB_REPOSITORY and exact HEAD_SHA are required');
 const headers={accept:'application/vnd.github+json',authorization:`Bearer ${token}`,'x-github-api-version':'2022-11-28','content-type':'application/json'};
@@ -37,12 +38,25 @@ function diagnosticPhase(run){
   const match=text.match(/ICTC_BROWSER_PHASE=([A-Za-z0-9._:-]+)/);
   return match?.[1]||'';
 }
-function sourceTarget(run){
+async function annotationPhase(run){
+  const name=String(run?.name||'');
+  if(!run?.id||!name.startsWith(browserSourcePrefix))return'';
+  if(annotationPhaseCache.has(run.id))return annotationPhaseCache.get(run.id);
+  let phase='';
+  try{
+    const annotations=await json(`${api}/repos/${repository}/check-runs/${run.id}/annotations?per_page=100`),text=(Array.isArray(annotations)?annotations:[]).map(row=>`${row?.title||''}\n${row?.message||''}\n${row?.raw_details||''}`).join('\n'),match=text.match(/ICTC_BROWSER_PHASE=([A-Za-z0-9._:-]+)/);
+    phase=match?.[1]||'';
+  }catch(error){console.warn(`browser annotation provenance unavailable for ${run.id}: ${error.message}`);}
+  if(phase)annotationPhaseCache.set(run.id,phase);
+  return phase;
+}
+async function resolvedPhase(run){return diagnosticPhase(run)||await annotationPhase(run);}
+function sourceTarget(run,phase=diagnosticPhase(run)){
   const name=String(run?.name||'');
   if(name.startsWith(browserSourcePrefix)){
     const browserSource=name.slice(browserSourcePrefix.length).trim();
     if(/^v3\/browser-[A-Za-z0-9._/-]+\.py$/.test(browserSource)){
-      const base=`https://github.com/${repository}/blob/${sha}/${browserSource}`,phase=diagnosticPhase(run);
+      const base=`https://github.com/${repository}/blob/${sha}/${browserSource}`;
       return phase?`${base}?phase=${encodeURIComponent(phase)}`:base;
     }
   }
@@ -75,27 +89,32 @@ while(true){
   previousSignature=signature;
   const required=runs.filter(run=>authority(run)==='required'),failures=rankedFailures(required),pending=required.filter(run=>conclusionState(run)==='pending'),diagnostic=runs.filter(run=>authority(run)==='diagnostic'),observedFor=Date.now()-started,settled=observedFor>=minObserveMs&&pending.length===0&&stablePolls>=2;
   if(settled||Date.now()>=deadline)break;
-  const diagnosticPending=diagnostic.filter(run=>conclusionState(run)==='pending').length;
-  await post('pending',`required: ${required.length} checks, ${failures.length} failed, ${pending.length} pending; diagnostic pending ${diagnosticPending}`,sourceTarget(failures[0]));
+  const diagnosticPending=diagnostic.filter(run=>conclusionState(run)==='pending').length,root=failures[0],rootPhase=root?await resolvedPhase(root):'';
+  await post('pending',`required: ${required.length} checks, ${failures.length} failed, ${pending.length} pending${rootPhase?` — ${rootPhase}`:''}; diagnostic pending ${diagnosticPending}`,sourceTarget(root,rootPhase));
   await new Promise(resolve=>setTimeout(resolve,pollMs));
 }
 
-const rows=last.map(run=>({
-  id:run.id,
-  name:run.name,
-  authority:authority(run),
-  status:run.status,
-  conclusion:run.conclusion||null,
-  detailsUrl:run.details_url||run.html_url||null,
-  sourceUrl:sourceTarget(run)||null,
-  diagnosticPhase:diagnosticPhase(run)||null,
-  failureRank:failureRank(run),
-  startedAt:run.started_at||null,
-  completedAt:run.completed_at||null,
-  state:conclusionState(run)
-}));
+const phases=new Map();
+for(const run of last)if(conclusionState(run)==='failure'&&String(run?.name||'').startsWith(browserSourcePrefix))phases.set(run.id,await resolvedPhase(run));
+const rows=last.map(run=>{
+  const phase=phases.get(run.id)||diagnosticPhase(run)||'';
+  return{
+    id:run.id,
+    name:run.name,
+    authority:authority(run),
+    status:run.status,
+    conclusion:run.conclusion||null,
+    detailsUrl:run.details_url||run.html_url||null,
+    sourceUrl:sourceTarget(run,phase)||null,
+    diagnosticPhase:phase||null,
+    failureRank:failureRank(run),
+    startedAt:run.started_at||null,
+    completedAt:run.completed_at||null,
+    state:conclusionState(run)
+  };
+});
 const requiredRows=rows.filter(row=>row.authority==='required'),diagnosticRows=rows.filter(row=>row.authority==='diagnostic');
-const failures=requiredRows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=requiredRows.filter(row=>row.state==='pending'),diagnosticFailures=diagnosticRows.filter(row=>row.state==='failure'),diagnosticPending=diagnosticRows.filter(row=>row.state==='pending'),report={schemaVersion:'1.6.0',authority:'github-check-runs-exact-head',acceptanceAuthority:'required-checks-only',diagnosticPolicy:'reported-not-gating',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,requiredCheckCount:requiredRows.length,diagnosticCheckCount:diagnosticRows.length,failureCount:failures.length,pendingCount:pending.length,diagnosticFailureCount:diagnosticFailures.length,diagnosticPendingCount:diagnosticPending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
+const failures=requiredRows.filter(row=>row.state==='failure').sort((a,b)=>a.failureRank-b.failureRank||String(a.name||'').localeCompare(String(b.name||''))||Number(a.id||0)-Number(b.id||0)),pending=requiredRows.filter(row=>row.state==='pending'),diagnosticFailures=diagnosticRows.filter(row=>row.state==='failure'),diagnosticPending=diagnosticRows.filter(row=>row.state==='pending'),report={schemaVersion:'1.7.0',authority:'github-check-runs-exact-head',acceptanceAuthority:'required-checks-only',diagnosticPolicy:'reported-not-gating',browserPhaseAuthority:'native-check-annotations+output-fallback',rootSelection:'leaf-before-aggregate',headSha:sha,observedAt:new Date().toISOString(),checkCount:rows.length,requiredCheckCount:requiredRows.length,diagnosticCheckCount:diagnosticRows.length,failureCount:failures.length,pendingCount:pending.length,diagnosticFailureCount:diagnosticFailures.length,diagnosticPendingCount:diagnosticPending.length,allGreen:failures.length===0&&pending.length===0,checks:rows};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});
 await writeFile(new URL('../artifacts/actions-census.json',import.meta.url),JSON.stringify(report,null,2));
 
