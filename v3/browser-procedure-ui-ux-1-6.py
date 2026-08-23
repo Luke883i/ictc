@@ -40,12 +40,6 @@ def close_plan(page):
     close=page.locator('#planDialog [aria-label="Chiudi"]')
     if close.count(): close.click()
     else: page.keyboard.press('Escape')
-def close_scheduler(page):
-    dialog=page.locator('#jobDialog')
-    if dialog.get_attribute('open') is not None:
-        close=dialog.locator('[aria-label="Chiudi configurazione job"]')
-        if close.count(): close.click()
-        else: page.keyboard.press('Escape')
 def ensure_monitoring_card(page):
     global PHASE
     missions=page.locator('#missionsList .mission-card')
@@ -54,9 +48,17 @@ def ensure_monitoring_card(page):
     trigger=page.locator('#monitoringView [data-rn-open-scheduler]');expect(trigger).to_be_visible();trigger.click();expect(page.locator('#jobDialog')).to_be_visible()
     PHASE='RN-seed-monitoring-form'
     form=page.locator('#jobDialog #missionForm');expect(form).to_be_visible();before=revision(page)
-    page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
+    page.evaluate("""()=>{const f=document.querySelector('#jobDialog #missionForm');if(!f)throw new Error('missionForm missing');const set=(name,value)=>{const el=f.elements[name];if(!el)return;el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};set('jobName','UI UX 1.6 isolated monitoring fixture');set('objective','Monitorare fonti pubbliche normative e decisioni di autorita pertinenti al perimetro dichiarato.');set('cadence','168');set('sourceHints','https://eur-lex.europa.eu');set('promptOverride','');}""")
     PHASE='RN-seed-submit'
-    form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();wait_revision_advance(page,before);close_plan(page);close_scheduler(page);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+    form.locator('button[type="submit"]').click();expect(page.locator('#jobDialog')).not_to_be_visible();wait_revision_advance(page,before);page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0");return page.locator('#missionsList .mission-card')
+def ensure_incident_card(page):
+    global PHASE
+    cases=page.locator('#incidentList .incident-card')
+    if cases.count()>0:return cases
+    PHASE='EC-seed-open-incident'
+    trigger=page.locator('#incidentsView .procedure-frame:visible .procedure-primary').first;expect(trigger).to_be_visible();trigger.click();dialog=page.locator('#incidentDialog');expect(dialog).to_be_visible()
+    PHASE='EC-seed-incident-form'
+    before=revision(page);dialog.locator('textarea[name="originalNarrative"]').fill('Evento isolato per verificare il percorso UI/UX senza dipendenze da journey precedenti.');dialog.locator('input[name="awarenessAt"]').fill('2026-08-10T12:30');dialog.locator('button[type="submit"]').click();expect(dialog).not_to_be_visible();wait_revision_advance(page,before);page.wait_for_function("()=>document.querySelectorAll('#incidentList .incident-card').length>0");return page.locator('#incidentList .incident-card')
 def ensure_action_ready_for_review(page):
     global PHASE
     verify=page.locator('#grcWorkspace [data-uiux-action-verify]')
@@ -99,7 +101,7 @@ try:
         PHASE='RN-plan-actions';assert_at_most_one_primary(page.locator('#planActions'),'RN-plan-dialog');assert page.locator('#planActions [data-run-mission]:visible,#planActions [data-pause-mission]:visible,#planActions [data-resume-mission]:visible,#planActions [data-revise-mission]:visible').count()<=3;assert page.locator('#planActions .procedure-evidence-action:visible').count()<=1;close_plan(page)
 
         PHASE='EC-sequentiality'
-        open_process(page,'EC-01');expect(page.locator('#incidentsView')).to_be_visible();cases=page.locator('#incidentList .incident-card');assert cases.count()>0
+        open_process(page,'EC-01');expect(page.locator('#incidentsView')).to_be_visible();cases=ensure_incident_card(page);assert cases.count()>0
         for i in range(min(cases.count(),12)):
             card=cases.nth(i);assert_at_most_one_primary(card,f'EC-card-{i}');primary=card.locator('.ux-primary:visible');assert primary.count()==1;assert 'Apri caso' in primary.inner_text();assert card.locator('.procedure-record-facts').count()==1
         cases.first.locator('.ux-primary').click();expect(page.locator('#incidentWorkspace')).to_be_visible();assert_at_most_one_primary(page.locator('#workspaceActions'),'EC-workspace-actions');assert page.locator('#incidentWorkspace .lens-panel.ux-progressive-panel').count()>=1;assert_targets(page.locator('#incidentWorkspace'),'EC-workspace');no_overflow(page);page.locator('#incidentWorkspace button[aria-label="Chiudi"]').click()
@@ -141,7 +143,7 @@ try:
         mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.goto(BASE+'/?view=processes',wait_until='networkidle');wait_owner(m);open_process(m,'RN-01');assert m.locator('#missionsList .mission-card').count()>0;assert m.locator('#missionsList .mission-card').first.locator('.ux-primary:visible').count()==1;no_overflow(m);mc.close()
 
         assert not errors,errors
-        report={'ok':True,'profile':'procedure-record-ontoepistemic-3.1-browser','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcProcessStatusProgressive':True,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Evidenze ICTC','epistemicDestination':'Relazioni tra decisioni, fonti ed evidenze','touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
+        report={'ok':True,'profile':'procedure-record-ontoepistemic-3.1-browser+isolated-fixtures','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'isolatedState':True,'primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','mcProcessStatusProgressive':True,'mcLegacyNaMappingCtas':0,'apLegacyDualProgressCtas':0,'apVerificationWrite':True,'epistemicEntrySurface':'Evidenze ICTC','epistemicDestination':'Relazioni tra decisioni, fonti ed evidenze','touchTargetsMinPx':44,'mobileOverflow':False,'claimBoundary':'Rendered server-backed browser falsification of the guided decision surfaces; not human usability research, legal compliance or independent assurance.'}
         (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-3.1: complete',flush=True);ctx.close();browser.close()
 except BaseException as exc:
     fail(exc);traceback.print_exc();raise

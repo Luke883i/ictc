@@ -11,6 +11,7 @@ const shellLineageWorkflow=await readFile(new URL('../.github/workflows/shell-ad
 const shellLineageProbe=await readFile(new URL('./browser-shell-admin-demo-probe-2-6.py',import.meta.url),'utf8');
 const wrapper=await readFile(new URL('./browser-procedure-finetuning-1-4.py',import.meta.url),'utf8');
 const pr60=await readFile(new URL('./browser-pr60-polish.py',import.meta.url),'utf8');
+const lineage16=await readFile(new URL('./browser-procedure-ui-ux-1-6.py',import.meta.url),'utf8');
 const browserJourneyJob=ci.match(/\n  browser-journeys:\n([\s\S]*?)\n  epistemic-professional-browser:/)?.[1]||'';
 const professionalBrowserJob=ci.match(/\n  epistemic-professional-browser:\n([\s\S]*?)\n  launcher-smoke:/)?.[1]||'';
 const ciVerdictJob=ci.match(/\n  ci-verdict:\n([\s\S]*)$/)?.[1]||'';
@@ -41,8 +42,16 @@ check(!pr60.includes('urllib.request'),'PR60 browser oracle must not retain dead
 check(pr60.includes("dataset.nativeSemanticLattice==='3.2.0'"),'PR60 browser oracle must synchronize on current native semantic authority');
 check(pr60.includes("localCompositionOwner==='proof-workspace-3-2.js'"),'PR60 browser oracle must wait for the current local Proof owner');
 check(pr60.includes('def ensure_rn_evidence_menu(page):'),'PR60 browser oracle must own its RN evidence fixture setup');
+check(pr60.includes("set('jobName','PR60 isolated evidence fixture')"),'PR60 RN fixture must satisfy the current required job profile contract');
+check(pr60.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'PR60 RN fixture must follow the current admin draft transition');
+check(!pr60.includes("expect(page.locator('#planDialog')).to_be_visible();close_plan"),'PR60 RN fixture must not expect the retired submit-to-plan transition');
 check(pr60.includes("[data-rn-open-scheduler]"),'PR60 browser oracle must create the minimum RN fixture through a supported UI entrypoint when state is empty');
 check(pr60.includes('if menu.count(): return menu'),'PR60 browser oracle must preserve existing state while remaining isolated-state safe');
+
+check(lineage16.includes("set('jobName','UI UX 1.6 isolated monitoring fixture')"),'UI/UX 1.6 RN fixture must satisfy the current required job profile contract');
+check(lineage16.includes("expect(page.locator('#jobDialog')).not_to_be_visible()"),'UI/UX 1.6 RN fixture must follow the current admin draft transition');
+check(lineage16.includes('def ensure_incident_card(page):'),'UI/UX 1.6 must own its EC fixture instead of depending on prior browser state');
+check(lineage16.includes("cases=ensure_incident_card(page)"),'UI/UX 1.6 EC assertions must consume the owned isolated fixture');
 
 check(!/statuses:\s*write/.test(ci),'canonical CI must not acquire commit-status write authority');
 check(!ciVerdictJob.includes('/statuses/'),'CI verdict must not publish parallel commit statuses');
@@ -72,4 +81,4 @@ check(deautopoiesis.includes("node-version: ${{ matrix.node }}"),'portability ma
 check(!deautopoiesis.includes('RAIL:'),'deautopoiesis must not publish parallel diagnostic rail verdicts');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,pr60FixtureAuthority:'self-seeded-current-owner',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
+console.log(JSON.stringify({ok:true,topology:'native-check-run-authority',fanoutStatuses:false,canonicalCiVerdictAuthority:'github-native-check-run',browserFailureProvenance:'native-matrix-check-name+source-artifact',browserMatrixIsolation:true,browserMaxParallel:4,browserFixtureAuthority:'self-contained-current-flow',pr60FixtureAuthority:'self-seeded-current-owner',shellLineageReadiness:'native-semantic-authority',deautopoiesisVerdictAuthority:'github-native-check-runs',portabilityVerdictBoundary:'setup+runtime+owned-quiescence+action-post-steps',windowsNodeOwnership:'baseline-scoped'}));
