@@ -38,7 +38,7 @@ Il footer resta persistente, compatto e non decisionale. Copy canonica: `ICTC ·
 - `Condizioni` -> GitHub `docs/OPEN_SOURCE_TERMS.md` con `noopener noreferrer`;
 - zero nuovi participant C0.1, endpoint, write authority o stati business;
 - closure 3.2.1 di procedure e Evidenze non modificata;
-- campagna bounded: **1.000/1.000** mutazioni modellate uccise su 10 failure family.
+- campagna bounded: **10.000/10.000** mutazioni source-string deterministiche uccise su 20 failure family dichiarate.
 
 ## Metriche e checklist
 
@@ -51,11 +51,13 @@ Il footer resta persistente, compatto e non decisionale. Copy canonica: `ICTC ·
 | Local terms links in current footer | 0 |
 | New business/write authorities | 0 |
 | New C0.1 participants | 0 |
-| Modeled mutations killed | 1.000/1.000 |
-| Failure-family coverage | 10/10 |
+| Source-string mutations killed | 10.000/10.000 |
+| Failure-family coverage | 20/20 |
 
 Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione con Semantic Workspace Closure 3.2.1; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate.
 
 ## Falsificazione e claim boundary
 
-`v3/workspace-chrome-3-3-saturation.mjs` combina ratchet statici sul repository e 1.000 mutanti deterministici distribuiti uniformemente tra token, font, palette header/footer, active state, target size, responsive, accessibilità, terms authority e owner boundary. Il 100% di kill-rate vale per questo vocabolario dichiarato: non equivale a 1.000 sessioni browser, preferenze di 1.000 utenti, certificazione WCAG, parere legale o assurance del deployment.
+`v3/workspace-chrome-3-3-saturation.mjs` esegue **10.000 source-string mutation executions** deterministiche sul contratto statico corrente, distribuite uniformemente su 20 failure family: token header/footer, font fallback, scope/versione, consumo palette header/footer, target size, responsive 900/640, forced-colors, reduced-motion, active state, focus, marker shell, terms authority, sicurezza del link esterno, bootstrap owner, current rail, contratto documentale e bounded scope. Ogni famiglia riceve 500 mutazioni; 10.000/10.000 devono essere rilevate.
+
+Il kill-rate vale soltanto per questo vocabolario dichiarato. Non equivale a 10.000 browser session, code mutation indipendenti compilati/eseguiti, preferenze di 10.000 utenti, certificazione WCAG, parere legale o assurance del deployment.
