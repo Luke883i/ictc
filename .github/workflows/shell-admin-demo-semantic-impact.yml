@@ -15,7 +15,7 @@ jobs:
           - {name: syntax, cmd: 'node scripts/syntax-check.mjs'}
           - {name: contract-2-6, cmd: 'node v3/shell-admin-demo-check-2-6.mjs'}
           - {name: saturation-2-6, cmd: 'node v3/shell-admin-demo-saturation-2-6.mjs'}
-          - {name: demo-seed, cmd: 'node v3/demo-seed-contract-check.mjs'}
+          - {name: demo-suite-2-2, cmd: 'node v3/demo-suite-2-2-runtime-semantic-check.mjs'}
           - {name: native-shell, cmd: 'node v3/native-shell-check.mjs'}
           - {name: v1-9-experience, cmd: 'node v3/v1-9-experience-check.mjs'}
           - {name: refined-product, cmd: 'node v3/refined-product-check.mjs'}

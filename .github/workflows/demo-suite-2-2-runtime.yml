@@ -3,11 +3,16 @@ name: Demo Suite 2.2 Runtime Semantic
 on:
   pull_request:
     paths:
+      - 'ictc.sh'
+      - 'v3/server.mjs'
+      - 'v3/public/ui/stable-shell.js'
+      - 'v3/browser-epistemic-professional-demo.py'
       - 'v3/demo/demo-suite-2-2-fixture-*.b64'
       - 'v3/runtime/demo-suite-2-2*.mjs'
       - 'v3/demo-suite-2-2-module-load-check.mjs'
       - 'v3/demo-suite-2-2-runtime-semantic-check.mjs'
       - 'v3/demo-suite-2-2-runtime-store-check.mjs'
+      - 'v3/demo-suite-2-2-projection-closure-check.mjs'
       - 'docs/DEMO_SUITE_2_2_RUNTIME_SEMANTIC.md'
       - '.github/workflows/demo-suite-2-2-runtime.yml'
   workflow_dispatch:
@@ -56,3 +61,14 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: RuntimeStore materialization + restart/idempotence
         run: node v3/demo-suite-2-2-runtime-store-check.mjs
+
+  projection-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Sole authority + 10M multi-abstraction mutations + server bootstrap
+        run: node v3/demo-suite-2-2-projection-closure-check.mjs
