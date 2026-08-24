@@ -3,52 +3,50 @@
 ## Superficie normativa
 
 ```bash
+npm run docs:check
 npm test
 npm run release:check
 ```
 
-`npm test` esegue `test:current`, cioè semantic current + runtime current. I rail storici restano regressioni/diagnostica; non ridefiniscono `v3/release-identity.json`.
+`npm test` esegue `test:current`: il documentation lattice check entra nella semantic current rail prima del runtime current. I rail storici restano regressioni/diagnostica e non ridefiniscono `v3/release-identity.json`.
 
-## Closure 2.8
+## Rail corrente
 
-I check mirati sono:
+La composizione UI corrente è **Native Semantic Lattice 3.2**:
 
 ```bash
-node v3/semantic-closure-2-8-runtime-check.mjs
-node v3/semantic-closure-2-8-causality-check.mjs
-node v3/semantic-closure-2-8-ui-check.mjs
-node v3/semantic-closure-2-8-saturation.mjs
+node v3/current-semantic-3-2.mjs
+node v3/native-semantic-lattice-3-2-check.mjs
+node v3/native-semantic-lattice-3-2-ui-check.mjs
+node v3/native-semantic-lattice-3-2-saturation.mjs
+node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-`current-release-suite-check.mjs`, già parte della semantic current suite, importa questi gate: non è stato creato un workflow parallelo.
+Il sistema documentale corrente è **Documentation Runtime 1.0**:
 
-### Modello 10M + 1M
+```bash
+npm run docs:check
+npm run docs:saturation
+```
 
-`semantic-closure-2-8-saturation.mjs` esegue deterministicamente:
-
-- **10.000.000 simulazioni** su combinazioni di ciclo rischio, stabilità evidenza, producer AI, lineage/cycle e semantic lifecycle event;
-- **1.000.000 mutazioni negative** su 11 failure family dichiarate;
-- discovery sulle prime 900.000 mutazioni;
-- holdout sulle ultime 100.000;
-- target kill-rate = 100%;
-- target new normalized family nel holdout = 0.
-
-Questa è bounded model evidence. Non dimostra completezza del fault vocabulary e non converte un volume alto in probabilità di correttezza.
+`docs:check` verifica authority/lifecycle, raggiungibilità degli owner, product truth, community routing, PR contract e package wiring. `docs:saturation` falsifica il modello degli invarianti documentali; il numero di trial non è un numero di contributor study, browser session o code mutation indipendenti.
 
 ## Livelli
 
 | Livello | Cosa falsifica |
 |---|---|
+| documentation current | authority, lifecycle, link graph, contributor/community routing, npm wiring |
 | syntax | parsing e import |
 | semantic current | authority, procedure contract, projection/UI, epistemic, static security, saturation |
 | runtime current | persistence, RBAC, evidence, readback, E2E runtime |
-| targeted closure | finding 2.8 e regressioni causali/temporali |
 | browser exact-head | journey reale sul server e DOM |
 | release check | stable rail + candidate current |
 
+I gate Closure 2.8 e delle slice precedenti restano lineage/regression evidence quando richiamati dalle suite correnti; non costituiscono la rail current per il solo fatto di avere un alto volume di mutation trial.
+
 ## Regola mutation
 
-Una mutazione utile rompe **un invariante indipendente**. Il kill-rate vale soltanto rispetto agli operatori dichiarati. Se una nuova failure family emerge, va aggiunta al vocabolario invece di aumentare il numero di seed per nasconderla.
+Una mutazione utile rompe **un invariante indipendente**. Il kill-rate vale soltanto rispetto agli operatori dichiarati. Se emerge una nuova failure family, va aggiunta al vocabolario invece di aumentare il numero di seed per nasconderla.
 
 Compression mutant: rimuovere un owner/guard/binding necessario deve riaprire almeno una signature. Test e prodotto non possono essere allentati nello stesso commit per ottenere verde.
 
@@ -62,4 +60,4 @@ I journey automatizzati sono E2 repository evidence e non sostituiscono review u
 
 ## Evidence / security
 
-I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP shape e limitation. Non attestano autenticità esterna, applicabilità legale, effectiveness, security del deployment o assurance indipendente.
+I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP shape e limitation. Non attestano autenticità esterna, applicabilità legale, effectiveness, security del deployment, configurazione server-side di GitHub o assurance indipendente.
