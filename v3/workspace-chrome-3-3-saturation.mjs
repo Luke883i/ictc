@@ -50,7 +50,7 @@ const operators=Object.freeze([
   {id:'terms-rel-loss',source:'shell',mutate:(v,i)=>replace(v,'target="_blank" rel="noopener noreferrer">Condizioni</a>',`target="_self">Condizioni</a>`,i)},
   {id:'bootstrap-loss',source:'native',mutate:(v,i)=>replace(v,"ensureStyle('/workspace-chrome-3-3.css','data-workspace-chrome-33')",`ensureStyle('/workspace-chrome-disabled-${i}.css','data-workspace-chrome-dead')`,i)},
   {id:'rail-loss',source:'current',mutate:(v,i)=>replace(v,"'v3/workspace-chrome-3-3-saturation.mjs'",`'v3/workspace-chrome-dead-${i}.mjs'`,i)},
-  {id:'design-contract-drift',source:'design',mutate:(v,i)=>replace(v,'10.000/10.000',`${9999-(i%20)}/10.000`,i)},
+  {id:'design-contract-drift',source:'design',mutate:(v,i)=>replace(v,/10\.000\/10\.000/g,`${9999-(i%20)}/10.000`,i)},
   {id:'scope-leak',source:'chrome',mutate:(v,i)=>`${v}\n#homeView[data-mutant="${i}"]{outline:0}\n`}
 ]);
 const TRIALS=10_000,counts=Object.fromEntries(operators.map(op=>[op.id,0]));let killed=0,lastNovelAt=-1;const seen=new Set();const survivors=[];
