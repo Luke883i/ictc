@@ -24,6 +24,8 @@ check(native.indexOf('workspace-chrome-3-3.css')<native.indexOf('workspace-finet
 check(shell.includes('home-priority-table')&&css.includes('.home-priority-table{overflow:hidden;border:1px solid')&&css.includes('border-top:1px solid var(--ui-ft-rule)!important'),'Home must be one bounded table-like surface with single separators');
 check(css.includes('.home-priority-table .home-business-priority:first-child{border-top:0!important}'),'Home first row must not draw a duplicate separator');
 check(shell.includes('home-priority-open')&&css.includes('.home-priority-open{display:inline-flex'),'Home actions must share one compact button treatment');
+check(css.includes('.home-priority-head>button{min-height:44px'),'Home catalogue navigation must retain a 44px minimum target');
+check(css.includes('.stable-footer-links a{display:inline-flex;align-items:center;min-height:44px'),'footer links must retain a 44px minimum target within the reserved footer geometry');
 check(proof.includes('retireDuplicateInvestigation(root,content,investigation)'),'Proof must explicitly retire duplicate lattice entries');
 check(proof.includes("root.querySelectorAll('#epistemicMetaCard,[data-meta-procedure=\"epistemic-lattice\"]')"),'Proof duplicate meta-card guard missing');
 check(proof.includes('content.prepend(investigation)'),'canonical lattice entry must remain first in Evidence');

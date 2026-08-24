@@ -12,11 +12,11 @@ html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-le
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-product{display:flex;align-items:center;min-width:0;height:100%}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-product b{display:inline-flex;align-items:center;margin:0;line-height:1;font-size:.73rem;letter-spacing:.025em}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-links{display:flex;align-items:center;justify-content:flex-end;gap:.75rem;height:100%;line-height:1}
-html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-links a{display:inline-flex;align-items:center;min-height:32px;font-size:.68rem}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-links a{display:inline-flex;align-items:center;min-height:44px;font-size:.68rem}
 
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities{gap:.32rem!important}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-head{margin:0!important;padding:.05rem .1rem .15rem}
-html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-head>button{min-height:36px;padding:.35rem .6rem;border:1px solid #d5dcf3;border-radius:9px;background:#f2f4ff;color:var(--color-brand-strong);font-weight:750}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-head>button{min-height:44px;padding:.35rem .6rem;border:1px solid #d5dcf3;border-radius:9px;background:#f2f4ff;color:var(--color-brand-strong);font-weight:750}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-table{overflow:hidden;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);box-shadow:0 7px 22px rgba(15,23,42,.045)}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-table .home-business-priority{width:100%;min-height:52px!important;margin:0!important;padding:.55rem .72rem!important;border:0!important;border-top:1px solid var(--ui-ft-rule)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;grid-template-columns:minmax(0,1fr) auto!important;gap:.8rem}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-table .home-business-priority:first-child{border-top:0!important}
