@@ -12,8 +12,9 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
 7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
 8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
-9. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
-10. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
+9. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e presentazione bounded di header/footer; non è business authority.
+10. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
+11. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
 Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti.
 
@@ -36,6 +37,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 | composition root UI | `v3/public/ui/active-experience.js` | una seconda root |
 | contratto/copy 3.2 | `native-semantic-lattice-3-2.js` | copy locale divergente |
 | composizione locale | owner locale + `native-workspace-3-2.js` bootstrap | un global post-render rewriter |
+| chrome globale | `design-tokens.css` + `workspace-chrome-3-3.css` + `21_DESIGN_SYSTEM.md` | palette/header/footer authority parallele |
 | annotazione globale | `semantic-composition-runtime.js` | business copy/reorder nel kernel globale |
 | decision presentation | `procedure-ui-ux-1-6.js` / C0.1 | una seconda presentation authority |
 | linguaggio business | `03_ENDUSER_LANGUAGE.md` + Semantic Foundation | label locali divergenti |
@@ -52,6 +54,10 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 La regola UI corrente è **work first, explanation on demand**. `active-experience.js` installa gli owner locali 3.2 e solo dopo il kernel globale di annotazione. Il kernel è annotation-only: non possiede la gerarchia locale, non introduce copy business e non riordina il DOM locale.
 
 Processi di Compliance è un catalogo di capability eterogenee e usa una matrice responsive 3 → 2 → 1. I record business ripetuti e comparabili usano invece list/row grammar. Il lifecycle costituzionale resta C0.1: `harmonization → presentation → integrity → journey → annotation`.
+
+## Workspace Chrome 3.3
+
+`design-tokens.css` possiede i token condivisi del chrome; `workspace-chrome-3-3.css` li applica soltanto a header/footer quando `stable-shell.js` espone il marker 3.3. Il bootstrap resta `native-workspace-3-2.js`: 3.3 non introduce un nuovo participant C0.1, non modifica business copy e non possiede navigation semantics. La falsificazione dedicata è `node v3/workspace-chrome-3-3-saturation.mjs`.
 
 ## Classi documentali
 
@@ -73,14 +79,15 @@ npm test
 npm run release:check
 ```
 
-Per lavoro specifico sulla composizione 3.2:
+Per lavoro specifico sulla composizione 3.2 / chrome 3.3:
 
 ```bash
 node v3/current-semantic-3-2.mjs
 node v3/native-semantic-lattice-3-2-check.mjs
 node v3/native-semantic-lattice-3-2-ui-check.mjs
+node v3/workspace-chrome-3-3-saturation.mjs
 node v3/native-semantic-lattice-3-2-saturation.mjs
 node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-`npm run docs:saturation` falsifica il modello documentale. Trial modellati, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
+`npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
