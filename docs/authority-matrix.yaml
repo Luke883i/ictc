@@ -1,4 +1,4 @@
-version: 10
+version: 11
 surfaces:
   product_intent:
     authority: docs/PRODUCT.md
@@ -44,8 +44,18 @@ surfaces:
     runtime_marker: v3/public/ui/stable-shell.js
     bootstrap: v3/public/ui/native-workspace-3-2.js
     dod: docs/21_DESIGN_SYSTEM.md
+    version: '3.3'
     classification: bounded-global-chrome-presentation
     scope: stable-header-and-stable-footer-only
+  ui_presentation_closure:
+    effective_layer: v3/public/workspace-finetuning-3-4.css
+    runtime_marker: v3/public/ui/stable-shell.js
+    bootstrap: v3/public/ui/native-workspace-3-2.js
+    dod: docs/UI_FINE_TUNING_3_4_DOD.md
+    version: '3.4'
+    classification: effective-transitional-presentation-closure
+    scope: chrome-plus-home-processes-evidence-presentation-only
+    retirement_target: absorb-observable-invariants-into-canonical-local-owners-and-delete-final-resolver
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
   api:
@@ -117,6 +127,9 @@ rules:
   - ui_composition_root is the only bootstrap authority for active UI composition
   - local native surface owners own information hierarchy and compression for their surfaces; the global semantic annotation runtime may classify metadata but may not rewrite business copy, reorder local DOM, or bootstrap local owners
   - ui_workspace_chrome is presentation-only and may style stable header/footer through shared tokens; it may not own business copy, local surface hierarchy, navigation semantics, runtime state or C0.1 participation
+  - ui_presentation_closure records the effective final presentation layer currently executed; it is transitional, may not acquire business/write/C0.1 authority, and must not become the destination for new presentation generations
+  - tests for a transitional closure protect observable invariants and must not require a conflicting predecessor rule to remain executable solely to prove that the closure overrides it
+  - deleting a superseded presentation cause together with its compensating override is preferred when observable behavior and accessibility invariants remain equivalent
   - the native workspace bootstrap may aggregate installer calls and bounded stylesheets but may not become a business write authority or a C0.1 participant
   - shared UI primitives are structural and accessibility helpers; they may not inject manifesto, purpose, why, evidence or boundary narratives into every surface
   - each landing exposes at most one primary purpose sentence before operational work; technical and methodological context is progressive by default
