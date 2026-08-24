@@ -1,23 +1,23 @@
 # START HERE — presa in carico ICTC
 
-Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing e non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
+Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing: non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
 
-## Percorso minimo corrente
+## Percorso minimo
 
-1. [README](../README.md) — identità sintetica, processi, stack e runtime corrente.
-2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto.
-3. [AGENTS](../AGENTS.md) — invarianti globali di sviluppo.
-4. [Authority matrix](authority-matrix.yaml) — owner eseguibili/documentali e regole di non-competizione.
-5. [Architecture](11_ARCHITECTURE.md) — AS-IS browser -> runtime -> SQLite.
-6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — basis, authority e read/write boundary.
-7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md).
-8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — information composition corrente.
-9. [Workspace Design System](21_DESIGN_SYSTEM.md) — token e chrome owner 3.3, più mappa dell'effective presentation corrente.
-10. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — **effective transitional presentation closure**, non nuovo business/design-system owner.
-11. [Testing](TESTING.md) e [Development](DEVELOPMENT.md).
-12. [Documentation Standard](DOCUMENTATION_STANDARD.md), [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) e [documentation-manifest.json](documentation-manifest.json).
+1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
+2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
+3. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
+4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
+5. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
+6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
+7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
+8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
+9. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer, con mappa dell'effective presentation corrente.
+10. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — effective transitional presentation closure corrente; non è business/design-system owner permanente.
+11. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
+12. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
-La data più recente non crea authority. `uiComposition=3.2`, `workspaceChrome=3.3` e `uiPresentation=3.4` sono assi distinti: il terzo registra l'effetto finale corrente e non canonizza la closure 3.4 come owner permanente.
+Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = 3.4` sono assi distinti: il terzo registra l'effetto finale AS-IS senza canonizzare la closure come owner permanente.
 
 ## Contributor e community path
 
@@ -34,48 +34,65 @@ La data più recente non crea authority. `uiComposition=3.2`, `workspaceChrome=3
 
 | Se devi cambiare | Parti da | Non creare |
 |---|---|---|
-| product intent/confini | `docs/PRODUCT.md` | product truth in prompt/PR/DoD |
-| composition root UI | `v3/public/ui/active-experience.js` | seconda root |
-| information composition | owner locali 3.2/3.2.1 | global post-render business rewriter |
-| chrome globale | `design-tokens.css` + `workspace-chrome-3-3.css` | palette/header/footer owner paralleli |
-| presentation closure corrente | `workspace-finetuning-3-4.css` come debito transitorio | `workspace-finetuning-3-5.css` |
+| product intent/confini | `docs/PRODUCT.md` | una product truth in prompt/PR/DoD |
+| composition root UI | `v3/public/ui/active-experience.js` | una seconda root |
+| contratto/copy 3.2 | `native-semantic-lattice-3-2.js` | copy locale divergente |
+| composizione locale | owner locale + `native-workspace-3-2.js` bootstrap | un global post-render rewriter |
+| chrome globale | `design-tokens.css` + `workspace-chrome-3-3.css` + `21_DESIGN_SYSTEM.md` | palette/header/footer authority parallele |
+| presentation closure corrente | `workspace-finetuning-3-4.css` come debito transitorio registrato | `workspace-finetuning-3-5.css` o altro final resolver |
 | annotazione globale | `semantic-composition-runtime.js` | business copy/reorder nel kernel globale |
-| decision presentation | `procedure-ui-ux-1-6.js` / C0.1 | seconda decision-presentation authority |
-| processo | registry/adapter/policy + runtime nativo | ottavo processo business |
-| evidenza | evidence/reference contracts | evidenza = conclusione |
-| persistenza | Store + SQLite persistence | secondo business store |
+| decision presentation | `procedure-ui-ux-1-6.js` / C0.1 | una seconda presentation authority |
+| linguaggio business | `03_ENDUSER_LANGUAGE.md` + Semantic Foundation | label locali divergenti |
+| processo | registry/adapter/policy + runtime nativo | un ottavo processo business |
+| azione umana | `semantic-foundation-actions.js` + annotation C0.1 | write authority nel browser |
+| evidenza | evidence/reference contracts | equivalenza evidenza = conclusione |
+| persistenza | Store + SQLite persistence | un secondo business store |
 | API | `docs/openapi.yaml` + handler runtime | endpoint UI-only paralleli |
-| documentazione | standard + manifest + runtime check | authority implicita per data/nome file |
-| test/release | current release suite + CI | gate PR alternativo |
+| documentazione | `DOCUMENTATION_STANDARD.md` + manifest | authority implicita per data/nome file |
+| test/release | current release suite + CI | un gate PR alternativo |
 
-## Regola di convergenza visuale
+## Native Semantic Lattice 3.2
 
-La closure 3.4 è oggi caricata dopo 3.3 e modifica l'output finale. È quindi registrata come **effective** ma resta un target di sottrazione. I test devono proteggere gli invarianti osservabili; **non devono richiedere che una causa legacy rimanga presente soltanto per dimostrare che la closure la sovrascrive**.
+La regola UI corrente è **work first, explanation on demand**. `active-experience.js` installa gli owner locali 3.2 e solo dopo il kernel globale di annotazione. Il kernel è annotation-only: non possiede la gerarchia locale, non introduce copy business e non riordina il DOM locale.
 
-Il target naturale è:
+Processi di Compliance è un catalogo di capability eterogenee e usa una matrice responsive 3 → 2 → 1. I record business ripetuti e comparabili usano invece list/row grammar. Il lifecycle costituzionale resta C0.1: `harmonization → presentation → integrity → journey → annotation`.
 
-`pochi owner chiari + pochi layer fisici`
+## Workspace Chrome 3.3 e presentation closure 3.4
 
-senza perdita degli invarianti visivi introdotti da 3.4/3.4.1.
+`design-tokens.css` possiede i token condivisi del chrome; `workspace-chrome-3-3.css` li applica a header/footer quando `stable-shell.js` espone il marker 3.3. Il bootstrap resta `native-workspace-3-2.js`: 3.3 non introduce un nuovo participant C0.1, non modifica business copy e non possiede navigation semantics.
+
+`workspace-finetuning-3-4.css` è invece l'effective final presentation layer corrente. È registrato perché modifica davvero l'output, ma resta una closure transitoria da assorbire negli owner canonici. I test devono proteggere gli invarianti osservabili e **non possono richiedere la sopravvivenza di una causa legacy soltanto per dimostrare che la closure la sovrascrive**.
 
 ## Classi documentali
 
 - **current**: authority AS-IS;
-- **operating**: istruzioni operative;
+- **operating**: istruzioni per modificare/testare il sistema;
 - **policy**: regole repository/community;
-- **lineage**: storia, non current truth;
-- **source-input**: input originari;
-- **roadmap**: futuro intenzionale;
+- **lineage**: storia e decision evidence, non current truth;
+- **source-input**: input originari, non AS-IS;
+- **roadmap**: futuro intenzionale, non comportamento corrente;
 - **generated**: evidenza derivata, mai hand-edited.
+
+I documenti storici classificati come lineage non sono autorità corrente. `00_PROMPT_CLARIFICATION.md` è source-input. `01_TO_BE_IDEA.md` e `ROADMAP.md` sono roadmap. Il DoD di una slice possiede soltanto il contratto della slice dichiarata e non ridefinisce implicitamente product/architecture authority.
 
 ## Verifica minima
 
 ```bash
 npm run docs:check
-npm run docs:saturation
 npm test
 npm run release:check
-node v3/ui-finetuning-3-4-check.mjs
 ```
 
-Trial modellati, source-string mutations, browser runtime, user study e setting GitHub/deployment sono classi di evidenza differenti. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati dai file del repository.
+Per lavoro specifico sulla composizione 3.2 / chrome 3.3 / presentation 3.4:
+
+```bash
+node v3/current-semantic-3-2.mjs
+node v3/native-semantic-lattice-3-2-check.mjs
+node v3/native-semantic-lattice-3-2-ui-check.mjs
+node v3/workspace-chrome-3-3-saturation.mjs
+node v3/ui-finetuning-3-4-check.mjs
+node v3/native-semantic-lattice-3-2-saturation.mjs
+node v3/native-semantic-lattice-3-2-stress.mjs
+```
+
+`npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
