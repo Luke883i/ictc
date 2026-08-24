@@ -7,7 +7,7 @@ const baseline=Object.freeze({tokens,chrome,shell,native,current,design});
 const tokenNames=['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-end','--chrome-on-dark','--chrome-control-bg','--chrome-control-border','--chrome-active-bg','--chrome-active-text','--chrome-focus'];
 const count=(text,needle)=>text.split(needle).length-1;
 const checks=Object.freeze([
-  ...tokenNames.map(token=>({id:`token:${token}`,test:s=>count(s.tokens,token)===1})),
+  ...tokenNames.map(token=>({id:`token:${token}`,test:s=>count(s.tokens,`${token}:`)===1})),
   {id:'font-stack',test:s=>s.tokens.includes('--font-sans:"Inter Variable","Inter",ui-sans-serif,system-ui')},
   {id:'scope-3.3',test:s=>s.chrome.includes('data-workspace-chrome="3.3"')},
   {id:'header-token-consumption',test:s=>['var(--chrome-header-start)','var(--chrome-header-mid)','var(--chrome-header-end)'].every(x=>s.chrome.includes(x))},
