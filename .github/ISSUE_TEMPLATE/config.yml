@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Luke883i/ictc/blob/main/SECURITY.md
+    about: Do not disclose vulnerabilities, credentials or exploit details in a public issue. Follow the private reporting route in SECURITY.md.
+  - name: Support and usage boundary
+    url: https://github.com/Luke883i/ictc/blob/main/SUPPORT.md
+    about: Read the support scope before opening a public issue.
