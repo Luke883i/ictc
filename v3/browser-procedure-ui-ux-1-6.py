@@ -13,8 +13,8 @@ PROCESS_SURFACES={
     'AP-01':('#grcWorkspace','actions','grc-workspace-3-2.js'),
 }
 PROCESS_READY={
-    'RN-01':"()=>{const r=document.querySelector('#monitoringView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#missionsList .mission-card')||r.querySelector('[data-rn-open-scheduler]')));}",
-    'EC-01':"()=>{const r=document.querySelector('#incidentsView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#incidentList .incident-card')||r.querySelector('.procedure-frame .procedure-primary')));}",
+    'RN-01':"()=>{const r=document.querySelector('#monitoringView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2.1\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#missionsList .mission-card')||r.querySelector('[data-rn-open-scheduler]')));}",
+    'EC-01':"()=>{const r=document.querySelector('#incidentsView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2.1\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#incidentList .incident-card')||r.querySelector('.procedure-frame .procedure-primary')));}",
     'AO-01':"()=>{const r=document.querySelector('#grcWorkspace'),q=r?.querySelector('[data-seq-queue-count]'),s=r?.querySelector('[data-seq-ao-search]'),f=r?.querySelector('[data-seq-ao-filter]'),d=r?.querySelector('.procedure-decision-frame .composition-process-context');return !!(q&&s&&f&&d);}",
     'MC-01':"()=>{const r=document.querySelector('#grcWorkspace'),s=r?.querySelector('details[data-composition-detail=\"process-status\"]'),f=r?.querySelector('[data-grc-form=\"mapping\"]'),d=r?.querySelector('.procedure-decision-frame .composition-process-context');return !!(s&&f&&d);}",
     'AP-01':"()=>{const r=document.querySelector('#grcWorkspace'),q=r?.querySelector('[data-seq-queue-count]'),d=r?.querySelector('.procedure-decision-frame .composition-process-context');return !!(q&&d);}",
@@ -23,7 +23,7 @@ PROCESS_READY={
 def fail(exc):
     payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
     (ART/'browser-procedure-ui-ux-1-6-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
-    print(f'::error title=browser-procedure-ui-ux-3-2::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
+    print(f'::error title=browser-procedure-ui-ux-3-2-1::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
     m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
@@ -37,7 +37,7 @@ def wait_experience_cycle(page,before=0):
     return experience_cycle(page)
 
 def wait_process_catalogue(page):
-    page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&document.querySelectorAll('#procedureHub .procedure-card').length===7")
+    page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&document.querySelector('#procedureHub')?.dataset.procedureHub==='semantic-workspace-closure-3-2-1'&&document.querySelectorAll('#procedureHub .procedure-card').length===7")
     if experience_cycle(page)==0:wait_experience_cycle(page,0)
 
 def open_process(page,code):
@@ -119,7 +119,7 @@ try:
         else:expect(m.locator('#monitoringView [data-rn-open-scheduler]')).to_be_visible()
         no_overflow(m);assert not mobile_writes,mobile_writes;mc.close()
         PHASE='read-only-boundary';assert not writes,writes;PHASE='page-errors';assert not errors,errors
-        report={'ok':True,'profile':'native-semantic-lattice-3.2-context-tolerant-ui-oracle','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'readOnly':True,'fixtureAuthority':'none','emptyAndPopulatedStateTolerant':True,'semanticReadiness':'monotonic-final-c01-cycle+declared-owner+observable-projection','primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','touchTargetsMinPx':44,'mobileOverflow':False,'proofEpistemicNavigation':'proof-secondary+command-palette-meta-row','epistemicBusinessProcess':False,'epistemicSecondaryEntry':'proofView','grcDisclosurePersistence':'same-process-context-events-preserve-user-state','writeCount':len(writes),'claimBoundary':'Rendered server-backed UI invariant check; stateful creation and transition coverage belongs to dedicated journey/runtime tests.'}
-        (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-3.2: complete',flush=True);ctx.close();browser.close()
+        report={'ok':True,'profile':'native-semantic-lattice-3.2.1-context-tolerant-ui-oracle','procedures':['RN-01','EC-01','AO-01','MC-01','AP-01'],'readOnly':True,'fixtureAuthority':'none','emptyAndPopulatedStateTolerant':True,'semanticReadiness':'monotonic-final-c01-cycle+declared-owner+observable-projection','primaryActionMax':1,'visibleSupportActionsMax':3,'sharedRecordPrimitive':'procedure-record-card','touchTargetsMinPx':44,'mobileOverflow':False,'proofEpistemicNavigation':'proof-secondary+command-palette-meta-row','epistemicBusinessProcess':False,'epistemicSecondaryEntry':'proofView','grcDisclosurePersistence':'same-process-context-events-preserve-user-state','writeCount':len(writes),'claimBoundary':'Rendered server-backed UI invariant check; stateful creation and transition coverage belongs to dedicated journey/runtime tests.'}
+        (ART/'browser-procedure-ui-ux-1-6.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print('browser-procedure-ui-ux-3.2.1: complete',flush=True);ctx.close();browser.close()
 except BaseException as exc:
     fail(exc);traceback.print_exc();raise
