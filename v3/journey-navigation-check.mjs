@@ -9,7 +9,7 @@ const [router, primitives, styles, css] = await Promise.all([
   read('./public/procedure-journey-2-1.css')
 ]);
 
-for (const token of ['document.startViewTransition', 'prefers-reduced-motion: reduce', 'ictcTransitionDirection', 'transitionDirection', 'focusAfterTransition', 'announceSurfaceChanged']) {
+for (const token of ['document.startViewTransition', 'prefers-reduced-motion: reduce', 'ictcTransitionDirection', 'transitionDirection', 'focusAfterTransition', 'announceSurfaceChanged', 'commitSurfaceNavigation']) {
   assert.ok(router.includes(token), `surface transition contract missing ${token}`);
 }
 for (const token of ["setAttribute('aria-current'", 'document.documentElement.dataset.ictcSurface', "new CustomEvent('ictc:surface-changed'", 'routeUrl(route)', 'commitHistory(route']) {
@@ -28,11 +28,20 @@ assert.equal(router.includes('await document.startViewTransition'), false, 'navi
 const start = router.indexOf('export function navigateSurface');
 const end = router.indexOf('export function getBackLabel');
 const nav = router.slice(start, end);
-for (const token of ['applyRoute(next)', 'commitHistory(next', 'announceSurfaceChanged(next', 'runTransition(renderSurfaceNavigation']) {
-  assert.ok(nav.includes(token), `navigateSurface missing synchronous contract ${token}`);
+for (const token of ['applyRoute(next)', 'commitHistory(next', 'commitSurfaceNavigation(next, from, direction)']) {
+  assert.ok(nav.includes(token), `navigateSurface missing committed contract ${token}`);
 }
 assert.ok(nav.indexOf('applyRoute(next)') < nav.indexOf('commitHistory(next'), 'route state must precede History commit');
-assert.ok(nav.indexOf('commitHistory(next') < nav.indexOf('announceSurfaceChanged(next'), 'History must be committed before surface semantic notification');
-assert.ok(nav.indexOf('announceSurfaceChanged(next') < nav.indexOf('runTransition(renderSurfaceNavigation'), 'surface semantic notification must not be delayed by visual animation');
+assert.ok(nav.indexOf('commitHistory(next') < nav.indexOf('commitSurfaceNavigation(next, from, direction)'), 'History must be committed before the surface DOM/semantic commit');
 
-console.log('journey-navigation-check: ok (synchronous route semantics + aria-current/data-ictc-surface current path + progressive visual transitions; no redundant breadcrumb owner)');
+const commitStart=router.indexOf('function commitSurfaceNavigation');
+const commitEnd=router.indexOf('export function navigateSurface');
+const committed=router.slice(commitStart,commitEnd);
+for(const token of ['runTransition(() => {','renderSurfaceNavigation();','announceSurfaceChanged(next, from, direction, extra);'])assert.ok(committed.includes(token),`surface commit missing ${token}`);
+assert.ok(committed.indexOf('renderSurfaceNavigation();') < committed.indexOf('announceSurfaceChanged(next, from, direction, extra);'),'surface semantic notification must follow the visible DOM commit inside the transition update');
+const restoreStart=router.indexOf('function restoreFromHistory');
+const restoreEnd=router.indexOf('export function installSurfaceRouter');
+const restore=router.slice(restoreStart,restoreEnd);
+assert.ok(restore.includes("commitSurfaceNavigation(next, from, 'back', { history: 'pop' })"),'popstate must use the same committed surface boundary');
+
+console.log('journey-navigation-check: ok (synchronous route/history state + committed visible-surface semantic event + progressive transitions; no redundant breadcrumb owner)');
