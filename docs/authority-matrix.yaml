@@ -1,4 +1,4 @@
-version: 11
+version: 12
 surfaces:
   product_intent:
     authority: docs/PRODUCT.md
@@ -54,7 +54,10 @@ surfaces:
     dod: docs/UI_FINE_TUNING_3_4_DOD.md
     version: '3.4'
     classification: effective-transitional-presentation-closure
-    scope: chrome-plus-home-processes-evidence-presentation-only
+    scope: landing-plus-home-plus-evidence-presentation-only
+    absorbed:
+      chrome: v3/public/workspace-chrome-3-3.css
+      process_catalogue: v3/public/semantic-workspace-closure-3-2-1.css
     retirement_target: absorb-observable-invariants-into-canonical-local-owners-and-delete-final-resolver
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
@@ -127,7 +130,8 @@ rules:
   - ui_composition_root is the only bootstrap authority for active UI composition
   - local native surface owners own information hierarchy and compression for their surfaces; the global semantic annotation runtime may classify metadata but may not rewrite business copy, reorder local DOM, or bootstrap local owners
   - ui_workspace_chrome is presentation-only and may style stable header/footer through shared tokens; it may not own business copy, local surface hierarchy, navigation semantics, runtime state or C0.1 participation
-  - ui_presentation_closure records the effective final presentation layer currently executed; it is transitional, may not acquire business/write/C0.1 authority, and must not become the destination for new presentation generations
+  - ui_presentation_closure records only the still-unabsorbed effective final presentation layer; it is transitional, may not acquire business/write/C0.1 authority, and must not become the destination for new presentation generations
+  - once a presentation responsibility is absorbed into its canonical owner, its selectors must be removed from ui_presentation_closure and recorded under absorbed
   - tests for a transitional closure protect observable invariants and must not require a conflicting predecessor rule to remain executable solely to prove that the closure overrides it
   - deleting a superseded presentation cause together with its compensating override is preferred when observable behavior and accessibility invariants remain equivalent
   - the native workspace bootstrap may aggregate installer calls and bounded stylesheets but may not become a business write authority or a C0.1 participant
