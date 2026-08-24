@@ -4,7 +4,7 @@
 
 Rendere il sistema documentale ICTC una superficie operativa verificabile: un contributor deve poter passare da repository a product truth, authority, owner, test e percorso di review senza ricostruire la cronologia delle PR o interpretare la data dei documenti.
 
-Questa slice è stacked su Native Semantic Lattice 3.2 e **non** modifica UI, runtime business, C0.1, process registry, persistenza o business write authority.
+Questa slice è materializzata direttamente su `main` dopo Native Semantic Lattice 3.2 e DEMO Suite 2.2; **non** modifica UI, runtime business, C0.1, process registry, persistenza o business write authority.
 
 ## Invarianti
 
@@ -39,6 +39,8 @@ npm run release:check
 - nessuna attestazione che GitHub Private Vulnerability Reporting o branch protection siano abilitati: sono acceptance esterne osservabili solo lato repository settings;
 - nessun tentativo di rendere tutti i documenti storici current.
 
-## Merge dependency
+## Mainline reconciliation
 
-Questa slice assume come base l'head di PR #99 (`agent/native-semantic-lattice-3-2`). Finché #99 non è in `main`, la PR documentale resta stacked per evitare duplicazione del diff 3.2. Dopo il merge della #99 può essere retargettata a `main` mantenendo invariato il proprio diff semantico.
+La candidate deve avere `main` come base GitHub, merge-base uguale all'head corrente di `main` e `behind = 0`. Una PR merged su una branch intermedia non materializza Documentation Runtime su `main` e non soddisfa questo DoD.
+
+Dopo il merge, `docs/PRODUCT.md`, `docs/documentation-manifest.json`, `GOVERNANCE.md` e i gate `docs:*` devono essere osservabili sul nuovo exact head di `main`. La presenza degli artefatti sulla sola branch di sviluppo non è evidenza di presa in carico.
