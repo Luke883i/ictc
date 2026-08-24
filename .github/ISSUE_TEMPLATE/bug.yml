@@ -3,6 +3,9 @@ about: Report a runtime, wiring, claim or evidence defect
 title: "[DEFECT] "
 labels: ["defect", "triage"]
 body:
+  - type: markdown
+    attributes:
+      value: "Do not report vulnerabilities, credentials, personal data or exploit details here. Follow SECURITY.md and use its private reporting route."
   - type: dropdown
     id: class
     attributes:
@@ -12,7 +15,7 @@ body:
         - Epistemic claim or label
         - Persistence, readback or receipt
         - Accessibility or visual
-        - Security or authorization
+        - Authorization behavior without vulnerability details
     validations:
       required: true
   - type: textarea
