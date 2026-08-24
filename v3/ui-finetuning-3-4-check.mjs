@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
-const [index,tokens,css,shell,native,proof]=await Promise.all([read('./public/index.html'),read('./public/design-tokens.css'),read('./public/workspace-finetuning-3-4.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./public/ui/proof-workspace-3-2.js')]);
+const [index,tokens,css,shell,native,proof,closure]=await Promise.all([read('./public/index.html'),read('./public/design-tokens.css'),read('./public/workspace-finetuning-3-4.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./public/ui/proof-workspace-3-2.js'),read('./public/semantic-workspace-closure-3-2-1.css')]);
 const issues=[],check=(value,message)=>{if(!value)issues.push(message)};
 check(index.includes('<svg class="ictc-brand-mark"')&&!index.includes('/assets/ictc-mark.png'),'header must mount canonical inline icon and retire raster logo mount');
 for(const token of ['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-mid','--chrome-footer-end','--landing-start','--landing-end','--landing-border','--home-action-start','--home-action-end','--home-action-text'])check((tokens.match(new RegExp(token.replace(/[-]/g,'\\-')+':','g'))||[]).length===1,`token uniqueness ${token}`);
@@ -29,15 +29,14 @@ check(proof.includes("root.querySelectorAll('#epistemicMetaCard,[data-meta-proce
 check(proof.includes('content.prepend(investigation)'),'canonical lattice entry must remain first in Evidence');
 check(css.includes('#proofView .proof-head{max-width:none!important;margin:.2rem 0 .65rem!important;padding:.85rem 1rem!important'),'Evidence landing header treatment missing');
 check(css.includes('#proofView #proofTitle')&&css.includes('color:var(--color-text)!important'),'Evidence header must use default text color');
-check(css.includes('#procedureHub{align-items:stretch!important;grid-auto-rows:1fr!important}')&&css.includes('height:100%!important;min-height:226px!important;align-self:stretch!important'),'process cards must converge to equal desktop geometry');
-check(css.includes('min-width:0;max-width:100%'),'process catalogue cards must contain intrinsic-width content');
-check(css.includes('>:not(header,h2,.procedure-purpose,footer){display:none!important}'),'catalogue card must expose only locally meaningful canonical children');
-check(css.includes('#procedureHub .procedure-card footer .executive-evidence-inline{display:none!important}'),'catalogue must hide the legacy executive evidence annotation while preserving current DOM trace');
-check(css.includes('#procedureHub .procedure-card .procedure-primary{min-height:44px!important'),'catalogue primary actions must retain a 44px minimum target');
-check(css.includes('@media(max-width:719px)')&&css.includes('height:auto!important;min-height:0!important'),'equal-height desktop contract must collapse safely on mobile');
+check(!css.includes('#procedureHub'),'3.4 final resolver must not own process catalogue geometry or visibility');
+check(closure.includes('#procedureHub{align-items:stretch!important;grid-auto-rows:1fr!important}')&&closure.includes('height:100%!important;align-self:stretch!important')&&closure.includes('min-height:226px!important'),'3.2.1 owner must provide equal desktop catalogue geometry');
+check(closure.includes('min-width:0;max-width:100%'),'process catalogue cards must contain intrinsic-width content in local owner');
+check(closure.includes('>:not(header,h2,.procedure-purpose,footer){display:none!important}'),'local catalogue owner must expose only canonical children');
+check(closure.includes('#procedureHub .procedure-card footer .executive-evidence-inline{display:none!important}'),'local catalogue owner must hide legacy executive evidence annotation');
+check(closure.includes('#procedureHub .procedure-card .procedure-primary{min-height:44px!important'),'catalogue primary actions must retain a 44px minimum target');
+check(closure.includes('@media(max-width:719px)')&&closure.includes('#procedureHub{grid-auto-rows:auto!important}')&&closure.includes('height:auto!important;min-height:0!important'),'local catalogue owner must collapse equal-height policy on mobile');
 check(css.includes('.stable-legal-footer{grid-template-columns:auto minmax(0,1fr);gap:.55rem!important}'),'mobile footer must allow links to shrink without document overflow');
 check(!/#adminCenter|#grcWorkspace|#monitoringView|#incidentsView/.test(css),'3.4 scope must not leak into procedure runtimes/admin');
-// Deliberately do not assert the continued presence of conflicting predecessor CSS.
-// A current presentation test protects observable output; it must remain valid when cause + compensating override are collapsed.
 if(issues.length){console.error(JSON.stringify({ok:false,suite:'ui-finetuning-3.4',issues},null,2));process.exit(1)}
-console.log(JSON.stringify({ok:true,suite:'ui-finetuning-3.4',tasks:{chrome:true,landingContinuity:true,home:true,proof:true,processCatalogue:true},scope:'header+footer+Home/Processes/Evidence landing treatment+Home summary+Evidence lattice entry+process catalogue only',ownersPreserved:['stable-shell.js','proof-workspace-3-2.js','procedure-frame.js'],catalogueTargetMinPx:44,legacyEvidenceAnnotationVisible:false,debtPreservationOracle:false,claimBoundary:'Static semantic/presentation contract; not human usability research, aesthetic certification, WCAG certification or legal assessment.'}));
+console.log(JSON.stringify({ok:true,suite:'ui-finetuning-3.4',tasks:{chrome:true,landingContinuity:true,home:true,proof:true,processCatalogue:true},scope:'3.4=header+footer+Home/Processes/Evidence landing treatment+Home summary+Evidence; process catalogue owned by 3.2.1',ownersPreserved:['stable-shell.js','proof-workspace-3-2.js','procedure-frame.js','semantic-workspace-closure-3-2-1.css'],catalogueTargetMinPx:44,processCatalogueInFinalResolver:false,legacyEvidenceAnnotationVisible:false,debtPreservationOracle:false,claimBoundary:'Static semantic/presentation contract; not human usability research, aesthetic certification, WCAG certification or legal assessment.'}));
