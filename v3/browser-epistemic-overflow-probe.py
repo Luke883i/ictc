@@ -9,13 +9,16 @@ ROLES=['admin','auditor']
 PHASE='init'; anomalies=[]
 
 def open_epistemic(page):
-    page.locator('.service-nav [data-service="processes"]').click()
-    meta=page.locator('#epistemicMetaCard')
-    expect(meta).not_to_be_visible()
     page.locator('.service-nav [data-service="proof"]').click()
     expect(page.locator('#proofView')).to_be_visible()
-    expect(meta).to_be_visible()
-    meta.locator('[data-service="epistemic"]').click()
+    page.wait_for_function("""()=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&entry&&content.firstElementChild===entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""")
+    investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]')
+    expect(investigation).to_have_count(1)
+    assert investigation.get_attribute('open') is None
+    investigation.locator(':scope > summary').click()
+    action=investigation.locator('[data-service="epistemic"]')
+    expect(action).to_be_visible()
+    action.click()
     expect(page.locator('#epistemicView')).to_be_visible()
     expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
     page.wait_for_function("()=>Number(document.querySelector('#epistemicView')?.dataset.loadedRevision||0)>0")
@@ -55,7 +58,7 @@ try:
                     anomalies.append(anomaly)
                     raise AssertionError(f"overflow={metric['delta']};offender={first['selector']};right={first.get('overRight',0)};left={first.get('overLeft',0)};inner={metric['innerWidth']};html={metric['html']};body={metric['body']}")
                 ctx.close()
-        out={'ok':True,'profile':'epistemic-overflow-causal-guard-3.2','roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'anomalyCount':0}
+        out={'ok':True,'profile':'epistemic-overflow-causal-guard-3.2+ui-finetuning-3.4','roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'entryAuthority':'proof-workspace-3-2','duplicateProofMetaEntry':False,'anomalyCount':0}
         (ART/'browser-epistemic-overflow-probe.json').write_text(json.dumps(out,indent=2),encoding='utf8')
         print('browser-epistemic-overflow-probe: complete anomalies=0',flush=True)
         browser.close()
