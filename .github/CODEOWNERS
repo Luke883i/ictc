@@ -1,5 +1,10 @@
 * @Luke883i
-/docs/domain/ @Luke883i
+/docs/ @Luke883i
 /schemas/ @Luke883i
 /lib/ @Luke883i
-/.github/workflows/ @Luke883i
+/v3/ @Luke883i
+/scripts/ @Luke883i
+/.github/ @Luke883i
+/SECURITY.md @Luke883i
+/GOVERNANCE.md @Luke883i
+/CONTRIBUTING.md @Luke883i
