@@ -33,21 +33,22 @@ html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #proofCont
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #proofContent>details.proof-section>summary{min-height:46px!important;padding:.62rem .8rem!important}
 
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub{align-items:stretch!important;grid-auto-rows:1fr!important}
-html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:100%!important;min-height:226px!important;align-self:stretch!important;grid-template-rows:auto auto minmax(0,1fr) auto!important;gap:.46rem!important;padding:.9rem!important}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:100%!important;min-height:226px!important;align-self:stretch!important;min-width:0;max-width:100%;grid-template-rows:auto auto minmax(0,1fr) auto!important;gap:.46rem!important;padding:.9rem!important}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]>:not(header,h2,.procedure-purpose,footer){display:none!important}
 html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card .procedure-purpose{display:block!important;min-height:0!important;overflow:visible!important;margin:0!important}
-html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card footer{align-self:end!important;margin-top:.1rem!important}
-html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card .procedure-primary{min-height:40px!important;padding:.4rem .62rem!important}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card footer{align-self:end!important;min-width:0;max-width:100%;margin-top:.1rem!important}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card footer .executive-evidence-inline{display:none!important}
+html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card .procedure-primary{min-height:44px!important;padding:.4rem .62rem!important}
 
 @media(max-width:719px){
   html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub{grid-auto-rows:auto!important}
-  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:auto!important;min-height:0!important}
+  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:auto!important;min-height:0!important;max-width:100%!important}
   html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-table .home-business-priority{grid-template-columns:minmax(0,1fr) auto!important}
 }
 @media(max-width:520px){
-  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-legal-footer{grid-template-columns:auto 1fr;gap:.55rem!important}
-  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-links{gap:.45rem;justify-content:end}
+  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-legal-footer{grid-template-columns:auto minmax(0,1fr);gap:.55rem!important}
+  html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] .stable-footer-links{min-width:0;gap:.45rem;justify-content:end}
   html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-open{padding-inline:.38rem}
 }
 @media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-table{border-color:CanvasText;box-shadow:none}html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] #homePriorities .home-priority-open{border:1px solid CanvasText}}
-@media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] :is(.home-business-priority,.home-priority-head>button){transition:none!important}}
+@media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"][data-ui-fine-tuning="3.4"] :is(.home-business-priority,.home-priority-head>button){transition:none!important;animation:none!important}}
