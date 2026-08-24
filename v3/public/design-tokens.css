@@ -12,8 +12,8 @@
   --ui-page-max:1240px;--ui-header-h:48px;--ui-control-h:36px;--ui-section-gap:.85rem;--ui-card-pad:.8rem;--ui-surface-gap:.65rem;
   --motion-fast:120ms;--motion-standard:170ms;--motion-slow:240ms;--ease-interface:cubic-bezier(.2,.75,.25,1);
   --elevation-rest:0 3px 14px rgba(15,23,42,.025);--elevation-focus:0 12px 32px rgba(15,23,42,.065);--elevation-float:0 18px 44px rgba(15,23,42,.1);
-  --chrome-header-start:#14213d;--chrome-header-mid:#223d69;--chrome-header-end:#315d91;
-  --chrome-footer-start:#0b1426;--chrome-footer-end:#172a47;
+  --chrome-header-start:#203454;--chrome-header-mid:#2a4c76;--chrome-header-end:#376b99;
+  --chrome-footer-start:#091425;--chrome-footer-mid:#102b48;--chrome-footer-end:#1d4668;
   --chrome-on-dark:#f8fbff;--chrome-on-dark-muted:#d5e0ef;
   --chrome-control-bg:#ffffff;--chrome-control-hover:#f7f9ff;--chrome-control-text:var(--color-text);--chrome-control-border:#d9e2ef;
   --chrome-active-bg:#eef1ff;--chrome-active-text:var(--color-brand-strong);--chrome-active-border:#cfd5ff;

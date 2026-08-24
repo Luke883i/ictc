@@ -246,14 +246,18 @@ try:
 
         PHASE = 'epistemic-explore'
         processes(page).click()
-        meta = page.locator('#epistemicMetaCard')
         expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
-        expect(meta).not_to_be_visible()
-        assert meta.evaluate('e=>e.parentElement?.id') == 'proofView'
         page.locator('.service-nav [data-service="proof"]').click()
         expect(page.locator('#proofView')).to_be_visible()
-        expect(meta).to_be_visible()
-        meta.locator('[data-service="epistemic"]').click()
+        investigation = page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]')
+        expect(investigation).to_have_count(1)
+        assert investigation.evaluate('e=>e.parentElement?.firstElementChild===e')
+        expect(page.locator('#proofView #epistemicMetaCard')).to_have_count(0)
+        assert investigation.get_attribute('open') is None
+        investigation.locator(':scope > summary').click()
+        action = investigation.locator('[data-service="epistemic"]')
+        expect(action).to_be_visible()
+        action.click()
         expect(page.locator('#epistemicView')).to_be_visible()
         page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r', arg=final_rev)
         expect(page.locator('[data-epistemic-mode="explore"]')).to_have_attribute('aria-pressed', 'true')
@@ -321,12 +325,12 @@ try:
 
         assert not errors, errors
         out = {
-            'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1',
+            'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1+ui-finetuning-3.4',
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'epistemicEntrySurface':'Evidenze ICTC','epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
+            'epistemicEntrySurface':'Evidenze ICTC / first-row canonical disclosure','duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
             'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,

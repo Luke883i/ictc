@@ -19,6 +19,8 @@ PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=
 
 def anomaly(kind,role,vp,surface,measured,expected): anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})
 def api_json(page,path,role): return page.evaluate("""async x=>{const r=await fetch(x.path,{headers:{'x-ictc-role':x.role,'x-ictc-actor-id':'visual-audit'}});if(!r.ok)throw new Error(x.path+' '+r.status);return r.json()}""",{'path':path,'role':role})
+def wait_canonical_evidence_entry(page):
+ page.wait_for_function("""()=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&entry&&content.firstElementChild===entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""")
 def no_overflow(page,role,vp,surface):
  m=page.evaluate('()=>({innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
  if max(m['html'],m['body'])>m['innerWidth']+1: anomaly('document-overflow',role,vp,surface,m,'document <= viewport+1')
@@ -75,7 +77,7 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
   if before!=after:anomaly('auditor-primary-leaves-process',role,vp,proc['code'],{'before':before,'after':after},'remain process-bound')
  no_overflow(page,role,vp,proc['code']);one_h1(page,role,vp,proc['code']);shot(page,role,vp,proc['code'],width);scenes.append({'role':role,'viewport':vp,'surface':proc['code'],'geometry':g})
 def audit_proof(page,role,vp,width):
- global PHASE;PHASE=f'{role}-{vp}-proof';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofContent')).to_be_visible();data=api_json(page,'/api/standard-proof',role);title=(page.locator('#proofTitle').text_content() or '').strip()
+ global PHASE;PHASE=f'{role}-{vp}-proof';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofContent')).to_be_visible();wait_canonical_evidence_entry(page);data=api_json(page,'/api/standard-proof',role);title=(page.locator('#proofTitle').text_content() or '').strip()
  if title!='Evidenze ICTC':anomaly('evidence-title-language',role,vp,'proof',title,'Evidenze ICTC')
  if page.locator('.proof-semantic-qualifier').count():anomaly('evidence-retired-qualifier-returned',role,vp,'proof',page.locator('.proof-semantic-qualifier').count(),0)
  if page.locator('#proofView [data-proof-tab]').count():anomaly('evidence-retired-tabs-returned',role,vp,'proof',page.locator('#proofView [data-proof-tab]').count(),0)
@@ -108,16 +110,20 @@ def audit_proof(page,role,vp,width):
 def epistemic_network_coverage(page,role,known_ids):
  seen=set();offset=0;limit=200;pages=0;exhausted=False
  for pages in range(1,41):
-  data=api_json(page,f'/api/epistemic-lattice?offset={offset}&limit={limit}',role);atoms=data.get('atoms',[]);seen.update(str(a.get('procedureId')) for a in atoms if a.get('procedureId'));projection=data.get('projection',{})
+  data=api_json(page,f'/api/epistemic-lattice?offset={offset}&limit={limit}',role);atoms=data.get('atoms',[]);seen.update(str(a.get('procedureId') or 'cross-cutting') for a in atoms if a.get('procedureId'));projection=data.get('projection',{})
   if int(projection.get('fromRevision') or 0)<=1 or int(projection.get('toRevision') or 0)<=0:exhausted=True;break
   offset+=limit
  known=set(known_ids);unknown=sorted(seen-known);return {'seen':sorted(seen),'unknown':unknown,'pages':pages,'offset':offset,'exhausted':exhausted}
 def audit_ep(page,role,vp,width,expected_ids,revision):
- global PHASE;PHASE=f'{role}-{vp}-EP-01';page.locator('.service-nav [data-service="processes"]').click();meta=page.locator('#epistemicMetaCard')
+ global PHASE;PHASE=f'{role}-{vp}-EP-01';page.locator('.service-nav [data-service="processes"]').click()
  if role in ('admin','auditor'):
-  expect(meta).not_to_be_visible();parent=meta.evaluate('e=>e.parentElement?.id')
-  if parent!='proofView':anomaly('epistemic-entry-parent',role,vp,'EP-01',parent,'proofView')
-  page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(meta).to_be_visible();meta.locator('[data-service="epistemic"]').click();expect(page.locator('#epistemicView')).to_be_visible();page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision);current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role);expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])});actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
+  page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();wait_canonical_evidence_entry(page);investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');expect(investigation).to_have_count(1)
+  if not investigation.evaluate('e=>e.parentElement?.firstElementChild===e'):anomaly('epistemic-entry-order',role,vp,'EP-01',False,'first Evidence disclosure')
+  duplicate=page.locator('#proofView #epistemicMetaCard').count()
+  if duplicate:anomaly('epistemic-duplicate-proof-entry',role,vp,'EP-01',duplicate,0)
+  if investigation.get_attribute('open') is not None:anomaly('epistemic-entry-open-by-default',role,vp,'EP-01',True,False)
+  else:investigation.locator(':scope > summary').click()
+  action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click();expect(page.locator('#epistemicView')).to_be_visible();page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision);current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role);expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])});actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
   if actual_current!=expected_current:anomaly('epistemic-current-page-projection-mismatch',role,vp,'EP-01',actual_current,expected_current)
   if role not in network_coverage_checked:
    coverage=epistemic_network_coverage(page,role,expected_ids)
@@ -125,7 +131,7 @@ def audit_ep(page,role,vp,width,expected_ids,revision):
    if not coverage['exhausted']:anomaly('epistemic-network-pagination-not-exhausted',role,vp,'EP-01',coverage,'walk reaches revision 1 within 40 pages')
    network_coverage_checked.add(role)
   no_overflow(page,role,vp,'EP-01');one_h1(page,role,vp,'EP-01');shot(page,role,vp,'EP-01',width)
- elif meta.count() and meta.is_visible():anomaly('epistemic-meta-visible-to-user',role,vp,'processes',True,False)
+ elif page.locator('#proofView #epistemicMetaCard').count():anomaly('epistemic-meta-visible-to-user',role,vp,'processes',True,False)
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
@@ -144,7 +150,7 @@ try:
     no_overflow(page,role,vp,'processes');one_h1(page,role,vp,'processes');shot(page,role,vp,'processes',width)
     for proc in PROCEDURES:audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
     audit_proof(page,role,vp,width);audit_ep(page,role,vp,width,list(registry.keys())+['epistemic-lattice'],revision);ctx.close()
-  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'responsive-matrix-3-2-1','proofHierarchy':'epistemic>trace>decisions-collapsed','epistemicEntrySurface':'Evidenze ICTC','boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
+  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1-runtime-audit+ui-finetuning-3.4','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'responsive-matrix-3-2-1','proofHierarchy':'epistemic>trace>decisions-collapsed','epistemicEntrySurface':'Evidenze ICTC / first-row canonical disclosure','duplicateProofMetaEntry':False,'evidenceEntryReadiness':'condition-based','boundary':'Server-backed automated visual, geometry, lexical and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
   if anomalies:
    for x in list(unique.values())[:40]:print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
    first=list(unique.values())[0];raise AssertionError(f"onto-compliance visual audit found {len(anomalies)} observations / {len(unique)} unique signatures; first={first['kind']}:{first['surface']}:{first['role']}:{first['viewport']}")

@@ -10,6 +10,7 @@ const lifecycle=await read('./public/ui/experience-lifecycle.js');
 const actionModel=await read('./runtime/grc-actions.mjs');
 const scopeRuntime=await read('./runtime/standard-library-handler.mjs');
 const lattice=await read('./public/ui/epistemic-lattice.js');
+const proofWorkspace=await read('./public/ui/proof-workspace-3-2.js');
 const common=await read('./public/ui/common.js');
 assert.equal(contract.schemaVersion,'1.6.0');
 assert.deepEqual(contract.scope,['RN-01','EC-01','AO-01','MC-01','AP-01']);
@@ -27,5 +28,8 @@ for(const token of ['data-seq-ao-search','data-seq-ao-filter','Conferma oggetto'
 assert.ok(scopeRuntime.includes('/api/standards/requirement-scope'));assert.ok(ui.includes("api('/api/standards/requirement-scope"));assert.ok(ui.includes('Decisioni registrate')&&ui.includes('Da decidere')&&ui.includes('Fuori perimetro'));assert.ok(ui.includes('Decidi perimetro')&&ui.includes('Decidi mapping'));assert.doesNotMatch(ui,/coveragePercent/);assert.ok(integrity.includes('input.required=true'));assert.ok(integrity.includes('Rifiuta proposta incompleta'));
 for(const token of ['Adotta azione','Avvia lavoro','Invia a verifica','Riprendi lavoro','Verifica risultato','Segnala blocco'])assert.ok(ui.includes(token),`AP 2.4 missing ${token}`);assert.ok(ui.includes("for(const progress of [...footer.querySelectorAll('[data-action-progress]')])progress.remove()"));assert.ok(common.includes("'x-ictc-actor-id':`local-${state.role}`"));assert.ok(actionModel.includes("completedBy===actor.id")&&actionModel.includes('action-self-review-ack-required'));
 for(const token of ['tuneRisks','Valuta rischio','tuneAssurance','Approva risposte'])assert.ok(ui.includes(token),`7-procedure convergence missing ${token}`);
-assert.ok(lattice.includes("card.dataset.metaProcedure='epistemic-lattice'"));assert.ok(ui.includes('proof.append(card)'));assert.ok(ui.includes("chip.textContent='Traccia disponibile'"));
-console.log(JSON.stringify({ok:true,control:'PROCEDURE-UI-UX-2-4+C0.1',legacyContract:'1.6.0',procedures:7,primitive:'procedure-record-card',compositionRoot:'active-experience'}));
+assert.equal(lattice.includes("card.dataset.metaProcedure='epistemic-lattice'"),false,'EP-01 lattice must not recreate the retired process meta-card');
+assert.ok(lattice.includes("function ensureProcessEntry(){const card=$('#epistemicMetaCard');card?.remove();}"),'EP-01 lattice must retain an idempotent legacy-entry retirement hook');
+assert.ok(proofWorkspace.includes('data-proof-workspace="epistemic-investigation"')&&proofWorkspace.includes('content.prepend(investigation)'),'Proof workspace must own the canonical first Evidence disclosure for EP-01');
+assert.ok(ui.includes('proof.append(card)'),'historical presentation compatibility may move a pre-existing legacy card but must not create it');assert.ok(ui.includes("chip.textContent='Traccia disponibile'"));
+console.log(JSON.stringify({ok:true,control:'PROCEDURE-UI-UX-2-4+C0.1',legacyContract:'1.6.0',procedures:7,primitive:'procedure-record-card',compositionRoot:'active-experience',epistemicEntryAuthority:'proof-workspace-3-2',legacyEpistemicCardCreator:false}));
