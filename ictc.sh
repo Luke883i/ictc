@@ -7,14 +7,15 @@ HOST="${ICTC_HOST:-127.0.0.1}"
 STATE="${ICTC_STATE_DIR:-$ROOT/.ictc}"
 RUNTIME_OVERRIDE="${ICTC_RUNTIME_DIR:-}"
 NO_OPEN="${ICTC_NO_OPEN:-0}"
-DEMO_SEED="${ICTC_DEMO_SEED:-0}"
+DEMO_SUITE="${ICTC_DEMO_SUITE:-}"
 COMMAND=""
 
 while (($#)); do
   case "$1" in
     start|stop|restart|status|logs|doctor|test|audit) COMMAND="$1" ;;
-    demo) COMMAND="start"; DEMO_SEED=1 ;;
-    --demo-seed|-demoseed) DEMO_SEED=1 ;;
+    demo) COMMAND="start"; DEMO_SUITE=2.2 ;;
+    --demo-suite) DEMO_SUITE=2.2 ;;
+    --demo-seed|-demoseed) DEMO_SUITE=2.2 ;;
     --no-open) NO_OPEN=1 ;;
     --profile)
       shift
@@ -29,8 +30,8 @@ done
 COMMAND="${COMMAND:-help}"
 if [[ -n "$RUNTIME_OVERRIDE" ]]; then
   RUNTIME="$RUNTIME_OVERRIDE"
-elif [[ "$DEMO_SEED" = 1 ]]; then
-  RUNTIME="$STATE/demo-runtime-v2"
+elif [[ "$DEMO_SUITE" = 2.2 ]]; then
+  RUNTIME="$STATE/demo-runtime-2-2"
 else
   RUNTIME="$STATE/runtime"
 fi
@@ -57,16 +58,16 @@ start(){
   rm -f "$PID"
   (
     cd "$ROOT"
-    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SEED="$DEMO_SEED" nohup node v3/server.mjs >>"$OUT" 2>&1 &
+    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SUITE="$DEMO_SUITE" nohup node v3/server.mjs >>"$OUT" 2>&1 &
     echo $! >"$PID.tmp"
   )
   mv "$PID.tmp" "$PID"
   local attempts="${ICTC_STARTUP_ATTEMPTS:-160}"
-  if [[ "$DEMO_SEED" = 1 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
+  if [[ "$DEMO_SUITE" = 2.2 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
   for _ in $(seq 1 "$attempts"); do
     if alive && health; then
-      if [[ "$DEMO_SEED" = 1 ]]; then
-        echo "ICTC DEMO attivo: $URL · runtime=$RUNTIME"
+      if [[ "$DEMO_SUITE" = 2.2 ]]; then
+        echo "ICTC DEMO Suite 2.2 attivo: $URL · runtime=$RUNTIME"
       else
         echo "ICTC attivo: $URL · runtime=$RUNTIME"
       fi
@@ -75,7 +76,7 @@ start(){
     fi
     sleep .2
   done
-  echo "ICTC non pronto dopo ${attempts} tentativi (demoSeed=${DEMO_SEED})" >&2
+  echo "ICTC non pronto dopo ${attempts} tentativi (demoSuite=${DEMO_SUITE:-off})" >&2
   tail -80 "$OUT" >&2 || true
   exit 1
 }
@@ -104,18 +105,19 @@ case "$COMMAND" in
     fi
     ;;
   logs) touch "$OUT"; tail -f "$OUT" ;;
-  doctor) echo "node=$(node --version) url=$URL runtime=$RUNTIME demoSeed=$DEMO_SEED" ;;
+  doctor) echo "node=$(node --version) url=$URL runtime=$RUNTIME demoSuite=${DEMO_SUITE:-off}" ;;
   test) (cd "$ROOT" && npm test) ;;
   audit) (cd "$ROOT" && npm run audit) ;;
   help)
     echo 'Uso:'
     echo '  ./ictc.sh start [--no-open]                 # modalità standard, .ictc/runtime'
-    echo '  ./ictc.sh demo [--no-open]                  # modalità demo PMI v2 + reality context, .ictc/demo-runtime-v2'
-    echo '  ./ictc.sh start --demo-seed [--no-open]     # equivalente esplicito di demo'
-    echo '  ./ictc.sh start -demoseed [--no-open]       # alias compatibile'
+    echo '  ./ictc.sh demo [--no-open]                  # DEMO Suite 2.2 canonica, .ictc/demo-runtime-2-2'
+    echo '  ./ictc.sh start --demo-suite [--no-open]    # equivalente esplicito di demo'
+    echo '  ./ictc.sh start --demo-seed [--no-open]     # alias compatibile: monta sempre Suite 2.2'
+    echo '  ./ictc.sh start -demoseed [--no-open]       # alias compatibile: monta sempre Suite 2.2'
     echo '  ./ictc.sh stop | restart | status | logs | doctor | test | audit'
-    echo 'La modalità demo usa gli stessi owner/runtime ICTC, materializza dati sintetici e lineage contestuale e disabilita lo scheduler operativo; non rappresenta esiti reali di compliance.'
-    echo 'Il bootstrap demo può richiedere più tempo del runtime standard; ICTC_DEMO_STARTUP_ATTEMPTS consente di modificare il budget di readiness senza cambiare i dati.'
-    echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale per il seed demo.'
+    echo 'La modalità DEMO monta esclusivamente Suite 2.2 sugli stessi owner/runtime ICTC; i 188 record positivi sono sintetici e i 512 mutanti di stress restano test-only.'
+    echo 'Il bootstrap DEMO può richiedere più tempo del runtime standard; ICTC_DEMO_STARTUP_ATTEMPTS consente di modificare il budget di readiness senza cambiare i dati.'
+    echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale o una vecchia demo-runtime-v2 per Suite 2.2.'
     ;;
 esac
