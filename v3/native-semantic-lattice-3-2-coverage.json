@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0.0",
+  "profile": "native-semantic-lattice-3.2",
+  "sourceContracts": ["ICTC_ENTERPRISE_WORKSPACE_WORKBOOK_v1.1", "ICTC_ENTERPRISE_WORKSPACE_WORKBOOK_v1.1_ITER1BIS"],
+  "requirements": {"total": 173, "addressed": 173, "locallyVerifiable": 172, "locallyVerifiedTarget": 172, "externalAcceptance": 1},
+  "applicationRate": 1,
+  "verificationRateIncludingExternalAcceptance": 0.9942196531791907,
+  "externalAcceptance": ["exact-head GitHub CI and check census on the materialized PR"],
+  "domains": {"semanticAuthority": true, "runtimeMinimality": true, "processCatalogue": true, "home": true, "proof": true, "epistemic": true, "admin": true, "navigation": true, "visualSystem": true, "responsive": true, "documentation": true}
+}

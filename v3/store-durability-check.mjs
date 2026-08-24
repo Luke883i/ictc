@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Store } from './store.mjs';
+import { cleanupTempDir } from './runtime-temp-cleanup.mjs';
 const root=await mkdtemp(path.join(tmpdir(),'ictc-store-durability-'));
 const actor={id:'durability-check',role:'admin',permissions:[]};
 const cases=[];const record=(id,status,evidence)=>cases.push({id,status,evidence});
@@ -14,4 +15,4 @@ try{
  assert.ok(store.persistence.db.prepare('SELECT COUNT(*) AS n FROM audit').get().n>=1);record('D05','passed','Audit is persisted in append-only rows, separate from mutable snapshot payload.');
  const report={schemaVersion:'2.0.0',control:'W0-PERSIST',backend:'sqlite-wal',invariant:'persist-readback-before-visible',caseCount:cases.length,result:'passed',cases,limitations:['This check proves single-process SQLite transaction/readback semantics and separate audit rows.','It does not claim multi-process HA, backup/restore, RTO/RPO or external deployment durability.']};
  await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/store-durability.json',import.meta.url),JSON.stringify(report,null,2));console.log(`store-durability-check: ok (cases=${cases.length}, backend=sqlite-wal)`);store.close();
-}finally{await rm(root,{recursive:true,force:true});}
+}finally{await cleanupTempDir(root);}

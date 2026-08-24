@@ -32,17 +32,18 @@ function setText(node,value){const next=String(value);if(node.textContent!==next
 function enforceCoveragePosture(){
   const root=$('#grcWorkspace'),p=state.data?.grc?.coverage;if(!root||!p||activeGrc()!=='coverage')return;
   const market=root.querySelector('.market-standard-kpis');
-  let host=root.querySelector('[data-uiux-coverage-kpis]')||root.querySelector('.grc-kpis:not(.market-standard-kpis)');
+  let host=root.querySelector('[data-uiux-coverage-kpis]')||root.querySelector('.grc-kpis:not(.market-standard-kpis)'),materialized=false;
   if(!host&&market){
     host=document.createElement('div');host.className='grc-kpis';host.dataset.uiuxCoverageKpis='true';host.dataset.uiuxOwner=OWNER;host.dataset.uiuxProcess='coverage';host.dataset.uiuxPhase='mapping';
     host.innerHTML='<article class="grc-kpi"><small></small><strong></strong><span></span></article>'.repeat(4);
-    market.before(host);market.classList.add('ux-hidden-legacy');market.setAttribute('aria-hidden','true');
+    market.before(host);market.classList.add('ux-hidden-legacy');market.setAttribute('aria-hidden','true');materialized=true;
   }
   if(!host)return;
   const cards=[...host.querySelectorAll(':scope > .grc-kpi')];if(cards.length<3)return;
   const values=[['Decisioni registrate',p.decided??0,`${p.declared??0} elementi dichiarati`],['Gap',p.gaps??0,'decisioni esplicite'],['Da decidere',p.unresolved??0,'nessuna inferenza automatica'],['Fuori perimetro',p.notApplicable??0,'decisioni di scope']];
   cards.slice(0,4).forEach((card,index)=>{const row=values[index];if(!row)return;const small=card.querySelector('small'),strong=card.querySelector('strong'),span=card.querySelector('span');if(small)setText(small,row[0]);if(strong)setText(strong,row[1]);if(span)setText(span,row[2]);});
   root.dataset.uiuxCoveragePercentagePrimary='false';
+  if(materialized)document.dispatchEvent(new CustomEvent('ictc:context-changed',{detail:{surface:'grc',procedureId:'coverage',reason:'coverage-status-materialized'}}));
 }
 function enforceMappingReference(){
   const root=$('#grcWorkspace');if(!root)return;

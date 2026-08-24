@@ -149,6 +149,12 @@ function announceSurfaceChanged(next, from, direction, extra = {}) {
     }
   }));
 }
+function commitSurfaceNavigation(next, from, direction, extra = {}) {
+  return runTransition(() => {
+    renderSurfaceNavigation();
+    announceSurfaceChanged(next, from, direction, extra);
+  }, direction);
+}
 export function navigateSurface(value, {
   focus = true,
   focusTarget = null,
@@ -161,8 +167,7 @@ export function navigateSurface(value, {
   const direction = transitionDirection(from, next, historyMode);
   applyRoute(next);
   commitHistory(next, historyMode, origin || from);
-  announceSurfaceChanged(next, from, direction);
-  const transition = runTransition(renderSurfaceNavigation, direction);
+  const transition = commitSurfaceNavigation(next, from, direction);
   if (focus) focusAfterTransition(transition, next.surface, focusTarget);
   return next.surface;
 }
@@ -186,8 +191,7 @@ function restoreFromHistory(event) {
   if (!route) return;
   const from = routeFor(state.service);
   const next = applyRoute(route);
-  announceSurfaceChanged(next, from, 'back', { history: 'pop' });
-  const transition = runTransition(renderSurfaceNavigation, 'back');
+  const transition = commitSurfaceNavigation(next, from, 'back', { history: 'pop' });
   focusAfterTransition(transition, next.surface, null);
 }
 export function installSurfaceRouter() {

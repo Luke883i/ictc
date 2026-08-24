@@ -76,7 +76,8 @@ try:
 
   PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); snapshot(page,'epistemic','#epistemicView')
   expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
-  boundary=page.locator('#epistemicView details[data-composition-detail="epistemic-boundary"]'); expect(boundary).to_be_visible(); assert boundary.get_attribute('open') is None
+  rules=page.locator('#epistemicView details[data-epistemic-workspace="rules"]'); expect(rules).to_be_visible(); assert rules.get_attribute('open') is None
+  expect(rules.locator('.epistemic-claim-boundary')).to_have_count(1)
 
   PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
   PHASE='settings'; open_profile(page); page.locator('#stableProfileMenu #openSettings').dispatch_event('click'); expect(page.locator('#settingsDialog')).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); expect(page.locator('#settingsDialog details.advanced')).not_to_have_attribute('open',''); page.keyboard.press('Escape')
@@ -86,7 +87,7 @@ try:
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
   assert aggregate_cov>=.95,aggregate_cov; assert aggregate_critical==1,aggregate_critical; assert not VIOLATIONS,VIOLATIONS
-  out={'ok':True,'profile':'surface-truth-2.5+semantic-composition-3.1','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'technicalProgressive':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
-  (ART/'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8'); print('browser-surface-truth-2-5+3.1: complete',flush=True); ctx.close(); browser.close()
+  out={'ok':True,'profile':'surface-truth-2.5+native-semantic-lattice-3.2','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'technicalProgressive':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
+  (ART/'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8'); print('browser-surface-truth-2-5+3.2: complete',flush=True); ctx.close(); browser.close()
 except BaseException as exc:
  fail(exc); traceback.print_exc(); raise

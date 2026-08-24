@@ -20,8 +20,6 @@ La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**. EP
 
 ## Regole costituzionali
 
-ICTC preserva queste non-equivalenze:
-
 ```text
 osservato ≠ vero nel mondo
 proposto ≠ deciso
@@ -64,19 +62,21 @@ Il runtime richiede Node.js `>=22.16.0`, usa `node:sqlite`, `PRAGMA journal_mode
 
 Il default bind è `127.0.0.1:4173`. TLS, IdP, secret management, backup/restore, malware scanning, monitoring, HA e hardening host restano responsabilità del deployment.
 
-## UI/UX corrente — Semantic Composition 3.1
+## UI/UX corrente — Native Semantic Lattice 3.2
 
-La costituzione di composizione è **work first, explanation on demand**. Ogni superficie classifica le informazioni come identity, context, attention, decision, action, evidence, consequence, boundary o technical; le primitive sono comuni e gli adapter sono specifici alla natura della superficie.
+La regola corrente è **work first, explanation on demand**, con composizione locale delle superfici e annotazione globale minima.
 
-- Home mostra attività che richiedono intervento, non una dashboard numerica.
-- Processi di Compliance usa righe confrontabili, non un card wall informativo.
-- Le procedure mostrano header compatto e lavoro prima di KPI, metodo, boundary e trace.
-- Evidenze ICTC porta decisioni/evidenze prima di sintesi e postura tecnica.
-- EP-01 porta relazioni e ricerca prima di conteggi e dettagli tecnici.
-- Admin porta azioni richieste prima di metriche e controlli tecnici.
-- Dialoghi mostrano un solo livello introduttivo; opzioni avanzate restano progressive.
+- `active-experience.js` è l'unico composition root e installa gli owner locali 3.2 prima dell'annotazione globale.
+- `native-workspace-3-2.js` aggrega il bootstrap tecnico di Proof, EP-01, Admin, GRC e dialoghi; non possiede business write authority.
+- `semantic-composition-runtime.js` è **annotation-only**: classifica surface/authority metadata e non riscrive copy business, non riordina DOM locale e non installa gli owner locali.
+- Home mostra una proposition aziendale unica e una attention queue limitata a 5 elementi.
+- Processi di Compliance usa una capability matrix responsive **3 → 2 → 1** con sette card e copy distinto tra catalogo e workspace.
+- Le procedure mantengono lavoro e decisione prima di KPI, metodo, boundary e trace.
+- Evidenze ICTC apre Decisioni e rende secondari metodo, integrità, verifiche esterne ed export.
+- EP-01 porta ricerca e relazioni prima di summary/compression e dettagli tecnici.
+- Admin esplicita gli effetti della disponibilità operativa senza trasformarla in applicabilità normativa.
 
-`v3/public/ui/semantic-composition-runtime.js` è l'owner della gerarchia informativa; `v3/public/ui/semantic-composition-model.js` ne è il contratto. Il lifecycle C0.1 conserva l'ordine `harmonization → presentation → integrity → journey → annotation`; `presentation` resta esclusiva per la decision presentation.
+Il lifecycle costituzionale resta **C0.1** con ordine `harmonization → presentation → integrity → journey → annotation`; il journey corrente resta `2.2-sequential-onto-epistemic`.
 
 ## Evidenze ed export
 
@@ -110,16 +110,19 @@ Operazioni comuni:
 ```bash
 npm test
 npm run release:check
-node v3/semantic-composition-3-1-check.mjs
-node v3/semantic-composition-3-1-ui-check.mjs
-node v3/documentation-composition-3-1-check.mjs
-node v3/semantic-composition-3-1-saturation.mjs
+node v3/current-semantic-3-2.mjs
+node v3/native-semantic-lattice-3-2-check.mjs
+node v3/native-semantic-lattice-3-2-ui-check.mjs
+node v3/native-semantic-lattice-3-2-saturation.mjs
+node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-La saturation 3.1 modella quattro campagne da 10.000.000 trial — tecnica, semantica, UI/UX e documentazione — per un totale di **40.000.000 mutazioni modellate**, con holdout da 100.000 per campagna. È bounded evidence del vocabolario dichiarato, non uno studio utenti, un parere legale, una certificazione di accessibilità o deployment assurance.
+La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario modellato** su 220 famiglie dichiarate. Non sono 10 milioni di mutazioni del codice o browser session. Lo stress 3.2 esercita invece il contratto eseguibile C0.1 di ordinamento/validazione dei participant su un milione di casi deterministici. Browser journey ed exact-head CI restano evidenze separate.
 
 ## Release e presa in carico
 
-`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Semantic Composition 3.1 modifica la gerarchia informativa senza creare un nuovo processo o una nuova write authority.
+`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority.
 
-**Per prendere in carico il repository parti da `docs/START_HERE.md`.** Lo standard per distinguere documentazione current, operating guide, lineage e generated evidence è `docs/DOCUMENTATION_STANDARD.md`; gli owner correnti sono in `docs/authority-matrix.yaml`.
+La branch protection server-side e gli altri gate indipendenti/deployment non possono essere auto-prodotti dal repository: restano blocker esterni quando non disponibili.
+
+**Per prendere in carico il repository parti da `docs/START_HERE.md`.** Gli owner correnti sono in `docs/authority-matrix.yaml`; lo standard documentale è `docs/DOCUMENTATION_STANDARD.md`.

@@ -28,6 +28,7 @@ jobs:
         run: node v3/operations-storage-authority-check.mjs
       - name: Enterprise readiness evidence-envelope fixture
         run: node v3/enterprise-readiness-check.mjs
+
   runtime-portability:
     strategy:
       fail-fast: false
@@ -40,8 +41,49 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '${{ matrix.node }}'
+          node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: Snapshot Windows Node process baseline
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $baseline = @(Get-Process node -ErrorAction SilentlyContinue | ForEach-Object {
+            [PSCustomObject]@{ Id = $_.Id; Started = $_.StartTime.ToUniversalTime().Ticks }
+          })
+          $baseline | ConvertTo-Json -Compress | Set-Content -Path "$env:RUNNER_TEMP/ictc-node-baseline.json" -Encoding utf8
+          Write-Host "Windows Node baseline: $($baseline.Count) process(es)"
       - name: Current runtime suite on supported matrix
         run: npm run test:current:runtime
+      - name: Enforce Windows runtime process quiescence
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $baselinePath = "$env:RUNNER_TEMP/ictc-node-baseline.json"
+          $baseline = @()
+          if (Test-Path $baselinePath) {
+            $raw = Get-Content -Raw $baselinePath
+            if ($raw.Trim()) { $baseline = @(ConvertFrom-Json $raw) }
+          }
+          $baselineKeys = [System.Collections.Generic.HashSet[string]]::new()
+          foreach ($item in $baseline) { [void]$baselineKeys.Add("$($item.Id):$($item.Started)") }
+          $current = @(Get-Process node -ErrorAction SilentlyContinue)
+          $residual = @($current | Where-Object {
+            $key = "$($_.Id):$($_.StartTime.ToUniversalTime().Ticks)"
+            -not $baselineKeys.Contains($key)
+          })
+          if ($residual.Count -gt 0) {
+            $ids = ($residual | ForEach-Object { $_.Id }) -join ','
+            Write-Host "Residual ICTC-owned Node processes after runtime rail: $ids"
+            $residual | Stop-Process -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 750
+          }
+          $remaining = @(Get-Process node -ErrorAction SilentlyContinue | Where-Object {
+            $key = "$($_.Id):$($_.StartTime.ToUniversalTime().Ticks)"
+            -not $baselineKeys.Contains($key)
+          })
+          if ($remaining.Count -gt 0) {
+            $ids = ($remaining | ForEach-Object { $_.Id }) -join ','
+            throw "Residual ICTC-owned Node processes survived explicit quiescence: $ids"
+          }
+          Write-Host "Windows runtime process quiescence: clean; preserved $($baselineKeys.Count) baseline process(es)"

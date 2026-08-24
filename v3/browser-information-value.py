@@ -1,51 +1,84 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
-BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
-PROCESS_SURFACES={'RN-01':('#monitoringView','monitoring'),'EC-01':('#incidentsView','incidents'),'AO-01':('#grcWorkspace','objects'),'MC-01':('#grcWorkspace','coverage'),'AP-01':('#grcWorkspace','actions'),'RC-01':('#grcWorkspace','risks'),'AR-01':('#grcWorkspace','assurance')}
+
+ROOT=pathlib.Path(__file__).resolve().parents[1]
+ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
+PHASE='init'
+PROCEDURE_CODES=('RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01')
+VIEW_OWNERS={
+ 'home':('#homeView','stable-shell.js'),
+ 'processes':('#processesView','procedure-frame.js'),
+ 'proof':('#proofView','proof-workspace-3-2.js'),
+ 'epistemic':('#epistemicView','epistemic-workspace-3-2.js'),
+}
+VIEW_READY={
+ 'home':"()=>{const q=document.querySelector('#homePriorities');return !!(q&&q.offsetParent!==null&&q.dataset.homeWorkQueue==='3.2');}",
+ 'processes':"()=>{const h=document.querySelector('#procedureHub');return !!(h&&h.dataset.procedureHub==='native-semantic-lattice-3-2'&&h.querySelectorAll(':scope > .procedure-card[data-native-semantic-lattice=\"3.2.0\"]').length===7);}",
+ 'proof':"()=>{const c=document.querySelector('#proofContent'),d=c?.querySelector(':scope > details[data-proof-domain=\"decisions\"]');return !!(c&&c.offsetParent!==null&&d&&d.open);}",
+ 'epistemic':"()=>{const r=document.querySelector('#epistemicView'),s=r?.querySelector('#epistemicSearch'),d=r?.querySelector('details[data-epistemic-workspace=\"rules\"]');return !!(r&&s&&s.offsetParent!==null&&d);}",
+}
+
 def fail(exc):
- payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/'browser-information-value-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-information-value::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
-def no_overflow(page):
- m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})');assert max(m['html'],m['body'])<=m['inner']+1,m
-def open_view(page,view):page.goto(f'{BASE}/?view={view}',wait_until='networkidle')
-def open_process(page,code):
- open_view(page,'processes');card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();selector,surface=PROCESS_SURFACES[code];page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.surface&&document.documentElement.dataset.semanticComposition==='3.1.0');}",arg={'selector':selector,'surface':surface})
-def assert_above_fold(page,selector,budget=360):
- global PHASE
- box=page.locator(selector).first.bounding_box()
- if box and box['y']>=budget:PHASE=f"{PHASE}-y{round(box['y'])}-b{budget}"
- assert box and box['y']<budget,{'selector':selector,'box':box,'budget':budget}
+ payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
+ (ART/'browser-information-value-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
+ print(f'::error title=browser-information-value::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
+
+def experience_cycle(page):
+ return int(page.evaluate("()=>Number(document.documentElement.dataset.experienceCycle||0)"))
+
+def wait_experience_cycle(page,before=0):
+ page.wait_for_function("before=>Number(document.documentElement.dataset.experienceCycle||0)>before",arg=before)
+ return experience_cycle(page)
+
+def wait_view_owner(page,view):
+ selector,owner=VIEW_OWNERS[view]
+ page.wait_for_function("x=>{const r=document.querySelector(x.selector);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.localCompositionOwner===x.owner);}",arg={'selector':selector,'owner':owner})
+ page.wait_for_function(VIEW_READY[view])
+
+def open_view(page,view):
+ page.goto(f'{BASE}/?view={view}',wait_until='domcontentloaded')
+ wait_experience_cycle(page,0);wait_view_owner(page,view)
+ return experience_cycle(page)
+
+def assert_capability_matrix(page):
+ cards=page.locator('#procedureHub > .procedure-card[data-procedure-frame-variant="matrix"]');expect(cards).to_have_count(7)
+ actual=cards.evaluate_all("xs=>xs.map(x=>x.dataset.processCode)")
+ assert actual==list(PROCEDURE_CODES),(actual,PROCEDURE_CODES)
+ for code in PROCEDURE_CODES:
+  card=page.locator(f'#procedureHub > .procedure-card[data-process-code="{code}"]');expect(card).to_be_visible();expect(card.locator(':scope > h2')).not_to_have_text('');expect(card.locator(':scope > .procedure-purpose')).not_to_have_text('');expect(card.locator(':scope > footer .procedure-primary')).to_be_visible()
+
 def open_profile(page):
- menu=page.locator('#stableProfileMenu');expect(menu.locator(':scope > summary')).to_be_visible();
+ menu=page.locator('#stableProfileMenu');expect(menu.locator(':scope > summary')).to_be_visible()
  if menu.get_attribute('open') is None:menu.locator(':scope > summary').click()
+
+def wait_admin_owner(page):
+ page.wait_for_function("()=>{const r=document.querySelector('#adminCenter');return !!(r&&r.offsetParent!==null&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.dataset.localCompositionOwner==='admin-workspace-3-2.js'&&r.querySelector('#procedurePolicyForm button[type=\"submit\"]'));}")
+
+def wait_settings_owner(page):
+ page.wait_for_function("()=>{const r=document.querySelector('#settingsDialog');return !!(r&&r.open&&r.dataset.nativeSemanticLattice==='3.2.0'&&r.querySelector('#settingsTitle'));}")
+
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1280,'height':900});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
-  page=ctx.new_page();page.set_default_timeout(30000);errors=[];writes=[];page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda req:writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None)
-  PHASE='home';open_view(page,'home');expect(page.locator('#homeTitle')).to_have_text('Attività di compliance');expect(page.locator('#homePulse')).to_be_hidden();expect(page.locator('#ictcManifest')).to_have_count(0);expect(page.locator('#homePriorities')).to_be_visible();assert page.locator('#homePriorities .home-business-priority').count()<=5;assert_above_fold(page,'#homePriorities',430);no_overflow(page)
-  PHASE='processes';open_view(page,'processes');expect(page.locator('#processesView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);expect(page.locator('#procedureHub .procedure-card').first).to_have_attribute('data-procedure-frame-variant','row');expect(page.locator('#procedureHub .procedure-signals')).to_have_count(0);assert_above_fold(page,'#procedureHub .procedure-card',330);no_overflow(page)
-  PHASE='rn';open_process(page,'RN-01');expect(page.locator('#monitoringView > .procedure-frame')).to_be_visible();expect(page.locator('#monitoringView > .hero')).to_be_hidden();expect(page.locator('#monitoringView [data-finetune-compass]')).to_be_hidden();assert_above_fold(page,'#monitoringView > .section-block',390);no_overflow(page)
-  PHASE='ec';open_process(page,'EC-01');expect(page.locator('#incidentsView > .procedure-frame')).to_be_visible();expect(page.locator('#incidentsView > .hero')).to_be_hidden();expect(page.locator('#incidentsView [data-finetune-compass]')).to_be_hidden();assert_above_fold(page,'#incidentsView > .section-block',390);no_overflow(page)
-  for code in ['AO-01','MC-01','AP-01','RC-01','AR-01']:
-   PHASE=f'grc-{code}';open_process(page,code)
-   PHASE=f'grc-{code}-frame';frame=page.locator('#grcWorkspace > .procedure-frame');expect(frame).to_be_visible()
-   PHASE=f'grc-{code}-work';work=page.locator('#grcWorkspace .grc-list');expect(work).to_be_visible()
-   PHASE=f'grc-{code}-status-count';status=page.locator('#grcWorkspace details[data-composition-detail="process-status"]');expect(status).to_have_count(1)
-   PHASE=f'grc-{code}-status-closed';expect(status).not_to_have_attribute('open','')
-   PHASE=f'grc-{code}-decision-count';decision=page.locator('#grcWorkspace .procedure-decision-frame .composition-process-context');expect(decision).to_have_count(1)
-   PHASE=f'grc-{code}-decision-closed';expect(decision).not_to_have_attribute('open','')
-   PHASE=f'grc-{code}-order';order=page.evaluate("()=>{const b=document.querySelector('#grcWorkspace .grc-body'),l=b?.querySelector('.grc-list'),k=b?.querySelector('details[data-composition-detail=\"process-status\"]');return !!(b&&l&&k&&l.parentElement===b&&k.parentElement===b&&[...b.children].indexOf(l)<[...b.children].indexOf(k));}");assert order,code
-   PHASE=f'grc-{code}-above-fold';assert_above_fold(page,'#grcWorkspace .grc-list',430)
-   PHASE=f'grc-{code}-overflow';no_overflow(page)
-  PHASE='proof';open_view(page,'proof');expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');expect(page.locator('#proofView [data-surface-information-value]')).to_have_count(0);expect(page.locator('#proofContent')).to_be_visible();decision=page.locator('#proofContent > details.proof-section').filter(has_text='Decisioni e tracciabilità');expect(decision).to_have_attribute('open','');expect(page.locator('#proofContent > details[data-composition-detail="proof-reading"]')).not_to_have_attribute('open','');no_overflow(page)
-  PHASE='epistemic';open_view(page,'epistemic');expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze');expect(page.locator('#epistemicSummary')).to_be_hidden();expect(page.locator('#epistemicCompression')).to_be_hidden();expect(page.locator('[data-epistemic-mode="explore"]')).to_have_text('Quadro');expect(page.locator('[data-epistemic-mode="flat"]')).to_have_text('Vista tecnica');no_overflow(page)
-  PHASE='admin';open_view(page,'home');open_profile(page);page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click');admin=page.locator('#adminCenter');expect(admin).to_be_visible();expect(admin.locator('#adminCenterTitle')).to_have_text('Amministrazione ICTC');expect(admin.locator('#adminMetrics')).to_be_hidden();expect(admin.locator('#adminAttention').locator('xpath=..')).to_be_visible();tech=admin.locator('details[data-composition-detail="technical-controls"]');expect(tech).to_have_count(1);expect(tech).not_to_have_attribute('open','');page.keyboard.press('Escape')
-  PHASE='settings';open_profile(page);page.locator('#stableProfileMenu #openSettings').dispatch_event('click');settings=page.locator('#settingsDialog');expect(settings).to_be_visible();expect(settings.locator('#settingsTitle')).to_have_text('Configurazione AI');expect(settings.locator('details.advanced')).not_to_have_attribute('open','');page.keyboard.press('Escape')
-  PHASE='mobile'
+  page=ctx.new_page();page.set_default_timeout(30000);errors=[];writes=[]
+  page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda req:writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None)
+
+  PHASE='home';open_view(page,'home');expect(page.locator('#homeTitle')).to_have_text('Attività di compliance');expect(page.locator('#homeSummary')).to_contain_text('governance');expect(page.locator('#homeSummary')).to_contain_text('GDPR');expect(page.locator('#homePulse')).to_be_hidden();priorities=page.locator('#homePriorities');expect(priorities).to_be_visible();assert priorities.locator('.home-business-priority').count()<=5
+  PHASE='processes';open_view(page,'processes');assert_capability_matrix(page);expect(page.locator('#procedureHub .procedure-signals')).to_have_count(0)
+  PHASE='proof';open_view(page,'proof');expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');expect(page.locator('#proofContent > details[data-proof-domain="decisions"]')).to_have_attribute('open','');expect(page.locator('#proofContent > details[data-proof-workspace="interpretation"]')).not_to_have_attribute('open','')
+  PHASE='epistemic';open_view(page,'epistemic');expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze');expect(page.locator('#epistemicSearch')).to_be_visible();rules=page.locator('#epistemicView details[data-epistemic-workspace="rules"]');expect(rules).to_have_count(1);expect(rules).not_to_have_attribute('open','')
+
+  PHASE='admin';open_view(page,'home');open_profile(page);page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click');wait_admin_owner(page);admin=page.locator('#adminCenter');expect(admin.locator('#procedureAdminPanel .procedure-admin-head h3')).to_have_text('Disponibilità operativa dei processi');expect(admin.locator('#procedurePolicyForm button[type="submit"]')).to_have_text('Salva disponibilità operativa');page.keyboard.press('Escape')
+  PHASE='settings';open_profile(page);page.locator('#stableProfileMenu #openSettings').dispatch_event('click');wait_settings_owner(page);expect(page.locator('#settingsTitle')).to_have_text('Configurazione AI');page.keyboard.press('Escape')
+
   for width in [390,320]:
-   mc=browser.new_context(viewport={'width':width,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");m=mc.new_page();m.set_default_timeout(30000);open_view(m,'home');expect(m.locator('#homePulse')).to_be_hidden();no_overflow(m);open_view(m,'processes');no_overflow(m);open_process(m,'AO-01');no_overflow(m);mc.close()
-  assert not writes,writes;assert not errors,errors
-  out={'ok':True,'profile':'semantic-composition-3.1','surfaceCoverage':['home','processes','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','proof','epistemic','admin','settings'],'homeNumericDashboard':False,'procedureWorkAboveFold':True,'technicalDefaultOpen':False,'mobileWidths':[390,320],'mobileOverflow':False,'writeCount':len(writes),'claimBoundary':'Rendered hierarchy/compression evidence only; not human comprehension research, legal compliance, accessibility certification or deployment security.'};(ART/'browser-information-value.json').write_text(json.dumps(out,indent=2),encoding='utf8');print('browser-information-value-3.1: complete');ctx.close();browser.close()
-except BaseException as exc:fail(exc);traceback.print_exc();raise
+   PHASE=f'responsive-semantic-{width}';mc=browser.new_context(viewport={'width':width,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");m=mc.new_page();m.set_default_timeout(30000);mobile_writes=[];m.on('request',lambda req:mobile_writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None);open_view(m,'home');open_view(m,'processes');assert_capability_matrix(m);assert not mobile_writes,mobile_writes;mc.close()
+
+  PHASE='read-only-boundary';assert not writes,writes;PHASE='page-errors';assert not errors,errors
+  out={'ok':True,'profile':'native-semantic-lattice-3.2','surfaceCoverage':['home','processes','proof','epistemic','admin','settings'],'capabilityCoverage':list(PROCEDURE_CODES),'procedureLifecycleAuthority':'dedicated-uiux-and-stateful-journeys','semanticReadiness':'monotonic-final-c01-cycle+declared-owner+surface-invariant','geometryAuthority':'dedicated-ui-and-responsive-gates','transportQuiescenceDependency':False,'globalRuntimeLocalAdapters':0,'processCatalogue':'matrix-responsive','homeNumericDashboard':False,'proof':'decisions-first','epistemic':'search-first','technicalDefaultOpen':False,'semanticViewportSamples':[390,320],'writeCount':len(writes),'claimBoundary':'Rendered information-architecture evidence only; procedure lifecycle, geometry and state transitions belong to dedicated gates and this is not human comprehension research, legal compliance, accessibility certification or deployment security.'}
+  (ART/'browser-information-value.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8');print('browser-information-value-3.2: complete');ctx.close();browser.close()
+except BaseException as exc:
+ fail(exc);traceback.print_exc();raise
