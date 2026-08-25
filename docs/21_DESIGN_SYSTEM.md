@@ -1,54 +1,71 @@
-# ICTC Workspace Design System — current authority map
+# ICTC Workspace Chrome Design System 3.3
 
-Questo documento descrive il **design system corrente** senza confondere owner canonici ed effetti transitori della stratigrafia runtime.
+Questo documento canonizza il contratto visuale del **chrome globale** ICTC: header principale, controlli permanenti e footer principale. Non possiede semantica business, lifecycle delle procedure, decision authority o C0.1; tali authority restano negli owner correnti 3.2/3.2.1.
 
-## Authority corrente
+## Prompt operativo consolidato
 
-- `v3/public/design-tokens.css` possiede i token visuali condivisi: tipografia, colori, spacing, radius, elevation, motion, focus e le famiglie `--chrome-*`, `--landing-*` e `--home-action-*`.
-- `v3/public/workspace-chrome-3-3.css` è il **solo owner bounded del chrome globale**: header e footer stabili. Workspace Chrome resta versione `3.3`.
-- Gli owner locali 3.2/3.2.1 possiedono gerarchia e composizione delle rispettive superfici.
-- `v3/public/workspace-finetuning-3-4.css` è l'**effective transitional presentation closure** attualmente caricata dopo 3.3. Corregge output visivi su chrome, landing, Home, Evidenze e catalogo processi, ma **non è un nuovo design-system owner** e non deve diventare la destinazione di nuove responsabilità.
-
-La distinzione è intenzionale: **declared owner != effective final cascade** finché la closure 3.4 non viene assorbita e ritirata.
+Rifinire header e footer senza introdurre un nuovo presentation owner: usare token condivisi, preservare le tre superfici canoniche e i controlli esistenti, ridurre rumore e drift cromatico, mantenere target accessibili e responsive, e fare del repository GitHub l'unica destinazione del link `Condizioni` nel footer corrente.
 
 ## Linguaggio visuale
 
-La base canonica usa `Inter Variable`, `Inter` e system UI; superfici business chiare; testo navy; indigo come brand; teal come accento; status success/warning/danger/info separati. Il chrome usa una famiglia navy -> blue distinta dalle superfici business. Il colore non costituisce mai un verdetto di compliance.
+Il chrome usa una direzione **deep navy → blue**, con superfici di controllo bianche e stato attivo indigo. Teal, amber, success e danger restano accenti semantici secondari e non costituiscono mai un verdetto di compliance. Le business surfaces rimangono chiare e separate dal chrome.
 
-I controlli permanenti mantengono contrasto elevato, target minimo 44 px ove applicabile, focus esplicito, supporto `forced-colors` e `prefers-reduced-motion`.
+La tipografia canonica è `Inter Variable`, poi `Inter`, quindi la system UI stack; nessun font file è necessario al runtime. Il monospace resta riservato a digest, identificatori tecnici e codice.
 
-## Header e footer correnti
+## Token authority
 
-Il runtime corrente monta il logo canonico come SVG inline. Header e footer usano gradienti a tre stop derivati dai token condivisi. Il footer corrente rende solo `ICTC · MIT · Repository · Condizioni`: **`Candidate` è assente**. `Condizioni` punta esclusivamente a `docs/OPEN_SOURCE_TERMS.md` su GitHub; `/terms.html` non è una seconda source of truth.
+`v3/public/design-tokens.css` è l'unico owner dei valori cromatici e tipografici condivisi. Il chrome consuma esclusivamente la famiglia `--chrome-*`: header, footer, testo su fondo scuro, control surface, active state, focus e shadow. `v3/public/workspace-chrome-3-3.css` applica quei token ed è caricato dal workspace owner dopo la closure 3.2.1.
 
-## Landing e Home
+Non duplicare literal cromatici del chrome in nuovi fogli. Un nuovo colore richiede prima un token con ruolo dichiarato.
 
-Home, Processi di Compliance ed Evidenze ICTC condividono oggi una grammatica landing chiara e luminosa basata su token. La Home usa una work summary compatta con CTA allineata `Apri` + SVG `arrow-up-right`; questa presentazione non modifica routing, procedure state o write authority.
+## Header
 
-## Evidenze e catalogo processi
+L'header conserva la composizione corrente: brand, tre superfici `Home / Processi di Compliance / Evidenze ICTC`, comando `Vai a…`, contesto DEMO quando presente, profilo/ruolo e stato runtime. La rifattorizzazione è visuale: nessun elemento assume nuova authority.
 
-Evidenze ICTC mantiene il **Reticolo epistemico come prima disclosure canonica** e non duplica entry EP-01/meta. Il catalogo processi usa geometria comparabile su desktop e altezza naturale su mobile. Questi effetti sono correnti, ma le rispettive semantiche restano negli owner locali.
+Regole: controlli chiari ad alto contrasto sul fondo navy-blue; active state espresso da forma, contrasto e colore; target interattivi almeno 44 px; focus sempre visibile; a larghezze ridotte si comprime il dettaglio, non si elimina la navigazione canonica.
 
-## Debito visuale esplicito
+## Footer
 
-Il percorso corrente contiene ancora molte generazioni CSS e la closure 3.4 usa override finali, inclusi `!important`, per neutralizzare regole precedenti. Questo è **visual debt noto**, non una nuova architettura target.
+Il footer resta persistente, compatto e non decisionale. Copy canonica corrente: `ICTC · MIT · Repository · Condizioni`; **`Candidate` è assente**. `MIT` e `Repository` puntano a GitHub; `Condizioni` punta esclusivamente a `docs/OPEN_SOURCE_TERMS.md` su GitHub. La route locale `/terms.html` può sopravvivere come compatibilità storica, ma non è una destinazione del footer corrente e non è una seconda source of truth.
 
-Regola di convergenza:
+## Effective presentation closure 3.4
 
-> preservare gli invarianti visivi correnti, assorbire le regole irriducibili nei veri owner e cancellare causa + compensazione; nessun test può richiedere la sopravvivenza di una regola legacy solo per dimostrare che una closure successiva la sovrascrive.
+Il Workspace Chrome resta versione e authority **3.3**. Il runtime corrente carica inoltre `v3/public/workspace-finetuning-3-4.css` dopo il chrome: è una **effective transitional presentation closure** che modifica l'output finale di chrome, landing, Home, Evidenze e catalogo processi senza acquisire business, write o C0.1 authority.
 
-## DoD corrente
+La 3.4 è registrata come AS-IS e come debito di convergenza, non come nuovo design-system owner permanente. Il target è assorbire gli invarianti osservabili nei rispettivi owner canonici e ritirare il final resolver. I test di presentation closure devono proteggere l'output osservabile e non richiedere la sopravvivenza di una causa legacy esclusivamente per dimostrare che una regola successiva la sovrascrive.
 
-- chrome owner canonico: `design-tokens.css` + `workspace-chrome-3-3.css`;
-- effective presentation closure registrata: `workspace-finetuning-3-4.css`;
-- `Candidate` nel footer corrente: `0`;
-- logo raster nel header corrente: `0`;
-- global navigation surfaces: `3`;
-- minimum permanent-control target: `44px` ove applicabile;
-- nuovi business/write owner introdotti dalla closure 3.4: `0`;
-- nuovi participant C0.1 introdotti dalla closure 3.4: `0`;
-- test di presentazione: devono proteggere **invarianti osservabili**, non la permanenza delle cause legacy.
+## DoD minimo
 
-## Claim boundary
+- un solo owner token: `design-tokens.css`;
+- un solo layer bounded del chrome 3.3, caricato dall'owner workspace esistente;
+- tre sole superfici globali canoniche;
+- target header >= 44 px, focus visibile, forced-colors e reduced-motion gestiti;
+- zero `href="/terms.html"` nel footer corrente;
+- `Condizioni` -> GitHub `docs/OPEN_SOURCE_TERMS.md` con `noopener noreferrer`;
+- `Candidate` assente dal footer corrente;
+- zero nuovi participant C0.1, endpoint, write authority o stati business;
+- closure 3.2.1 di procedure e Evidenze non modificata;
+- campagna bounded: **10.000/10.000** mutazioni source-string deterministiche uccise su 20 failure family dichiarate.
 
-I test statici e le mutation campaign del design system provano soltanto i contratti dichiarati. Non equivalgono a user study, browser session indipendenti, certificazione WCAG, parere legale, assurance di deployment o preferenza estetica umana.
+## Metriche e checklist
+
+| Metrica | Target |
+|---|---:|
+| Global navigation items | 3 |
+| Chrome token owner | 1 |
+| Chrome visual layer | 1 |
+| Minimum permanent-control target | 44 px |
+| Local terms links in current footer | 0 |
+| `Candidate` in current footer | 0 |
+| New business/write authorities | 0 |
+| New C0.1 participants | 0 |
+| Source-string mutations killed | 10.000/10.000 |
+| Failure-family coverage | 20/20 |
+
+Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione con Semantic Workspace Closure 3.2.1; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate; eventuali closure successive non diventano nuovi owner per inerzia di cascade.
+
+## Falsificazione e claim boundary
+
+`v3/workspace-chrome-3-3-saturation.mjs` esegue **10.000 source-string mutation executions** deterministiche sul contratto statico corrente, distribuite uniformemente su 20 failure family: token header/footer, font fallback, scope/versione, consumo palette header/footer, target size, responsive 900/640, forced-colors, reduced-motion, active state, focus, marker shell, terms authority, sicurezza del link esterno, bootstrap owner, current rail, contratto documentale e bounded scope. Ogni famiglia riceve 500 mutazioni; 10.000/10.000 devono essere rilevate.
+
+Il kill-rate vale soltanto per questo vocabolario dichiarato. Non equivale a 10.000 browser session, code mutation indipendenti compilati/eseguiti, preferenze di 10.000 utenti, certificazione WCAG, parere legale o assurance del deployment.
