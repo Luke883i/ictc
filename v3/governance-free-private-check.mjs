@@ -32,7 +32,10 @@ export function evaluateMainPush(event, associatedPullRequests, policy) {
 
 function evaluateRequiredChecks(required, checkRuns) {
   const latest = new Map();
-  for (const run of checkRuns || []) latest.set(run.name, run);
+  for (const run of checkRuns || []) {
+    const previous = latest.get(run.name);
+    if (!previous || Number(run.id || 0) > Number(previous.id || 0)) latest.set(run.name, run);
+  }
   const states = required.map(name => {
     const run = latest.get(name);
     return { name, status: run?.status || 'missing', conclusion: run?.conclusion || null, url: run?.html_url || null };
@@ -51,11 +54,21 @@ async function associatedPullRequests(sha) {
   if (!token || !repository) throw new Error('GITHUB_TOKEN/GITHUB_REPOSITORY assente');
   return githubJson(`${api}/repos/${repository}/commits/${sha}/pulls?per_page=100`, token);
 }
-async function checkRuns(sha) {
+async function checkRuns(sha, requiredNames = []) {
   const token = process.env.GITHUB_TOKEN, repository = process.env.GITHUB_REPOSITORY, api = process.env.GITHUB_API_URL || 'https://api.github.com';
   if (!token || !repository) throw new Error('GITHUB_TOKEN/GITHUB_REPOSITORY assente');
-  const payload = await githubJson(`${api}/repos/${repository}/commits/${sha}/check-runs?filter=latest&per_page=100`, token);
-  return payload.check_runs || [];
+  const names = [...new Set(requiredNames.map(name => String(name || '')).filter(Boolean))];
+  const runs = [];
+  for (const name of names) {
+    for (let page = 1; page <= 20; page += 1) {
+      const payload = await githubJson(`${api}/repos/${repository}/commits/${sha}/check-runs?check_name=${encodeURIComponent(name)}&filter=latest&per_page=100&page=${page}`, token);
+      const pageRuns = payload.check_runs || [];
+      runs.push(...pageRuns);
+      if (pageRuns.length < 100) break;
+      if (page === 20) throw new Error(`Check-run pagination limit exceeded for ${name}`);
+    }
+  }
+  return runs;
 }
 async function waitForRequiredChecks(sha, required) {
   const waitMs = Math.max(0, Math.min(60 * 60_000, Number(process.env.ICTC_GOV_WAIT_MS || 55 * 60_000)));
@@ -63,7 +76,7 @@ async function waitForRequiredChecks(sha, required) {
   const deadline = Date.now() + waitMs;
   let result;
   do {
-    result = evaluateRequiredChecks(required, await checkRuns(sha));
+    result = evaluateRequiredChecks(required, await checkRuns(sha, required));
     if (result.ok) return result;
     const terminalFailure = result.blockers?.some(item => item.status === 'completed' && item.conclusion && !['success'].includes(item.conclusion));
     if (terminalFailure || Date.now() >= deadline) return result;
@@ -81,9 +94,10 @@ function selfTest(policy) {
     ['valid-pr', evaluatePullRequest(validPr, policy).ok === true],
     ['reject-main-pr', evaluatePullRequest(invalidPr, policy).code === 'direct-main-pr'],
     ['valid-merged-push', evaluateMainPush({ ref: 'refs/heads/main', after: sha }, merged, policy).ok === true],
-    ['accept-green-checks', evaluateRequiredChecks(required, [{ name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
+    ['accept-green-checks', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
+    ['prefer-latest-duplicate-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'failure' }, { id: 2, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
     ['reject-missing-check', evaluateRequiredChecks(required, []).code === 'required-checks-not-green'],
-    ['reject-skipped-check', evaluateRequiredChecks(required, [{ name: 'enterprise-candidate', status: 'completed', conclusion: 'skipped' }]).code === 'required-checks-not-green']
+    ['reject-skipped-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'skipped' }]).code === 'required-checks-not-green']
   ];
   const failed = tests.filter(([, ok]) => !ok).map(([name]) => name);
   return { ok: failed.length === 0, tests: Object.fromEntries(tests), failed };
