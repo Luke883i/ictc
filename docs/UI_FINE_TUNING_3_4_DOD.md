@@ -2,67 +2,53 @@
 
 ## Intent
 
-Converge the current native workspace lineage on one bounded presentation slice without adding a new semantic or decision owner. The effective 3.4 closure currently resolves global chrome, luminous landing continuity, Home work summary and Evidence presentation. **Process catalogue geometry has been absorbed into the canonical local 3.2.1 owner and is no longer owned by the 3.4 final resolver.**
+La closure 3.4 è una **effective transitional presentation closure**, non una nuova authority permanente. Dopo le prime slice CAP-VIS, due responsabilità sono già state assorbite: **Process catalogue -> 3.2.1** e **global chrome -> Workspace Chrome 3.3**. Il residual 3.4 conserva soltanto landing continuity, Home work summary/actions ed Evidence presentation ancora da contrarre.
 
 ## Global DoD
 
-- `stable-shell.js`, `procedure-frame.js`, `proof-workspace-3-2.js`, and `semantic-workspace-closure-3-2-1.css` remain canonical local owners for their declared responsibilities.
-- 3.4 is a transitional presentation closure loaded after Workspace Chrome 3.3; it does not rewrite business semantics, data, permissions, routing, or procedure state.
-- The residual 3.4 layer remains a **final cascade resolver** only for its still-unabsorbed presentation responsibilities; it is not a target for new generations.
-- No React runtime or icon dependency is introduced: the existing vanilla runtime renders a Lucide-compatible inline SVG for the Home action affordance.
-- Desktop and mobile retain the canonical three-service shell, seven business processes, EP-01 cross-cutting boundary, 44px shared interaction grammar where applicable, and no horizontal overflow.
-- The semantic rail executes both the 3.4 static contract and the mutation saturation gate.
-- A responsibility already absorbed by a canonical local owner must not remain duplicated in `workspace-finetuning-3-4.css`.
+- `workspace-chrome-3-3.css` possiede integralmente header/footer correnti.
+- `semantic-workspace-closure-3-2-1.css` possiede integralmente la presentation del catalogo Processi.
+- `workspace-finetuning-3-4.css` non contiene selettori stable chrome né `#procedureHub`.
+- 3.4 non possiede business semantics, data, permissions, routing, procedure state o C0.1 participation.
+- Una responsabilità assorbita da un owner canonico non può restare duplicata nel final cascade resolver.
 
-## Task 1 — Header and footer
+## Task 1 — Header and footer — absorbed into 3.3
 
-DoD: the header mounts the canonical inline SVG mark directly, contains no raster logo mount, and uses a visibly darker three-stop navy/blue gradient; the footer retains a perceptible three-stop dark gradient with clear links and aligned geometry; the ambiguous `Candidate` label remains absent from rendered footer markup.
+Gli invarianti introdotti da 3.4/3.4.1 sono preservati nel chrome owner 3.3: SVG inline, header navy/blue a tre stop, footer a tre stop, layout grid compatto, link target >=44px, hover/focus, responsive e forced-colors. `Candidate` resta assente.
 
-Metrics: raster logo mounts `0`; canonical inline mark `1`; header gradient stops `3`; footer gradient stops `3`; footer `Candidate` labels `0`.
+Metrics: stable chrome selectors in 3.4 `0`; raster logo mounts `0`; header gradient stops `3`; footer gradient stops `3`; footer `Candidate` labels `0`.
 
-## Task 2 — Landing continuity
+## Task 2 — Landing continuity — residual 3.4
 
-DoD: Home, Processi and Evidenze landing headers share one luminous, low-contrast gradient vocabulary based on shared tokens; each surface remains bounded by the same border/shadow grammar and keeps dark default text; no procedure runtime, admin surface, business semantics, routing, or state is restyled by this landing treatment.
+Home, Processi ed Evidenze condividono una landing luminosa tokenizzata. Questa responsabilità resta transitoriamente nel residual 3.4 e non modifica semantica, routing o state.
 
-Metrics: shared landing gradient owners `1`; covered canonical landing surfaces `3`; new semantic owners `0`; procedure/admin scope leaks `0`.
+## Task 3 — Home summary and actions — residual 3.4
 
-## Task 3 — Home summary and actions
+La Home conserva una sola superficie work-summary, separatori singoli e CTA inline `Apri` + SVG `arrow-up-right`, senza cambiare routing o process ownership.
 
-DoD: attention rows are grouped inside one bounded table-like surface; rows use one separator and the first row adds no duplicate top rule. Each route action is one inline CTA containing `Apri` and a Lucide-compatible `arrow-up-right` SVG. CTA colors derive from shared tokens and preserve routing semantics.
+## Task 4 — Evidenze ICTC — residual 3.4
 
-Metrics: summary surfaces `1`; internal row separators `n-1`; duplicate perimeter rules `0`; primary row minimum height `>=44px`; text-arrow glyphs `0`; routing semantics changed `0`.
-
-## Task 4 — Evidenze ICTC
-
-DoD: the canonical Reticolo epistemico disclosure is unique inside Evidence and remains the first row; duplicate EP-01/meta cards are removed by the Proof owner; Evidence landing remains compact and contains no decorative hero note.
-
-Metrics: Evidence lattice entries `1`; lattice position `1`; duplicate meta entries `0`; decorative hero notes visible `0`.
+Reticolo epistemico resta unico e first-row; Evidence landing è compatta; il Proof owner mantiene deduplica e ordine semantico.
 
 ## Task 5 — Process catalogue — absorbed into 3.2.1
 
-The observable 3.4 catalogue invariants are retained, but their implementation authority is now `semantic-workspace-closure-3-2-1.css`, not the global final resolver.
-
-DoD: desktop process cards share equal rows and equal height; canonical visible children are code, title, catalogue summary and CTA; historical direct-child noise remains hidden in catalogue view; mobile returns to natural auto-height. `workspace-finetuning-3-4.css` contains **zero `#procedureHub` selectors**.
-
-Metrics: desktop equal-row policy `1`; canonical direct visible child classes `4`; local-noise direct children visible `0`; CTA alignment `end`; mobile forced equal height `0`; `#procedureHub` selectors in 3.4 final resolver `0`.
+Desktop: equal rows/equal height, quattro classi di figli canonici visibili e CTA allineata. Mobile: natural auto-height. `workspace-finetuning-3-4.css` contiene `#procedureHub` selectors = `0`.
 
 ## Reticular DoD
 
-A change is accepted only when chrome does not style local workspaces; landing continuity does not become a semantic owner; Home does not become a second process owner; Evidence deduplication does not remove the Processes EP-01 secondary entry; catalogue compression does not hide workspace content after navigation. 3.4 remains an effective transitional resolver for its residual responsibilities only. **Negative authority delta is preferred: once an invariant is owned locally, its duplicate final-cascade implementation is deleted.**
+3.4 resta un final cascade resolver **soltanto per le responsabilità residuali**. Ogni assorbimento deve produrre negative authority delta: invarianti preservati, owner canonico esplicito, duplicazione rimossa dal resolver, nessuna nuova generazione CSS.
 
 ## Falsification
 
-`v3/ui-finetuning-3-4-saturation.mjs` runs five deterministic campaigns of 1,000,000 model mutations over eight abstraction levels per task. The process-catalogue family continues to falsify the observable invariant while the static checker additionally proves that its source authority has moved to 3.2.1. Model mutations are not browser sessions or human preference studies.
+`v3/ui-finetuning-3-4-check.mjs` verifica sia l'output corrente sia il luogo di ownership: chrome in 3.3, catalogue in 3.2.1, residual landing/Home/Evidence in 3.4. La saturation 3.4 mantiene cinque campagne modellate da 1M trial; tali trial non sono browser session, code mutants indipendenti o user study.
 
 ## Checklist
 
-- [ ] Canonical SVG brand mark mounted inline; PNG mount absent.
-- [ ] Header/footer current visual invariants preserved.
-- [ ] Home, Processi and Evidenze landing headers share the luminous tokenized treatment.
-- [ ] Home summary and CTA invariants preserved.
-- [ ] Evidence contains one first-row Reticolo epistemico entry.
-- [ ] Process cards are equal on desktop and natural-height on mobile.
-- [ ] Process catalogue rules live in 3.2.1 and `workspace-finetuning-3-4.css` has zero `#procedureHub` selectors.
-- [ ] Static 3.4 contract passes without debt-preservation assertions.
-- [ ] 5,000,000/5,000,000 model mutations are killed.
-- [ ] Current semantic rail and repository CI remain green before merge.
+- [ ] Stable chrome selectors nel residual 3.4 = 0.
+- [ ] `#procedureHub` selectors nel residual 3.4 = 0.
+- [ ] Header/footer correnti preservati in 3.3.
+- [ ] Process catalogue invariants preservati in 3.2.1.
+- [ ] Landing/Home/Evidence residual invariants preservati.
+- [ ] Debt-preservation oracle assente.
+- [ ] Nessun nuovo owner, layer, route, write authority o C0.1 participant.
+- [ ] Current semantic rail e repository CI green prima del merge.
