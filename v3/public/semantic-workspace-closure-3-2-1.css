@@ -1,8 +1,11 @@
 /* Semantic Workspace Closure 3.2.1 — closes workbook-to-runtime copy and layout drift. */
-html[data-native-semantic-lattice="3.2.0"] #procedureHub{align-items:start!important;grid-auto-rows:max-content!important}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{grid-template-rows:auto auto auto auto!important;min-height:0!important;height:auto!important;align-self:start!important;gap:.65rem!important;padding:1rem 1rem .95rem!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub{align-items:stretch!important;grid-auto-rows:1fr!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{grid-template-rows:auto auto minmax(0,1fr) auto!important;min-height:226px!important;height:100%!important;align-self:stretch!important;min-width:0;max-width:100%;gap:.46rem!important;padding:.9rem!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]>:not(header,h2,.procedure-purpose,footer){display:none!important}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-purpose{min-height:0!important;margin:0!important;display:block!important;overflow:visible!important;-webkit-line-clamp:unset!important;line-clamp:unset!important}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card footer{margin-top:.15rem!important;align-self:start!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card footer{margin-top:.1rem!important;align-self:end!important;min-width:0;max-width:100%}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card footer .executive-evidence-inline{display:none!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{min-height:44px!important;padding:.4rem .62rem!important}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy{max-width:82ch}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{margin-bottom:.35rem!important;font-size:.96rem!important;line-height:1.5!important}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-value{margin:.15rem 0 0;color:var(--color-text);font-size:.86rem;line-height:1.45}
@@ -17,4 +20,4 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-work
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-workspace="trace-reconstruction"] #traceExplorer>.trace-head{margin-top:0!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-domain="decisions"]{box-shadow:none!important;border-color:var(--color-border)!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-section-body{padding:.75rem .9rem!important}
-@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{padding:.9rem!important}html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-value,html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-boundary{max-width:100%}}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub{grid-auto-rows:auto!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:auto!important;min-height:0!important;max-width:100%!important;padding:.9rem!important}html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-value,html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-boundary{max-width:100%}}
