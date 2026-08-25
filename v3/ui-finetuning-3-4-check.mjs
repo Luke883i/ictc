@@ -1,19 +1,21 @@
 import { readFile } from 'node:fs/promises';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
-const [index,tokens,css,shell,native,proof,closure]=await Promise.all([read('./public/index.html'),read('./public/design-tokens.css'),read('./public/workspace-finetuning-3-4.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./public/ui/proof-workspace-3-2.js'),read('./public/semantic-workspace-closure-3-2-1.css')]);
+const [index,tokens,css,chrome,shell,native,proof,closure]=await Promise.all([read('./public/index.html'),read('./public/design-tokens.css'),read('./public/workspace-finetuning-3-4.css'),read('./public/workspace-chrome-3-3.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./public/ui/proof-workspace-3-2.js'),read('./public/semantic-workspace-closure-3-2-1.css')]);
 const issues=[],check=(value,message)=>{if(!value)issues.push(message)};
 check(index.includes('<svg class="ictc-brand-mark"')&&!index.includes('/assets/ictc-mark.png'),'header must mount canonical inline icon and retire raster logo mount');
 for(const token of ['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-mid','--chrome-footer-end','--landing-start','--landing-end','--landing-border','--home-action-start','--home-action-end','--home-action-text'])check((tokens.match(new RegExp(token.replace(/[-]/g,'\\-')+':','g'))||[]).length===1,`token uniqueness ${token}`);
 check(css.includes('data-ui-fine-tuning="3.4"'),'3.4 scope missing');
-check(css.includes('var(--chrome-header-mid)')&&css.includes('var(--workspace-header)'),'header must consume a three-stop dark gradient');
+check(chrome.includes('var(--chrome-header-mid)')&&chrome.includes('var(--workspace-header)'),'3.3 chrome owner must consume the current three-stop header gradient');
 check(tokens.includes('--chrome-header-start:#142a46')&&tokens.includes('--chrome-header-mid:#1d4068')&&tokens.includes('--chrome-header-end:#285b84'),'header palette must retain current continuity tuning');
-check(css.includes('var(--chrome-footer-mid)')&&css.includes('var(--workspace-footer)'),'footer must consume visible multi-stop gradient');
-check(css.includes('.stable-legal-footer{background:var(--workspace-footer)!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center!important'),'footer alignment contract missing');
-check(css.includes('.stable-footer-links a:hover{background:rgba(255,255,255,.08);color:var(--chrome-on-dark)!important}'),'footer links must expose a clear hover treatment');
+check(chrome.includes('var(--chrome-footer-mid)')&&chrome.includes('var(--workspace-footer)'),'3.3 chrome owner must consume the current three-stop footer gradient');
+check(chrome.includes('.stable-legal-footer{background:var(--workspace-footer)!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center!important'),'3.3 footer alignment contract missing');
+check(chrome.includes('.stable-footer-links a:hover{background:rgba(255,255,255,.08);color:var(--chrome-on-dark)!important;text-decoration:underline}'),'3.3 footer links must expose current hover treatment');
+check(chrome.includes('.stable-header .ictc-brand-mark{display:block;flex:0 0 auto;width:30px;height:30px'),'3.3 chrome owner must own canonical brand-mark geometry');
+check(!/(?:\.stable-header|\.stable-legal-footer|\.stable-footer-product|\.stable-footer-links)/.test(css),'3.4 final resolver must not own stable header/footer chrome');
 check(!shell.includes('<small>Candidate</small>')&&shell.includes('<span class="stable-footer-product"><b>ICTC</b></span>'),'footer candidate label must be absent from rendered markup');
 check(shell.includes("UI_FINE_TUNING_VERSION='3.4'")&&shell.includes('html.dataset.uiFineTuning=UI_FINE_TUNING_VERSION'),'3.4 shell identity missing');
-check(native.includes("ensureStyle('/workspace-finetuning-3-4.css','data-ui-finetuning-34')"),'3.4 style must load in current native workspace');
-check(native.indexOf('workspace-chrome-3-3.css')<native.indexOf('workspace-finetuning-3-4.css'),'3.4 must currently resolve after chrome 3.3');
+check(native.includes("ensureStyle('/workspace-finetuning-3-4.css','data-ui-finetuning-34')"),'3.4 residual style must load in current native workspace');
+check(native.indexOf('workspace-chrome-3-3.css')<native.indexOf('workspace-finetuning-3-4.css'),'residual 3.4 layer must remain after chrome while unabsorbed responsibilities exist');
 check(css.includes('--workspace-landing:linear-gradient')&&css.includes(':is(#homeView .home-hero,#processesView .processes-head,#proofView .proof-head){background:var(--workspace-landing)!important'),'canonical landing surfaces must share one light visual treatment');
 check(css.includes('border:1px solid var(--landing-border)!important')&&css.includes('box-shadow:var(--landing-shadow)!important'),'landing surfaces must remain bounded and luminous');
 check(shell.includes('home-priority-table')&&css.includes('.home-priority-table{overflow:hidden;border:1px solid')&&css.includes('border-top:1px solid var(--ui-ft-rule)!important'),'Home must be one bounded table-like surface with single separators');
@@ -23,7 +25,7 @@ check(shell.includes('home-priority-open')&&css.includes('.home-priority-open{di
 check(css.includes('background:var(--workspace-home-action)')&&css.includes('color:var(--home-action-text)'),'Home CTA must consume shared action tokens');
 check(css.includes('.home-priority-open .lucide{width:14px;height:14px'),'Home action icon geometry missing');
 check(css.includes('.home-priority-head>button{min-height:44px'),'Home catalogue navigation must retain a 44px minimum target');
-check(css.includes('.stable-footer-links a{display:inline-flex;align-items:center;min-height:44px'),'footer links must retain a 44px minimum target');
+check(chrome.includes('.stable-footer-links a{display:inline-flex;align-items:center;min-height:44px'),'footer links must retain a 44px minimum target in chrome owner');
 check(proof.includes('retireDuplicateInvestigation(root,content,investigation)'),'Proof must explicitly retire duplicate lattice entries');
 check(proof.includes("root.querySelectorAll('#epistemicMetaCard,[data-meta-procedure=\"epistemic-lattice\"]')"),'Proof duplicate meta-card guard missing');
 check(proof.includes('content.prepend(investigation)'),'canonical lattice entry must remain first in Evidence');
@@ -36,7 +38,7 @@ check(closure.includes('>:not(header,h2,.procedure-purpose,footer){display:none!
 check(closure.includes('#procedureHub .procedure-card footer .executive-evidence-inline{display:none!important}'),'local catalogue owner must hide legacy executive evidence annotation');
 check(closure.includes('#procedureHub .procedure-card .procedure-primary{min-height:44px!important'),'catalogue primary actions must retain a 44px minimum target');
 check(closure.includes('@media(max-width:719px)')&&closure.includes('#procedureHub{grid-auto-rows:auto!important}')&&closure.includes('height:auto!important;min-height:0!important'),'local catalogue owner must collapse equal-height policy on mobile');
-check(css.includes('.stable-legal-footer{grid-template-columns:auto minmax(0,1fr);gap:.55rem!important}'),'mobile footer must allow links to shrink without document overflow');
-check(!/#adminCenter|#grcWorkspace|#monitoringView|#incidentsView/.test(css),'3.4 scope must not leak into procedure runtimes/admin');
+check(chrome.includes('.stable-legal-footer{grid-template-columns:auto minmax(0,1fr);gap:.55rem!important}'),'mobile footer must shrink in chrome owner without document overflow');
+check(!/#adminCenter|#grcWorkspace|#monitoringView|#incidentsView/.test(css),'3.4 residual scope must not leak into procedure runtimes/admin');
 if(issues.length){console.error(JSON.stringify({ok:false,suite:'ui-finetuning-3.4',issues},null,2));process.exit(1)}
-console.log(JSON.stringify({ok:true,suite:'ui-finetuning-3.4',tasks:{chrome:true,landingContinuity:true,home:true,proof:true,processCatalogue:true},scope:'3.4=header+footer+Home/Processes/Evidence landing treatment+Home summary+Evidence; process catalogue owned by 3.2.1',ownersPreserved:['stable-shell.js','proof-workspace-3-2.js','procedure-frame.js','semantic-workspace-closure-3-2-1.css'],catalogueTargetMinPx:44,processCatalogueInFinalResolver:false,legacyEvidenceAnnotationVisible:false,debtPreservationOracle:false,claimBoundary:'Static semantic/presentation contract; not human usability research, aesthetic certification, WCAG certification or legal assessment.'}));
+console.log(JSON.stringify({ok:true,suite:'ui-finetuning-3.4',tasks:{chrome:true,landingContinuity:true,home:true,proof:true,processCatalogue:true},scope:'3.4 residual=Home/Processes/Evidence landing treatment+Home summary+Evidence; chrome owned by 3.3; process catalogue owned by 3.2.1',ownersPreserved:['workspace-chrome-3-3.css','stable-shell.js','proof-workspace-3-2.js','procedure-frame.js','semantic-workspace-closure-3-2-1.css'],catalogueTargetMinPx:44,chromeInFinalResolver:false,processCatalogueInFinalResolver:false,legacyEvidenceAnnotationVisible:false,debtPreservationOracle:false,claimBoundary:'Static semantic/presentation contract; not human usability research, aesthetic certification, WCAG certification or legal assessment.'}));
