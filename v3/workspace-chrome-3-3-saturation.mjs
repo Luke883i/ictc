@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
 const [tokens,chrome,shell,native,current,design]=await Promise.all([
-  read('./public/design-tokens.css'),read('./public/workspace-chrome-3-3.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./current-semantic-3-2.mjs'),read('../docs/21_DESIGN_SYSTEM.md')
+  read('./public/design-tokens.css'),read('./public/workspace-chrome-3-3.css'),read('./public/ui/stable-shell.js'),read('./public/ui/native-workspace-3-2.js'),read('./current-gate-registry.mjs'),read('../docs/21_DESIGN_SYSTEM.md')
 ]);
 const baseline=Object.freeze({tokens,chrome,shell,native,current,design});
 const tokenNames=['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-end','--chrome-on-dark','--chrome-control-bg','--chrome-control-border','--chrome-active-bg','--chrome-active-text','--chrome-focus'];
