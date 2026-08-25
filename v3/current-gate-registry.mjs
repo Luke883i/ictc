@@ -1,0 +1,69 @@
+import { readFileSync } from 'node:fs';
+import { CURRENT_SEMANTIC } from './current-release-suite.mjs';
+
+const releaseIdentity=JSON.parse(readFileSync(new URL('./release-identity.json',import.meta.url),'utf8'));
+const documentationManifest=JSON.parse(readFileSync(new URL('../docs/documentation-manifest.json',import.meta.url),'utf8'));
+const axes=documentationManifest.versionAxes;
+
+export const POLICY_GATES=Object.freeze(['v3/runtime-temp-cleanup-contract-check.mjs','v3/ci-topology-contract-check.mjs']);
+export const LEGACY_DEMO_GATES=Object.freeze(['v3/demo-seed-contract-check.mjs','v3/demo-seed-saturation.mjs','v3/demo-outcome-audit-check.mjs','v3/demo-outcome-saturation.mjs','v3/demo-reality-context-check.mjs','v3/demo-procedure-ontology-check.mjs','v3/demo-operating-year-check.mjs','v3/demo-operating-year-saturation.mjs']);
+export const DEMO_SUITE_GATES=Object.freeze(['v3/demo-suite-2-2-module-load-check.mjs','v3/demo-suite-2-2-runtime-semantic-check.mjs','v3/demo-suite-2-2-runtime-store-check.mjs','v3/demo-suite-2-2-projection-closure-check.mjs']);
+export const NATIVE_GATES=Object.freeze(['v3/current-gate-registry-check.mjs','v3/native-semantic-lattice-3-2-check.mjs','v3/native-semantic-lattice-3-2-ui-check.mjs','v3/semantic-workspace-closure-3-2-1-saturation.mjs','v3/workspace-chrome-3-3-saturation.mjs','v3/ui-finetuning-3-4-check.mjs','v3/ui-finetuning-3-4-saturation.mjs','v3/native-semantic-lattice-3-2-saturation.mjs','v3/native-semantic-lattice-3-2-stress.mjs','v3/experience-readiness-3-2-saturation.mjs','v3/product-ci-coevolution-3-2.mjs','v3/surface-commit-3-2-v2-saturation.mjs','v3/grc-canonical-render-3-2-saturation.mjs','v3/grc-coverage-handoff-3-2-saturation.mjs','v3/ci-verdict-fanout-3-2-saturation.mjs']);
+
+// Versioned names that still implement contracts explicitly current in release identity / authority docs.
+export const CURRENT_CONTRACT_GATES=Object.freeze([
+  'v3/v1-2-market-candidate-check.mjs','v3/v1-9-experience-check.mjs','v3/v1-9-experience-saturation.mjs',
+  'v3/onto-compliance-horizon-check.mjs','v3/onto-compliance-saturation.mjs',
+  'v3/visual-grace-lexical-epistemic-check.mjs','v3/visual-grace-lexical-epistemic-saturation.mjs',
+  'v3/semantic-foundation-3-0-check.mjs','v3/semantic-foundation-3-0-saturation.mjs'
+]);
+
+// Explicit, reviewable lineage classification. Unknown/new gates fail closed into current-required.
+export const COMPATIBILITY_REGRESSION_GATES=Object.freeze([
+  'v3/refined-product-check.mjs',
+  'v3/procedure-journey-2-1-check.mjs',
+  'v3/ui-epistemic-convergence-check.mjs',
+  'v3/ui-epistemic-procedure-saturation.mjs',
+  'v3/pr60-convergence-saturation.mjs',
+  'v3/refined-product-saturation.mjs',
+  'v3/v2-grc-convergence-check.mjs',
+  'v3/v2-grc-saturation.mjs',
+  'v3/v4-stable-real-saturation.mjs',
+  'v3/enterprise-t-saturation.mjs',
+  'v3/enterprise-t-audit.mjs',
+  'v3/procedure-finetuning-2-3-check.mjs',
+  'v3/procedure-finetuning-2-3-saturation.mjs',
+  'v3/procedure-record-contract-2-4-check.mjs',
+  'v3/procedure-record-saturation-2-4.mjs',
+  'v3/surface-truth-contract-2-5-check.mjs',
+  'v3/surface-truth-saturation-2-5.mjs',
+  'v3/shell-admin-demo-check-2-6.mjs',
+  'v3/shell-admin-demo-saturation-2-6.mjs',
+  'v3/semantic-closure-2-8-causality-check.mjs',
+  'v3/semantic-closure-2-8-ui-check.mjs',
+  'v3/semantic-closure-2-8-saturation.mjs',
+  'v3/runtime-stabilization-semantic-check.mjs',
+  'v3/runtime-stabilization-2-9-saturation.mjs'
+]);
+
+const legacyDemo=new Set(LEGACY_DEMO_GATES);
+const compatibilityRegression=new Set(COMPATIBILITY_REGRESSION_GATES);
+export function classifyBaseGate(gate){if(legacyDemo.has(gate))return'replaced';if(compatibilityRegression.has(gate))return'compatibility-regression';return'current-required';}
+export const CURRENT_BASE_GATE_REGISTRY=Object.freeze(CURRENT_SEMANTIC.map(gate=>Object.freeze({gate,class:classifyBaseGate(gate)})));
+export const CURRENT_REQUIRED_BASE=Object.freeze(CURRENT_BASE_GATE_REGISTRY.filter(entry=>entry.class==='current-required').map(entry=>entry.gate));
+export const COMPATIBILITY_REGRESSION_BASE=Object.freeze(CURRENT_BASE_GATE_REGISTRY.filter(entry=>entry.class==='compatibility-regression').map(entry=>entry.gate));
+export const REPLACED_BASE=Object.freeze(CURRENT_BASE_GATE_REGISTRY.filter(entry=>entry.class==='replaced').map(entry=>entry.gate));
+
+// Projection only: values are read from the current release/documentation authorities, never recopied here.
+export const CURRENT_AUTHORITY_VECTOR=Object.freeze({
+  product:releaseIdentity.productVersion,
+  semantic:releaseIdentity.contracts.semantic,
+  experience:releaseIdentity.contracts.experience,
+  epistemic:releaseIdentity.contracts.epistemic,
+  uiComposition:axes.uiComposition.value,
+  workspaceChrome:axes.workspaceChrome.value,
+  uiPresentation:Object.freeze({value:axes.uiPresentation.value,classification:axes.uiPresentation.classification}),
+  journey:releaseIdentity.contracts.journey,
+  constitution:releaseIdentity.contracts.constitution,
+  documentation:axes.documentation.value
+});
