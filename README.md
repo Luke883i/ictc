@@ -72,11 +72,13 @@ La regola corrente è **work first, explanation on demand**, con composizione lo
 - Home mostra una proposition aziendale unica e una attention queue limitata a 5 elementi.
 - Processi di Compliance usa una capability matrix responsive **3 → 2 → 1** con sette card e copy distinto tra catalogo e workspace.
 - Le procedure mantengono lavoro e decisione prima di KPI, metodo, boundary e trace.
-- Evidenze ICTC apre Decisioni e rende secondari metodo, integrità, verifiche esterne ed export.
+- Evidenze ICTC apre con il **Reticolo epistemico** e mantiene secondari decisioni/tracciabilità, metodo, integrità, verifiche esterne ed export.
 - EP-01 porta ricerca e relazioni prima di summary/compression e dettagli tecnici.
 - Admin esplicita gli effetti della disponibilità operativa senza trasformarla in applicabilità normativa.
 
 Il lifecycle costituzionale resta **C0.1** con ordine `harmonization → presentation → integrity → journey → annotation`; il journey corrente resta `2.2-sequential-onto-epistemic`.
+
+Il design system mantiene tre assi distinti: `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = 3.4`. La closure 3.4 è l'effetto visuale finale AS-IS caricato dopo il chrome 3.3, ma resta una **effective transitional presentation closure** da assorbire nei veri owner: non è un nuovo business/design-system owner permanente.
 
 ## Evidenze ed export
 
@@ -113,6 +115,7 @@ npm run release:check
 node v3/current-semantic-3-2.mjs
 node v3/native-semantic-lattice-3-2-check.mjs
 node v3/native-semantic-lattice-3-2-ui-check.mjs
+node v3/ui-finetuning-3-4-check.mjs
 node v3/native-semantic-lattice-3-2-saturation.mjs
 node v3/native-semantic-lattice-3-2-stress.mjs
 ```
@@ -121,7 +124,7 @@ La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario mo
 
 ## Release e presa in carico
 
-`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority.
+`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority. Il registry documentale registra separatamente `workspaceChrome = 3.3` e `uiPresentation = 3.4` per rappresentare l'AS-IS senza promuovere la closure transitoria a lineage permanente.
 
 La branch protection server-side e gli altri gate indipendenti/deployment non possono essere auto-prodotti dal repository: restano blocker esterni quando non disponibili.
 

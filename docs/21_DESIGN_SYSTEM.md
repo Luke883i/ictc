@@ -26,7 +26,13 @@ Regole: controlli chiari ad alto contrasto sul fondo navy-blue; active state esp
 
 ## Footer
 
-Il footer resta persistente, compatto e non decisionale. Copy canonica: `ICTC · Candidate · MIT · Repository · Condizioni`. `MIT` e `Repository` puntano a GitHub; `Condizioni` punta esclusivamente a `docs/OPEN_SOURCE_TERMS.md` su GitHub. La route locale `/terms.html` può sopravvivere come compatibilità storica, ma non è una destinazione del footer corrente e non è una seconda source of truth.
+Il footer resta persistente, compatto e non decisionale. Copy canonica corrente: `ICTC · MIT · Repository · Condizioni`; **`Candidate` è assente**. `MIT` e `Repository` puntano a GitHub; `Condizioni` punta esclusivamente a `docs/OPEN_SOURCE_TERMS.md` su GitHub. La route locale `/terms.html` può sopravvivere come compatibilità storica, ma non è una destinazione del footer corrente e non è una seconda source of truth.
+
+## Effective presentation closure 3.4
+
+Il Workspace Chrome resta versione e authority **3.3**. Il runtime corrente carica inoltre `v3/public/workspace-finetuning-3-4.css` dopo il chrome: è una **effective transitional presentation closure** che modifica l'output finale di chrome, landing, Home, Evidenze e catalogo processi senza acquisire business, write o C0.1 authority.
+
+La 3.4 è registrata come AS-IS e come debito di convergenza, non come nuovo design-system owner permanente. Il target è assorbire gli invarianti osservabili nei rispettivi owner canonici e ritirare il final resolver. I test di presentation closure devono proteggere l'output osservabile e non richiedere la sopravvivenza di una causa legacy esclusivamente per dimostrare che una regola successiva la sovrascrive.
 
 ## DoD minimo
 
@@ -36,6 +42,7 @@ Il footer resta persistente, compatto e non decisionale. Copy canonica: `ICTC ·
 - target header >= 44 px, focus visibile, forced-colors e reduced-motion gestiti;
 - zero `href="/terms.html"` nel footer corrente;
 - `Condizioni` -> GitHub `docs/OPEN_SOURCE_TERMS.md` con `noopener noreferrer`;
+- `Candidate` assente dal footer corrente;
 - zero nuovi participant C0.1, endpoint, write authority o stati business;
 - closure 3.2.1 di procedure e Evidenze non modificata;
 - campagna bounded: **10.000/10.000** mutazioni source-string deterministiche uccise su 20 failure family dichiarate.
@@ -49,12 +56,13 @@ Il footer resta persistente, compatto e non decisionale. Copy canonica: `ICTC ·
 | Chrome visual layer | 1 |
 | Minimum permanent-control target | 44 px |
 | Local terms links in current footer | 0 |
+| `Candidate` in current footer | 0 |
 | New business/write authorities | 0 |
 | New C0.1 participants | 0 |
 | Source-string mutations killed | 10.000/10.000 |
 | Failure-family coverage | 20/20 |
 
-Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione con Semantic Workspace Closure 3.2.1; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate.
+Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione con Semantic Workspace Closure 3.2.1; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate; eventuali closure successive non diventano nuovi owner per inerzia di cascade.
 
 ## Falsificazione e claim boundary
 
