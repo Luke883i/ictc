@@ -10,8 +10,9 @@ export function validateDocumentationModel(model){
  check(model.productVersion==='1.8.0','product-version');
  check(model.uiVersion==='3.2','ui-version');
  check(model.workspaceChromeVersion==='3.3','workspace-chrome-version');
- check(model.uiPresentationVersion==='3.4','ui-presentation-version');
- check(model.effectivePresentationRegistered,'ui-presentation-registration');
+ check(model.uiPresentationVersion==='local-owners','ui-presentation-version');
+ check(model.distributedPresentationRegistered,'ui-presentation-registration');
+ check(model.retired34Lineage,'ui-34-lineage');
  check(model.journey==='2.2-sequential-onto-epistemic','journey-version'); check(model.constitution==='C0.1','constitution-version'); check(model.documentationVersion==='1.0','documentation-version');
  check(model.processCount===7,'process-count'); check(!model.ep01BusinessProcess,'ep01-boundary');
  check(model.globalUiRuntime==='annotation-only','ui-global-runtime'); check(model.capabilityGrammar==='matrix','capability-grammar');

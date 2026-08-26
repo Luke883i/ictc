@@ -1,4 +1,4 @@
-version: 12
+version: 13
 surfaces:
   product_intent:
     authority: docs/PRODUCT.md
@@ -35,9 +35,15 @@ surfaces:
     composition_root: v3/public/ui/active-experience.js
     local_bootstrap: v3/public/ui/native-workspace-3-2.js
     global_annotation: v3/public/ui/semantic-composition-runtime.js
+    visual_layer: v3/public/enterprise-workspace-3-2.css
     dod: docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md
     classification: local-native-information-hierarchy
     scope: all-user-visible-surfaces
+  ui_process_evidence_presentation:
+    visual_layer: v3/public/semantic-workspace-closure-3-2-1.css
+    dod: docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md
+    classification: canonical-local-process-evidence-presentation
+    scope: process-catalogue-process-landing-and-evidence-presentation
   ui_workspace_chrome:
     tokens: v3/public/design-tokens.css
     visual_layer: v3/public/workspace-chrome-3-3.css
@@ -47,18 +53,16 @@ surfaces:
     version: '3.3'
     classification: bounded-global-chrome-presentation
     scope: stable-header-and-stable-footer-only
-  ui_presentation_closure:
-    effective_layer: v3/public/workspace-finetuning-3-4.css
+  ui_presentation:
+    home_visual: v3/public/enterprise-workspace-3-2.css
+    process_evidence_visual: v3/public/semantic-workspace-closure-3-2-1.css
+    chrome_visual: v3/public/workspace-chrome-3-3.css
     runtime_marker: v3/public/ui/stable-shell.js
     bootstrap: v3/public/ui/native-workspace-3-2.js
-    dod: docs/UI_FINE_TUNING_3_4_DOD.md
-    version: '3.4'
-    classification: effective-transitional-presentation-closure
-    scope: landing-plus-home-plus-evidence-presentation-only
-    absorbed:
-      chrome: v3/public/workspace-chrome-3-3.css
-      process_catalogue: v3/public/semantic-workspace-closure-3-2-1.css
-    retirement_target: absorb-observable-invariants-into-canonical-local-owners-and-delete-final-resolver
+    classification: canonical-distributed-presentation
+    final_resolver: none
+    retired_layer: v3/public/workspace-finetuning-3-4.css
+    retired_dod: docs/UI_FINE_TUNING_3_4_DOD.md
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
   api:
@@ -130,9 +134,11 @@ rules:
   - ui_composition_root is the only bootstrap authority for active UI composition
   - local native surface owners own information hierarchy and compression for their surfaces; the global semantic annotation runtime may classify metadata but may not rewrite business copy, reorder local DOM, or bootstrap local owners
   - ui_workspace_chrome is presentation-only and may style stable header/footer through shared tokens; it may not own business copy, local surface hierarchy, navigation semantics, runtime state or C0.1 participation
-  - ui_presentation_closure records only the still-unabsorbed effective final presentation layer; it is transitional, may not acquire business/write/C0.1 authority, and must not become the destination for new presentation generations
-  - once a presentation responsibility is absorbed into its canonical owner, its selectors must be removed from ui_presentation_closure and recorded under absorbed
-  - tests for a transitional closure protect observable invariants and must not require a conflicting predecessor rule to remain executable solely to prove that the closure overrides it
+  - current presentation is distributed across declared canonical owners; there is no global final cascade resolver
+  - enterprise-workspace-3-2.css may own Home and bounded native workspace visuals but may not retain historical stable-chrome or process-catalogue causes
+  - semantic-workspace-closure-3-2-1.css owns Processi catalogue/landing and Evidence presentation in addition to its copy/layout closure
+  - workspace-finetuning-3-4.css is retired lineage and may not be loaded, marked current, or reintroduced as a final resolver
+  - tests for the retired 3.4 closure protect relocated observable invariants at their current owners and must fail if the retired resolver returns
   - deleting a superseded presentation cause together with its compensating override is preferred when observable behavior and accessibility invariants remain equivalent
   - the native workspace bootstrap may aggregate installer calls and bounded stylesheets but may not become a business write authority or a C0.1 participant
   - shared UI primitives are structural and accessibility helpers; they may not inject manifesto, purpose, why, evidence or boundary narratives into every surface

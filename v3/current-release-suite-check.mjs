@@ -45,14 +45,14 @@ check(JSON.stringify([...LEGACY_DEMO_GATES])===JSON.stringify(legacyDemo),'legac
 const suite22=['v3/demo-suite-2-2-module-load-check.mjs','v3/demo-suite-2-2-runtime-semantic-check.mjs','v3/demo-suite-2-2-runtime-store-check.mjs','v3/demo-suite-2-2-projection-closure-check.mjs'];
 check(JSON.stringify([...DEMO_SUITE_GATES])===JSON.stringify(suite22),'Suite 2.2 acceptance registry drift');
 for(const gate of suite22){try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`Suite 2.2 gate path missing: ${gate}`);}}
-const ui34=['v3/ui-finetuning-3-4-check.mjs','v3/ui-finetuning-3-4-saturation.mjs'];
-for(const gate of ui34){
-  check(NATIVE_GATES.includes(gate),`UI Fine-Tuning 3.4 current acceptance gate missing from native registry: ${gate}`);
-  try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`UI Fine-Tuning 3.4 gate path missing: ${gate}`);}
+const presentationRetirement=['v3/ui-finetuning-3-4-check.mjs','v3/ui-finetuning-3-4-saturation.mjs'];
+for(const gate of presentationRetirement){
+  check(NATIVE_GATES.includes(gate),`presentation-retirement gate missing from native registry: ${gate}`);
+  try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`presentation-retirement gate path missing: ${gate}`);}
 }
 check(currentSemantic32.includes('CURRENT_SEMANTIC_ACTIVE')&&currentSemantic32.includes('LEGACY_DEMO_GATES')&&currentSemantic32.includes('DEMO_SUITE_GATES')&&currentSemantic32.includes('NATIVE_GATES'),'semantic wrapper must consume explicit current/replaced/Suite 2.2/native registry classes');
-check(CURRENT_AUTHORITY_VECTOR.uiPresentation?.value==='3.4','current authority vector must publish UI Presentation 3.4');
-check(String(CURRENT_AUTHORITY_VECTOR.uiPresentation?.classification||'').includes('transitional'),'UI Presentation 3.4 must remain explicitly transitional');
+check(CURRENT_AUTHORITY_VECTOR.uiPresentation?.value==='local-owners','current authority vector must publish local presentation owners');
+check(CURRENT_AUTHORITY_VECTOR.uiPresentation?.classification==='canonical-distributed-presentation','current presentation classification must be canonical distributed ownership');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,legacyDemoGatesRetired:legacyDemo.length,demoSuite22Gates:suite22.length,uiFineTuning34Gates:ui34.length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0',semanticClosureContract:'2.8.0',runtimeStabilizationContract:'2.9.0',semanticFoundationContract:'3.0.1',nativeSemanticLatticeContract:'3.2.0',uiFineTuningContract:'3.4.0',versionedGateAttribution:'direct+registry+wrapper',defaultCheckTimeoutMs:60000,ioHeavyCommandLedgerTimeoutMs:180000}));
+console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,legacyDemoGatesRetired:legacyDemo.length,demoSuite22Gates:suite22.length,presentationRetirementGates:presentationRetirement.length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0',semanticClosureContract:'2.8.0',runtimeStabilizationContract:'2.9.0',semanticFoundationContract:'3.0.1',nativeSemanticLatticeContract:'3.2.0',uiPresentationContract:'local-owners',versionedGateAttribution:'direct+registry+wrapper',defaultCheckTimeoutMs:60000,ioHeavyCommandLedgerTimeoutMs:180000}));

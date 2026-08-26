@@ -39,12 +39,14 @@ assert.equal(CURRENT_AUTHORITY_VECTOR.epistemic,releaseIdentity.contracts.episte
 assert.equal(CURRENT_AUTHORITY_VECTOR.uiComposition,axes.uiComposition.value);
 assert.equal(CURRENT_AUTHORITY_VECTOR.workspaceChrome,axes.workspaceChrome.value);
 assert.deepEqual(CURRENT_AUTHORITY_VECTOR.uiPresentation,{value:axes.uiPresentation.value,classification:axes.uiPresentation.classification});
-assert.ok(CURRENT_AUTHORITY_VECTOR.uiPresentation.classification.includes('transitional'),'3.4 presentation closure must remain explicitly transitional');
+assert.equal(CURRENT_AUTHORITY_VECTOR.uiPresentation.value,'local-owners','current presentation must resolve through canonical local owners');
+assert.equal(CURRENT_AUTHORITY_VECTOR.uiPresentation.classification,'canonical-distributed-presentation','current presentation classification drift');
 assert.equal(CURRENT_AUTHORITY_VECTOR.journey,releaseIdentity.contracts.journey);
 assert.equal(CURRENT_AUTHORITY_VECTOR.constitution,releaseIdentity.contracts.constitution);
 assert.equal(CURRENT_AUTHORITY_VECTOR.documentation,documentationManifest.documentationRuntime);
 const vector=JSON.stringify(CURRENT_AUTHORITY_VECTOR);
 assert.ok(!vector.includes('+'),'current authority vector must not concatenate lineage generations');
+assert.ok(!vector.includes('effective-transitional-closure'),'retired 3.4 closure must not remain current authority');
 assert.deepEqual(Object.keys(CURRENT_AUTHORITY_VECTOR),['product','semantic','experience','epistemic','uiComposition','workspaceChrome','uiPresentation','journey','constitution','documentation']);
 
-console.log(JSON.stringify({ok:true,suite:'current-gate-registry',base:{total:CURRENT_SEMANTIC.length,currentRequired:CURRENT_REQUIRED_BASE.length,compatibilityRegression:COMPATIBILITY_REGRESSION_BASE.length,replaced:REPLACED_BASE.length},orderPreserved:true,currentContractOverrides:CURRENT_CONTRACT_GATES.length,explicitCompatibility:COMPATIBILITY_REGRESSION_GATES.length,policy:POLICY_GATES.length,demoSuite:DEMO_SUITE_GATES.length,native:NATIVE_GATES.length,currentAuthorityVector:CURRENT_AUTHORITY_VECTOR,claimBoundary:'Classification is explicit and fail-closed, and cannot reorder the canonical semantic rail. Compatibility-regression gates remain blocking until a later responsibility-coverage contraction proves safe demotion.'}));
+console.log(JSON.stringify({ok:true,suite:'current-gate-registry',base:{total:CURRENT_SEMANTIC.length,currentRequired:CURRENT_REQUIRED_BASE.length,compatibilityRegression:COMPATIBILITY_REGRESSION_BASE.length,replaced:REPLACED_BASE.length},orderPreserved:true,currentContractOverrides:CURRENT_CONTRACT_GATES.length,explicitCompatibility:COMPATIBILITY_REGRESSION_GATES.length,policy:POLICY_GATES.length,demoSuite:DEMO_SUITE_GATES.length,native:NATIVE_GATES.length,currentAuthorityVector:CURRENT_AUTHORITY_VECTOR,claimBoundary:'Classification remains explicit and fail-closed; presentation retirement changes current authority truth without reordering the semantic rail. Compatibility-regression gates remain blocking until responsibility-coverage contraction proves safe demotion.'}));

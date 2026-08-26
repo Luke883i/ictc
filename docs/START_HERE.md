@@ -12,12 +12,13 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
 7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
 8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
-9. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer, con mappa dell'effective presentation corrente.
-10. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — effective transitional presentation closure corrente; non è business/design-system owner permanente.
-11. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
-12. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
+9. [Semantic Workspace Closure 3.2.1](SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md) — owner corrente di Processi/Evidence presentation oltre alla closure copy/layout.
+10. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer.
+11. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — lineage della closure ritirata; non è current authority.
+12. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
+13. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
-Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = 3.4` sono assi distinti: il terzo registra l'effetto finale AS-IS senza canonizzare la closure come owner permanente.
+Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners` sono assi distinti: la presentation corrente è distribuita tra owner canonici e non esiste più un final cascade resolver globale.
 
 ## Contributor e community path
 
@@ -37,9 +38,9 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 | product intent/confini | `docs/PRODUCT.md` | una product truth in prompt/PR/DoD |
 | composition root UI | `v3/public/ui/active-experience.js` | una seconda root |
 | contratto/copy 3.2 | `native-semantic-lattice-3-2.js` | copy locale divergente |
-| composizione locale | owner locale + `native-workspace-3-2.js` bootstrap | un global post-render rewriter |
+| Home presentation | `enterprise-workspace-3-2.css` | un final resolver globale |
+| Processi/Evidence presentation | `semantic-workspace-closure-3-2-1.css` | duplicazione in 3.2 o in un nuovo layer |
 | chrome globale | `design-tokens.css` + `workspace-chrome-3-3.css` + `21_DESIGN_SYSTEM.md` | palette/header/footer authority parallele |
-| presentation closure corrente | `workspace-finetuning-3-4.css` come debito transitorio registrato | `workspace-finetuning-3-5.css` o altro final resolver |
 | annotazione globale | `semantic-composition-runtime.js` | business copy/reorder nel kernel globale |
 | decision presentation | `procedure-ui-ux-1-6.js` / C0.1 | una seconda presentation authority |
 | linguaggio business | `03_ENDUSER_LANGUAGE.md` + Semantic Foundation | label locali divergenti |
@@ -57,11 +58,13 @@ La regola UI corrente è **work first, explanation on demand**. `active-experien
 
 Processi di Compliance è un catalogo di capability eterogenee e usa una matrice responsive 3 → 2 → 1. I record business ripetuti e comparabili usano invece list/row grammar. Il lifecycle costituzionale resta C0.1: `harmonization → presentation → integrity → journey → annotation`.
 
-## Workspace Chrome 3.3 e presentation closure 3.4
+## Presentation corrente: owner locali + Workspace Chrome 3.3
 
-`design-tokens.css` possiede i token condivisi del chrome; `workspace-chrome-3-3.css` li applica a header/footer quando `stable-shell.js` espone il marker 3.3. Il bootstrap resta `native-workspace-3-2.js`: 3.3 non introduce un nuovo participant C0.1, non modifica business copy e non possiede navigation semantics.
+`enterprise-workspace-3-2.css` conserva soltanto la presentation bounded di Home e di superfici native non coperte da owner più specifici. Non possiede più cause storiche di stable chrome o catalogo Processi.
 
-`workspace-finetuning-3-4.css` è invece l'effective final presentation layer corrente. È registrato perché modifica davvero l'output, ma resta una closure transitoria da assorbire negli owner canonici. I test devono proteggere gli invarianti osservabili e **non possono richiedere la sopravvivenza di una causa legacy soltanto per dimostrare che la closure la sovrascrive**.
+`semantic-workspace-closure-3-2-1.css` possiede la presentation corrente di Processi di Compliance ed Evidenze ICTC insieme alla closure copy/layout 3.2.1. `design-tokens.css` e `workspace-chrome-3-3.css` possiedono il chrome globale quando `stable-shell.js` espone il marker 3.3.
+
+`workspace-finetuning-3-4.css` è ritirato e non viene caricato. `UI_FINE_TUNING_3_4_DOD.md` resta lineage: i suoi gate storici sono mantenuti come retirement oracle per impedire che il final resolver o le vecchie cause concorrenti vengano reintrodotti.
 
 ## Classi documentali
 
@@ -83,7 +86,7 @@ npm test
 npm run release:check
 ```
 
-Per lavoro specifico sulla composizione 3.2 / chrome 3.3 / presentation 3.4:
+Per lavoro specifico sulla composizione/presentation corrente:
 
 ```bash
 node v3/current-semantic-3-2.mjs
@@ -91,8 +94,9 @@ node v3/native-semantic-lattice-3-2-check.mjs
 node v3/native-semantic-lattice-3-2-ui-check.mjs
 node v3/workspace-chrome-3-3-saturation.mjs
 node v3/ui-finetuning-3-4-check.mjs
+node v3/ui-finetuning-3-4-saturation.mjs
 node v3/native-semantic-lattice-3-2-saturation.mjs
 node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-`npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
+I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il **ritiro** della 3.4 e la relocation degli invarianti negli owner correnti. `npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
