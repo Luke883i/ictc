@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "documentationRuntime": "1.0",
   "entrypoint": "docs/START_HERE.md",
   "principle": "The manifest registers documentation authority and lifecycle; it never replaces substantive canonical documents.",
@@ -7,7 +7,7 @@
     "product": {"owner": "package.json", "value": "1.8.0"},
     "uiComposition": {"owner": "docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md", "value": "3.2"},
     "workspaceChrome": {"owner": "docs/21_DESIGN_SYSTEM.md", "value": "3.3"},
-    "uiPresentation": {"owner": "docs/UI_FINE_TUNING_3_4_DOD.md", "value": "3.4", "classification": "effective-transitional-closure"},
+    "uiPresentation": {"owners": ["docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md", "docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md", "docs/21_DESIGN_SYSTEM.md"], "value": "local-owners", "classification": "canonical-distributed-presentation"},
     "journey": {"owner": "v3/release-identity.json", "value": "2.2-sequential-onto-epistemic"},
     "constitution": {"owner": "v3/release-identity.json", "value": "C0.1"},
     "documentation": {"owner": "docs/documentation-manifest.json", "value": "1.0"}
@@ -21,7 +21,8 @@
     {"id":"journeys","path":"docs/04_USER_JOURNEYS.md","lifecycle":"current","mode":"reference","authorityTopic":"user_journeys","authoritative":true},
     {"id":"architecture","path":"docs/11_ARCHITECTURE.md","lifecycle":"current","mode":"reference","authorityTopic":"architecture","authoritative":true},
     {"id":"workspace-chrome-33","path":"docs/21_DESIGN_SYSTEM.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_workspace_chrome","authoritative":true},
-    {"id":"ui-presentation-34","path":"docs/UI_FINE_TUNING_3_4_DOD.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_presentation_closure","authoritative":true},
+    {"id":"semantic-workspace-321","path":"docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_process_evidence_presentation","authoritative":true},
+    {"id":"ui-presentation-34","path":"docs/UI_FINE_TUNING_3_4_DOD.md","lifecycle":"lineage","mode":"reference","authorityTopic":null,"authoritative":false},
     {"id":"doc-standard","path":"docs/DOCUMENTATION_STANDARD.md","lifecycle":"policy","mode":"reference","authorityTopic":"documentation_standard","authoritative":true},
     {"id":"doc-manifest","path":"docs/documentation-manifest.json","lifecycle":"policy","mode":"reference","authorityTopic":"documentation_registry","authoritative":true},
     {"id":"testing","path":"docs/TESTING.md","lifecycle":"operating","mode":"reference","authorityTopic":"testing_evidence","authoritative":true},

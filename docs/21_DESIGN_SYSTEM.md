@@ -14,7 +14,7 @@ La tipografia canonica è `Inter Variable`, poi `Inter`, quindi la system UI sta
 
 ## Token authority
 
-`v3/public/design-tokens.css` è l'unico owner dei valori cromatici e tipografici condivisi. Il chrome consuma esclusivamente la famiglia `--chrome-*`: header, footer, testo su fondo scuro, control surface, active state, focus e shadow. `v3/public/workspace-chrome-3-3.css` applica quei token, è caricato dal workspace owner dopo la closure 3.2.1 ed è ora il **solo owner canonico ed effettivo** dell'intero stable chrome corrente.
+`v3/public/design-tokens.css` è l'unico owner dei valori cromatici e tipografici condivisi. Il chrome consuma esclusivamente la famiglia `--chrome-*`: header, footer, testo su fondo scuro, control surface, active state, focus e shadow. `v3/public/workspace-chrome-3-3.css` applica quei token, è caricato dal workspace owner dopo la closure 3.2.1 ed è il **solo owner canonico ed effettivo** dell'intero stable chrome corrente.
 
 Non duplicare literal cromatici del chrome in nuovi fogli. Un nuovo colore richiede prima un token con ruolo dichiarato.
 
@@ -30,13 +30,17 @@ Il footer resta persistente, compatto e non decisionale. Copy canonica corrente:
 
 La presentation corrente del footer — gradiente a tre stop, grid compatta, hit-area dei link, hover/focus, responsive behavior, forced-colors e reduced-motion — è applicata integralmente dal chrome owner 3.3.
 
-## Effective presentation closure 3.4
+## Presentation authority dopo il ritiro 3.4
 
-Il Workspace Chrome resta versione e authority **3.3**. Il runtime corrente carica inoltre `v3/public/workspace-finetuning-3-4.css` dopo il chrome come **effective transitional presentation closure**, ma il suo scope è ora residuale: landing continuity, Home summary/actions ed Evidence presentation.
+Non esiste più un final cascade resolver globale. `workspace-finetuning-3-4.css` è ritirato e non viene caricato dal bootstrap corrente.
 
-Il chrome globale è stato assorbito in `workspace-chrome-3-3.css`; il catalogo Processi è stato assorbito in `semantic-workspace-closure-3-2-1.css`. Di conseguenza `workspace-finetuning-3-4.css` contiene **zero selettori `.stable-header`, `.stable-legal-footer`, `.stable-footer-product`, `.stable-footer-links` e zero selettori `#procedureHub`**.
+La presentation corrente è distribuita tra owner già canonici:
 
-La 3.4 resta registrata come AS-IS e come debito di convergenza, non come nuovo design-system owner permanente. Il target è assorbire gli invarianti osservabili residuali nei rispettivi owner canonici e ritirare il final resolver. I test di presentation closure devono proteggere l'output osservabile e non richiedere la sopravvivenza di una causa legacy esclusivamente per dimostrare che una regola successiva la sovrascrive.
+- Home e work-summary: `enterprise-workspace-3-2.css`;
+- Processi di Compliance ed Evidenze ICTC: `semantic-workspace-closure-3-2-1.css`;
+- stable header/footer: `workspace-chrome-3-3.css`.
+
+Le cause storiche di stable chrome e process catalogue sono rimosse da `enterprise-workspace-3-2.css`: un owner corrente non deve dipendere da una regola precedente confliggente solo perché un layer successivo la sovrascrive. `UI_FINE_TUNING_3_4_DOD.md` resta lineage e i gate con nome 3.4 sono retirement oracle: verificano comportamento e ownership correnti e falliscono se il resolver ritirato ritorna.
 
 ## DoD minimo
 
@@ -47,11 +51,12 @@ La 3.4 resta registrata come AS-IS e come debito di convergenza, non come nuovo 
 - zero `href="/terms.html"` nel footer corrente;
 - `Condizioni` -> GitHub `docs/OPEN_SOURCE_TERMS.md` con `noopener noreferrer`;
 - `Candidate` assente dal footer corrente;
-- stable chrome selectors nel residual 3.4: `0`;
-- `#procedureHub` selectors nel residual 3.4: `0`;
+- `workspace-finetuning-3-4.css` assente dal runtime/tree corrente;
+- historical stable-chrome selectors in `enterprise-workspace-3-2.css`: `0`;
+- `#procedureHub` selectors in `enterprise-workspace-3-2.css`: `0`;
 - presentation del catalogo Processi posseduta da `semantic-workspace-closure-3-2-1.css`;
 - zero nuovi participant C0.1, endpoint, write authority o stati business;
-- campagna bounded: **10.000/10.000** mutazioni source-string deterministiche uccise su 20 failure family dichiarate.
+- campagna bounded chrome: **10.000/10.000** mutazioni source-string deterministiche uccise su 20 failure family dichiarate.
 
 ## Metriche e checklist
 
@@ -60,8 +65,9 @@ La 3.4 resta registrata come AS-IS e come debito di convergenza, non come nuovo 
 | Global navigation items | 3 |
 | Chrome token owner | 1 |
 | Chrome visual owner | 1 |
-| Stable chrome selectors in 3.4 | 0 |
-| `#procedureHub` selectors in 3.4 | 0 |
+| Active final presentation resolver | 0 |
+| Historical stable-chrome causes in 3.2 | 0 |
+| Historical `#procedureHub` causes in 3.2 | 0 |
 | Minimum permanent-control target | 44 px |
 | Local terms links in current footer | 0 |
 | `Candidate` in current footer | 0 |
@@ -70,7 +76,7 @@ La 3.4 resta registrata come AS-IS e come debito di convergenza, non come nuovo 
 | Source-string mutations killed | 10.000/10.000 |
 | Failure-family coverage | 20/20 |
 
-Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione con Semantic Workspace Closure 3.2.1; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate; responsabilità assorbite non ricompaiono nel final resolver; eventuali closure successive non diventano nuovi owner per inerzia di cascade.
+Checklist di review: token prima dei literal; nessun copy business riscritto; nessuna collisione tra 3.2/3.2.1/3.3; header leggibile da desktop a mobile; footer persistente e non sovrapposto al lavoro; active/focus percepibili anche senza affidarsi al solo colore; forced-colors e reduced-motion non degradano comprensione; link legali senza superfici duplicate; responsabilità locali non ricompaiono in un final resolver; nessuna nuova generation CSS per inerzia di cascade.
 
 ## Falsificazione e claim boundary
 
