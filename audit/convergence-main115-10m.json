@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "baselineMain": "a190fcd0d42fbcaae6dcd98f7bb002966bd53d8b",
+  "campaign": {
+    "trials": 10000000,
+    "abstractionLevels": 12,
+    "invariants": 96,
+    "mutationFamilies": 144,
+    "crossLevelTrials": 5201200,
+    "pass1": {"killed": 9761144, "survived": 238856, "killRate": 0.9761144},
+    "hardenedBlindSpots": [
+      "workbook_exact_main_sha",
+      "external_claims_not_self_closed",
+      "counter_same_predicate_family",
+      "rc_untreated_actionable",
+      "ar_review_needed_has_native_trigger",
+      "compatibility_unique_coverage_measured",
+      "capacity_budget_explicit"
+    ],
+    "replay": {"killed": 10000000, "survived": 0},
+    "holdout": {"trials": 1000000, "killed": 1000000, "survived": 0},
+    "negativeControls": {"trials": 250000, "falsePositives": 0}
+  },
+  "minimalInternalChain": [
+    "P1 Presentation Authority Retirement 4.0",
+    "P2 Procedure Worklist + RC Closure 1.0",
+    "P3 Temporal/Epistemic Procedure Closure 1.0",
+    "P4 Enterprise-Candidate Assurance + Reliability Closure 1.0"
+  ],
+  "claimBoundary": "E2 modeled/state/architecture falsification used to choose and compress the semantic slice chain. Trial counts are not browser sessions, independently compiled code mutants, human studies, penetration tests, production load evidence or independent assurance."
+}
