@@ -6,7 +6,8 @@ let retiredExists=true;try{await access(retired)}catch{retiredExists=false}
 const issues=[],check=(value,message)=>{if(!value)issues.push(message)};
 check(!retiredExists,'transitional 3.4 stylesheet must be retired from the active tree');
 check(!native.includes('workspace-finetuning-3-4.css')&&!native.includes('data-ui-finetuning-34'),'native workspace must not load the retired 3.4 resolver');
-check(!shell.includes('UI_FINE_TUNING_VERSION')&&!shell.includes('dataset.uiFineTuning'),'shell must not publish retired 3.4 identity');
+check(!shell.includes('UI_FINE_TUNING_VERSION')&&!/dataset\.uiFineTuning\s*=/.test(shell),'shell must not publish retired 3.4 identity');
+check((shell.match(/delete\s+(?:html|header)\.dataset\.uiFineTuning/g)||[]).length>=2,'shell must actively retire stale 3.4 dataset identity');
 check(shell.includes("UI_PRESENTATION_MODE='local-owners'")&&shell.includes('dataset.uiPresentation=UI_PRESENTATION_MODE'),'shell must publish canonical local presentation mode');
 check(index.includes('<svg class="ictc-brand-mark"')&&!index.includes('/assets/ictc-mark.png'),'header must retain canonical inline icon');
 for(const token of ['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-mid','--chrome-footer-end','--landing-start','--landing-end','--landing-border','--home-action-start','--home-action-end','--home-action-text'])check((tokens.match(new RegExp(token.replace(/[-]/g,'\\-')+':','g'))||[]).length===1,`token uniqueness ${token}`);
