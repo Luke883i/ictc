@@ -20,6 +20,7 @@ assert.ok(COMPATIBILITY_REGRESSION_BASE.length>0,'compatibility-regression class
 for(const gate of REPLACED_BASE)assert.ok(!activeSet.includes(gate),`replaced gate still active: ${gate}`);
 for(const gate of DEMO_SUITE_GATES)assert.ok(!LEGACY_DEMO_GATES.includes(gate),`DEMO Suite gate collides with replaced gate: ${gate}`);
 assert.equal(NATIVE_GATES.filter(gate=>gate==='v3/current-gate-registry-check.mjs').length,1,'registry check must be canonical native gate');
+assert.equal(NATIVE_GATES.filter(gate=>gate==='v3/capability-truth-check.mjs').length,1,'S0 capability truth firewall must be a canonical native gate');
 
 const requiredResponsibilities=['v3/documentation-authority-check.mjs','v3/release-identity-check.mjs','v3/product-contract-check.mjs','v3/procedure-contracts-check.mjs','v3/experience-constitution-check.mjs','v3/security-boundary-check.mjs','v3/write-authority-census-check.mjs',...CURRENT_CONTRACT_GATES];
 for(const gate of requiredResponsibilities)assert.ok(CURRENT_REQUIRED_BASE.includes(gate),`current responsibility misclassified: ${gate}`);
