@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "authority": "capability-truth",
+  "auditedAnchor": {
+    "mainSha": "af37bc65802b0864a84b6deb9feb928d7e410cea",
+    "mergedPr": 116,
+    "meaning": "post-presentation-authority-retirement-4.0"
+  },
+  "releaseClaim": {
+    "stage": "candidate",
+    "classification": "truth-current",
+    "enterpriseCandidate": false,
+    "enterpriseReady": false,
+    "claimBoundary": "Repository-proven capabilities are not deployment effectiveness. Enterprise-candidate requires S1-S5 closure; enterprise-ready additionally requires deployment/independent evidence."
+  },
+  "repositoryCapabilities": [
+    {"id":"distributed-presentation-authority","status":"repository-proven","evidencePaths":["docs/documentation-manifest.json","v3/current-gate-registry.mjs"],"residualBoundary":"Local presentation owners are canonical; this says nothing about production deployment quality."},
+    {"id":"sqlite-integrity-authority","status":"repository-proven","evidencePaths":["docs/DATA_AND_STORAGE.md","v3/runtime/hardened-persistence.mjs"],"residualBoundary":"Active SQLite is not application-encrypted and is not a distributed database."},
+    {"id":"physical-tenant-isolation","status":"repository-proven","evidencePaths":["docs/DATA_AND_STORAGE.md","v3/runtime/tenant-authority.mjs"],"residualBoundary":"Per-tenant SQLite/filesystem isolation does not prove horizontal-scale or RLS deployment."},
+    {"id":"attachment-quarantine-and-attestation","status":"repository-proven","evidencePaths":["v3/runtime/attachment-storage.mjs","v3/runtime/attachment-scanner.mjs","v3/runtime/attachment-trust.mjs"],"retiresAbsenceClaimFrom":["GAP-007"],"residualBoundary":"Protocol/quarantine are proven; scanner engine efficacy is external evidence."},
+    {"id":"trusted-header-identity-and-server-roles","status":"repository-proven","evidencePaths":["v3/runtime/identity.mjs","v3/runtime/tenant-authority.mjs"],"retiresAbsenceClaimFrom":["GAP-009"],"residualBoundary":"Upstream IdP, MFA, deprovisioning and proxy administration are deployment evidence."},
+    {"id":"privacy-lifecycle","status":"repository-proven","evidencePaths":["v3/runtime/privacy-lifecycle.mjs","docs/DATA_AND_STORAGE.md"],"residualBoundary":"Restore anti-resurrection across external backup systems remains a deployment policy."},
+    {"id":"encrypted-verifiable-recovery-point","status":"repository-proven","evidencePaths":["v3/runtime/recovery.mjs","docs/OPERATIONS.md"],"residualBoundary":"KMS/HSM custody, off-host durability and approved RTO/RPO are external evidence."},
+    {"id":"request-correlation-and-local-observability","status":"repository-proven","evidencePaths":["v3/runtime/operational-observability.mjs","v3/runtime/abuse-budget.mjs","docs/OPERATIONS.md"],"retiresAbsenceClaimFrom":["GAP-014"],"residualBoundary":"Collector, distributed tracing, alert routing and distributed rate limiting are deployment concerns."}
+  ],
+  "currentInternalBlockers": [
+    {"id":"S1-WORKLIST","gapIds":["GAP-015","GAP-016"],"targetSlice":"S1"},
+    {"id":"S2-CAUSALITY","gapIds":["GAP-017","GAP-018"],"targetSlice":"S2"},
+    {"id":"S3-RELIABILITY","gapIds":["GAP-010","GAP-019"],"targetSlice":"S3"},
+    {"id":"S4-ASSURANCE-CONTRACTION","gapIds":["GAP-020"],"targetSlice":"S4"},
+    {"id":"S5-CANDIDATE-SEAL","gapIds":["GAP-021"],"targetSlice":"S5"}
+  ],
+  "externalEvidenceBoundaries": [
+    {"id":"E4-SCANNER-EFFECTIVENESS","status":"external-evidence-required","gapIds":["GAP-007"],"authority":"deployment"},
+    {"id":"E4-IDENTITY-EFFECTIVENESS","status":"external-evidence-required","gapIds":["GAP-009"],"authority":"deployment"},
+    {"id":"E4-HUMAN-VALIDATION","status":"external-evidence-required","gapIds":["GAP-012"],"authority":"independent"},
+    {"id":"E4-OBSERVABILITY-ALERTING","status":"external-evidence-required","gapIds":["GAP-014"],"authority":"deployment"},
+    {"id":"E4-BRANCH-PROTECTION","status":"external-evidence-required","gapIds":["GAP-022"],"authority":"repository-settings"}
+  ],
+  "staleOpenClaimFragments": [
+    "quarantena e scansione malware server-side non implementate",
+    "autenticazione e autorizzazione enterprise assenti",
+    "scouting schedulato ancora simulato",
+    "support bundle copre la diagnosi locale minima senza dichiararsi telemetria"
+  ]
+}
