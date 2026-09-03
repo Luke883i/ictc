@@ -4,16 +4,19 @@ La fonte canonica è `v3/gaps.json`. La UI pubblica soltanto i gap con stato `op
 
 ## Baseline corrente
 
-S0 Capability Truth Closure parte dal `main` successivo al merge della PR #116. La release resta **candidate / truth-current**: S0 non introduce nuove capability di business e non autorizza le label `enterprise-candidate` o `enterprise-ready`.
+La baseline corrente è il `main` successivo al merge della PR #118. **S0 Capability Truth Closure** e **S1 Procedure Worklist + RC Reference Closure** sono repository-proven e riconciliate nelle authority correnti. La release resta **candidate / truth-current**: questa riconciliazione non autorizza le label `enterprise-candidate` o `enterprise-ready`.
 
-Le authority post-#116 già correnti restano valide: presentation distribuita fra owner locali, SQLite come persistence authority corrente, tenant isolation fisica opzionale, attachment quarantine/trust protocol, trusted-header identity bridge, privacy lifecycle, recovery point cifrati e verificabili, request correlation e observability process-local.
+Restano valide le capability già provate dopo S0: presentation distribuita fra owner locali, SQLite come persistence authority corrente, tenant isolation fisica opzionale, attachment quarantine/trust protocol, trusted-header identity bridge, privacy lifecycle, recovery point cifrati e verificabili, request correlation e observability process-local. S1 aggiunge la worklist condivisa 7/7 e la reference closure RC: actionable = unreviewed ∪ reviewed-without-current-treatment ∪ review-due; la severità alta resta informativa.
 
-Queste capability repository non provano automaticamente l'efficacia del deployment.
+Queste capability repository non provano automaticamente l'efficacia del deployment. In particolare AR approved resta quiescente finché S2 non introduce una causa nativa `review-needed`.
+
+## Slice interna chiusa
+
+- **S1 — GAP-015 / GAP-016 — closed:** worklist condivisa 7/7 e default actionable RC corretto, con `v3/procedure-worklist-s1-check.mjs` e `v3/procedure-worklist-s1-saturation.mjs` come evidence repository.
 
 ## Gap aperti interni: chain minima
 
-- **S1 — GAP-015 / GAP-016:** worklist condivisa 7/7 e default actionable RC corretto.
-- **S2 — GAP-017 / GAP-018:** AR review-needed con causa nativa ed epistemic effects espliciti.
+- **S2 — GAP-017 / GAP-018:** AR `review-needed` con causa nativa ed epistemic effects espliciti.
 - **S3 — GAP-010 / GAP-019:** reliability contract: restart/lease, persistence port, migration/rollback, API compatibility/capacity e SLI/SLO.
 - **S4 — GAP-020:** contraction proof del compatibility rail e secure-delivery/accessibility core.
 - **S5 — GAP-021:** evidence seal necessario prima di qualsiasi promozione a enterprise-candidate.
@@ -28,12 +31,12 @@ Queste capability repository non provano automaticamente l'efficacia del deploym
 
 La quarantena, il protocollo scanner, il bridge trusted-header e la telemetria process-local **non sono più gap di assenza della capability repository**. Restano aperti solo i loro residui di efficacia/operatività esterna.
 
-## Stato legacy
+## Stato storico
 
-I gap chiusi o mitigati GAP-001..GAP-006, GAP-008, GAP-011 e GAP-013 restano nel registro canonico come storia verificabile. S0 non li riapre e non riutilizza i loro ID per nuovi problemi.
+I gap chiusi o mitigati GAP-001..GAP-006, GAP-008, GAP-011, GAP-013, GAP-015 e GAP-016 restano nel registro canonico come storia verificabile. Le slice successive non li riaprono e non riutilizzano i loro ID per nuovi problemi.
 
 ## Regola di chiusura
 
 Un gap repository-internal può diventare `closed` soltanto con path di modifica e test esistenti, evidenza riproducibile e limitazione residua esplicita. Un gap con `closureClass = external-evidence` o `independent-evidence` non può essere chiuso da un file o da un test sintetico del repository: richiede l'evidence indicata dalla propria authority esterna.
 
-Il gate `v3/capability-truth-check.mjs` fallisce chiuso su drift fra release identity, presentation authority, capability census, gap canonici/pubblici, slice interne ed E4 boundary.
+Il gate `v3/capability-truth-check.mjs` fallisce chiuso su drift fra release identity, presentation authority, capability census, gap canonici/pubblici, chiusura S1, slice interne S2-S5 ed E4 boundary.
