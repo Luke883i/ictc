@@ -2,16 +2,16 @@
   "schemaVersion": "1.0.0",
   "authority": "capability-truth",
   "auditedAnchor": {
-    "mainSha": "af37bc65802b0864a84b6deb9feb928d7e410cea",
-    "mergedPr": 116,
-    "meaning": "post-presentation-authority-retirement-4.0"
+    "mainSha": "30f0968e4aacc15fa8bace3846c11ecb725c9bb9",
+    "mergedPr": 118,
+    "meaning": "post-s1-procedure-worklist-rc-reference-closure"
   },
   "releaseClaim": {
     "stage": "candidate",
     "classification": "truth-current",
     "enterpriseCandidate": false,
     "enterpriseReady": false,
-    "claimBoundary": "Repository-proven capabilities are not deployment effectiveness. Enterprise-candidate requires S1-S5 closure; enterprise-ready additionally requires deployment/independent evidence."
+    "claimBoundary": "Repository-proven capabilities are not deployment effectiveness. Enterprise-candidate requires S2-S5 closure; enterprise-ready additionally requires deployment/independent evidence."
   },
   "repositoryCapabilities": [
     {"id":"distributed-presentation-authority","status":"repository-proven","evidencePaths":["docs/documentation-manifest.json","v3/current-gate-registry.mjs"],"residualBoundary":"Local presentation owners are canonical; this says nothing about production deployment quality."},
@@ -21,10 +21,10 @@
     {"id":"trusted-header-identity-and-server-roles","status":"repository-proven","evidencePaths":["v3/runtime/identity.mjs","v3/runtime/tenant-authority.mjs"],"retiresAbsenceClaimFrom":["GAP-009"],"residualBoundary":"Upstream IdP, MFA, deprovisioning and proxy administration are deployment evidence."},
     {"id":"privacy-lifecycle","status":"repository-proven","evidencePaths":["v3/runtime/privacy-lifecycle.mjs","docs/DATA_AND_STORAGE.md"],"residualBoundary":"Restore anti-resurrection across external backup systems remains a deployment policy."},
     {"id":"encrypted-verifiable-recovery-point","status":"repository-proven","evidencePaths":["v3/runtime/recovery.mjs","docs/OPERATIONS.md"],"residualBoundary":"KMS/HSM custody, off-host durability and approved RTO/RPO are external evidence."},
-    {"id":"request-correlation-and-local-observability","status":"repository-proven","evidencePaths":["v3/runtime/operational-observability.mjs","v3/runtime/abuse-budget.mjs","docs/OPERATIONS.md"],"retiresAbsenceClaimFrom":["GAP-014"],"residualBoundary":"Collector, distributed tracing, alert routing and distributed rate limiting are deployment concerns."}
+    {"id":"request-correlation-and-local-observability","status":"repository-proven","evidencePaths":["v3/runtime/operational-observability.mjs","v3/runtime/abuse-budget.mjs","docs/OPERATIONS.md"],"retiresAbsenceClaimFrom":["GAP-014"],"residualBoundary":"Collector, distributed tracing, alert routing and distributed rate limiting are deployment concerns."},
+    {"id":"procedure-worklist-and-risk-reference-closure","status":"repository-proven","evidencePaths":["v3/runtime/procedure-worklist.mjs","v3/procedure-worklist-s1-check.mjs","v3/procedure-worklist-s1-saturation.mjs"],"closesGapIds":["GAP-015","GAP-016"],"residualBoundary":"The shared worklist owns interaction grammar while procedure-local providers own business semantics; AR approved remains quiescent until S2 provides a native review-needed cause."}
   ],
   "currentInternalBlockers": [
-    {"id":"S1-WORKLIST","gapIds":["GAP-015","GAP-016"],"targetSlice":"S1"},
     {"id":"S2-CAUSALITY","gapIds":["GAP-017","GAP-018"],"targetSlice":"S2"},
     {"id":"S3-RELIABILITY","gapIds":["GAP-010","GAP-019"],"targetSlice":"S3"},
     {"id":"S4-ASSURANCE-CONTRACTION","gapIds":["GAP-020"],"targetSlice":"S4"},
