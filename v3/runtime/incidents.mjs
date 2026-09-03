@@ -13,7 +13,7 @@ export function createIncidentHandler({ store, permissions }) {
     const current = findIncident(store.snapshot(), incidentId);
     ensureIncidentOwner(actor, current);
     const ai = await analyzeIncident(store.snapshot().settings, current);
-    return store.mutate(actor, 'incident.analyzed', { type: 'incident', id: incidentId }, { trace: ai.trace }, draft => {
+    return store.mutateProposed(actor, 'incident.analyzed', { type: 'incident', id: incidentId }, { trace: ai.trace }, draft => {
       const incident = findIncident(draft, incidentId);
       ensureIncidentOwner(actor, incident);
       incident.analysis = ai.output;
@@ -67,7 +67,7 @@ export function createIncidentHandler({ store, permissions }) {
       const questions = deriveQuestions(incident);
       if (questions.length) throw httpError(409, 'Rispondi alle domande motivate prima di generare la formulazione', 'questions-open', { missing: questions.map(item => item.id) });
       const ai = await draftIncident(before.settings, incident, questions);
-      const envelope = await store.mutate(actor, 'incident.draft.generated', { type: 'incident', id: params.id }, { trace: ai.trace }, draft => {
+      const envelope = await store.mutateProposed(actor, 'incident.draft.generated', { type: 'incident', id: params.id }, { trace: ai.trace }, draft => {
         const current = findIncident(draft, params.id);
         ensureIncidentOwner(actor, current);
         const narrative = asString(ai.output.narrative, 50_000);
@@ -116,7 +116,7 @@ export function createIncidentHandler({ store, permissions }) {
       if (input.confirmed !== true) throw httpError(400, 'Conferma esplicita richiesta', 'confirmation-required');
       const formulationSha256 = asString(input.formulationSha256, 64).toLowerCase();
       if (!/^[a-f0-9]{64}$/.test(formulationSha256)) throw httpError(400, 'Conferma il digest della versione corrente', 'formulation-digest-required');
-      const envelope = await store.mutate(actor, 'incident.submitted', { type: 'incident', id: params.id }, { ...input, formulationSha256 }, draft => {
+      const envelope = await store.mutateDecided(actor, 'incident.submitted', { type: 'incident', id: params.id }, { ...input, formulationSha256 }, draft => {
         const incident = findIncident(draft, params.id);
         ensureIncidentOwner(actor, incident);
         const current = currentFormulation(incident);

@@ -24,7 +24,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
     const before = store.snapshot();
     const mission = findMission(before, missionId);
     const ai = await createMonitoringPlan(before.settings, mission);
-    return store.mutate(actor, 'monitoring.mission.planned', { type: 'mission', id: missionId }, { trace: ai.trace }, draft => {
+    return store.mutateProposed(actor, 'monitoring.mission.planned', { type: 'mission', id: missionId }, { trace: ai.trace }, draft => {
       const current = findMission(draft, missionId);
       current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
       current.plan = ai.output;
@@ -79,7 +79,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
         throw error;
       }
       const items = Array.isArray(discovery.output.items) ? discovery.output.items : [];
-      return store.mutate(actor, 'monitoring.run.completed', { type: 'run', id: runId }, { missionId, trace: discovery.trace }, draft => {
+      return store.mutateProposed(actor, 'monitoring.run.completed', { type: 'run', id: runId }, { missionId, trace: discovery.trace }, draft => {
         const current = findMission(draft, missionId);
         current.sourceClasses = assertRnClosedUniverse(current.sourceClasses);
         let inserted = 0;
@@ -275,7 +275,7 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       if (!reason) throw httpError(400, 'Motiva la decisione sulla fonte', 'reason-required');
       const before = store.snapshot(), source = findCatalog(before, params.id), privacyReviewed = input.privacyReviewed === true;
       const verificationBasis = decision === 'verified' ? assertRnVerifiableSource(source, { privacyReviewed }) : null;
-      const envelope = await store.mutate(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason, verificationBasis, privacyReviewed }, draft => {
+      const envelope = await store.mutateDecided(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason, verificationBasis, privacyReviewed }, draft => {
         const current = applyCatalogDecision(findCatalog(draft, params.id), decision, reason, actor.id);
         if (verificationBasis) current.rnVerification = { ...verificationBasis, privacyReviewed, by: actor.id, at: now() };
         return current;
