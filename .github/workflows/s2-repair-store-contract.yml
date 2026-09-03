@@ -1,0 +1,64 @@
+name: s2-repair-store-contract
+on:
+  push:
+    branches:
+      - agent/s2-temporal-epistemic-closure
+permissions:
+  contents: write
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - name: Make epistemic mutation helpers native Store contract
+        shell: python
+        run: |
+          from pathlib import Path
+
+          wrapper = Path('v3/runtime/epistemic-write-store.mjs')
+          text = wrapper.read_text()
+          old = "function commandWithEffect(command={},actor,families,producerRef=null)"
+          new = "export function commandWithEffect(command={},actor,families,producerRef=null)"
+          if text.count(old) != 1:
+              raise SystemExit(f'epistemic wrapper anchor drift: {text.count(old)}')
+          wrapper.write_text(text.replace(old, new, 1))
+
+          store = Path('v3/store.mjs')
+          text = store.read_text()
+          import_anchor = "import { buildEpistemicStep, semanticManifestSha256 } from './runtime/epistemic-step.mjs';\n"
+          import_line = "import { commandWithEffect } from './runtime/epistemic-write-store.mjs';\n"
+          if import_line not in text:
+              if text.count(import_anchor) != 1:
+                  raise SystemExit(f'store import anchor drift: {text.count(import_anchor)}')
+              text = text.replace(import_anchor, import_anchor + import_line, 1)
+          method_anchor = "  close(){this.persistence.close();}\n  async mutate(actor,action,subject,input,change,command={})"
+          methods = """  close(){this.persistence.close();}
+  mutateObserved(actor,action,subject,input,change,command={}){return this.mutate(actor,action,subject,input,change,commandWithEffect(command,actor,['observed']));}
+  mutateProposed(actor,action,subject,input,change,command={},producerRef={type:'service',id:'ai-provider'}){return this.mutate(actor,action,subject,input,change,commandWithEffect(command,actor,['proposed'],producerRef));}
+  mutateDecided(actor,action,subject,input,change,command={}){return this.mutate(actor,action,subject,input,change,commandWithEffect(command,actor,['decided']));}
+  mutateAttested(actor,action,subject,input,change,command={}){return this.mutate(actor,action,subject,input,change,commandWithEffect(command,actor,['attested']));}
+  async mutate(actor,action,subject,input,change,command={})"""
+          if '  mutateDecided(actor,action,subject,input,change,command={})' not in text:
+              if text.count(method_anchor) != 1:
+                  raise SystemExit(f'store method anchor drift: {text.count(method_anchor)}')
+              text = text.replace(method_anchor, methods, 1)
+          store.write_text(text)
+      - name: Validate repaired contract
+        run: |
+          node --check v3/store.mjs
+          node --check v3/runtime/epistemic-write-store.mjs
+          node v3/s2-temporal-epistemic-check.mjs
+          node v3/fi01-reference-check.mjs
+          git diff --check
+      - name: Commit repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add v3/store.mjs v3/runtime/epistemic-write-store.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m "fix(s2): preserve Store mutation helper contract"
+          git push origin HEAD:${GITHUB_REF_NAME}
