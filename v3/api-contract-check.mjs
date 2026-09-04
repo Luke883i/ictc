@@ -101,7 +101,7 @@ async function collectRuntimeRoutes() {
     registryHandlerImports = extractRuntimeHandlerImports(registrySource);
   }
   const mountedImports = [...new Set([...directImports, ...registryHandlerImports])].sort();
-  const files = [{ path: serverPath, source: serverSource }, ...await Promise.all(mountedImports.map(async relative => ({ path: path.join(repoRoot, relative), source: await readFile(path.join(repoRoot, relative), 'utf8') }))];
+  const files = [{ path: serverPath, source: serverSource }, ...await Promise.all(mountedImports.map(async relative => ({ path: path.join(repoRoot, relative), source: await readFile(path.join(repoRoot, relative), 'utf8') })))];
   const combined = new Map();
   for (const file of files) {
     const relative = path.relative(repoRoot, file.path);
