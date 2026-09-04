@@ -16,7 +16,7 @@ export function createContributionHandler({ store, permissions }) {
     const current = findContribution(store.snapshot(), contributionId);
     ensureContributionOwner(actor, current);
     const ai = await enrichContribution(store.snapshot().settings, current);
-    return store.mutate(actor, 'contribution.enriched', { type: 'contribution', id: contributionId }, { trace: ai.trace }, draft => {
+    return store.mutateProposed(actor, 'contribution.enriched', { type: 'contribution', id: contributionId }, { trace: ai.trace }, draft => {
       const contribution = findContribution(draft, contributionId);
       ensureContributionOwner(actor, contribution);
       const items = Array.isArray(ai.output.items) ? ai.output.items : [];
