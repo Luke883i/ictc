@@ -1,11 +1,13 @@
 openapi: 3.0.3
 info:
   title: ICTC API
-  version: 1.8.0
+  version: 1.9.0
   description: >
     API contrattuale del runtime ICTC Control Tower Experimental. L'AI assiste
     la preparazione e l'interpretazione; routing finale, decisioni, rating,
-    approvazioni e validazioni restano umani.
+    approvazioni e validazioni restano umani. La superficie method/path segue
+    i route handler effettivamente montati; la presenza di un endpoint non
+    costituisce una conclusione di compliance, applicabilita o readiness.
 servers:
   - url: http://127.0.0.1:4173
 paths:
@@ -13,6 +15,14 @@ paths:
     get:
       summary: Stato runtime e readiness
       responses: { '200': { description: Runtime disponibile } }
+  /api/runtime/tenancy:
+    get:
+      summary: Proietta il tenant runtime corrente
+      responses: { '200': { description: Posture tenancy runtime } }
+  /api/runtime/observability:
+    get:
+      summary: Espone telemetria process-local bounded
+      responses: { '200': { description: Contatori, SLO interno, storage e abuse budget process-local } }
   /api/bootstrap:
     get:
       summary: Vista iniziale filtrata per ruolo
@@ -37,6 +47,17 @@ paths:
     get:
       summary: Ricostruisce una traccia procedurale specifica
       responses: { '200': { description: Traccia role-scoped dello specifico soggetto } }
+  /api/process-landscape:
+    get:
+      summary: Proietta il panorama processi dalla stessa authority runtime
+      responses: { '200': { description: Process landscape role-scoped e derivato } }
+  /api/cross-procedure/create:
+    get:
+      summary: Elenca target di draft cross-procedure dichiarati
+      responses: { '200': { description: Destinazioni bounded senza trasferimento di decisioni } }
+    post:
+      summary: Crea un draft target con lineage e basis bounded
+      responses: { '201': { description: Draft target con receipt; nessun trasferimento di applicabilita, rating o decisioni } }
   /api/insights:
     get:
       summary: KPI deterministici e proposte narrative separate
@@ -47,7 +68,7 @@ paths:
       responses: { '201': { description: AssistEnvelope proposal-only con receipt } }
   /api/insights/{id}/validate:
     post:
-      summary: Valida umanamente una lettura AI se la base KPI non è cambiata
+      summary: Valida umanamente una lettura AI se la base KPI non e cambiata
       responses: { '200': { description: Adozione umana motivata con receipt } }
   /api/workbench/meta:
     get:
@@ -61,6 +82,30 @@ paths:
     get:
       summary: Metriche descrittive del workbench
       responses: { '200': { description: Conteggi osservabili senza record sintetici } }
+  /api/epistemic-lattice:
+    get:
+      summary: Proietta il reticolo epistemico bounded
+      responses: { '200': { description: Atomi, effetti e relazioni role-scoped con paginazione bounded } }
+  /api/epistemic-lattice/infer:
+    post:
+      summary: Genera derivazioni AI progressive solo su basis dichiarata
+      responses: { '201': { description: Derivazioni proposal-only con human-on esplicito e receipt } }
+  /api/epistemic-lattice/derivations/{id}/review:
+    post:
+      summary: Registra review umana di una derivazione proposta
+      responses: { '200': { description: Accept o reject motivato; nessuna conclusione automatica di compliance } }
+  /api/review-needs:
+    get:
+      summary: Proietta il ledger dei riesami necessari
+      responses: { '200': { description: ReviewNeed visibili al ruolo } }
+  /api/review-needs/sweep:
+    post:
+      summary: Materializza cause temporali di riesame
+      responses: { '200': { description: Sweep clock-bound con eventuale receipt } }
+  /api/review-needs/{id}/resolve:
+    post:
+      summary: Risolve un riesame solo contro una decisione umana idonea
+      responses: { '200': { description: Risoluzione con receipt e decision reference } }
   /api/grc:
     get:
       summary: Projection GRC consolidata role-scoped
@@ -77,6 +122,14 @@ paths:
     post:
       summary: Registra review umana dell'oggetto
       responses: { '200': { description: Decisione object-review con receipt } }
+  /api/grc/objects/{id}/update:
+    post:
+      summary: Aggiorna un oggetto governato
+      responses: { '200': { description: Aggiornamento con receipt e identity checks } }
+  /api/grc/objects/{id}/attest:
+    post:
+      summary: Registra attestazione umana dell'oggetto
+      responses: { '200': { description: Attestazione con receipt } }
   /api/grc/objects/{id}/relations:
     post:
       summary: Registra una relazione tipizzata tra oggetti
@@ -93,22 +146,30 @@ paths:
     post:
       summary: Valida mapping, gap, not-applicable o reject
       responses: { '200': { description: Decisione umana con receipt } }
+  /api/grc/mappings/{id}/actions:
+    post:
+      summary: Crea una remediation da un gap deciso
+      responses: { '201': { description: Action con lineage dal mapping e receipt } }
   /api/grc/actions:
     post:
       summary: Crea una action persistente
       responses: { '201': { description: Action proposta con receipt } }
   /api/grc/actions/{id}/prioritize:
     post:
-      summary: Genera priorità AI proposta
-      responses: { '200': { description: Priorità proposta, non adottata } }
+      summary: Genera priorita AI proposta
+      responses: { '200': { description: Priorita proposta, non adottata } }
   /api/grc/actions/{id}/adopt:
     post:
-      summary: Adotta priorità, owner e scadenza con decisione umana
+      summary: Adotta priorita, owner e scadenza con decisione umana
       responses: { '200': { description: Action operativa con receipt } }
   /api/grc/actions/{id}/progress:
     post:
       summary: Aggiorna stato di una action autorizzata
       responses: { '200': { description: Avanzamento persistito con receipt } }
+  /api/grc/actions/{id}/verify:
+    post:
+      summary: Registra verifica umana di una action
+      responses: { '200': { description: Verifica con receipt } }
   /api/grc/risks:
     post:
       summary: Crea scenario di rischio proposto
@@ -116,11 +177,19 @@ paths:
   /api/grc/risks/propose:
     post:
       summary: Genera scenario e rating AI proposti
-      responses: { '201': { description: Proposta AI esclusa dalla heatmap finché non validata } }
+      responses: { '201': { description: Proposta AI esclusa dalla heatmap finche non validata } }
   /api/grc/risks/{id}/review:
     post:
       summary: Registra rating umano 1..5 x 1..5
       responses: { '200': { description: Rating human-reviewed con receipt } }
+  /api/grc/risks/{id}/treatment:
+    post:
+      summary: Registra decisione umana di trattamento del rischio
+      responses: { '200': { description: Trattamento con receipt } }
+  /api/grc/risks/{id}/actions:
+    post:
+      summary: Crea remediation da trattamento mitigate
+      responses: { '201': { description: Action con lineage dal rischio e receipt } }
   /api/grc/assurance:
     post:
       summary: Preserva una richiesta di assurance
@@ -129,10 +198,45 @@ paths:
     post:
       summary: Decompone la richiesta e genera draft AI bounded
       responses: { '200': { description: Draft AI tracciato e non approvato } }
+  /api/grc/assurance/{id}/manual-draft:
+    post:
+      summary: Registra un draft assurance redatto dall'umano
+      responses: { '200': { description: Draft umano con receipt } }
   /api/grc/assurance/{id}/approve:
     post:
       summary: Approva umanamente le risposte e le evidenze citate
       responses: { '200': { description: Risposte approvate con receipt } }
+  /api/standards:
+    get:
+      summary: Proietta libreria standard, scope e storico edizioni
+      responses: { '200': { description: Libreria bounded e role-scoped } }
+  /api/standards/requirement-scope:
+    post:
+      summary: Registra decisione umana sullo scope di un requirement
+      responses: { '200': { description: Requirement scope con receipt } }
+  /api/standards/{id}:
+    get:
+      summary: Legge un framework standard registrato
+      responses: { '200': { description: Framework disponibile nella libreria runtime } }
+  /api/standards/{id}/scope:
+    post:
+      summary: Registra la decisione organizzativa di scope dello standard
+      responses: { '200': { description: Scope con receipt; non determina applicabilita legale } }
+  /api/standards/packs:
+    post:
+      summary: Importa un pack standard preservando lo storico
+      responses: { '201': { description: Pack importato con receipt } }
+  /api/standards/crosswalks:
+    post:
+      summary: Registra un crosswalk tra riferimenti standard
+      responses: { '201': { description: Crosswalk con receipt } }
+  /api/control-tests:
+    get:
+      summary: Proietta i test di controllo registrati
+      responses: { '200': { description: Control tests role-scoped } }
+    post:
+      summary: Registra un test di controllo
+      responses: { '201': { description: Test registrato con receipt; nessuna efficacia implicita } }
   /api/monitoring-jobs/draft:
     post:
       summary: Crea un job di monitoraggio in stato bozza e tenta la pianificazione AI
@@ -141,9 +245,45 @@ paths:
     put:
       summary: Aggiorna il profilo di un job governato e rigenera il piano
       responses: { '200': { description: Profilo aggiornato con receipt } }
+  /api/user/monitors:
+    post:
+      summary: Crea un monitoraggio utente e tenta il planning AI
+      responses: { '201': { description: Intento e planning separati con stato corrente } }
+  /api/user/monitors/{id}/revise:
+    post:
+      summary: Richiede una revisione del monitoraggio utente
+      responses: { '200': { description: Revisione e nuovo planning bounded } }
+  /api/user/monitors/{id}/activate:
+    post:
+      summary: Attiva un monitoraggio utente con piano disponibile
+      responses: { '200': { description: Transizione autorizzata con receipt } }
+  /api/user/monitors/{id}/pause:
+    post:
+      summary: Sospende un monitoraggio utente con motivazione
+      responses: { '200': { description: Transizione autorizzata con receipt } }
+  /api/user/monitors/{id}/resume:
+    post:
+      summary: Riprende un monitoraggio utente sospeso
+      responses: { '200': { description: Transizione autorizzata con receipt } }
+  /api/user/monitors/{id}/run:
+    post:
+      summary: Esegue un monitoraggio utente autorizzato
+      responses: { '200': { description: Run con receipt } }
+  /api/missions/manual-draft:
+    post:
+      summary: Crea un monitoraggio manual-first senza planning AI obbligatorio
+      responses: { '201': { description: Missione needs-plan con receipt } }
+  /api/missions/{id}/manual-plan:
+    post:
+      summary: Registra un piano di monitoraggio definito dall'umano
+      responses: { '200': { description: Piano human-authority con receipt } }
+  /api/missions/{id}/observations:
+    post:
+      summary: Registra una osservazione manuale entro le classi RN consentite
+      responses: { '201': { description: Fonte osservata manualmente con receipt } }
   /api/standard-proof:
     get:
-      summary: Projection read-only di capacità, prove e limiti standard-facing
+      summary: Projection read-only di capacita, prove e limiti standard-facing
       responses: { '200': { description: Documento proof bounded } }
   /api/export/current.json:
     get:
@@ -157,6 +297,32 @@ paths:
     put:
       summary: Aggiorna configurazione organizzativa e AI
       responses: { '200': { description: Configurazione aggiornata con receipt } }
+  /api/admin/ai-policy:
+    put:
+      summary: Aggiorna la policy AI governata
+      responses: { '200': { description: AI policy aggiornata con receipt } }
+  /api/admin/procedures:
+    get:
+      summary: Legge la policy di abilitazione delle procedure
+      responses: { '200': { description: Procedure policy runtime } }
+    put:
+      summary: Aggiorna la policy di abilitazione delle procedure
+      responses: { '200': { description: Procedure policy aggiornata con receipt } }
+  /api/admin/privacy:
+    get:
+      summary: Legge la policy privacy e lifecycle
+      responses: { '200': { description: Privacy lifecycle projection } }
+    put:
+      summary: Aggiorna la policy privacy e lifecycle
+      responses: { '200': { description: Privacy policy aggiornata con receipt } }
+  /api/admin/privacy/erase:
+    post:
+      summary: Esegue una erasure governata del soggetto richiesto
+      responses: { '200': { description: Erasure con receipt e policy checks } }
+  /api/admin/attachments/{id}/scan-attestation:
+    post:
+      summary: Registra una attestazione scanner tenant-bound
+      responses: { '200': { description: Trust/storage state aggiornato con receipt } }
   /api/missions/draft:
     post:
       summary: Crea un piano di monitoraggio in bozza
@@ -185,6 +351,14 @@ paths:
     post:
       summary: Registra una decisione umana sulla fonte
       responses: { '200': { description: Decisione registrata con receipt } }
+  /api/catalog/{id}/impact:
+    post:
+      summary: Registra una valutazione umana dell'impatto di una fonte verificata
+      responses: { '200': { description: Impact assessment con receipt } }
+  /api/catalog/{id}/actions:
+    post:
+      summary: Crea una action da una fonte con impatto rilevante deciso
+      responses: { '201': { description: Action con provenance dalla fonte e receipt } }
   /api/contributions:
     post:
       summary: Registra materiale originale e tenta l'arricchimento AI
@@ -197,6 +371,10 @@ paths:
     post:
       summary: Ritenta l'arricchimento AI del materiale
       responses: { '200': { description: Arricchimento registrato con receipt } }
+  /api/incidents/manual-intake:
+    post:
+      summary: Registra un evento in modalita manual-first
+      responses: { '201': { description: Evento registrato senza analisi AI obbligatoria } }
   /api/incidents/intake:
     post:
       summary: Registra il racconto originale e gli allegati
@@ -228,6 +406,18 @@ paths:
     post:
       summary: Chiude un evento con motivazione
       responses: { '200': { description: Chiusura registrata con receipt } }
+  /api/incidents/{id}/follow-up:
+    post:
+      summary: Registra un follow-up sull'evento
+      responses: { '200': { description: Follow-up con receipt } }
+  /api/incidents/{id}/actions:
+    post:
+      summary: Crea una action collegata a un evento autorizzato
+      responses: { '201': { description: Action con lineage dall'evento e receipt } }
+  /api/incidents/{id}/links:
+    post:
+      summary: Registra un collegamento operativo tipizzato dall'evento
+      responses: { '200': { description: Link verso oggetto o rischio con receipt } }
   /api/evidence/{type}/{id}:
     get:
       summary: Esporta un fascicolo JSON filtrato per autorizzazione
@@ -236,6 +426,18 @@ paths:
     get:
       summary: Esporta il dossier evidenze bounded in formato ZIP
       responses: { '200': { description: ZIP con manifest, grafo, decisioni, claim, receipts, limiti e checksum } }
+  /api/evidence/{type}/{id}.pdf:
+    get:
+      summary: Esporta la rappresentazione PDF del dossier autorizzato
+      responses: { '200': { description: PDF derivato dallo stesso dossier bounded } }
+  /api/evidence/{type}/{id}.xml:
+    get:
+      summary: Esporta la rappresentazione XML del dossier autorizzato
+      responses: { '200': { description: XML derivato dallo stesso dossier bounded } }
+  /api/evidence/{type}/{id}.md:
+    get:
+      summary: Esporta la rappresentazione Markdown del dossier autorizzato
+      responses: { '200': { description: Markdown derivato dallo stesso dossier bounded } }
   /api/attachments/{id}:
     get:
       summary: Scarica un allegato autorizzato
@@ -265,14 +467,14 @@ paths:
       responses: { '200': { description: Utente aggiornato con receipt } }
   /api/admin/identity:
     get:
-      summary: Legge la configurazione identità e la proiezione runtime
-      responses: { '200': { description: Configurazione identità senza segreti } }
+      summary: Legge la configurazione identita e la proiezione runtime
+      responses: { '200': { description: Configurazione identita senza segreti } }
     put:
-      summary: Aggiorna strategia identità, header e regole di mapping
-      responses: { '200': { description: Policy identità aggiornata con receipt } }
+      summary: Aggiorna strategia identita, header e regole di mapping
+      responses: { '200': { description: Policy identita aggiornata con receipt } }
   /api/admin/identity/test:
     post:
-      summary: Prova una policy identità su attributi campione senza salvarla
+      summary: Prova una policy identita su attributi campione senza salvarla
       responses: { '200': { description: Decisione di accesso simulata } }
 components:
   schemas:
