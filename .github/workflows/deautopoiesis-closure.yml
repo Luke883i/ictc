@@ -54,7 +54,15 @@ jobs:
           $baseline | ConvertTo-Json -Compress | Set-Content -Path "$env:RUNNER_TEMP/ictc-node-baseline.json" -Encoding utf8
           Write-Host "Windows Node baseline: $($baseline.Count) process(es)"
       - name: Current runtime suite on supported matrix
+        id: current-runtime
+        continue-on-error: true
         run: npm run test:current:runtime
+      - name: "Runtime suite verdict · ${{ steps.current-runtime.outputs.failed_check || 'passed' }}"
+        if: always()
+        env:
+          ICTC_RUNTIME_SUITE_OUTCOME: ${{ steps.current-runtime.outcome }}
+          ICTC_RUNTIME_FAILED_CHECK: ${{ steps.current-runtime.outputs.failed_check }}
+        run: node -e "const outcome=process.env.ICTC_RUNTIME_SUITE_OUTCOME;const failed=process.env.ICTC_RUNTIME_FAILED_CHECK||'unknown';if(outcome!=='success'){console.error('runtime portability failed_check='+failed);process.exit(1)}console.log('runtime portability suite passed')"
       - name: Enforce Windows runtime process quiescence
         if: always() && runner.os == 'Windows'
         shell: pwsh
