@@ -13,9 +13,11 @@ const normalizePath = value => value.replace(/:([A-Za-z0-9_]+)/g, '{$1}');
 const keyFor = (method, pathname) => `${method.toUpperCase()} ${normalizePath(pathname)}`;
 
 function methodsFrom(text) {
-  return [...text.matchAll(/\bmethod\s*===\s*['"]([A-Z]+)['"]/g)]
-    .map(match => match[1])
-    .filter(method => HTTP_METHODS.has(method));
+  const methods = new Set();
+  for (const match of text.matchAll(/\bmethod\s*===\s*['"]([A-Z]+)['"]/g)) if (HTTP_METHODS.has(match[1])) methods.add(match[1]);
+  for (const match of text.matchAll(/\bmethod\s*!==\s*['"]([A-Z]+)['"][^;{}]{0,160}return\s+false/g)) if (HTTP_METHODS.has(match[1])) methods.add(match[1]);
+  for (const match of text.matchAll(/\(request\.method\s*\|\|\s*['"]GET['"]\)\s*!==\s*['"]([A-Z]+)['"][^;{}]{0,160}return\s+false/g)) if (HTTP_METHODS.has(match[1])) methods.add(match[1]);
+  return [...methods];
 }
 
 export function extractMountedRuntimeImports(serverSource) {
@@ -64,15 +66,22 @@ export function extractRuntimeRoutes(source, file = 'runtime') {
     else if (getOnlyGuard) add('GET', match[2], { kind: 'guarded-get' });
   }
 
+  for (const match of source.matchAll(/\bpathname\s*!==\s*(['"])(\/api\/[^'"]+)\1\s*\)\s*return\s+false/g)) {
+    const segment = source.slice(match.index, Math.min(source.length, match.index + 2400));
+    for (const method of methodsFrom(segment)) add(method, match[2], { kind: 'fail-closed-path-guard' });
+  }
+
   const routeMatchRegex = /routeMatch\(pathname,\s*(['"])(\/api\/[^'"]+)\1\)/g;
   for (const match of source.matchAll(routeMatchRegex)) {
+    const prefix = source.slice(Math.max(0, match.index - 120), match.index);
+    const binding = prefix.match(/(?:const|let|var)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=\s*$/)?.[1] || null;
     const after = match.index + match[0].length;
     const nextRoute = source.indexOf('routeMatch(pathname', after);
-    const segment = source.slice(after, nextRoute === -1 ? Math.min(source.length, after + 800) : nextRoute);
+    const segment = source.slice(after, nextRoute === -1 ? Math.min(source.length, after + 1000) : nextRoute);
     const ifIndex = segment.indexOf('if');
     const braceIndex = ifIndex === -1 ? -1 : segment.indexOf('{', ifIndex);
-    const condition = ifIndex === -1 ? '' : segment.slice(ifIndex, braceIndex === -1 ? Math.min(segment.length, ifIndex + 400) : braceIndex);
-    if (!condition.includes('params')) continue;
+    const condition = ifIndex === -1 ? '' : segment.slice(ifIndex, braceIndex === -1 ? Math.min(segment.length, ifIndex + 500) : braceIndex);
+    if (binding ? !condition.includes(binding) : !/\b(params|match)\b/.test(condition)) continue;
     for (const method of methodsFrom(condition)) add(method, match[2], { kind: 'route-match' });
   }
 
@@ -134,6 +143,10 @@ async function runSelfTest() {
   if (!routed.has('POST /api/incidents/{id}/formulation') || !routed.has('PUT /api/incidents/{id}/formulation')) throw new Error('self-test routeMatch extraction failed');
   const guarded = extractRuntimeRoutes("if((request.method||'GET')!=='GET')return false;if(pathname==='/api/workbench/meta'){}", 'guarded.mjs');
   if (!guarded.has('GET /api/workbench/meta')) throw new Error('self-test guarded GET extraction failed');
+  const failClosed = extractRuntimeRoutes("if(pathname!=='/api/cross-procedure/create')return false;const method=request.method||'GET';if(method==='GET'){}if(method!=='POST')return false;", 'fail-closed.mjs');
+  if (!failClosed.has('GET /api/cross-procedure/create') || !failClosed.has('POST /api/cross-procedure/create')) throw new Error('self-test fail-closed path guard extraction failed');
+  const namedRoute = extractRuntimeRoutes("const match=routeMatch(pathname,'/api/admin/attachments/:id/scan-attestation');if((request.method||'GET')!=='POST'||!match)return false;", 'named-route.mjs');
+  if (!namedRoute.has('POST /api/admin/attachments/{id}/scan-attestation')) throw new Error('self-test named route fail-closed method extraction failed');
   const declared = extractRuntimeRoutes("declareApiRoute('GET','/api/evidence/:type/:id.zip');", 'declared.mjs');
   if (!declared.has('GET /api/evidence/{type}/{id}.zip')) throw new Error('self-test declared regex route extraction failed');
   const mounted = extractMountedRuntimeImports("import { createA } from './runtime/a.mjs'; import { helper } from './runtime/http.mjs'; const handlers=[createA()];");
@@ -151,12 +164,12 @@ async function runSelfTest() {
   if (!openapi.has('GET /api/health') || !openapi.has('POST /api/items/{id}')) throw new Error('self-test OpenAPI extraction failed');
   const mismatch = compareRouteSets(direct, openapi, 'append-only events');
   if (!mismatch.extraInOpenApi.length || mismatch.staleClaims.length !== 1) throw new Error('self-test mismatch detection failed');
-  console.log('api-contract-check: self-test ok (server direct + transitive create* handler closure, direct, routeMatch, declared regex, guarded GET, OpenAPI, mismatch)');
+  console.log('api-contract-check: self-test ok (server direct + transitive create* handler closure, direct, fail-closed path guards, routeMatch bindings, declared regex, guarded GET, OpenAPI, mismatch)');
 }
 
 async function runContractCheck() {
   const openapiText = await readFile(openapiPath, 'utf8'); const runtime = await collectRuntimeRoutes(); const openApiRoutes = extractOpenApiRoutes(openapiText); const comparison = compareRouteSets(runtime.routes, openApiRoutes, openapiText);
-  const report = { schemaVersion: '1.3.0', result: comparison.missingFromOpenApi.length || comparison.extraInOpenApi.length || comparison.staleClaims.length ? 'failed' : 'passed', runtimeRouteCount: runtime.routes.size, openApiRouteCount: openApiRoutes.size, mountedRuntimeFiles: runtime.mountedFiles, directRuntimeImports: runtime.directImports, registryHandlerImports: runtime.registryHandlerImports, runtimeRoutes: [...runtime.routes.keys()].sort(), openApiRoutes: [...openApiRoutes.keys()].sort(), ...comparison, boundary: 'Executable check binds the method/path surface mounted by v3/server.mjs, its direct runtime imports, and the transitive closure of create* handler imports rooted at runtime-handler-registry.mjs. Regex routes require an explicit co-located declareApiRoute declaration. The check rejects known stale canonical-state claims but does not prove full payload schema equivalence, authorization correctness, or semantic compatibility.' };
+  const report = { schemaVersion: '1.4.0', result: comparison.missingFromOpenApi.length || comparison.extraInOpenApi.length || comparison.staleClaims.length ? 'failed' : 'passed', runtimeRouteCount: runtime.routes.size, openApiRouteCount: openApiRoutes.size, mountedRuntimeFiles: runtime.mountedFiles, directRuntimeImports: runtime.directImports, registryHandlerImports: runtime.registryHandlerImports, runtimeRoutes: [...runtime.routes.keys()].sort(), openApiRoutes: [...openApiRoutes.keys()].sort(), ...comparison, boundary: 'Executable check binds the method/path surface mounted by v3/server.mjs, its direct runtime imports, and the transitive closure of create* handler imports rooted at runtime-handler-registry.mjs. Fail-closed path/method guards and named routeMatch bindings are recognized structurally; regex or otherwise non-inferable routes require an explicit co-located declareApiRoute declaration. The check rejects known stale canonical-state claims but does not prove full payload schema equivalence, authorization correctness, or semantic compatibility.' };
   await mkdir(path.dirname(artifactPath), { recursive: true }); await writeFile(artifactPath, JSON.stringify(report, null, 2));
   if (report.result !== 'passed') { const diagnostic = [report.missingFromOpenApi.length ? `missing=${report.missingFromOpenApi.join(',')}` : '',report.extraInOpenApi.length ? `extra=${report.extraInOpenApi.join(',')}` : '',report.staleClaims.length ? `stale=${report.staleClaims.join(',')}` : ''].filter(Boolean).join(' | ');console.error(`::error title=API contract drift::${diagnostic}`);console.error(JSON.stringify(report, null, 2));process.exitCode=1;return; }
   console.log(`api-contract-check: ok (runtime=${runtime.routes.size}, openapi=${openApiRoutes.size}, transitive mounted method/path surface)`);
