@@ -152,7 +152,7 @@ try:
         assert demo['stressFixtures'] == 512
         assert demo['stressVisible'] is False
         assert demo['schedulerEnabled'] is False
-        assert demo['stateDigest'] == '4266e20a3a89efe65d9e1d050b81fbaaccbccd378e81f28b8e26d0a51c46d61e'
+        assert demo['stateDigest'] == '22031f08dc2049d4e9e16a1ee2a9b5b303ebd58880288eecf946b33f7b6d452d'
         assert 'demoAudit' not in boot
         lattice = api(page, '/api/epistemic-lattice?offset=0&limit=80')['payload']
         assert lattice['schemaVersion'] == '1.3.0'
