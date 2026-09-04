@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { appendFileSync } from 'node:fs';
 import { copyFile, mkdtemp, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -16,6 +17,7 @@ const actor={id:'s3-check',role:'admin',permissions:[]};
 const state=()=>({schemaVersion:'2.4.0',revision:0,settings:{},missions:[],runs:[],contributions:[],catalog:[],incidents:[],subjectVersions:[],reviewNeeds:[],audit:[],commandResults:{'cmd-1':{actorId:actor.id,action:'s3.test',envelope:{result:{ok:true},receipt:{eventId:'none'}},storedAt:'2026-09-04T00:00:00.000Z'}}});
 let phase='bootstrap';
 const mark=value=>{phase=value;console.log(`s3-runtime-reliability:phase ${value}`);};
+function publishFailureDiagnostic(error){const output=process.env.GITHUB_OUTPUT;if(!output)return;const safe=value=>String(value||'unknown').replace(/[\r\n]/g,' ').slice(0,120);try{appendFileSync(output,`s3_failed_phase=${safe(phase)}\ns3_failed_code=${safe(error?.code||error?.name||'unknown')}\n`);}catch{}}
 
 try{
   mark('persistence-capability');
@@ -130,6 +132,7 @@ try{
   mark('complete');
   console.log(JSON.stringify({ok:true,suite:'s3-runtime-reliability',persistence:{base:persistenceCapabilityProjection(new SqliteStatePersistence(tmp)).complete,hardened:true,schemaVersion:RUNTIME_STORAGE_SCHEMA_VERSION,rollback:'restore-pre-migration-recovery-point'},scheduler:{durableClaim:true,fencing:true,restartOverlap:true,dueVersionBound:true},api:{baselineBound:true,mountedParity:true,jsonWriteBound:8000000,paginationMax:200},slo:{internal:true,minimumRequests:100},claimBoundary:'Repository-bounded S3 reliability contract. No HA, enterprise-ready, approved RTO/RPO, or production SLO claim.'}));
 }catch(error){
+  publishFailureDiagnostic(error);
   console.error(JSON.stringify({ok:false,suite:'s3-runtime-reliability',phase,code:error?.code||null,name:error?.name||null,message:error?.message||String(error)},null,2));
   throw error;
 }finally{

@@ -57,12 +57,14 @@ jobs:
         id: current-runtime
         continue-on-error: true
         run: npm run test:current:runtime
-      - name: "Runtime suite verdict · ${{ steps.current-runtime.outputs.failed_check || 'passed' }}"
+      - name: "Runtime suite verdict · ${{ steps.current-runtime.outputs.failed_check || 'passed' }} · ${{ steps.current-runtime.outputs.s3_failed_phase || 'phase-ok' }} · ${{ steps.current-runtime.outputs.s3_failed_code || 'code-ok' }}"
         if: always()
         env:
           ICTC_RUNTIME_SUITE_OUTCOME: ${{ steps.current-runtime.outcome }}
           ICTC_RUNTIME_FAILED_CHECK: ${{ steps.current-runtime.outputs.failed_check }}
-        run: node -e "const outcome=process.env.ICTC_RUNTIME_SUITE_OUTCOME;const failed=process.env.ICTC_RUNTIME_FAILED_CHECK||'unknown';if(outcome!=='success'){console.error('runtime portability failed_check='+failed);process.exit(1)}console.log('runtime portability suite passed')"
+          ICTC_S3_FAILED_PHASE: ${{ steps.current-runtime.outputs.s3_failed_phase }}
+          ICTC_S3_FAILED_CODE: ${{ steps.current-runtime.outputs.s3_failed_code }}
+        run: node -e "const outcome=process.env.ICTC_RUNTIME_SUITE_OUTCOME;const failed=process.env.ICTC_RUNTIME_FAILED_CHECK||'unknown';const phase=process.env.ICTC_S3_FAILED_PHASE||'unknown';const code=process.env.ICTC_S3_FAILED_CODE||'unknown';if(outcome!=='success'){console.error('runtime portability failed_check='+failed+' phase='+phase+' code='+code);process.exit(1)}console.log('runtime portability suite passed')"
       - name: Enforce Windows runtime process quiescence
         if: always() && runner.os == 'Windows'
         shell: pwsh
