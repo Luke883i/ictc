@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFile, mkdtemp, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SqliteStatePersistence } from './sqlite-state-persistence.mjs';
 import { HardenedSqliteStatePersistence, RUNTIME_STORAGE_SCHEMA_VERSION, runtimeStorageCompatibility } from './runtime/hardened-persistence.mjs';
 import { assertPersistenceCapability, persistenceCapabilityProjection } from './runtime/persistence-capability.mjs';
@@ -10,7 +11,7 @@ import { evaluateRuntimeSlo } from './runtime/reliability-slo.mjs';
 import { evaluateApiReliability } from './runtime/api-reliability.mjs';
 import { cleanupTempDir } from './runtime-temp-cleanup.mjs';
 
-const here=path.dirname(new URL(import.meta.url).pathname),repoRoot=path.dirname(here),tmp=await mkdtemp(path.join(os.tmpdir(),'ictc-s3-runtime-'));
+const here=path.dirname(fileURLToPath(import.meta.url)),repoRoot=path.dirname(here),tmp=await mkdtemp(path.join(os.tmpdir(),'ictc-s3-runtime-'));
 const actor={id:'s3-check',role:'admin',permissions:[]};
 const state=()=>({schemaVersion:'2.4.0',revision:0,settings:{},missions:[],runs:[],contributions:[],catalog:[],incidents:[],subjectVersions:[],reviewNeeds:[],audit:[],commandResults:{'cmd-1':{actorId:actor.id,action:'s3.test',envelope:{result:{ok:true},receipt:{eventId:'none'}},storedAt:'2026-09-04T00:00:00.000Z'}}});
 let phase='bootstrap';
