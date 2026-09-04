@@ -24,13 +24,26 @@ export function extractMountedRuntimeImports(serverSource) {
   return [...imports].sort();
 }
 
-export function extractRuntimeHandlerImports(registrySource) {
+export function extractRuntimeHandlerImports(source) {
   const imports = new Set();
-  for (const match of registrySource.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]\.\/([^'"]+\.mjs)['"]/g)) {
+  for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]\.\/([^'"]+\.mjs)['"]/g)) {
     const bindings = match[1].split(',').map(value => value.trim().split(/\s+as\s+/)[0]).filter(Boolean);
     if (bindings.some(binding => /^create[A-Z0-9_]/.test(binding))) imports.add(`v3/runtime/${match[2]}`);
   }
   return [...imports].sort();
+}
+
+export async function expandRuntimeHandlerImports(seed, readSource) {
+  const seen = new Set();
+  const queue = [...seed];
+  while (queue.length) {
+    const relative = queue.shift();
+    if (seen.has(relative)) continue;
+    seen.add(relative);
+    const source = await readSource(relative);
+    for (const child of extractRuntimeHandlerImports(source)) if (!seen.has(child)) queue.push(child);
+  }
+  return [...seen].sort();
 }
 
 export function extractRuntimeRoutes(source, file = 'runtime') {
@@ -98,7 +111,8 @@ async function collectRuntimeRoutes() {
   let registryHandlerImports = [];
   if (directImports.includes(registryRelative)) {
     const registrySource = await readFile(path.join(repoRoot, registryRelative), 'utf8');
-    registryHandlerImports = extractRuntimeHandlerImports(registrySource);
+    const registrySeeds = extractRuntimeHandlerImports(registrySource);
+    registryHandlerImports = await expandRuntimeHandlerImports(registrySeeds, relative => readFile(path.join(repoRoot, relative), 'utf8'));
   }
   const mountedImports = [...new Set([...directImports, ...registryHandlerImports])].sort();
   const files = [{ path: serverPath, source: serverSource }, ...await Promise.all(mountedImports.map(async relative => ({ path: path.join(repoRoot, relative), source: await readFile(path.join(repoRoot, relative), 'utf8') })))];
@@ -126,18 +140,25 @@ async function runSelfTest() {
   if (mounted.join(',') !== 'v3/runtime/a.mjs,v3/runtime/http.mjs') throw new Error('self-test direct mounted authority failed');
   const registryMounted = extractRuntimeHandlerImports("import { createA } from './a.mjs'; import { helper } from './helper.mjs'; import { createB, helperB } from './b.mjs'; const factories={a:()=>createA(),b:()=>createB()};");
   if (registryMounted.join(',') !== 'v3/runtime/a.mjs,v3/runtime/b.mjs') throw new Error('self-test registry mounted authority failed');
+  const fakeSources = new Map([
+    ['v3/runtime/a.mjs', "import { createLegacy as createCompatibility } from './legacy.mjs';"],
+    ['v3/runtime/b.mjs', "import { helper } from './helper.mjs';"],
+    ['v3/runtime/legacy.mjs', 'export function createLegacy(){}']
+  ]);
+  const closure = await expandRuntimeHandlerImports(['v3/runtime/a.mjs','v3/runtime/b.mjs'], async relative => fakeSources.get(relative) || '');
+  if (closure.join(',') !== 'v3/runtime/a.mjs,v3/runtime/b.mjs,v3/runtime/legacy.mjs') throw new Error('self-test transitive handler closure failed');
   const openapi = extractOpenApiRoutes("paths:\n  /api/health:\n    get:\n      responses: {}\n  /api/items/{id}:\n    post:\n      responses: {}\n");
   if (!openapi.has('GET /api/health') || !openapi.has('POST /api/items/{id}')) throw new Error('self-test OpenAPI extraction failed');
   const mismatch = compareRouteSets(direct, openapi, 'append-only events');
   if (!mismatch.extraInOpenApi.length || mismatch.staleClaims.length !== 1) throw new Error('self-test mismatch detection failed');
-  console.log('api-contract-check: self-test ok (server direct + registry-mounted authority, direct, routeMatch, declared regex, guarded GET, OpenAPI, mismatch)');
+  console.log('api-contract-check: self-test ok (server direct + transitive create* handler closure, direct, routeMatch, declared regex, guarded GET, OpenAPI, mismatch)');
 }
 
 async function runContractCheck() {
   const openapiText = await readFile(openapiPath, 'utf8'); const runtime = await collectRuntimeRoutes(); const openApiRoutes = extractOpenApiRoutes(openapiText); const comparison = compareRouteSets(runtime.routes, openApiRoutes, openapiText);
-  const report = { schemaVersion: '1.2.0', result: comparison.missingFromOpenApi.length || comparison.extraInOpenApi.length || comparison.staleClaims.length ? 'failed' : 'passed', runtimeRouteCount: runtime.routes.size, openApiRouteCount: openApiRoutes.size, mountedRuntimeFiles: runtime.mountedFiles, directRuntimeImports: runtime.directImports, registryHandlerImports: runtime.registryHandlerImports, runtimeRoutes: [...runtime.routes.keys()].sort(), openApiRoutes: [...openApiRoutes.keys()].sort(), ...comparison, boundary: 'Executable check binds the method/path surface mounted by v3/server.mjs, its direct runtime imports, and create* handler imports declared by runtime-handler-registry.mjs. Regex routes require an explicit co-located declareApiRoute declaration. The check rejects known stale canonical-state claims but does not prove full payload schema equivalence, authorization correctness, or semantic compatibility.' };
+  const report = { schemaVersion: '1.3.0', result: comparison.missingFromOpenApi.length || comparison.extraInOpenApi.length || comparison.staleClaims.length ? 'failed' : 'passed', runtimeRouteCount: runtime.routes.size, openApiRouteCount: openApiRoutes.size, mountedRuntimeFiles: runtime.mountedFiles, directRuntimeImports: runtime.directImports, registryHandlerImports: runtime.registryHandlerImports, runtimeRoutes: [...runtime.routes.keys()].sort(), openApiRoutes: [...openApiRoutes.keys()].sort(), ...comparison, boundary: 'Executable check binds the method/path surface mounted by v3/server.mjs, its direct runtime imports, and the transitive closure of create* handler imports rooted at runtime-handler-registry.mjs. Regex routes require an explicit co-located declareApiRoute declaration. The check rejects known stale canonical-state claims but does not prove full payload schema equivalence, authorization correctness, or semantic compatibility.' };
   await mkdir(path.dirname(artifactPath), { recursive: true }); await writeFile(artifactPath, JSON.stringify(report, null, 2));
   if (report.result !== 'passed') { const diagnostic = [report.missingFromOpenApi.length ? `missing=${report.missingFromOpenApi.join(',')}` : '',report.extraInOpenApi.length ? `extra=${report.extraInOpenApi.join(',')}` : '',report.staleClaims.length ? `stale=${report.staleClaims.join(',')}` : ''].filter(Boolean).join(' | ');console.error(`::error title=API contract drift::${diagnostic}`);console.error(JSON.stringify(report, null, 2));process.exitCode=1;return; }
-  console.log(`api-contract-check: ok (runtime=${runtime.routes.size}, openapi=${openApiRoutes.size}, server+registry mounted method/path surface)`);
+  console.log(`api-contract-check: ok (runtime=${runtime.routes.size}, openapi=${openApiRoutes.size}, transitive mounted method/path surface)`);
 }
 if (process.argv.includes('--self-test')) await runSelfTest(); else await runContractCheck();
