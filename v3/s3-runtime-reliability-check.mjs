@@ -109,8 +109,11 @@ try{
   assert.ok(recoverySource.includes('restoreEncryptedRecoveryPoint'));
 
   mark('api-mounted-contract');
-  const apiContract=spawnSync(process.execPath,[path.join(here,'api-contract-check.mjs')],{cwd:repoRoot,stdio:'inherit'});
-  assert.equal(apiContract.status,0,'existing exact mounted API method/path contract must remain green');
+  const apiContract=spawnSync(process.execPath,[path.join(here,'api-contract-check.mjs')],{cwd:repoRoot,encoding:'utf8',env:process.env,timeout:90_000,killSignal:'SIGKILL'});
+  const apiContractOutput=`${apiContract.stdout||''}\n${apiContract.stderr||''}`;
+  if(apiContractOutput.trim())process.stdout.write(apiContractOutput.endsWith('\n')?apiContractOutput:`${apiContractOutput}\n`);
+  if(apiContract.error)throw Object.assign(new Error(`API contract checker spawn failed: ${apiContract.error.code||apiContract.error.message}`),{code:'api-contract-spawn-failed'});
+  if(apiContract.status!==0){const line=apiContractOutput.split(/\r?\n/).map(value=>value.trim()).find(value=>value.includes('API contract drift'))||apiContractOutput.split(/\r?\n/).map(value=>value.trim()).filter(Boolean).at(-1)||`exit ${apiContract.status}`;throw Object.assign(new Error(`API contract drift: ${line}`),{code:'api-contract-drift'});}
 
   mark('runtime-slo');
   const good={counters:{requestsTotal:1000,errorsTotal:2,rateLimitedTotal:5},durationMsBuckets:{'5':100,'25':200,'100':300,'250':250,'500':100,'1000':50,'2500':0,'5000':0,'10000':0,'+Inf':0}};
