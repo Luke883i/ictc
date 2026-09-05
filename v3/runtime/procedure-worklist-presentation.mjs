@@ -1,12 +1,12 @@
-const BUSINESS_IDS=Object.freeze(['monitoring','incidents','objects','coverage','actions','risks','assurance']);
-const BUSINESS_SET=new Set(BUSINESS_IDS);
+import { procedureWorklistProviderIds } from './procedure-worklist.mjs';
 
+const canonicalProcedureIds=()=>procedureWorklistProviderIds();
 const text=(value,fallback='')=>String(value??fallback).trim();
 const humanize=value=>text(value).replaceAll('-',' ').replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase());
 const safeSituation=(value,fallback='Da esaminare')=>text(value)||fallback;
 
 function target(procedureId,subjectType,subjectId,intendedAction,context={}){
-  if(!BUSINESS_SET.has(procedureId))throw new Error(`Presentation target procedure not canonical: ${procedureId}`);
+  if(!canonicalProcedureIds().includes(procedureId))throw new Error(`Presentation target procedure not canonical: ${procedureId}`);
   if(!text(subjectType)||!text(subjectId)||!text(intendedAction))throw new Error('Typed target requires subjectType, subjectId and intendedAction');
   return Object.freeze({procedureId,subjectType:text(subjectType),subjectId:text(subjectId),intendedAction:text(intendedAction),context:Object.freeze({...context})});
 }
@@ -25,20 +25,18 @@ function rowId(row,prefix=''){
   const id=text(row?.id);return prefix&&id.startsWith(prefix)?id.slice(prefix.length):id;
 }
 function readonly(actor,row){return actor?.role==='auditor'||row?.canAct===false;}
-function action(row,actor,fallback='Apri dettaglio'){return readonly(actor,row)?'inspect-record':text(row?.primaryAction,'inspect-record')||'inspect-record';}
+function action(row,actor){return readonly(actor,row)?'inspect-record':text(row?.primaryAction,'inspect-record')||'inspect-record';}
 
 const RN_STATE=Object.freeze({'needs-plan':'Piano da completare',draft:'Piano in bozza',paused:'Monitoraggio sospeso',active:'Monitoraggio attivo',candidate:'Fonte da verificare',verified:'Impatto da valutare',rejected:'Fonte esclusa',superseded:'Fonte superata',failed:'Controllo fallito'});
 function monitoring(row,{state,actor}){
-  const id=text(row.id),kind=row.kind,rawId=kind==='mission'?rowId(row,'mission:'):kind==='source'?rowId(row,'source:'):kind==='run'?rowId(row,'run:'):rowId(row);
+  const kind=row.kind,rawId=kind==='mission'?rowId(row,'mission:'):kind==='source'?rowId(row,'source:'):kind==='run'?rowId(row,'run:'):rowId(row);
   const kindLabel=kind==='mission'?'Monitoraggio':kind==='source'?'Fonte':kind==='run'?'Esecuzione':'Elemento di monitoraggio';
-  const situation=safeSituation(RN_STATE[row.state]);
   const labels=Object.freeze({'complete-plan':'Completa piano','review-source':'Verifica fonte','assess-impact':'Valuta impatto','inspect-failed-run':'Esamina esecuzione','inspect-record':'Apri dettaglio'});
-  const intended=action(row,actor);const actionLabel=labels[intended]||'Apri dettaglio';
-  const context={};
+  const intended=action(row,actor),context={};
   if(kind==='run'){
     const run=(state?.runs||[]).find(x=>String(x.id)===rawId);if(run?.missionId)context.missionId=String(run.missionId);
   }
-  return presentation({kindLabel,situationLabel:situation,actionLabel,targetRef:target('monitoring',kind||'record',rawId,intended,context),facets:[facet('work-type','Tipo di lavoro',kind||'record',kindLabel)]});
+  return presentation({kindLabel,situationLabel:safeSituation(RN_STATE[row.state]),actionLabel:labels[intended]||'Apri dettaglio',targetRef:target('monitoring',kind||'record',rawId,intended,context),facets:[facet('work-type','Tipo di lavoro',kind||'record',kindLabel)]});
 }
 
 const EC_STATE=Object.freeze({draft:'Da chiarire',intake:'Da chiarire',review:'Da verificare',submitted:'Inviata · da seguire',closed:'Chiusa'});
@@ -55,10 +53,10 @@ function objects(row,{actor}){
 
 const MC_STATE=Object.freeze({undeclared:'Uso da dichiarare',reference:'Usato come riferimento',applicable:'Nel perimetro',unknown:'Applicabilità da decidere',deferred:'Decisione rinviata','not-applicable':'Fuori perimetro',proposed:'Mapping da decidere',gap:'Gap da gestire',mapped:'Mappato',rejected:'Escluso'});
 function coverage(row,{state,actor}){
-  const kind=row.kind,id=text(row.id),subjectId=kind==='standard'?rowId(row,'standard:'):kind==='requirement-scope'?rowId(row,'scope:'):kind==='mapping'?rowId(row,'mapping:'):rowId(row),kindLabel=kind==='standard'?'Standard':kind==='requirement-scope'?'Requisito':kind==='mapping'?'Mapping':'Elemento di copertura';
+  const kind=row.kind,subjectId=kind==='standard'?rowId(row,'standard:'):kind==='requirement-scope'?rowId(row,'scope:'):kind==='mapping'?rowId(row,'mapping:'):rowId(row),kindLabel=kind==='standard'?'Standard':kind==='requirement-scope'?'Requisito':kind==='mapping'?'Mapping':'Elemento di copertura';
   const intended=action(row,actor),labels=Object.freeze({'decide-standard-use':'Decidi utilizzo','decide-requirement-scope':'Decidi applicabilità','resolve-gap':'Gestisci gap','review-mapping':'Decidi mapping','inspect-record':'Apri dettaglio'}),context={};
   if(kind==='requirement-scope'){
-    const record=(state?.requirementScopes||[]).find(x=>String(x.id)===subjectId);const binding=record?.binding||{};
+    const record=(state?.requirementScopes||[]).find(x=>String(x.id)===subjectId),binding=record?.binding||{};
     if(binding.frameworkId)context.frameworkId=String(binding.frameworkId);if(binding.nodeId)context.nodeId=String(binding.nodeId);if(record?.requirementRef)context.requirementRef=String(record.requirementRef);
   }
   return presentation({kindLabel,situationLabel:safeSituation(MC_STATE[row.state]),actionLabel:labels[intended]||'Apri dettaglio',targetRef:target('coverage',kind||'record',subjectId,intended,context),facets:[facet('decision-area','Ambito della decisione',kind||'record',kindLabel)]});
@@ -84,9 +82,11 @@ function assurance(row,{actor}){
 }
 
 const PRESENTERS=Object.freeze({monitoring,incidents,objects,coverage,actions,risks,assurance});
-export function procedureWorklistPresentationIds(){return Object.freeze([...BUSINESS_IDS]);}
+function presenterFor(id){return Object.hasOwn(PRESENTERS,id)?PRESENTERS[id]:null;}
+function assertPresenterCoverage(){const canonical=canonicalProcedureIds(),registered=Object.keys(PRESENTERS);if(canonical.length!==registered.length||canonical.some(id=>!registered.includes(id)))throw new Error(`Presentation provider coverage drift: canonical=${canonical.join(',')} registered=${registered.join(',')}`);}
+export function procedureWorklistPresentationIds(){assertPresenterCoverage();return Object.freeze([...canonicalProcedureIds()]);}
 export function presentProcedureWorklist(procedure,state,actor={role:'admin'}){
-  const fn=PRESENTERS[procedure?.id];if(!fn)throw new Error(`Presentation provider missing: ${procedure?.id||'unknown'}`);
+  assertPresenterCoverage();const fn=presenterFor(procedure?.id);if(!fn)throw new Error(`Presentation provider missing: ${procedure?.id||'unknown'}`);
   const presentRow=row=>Object.freeze({...row,presentation:fn(row,{state,actor})});
   const rows=(procedure.rows||[]).map(presentRow),allRows=(procedure.allRows||[]).map(presentRow),facetMap=new Map();
   for(const row of allRows)for(const local of row.presentation.facets){let entry=facetMap.get(local.key);if(!entry){entry={key:local.key,label:local.label,values:new Map()};facetMap.set(local.key,entry);}if(entry.label!==local.label)throw new Error(`${procedure.id}: local facet label drift for ${local.key}`);entry.values.set(local.value,local.valueLabel);}
@@ -95,5 +95,5 @@ export function presentProcedureWorklist(procedure,state,actor={role:'admin'}){
 }
 export function procedureWorklistPresentationProjection(worklists,state,actor={role:'admin'}){
   const procedures=(worklists?.procedures||[]).map(item=>presentProcedureWorklist(item,state,actor));
-  return Object.freeze({...worklists,schemaVersion:'1.2.0',authority:'runtime-procedure-worklist-presentation<-procedure-local-presenters<-runtime-procedure-worklist',procedures:Object.freeze(procedures),presentationPolicy:Object.freeze({providerLocalSemantics:true,sharedPrimitiveBusinessVocabulary:false,typedTargets:true,localFacetSemantics:true,globalBusinessState:false}),limitations:Object.freeze([...(worklists?.limitations||[]),'Presentation labels and facets are procedure-local projections; raw runtime kind/state remain available as technical attributes only.','Typed targets preserve procedure, subject and intended action; UI resolution must fail closed rather than fall back to a generic process surface.'])});
+  return Object.freeze({...worklists,schemaVersion:'1.2.0',authority:'runtime-procedure-worklist-presentation<-procedure-local-presenters<-runtime-procedure-worklist',procedures:Object.freeze(procedures),presentationPolicy:Object.freeze({providerLocalSemantics:true,sharedPrimitiveBusinessVocabulary:false,typedTargets:true,localFacetSemantics:true,globalBusinessState:false,procedureMembershipAuthority:'runtime/procedure-worklist.mjs'}),limitations:Object.freeze([...(worklists?.limitations||[]),'Presentation labels and facets are procedure-local projections; raw runtime kind/state remain available as technical attributes only.','Typed targets preserve procedure, subject and intended action; UI resolution must fail closed rather than fall back to a generic process surface.','Canonical procedure membership is inherited from procedureWorklistProviderIds(); the presentation layer cannot create an independent seven-procedure universe.'])});
 }
