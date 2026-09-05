@@ -22,5 +22,5 @@ function canonicalBody(root=document.querySelector('#grcWorkspace')){return root
 function publishCanonicalCommit(root=document.querySelector('#grcWorkspace')){const body=canonicalBody(root);if(!body||body===lastCanonicalBody)return false;lastCanonicalBody=body;applyGrcWorkspace32();document.dispatchEvent(new CustomEvent('ictc:context-changed',{detail:{surface:'grc',procedureId:selected(),reason:'grc-render-committed'}}));return true;}
 function observeCanonicalRender(){const root=document.querySelector('#grcWorkspace');if(!root||observer)return;lastCanonicalBody=canonicalBody(root);observer=new MutationObserver(()=>publishCanonicalCommit(root));observer.observe(root,{childList:true});}
 function converge(){observeCanonicalRender();applyGrcWorkspace32();}
-function onSurfaceChanged(event){if(event?.detail?.surface==='grc'){observeCanonicalRender();return;}converge();}
+function onSurfaceChanged(event){if(event?.detail?.surface==='grc'){observeCanonicalRender();queueMicrotask(converge);return;}converge();}
 export function installGrcWorkspace32(){if(installed)return;installed=true;bindTargetResolver();observeCanonicalRender();document.addEventListener('ictc:surface-changed',onSurfaceChanged);for(const event of ['ictc:rendered','ictc:context-changed','ictc:projection-committed'])document.addEventListener(event,converge);converge();}
