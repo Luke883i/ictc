@@ -1,81 +1,123 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const root=path.resolve(here,'..');
-const load=rel=>JSON.parse(readFileSync(path.join(root,rel),'utf8'));
-const truth=load('v3/capability-truth.json');
-const releaseIdentity=load('v3/release-identity.json');
-const documentationManifest=load('docs/documentation-manifest.json');
-const gaps=load('v3/gaps.json');
-const publicRegistry=load('v3/public/gap-registry.json');
-const EXPECTED_SCOPE='ICTC current capability truth after merged PR #118; S1 worklist and RC reference closure reconciled; release stage candidate; repository capabilities separated from deployment/independent evidence.';
-const EXPECTED_BLOCKERS=['S2-CAUSALITY','S3-RELIABILITY','S4-ASSURANCE-CONTRACTION','S5-CANDIDATE-SEAL'];
-const S1_GAPS=['GAP-015','GAP-016'];
-const S1_CAPABILITY='procedure-worklist-and-risk-reference-closure';
-const failures=[];const check=(ok,msg)=>{if(!ok)failures.push(msg);};
+const defaultRoot=path.resolve(here,'..');
+const POST_S3_MAIN='9f56b4444b212b36e5957f00df6cac0be381a9b1';
+const EXPECTED_SCOPE='ICTC current capability truth after merged PR #121; S0-S3 repository-internal closures reconciled; release stage candidate; repository capabilities separated from deployment/independent evidence.';
+const EXPECTED_BLOCKERS=['S4-ASSURANCE-CONTRACTION','S5-CANDIDATE-SEAL'];
+const EXPECTED_EXTERNAL=['E4-SCANNER-EFFECTIVENESS','E4-IDENTITY-EFFECTIVENESS','E4-HUMAN-VALIDATION','E4-OBSERVABILITY-ALERTING','E4-BRANCH-PROTECTION'];
+const CLOSURES={
+  S1:{capability:'procedure-worklist-and-risk-reference-closure',gapIds:['GAP-015','GAP-016'],evidencePaths:['v3/runtime/procedure-worklist.mjs','v3/procedure-worklist-s1-check.mjs','v3/procedure-worklist-s1-saturation.mjs']},
+  S2:{capability:'ar-temporal-review-and-explicit-epistemic-effects',gapIds:['GAP-017','GAP-018'],evidencePaths:['v3/runtime/grc-assurance.mjs','v3/runtime/dependency-review.mjs','v3/runtime/epistemic-write-store.mjs','v3/runtime/epistemic-step.mjs','v3/s2-temporal-epistemic-check.mjs','v3/s2-temporal-epistemic-saturation.mjs']},
+  S3:{capability:'runtime-reliability-contract-s3',gapIds:['GAP-010','GAP-019'],evidencePaths:['v3/runtime/persistence-capability.mjs','v3/runtime/hardened-persistence.mjs','v3/runtime/scheduler-lease.mjs','v3/runtime/api-reliability.mjs','v3/runtime/reliability-slo.mjs','v3/s3-runtime-reliability-check.mjs','v3/s3-runtime-reliability-saturation.mjs']}
+};
+const GAP_PROOF={
+  'GAP-015':{slice:'S1',change:'v3/runtime/procedure-worklist.mjs',test:'v3/procedure-worklist-s1-check.mjs',saturation:'v3/procedure-worklist-s1-saturation.mjs'},
+  'GAP-016':{slice:'S1',change:'v3/runtime/procedure-worklist.mjs',test:'v3/procedure-worklist-s1-check.mjs',saturation:'v3/procedure-worklist-s1-saturation.mjs'},
+  'GAP-017':{slice:'S2',change:'v3/runtime/grc-assurance.mjs',test:'v3/s2-temporal-epistemic-check.mjs',saturation:'v3/s2-temporal-epistemic-saturation.mjs'},
+  'GAP-018':{slice:'S2',change:'v3/runtime/epistemic-write-store.mjs',test:'v3/s2-temporal-epistemic-check.mjs',saturation:'v3/s2-temporal-epistemic-saturation.mjs'},
+  'GAP-010':{slice:'S3',change:'v3/runtime/scheduler-lease.mjs',test:'v3/s3-runtime-reliability-check.mjs',saturation:'v3/s3-runtime-reliability-saturation.mjs'},
+  'GAP-019':{slice:'S3',change:'v3/runtime/persistence-capability.mjs',test:'v3/s3-runtime-reliability-check.mjs',saturation:'v3/s3-runtime-reliability-saturation.mjs'}
+};
+const load=(root,rel)=>JSON.parse(readFileSync(path.join(root,rel),'utf8'));
+export function loadCapabilityTruthFixture(root=defaultRoot){return{truth:load(root,'v3/capability-truth.json'),releaseIdentity:load(root,'v3/release-identity.json'),documentationManifest:load(root,'docs/documentation-manifest.json'),gaps:load(root,'v3/gaps.json'),publicRegistry:load(root,'v3/public/gap-registry.json'),root};}
+export function validateCapabilityTruth({truth,releaseIdentity,documentationManifest,gaps,publicRegistry,root=defaultRoot,pathExists=rel=>existsSync(path.join(root,rel))}){
+  const failures=[];const check=(ok,msg)=>{if(!ok)failures.push(msg);};
+  check(truth?.schemaVersion==='1.0.0','capability truth schema drift');
+  check(truth?.authority==='capability-truth','capability truth authority drift');
+  check(truth?.auditedAnchor?.mainSha===POST_S3_MAIN,'audited anchor must be exact post-#121 main');
+  check(truth?.auditedAnchor?.mergedPr===121,'audited anchor PR must be #121');
+  check(truth?.auditedAnchor?.meaning==='post-s3-runtime-reliability-contract','audited anchor meaning drift');
+  check(releaseIdentity?.releaseStage==='candidate','release must remain candidate before S5');
+  check(truth?.releaseClaim?.stage===releaseIdentity?.releaseStage,'release claim/identity drift');
+  check(truth?.releaseClaim?.classification==='truth-current','capability truth must remain truth-current');
+  check(truth?.releaseClaim?.enterpriseCandidate===false,'post-S3 reconciliation cannot claim enterprise-candidate');
+  check(truth?.releaseClaim?.enterpriseReady===false,'repository truth cannot claim enterprise-ready');
+  check(String(truth?.releaseClaim?.claimBoundary||'').includes('S4-S5'),'remaining internal chain must be S4-S5');
+  check(String(truth?.releaseClaim?.claimBoundary||'').includes('deployment/independent E4'),'E4 claim boundary must remain explicit');
+  const presentation=documentationManifest?.versionAxes?.uiPresentation;
+  check(presentation?.value==='local-owners','presentation authority regression');
+  check(presentation?.classification==='canonical-distributed-presentation','presentation classification regression');
 
-check(truth.schemaVersion==='1.0.0','capability truth schema drift');
-check(truth.authority==='capability-truth','capability truth authority drift');
-check(truth.auditedAnchor?.mainSha==='30f0968e4aacc15fa8bace3846c11ecb725c9bb9','audited anchor must be exact post-#118 main');
-check(truth.auditedAnchor?.mergedPr===118,'audited anchor PR must be #118');
-check(truth.auditedAnchor?.meaning==='post-s1-procedure-worklist-rc-reference-closure','audited anchor meaning drift');
-check(releaseIdentity.releaseStage==='candidate','release must remain candidate before S5');
-check(truth.releaseClaim?.stage===releaseIdentity.releaseStage,'release claim/identity drift');
-check(truth.releaseClaim?.classification==='truth-current','capability truth must remain truth-current');
-check(truth.releaseClaim?.enterpriseCandidate===false,'S1 reconciliation cannot claim enterprise-candidate');
-check(truth.releaseClaim?.enterpriseReady===false,'repository truth cannot claim enterprise-ready');
-check(String(truth.releaseClaim?.claimBoundary||'').includes('S2-S5'),'remaining internal chain must be S2-S5');
-const presentation=documentationManifest.versionAxes?.uiPresentation;
-check(presentation?.value==='local-owners','presentation authority regression');
-check(presentation?.classification==='canonical-distributed-presentation','presentation classification regression');
+  const capabilities=truth?.repositoryCapabilities||[];
+  check(capabilities.length>=11,'post-S3 capability census unexpectedly small');
+  check(new Set(capabilities.map(x=>x.id)).size===capabilities.length,'duplicate capability id');
+  for(const item of capabilities){
+    check(item.status==='repository-proven',`${item.id}: capability status drift`);
+    check(Array.isArray(item.evidencePaths)&&item.evidencePaths.length>=2,`${item.id}: insufficient proof paths`);
+    check(Boolean(String(item.residualBoundary||'').trim()),`${item.id}: residual boundary missing`);
+    for(const rel of item.evidencePaths||[])check(pathExists(rel),`${item.id}: evidence path missing: ${rel}`);
+  }
+  for(const [slice,spec] of Object.entries(CLOSURES)){
+    const capability=capabilities.find(x=>x.id===spec.capability);
+    check(Boolean(capability),`${slice}: repository capability missing`);
+    check(JSON.stringify(capability?.closesGapIds||[])===JSON.stringify(spec.gapIds),`${slice}: closure map drift`);
+    for(const rel of spec.evidencePaths)check(capability?.evidencePaths?.includes(rel),`${slice}: proof missing: ${rel}`);
+  }
 
-const capabilities=truth.repositoryCapabilities||[];
-check(capabilities.length>=9,'post-S1 capability census unexpectedly small');
-check(new Set(capabilities.map(x=>x.id)).size===capabilities.length,'duplicate capability id');
-for(const item of capabilities){
-  check(item.status==='repository-proven',`${item.id}: capability status drift`);
-  check(Array.isArray(item.evidencePaths)&&item.evidencePaths.length>=2,`${item.id}: insufficient proof paths`);
-  check(Boolean(String(item.residualBoundary||'').trim()),`${item.id}: residual boundary missing`);
-  for(const rel of item.evidencePaths||[])check(existsSync(path.join(root,rel)),`${item.id}: evidence path missing: ${rel}`);
+  check(gaps?.schemaVersion==='1.2.0','gap schema drift');
+  check(gaps?.scope===EXPECTED_SCOPE,'gap scope must be reconciled post-#121');
+  check(JSON.stringify(gaps?.closureClasses)===JSON.stringify(['repository-internal','external-evidence','independent-evidence']),'closure class registry drift');
+  const canonical=gaps?.gaps||[],ids=canonical.map(x=>x.id),open=canonical.filter(x=>x.status==='open');
+  check(new Set(ids).size===ids.length,'duplicate canonical gap id');
+  check(publicRegistry?.schemaVersion===gaps?.schemaVersion,'public/canonical schema drift');
+  check(publicRegistry?.scope===gaps?.scope,'public/canonical scope drift');
+  check(JSON.stringify((publicRegistry?.gaps||[]).map(x=>x.id))===JSON.stringify(open.map(x=>x.id)),'public gap registry must equal canonical open-gap order');
+  for(const [id,spec] of Object.entries(GAP_PROOF)){
+    const gap=canonical.find(x=>x.id===id);
+    check(Boolean(gap),`${id}: missing`);
+    check(gap?.status==='closed',`${id}: closure regressed`);
+    check(gap?.closureClass==='repository-internal',`${id}: closure class drift`);
+    check(gap?.targetSlice===spec.slice,`${id}: target slice drift`);
+    check(gap?.changePaths?.includes(spec.change),`${id}: change proof missing: ${spec.change}`);
+    check(gap?.testPaths?.includes(spec.test),`${id}: test proof missing: ${spec.test}`);
+    check(gap?.testPaths?.includes(spec.saturation),`${id}: saturation proof missing: ${spec.saturation}`);
+    check((gap?.evidence||[]).length>0,`${id}: closure evidence missing`);
+    check((gap?.limitations||[]).length>0,`${id}: residual limitation missing`);
+    check(!(publicRegistry?.gaps||[]).some(x=>x.id===id),`${id}: closed gap leaked into public open registry`);
+  }
+
+  const blockerGroups=truth?.currentInternalBlockers||[],blockerIds=blockerGroups.map(x=>x.id),internalIds=blockerGroups.flatMap(x=>x.gapIds||[]);
+  check(JSON.stringify(blockerIds)===JSON.stringify(EXPECTED_BLOCKERS),'internal blocker lattice must be S4 -> S5');
+  check(new Set(internalIds).size===internalIds.length,'internal gap assigned more than once');
+  for(const group of blockerGroups)for(const id of group.gapIds||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open',`${id}: blocker not open`);check(gap?.closureClass==='repository-internal',`${id}: blocker class drift`);check(gap?.targetSlice===group.targetSlice,`${id}: blocker target drift`);}
+  const openInternal=open.filter(x=>x.closureClass==='repository-internal').map(x=>x.id).sort();
+  check(JSON.stringify([...internalIds].sort())===JSON.stringify(openInternal),'every open internal gap must be assigned exactly once to S4-S5');
+
+  const external=truth?.externalEvidenceBoundaries||[],externalGapIds=external.flatMap(x=>x.gapIds||[]);
+  check(JSON.stringify(external.map(x=>x.id))===JSON.stringify(EXPECTED_EXTERNAL),'E4 boundary census drift');
+  check(new Set(externalGapIds).size===externalGapIds.length,'external gap assigned more than once');
+  const openExternal=open.filter(x=>['external-evidence','independent-evidence'].includes(x.closureClass)).map(x=>x.id).sort();
+  check(JSON.stringify([...externalGapIds].sort())===JSON.stringify(openExternal),'every open external/independent gap must map exactly once to E4');
+  for(const boundary of external){
+    check(boundary.status==='external-evidence-required',`${boundary.id}: repository cannot self-close E4`);
+    check(['deployment','independent','repository-settings'].includes(boundary.authority),`${boundary.id}: external authority drift`);
+    for(const id of boundary.gapIds||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open',`${id}: E4 gap must remain open`);check(['external-evidence','independent-evidence'].includes(gap?.closureClass),`${id}: E4 class drift`);}
+  }
+  for(const item of capabilities)for(const id of item.retiresAbsenceClaimFrom||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open'&&gap?.closureClass==='external-evidence',`${id}: retired absence claim must remain an external evidence boundary`);}
+  const openText=JSON.stringify(open).toLowerCase();
+  for(const fragment of truth?.staleOpenClaimFragments||[])check(!openText.includes(String(fragment).toLowerCase()),`stale open claim returned: ${fragment}`);
+  return{ok:failures.length===0,failures,counts:{capabilities:capabilities.length,closedInternal:Object.keys(GAP_PROOF).length,openInternal:openInternal.length,externalBoundaries:external.length}};
 }
-const s1=capabilities.find(x=>x.id===S1_CAPABILITY);
-check(Boolean(s1),'S1 capability missing');
-check(JSON.stringify(s1?.closesGapIds||[])===JSON.stringify(S1_GAPS),'S1 capability closure map drift');
-for(const rel of ['v3/runtime/procedure-worklist.mjs','v3/procedure-worklist-s1-check.mjs','v3/procedure-worklist-s1-saturation.mjs'])check(s1?.evidencePaths?.includes(rel),`S1 proof missing: ${rel}`);
-
-check(gaps.schemaVersion==='1.2.0','gap schema drift');
-check(gaps.scope===EXPECTED_SCOPE,'gap scope must be reconciled post-#118');
-check(JSON.stringify(gaps.closureClasses)===JSON.stringify(['repository-internal','external-evidence','independent-evidence']),'closure class registry drift');
-const canonical=gaps.gaps||[], ids=canonical.map(x=>x.id), open=canonical.filter(x=>x.status==='open');
-check(new Set(ids).size===ids.length,'duplicate canonical gap id');
-check(JSON.stringify(publicRegistry.gaps.map(x=>x.id))===JSON.stringify(open.map(x=>x.id)),'public registry must equal canonical open-gap order');
-check(publicRegistry.schemaVersion===gaps.schemaVersion,'public/canonical schema drift');
-check(publicRegistry.scope===gaps.scope,'public/canonical scope drift');
-for(const id of S1_GAPS){
-  const gap=canonical.find(x=>x.id===id);
-  check(Boolean(gap),`${id}: missing`);check(gap?.status==='closed',`${id}: S1 closure regressed`);check(gap?.closureClass==='repository-internal',`${id}: closure class drift`);check(gap?.targetSlice==='S1',`${id}: target slice drift`);
-  check(gap?.changePaths?.includes('v3/runtime/procedure-worklist.mjs'),`${id}: runtime worklist authority missing`);
-  check(gap?.testPaths?.includes('v3/procedure-worklist-s1-check.mjs'),`${id}: exact S1 check missing`);
-  check(gap?.testPaths?.includes('v3/procedure-worklist-s1-saturation.mjs'),`${id}: S1 saturation missing`);
-  check((gap?.evidence||[]).length>0&&Boolean(gap?.limitations?.length),`${id}: closure evidence/limitation missing`);
-  check(!publicRegistry.gaps.some(x=>x.id===id),`${id}: closed gap leaked into public open registry`);
-}
-
-const blockerGroups=truth.currentInternalBlockers||[], blockerIds=blockerGroups.map(x=>x.id), internalIds=blockerGroups.flatMap(x=>x.gapIds||[]);
-check(JSON.stringify(blockerIds)===JSON.stringify(EXPECTED_BLOCKERS),'internal blocker lattice must begin at S2');
-check(new Set(internalIds).size===internalIds.length,'internal gap assigned more than once');
-for(const group of blockerGroups)for(const id of group.gapIds||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open',`${id}: blocker not open`);check(gap?.closureClass==='repository-internal',`${id}: blocker class drift`);check(gap?.targetSlice===group.targetSlice,`${id}: blocker target drift`);}
-const openInternal=open.filter(x=>x.closureClass==='repository-internal').map(x=>x.id).sort();check(JSON.stringify([...internalIds].sort())===JSON.stringify(openInternal),'every open internal gap must be assigned exactly once to S2-S5');
-
-const external=truth.externalEvidenceBoundaries||[], expectedExternal=['E4-SCANNER-EFFECTIVENESS','E4-IDENTITY-EFFECTIVENESS','E4-HUMAN-VALIDATION','E4-OBSERVABILITY-ALERTING','E4-BRANCH-PROTECTION'];
-check(JSON.stringify(external.map(x=>x.id))===JSON.stringify(expectedExternal),'E4 boundary census drift');
-const externalGapIds=external.flatMap(x=>x.gapIds||[]);check(new Set(externalGapIds).size===externalGapIds.length,'external gap assigned more than once');
-const openExternal=open.filter(x=>['external-evidence','independent-evidence'].includes(x.closureClass)).map(x=>x.id).sort();check(JSON.stringify([...externalGapIds].sort())===JSON.stringify(openExternal),'every open external/independent gap must map exactly once to E4');
-for(const boundary of external){check(boundary.status==='external-evidence-required',`${boundary.id}: repository cannot self-close E4`);for(const id of boundary.gapIds||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open',`${id}: E4 gap must remain open`);check(['external-evidence','independent-evidence'].includes(gap?.closureClass),`${id}: E4 class drift`);}}
-for(const item of capabilities)for(const id of item.retiresAbsenceClaimFrom||[]){const gap=canonical.find(x=>x.id===id);check(gap?.status==='open'&&gap?.closureClass==='external-evidence',`${id}: retired absence claim must remain external evidence boundary`);}
-const openText=JSON.stringify(open).toLowerCase();for(const fragment of truth.staleOpenClaimFragments||[])check(!openText.includes(String(fragment).toLowerCase()),`stale open claim returned: ${fragment}`);
-assert.deepEqual(failures,[],failures.join('\n'));
-console.log(JSON.stringify({ok:true,suite:'capability-truth-post-s1-reconciliation',anchor:truth.auditedAnchor,capabilities:capabilities.length,s1Closed:S1_GAPS,openInternal,externalGapIds,claimBoundary:truth.releaseClaim.claimBoundary}));
+function expectMutationFailure(name,fixture,mutate){const copy=structuredClone(fixture);mutate(copy);const result=validateCapabilityTruth({...copy,pathExists:()=>true});assert.equal(result.ok,false,`${name}: mutation survived truth firewall`);return name;}
+export function selfTestCapabilityTruth(fixture){return[
+  expectMutationFailure('stale-anchor',fixture,x=>{x.truth.auditedAnchor.mainSha='stale';}),
+  expectMutationFailure('premature-enterprise-candidate',fixture,x=>{x.truth.releaseClaim.enterpriseCandidate=true;}),
+  expectMutationFailure('stale-s2-blocker',fixture,x=>{x.truth.currentInternalBlockers.unshift({id:'S2-CAUSALITY',gapIds:['GAP-017','GAP-018'],targetSlice:'S2'});}),
+  expectMutationFailure('stale-s3-blocker',fixture,x=>{x.truth.currentInternalBlockers.unshift({id:'S3-RELIABILITY',gapIds:['GAP-010','GAP-019'],targetSlice:'S3'});}),
+  expectMutationFailure('s2-capability-missing',fixture,x=>{x.truth.repositoryCapabilities=x.truth.repositoryCapabilities.filter(c=>c.id!==CLOSURES.S2.capability);}),
+  expectMutationFailure('s3-capability-missing',fixture,x=>{x.truth.repositoryCapabilities=x.truth.repositoryCapabilities.filter(c=>c.id!==CLOSURES.S3.capability);}),
+  expectMutationFailure('s2-gap-reopened',fixture,x=>{x.gaps.gaps.find(g=>g.id==='GAP-017').status='open';}),
+  expectMutationFailure('s3-gap-reopened',fixture,x=>{x.gaps.gaps.find(g=>g.id==='GAP-010').status='open';}),
+  expectMutationFailure('public-closed-gap-leak',fixture,x=>{x.publicRegistry.gaps.push(structuredClone(x.gaps.gaps.find(g=>g.id==='GAP-019')));}),
+  expectMutationFailure('orphan-open-internal',fixture,x=>{x.gaps.gaps.push({id:'GAP-X',status:'open',closureClass:'repository-internal',targetSlice:'S4'});}),
+  expectMutationFailure('external-self-closure',fixture,x=>{x.truth.externalEvidenceBoundaries[0].status='repository-proven';}),
+  expectMutationFailure('branch-protection-self-closure',fixture,x=>{x.gaps.gaps.find(g=>g.id==='GAP-022').status='closed';}),
+  expectMutationFailure('evidence-path-loss',fixture,x=>{x.truth.repositoryCapabilities.find(c=>c.id===CLOSURES.S3.capability).evidencePaths=x.truth.repositoryCapabilities.find(c=>c.id===CLOSURES.S3.capability).evidencePaths.filter(p=>p!=='v3/runtime/scheduler-lease.mjs');}),
+  expectMutationFailure('saturation-proof-loss',fixture,x=>{x.gaps.gaps.find(g=>g.id==='GAP-010').testPaths=x.gaps.gaps.find(g=>g.id==='GAP-010').testPaths.filter(p=>p!=='v3/s3-runtime-reliability-saturation.mjs');})
+];}
+function main(){const fixture=loadCapabilityTruthFixture();const result=validateCapabilityTruth(fixture);assert.deepEqual(result.failures,[],result.failures.join('\n'));const selfTests=selfTestCapabilityTruth(fixture);console.log(JSON.stringify({ok:true,suite:'capability-truth-post-s3-reconciliation',anchor:fixture.truth.auditedAnchor,closedSlices:['S1','S2','S3'],remainingInternal:['S4','S5'],counts:result.counts,selfTests:selfTests.length,claimBoundary:fixture.truth.releaseClaim.claimBoundary}));}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)main();
