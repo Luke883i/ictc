@@ -1,7 +1,7 @@
 import { state } from './common.js';
 import { NATIVE_SEMANTIC_LATTICE_VERSION, PROCEDURE_WORKSPACE } from './native-semantic-lattice-3-2.js';
 const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
-let installed=false,observer=null,lastCanonicalBody=null;
+let installed=false,observer=null,lastCanonicalBody=null,targetResolverBound=false;
 function selected(){let id=state.activeProcessId||'';try{id=id||localStorage.getItem('ictc-grc-process')||'';}catch{}return GRC_IDS.has(id)?id:'objects';}
 function disclosure(host,key,label,node){if(!host||!node)return null;const procedure=selected();let detail=host.querySelector(`:scope > details[data-composition-detail="${key}"]`),reset=!detail||detail.dataset.compositionProcedure!==procedure;if(!detail){detail=document.createElement('details');detail.className='composition-detail';detail.dataset.compositionDetail=key;detail.innerHTML=`<summary>${label}</summary><div data-composition-detail-body></div>`;host.append(detail);}const body=detail.querySelector('[data-composition-detail-body]');if(node.parentElement!==body)body.append(node);detail.dataset.compositionProcedure=procedure;if(reset)detail.removeAttribute('open');return detail;}
 function ensureAttentionSlot(root,procedure){const frame=root?.querySelector(':scope > .procedure-frame');if(!root||!frame)return null;let slot=root.querySelector(`:scope > [data-procedure-attention-slot="${procedure}"]`),changed=false;for(const stale of root.querySelectorAll(':scope > [data-procedure-attention-slot]'))if(stale!==slot&&stale.dataset.procedureAttentionSlot!==procedure)stale.remove();if(!slot){slot=document.createElement('div');slot.dataset.procedureAttentionSlot=procedure;slot.dataset.attentionSlotOwner='grc-workspace-3-2.js';slot.dataset.informationRole='attention';changed=true;}if(frame.nextElementSibling!==slot){frame.after(slot);changed=true;}if(changed)document.dispatchEvent(new CustomEvent('ictc:attention-slot-ready',{detail:{procedureId:procedure,owner:slot.dataset.attentionSlotOwner}}));return slot;}
@@ -13,51 +13,14 @@ function focusNode(node){if(!node)return;node.scrollIntoView({block:'center',beh
 function exactRecord(ref){return document.querySelector(`#grcWorkspace [data-grc-record-procedure="${CSS.escape(ref.procedureId)}"][data-grc-record-kind="${CSS.escape(ref.subjectType)}"][data-grc-record-id="${CSS.escape(ref.subjectId)}"]`);}
 function frameworkCard(id){return id?document.querySelector(`#grcWorkspace [data-framework-card="${CSS.escape(id)}"]`):null;}
 function mappingByRequirement(requirementRef){return requirementRef?document.querySelector(`#grcWorkspace [data-grc-record-procedure="coverage"][data-grc-record-kind="mapping"][data-grc-requirement-ref="${CSS.escape(requirementRef)}"]`):null;}
-function actionControl(ref,record){if(!record||!ref)return null;const id=ref.subjectId,action=ref.intendedAction;if(action==='inspect-record')return null;if(action==='review-object')return record.querySelector('[data-object-review="active"]');if(action==='reattest-object')return record.querySelector(`[data-object-attest="${CSS.escape(id)}"]`);if(action==='review-mapping')return record.querySelector('[data-uiux-mapping-decision],[data-mapping-decision]');if(action==='resolve-gap')return null;if(action==='adopt-action')return record.querySelector(`[data-action-adopt="${CSS.escape(id)}"]`);if(action==='progress-action')return record.querySelector(`[data-uiux-action-quick="${CSS.escape(id)}"],[data-action-progress]`);if(action==='verify-action')return record.querySelector(`[data-uiux-action-verify="${CSS.escape(id)}"],[data-v4-action-verify="${CSS.escape(id)}"]`);if(action==='review-risk')return record.querySelector(`[data-risk-review="${CSS.escape(id)}"]`);if(action==='decide-treatment')return record.querySelector(`[data-v4-risk-treatment="${CSS.escape(id)}"]`);if(action==='draft-response')return record.querySelector(`[data-assurance-propose="${CSS.escape(id)}"]`);if(action==='review-response')return record.querySelector(`[data-assurance-approve="${CSS.escape(id)}"],[data-assurance-answer]`);return null;}
-function resolveGrcTarget(detail){const ref=detail.targetRef;if(!GRC_IDS.has(ref.procedureId))return false;let record=null,control=null,resolution='record';if(ref.procedureId==='coverage'&&ref.subjectType==='standard'){record=frameworkCard(ref.subjectId);control=record?.querySelector('.market-scope-editor > summary,[data-standard-scope-decision],[data-standard-scope]')||null;resolution=control?'record-action':'record-intent';}else if(ref.procedureId==='coverage'&&ref.subjectType==='requirement-scope'){record=mappingByRequirement(ref.context?.requirementRef)||frameworkCard(ref.context?.frameworkId);control=record?.querySelector('[data-uiux-scope-decision]')||record?.querySelectoŠ	ÖÙ]K[Ü[‹\Ý[™\™Xœ›ÝÜÙ\—IÊ_[Ü™\ÛÛ][ÛXÛÛ›Û	‰œ™XÛÜ™Ëš\Ð]šX]J	Ù]KYœ˜[Y]ÛÜšËXØ\™	ÊOÉÝ\Y\™\]Z\™[Y[XÛÛ^	Î˜ÛÛ›ÛÉÜ™XÛÜ™XXÝ[Û‰Î‰Ý\Y\™\]Z\™[Y[XÛÛ^	ÎßY[Ù^Ü™XÛÜ™Y^XÝ™XÛÜ™
-™YŠNØÛÛ›ÛXXÝ[ÛÛÛ›Û
-™Y‹™XÛÜ™
-NÜ™\ÛÛ][ÛXÛÛ›ÛÉÜ™XÛÜ™XXÝ[Û‰Î‰Ü™XÛÜ™Z[[	ÎßZYŠ\™XÛÜ™
-\™]\›ˆ˜[ÙNØÛX\XÝ]™U\™Ù]Ê
-NÜ™XÛÜ™™]\Ù]ÛÜšÕ\™Ù]XÝ]™OIÝYIÎÜ™XÛÜ™™]\Ù]ÛÜšÕ\™Ù]ÝXš™XÝY\™Y‹œÝXš™XÝYÜ™XÛÜ™™]\Ù]ÛÜšÕ\™Ù]XÝ[Û\™Y‹š[[™YXÝ[ÛŽÚYŠ™Y‹˜ÛÛ^Ë››ÙRY
-\™XÛÜ™™]\Ù]ÛÜšÕ\™Ù]›ÙRY\™Y‹˜ÛÛ^››ÙRYÙ›ØÝ\Ó›ÙJÛÛ›Û™XÛÜ™
-NÙ]Z[œ™\ÛÛ™Y]YNÙ]Z[œ™\ÛÛ][Û\™\ÛÛ][ÛŽÙ]Z[œ™XÛÜ™Y\™XÛÜ™™]\Ù]™Ü˜Ô™XÛÜ™Y™Y‹œÝXš™XÝYÙ]Z[š\ÐXÝ[ÛÛÛ›ÛP›ÛÛX[ŠÛÛ›Û
-NÜ™]\›ˆYNßB™^Ü[˜Ý[Ûˆ\QÜ˜ÕÛÜšÜÜXÙLÌŠ
-^ØÛÛœÝ›ÛÝYØÝ[Y[œ]Y\žTÙ[XÝÜŠ	ÈÙÜ˜ÕÛÜšÜÜXÙIÊNÚYŠ\›ÛÝ
-\™]\›ŽØÛÛœÝ›ØÙY\™O\Ù[XÝY
-
-NÜ›ÛÝ™]\Ù]›ØØ[ÛÛ\ÜÚ][Û“ÝÛ™\IÙÜ˜Ë]ÛÜšÜÜXÙKLËL‹šœÉÎÜ›ÛÝ™]\Ù]›˜]]™TÙ[X[XÓ]XÙOSUU‘WÔÑSPS•P×ÓUPÑWÕ‘T”ÒSÓŽÜ›ÛÝ™]\Ù]˜ÛÛ\ÜÚ][Û”Ý\™˜XÙO\›ØÙY\™NÙ[œÝ\™P][[Û”ÛÝ
-›ÛÝ›ØÙY\™JNØÛÛœÝ›ÙO\›ÛÝœ]Y\žTÙ[XÝÜŠ	Ë™Ü˜ËX›ÙIÊ_›ÛÝ\ÝX›ÙKœ]Y\žTÙ[XÝÜŠ	Ë™Ü˜Ë[\Ý	ÊNÚYŠ\Ý
-^Û\Ý™]\Ù]š[™›Ü›X][Û”›ÛOIØ][[Û‰ÎØÛÛœÝÝXÝ\˜[VË‹‹˜›ÙK˜Ú[™[—K™š[™
-›ÙOOˆ[›ÙK›X]Ú\Ê	Ëœ›ØÙY\™KYœ˜[YK™Ü˜ËZXY™Ü˜Ë[˜]‹ZXY	ÊJNÚYŠÝXÝ\˜[	‰œÝXÝ\˜[OO[\Ý
-X›ÙKš[œÙ\™Y›Ü™J\ÝÝXÝ\˜[
-NßX[››Ý]PØ[›ÛšXØ[™XÛÜ™Ê›ÛÝ›ØÙY\™JNØÛÛœÝÜ\ÏX›ÙKœ]Y\žTÙ[XÝÜŠ	Ë™Ü˜ËZÜ\ÉÊNÚYŠÜ\ÊY\ØÛÜÝ\™J›ÙK	Ü›ØÙ\ÜË\Ý]\ÉË	ÔÝ]È[›ØÙ\ÜÛÉËÜ\ÊNØÛÛœÝX]X›ÙKœ]Y\žTÙ[XÝÜŠ	Ë™Ü˜ËZX]	ÊNÚYŠX]
-Y\ØÛÜÝ\™J›ÙK	Üš\ÚËX[˜[\Ú\ÉË	ÓX]šXÙHH]YÛ[È[H˜[]^š[Û™IËX]
-NØÛÛœÝ›Ü›OX›ÙKœ]Y\žTÙ[XÝÜŠ	ÈÙÜ˜Ôš[X\žQ›Ü›IÊKÛÜOT“ÐÑQT‘WÕÓÔ’ÔÔPÑVÜ›ØÙY\™WNÚYŠ›Ü›I‰˜ÛÜJ^Ù›Ü›K™]\Ù]š[™›Ü›X][Û”›ÛOIØXÝ[Û‰ÎØÛÛœÝÝ[[X\žOY›Ü›Kœ]Y\žTÙ[XÝÜŠ	ÎœØÛÜHˆÝ[[X\žIÊNÚYŠÝ[[X\žJ\Ý[[X\žK^ÛÛ[XÛÜKœš[X\žNß_B™[˜Ý[ÛˆØ[›ÛšXØ[›ÙJ›ÛÝYØÝ[Y[œ]Y\žTÙ[XÝÜŠ	ÈÙÜ˜ÕÛÜšÜÜXÙIÊJ^Ü™]\›ˆ›ÛÝËœ]Y\žTÙ[XÝÜŠ	ÎœØÛÜHˆ™Ü˜ËX›ÙIÊ_[ßB™[˜Ý[ÛˆX›\ÚØ[›ÛšXØ[ÛÛ[Z]
-›ÛÝYØÝ[Y[œ]Y\žTÙ[XÝÜŠ	ÈÙÜ˜ÕÛÜšÜÜXÙIÊJ^ØÛÛœÝ›ÙOXØ[›ÛšXØ[›ÙJ›ÛÝ
-NÚYŠX›Ù_›ÙOOO[\ÝØ[›ÛšXØ[›ÙJ\™]\›ˆ˜[ÙNÛ\ÝØ[›ÛšXØ[›ÙOX›ÙNØ\QÜ˜ÕÛÜšÜÜXÙLÌŠ
-NÙØÝ[Y[™\Ü]Ú]™[
-™]ÈÝ\ÝÛQ]™[
-	ÚXÝÎ˜ÛÛ^XÚ[™ÙY	ËÙ]Z[žÜÝ\™˜XÙN‰ÙÜ˜ÉË›ØÙY\™RYœÙ[XÝY
-
-K™X\ÛÛŽ‰ÙÜ˜Ë\™[™\‹XÛÛ[Z]Y	ß_JJNÜ™]\›ˆYNßB™[˜Ý[ÛˆØœÙ\™PØ[›ÛšXØ[™[™\Š
-^ØÛÛœÝ›ÛÝYØÝ[Y[œ]Y\žTÙ[XÝÜŠ	ÈÙÜ˜ÕÛÜšÜÜXÙIÊNÚYŠ\›ÛÝØœÙ\™\Š\™]\›ŽÛ\ÝØ[›ÛšXØ[›ÙOXØ[›ÛšXØ[›ÙJ›ÛÝ
-NÛØœÙ\™\[™]È]]][Û“ØœÙ\™\Š
-
-OOœX›\ÚØ[›ÛšXØ[ÛÛ[Z]
-›ÛÝ
-JNÛØœÙ\™\‹›ØœÙ\™J›ÛÝØÚ[\ÝY_JNßB™[˜Ý[ÛˆÛÛ™\™ÙJ
-^ÛØœÙ\™PØ[›ÛšXØ[™[™\Š
-NØ\QÜ˜ÕÛÜšÜÜXÙLÌŠ
-NßB™[˜Ý[ÛˆÛ”Ý\™˜XÙPÚ[™ÙY
-]™[
-^ÚYŠ]™[Ë™]Z[ËœÝ\™˜XÙOOOIÙÜ˜ÉÊ^ÛØœÙ\™PØ[›ÛšXØ[™[™\Š
-NÜ™]\›ŽßXÛÛ™\™ÙJ
-NßB™^Ü[˜Ý[Ûˆ[œÝ[Ü˜ÕÛÜšÜÜXÙLÌŠ
-^ÚYŠ[œÝ[Y
-\™]\›ŽÚ[œÝ[Y]YNÛØœÙ\™PØ[›ÛšXØ[™[™\Š
-NÙØÝ[Y[˜Y]™[\Ý[™\Š	ÚXÝÎÛÜšË]\™Ù]\™\]Y\Ý	Ë]™[OžØÛÛœÝ]Z[Y]™[™]Z[ÚYŠ]Z[Ëœ™\ÛÛ™YY]Z[Ë\™Ù]™YŠ\™]\›ŽÜ™\ÛÛ™QÜ˜Õ\™Ù]
-]Z[
-NßJNÙØÝ[Y[˜Y]™[\Ý[™\Š	ÚXÝÎœÝ\™˜XÙKXÚ[™ÙY	ËÛ”Ý\™˜XÙPÚ[™ÙY
-NÙ›ÜŠÛÛœÝ]™[ÙˆÉÚXÝÎœ™[™\™Y	Ë	ÚXÝÎ˜ÛÛ^XÚ[™ÙY	Ë	ÚXÝÎœ›Ú™XÝ[Û‹XÛÛ[Z]Y	×JYØÝ[Y[˜Y]™[\Ý[™\Š]™[ÛÛ™\™ÙJNØÛÛ™\™ÙJ
-NßB
+function actionControl(ref,record){if(!record||!ref)return null;const id=ref.subjectId,action=ref.intendedAction;if(action==='inspect-record'||action==='resolve-gap')return null;if(action==='review-object')return record.querySelector('[data-object-review="active"]');if(action==='reattest-object')return record.querySelector(`[data-object-attest="${CSS.escape(id)}"]`);if(action==='review-mapping')return record.querySelector('[data-uiux-mapping-decision],[data-mapping-decision]');if(action==='adopt-action')return record.querySelector(`[data-action-adopt="${CSS.escape(id)}"],[data-action-adopt]`);if(action==='progress-action')return record.querySelector(`[data-uiux-action-quick="${CSS.escape(id)}"],[data-action-progress]`);if(action==='verify-action')return record.querySelector(`[data-uiux-action-verify="${CSS.escape(id)}"],[data-v4-action-verify="${CSS.escape(id)}"]`);if(action==='review-risk')return record.querySelector(`[data-risk-review="${CSS.escape(id)}"],[data-risk-review]`);if(action==='decide-treatment')return record.querySelector(`[data-v4-risk-treatment="${CSS.escape(id)}"]`);if(action==='draft-response')return record.querySelector(`[data-assurance-propose="${CSS.escape(id)}"],[data-assurance-propose]`);if(action==='review-response')return record.querySelector(`[data-assurance-approve="${CSS.escape(id)}"],[data-assurance-answer]`);return null;}
+function resolveRecord(detail,record,control=null,resolution='record'){if(!record)return false;clearActiveTargets();record.dataset.workTargetActive='true';record.dataset.workTargetSubjectId=detail.targetRef.subjectId;record.dataset.workTargetAction=detail.targetRef.intendedAction;focusNode(control||record);detail.resolved=true;detail.resolution=control?`${resolution}-action`:resolution;detail.recordId=detail.targetRef.subjectId;detail.hasActionControl=Boolean(control);return true;}
+function resolveGrcTarget(detail){const ref=detail?.targetRef;if(!ref||!GRC_IDS.has(ref.procedureId))return false;let record=null,control=null,resolution='record';if(ref.procedureId==='coverage'&&ref.subjectType==='standard'){record=frameworkCard(ref.subjectId);control=record?.querySelector('.market-scope-editor > summary,[data-standard-scope-decision],[data-standard-scope]')||null;resolution='standard';}else if(ref.procedureId==='coverage'&&ref.subjectType==='requirement-scope'){record=mappingByRequirement(ref.context?.requirementRef)||frameworkCard(ref.context?.frameworkId);control=record?.querySelector('[data-uiux-scope-decision]')||null;resolution=record?.matches?.('[data-framework-card]')?'standard-context':'requirement-context';}else{record=exactRecord(ref);control=actionControl(ref,record);}return resolveRecord(detail,record,control,resolution);}
+function bindTargetResolver(){if(targetResolverBound)return;targetResolverBound=true;document.addEventListener('ictc:work-target-request',event=>{const detail=event.detail;if(detail?.resolved)return;resolveGrcTarget(detail);});}
+export function applyGrcWorkspace32(){const root=document.querySelector('#grcWorkspace');if(!root)return;const procedure=selected();root.dataset.localCompositionOwner='grc-workspace-3-2.js';root.dataset.nativeSemanticLattice=NATIVE_SEMANTIC_LATTICE_VERSION;root.dataset.compositionSurface=procedure;const body=root.querySelector('.grc-body')||root,list=body.querySelector('.grc-list');if(list){list.dataset.informationRole='attention';const structural=[...body.children].find(node=>!node.matches('.procedure-frame,.grc-head,.grc-nav-head'));if(structural&&structural!==list)body.insertBefore(list,structural);}const kpis=body.querySelector('.grc-kpis');if(kpis)disclosure(body,'process-status','Stato del processo',kpis);const heat=body.querySelector('.grc-heat');if(heat)disclosure(body,'risk-analysis','Matrice e dettaglio della valutazione',heat);const form=body.querySelector('#grcPrimaryForm'),copy=PROCEDURE_WORKSPACE[procedure];if(form&&copy){form.dataset.informationRole='action';const summary=form.querySelector(':scope > summary');if(summary)summary.textContent=copy.primary;}ensureAttentionSlot(root,procedure);annotateCanonicalRecords(root,procedure);}
+function canonicalBody(root=document.querySelector('#grcWorkspace')){return root?.querySelector(':scope > .grc-body')||null;}
+function publishCanonicalCommit(root=document.querySelector('#grcWorkspace')){const body=canonicalBody(root);if(!body||body===lastCanonicalBody)return false;lastCanonicalBody=body;applyGrcWorkspace32();document.dispatchEvent(new CustomEvent('ictc:context-changed',{detail:{surface:'grc',procedureId:selected(),reason:'grc-render-committed'}}));return true;}
+function observeCanonicalRender(){const root=document.querySelector('#grcWorkspace');if(!root||observer)return;lastCanonicalBody=canonicalBody(root);observer=new MutationObserver(()=>publishCanonicalCommit(root));observer.observe(root,{childList:true});}
+function converge(){observeCanonicalRender();applyGrcWorkspace32();}
+function onSurfaceChanged(event){if(event?.detail?.surface==='grc'){observeCanonicalRender();return;}converge();}
+export function installGrcWorkspace32(){if(installed)return;installed=true;bindTargetResolver();observeCanonicalRender();document.addEventListener('ictc:surface-changed',onSurfaceChanged);for(const event of ['ictc:rendered','ictc:context-changed','ictc:projection-committed'])document.addEventListener(event,converge);converge();}
