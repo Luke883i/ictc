@@ -29,7 +29,7 @@ def open_process(page,code,pid):
  close_dialogs(page);PHASE=f'{code}-catalogue-nav';page.locator('.service-nav [data-service="processes"]').click();page.wait_for_function("()=>!document.querySelector('#processesView')?.hidden")
  PHASE=f'{code}-catalogue-card';card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();button=card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first;expect(button).to_be_visible();button.click()
  host='#monitoringView' if pid=='monitoring' else '#incidentsView' if pid=='incidents' else '#grcWorkspace'
- PHASE=f'{code}-surface-commit';page.wait_for_function("([host,code])=>{const h=document.querySelector(host),f=h?.querySelector(':scope > .procedure-frame');return !!(h&&h.offsetParent!==null&&f&&f.querySelector('.process-code')?.textContent?.includes(code))}",arg=[host,code])
+ PHASE=f'{code}-surface-commit';page.wait_for_function("([host,code])=>{const h=document.querySelector(host),f=h?.querySelector(':scope > .procedure-frame');return !!(h&&h.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(code))}",arg=[host,code])
  return host
 
 def audit_one(page,code,pid):
@@ -48,7 +48,7 @@ def audit_one(page,code,pid):
  PHASE=f'{code}-typed-target-present';buttons=section.locator('[data-work-item-target]');assert buttons.count()>0,f'{pid}: no typed target CTA';button=buttons.first;subject_id=button.get_attribute('data-work-target-subject-id');subject_type=button.get_attribute('data-work-target-subject-type');action=button.get_attribute('data-work-target-action');assert subject_id and subject_type and action,(pid,subject_type,subject_id,action)
  PHASE=f'{code}-exact-target-dispatch';button.click();page.wait_for_function("el=>!!el.dataset.workTargetResolution",arg=button.element_handle(),timeout=5000);resolution=button.get_attribute('data-work-target-resolution');assert resolution!='unresolved',(pid,subject_type,subject_id,action,resolution)
  PHASE=f'{code}-exact-target-marker';page.wait_for_function("()=>document.querySelectorAll('[data-work-target-active=\"true\"]').length===1",timeout=5000);active=page.locator('[data-work-target-active="true"]');assert active.get_attribute('data-work-target-subject-id')==subject_id,(pid,'subject',active.get_attribute('data-work-target-subject-id'),subject_id);assert active.get_attribute('data-work-target-action')==action,(pid,'action',active.get_attribute('data-work-target-action'),action)
- PHASE=f'{code}-screenshot';screenshot=ART/f's4-a1-{pid}.png';page.screenshot(path=str(screenshot),full_page=True);RESULTS.append({'code':code,'procedureId':pid,'slotOwner':owner,'facetKey':facet_key,'visibleFacetControls':facet_count,'immediateControls':immediate.count(),'defaultRows':count,'target':{'subjectType':subject_type,'subjectId':subject_id,'intendedAction':action,'resolution':resolution},'rawKindStateDefault':False,'firstOperationalAttention':True,'artifact':screenshot.name});clear=close_dialogs(page)
+ PHASE=f'{code}-screenshot';screenshot=ART/f's4-a1-{pid}.png';page.screenshot(path=str(screenshot),full_page=True);RESULTS.append({'code':code,'procedureId':pid,'slotOwner':owner,'facetKey':facet_key,'visibleFacetControls':facet_count,'immediateControls':immediate.count(),'defaultRows':count,'target':{'subjectType':subject_type,'subjectId':subject_id,'intendedAction':action,'resolution':resolution},'rawKindStateDefault':False,'firstOperationalAttention':True,'artifact':screenshot.name});close_dialogs(page)
 
 try:
  with sync_playwright() as pw:
