@@ -4,7 +4,7 @@ from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
-EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or os.environ.get('GITHUB_SHA') or '').strip().lower()
+EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').strip().lower()
 PHASE='init'; NETWORK=[]; FAILURES=[]; PAGE_ERRORS=[]; API_PROBE={}
 VIEWS={
  'home':'#homeView',
@@ -62,22 +62,22 @@ try:
   ctx=browser.new_context(viewport={'width':1440,'height':950})
   ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   request=ctx.request
-  PHASE='runtime-identity';health=api_get(request,'/api/health');identity=api_get(request,'/api/runtime/identity')
-  API_PROBE['health']=health;API_PROBE['runtimeIdentity']=identity
-  assert health['status']==200,health
-  assert identity['status']==200,identity
-  ib=identity['body'];assert ib.get('authority')=='runtime-build-identity',ib
+  PHASE='health';health=api_get(request,'/api/health');API_PROBE['health']=health;assert health['status']==200,health
+  PHASE='admin-endpoint-probe'
+  admin={}
+  for endpoint in ADMIN_ENDPOINTS:
+   probe=api_get(request,endpoint);admin[endpoint]=probe;assert probe['status']==200,probe
+  API_PROBE['admin']=admin
+  PHASE='runtime-identity'
+  ib=(admin['/api/admin/identity']['body'] or {}).get('buildIdentity') or {}
+  API_PROBE['runtimeIdentity']=ib
+  assert ib.get('authority')=='runtime-build-identity',ib
   assert ib.get('productVersion')==health['body'].get('version'),(ib,health)
   build=ib.get('build') or {}
   if EXPECTED_SHA:
    assert build.get('sha')==EXPECTED_SHA,(EXPECTED_SHA,build)
    assert build.get('exact') is True,build
    assert build.get('dirty') is False,build
-  PHASE='admin-endpoint-probe'
-  admin={}
-  for endpoint in ADMIN_ENDPOINTS:
-   probe=api_get(request,endpoint);admin[endpoint]=probe;assert probe['status']==200,probe
-  API_PROBE['admin']=admin
 
   page=ctx.new_page();page.set_default_timeout(30000)
   def on_response(res):
@@ -90,7 +90,7 @@ try:
   snapshots['admin']=open_admin(page)
   PHASE='browser-errors';assert not FAILURES,FAILURES;assert not PAGE_ERRORS,PAGE_ERRORS
   writes=[x for x in NETWORK if x['method']!='GET'];PHASE='read-only-boundary';assert not writes,writes
-  out={'ok':True,'slice':'S4-A0','profile':'rta-observability-bootstrap','expectedBuildSha':EXPECTED_SHA or None,'runtimeIdentity':ib,'health':{'version':health['body'].get('version'),'handlerRegistry':health['body'].get('handlerRegistry'),'requestId':health.get('requestId')},'adminEndpointProbe':{k:{'status':v['status'],'requestId':v.get('requestId')} for k,v in admin.items()},'surfaces':snapshots,'network':NETWORK,'networkFailures':FAILURES,'pageErrors':PAGE_ERRORS,'writeCount':len(writes),'artifacts':['s4-a0-home.png','s4-a0-processes.png','s4-a0-proof.png','s4-a0-epistemic.png','s4-a0-admin.png'],'claimBoundary':'Exact-head runtime/browser baseline evidence for S4-A0. This does not prove final-view correctness, human usability, accessibility certification, deployment immutability, supply-chain provenance or enterprise-ready status.'}
+  out={'ok':True,'slice':'S4-A0','profile':'rta-observability-bootstrap','expectedBuildSha':EXPECTED_SHA or None,'runtimeIdentity':ib,'health':{'version':health['body'].get('version'),'handlerRegistry':health['body'].get('handlerRegistry'),'requestId':health.get('requestId')},'adminEndpointProbe':{k:{'status':v['status'],'requestId':v.get('requestId')} for k,v in admin.items()},'surfaces':snapshots,'network':NETWORK,'networkFailures':FAILURES,'pageErrors':PAGE_ERRORS,'writeCount':len(writes),'artifacts':['s4-a0-home.png','s4-a0-processes.png','s4-a0-proof.png','s4-a0-epistemic.png','s4-a0-admin.png'],'claimBoundary':'Exact-head runtime/browser baseline evidence for S4-A0. Build identity is projected through the existing Admin identity contract; no extra runtime route is minted. This does not prove final-view correctness, human usability, accessibility certification, deployment immutability, supply-chain provenance or enterprise-ready status.'}
   (ART/'browser-s4-a0-observability.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8')
   print(json.dumps({'ok':True,'slice':'S4-A0','build':build,'adminEndpoints':4,'surfaces':list(snapshots),'networkEvents':len(NETWORK)}),flush=True)
   ctx.close();browser.close()

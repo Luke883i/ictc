@@ -55,14 +55,13 @@ start(){
     echo "ICTC già attivo: $URL"
     return
   fi
-  local build_sha build_dirty
-  build_sha="${ICTC_BUILD_SHA:-${GITHUB_SHA:-}}"
-  build_dirty="${ICTC_BUILD_DIRTY:-}"
-  if [[ -z "$build_sha" ]] && command -v git >/dev/null 2>&1; then
+  local build_sha="" build_dirty=""
+  if command -v git >/dev/null 2>&1 && git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     build_sha="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || true)"
-  fi
-  if [[ -z "$build_dirty" ]] && [[ -n "$build_sha" ]] && command -v git >/dev/null 2>&1 && git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     if git -C "$ROOT" diff --quiet HEAD -- && git -C "$ROOT" diff --cached --quiet; then build_dirty=0; else build_dirty=1; fi
+  else
+    build_sha="${ICTC_BUILD_SHA:-}"
+    build_dirty="${ICTC_BUILD_DIRTY:-}"
   fi
   rm -f "$PID"
   (
