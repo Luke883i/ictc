@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 concurrency:
   group: s4-a1-presentation-worklist-authority-${{ github.ref }}
   cancel-in-progress: true
@@ -73,7 +74,6 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          trap './ictc.sh stop --profile current || true' EXIT
           export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4821 PORT=4821 ICTC_SCHEDULER_TICK_MS=100000
           status=0
           python -u v3/browser-s4-a1-worklist-authority.py || status=$?
@@ -82,6 +82,34 @@ jobs:
             FAILED_BROWSER_SCRIPT='v3/browser-s4-a1-worklist-authority.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Publish machine-readable A1 browser provenance
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -u
+          error='artifacts/browser-s4-a1-worklist-authority-error.json'
+          report='artifacts/browser-s4-a1-worklist-authority.json'
+          if [[ -f "$error" ]]; then
+            phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
+            type="$(node -e "const p=require('./$error');process.stdout.write(String(p.type||'Error'))")"
+            description="failure ${phase} ${type}"
+            state=failure
+          elif [[ -f "$report" ]]; then
+            phase=complete
+            description='7/7 exact-target browser contract green'
+            state=success
+          else
+            phase=no-artifact
+            description='browser evidence artifact missing'
+            state=error
+          fi
+          description="${description:0:140}"
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a1-worklist-authority.py?phase=${phase}"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a1-browser' -f description="$description" -f target_url="$target" >/dev/null || true
+          echo "ICTC_S4_A1_BROWSER_PHASE=$phase"
       - name: Stop DEMO runtime
         if: always()
         shell: bash
