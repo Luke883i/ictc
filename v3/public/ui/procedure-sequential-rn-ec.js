@@ -1,16 +1,20 @@
 import { $, compactList, ensureSequence } from './procedure-sequential-dom.js';
 
-export function renderRn(){
-  const host=$('#monitoringView');
-  if(!host||host.hidden)return;
-  ensureSequence(host,'monitoring');
-  compactList($('#missionsList'),'.mission-card',12,'Altri monitoraggi');
-  compactList($('#catalogList'),'.catalog-card',16,'Altre fonti');
+let targetResolverBound=false;
+function attr(root,name,value){return root?.querySelector(`[${name}="${CSS.escape(String(value))}"]`)||null;}
+function clearActiveTargets(){for(const node of document.querySelectorAll('[data-work-target-active]')){delete node.dataset.workTargetActive;delete node.dataset.workTargetSubjectId;delete node.dataset.workTargetAction;}}
+function focusNode(node){if(!node)return;node.scrollIntoView({block:'center',behavior:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'});if(!node.hasAttribute('tabindex')&&!node.matches('button,a,input,select,textarea,summary'))node.tabIndex=-1;node.focus({preventScroll:true});}
+function resolve(detail,record,control,resolution='record-action'){if(!record)return false;clearActiveTargets();record.dataset.workTargetActive='true';record.dataset.workTargetSubjectId=detail.targetRef.subjectId;record.dataset.workTargetAction=detail.targetRef.intendedAction;focusNode(control||record);detail.resolved=true;detail.resolution=control?resolution:'record-intent';detail.recordId=detail.targetRef.subjectId;detail.hasActionControl=Boolean(control);return true;}
+function resolveMonitoring(detail){const ref=detail.targetRef,id=ref.subjectId;if(ref.subjectType==='mission'){const control=attr(document,'data-open-plan',id)||attr(document,'data-id',id)?.closest('.mission-card')?.querySelector('[data-seq-owner-monitor="open"]');return resolve(detail,control?.closest('.mission-card'),control);}if(ref.subjectType==='source'){const control=attr(document,'data-open-source',id);return resolve(detail,control?.closest('.catalog-card'),control);}if(ref.subjectType==='run'&&ref.context?.missionId){const control=attr(document,'data-open-plan',ref.context.missionId)||attr(document,'data-id',ref.context.missionId)?.closest('.mission-card')?.querySelector('[data-seq-owner-monitor="open"]');return resolve(detail,control?.closest('.mission-card'),control,'typed-context-record');}return false;}
+function resolveIncident(detail){const ref=detail.targetRef,control=attr(document,'data-open-incident',ref.subjectId);return resolve(detail,control?.closest('.incident-card'),control);}
+function bindTargetResolver(){if(targetResolverBound)return;targetResolverBound=true;document.addEventListener('ictc:work-target-request',event=>{const detail=event.detail,ref=detail?.targetRef;if(!ref||detail.resolved)return;if(ref.procedureId==='monitoring')resolveMonitoring(detail);else if(ref.procedureId==='incidents')resolveIncident(detail);});}
+function ensureAttentionSlot(host,id){
+  if(!host)return null;const frame=host.querySelector(':scope > .procedure-frame');if(!frame)return null;
+  let slot=host.querySelector(`:scope > [data-procedure-attention-slot="${id}"]`),changed=false;
+  if(!slot){slot=document.createElement('div');slot.dataset.procedureAttentionSlot=id;slot.dataset.attentionSlotOwner='procedure-sequential-rn-ec.js';slot.dataset.informationRole='attention';changed=true;}
+  if(frame.nextElementSibling!==slot){frame.after(slot);changed=true;}
+  if(changed)document.dispatchEvent(new CustomEvent('ictc:attention-slot-ready',{detail:{procedureId:id,owner:slot.dataset.attentionSlotOwner}}));
+  return slot;
 }
-
-export function renderEc(){
-  const host=$('#incidentsView');
-  if(!host||host.hidden)return;
-  ensureSequence(host,'incidents');
-  compactList($('#incidentList'),'.incident-card',12,'Altri fascicoli evento');
-}
+export function renderRn(){const host=$('#monitoringView');if(!host||host.hidden)return;bindTargetResolver();ensureAttentionSlot(host,'monitoring');ensureSequence(host,'monitoring');compactList($('#missionsList'),'.mission-card',12,'Altri monitoraggi');compactList($('#catalogList'),'.catalog-card',16,'Altre fonti');}
+export function renderEc(){const host=$('#incidentsView');if(!host||host.hidden)return;bindTargetResolver();ensureAttentionSlot(host,'incidents');ensureSequence(host,'incidents');compactList($('#incidentList'),'.incident-card',12,'Altri fascicoli evento');}
