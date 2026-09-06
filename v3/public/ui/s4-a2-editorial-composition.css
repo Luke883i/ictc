@@ -1,0 +1,10 @@
+/* S4-A2: legacy orientation is retired declaratively; no late DOM move/hide owns hierarchy. */
+#monitoringView > .workspace-return,
+#incidentsView > .workspace-return,
+#monitoringView > .hero > .hero-copy,
+#incidentsView > .hero > .hero-copy,
+#grcWorkspace > .grc-head > .workspace-return,
+#grcWorkspace > .grc-head > div { display:none !important; }
+#monitoringView > .hero,
+#incidentsView > .hero { display:block; margin:0; padding:0; background:none; border:0; box-shadow:none; }
+#grcWorkspace > .grc-head { min-height:0; }
