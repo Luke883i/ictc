@@ -74,7 +74,9 @@ jobs:
             error='artifacts/browser-convergent-kernel-error.json'
             if [[ -f "$error" ]]; then
               phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
-              message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'browser journey failed').replace(/[\r\n]+/g,' '))")"
+              message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'').replace(/[\r\n]+/g,' '))")"
+              trace="$(node -e "const p=require('./$error');const xs=String(p.traceback||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);process.stdout.write(xs.slice(-3).join(' | ').replace(/[\r\n]+/g,' '))")"
+              [[ -n "$message" ]] || message="$trace"
             else
               phase='no-artifact'; message='browser journey failed without structured artifact'
             fi
