@@ -56,13 +56,12 @@ try:
         assert risk_id in cell['riskIds'],cell
         assert any(item.get('riskId')==risk_id for item in after['reviewed'])
 
-        PHASE='ui-risk-analysis-progressive'
+        PHASE='ui-risk-analysis-owner'
         open_risks(page)
-        analysis=page.locator('#grcWorkspace details[data-composition-detail="risk-analysis"]')
+        analysis=page.locator('#grcWorkspace .grc-heat[data-editorial-support="risk-analysis"]')
         expect(analysis).to_have_count(1)
-        expect(analysis).not_to_have_attribute('open','')
-        analysis.locator(':scope > summary').click()
-        expect(analysis).to_have_attribute('open','')
+        expect(analysis).to_be_visible()
+        assert analysis.get_attribute('data-information-role')=='context'
 
         PHASE='ui-grid'
         cells=analysis.locator('.risk-map .risk-cell')
@@ -79,7 +78,7 @@ try:
         expect(page.locator(f'#risk-{risk_id}')).to_have_count(1)
 
         PHASE='aggregate-projections'
-        dims=page.locator('#grcWorkspace details[data-risk-dimensions]')
+        dims=analysis.locator('details[data-risk-dimensions]')
         expect(dims).to_have_count(1)
         if dims.get_attribute('open') is None: dims.locator(':scope > summary').click()
         expect(dims).to_contain_text('Proiezioni aggregate')
@@ -89,7 +88,7 @@ try:
 
         PHASE='bounded-semantics'
         assert not errors,errors
-        payload={'ok':True,'profile':'risk-human-matrix-drilldown+semantic-composition-3.1','riskId':risk_id,'cell':{'likelihood':4,'impact':5},'cells':25,'humanReviewed':True,'riskAnalysisProgressive':True,'aggregateProjection':True,'canonicalProcedureFrame':True,'retiredContextStripAbsent':True,'claimBoundary':'Browser E2E proves projection/drilldown wiring for an explicit human review; it does not establish objective probability, legal applicability, offence classification, control effectiveness or compliance.'}
+        payload={'ok':True,'profile':'risk-human-matrix-drilldown+semantic-composition-3.1+s4-a2-local-context-owner','riskId':risk_id,'cell':{'likelihood':4,'impact':5},'cells':25,'humanReviewed':True,'riskAnalysisOwner':'grc-workspace-3-2.js','aggregateProjection':True,'canonicalProcedureFrame':True,'retiredContextStripAbsent':True,'claimBoundary':'Browser E2E proves projection/drilldown wiring for an explicit human review and owner-bound risk-analysis context; it does not establish objective probability, legal applicability, offence classification, control effectiveness or compliance.'}
         (ART/'browser-risk-drilldown.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
         print('browser-risk-drilldown: complete',flush=True)
         ctx.close(); browser.close()
