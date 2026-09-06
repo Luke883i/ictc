@@ -19,6 +19,7 @@ assert.match(anatomy,/editorialSlot\(host,'advanced-context'\)/);
 assert.match(anatomy,/editorialSlot\(host,'reference'\)/);
 assert.match(helper,/insertAdjacentElement\('afterend',slot\)/,'attention may be inserted only on first construction');
 assert.match(helper,/if\(!slot\)/,'existing attention slot must not be repaired by reparent');
+assert.match(helper,/host\.querySelectorAll\(selector\).*node=>node\.parentElement===host/,'direct-role selector resolution must preserve :scope semantics and reject nested matches');
 assert.match(helper,/editorialOrderValid/);
 assert.match(rn,/RN_EC_EDITORIAL_ORDER/);
 assert.match(grc,/GRC_EDITORIAL_ORDER/);
@@ -34,6 +35,6 @@ const rnDecl=declared(rn,'RN_EC_EDITORIAL_ORDER'),grcDecl=declared(grc,'GRC_EDIT
 for(const id of ['monitoring','incidents'])assert.match(rnDecl,new RegExp(`${id}:Object\\.freeze\\(\\['attention','controls','primary'`));
 for(const id of ['objects','coverage','actions','risks','assurance'])assert.match(grcDecl,new RegExp(`${id}:Object\\.freeze\\(\\['attention','controls','primary'`));
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'S4-A2',baseMainSha:'cfe544fe730aeecf43228e19bd58dbb5e254f8a7',localOwners:owners,metrics:{localOwnerCoverage:'7/7',lateReparentAuthority:0,mutationObserverHierarchyAuthority:0,globalFinalizer:0,visibleDuplicateOrientationCssRetired:true},claimBoundary:'E2 source-contract evidence only; not browser/deployment/human evidence.'};
+const report={ok:true,slice:'S4-A2',baseMainSha:'cfe544fe730aeecf43228e19bd58dbb5e254f8a7',localOwners:owners,metrics:{localOwnerCoverage:'7/7',directRoleSelectorBinding:'direct-only',lateReparentAuthority:0,mutationObserverHierarchyAuthority:0,globalFinalizer:0,visibleDuplicateOrientationCssRetired:true},claimBoundary:'E2 source-contract evidence only; not browser/deployment/human evidence.'};
 writeFileSync(new URL('../artifacts/s4-a2-editorial-composition-contract.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));

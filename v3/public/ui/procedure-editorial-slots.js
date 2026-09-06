@@ -1,7 +1,7 @@
 const SLOT_NAMES=Object.freeze(['attention','controls','primary','advanced-context','reference','evidence','technical','boundary']);
 const AUXILIARY=new Set(['advanced-context','reference','evidence','technical','boundary']);
 const token=value=>String(value||'').trim();
-const direct=(host,selector)=>selector?[...host.children].filter(node=>node.matches?.(selector)):[];
+const direct=(host,selector)=>selector?[...host.querySelectorAll(selector)].filter(node=>node.parentElement===host):[];
 function validOrder(order){return Array.isArray(order)&&order.length===new Set(order).size&&order.every(name=>SLOT_NAMES.includes(name));}
 function createAuxiliary(host,name,owner){const node=document.createElement('div');node.dataset.editorialSlot=name;node.dataset.editorialSlotOwner=owner;node.dataset.informationRole=name==='advanced-context'?'context':name;host.append(node);return node;}
 function attentionSlot(host,procedureId,owner){let slot=host.querySelector(`:scope > [data-procedure-attention-slot="${CSS.escape(procedureId)}"]`);let created=false;if(!slot){const frame=host.querySelector(':scope > .procedure-frame');if(!frame)return{slot:null,created:false};slot=document.createElement('div');slot.dataset.procedureAttentionSlot=procedureId;slot.dataset.attentionSlotOwner=owner;slot.dataset.informationRole='attention';slot.dataset.editorialSlot='attention';slot.dataset.editorialSlotOwner=owner;frame.insertAdjacentElement('afterend',slot);created=true;}else{slot.dataset.editorialSlot='attention';slot.dataset.editorialSlotOwner=owner;slot.dataset.attentionSlotOwner=owner;}return{slot,created};}
