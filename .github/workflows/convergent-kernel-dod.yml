@@ -75,7 +75,7 @@ jobs:
             if [[ -f "$error" ]]; then
               phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
               message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'').replace(/[\r\n]+/g,' '))")"
-              trace="$(node -e "const p=require('./$error');const xs=String(p.traceback||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);process.stdout.write(xs.slice(-3).join(' | ').replace(/[\r\n]+/g,' '))")"
+              trace="$(node -e "const p=require('./$error');const xs=String(p.traceback||'').split(/\r?\n/);let out='';for(let i=1;i<xs.length;i++){const c=xs[i].indexOf('^');if(c>=0){const src=xs[i-1]||'';out=src.slice(Math.max(0,c-42),Math.min(src.length,c+88)).trim();break;}}if(!out)out=xs.map(x=>x.trim()).filter(Boolean).slice(-3).join(' | ');process.stdout.write(out.replace(/[\r\n]+/g,' '))")"
               [[ -n "$message" ]] || message="$trace"
             else
               phase='no-artifact'; message='browser journey failed without structured artifact'
