@@ -32,9 +32,9 @@ def audit(page,code,pid,host):
  RESULTS.append({'code':code,'procedureId':pid,'owner':OWNER[pid],'declaredOrder':order,'actualRoles':direct,'lateHierarchyMutations':mutations,'screenshot':shot.name})
 try:
  with sync_playwright() as p:
-  browser=p.chromium.launch(headless=True,executable_path=os.environ.get('ICTC_CHROMIUM') or None,args=['--no-sandbox']); ctx=browser.new_context(viewport={'width':1440,'height':1000}); page=ctx.new_page()
+  browser=p.chromium.launch(headless=True,executable_path=os.environ.get('ICTC_CHROMIUM') or None,args=['--no-sandbox']); ctx=browser.new_context(viewport={'width':1440,'height':1000}); ctx.add_init_script("localStorage.setItem('ictc-profile','demo')"); page=ctx.new_page()
   page.on('request',lambda r: NETWORK.append({'method':r.method,'url':r.url}) if '/api/' in r.url else None); page.on('requestfailed',lambda r: FAILURES.append({'url':r.url,'failure':r.failure})); page.on('pageerror',lambda e: PAGE_ERRORS.append(str(e)))
-  PHASE='bootstrap'; page.goto(BASE,wait_until='domcontentloaded'); page.evaluate("localStorage.setItem('ictc-profile','demo')"); page.reload(wait_until='domcontentloaded'); page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'",timeout=30000)
+  PHASE='bootstrap'; page.goto(BASE,wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'",timeout=30000)
   PHASE='identity'; ident_res=ctx.request.get(f'{BASE}/api/admin/identity',headers={'X-ICTC-Role':'admin'}); assert ident_res.ok, f'identity status {ident_res.status}'; identity=ident_res.json(); runtime_identity=identity.get('buildIdentity') or {}; build=runtime_identity.get('build') or {}; assert not EXPECTED_SHA or build.get('sha')==EXPECTED_SHA,(build,EXPECTED_SHA); assert not EXPECTED_SHA or build.get('exact') is True,build; assert not EXPECTED_SHA or build.get('dirty') is False,build
   for code,pid,host in PROCEDURES: audit(page,code,pid,host)
   PHASE='network'; writes=[x for x in NETWORK if x['method'] not in ('GET','HEAD','OPTIONS')]; assert writes==[],writes; assert FAILURES==[],FAILURES; assert PAGE_ERRORS==[],PAGE_ERRORS
