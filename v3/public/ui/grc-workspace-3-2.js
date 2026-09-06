@@ -4,7 +4,7 @@ import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from '.
 const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
 export const GRC_EDITORIAL_ORDER=Object.freeze({
   objects:Object.freeze(['attention','controls','primary','advanced-context','reference']),
-  coverage:Object.freeze(['attention','controls','primary','reference','advanced-context']),
+  coverage:Object.freeze(['attention','controls','primary','advanced-context','reference']),
   actions:Object.freeze(['attention','controls','primary','advanced-context','reference']),
   risks:Object.freeze(['attention','controls','primary','advanced-context','reference']),
   assurance:Object.freeze(['attention','controls','primary','advanced-context','reference'])
