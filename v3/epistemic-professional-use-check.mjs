@@ -49,8 +49,9 @@ for (const token of ["demo['projectionAuthority']", "'demo-suite-2-2'", "demo['p
 }
 
 assert.ok(browser.includes('wait_canonical_evidence_entry'), 'professional browser must synchronize on the canonical Evidence entry');
-assert.ok(browser.includes('details[data-proof-workspace=\\"epistemic-investigation\\"]') || browser.includes('details[data-proof-workspace="epistemic-investigation"]'), 'professional browser must bind EP-01 to the canonical first Evidence disclosure');
-assert.ok(browser.includes('firstElementChild===entry'), 'professional browser must require EP-01 as first Evidence disclosure');
+assert.ok(browser.includes('details[data-proof-workspace=\\"epistemic-investigation\\"]') || browser.includes('details[data-proof-workspace="epistemic-investigation"]'), 'professional browser must bind EP-01 to the canonical progressive Evidence disclosure');
+assert.ok(browser.includes("root.dataset.proofReadingOrder===expected") && browser.includes("PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'"), 'professional browser must require A3 evidence-meaning-first Proof order before entering EP-01');
+assert.ok(!browser.includes('firstElementChild===entry'), 'professional browser must not restore the retired first-row EP-01 authority');
 assert.match(browser, /#proofView #epistemicMetaCard['"]?\)\.count\(\)\s*==\s*0/, 'professional browser must reject duplicate Proof-local meta entry');
 assert.ok(!browser.includes('#epistemicMetaCard [data-service="epistemic"]'), 'professional browser must not navigate through retired duplicate meta entry');
 assert.ok(browser.includes("'duplicateProofMetaEntry':False") || browser.includes("'duplicateProofMetaEntry': False"), 'professional evidence must declare duplicate Proof entry absent');
@@ -59,4 +60,4 @@ assert.ok(lensUi.includes('currentThread') && lensUi.includes('data-epistemic-ba
 assert.ok(lattice.includes("schemaVersion:'1.3.0'") && lattice.includes('epistemicProfessionalDiagnostics') && lattice.includes('rnSemanticAtoms'), 'lattice projection v1.3 must expose diagnostics plus bounded RN semantic atoms without changing decision authority');
 assert.ok(browser.includes('sameProjectionDigestAcrossLenses') && browser.includes('demoProjectionAuthority'), 'browser must prove lens digest conservation and Suite 2.2 projection authority');
 
-console.log('epistemic-professional-use-check: ok (12 bounded lenses / Proof first-row EP-01 authority / EP-01 v1.3 / deterministic lens mount / Suite 2.2 synthetic projection / screenshot matrix contract)');
+console.log('epistemic-professional-use-check: ok (12 bounded lenses / A3 progressive EP-01 authority after evidence meaning / EP-01 v1.3 / deterministic lens mount / Suite 2.2 synthetic projection / screenshot matrix contract)');
