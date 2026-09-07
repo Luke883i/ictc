@@ -27,7 +27,7 @@ def open_process(page,code):
  card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click(); page.wait_for_timeout(160)
 
 def visible_orientation_count(page,selector):
- return page.locator(selector).evaluate("""root=>[...root.querySelectorAll('.procedure-frame,.hero')].filter(e=>{const s=getComputedStyle(e);return !e.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0}).length""")
+ return page.locator(selector).evaluate("""root=>[...root.querySelectorAll('.procedure-frame,.hero:not([data-editorial-slot="controls"])')].filter(e=>{const s=getComputedStyle(e);return !e.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0}).length""")
 
 def snapshot(page,name,selector):
  page.wait_for_timeout(40)
