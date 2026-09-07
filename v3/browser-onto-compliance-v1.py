@@ -16,6 +16,7 @@ PROCEDURES=[
  {'code':'AR-01','id':'assurance','root':'#grcWorkspace','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','context':'#grcWorkspace > [data-editorial-slot="advanced-context"]','anatomy':'#grcWorkspace > [data-editorial-slot="advanced-context"] > .procedure-anatomy'}]
 OWNER={'monitoring':'procedure-sequential-rn-ec.js','incidents':'procedure-sequential-rn-ec.js','objects':'grc-workspace-3-2.js','coverage':'grc-workspace-3-2.js','actions':'grc-workspace-3-2.js','risks':'grc-workspace-3-2.js','assurance':'grc-workspace-3-2.js'}
 SCREENSHOT_WIDTHS={390,1280}
+PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
 PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=set()
 
 def anomaly(kind,role,vp,surface,measured,expected): anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})
@@ -33,7 +34,7 @@ def shot(page,role,vp,surface,width):
  safe=re.sub(r'[^a-z0-9_-]+','-',surface.lower()).strip('-');name=f'ux-och-v1-{role}-{vp}-{safe}.png';page.screenshot(path=str(ART/name),full_page=True);screenshots.append(name)
 def visible_columns(page): return page.locator('#procedureHub .procedure-card').evaluate_all("""ns=>{const rs=ns.filter(n=>n.getClientRects().length).map(n=>n.getBoundingClientRect()),xs=[];for(const x of rs.map(r=>r.x).sort((a,b)=>a-b))if(!xs.some(v=>Math.abs(v-x)<3))xs.push(x);return {count:rs.length,columns:xs.length,primaryHeights:ns.filter(n=>n.getClientRects().length).map(n=>n.querySelector('.procedure-primary')?.getBoundingClientRect().height||0)}}""")
 def wait_canonical_evidence_entry(page):
- page.wait_for_function("""()=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&entry&&content.firstElementChild===entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""")
+ page.wait_for_function("""expected=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&root.dataset.proofReadingOrder===expected&&entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""",arg=PROOF_READING_ORDER)
 def open_process(page,code,proc):
  page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click();page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&r.dataset.editorialOwner===x.owner&&r.dataset.editorialOrderValid==='true')}",arg={'root':proc['root'],'owner':OWNER[proc['id']]});frame=page.locator(proc['frame']);expect(frame).to_be_visible();return frame
 
@@ -81,12 +82,19 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
 def audit_proof(page,role,vp,width):
  global PHASE;PHASE=f'{role}-{vp}-proof';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofContent')).to_be_visible();wait_canonical_evidence_entry(page);data=api_json(page,'/api/standard-proof',role);title=(page.locator('#proofTitle').text_content() or '').strip()
  if title!='Evidenze ICTC':anomaly('evidence-title-language',role,vp,'proof',title,'Evidenze ICTC')
- investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]');decisions=page.locator('#proofContent > details[data-proof-domain="decisions"]')
- for name,disclosure in [('epistemic-investigation',investigation),('trace-reconstruction',trace),('decisions',decisions)]:
+ root=page.locator('#proofView');facts=page.locator('#proofContent > .proof-fact-strip');investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]');decisions=page.locator('#proofContent > details[data-proof-domain="decisions"]')
+ if root.get_attribute('data-proof-reading-order')!=PROOF_READING_ORDER:anomaly('evidence-reading-order-marker',role,vp,'proof',root.get_attribute('data-proof-reading-order'),PROOF_READING_ORDER)
+ if facts.count()!=1 or not facts.is_visible():anomaly('evidence-fact-strip',role,vp,'proof',facts.count(),1)
+ elif facts.get_attribute('data-proof-facts')!='non-evaluative':anomaly('evidence-fact-grammar',role,vp,'proof',facts.get_attribute('data-proof-facts'),'non-evaluative')
+ for name,disclosure in [('epistemic-investigation',investigation),('trace-reconstruction',trace)]:
   if disclosure.count()!=1:anomaly('evidence-workspace-owner-count',role,vp,'proof',{'workspace':name,'count':disclosure.count()},{'workspace':name,'count':1})
-  elif disclosure.get_attribute('open') is not None:anomaly('evidence-workspace-open-by-default',role,vp,'proof',name,'collapsed')
- order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')")
- if order[:3]!=['epistemic-investigation','trace-reconstruction','decisions']:anomaly('evidence-workspace-order',role,vp,'proof',order[:3],['epistemic-investigation','trace-reconstruction','decisions'])
+  elif disclosure.get_attribute('open') is not None:anomaly('evidence-technical-open-by-default',role,vp,'proof',name,'collapsed')
+ if decisions.count()!=1:anomaly('evidence-workspace-owner-count',role,vp,'proof',{'workspace':'decisions','count':decisions.count()},{'workspace':'decisions','count':1})
+ elif decisions.get_attribute('open') is None:anomaly('evidence-decisions-not-frontstage',role,vp,'proof','collapsed','open')
+ expected_order=['facts','decisions','evidence-basis','trace-reconstruction','epistemic-investigation','external','integrity','interpretation','export']
+ order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null)).filter(Boolean)""")
+ projected=[x for x in order if x in expected_order]
+ if projected!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',projected,expected_order)
  reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]')
  if reading.count()!=1:anomaly('evidence-progressive-reading-missing',role,vp,'proof',reading.count(),1)
  else:
@@ -142,7 +150,7 @@ try:
     no_overflow(page,role,vp,'processes');one_h1(page,role,vp,'processes');shot(page,role,vp,'processes',width)
     for proc in PROCEDURES:audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
     audit_proof(page,role,vp,width);audit_ep(page,role,vp,width,list(registry.keys())+['epistemic-lattice'],revision);ctx.close()
-  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a2-owner-declared-editorial-slots-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'responsive-matrix-3-2-1','proofHierarchy':'epistemic>trace>decisions-collapsed','editorialHierarchy':'attention>controls>primary>advanced-context>reference','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
+  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a3-specialized-local-closure-runtime-audit','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'responsive-matrix-3-2-1','proofHierarchy':PROOF_READING_ORDER,'editorialHierarchy':'attention>controls>primary>advanced-context>reference','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
   if anomalies:
    for x in list(unique.values())[:40]:print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
    first=list(unique.values())[0];raise AssertionError(f"onto-compliance visual audit found {len(anomalies)} observations / {len(unique)} unique signatures; first={first['kind']}:{first['surface']}:{first['role']}:{first['viewport']}")

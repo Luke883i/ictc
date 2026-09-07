@@ -13,6 +13,7 @@ LOG = ART / 'browser-epistemic-professional-demo-server.log'
 PROC = None
 LENSES = ['compliance-lead','internal-auditor','dpo-privacy','security-manager','risk-manager','control-owner','assurance-reviewer','legal-231-reviewer','it-operations','supplier-procurement','quality-manager','executive-sme']
 EXPECTED_MODES = {'compliance-lead':'explore','internal-auditor':'flat','dpo-privacy':'explore','security-manager':'graph','risk-manager':'explore','control-owner':'graph','assurance-reviewer':'explore','legal-231-reviewer':'flat','it-operations':'graph','supplier-procurement':'explore','quality-manager':'explore','executive-sme':'explore'}
+PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
 SHOTS = []
 
 
@@ -81,10 +82,9 @@ def stop_server(log):
 
 
 def wait_canonical_evidence_entry(page):
-    page.wait_for_function("""()=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&entry&&content.firstElementChild===entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""")
+    page.wait_for_function("""expected=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&root.dataset.proofReadingOrder===expected&&entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""", arg=PROOF_READING_ORDER)
     investigation = page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]')
     expect(investigation).to_have_count(1)
-    assert investigation.evaluate('e=>e.parentElement?.firstElementChild===e')
     assert page.locator('#proofView #epistemicMetaCard').count() == 0
     return investigation
 
@@ -117,6 +117,15 @@ def open_epistemic(page, phase_prefix='open-epistemic'):
     expect(page.locator('#epistemicLens option')).to_have_count(12, timeout=20000)
     expect(page.locator('#epistemicLens')).to_be_enabled(timeout=20000)
     no_overflow(page)
+
+
+def open_technical_modes(page):
+    detail=page.locator('#epistemicView details[data-epistemic-a3="technical-modes"]')
+    expect(detail).to_be_visible()
+    if detail.get_attribute('open') is None:
+        detail.locator(':scope > summary').click()
+    expect(detail).to_have_attribute('open','')
+    return detail
 
 
 def fail(error):
@@ -217,6 +226,8 @@ try:
         expect(page.locator('.epistemic-detail')).to_be_visible()
         shot(page, 'epistemic-use-atom-basis.png')
 
+        PHASE = 'technical-disclosure'
+        open_technical_modes(page)
         PHASE = 'flat-raw'
         page.locator('[data-epistemic-mode="flat"]').click()
         expect(page.locator('.epistemic-table')).to_be_visible()
@@ -289,7 +300,7 @@ try:
         assert not errors, errors
         out = {
             'ok':True,
-            'profile':'epistemic-professional-demo-suite-2-2+ui-finetuning-3.4',
+            'profile':'epistemic-professional-demo-suite-2-2+s4-a3-specialized-local-closure',
             'epistemicSchemaVersion':'1.3.0',
             'businessProcedures':7,
             'professionalLenses':len(LENSES),
@@ -300,7 +311,8 @@ try:
             'demoProjectionAuthority':demo['projectionAuthority'],
             'demoStateDigest':demo['stateDigest'],
             'rnSemanticAtoms':lattice['projection']['rnSemanticAtoms'],
-            'metaEntrySurface':'Evidenze ICTC / first-row canonical disclosure',
+            'metaEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning',
+            'proofReadingOrder':PROOF_READING_ORDER,
             'duplicateProofMetaEntry':False,
             'screenshots':SHOTS,
             'screenshotCount':len(SHOTS),

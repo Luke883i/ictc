@@ -6,12 +6,13 @@ ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4811').rstrip('/')
 VIEWPORTS=[('mobile',390,844),('tablet',768,1024),('desktop',1280,900),('wide',1600,1000)]
 ROLES=['admin','auditor']
+PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
 PHASE='init'; anomalies=[]
 
 def open_epistemic(page):
     page.locator('.service-nav [data-service="proof"]').click()
     expect(page.locator('#proofView')).to_be_visible()
-    page.wait_for_function("""()=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&entry&&content.firstElementChild===entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""")
+    page.wait_for_function("""expected=>{const root=document.querySelector('#proofView'),content=document.querySelector('#proofContent'),entry=content?.querySelector(':scope > details[data-proof-workspace="epistemic-investigation"]');return !!(root&&root.offsetParent!==null&&root.dataset.localCompositionOwner==='proof-workspace-3-2.js'&&root.dataset.proofReadingOrder===expected&&entry&&!root.querySelector('#epistemicMetaCard')&&entry.querySelector('[data-service="epistemic"]'));}""",arg=PROOF_READING_ORDER)
     investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]')
     expect(investigation).to_have_count(1)
     assert investigation.get_attribute('open') is None
@@ -58,7 +59,7 @@ try:
                     anomalies.append(anomaly)
                     raise AssertionError(f"overflow={metric['delta']};offender={first['selector']};right={first.get('overRight',0)};left={first.get('overLeft',0)};inner={metric['innerWidth']};html={metric['html']};body={metric['body']}")
                 ctx.close()
-        out={'ok':True,'profile':'epistemic-overflow-causal-guard-3.2+ui-finetuning-3.4','roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'entryAuthority':'proof-workspace-3-2','duplicateProofMetaEntry':False,'anomalyCount':0}
+        out={'ok':True,'profile':'epistemic-overflow-causal-guard-3.2+s4-a3-specialized-local-closure','roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'entryAuthority':'proof-workspace-3-2-progressive-after-evidence-meaning','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'anomalyCount':0}
         (ART/'browser-epistemic-overflow-probe.json').write_text(json.dumps(out,indent=2),encoding='utf8')
         print('browser-epistemic-overflow-probe: complete anomalies=0',flush=True)
         browser.close()
