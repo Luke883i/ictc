@@ -73,7 +73,9 @@ def assert_meaning_first(page):
     facts=page.locator('#proofContent > .proof-fact-strip');decisions=page.locator('#proofContent > details[data-proof-domain="decisions"]');standards=page.locator('#proofContent > details[data-proof-domain="evidence-basis"]');trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]');investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]')
     expect(facts).to_have_count(1);expect(facts).to_be_visible();assert facts.get_attribute('data-proof-facts')=='non-evaluative'
     for node in [decisions,standards,trace,investigation,reading]:expect(node).to_have_count(1)
-    expect(decisions).to_have_attribute('open','');for node in [standards,trace,investigation,reading]:expect(node).not_to_have_attribute('open','')
+    expect(decisions).to_have_attribute('open','')
+    for node in [standards,trace,investigation,reading]:
+        expect(node).not_to_have_attribute('open','')
     expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico');expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro');expect(decisions.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità');expect(standards.locator(':scope > summary')).to_contain_text('Evidenze e basi');expect(reading.locator(':scope > summary b')).to_have_text('Criteri di lettura e sintesi tecnica')
     expected=['facts','decisions','evidence-basis','trace-reconstruction','epistemic-investigation','external','integrity','interpretation','export'];order=direct_order(page);assert [x for x in order if x in expected]==expected,order
     expect(page.locator('#proofMethodTitle')).to_be_hidden();expect(page.locator('#traceExplorer')).to_be_hidden();expect(investigation.locator('[data-service="epistemic"]')).to_be_hidden()
