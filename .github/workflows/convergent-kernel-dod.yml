@@ -71,8 +71,21 @@ jobs:
           python -u v3/browser-convergent-kernel.py || status=$?
           if [[ "$status" -ne 0 ]]; then
             FAILED_BROWSER_SCRIPT='v3/browser-convergent-kernel.py' node scripts/browser-failure-provenance.mjs || true
+            error='artifacts/browser-convergent-kernel-error.json'
+            if [[ -f "$error" ]]; then
+              phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
+              message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'').replace(/[\r\n]+/g,' '))")"
+              trace="$(node -e "const p=require('./$error');const xs=String(p.traceback||'').split(/\r?\n/);let out='';for(let i=1;i<xs.length;i++){const c=xs[i].indexOf('^');if(c>=0){const src=xs[i-1]||'';out=src.slice(Math.max(0,c-42),Math.min(src.length,c+88)).trim();break;}}if(!out)out=xs.map(x=>x.trim()).filter(Boolean).slice(-3).join(' | ');process.stdout.write(out.replace(/[\r\n]+/g,' '))")"
+              [[ -n "$message" ]] || message="$trace"
+            else
+              phase='no-artifact'; message='browser journey failed without structured artifact'
+            fi
+            target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-convergent-kernel.py?phase=${phase}"
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state=failure -f context='ictc/convergent-kernel-browser' -f description="${phase}: ${message:0:110}" -f target_url="$target" >/dev/null || true
             exit "$status"
           fi
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-convergent-kernel.py?phase=complete"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state=success -f context='ictc/convergent-kernel-browser' -f description='seven-procedure convergent browser journey passed' -f target_url="$target" >/dev/null || true
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
