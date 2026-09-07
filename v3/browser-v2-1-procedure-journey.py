@@ -8,6 +8,7 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'assurance'}
+PROOF_READING_ORDER = 'facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
 
 def fail(e):
     payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
@@ -78,6 +79,14 @@ def select_user(locator, value, phase):
     expect(locator).to_be_visible()
     expect(locator).to_be_editable()
     locator.select_option(value)
+
+def open_technical_modes(page):
+    detail = page.locator('#epistemicView details[data-epistemic-a3="technical-modes"]')
+    expect(detail).to_be_visible()
+    if detail.get_attribute('open') is None:
+        detail.locator(':scope > summary').click()
+    expect(detail).to_have_attribute('open', '')
+    return detail
 
 def submit_grc(page, code, pid, fill, needle):
     global PHASE
@@ -249,9 +258,9 @@ try:
         expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
         page.locator('.service-nav [data-service="proof"]').click()
         expect(page.locator('#proofView')).to_be_visible()
+        page.wait_for_function('expected=>document.querySelector("#proofView")?.dataset.proofReadingOrder===expected', arg=PROOF_READING_ORDER)
         investigation = page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]')
         expect(investigation).to_have_count(1)
-        assert investigation.evaluate('e=>e.parentElement?.firstElementChild===e')
         expect(page.locator('#proofView #epistemicMetaCard')).to_have_count(0)
         assert investigation.get_attribute('open') is None
         investigation.locator(':scope > summary').click()
@@ -286,9 +295,17 @@ try:
 
         PHASE = 'same-digest-expert-modes'
         digest_before = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
+        open_technical_modes(page)
         page.locator('[data-epistemic-mode="flat"]').click(); expect(page.locator('.epistemic-table')).to_be_visible()
         digest_flat = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
+        open_technical_modes(page)
         page.locator('[data-epistemic-mode="graph"]').click(); expect(page.locator('.epistemic-graph-canvas')).to_be_visible()
+        graph = page.locator('.epistemic-graph')
+        focus = graph.get_attribute('data-epistemic-graph-focus') or ''
+        nodes = int(graph.get_attribute('data-epistemic-graph-node-count') or '0')
+        edges = int(graph.get_attribute('data-epistemic-graph-edge-count') or '0')
+        assert focus and 1 <= nodes <= 24 and 0 <= edges <= 48, (focus,nodes,edges)
+        assert page.locator(f'.epistemic-node-list [data-epistemic-node="{focus}"]').count() == 1
         digest_graph = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
         assert digest_before == digest_flat == digest_graph
         no_overflow(page)
@@ -325,13 +342,14 @@ try:
 
         assert not errors, errors
         out = {
-            'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1+ui-finetuning-3.4',
+            'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1+s4-a3',
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'epistemicEntrySurface':'Evidenze ICTC / first-row canonical disclosure','duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
+            'epistemicEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
             'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'focusedGraphBounded':True,'focusedGraphLimits':{'nodes':24,'edges':48},
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
             'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+page-local-progressive-epistemic-exploration'
