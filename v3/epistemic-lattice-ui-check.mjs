@@ -12,7 +12,7 @@ assert.ok(ui.includes("if(!allowed()){clearProtectedState();render();return;}"),
 assert.equal(ui.includes("card.dataset.metaProcedure='epistemic-lattice'"),false,'lattice must not recreate the retired EP-01 process meta-card');
 assert.ok(ui.includes("function ensureProcessEntry(){const card=$('#epistemicMetaCard');card?.remove();}"),'lattice must retire any legacy EP-01 meta-card idempotently');
 assert.match(router,/\bepistemic\s*:\s*['"]#epistemicView['"]/,'router missing epistemic surface');
-assert.ok(proofWorkspace.includes('data-proof-workspace="epistemic-investigation"')&&proofWorkspace.includes('data-service="epistemic"')&&proofWorkspace.includes('content.prepend(investigation)'),'Proof workspace must own the canonical first-row EP-01 entry');
+assert.ok(proofWorkspace.includes('data-proof-workspace="epistemic-investigation"')&&proofWorkspace.includes('data-service="epistemic"')&&proofWorkspace.includes("root.dataset.proofReadingOrder='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'")&&proofWorkspace.includes('ordered(content,[factStrip,decisions,standards,trace,investigation'),'Proof workspace must own the canonical progressive EP-01 entry after fact/decision/evidence meaning');
 assert.ok(tools.includes("id:'epistemic'")||/id\s*:\s*['"]epistemic['"]/.test(tools),'command palette missing epistemic navigation');
 assert.ok(tools.includes("['admin','auditor'].includes(state.role)")||/\[['"]admin['"],['"]auditor['"]\]\.includes\(state\.role\)/.test(tools),'command palette EP-01 must be role bounded');
 assertActiveInstallers(active,['installEpistemicLattice'],{label:'EP-01 active experience'});
@@ -20,4 +20,4 @@ assert.ok(styles.includes("@import url('./epistemic-lattice.css');")&&styles.inc
 for(const token of ['.epistemic-table','.epistemic-graph-canvas','.epistemic-node-list'])assert.ok(baseCss.includes(token),`EP-01 base css missing ${token}`);
 for(const token of ['.epistemic-level-nav','.epistemic-cluster-grid','.epistemic-atom-readable','.epistemic-proposed-readings'])assert.ok(journeyCss.includes(token),`EP-01 exploration css missing ${token}`);
 assert.equal(ui.includes('procedureRegistry.procedures.push'),false,'EP-01 must not append itself to business procedures');
-console.log('epistemic-lattice-ui-check: ok (Proof-owned entry + same-digest expert modes + progressive exploration + revision convergence + semantic route/install contracts)');
+console.log('epistemic-lattice-ui-check: ok (Proof-owned progressive entry + same-digest expert modes + progressive exploration + revision convergence + semantic route/install contracts)');
