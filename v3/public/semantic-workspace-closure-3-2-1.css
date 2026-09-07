@@ -21,6 +21,11 @@ html[data-native-semantic-lattice="3.2.0"] #proofView .proof-head :is(.eyebrow,.
 html[data-native-semantic-lattice="3.2.0"] #proofView #proofTitle{margin:0 0 .12rem!important;font-size:clamp(1.45rem,2.2vw,1.78rem)!important;line-height:1.08;color:var(--color-text)!important;letter-spacing:-.02em}
 html[data-native-semantic-lattice="3.2.0"] #proofView .proof-head #proofTitle+p{max-width:76ch!important;margin:0!important;color:var(--color-muted)!important;font-size:.88rem!important;line-height:1.42!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent{display:grid;gap:.45rem!important}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip{display:flex;flex-wrap:wrap;gap:.35rem;margin:0!important;padding:.45rem .55rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface-subtle)}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article{display:grid;grid-template-columns:auto auto;align-items:baseline;gap:.15rem .4rem;min-width:min(100%,220px);padding:.2rem .35rem;background:transparent;border:0;box-shadow:none}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article span{font-size:.74rem;color:var(--color-muted)}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article b{font-size:.9rem;line-height:1.2;color:var(--color-text)}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article small{grid-column:1/-1;font-size:.7rem;line-height:1.3;color:var(--color-muted)}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section{margin:0!important;border:1px solid var(--color-border);border-radius:14px;background:#fff;box-shadow:none}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section[data-proof-domain="decisions"]{border-color:var(--color-border)!important;box-shadow:none!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary{min-height:46px!important;padding:.62rem .8rem!important;cursor:pointer}
@@ -31,8 +36,7 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-work
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-workspace="trace-reconstruction"] #traceExplorer>.trace-head{margin-top:0!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-section-body{padding:.75rem .9rem!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-workspace-interpretation{background:var(--color-surface-subtle)}
-html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-snapshot{grid-template-columns:repeat(4,minmax(0,1fr))}
-@media(max-width:1099px){html[data-native-semantic-lattice="3.2.0"] #procedureHub{grid-template-columns:repeat(2,minmax(0,1fr))!important}html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-snapshot{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub{grid-template-columns:1fr!important;grid-auto-rows:auto!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:auto!important;min-height:0!important;max-width:100%!important;padding:.9rem!important}html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-value,html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-boundary{max-width:100%}}
-@media(max-width:390px){html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-snapshot{grid-template-columns:1fr}}
+@media(max-width:1099px){html[data-native-semantic-lattice="3.2.0"] #procedureHub{grid-template-columns:repeat(2,minmax(0,1fr))!important}html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article{min-width:min(100%,180px)}}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub{grid-template-columns:1fr!important;grid-auto-rows:auto!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-procedure-frame-variant="matrix"]{height:auto!important;min-height:0!important;max-width:100%!important;padding:.9rem!important}html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-value,html[data-native-semantic-lattice="3.2.0"] .procedure-frame .procedure-boundary{max-width:100%!important}}
+@media(max-width:390px){html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip{display:grid;grid-template-columns:1fr}}
 @media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"] :is(#processesView .processes-head,#proofView .proof-head){border-color:CanvasText!important;box-shadow:none!important}}
