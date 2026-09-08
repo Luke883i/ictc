@@ -50,6 +50,10 @@ def run_single_failure(browser,key):
     expect(dialog).to_have_attribute(f'data-admin-slice-{key}','error')
     for other in SLICES:
         if other!=key: expect(dialog).to_have_attribute(f'data-admin-slice-{other}','ready')
+    owner_view={'readiness':'overview','usage':'ai','users':'identity','identity':'identity'}[key]
+    PHASE=f'{key}-local-error-visible'
+    dialog.locator(f'[data-admin-nav="{owner_view}"]').click()
+    expect(dialog.locator(f'[data-admin-view="{owner_view}"]')).to_be_visible()
     error=dialog.locator(f'[data-admin-slice-error="{key}"]'); expect(error).to_be_visible(); expect(error.get_by_role('button',name='Riprova')).to_be_visible()
     PHASE=f'{key}-retry'
     error.get_by_role('button',name='Riprova').click()
