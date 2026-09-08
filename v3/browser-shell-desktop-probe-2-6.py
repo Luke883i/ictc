@@ -2,6 +2,10 @@ import os
 from playwright.sync_api import expect,sync_playwright
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PROBE=os.environ.get('ICTC_DESKTOP_PROBE','nav')
+def footer_effect(page):
+    metric=page.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter'),main=document.querySelector('main');if(!f||!main)return{missing:true};const fr=f.getBoundingClientRect(),mr=main.getBoundingClientRect(),visible=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'},controls=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(visible),overlaps=controls.filter(e=>{const r=e.getBoundingClientRect();return Math.max(0,Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top))*Math.max(0,Math.min(r.right,fr.right)-Math.max(r.left,fr.left))>0}).length;return{missing:false,footerTopDoc:fr.top+scrollY,mainBottomDoc:mr.bottom+scrollY,footerHeight:fr.height,overlaps}}""")
+    assert not metric.get('missing') and metric['footerHeight']>0 and metric['footerTopDoc']>=metric['mainBottomDoc']-1 and metric['overlaps']==0,metric
+    return metric
 with sync_playwright() as pw:
     launch={'headless':True,'args':['--no-sandbox']}
     if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
@@ -13,6 +17,6 @@ with sync_playwright() as pw:
     elif PROBE=='profile':
         menu=page.locator('#stableProfileMenu');expect(menu).to_be_visible();expect(menu).to_contain_text('Amministratore');expect(menu).to_contain_text('Ruolo attivo')
     elif PROBE=='footer':
-        footer=page.locator('#stableLegalFooter');expect(footer).to_be_visible();metric=footer.evaluate("e=>({pos:getComputedStyle(e).position,bottom:getComputedStyle(e).bottom,h:e.getBoundingClientRect().height,pad:parseFloat(getComputedStyle(document.body).paddingBottom)||0,z:getComputedStyle(e).zIndex})");assert metric['pos']=='fixed' and metric['bottom']=='0px' and metric['pad']>=metric['h']-1,metric
+        footer=page.locator('#stableLegalFooter');expect(footer).to_be_visible();footer_effect(page)
     else: raise SystemExit(f'unknown probe {PROBE}')
     print({'ok':True,'probe':PROBE});ctx.close();browser.close()
