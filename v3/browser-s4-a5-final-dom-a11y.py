@@ -74,6 +74,13 @@ def wait_current_home(page, role):
     RESULTS.append({'oracle': 'current-final-dom-owner', 'role': role, 'homeTitle': headings.first.inner_text().strip(), 'homeWorkQueue': priorities.get_attribute('data-home-work-queue')})
 
 
+def wait_processes_ready(page):
+    expect(page.locator('#processesView')).to_be_visible()
+    cards = page.locator('#procedureHub .procedure-card')
+    expect(cards).to_have_count(7)
+    expect(page.locator('#procedureHub .procedure-card footer .primary').first).to_be_visible()
+
+
 def reduced_motion(browser):
     phase('reduced-motion-context')
     ctx = browser.new_context(viewport={'width': 1280, 'height': 850}, reduced_motion='reduce')
@@ -106,7 +113,7 @@ def run_viewport(browser, width, height, label):
     phase(f'{label}-process-nav')
     page.locator('.service-nav [data-service="processes"]').click()
     phase(f'{label}-process-count')
-    expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+    wait_processes_ready(page)
     phase(f'{label}-process-reflow')
     no_overflow(page, f'{label}:processes')
     phase(f'{label}-proof-nav')
@@ -168,7 +175,7 @@ try:
         phase('desktop-process-nav')
         page.locator('.service-nav [data-service="processes"]').click()
         phase('desktop-process-count')
-        expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
+        wait_processes_ready(page)
         phase('desktop-process-targets')
         target_height(page, '#procedureHub .procedure-card footer .primary:visible', 'desktop:procedure-primary')
         phase('desktop-process-reflow')
