@@ -6,13 +6,16 @@ const [tokens,chrome,shell,native,current,design]=await Promise.all([
 const baseline=Object.freeze({tokens,chrome,shell,native,current,design});
 const tokenNames=['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-end','--chrome-on-dark','--chrome-control-bg','--chrome-control-border','--chrome-active-bg','--chrome-active-text','--chrome-focus'];
 const count=(text,needle)=>text.split(needle).length-1;
+const controlRule=css=>css.match(/\.topbar :where\(\.service-nav button,[^{]+\)\{([^}]*)\}/)?.[1]||'';
+const paletteOnly=css=>{const rule=controlRule(css);return Boolean(rule)&&!/(?:^|;)\s*(?:min-height|height|padding(?:-[^:]*)?|border-radius|box-sizing)\s*:/m.test(rule);};
 const checks=Object.freeze([
   ...tokenNames.map(token=>({id:`token:${token}`,test:s=>count(s.tokens,`${token}:`)===1})),
   {id:'font-stack',test:s=>s.tokens.includes('--font-sans:"Inter Variable","Inter",ui-sans-serif,system-ui')},
   {id:'scope-3.3',test:s=>s.chrome.includes('data-workspace-chrome="3.3"')},
+  {id:'live-header-owner',test:s=>s.chrome.includes('[data-workspace-chrome="3.3"] .topbar{')&&!/\.stable-header(?=[\s:{.#>])/.test(s.chrome)},
   {id:'header-token-consumption',test:s=>['var(--chrome-header-start)','var(--chrome-header-mid)','var(--chrome-header-end)'].every(x=>s.chrome.includes(x))},
   {id:'footer-token-consumption',test:s=>['var(--chrome-footer-start)','var(--chrome-footer-end)'].every(x=>s.chrome.includes(x))},
-  {id:'target-44',test:s=>s.chrome.includes('min-height:44px!important')},
+  {id:'palette-only-controls',test:s=>paletteOnly(s.chrome)},
   {id:'responsive-900',test:s=>s.chrome.includes('@media(max-width:900px)')},
   {id:'responsive-640',test:s=>s.chrome.includes('@media(max-width:640px)')},
   {id:'forced-colors',test:s=>s.chrome.includes('@media(forced-colors:active)')},
@@ -36,9 +39,10 @@ const operators=Object.freeze([
   {id:'drop-footer-token',source:'tokens',mutate:(v,i)=>replace(v,/--chrome-footer-start:[^;]+;/,'',i)},
   {id:'font-fallback-drift',source:'tokens',mutate:(v,i)=>replace(v,'"Inter Variable","Inter",ui-sans-serif,system-ui','Arial,sans-serif',i)},
   {id:'scope-version-drift',source:'chrome',mutate:(v,i)=>replace(v,/data-workspace-chrome="3\.3"/g,`data-workspace-chrome="3.${4+(i%5)}"`,i)},
+  {id:'dead-header-owner',source:'chrome',mutate:(v,i)=>replace(v,'.topbar{',`.stable-header{`,i)},
   {id:'header-literal-regression',source:'chrome',mutate:(v,i)=>replace(v,'var(--chrome-header-start)',`rgb(${10+i%20} 20 40)`,i)},
   {id:'footer-literal-regression',source:'chrome',mutate:(v,i)=>replace(v,'var(--chrome-footer-start)',`rgb(8 18 ${30+i%20})`,i)},
-  {id:'target-shrink',source:'chrome',mutate:(v,i)=>replace(v,'min-height:44px!important',`min-height:${32+(i%12)}px!important`,i)},
+  {id:'control-geometry-contamination',source:'chrome',mutate:(v,i)=>replace(v,'box-shadow:0 1px 4px rgba(8,18,35,.08)!important}',`box-shadow:0 1px 4px rgba(8,18,35,.08)!important;min-height:${44+(i%4)}px!important}`,i)},
   {id:'responsive-900-loss',source:'chrome',mutate:(v,i)=>replace(v,'@media(max-width:900px)',`@media(max-width:${901+i%20}px)`,i)},
   {id:'responsive-640-loss',source:'chrome',mutate:(v,i)=>replace(v,'@media(max-width:640px)',`@media(max-width:${641+i%20}px)`,i)},
   {id:'forced-colors-loss',source:'chrome',mutate:(v,i)=>replace(v,'@media(forced-colors:active)',`@media(forced-colors:${i%2?'none':'inactive'})`,i)},
@@ -55,6 +59,6 @@ const operators=Object.freeze([
 ]);
 const TRIALS=10_000,counts=Object.fromEntries(operators.map(op=>[op.id,0]));let killed=0,lastNovelAt=-1;const seen=new Set();const survivors=[];
 for(let i=0;i<TRIALS;i+=1){const op=operators[i%operators.length],mutant={...baseline};mutant[op.source]=op.mutate(baseline[op.source],i);counts[op.id]+=1;if(!seen.has(op.id)){seen.add(op.id);lastNovelAt=i;}const detected=violations(mutant);if(detected.length)killed+=1;else survivors.push({trial:i,operator:op.id});}
-const familyCounts=Object.values(counts),distributionOk=familyCounts.every(value=>value===TRIALS/operators.length),noNovelAfter=TRIALS-lastNovelAt-1;
+const familyCounts=Object.values(counts),minPerFamily=Math.floor(TRIALS/operators.length),maxPerFamily=Math.ceil(TRIALS/operators.length),distributionOk=familyCounts.every(value=>value===minPerFamily||value===maxPerFamily),noNovelAfter=TRIALS-lastNovelAt-1;
 if(killed!==TRIALS||survivors.length||seen.size!==operators.length||!distributionOk){console.error(JSON.stringify({ok:false,suite:'workspace-chrome-3.3',phase:'mutation',trials:TRIALS,killed,survivors:survivors.slice(0,20),familyCoverage:`${seen.size}/${operators.length}`,counts},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,suite:'workspace-chrome-3.3',sourceStringMutationExecutions:TRIALS,killed,killRate:1,declaredFailureFamilies:operators.length,familyCoverage:`${seen.size}/${operators.length}`,perFamily:TRIALS/operators.length,lastNovelAt,noNovelAfter,counts,scope:'global header/footer visual contract only',claimBoundary:'Deterministic source-string mutation executions against the declared static contract; not browser sessions, human preference studies, WCAG certification, legal review or deployment assurance.'}));
+console.log(JSON.stringify({ok:true,suite:'workspace-chrome-3.3',sourceStringMutationExecutions:TRIALS,killed,killRate:1,declaredFailureFamilies:operators.length,familyCoverage:`${seen.size}/${operators.length}`,perFamilyRange:[minPerFamily,maxPerFamily],lastNovelAt,noNovelAfter,counts,scope:'global header/footer visual contract only; header-control geometry remains outside palette ownership',claimBoundary:'Deterministic source-string mutation executions against the declared static contract; not browser sessions, human preference studies, WCAG certification, legal review or deployment assurance.'}));
