@@ -25,6 +25,7 @@
 @import url('./business-surface-convergence-2-7-closure.css');
 @import url('./ui-convergence.css');
 @import url('./semantic-composition-3-1.css');
+@import url('./a6-ux1-fixed-safe-footer.css');
 
 [hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}

@@ -15,27 +15,29 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
-    "mergedPr": 129,
-    "meaning": "post-a5-main-reconciliation",
+    "mainSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299",
+    "mergedPr": 130,
+    "meaning": "post-gov-cwa1-activation",
     "observationDate": "2026-09-08"
   },
   "observedContext": {
     "latestMergedPr": {
+      "number": 130,
+      "mergeSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299",
+      "title": "GOV-CWA-1: activate convergence workbook authority"
+    },
+    "priorSemanticPr": {
       "number": 129,
       "mergeSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
       "title": "A5-MAIN: reconcile post-merge capability truth"
     },
-    "priorSemanticPr": {
-      "number": 128,
-      "mergeSha": "0b3bb752efb6251aea83857fe3d64b93b9527b50",
-      "title": "S4-A5: reconcile browser and accessibility oracles"
-    },
     "exactMain": {
       "combinedStatus": "success",
-      "failedRuns": 0,
+      "failedRuns": 1,
       "queuedRuns": 0,
-      "inProgressRuns": 0
+      "inProgressRuns": 0,
+      "classification": "mixed-post-merge",
+      "failureBoundary": "ictc-security/static-analysis-posture upload-artifact after semantic security steps passed"
     },
     "branchProtection": {
       "protected": false,
@@ -49,6 +51,23 @@
     "stateWhenThisVersionIsOnMain": "active",
     "insertedBefore": "S4-A6",
     "reason": "explicit user-directed activation of convergence-workbook governance before product execution resumes"
+  },
+  "currentExecution": {
+    "trajectoryImpact": "planned",
+    "parentSlice": "S4-A6",
+    "currentSubSlice": "A6-UX1",
+    "title": "fixed-safe footer",
+    "stateOnPullRequest": "candidate",
+    "parentRemainsOpen": true,
+    "runtimeContract": [
+      "final resolver imported last",
+      "fixed footer geometry",
+      "exact body reserve",
+      "root scroll-padding",
+      "safe-area coupling",
+      "native-focus non-overlap",
+      "no body flex/fixed/overflow root trap"
+    ]
   },
   "activeTrajectory": {
     "parentSlice": "S4",
@@ -108,12 +127,12 @@
   ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.8-gov-cwa1-minimal",
+    "version": "v3.9-a6-ux1-prepr-minimal",
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "bac9cc3bfa2b5a65629cd6ff34eb3ee017a8e4f78055ebbd1d10b6bd68bcb187",
-    "bindingSha256": "fbd62543ba27f5349a2722d259f79a8eb92c53893b2bf624fb01f81ddc3fd63c",
+    "sha256": "8310a8f27474d91e28e49c5f9d8fe65736a20ef1bb858075ca420f32a5c4b269",
+    "bindingSha256": "ba087292954a284598288c6aef31aca063b4819a52da2492f4af1e4ff94067c6",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
   },
@@ -124,5 +143,5 @@
     "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "GOV-CWA-1 establishes a repository-bounded planning/reconciliation membrane and an active workbook projection. It does not make main server-side protected, does not establish enterprise-ready, legal compliance, production effectiveness, independent review, scanner efficacy or human accessibility effectiveness."
+  "claimBoundary": "A6-UX1 is a planned execution unit inside S4-A6. It adds a fixed-safe footer runtime contract and exact-head automated geometry evidence without closing S4-A6, promoting release identity, establishing branch protection, production effectiveness, independent assurance, legal compliance or human accessibility effectiveness."
 }

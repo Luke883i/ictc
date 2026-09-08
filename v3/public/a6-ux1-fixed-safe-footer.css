@@ -1,0 +1,24 @@
+/* S4-A6 / A6-UX1: final footer geometry resolver. A5 static closure remains the fallback owner below this import. */
+html[data-ictc-experience="market-1"]{
+  --a6-ux1-footer-base:44px;
+  --a6-ux1-footer-safe-bottom:env(safe-area-inset-bottom,0px);
+  --a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-base) + var(--a6-ux1-footer-safe-bottom));
+  scroll-padding-bottom:var(--a6-ux1-footer-reserve);
+}
+html[data-ictc-experience="market-1"] body{
+  padding-bottom:var(--a6-ux1-footer-reserve)!important;
+}
+html[data-ictc-experience="market-1"] #stableLegalFooter,
+html[data-ictc-experience="market-1"] .stable-legal-footer{
+  position:fixed!important;
+  inset:auto 0 0 0!important;
+  width:100%;
+  height:var(--a6-ux1-footer-reserve)!important;
+  min-height:var(--a6-ux1-footer-reserve)!important;
+  box-sizing:border-box;
+  padding-bottom:var(--a6-ux1-footer-safe-bottom)!important;
+  z-index:75;
+}
+@media(max-width:760px){
+  html[data-ictc-experience="market-1"]{--a6-ux1-footer-base:52px}
+}
