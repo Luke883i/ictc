@@ -8,7 +8,8 @@ const chrome=read('./public/workspace-chrome-3-3.css');
 const shell=read('./public/ui/stable-shell.js');
 const authority=read('../docs/authority-matrix.yaml');
 for(const token of ['keyboard-navigation','focus-visible-effect','reflow-1440-390-320','reduced-motion-effect','contrast-critical-controls','target-size-critical-controls','footer-geometric-overlap','human-at-remains-e4'])assert.ok(browser.includes(token),`A5 browser oracle missing ${token}`);
-assert.ok(browser.includes('getBoundingClientRect')&&browser.includes('scrollIntoView'),'footer/focus oracle must measure actual geometry');
+assert.ok(browser.includes('getBoundingClientRect')&&browser.includes('e.focus?.()')&&browser.includes('requestAnimationFrame'),'footer/focus oracle must measure settled native-focus geometry');
+assert.ok(!browser.includes("focus?.({preventScroll:true})"),'A5 footer oracle must not suppress native focus scrolling');
 assert.ok(browser.includes("context='a5-final-dom'")||browser.includes("'a5-final-dom'"),'A5 artifact context missing');
 assert.ok(workflow.includes('pull_request:')&&workflow.includes('v3/browser-s4-a5-final-dom-a11y.py'),'A5 actual-DOM browser workflow must run on PR exact-head');
 for(const gate of ['v3/s4-a5-browser-a11y-check.mjs','v3/s4-a5-browser-a11y-saturation.mjs','v3/s4-a5-holdout-10k.mjs'])assert.ok(registry.includes(gate),`A5 native gate missing ${gate}`);
@@ -19,4 +20,4 @@ assert.ok(chrome.includes('@media(forced-colors:active)'),'current chrome must r
 assert.ok(shell.includes("footer.id='stableLegalFooter'")&&shell.includes("footer.className='stable-legal-footer'"),'stable footer owner missing');
 assert.ok(authority.includes('browser test processes are observational')&&authority.includes('current runtime UI contracts must be reachable through the canonical npm test gate'),'A5 must preserve canonical assurance authority');
 assert.ok(!browser.toLowerCase().includes('screen reader pass')&&!browser.toLowerCase().includes('human usability pass'),'A5 must not synthesize human validation');
-console.log(JSON.stringify({ok:true,slice:'S4-A5',authority:'current-final-dom-browser+a11y-source-contract',checks:['canonical browser matrix','actual geometry not CSS-technique lock','keyboard/focus','reflow','reduced motion','contrast','target height','footer overlap','human AT boundary'],claimBoundary:'Source contract plus actual-DOM browser oracle. Human AT/usability remains E4.'}));
+console.log(JSON.stringify({ok:true,slice:'S4-A5',authority:'current-final-dom-browser+a11y-source-contract',checks:['canonical browser matrix','settled native-focus geometry','keyboard/focus','reflow','reduced motion','contrast','target height','footer overlap','human AT boundary'],claimBoundary:'Source contract plus actual-DOM browser oracle. Human AT/usability remains E4.'}));
