@@ -52,7 +52,7 @@ def keyboard_focus(page):
 
 
 def critical_contrast(page):
-    ratios = page.evaluate("""()=>{function rgb(v){const m=v.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(Number);return p.slice(0,3)}function lum(c){return c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)}function ratio(a,b){const x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return(hi+.05)/(lo+.05)}function solidBg(e){for(let n=e;n;n=n.parentElement){const raw=getComputedStyle(n).backgroundColor,c=rgb(raw);if(c&&raw!=='rgba(0, 0, 0, 0)')return c}return[255,255,255]}function visible(e){if(!e)return false;const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'}const items=[['service-home',document.querySelector('.service-nav [data-service="home"]')],['service-processes',document.querySelector('.service-nav [data-service="processes"]')],['home-visible-h1',[...document.querySelectorAll('#homeView h1')].find(visible)]];return items.map(([sel,e])=>{if(!visible(e))return{sel,missing:true};const fg=rgb(getComputedStyle(e).color),bg=solidBg(e);return{sel,ratio:fg?ratio(fg,bg):0,fg,bg}})}""")
+    ratios = page.evaluate("""()=>{function rgb(v){const m=v.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(Number);return p.slice(0,3)}function lum(c){return c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)}function ratio(a,b){const x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return(hi+.05)/(lo+.05)}function solidBg(e){for(let n=e;n;n=n.parentElement){const raw=getComputedStyle(n).backgroundColor,c=rgb(raw);if(c&&raw!=='rgba(0, 0, 0, 0)')return c}return[255,255,255]}function visible(e){if(!e)return false;const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'}const items=[['service-home',document.querySelector('.service-nav [data-service="home"]')],['service-processes',document.querySelector('.service-nav [data-service="processes"]')],['home-visible-h1',[...document.querySelectorAll('#homeView h1')].find(visible)],['home-worklist-control',[...document.querySelectorAll('#homePriorities button')].find(visible)]];return items.map(([sel,e])=>{if(!visible(e))return{sel,missing:true};const fg=rgb(getComputedStyle(e).color),bg=solidBg(e);return{sel,ratio:fg?ratio(fg,bg):0,fg,bg}})}""")
     bad = [row for row in ratios if row.get('missing') or row['ratio'] < 4.5]
     assert not bad, bad
     RESULTS.append({'oracle': 'contrast-critical-controls', 'ratios': ratios})
@@ -61,12 +61,15 @@ def critical_contrast(page):
 def wait_current_home(page, role):
     phase(f'{role}-home-semantic-ready')
     expect(page.locator('#homeView')).to_be_visible()
-    expect(page.locator('#homePrimaryAction')).to_be_visible()
     expect(page.locator('#stableLegalFooter')).to_be_visible()
+    priorities = page.locator('#homePriorities')
+    expect(priorities).to_be_visible()
+    expect(priorities).to_have_attribute('data-home-work-queue', '3.2')
+    expect(priorities.locator('button:visible').first).to_be_visible()
     headings = page.locator('#homeView h1:visible')
     expect(headings.first).to_be_visible()
     assert headings.count() == 1, {'role': role, 'visibleHomeH1': headings.count()}
-    RESULTS.append({'oracle': 'current-final-dom-owner', 'role': role, 'homeTitle': headings.first.inner_text().strip()})
+    RESULTS.append({'oracle': 'current-final-dom-owner', 'role': role, 'homeTitle': headings.first.inner_text().strip(), 'homeWorkQueue': priorities.get_attribute('data-home-work-queue')})
 
 
 def reduced_motion(browser):
@@ -155,8 +158,8 @@ try:
         critical_contrast(page)
         phase('desktop-service-targets')
         target_height(page, '.service-nav button:visible', 'desktop:service-nav')
-        phase('desktop-home-primary-target')
-        target_height(page, '#homePrimaryAction:visible', 'desktop:home-primary')
+        phase('desktop-home-worklist-targets')
+        target_height(page, '#homePriorities button:visible', 'desktop:home-worklist')
         phase('desktop-home-footer')
         footer_clear(page, 'desktop:home')
 
