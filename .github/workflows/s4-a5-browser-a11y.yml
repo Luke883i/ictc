@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 concurrency:
   group: s4-a5-browser-a11y-${{ github.ref }}
   cancel-in-progress: true
@@ -70,6 +71,32 @@ jobs:
             FAILED_BROWSER_SCRIPT='v3/browser-s4-a5-final-dom-a11y.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Publish A5 browser provenance
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -u
+          error='artifacts/browser-s4-a5-final-dom-a11y-error.json'
+          report='artifacts/browser-s4-a5-final-dom-a11y.json'
+          if [[ -f "$error" ]]; then
+            phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
+            message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'browser contract failed').replace(/[\\r\\n]+/g,' '))")"
+            state=failure
+            description="failure ${phase}: ${message}"
+          elif [[ -f "$report" ]]; then
+            phase=complete
+            state=success
+            description='A5 final-DOM browser and accessibility effects green'
+          else
+            phase=no-artifact
+            state=error
+            description='A5 browser evidence artifact missing'
+          fi
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a5-final-dom-a11y.py?phase=${phase}"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a5-browser' -f description="${description:0:140}" -f target_url="$target" >/dev/null || true
       - name: Stop current runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
