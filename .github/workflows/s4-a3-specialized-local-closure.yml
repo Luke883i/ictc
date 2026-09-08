@@ -1,0 +1,111 @@
+name: s4-a3-specialized-local-closure
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  statuses: write
+concurrency:
+  group: s4-a3-specialized-local-closure-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  specialized-local-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - name: A3 changed-source syntax
+        run: |
+          node --check v3/public/ui/standard-use-language.js
+          node --check v3/public/ui/epistemic-lattice.js
+          node --check v3/public/ui/epistemic-workspace-3-2.js
+          node --check v3/public/ui/proof-workspace-3-2.js
+          node --check v3/s4-a3-specialized-local-closure-check.mjs
+          node --check v3/s4-a3-specialized-local-saturation-1m.mjs
+          python -m py_compile v3/browser-s4-a3-specialized-local-closure.py
+      - name: A3 source contract
+        run: node v3/s4-a3-specialized-local-closure-check.mjs
+      - name: A3 semantic mutation saturation 1M
+        run: node v3/s4-a3-specialized-local-saturation-1m.mjs
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          test -n "$browser" && test -x "$browser"
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Materialize exact-head canonical DEMO runtime
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4823 PORT=4823
+          export ICTC_BASE_URL="http://127.0.0.1:4823"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-s4-a3-state"
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-s4-a3-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000 ICTC_DEMO_STARTUP_ATTEMPTS=900
+          export ICTC_EXPECT_BUILD_SHA="$HEAD_SHA"
+          ./ictc.sh demo --profile current --no-open
+          ./ictc.sh status --profile current
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+          echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
+          echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
+          echo "ICTC_EXPECT_BUILD_SHA=$ICTC_EXPECT_BUILD_SHA" >> "$GITHUB_ENV"
+      - name: A3 specialized local browser contract
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          status=0
+          python -u v3/browser-s4-a3-specialized-local-closure.py || status=$?
+          cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-s4-a3-server.log || true
+          if [[ "$status" -ne 0 ]]; then
+            FAILED_BROWSER_SCRIPT='v3/browser-s4-a3-specialized-local-closure.py' node scripts/browser-failure-provenance.mjs || true
+            exit "$status"
+          fi
+      - name: Publish A3 browser provenance
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -u
+          error='artifacts/browser-s4-a3-specialized-local-closure-error.json'
+          report='artifacts/browser-s4-a3-specialized-local-closure.json'
+          if [[ -f "$error" ]]; then
+            phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
+            message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'browser contract failed').replace(/[\r\n]+/g,' '))")"
+            state=failure
+            description="failure ${phase}: ${message}"
+          elif [[ -f "$report" ]]; then phase=complete; state=success; description='MC/EP/Proof specialized local closure green';
+          else phase=no-artifact; state=error; description='browser evidence artifact missing'; fi
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a3-specialized-local-closure.py?phase=${phase}"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a3-browser' -f description="${description:0:140}" -f target_url="$target" >/dev/null || true
+      - name: Stop DEMO runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+        if: always()
+        with:
+          name: s4-a3-specialized-local-closure
+          path: |
+            artifacts/s4-a3-*.json
+            artifacts/browser-s4-a3-*.json
+            artifacts/browser-s4-a3-server.log
+          if-no-files-found: error
+          retention-days: 30
