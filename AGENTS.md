@@ -28,20 +28,28 @@ Read additional documents by responsibility instead of treating the whole `docs/
 - Architecture/persistence: `docs/11_ARCHITECTURE.md`, `docs/authority-matrix.yaml`.
 - AI: `docs/10_LOCAL_AI_CONTRACT.md`.
 - Delivery/CI: `docs/13_DEVOPS_AND_CI_CD.md`, `docs/14_ITERATION_DOD.md`, `docs/TESTING.md`.
-- Current PR convergence: `docs/PR60_GLOBAL_DOD.md`.
+- Current development convergence: `docs/convergence/convergence-authority.json` and its derived `docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx` projection.
 
-Historical/candidate documents are useful for design lineage but do not override the current executable owner declared by the authority matrix.
+Historical/candidate documents are useful for design lineage but do not override the current executable owner declared by the authority matrix. PR-specific historical DoDs do not become current convergence authority by recency.
+
+## Convergence governance
+
+11. Every PR targeting `main` declares `Trajectory impact` as exactly one of `planned | intentional-deviation | neutral | reconciliation` and declares `Convergence slice`.
+12. `planned`, `intentional-deviation` and `reconciliation` changes to trajectory-sensitive surfaces update `docs/convergence/convergence-authority.json` and its active workbook projection together. A truly neutral PR uses `Convergence slice: NONE` and must not replan or rewrite the workbook.
+13. A user-directed change outside the current workbook is allowed as `intentional-deviation`: preserve prior history, re-anchor to the exact PR base and re-plan forward. Do not reject a user decision merely because it was absent from the previous plan.
+14. Never predict or embed a PR's own future head/merge SHA into the authority or workbook. Exact-head and exact-main facts are bound after they exist by Git/GitHub evidence and the untracked convergence receipt.
+15. CI may verify the convergence authority and emit receipts; it must not gain `contents:write` or auto-commit to `main` to update the workbook.
 
 ## Free/private repository governance
 
-11. `GOV-01F` is compensating control only while server-side branch protection is unavailable. Never describe `main` as protected unless GitHub itself reports active protection/enforcement.
-12. Before proposing a merge, observe the exact PR HEAD and require all checks declared in `.github/gov-01f-policy.json` for that HEAD. After merge, observe new `main` and declared post-merge checks.
-13. A direct push to `main` detected by GOV-01F is a governance breach: freeze runtime expansion, reconcile diff/evidence and do not erase history automatically.
+16. `GOV-01F` is compensating control only while server-side branch protection is unavailable. Never describe `main` as protected unless GitHub itself reports active protection/enforcement.
+17. Before proposing a merge, observe the exact PR HEAD and require all checks declared in `.github/gov-01f-policy.json` for that HEAD. After merge, observe new `main` and declared post-merge checks.
+18. A direct push to `main` detected by GOV-01F is a governance breach: freeze runtime expansion, reconcile diff/evidence and do not erase history automatically.
 
 ## Runtime authority
 
-14. Before changing runtime authority, read `docs/authority-matrix.yaml` and run `node v3/authority-contract-check.mjs`.
-15. Executable runtime authority remains under `v3/`; do not create a parallel root/lib runtime owner without explicit migration decision and falsifier.
-16. Seven business procedures remain seven. EP-01 is cross-cutting supervision, not an eighth business process.
-17. Cross-procedure creation must authorize the source, target permission and target procedure policy, and must normalize the new object through the target's native initial-state contract.
-18. Evidence formats are same-as-read and derive from the canonical evidence graph/dossier owner; no format may widen visibility or silently drop claim boundaries.
+19. Before changing runtime authority, read `docs/authority-matrix.yaml` and run `node v3/authority-contract-check.mjs`.
+20. Executable runtime authority remains under `v3/`; do not create a parallel root/lib runtime owner without explicit migration decision and falsifier.
+21. Seven business procedures remain seven. EP-01 is cross-cutting supervision, not an eighth business process.
+22. Cross-procedure creation must authorize the source, target permission and target procedure policy, and must normalize the new object through the target's native initial-state contract.
+23. Evidence formats are same-as-read and derive from the canonical evidence graph/dossier owner; no format may widen visibility or silently drop claim boundaries.

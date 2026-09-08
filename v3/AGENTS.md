@@ -7,4 +7,5 @@
 - Prefer explicit `metadata.epistemicEffects` for materially epistemic writes. Action-name inference is compatibility only and must never promote AI output to human authority.
 - New external evidence used at a decisive checkpoint must be version/digest-bound; observation timestamp alone is not decision-grade evidence identity.
 - Cross-process creation produces a bounded native draft; do not bypass lineage depth/cycle guards or transfer source decisions.
+- Before changing `v3/`, reconcile the PR against `docs/convergence/convergence-authority.json`, declare `Trajectory impact` / `Convergence slice`, and update the authority plus active workbook when the change is planned, an intentional deviation, or a reconciliation.
 - Run the current semantic/runtime suite and the relevant targeted checks after UI or runtime changes. Exact-head CI is the acceptance evidence for a PR.
