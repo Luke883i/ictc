@@ -6,8 +6,7 @@ const result=validateA6Ux1({
   styles:read('./public/styles.css'),
   registry:read('./current-gate-registry.mjs'),
   workflow:read('../.github/workflows/s4-a6-ux1-fixed-safe-footer.yml'),
-  browser:read('./browser-s4-a6-ux1-fixed-safe-footer.py'),
-  authority:read('../docs/convergence/convergence-authority.json')
+  browser:read('./browser-s4-a6-ux1-fixed-safe-footer.py')
 });
 if(!result.ok){console.error(JSON.stringify({ok:false,...A6_UX1_CONTRACT,failures:result.failures},null,2));process.exit(1)}
-console.log(JSON.stringify({ok:true,...A6_UX1_CONTRACT,checks:'fixed footer + exact reserve + root scroll-padding + safe-area + exact-head Chromium + no root trap'}));
+console.log(JSON.stringify({ok:true,...A6_UX1_CONTRACT,checks:'fixed footer + exact reserve + root scroll-padding + safe-area + exact-head Chromium + no root trap',governanceBoundary:'Forward regression gate validates UX1 runtime geometry only; convergence-authority validates current PR lineage separately.'}));
