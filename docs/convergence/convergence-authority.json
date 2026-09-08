@@ -15,29 +15,28 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299",
-    "mergedPr": 130,
-    "meaning": "post-gov-cwa1-activation",
+    "mainSha": "190bbe0bc97ea0cef10806b1d4bba8aed043b486",
+    "mergedPr": 131,
+    "meaning": "post-a6-ux1-fixed-safe-footer",
     "observationDate": "2026-09-08"
   },
   "observedContext": {
     "latestMergedPr": {
+      "number": 131,
+      "mergeSha": "190bbe0bc97ea0cef10806b1d4bba8aed043b486",
+      "title": "S4-A6 UX1: fixed-safe footer runtime contract"
+    },
+    "priorSemanticPr": {
       "number": 130,
       "mergeSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299",
       "title": "GOV-CWA-1: activate convergence workbook authority"
     },
-    "priorSemanticPr": {
-      "number": 129,
-      "mergeSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
-      "title": "A5-MAIN: reconcile post-merge capability truth"
-    },
     "exactMain": {
       "combinedStatus": "success",
-      "failedRuns": 1,
+      "failedRuns": 0,
       "queuedRuns": 0,
       "inProgressRuns": 0,
-      "classification": "mixed-post-merge",
-      "failureBoundary": "ictc-security/static-analysis-posture upload-artifact after semantic security steps passed"
+      "classification": "green-quiescent"
     },
     "branchProtection": {
       "protected": false,
@@ -55,18 +54,18 @@
   "currentExecution": {
     "trajectoryImpact": "planned",
     "parentSlice": "S4-A6",
-    "currentSubSlice": "A6-UX1",
-    "title": "fixed-safe footer",
+    "currentSubSlice": "A6-UX2",
+    "title": "header/footer palette convergence",
     "stateOnPullRequest": "candidate",
     "parentRemainsOpen": true,
     "runtimeContract": [
-      "final resolver imported last",
-      "fixed footer geometry",
-      "exact body reserve",
-      "root scroll-padding",
-      "safe-area coupling",
-      "native-focus non-overlap",
-      "no body flex/fixed/overflow root trap"
+      "live topbar bound directly to canonical workspace chrome owner",
+      "design-tokens remains the single shared chrome color owner",
+      "business surface 2.7 no longer owns header or footer palette",
+      "business 2.7 chrome closure retired from runtime and tree",
+      "footer gradient remains darker than header gradient stop-by-stop",
+      "on-dark and muted chrome text retain at least 4.5 contrast against all canonical gradient stops",
+      "A6-UX1 fixed-safe footer geometry remains unchanged and palette-free"
     ]
   },
   "activeTrajectory": {
@@ -127,12 +126,12 @@
   ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.9-a6-ux1-prepr-minimal",
+    "version": "v3.10-a6-ux2-prepr-minimal",
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "8310a8f27474d91e28e49c5f9d8fe65736a20ef1bb858075ca420f32a5c4b269",
-    "bindingSha256": "ba087292954a284598288c6aef31aca063b4819a52da2492f4af1e4ff94067c6",
+    "sha256": "5b2641856ccb71cefc0051a9d018e4945511eae50f84dc0009e7fa5bcfb22fba",
+    "bindingSha256": "e9910d8de8474e52eba132f9821621d7e8c73c9bed204bf55d1003114c046831",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
   },
@@ -143,5 +142,5 @@
     "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "A6-UX1 is a planned execution unit inside S4-A6. It adds a fixed-safe footer runtime contract and exact-head automated geometry evidence without closing S4-A6, promoting release identity, establishing branch protection, production effectiveness, independent assurance, legal compliance or human accessibility effectiveness."
+  "claimBoundary": "A6-UX2 is a planned execution unit inside S4-A6. It contracts chrome palette ownership onto the existing token and workspace-chrome authorities, preserves A6-UX1 geometry, and adds E2/E3 automated evidence without closing S4-A6, promoting release identity, establishing branch protection, production effectiveness, human aesthetic preference, WCAG certification, independent assurance or legal compliance."
 }
