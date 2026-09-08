@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
+const admin=read('./public/ui/admin-center.js');
+const coordinator=read('./public/ui/admin-slice-coordinator.js');
+assert.ok(coordinator.includes("readiness:'/api/admin/readiness'")&&coordinator.includes("usage:'/api/admin/usage'")&&coordinator.includes("users:'/api/admin/users'")&&coordinator.includes("identity:'/api/admin/identity'"),'A4 must own four independent Admin read slices');
+assert.ok(coordinator.includes('Promise.allSettled')&&!coordinator.includes('Promise.all('),'A4 coordinator must be fail-independent, not fail-total Promise.all');
+assert.ok(coordinator.includes('epochs')&&coordinator.includes('stale:true'),'A4 retry must be latest-wins and reject stale render authority');
+assert.ok(admin.includes("adminFailureIsolation='slice-local'")&&admin.includes("adminRouteability='modal-local'"),'Admin must publish local failure isolation and explicit modal routeability');
+assert.ok(admin.includes('data-admin-retry')&&admin.includes('admin-slice-error'),'A4 must expose local retry/error affordance');
+assert.ok(admin.includes("refreshAdminSlices(['readiness','usage'])")&&admin.includes("refreshAdminSlices(['identity','readiness'])")&&admin.includes("refreshAdminSlices(['users','readiness'])"),'Admin writes must refresh only dependent slices');
+assert.ok(!admin.includes('Promise.all('),'Admin owner must not retain fail-total read fan-in');
+const open=admin.indexOf("$('#openAdminCenter')?.addEventListener('click'");
+const show=admin.indexOf('dialog.showModal()',open),load=admin.indexOf('void loadAdmin()',open);
+assert.ok(open>=0&&show>open&&load>show,'Admin dialog must become usable before remote reads settle');
+assert.ok(!admin.includes('history.pushState')&&!admin.includes('history.replaceState')&&!admin.includes('popstate'),'A4 must not mint a router for modal-local Admin');
+assert.ok(!admin.includes('MutationObserver'),'A4 must not add late DOM authority');
+console.log(JSON.stringify({ok:true,slice:'S4-A4',authority:'source-contract',checks:['4 independent Admin read slices','dialog opens before reads settle','single endpoint failure cannot deny whole Admin','localized retry/error boundary','latest-wins retry race','targeted dependent refresh after writes','modal-local routeability explicit','no new router or MutationObserver'],claimBoundary:'Source-contract evidence only; actual browser failure injection remains separate.'}));
