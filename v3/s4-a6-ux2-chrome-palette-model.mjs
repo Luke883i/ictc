@@ -18,7 +18,9 @@ export function validateChromePalette(s){const f=[];const fail=(code,detail)=>f.
   for(const t of FOOTER)if(!fd.includes(`var(${t})`))fail('FOOTER_TOKEN_CONSUMPTION',t);
   if(!s.chrome.includes('[data-workspace-chrome="3.3"] .topbar{'))fail('LIVE_HEADER_SELECTOR','.topbar');
   if(/\.stable-header(?=[\s:{.#>])/.test(s.chrome))fail('DEAD_HEADER_SELECTOR','.stable-header');
-  if(!s.chrome.includes('min-height:44px!important'))fail('TARGET_44','header/footer target');
+  const controlRule=s.chrome.match(/\.topbar :where\(\.service-nav button,[^{]+\)\{([^}]*)\}/)?.[1]||'';
+  if(!controlRule)fail('CONTROL_PALETTE_RULE','live header control palette rule missing');
+  if(/(?:^|;)\s*(?:min-height|height|padding(?:-[^:]*)?|border-radius|box-sizing)\s*:/m.test(controlRule))fail('CONTROL_GEOMETRY_CONTAMINATION','A6-UX2 palette owner must not acquire header-control geometry');
   if(!s.chrome.includes('@media(forced-colors:active)'))fail('FORCED_COLORS','missing');
   if(!s.chrome.includes('@media(prefers-reduced-motion:reduce)'))fail('REDUCED_MOTION','missing');
   if(!s.chrome.includes(':focus-visible'))fail('FOCUS_VISIBLE','missing');
