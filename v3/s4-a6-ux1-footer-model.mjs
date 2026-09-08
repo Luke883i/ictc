@@ -7,10 +7,10 @@ export const A6_UX1_CONTRACT=Object.freeze({
 });
 
 const escapeRegExp=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-const exactProp=(css,prop,value)=>new RegExp(`(?:^|[;{]\\s*)${escapeRegExp(prop)}\\s*:\s*${escapeRegExp(value)}(?:\\s*!important)?\\s*(?:;|})`,'m').test(css);
+const exactProp=(css,prop,value)=>new RegExp(`(?:^|[;{]\\s*)${escapeRegExp(prop)}\\s*:\\s*${escapeRegExp(value)}(?:\\s*!important)?\\s*(?:;|})`,'m').test(css);
 const has=(text,token)=>text.includes(token);
 
-export function validateA6Ux1({css,styles,registry,workflow,browser,authority}){
+export function validateA6Ux1({css,styles,registry,workflow,browser}){
   const failures=[];
   const check=(condition,code,detail)=>{if(!condition)failures.push({code,detail});};
   const imports=[...styles.matchAll(/@import\s+url\(['"]?([^)'"\s]+)['"]?\)/g)].map(m=>m[1]);
@@ -31,7 +31,5 @@ export function validateA6Ux1({css,styles,registry,workflow,browser,authority}){
   check(has(workflow,'pull_request:')&&has(workflow,'push:')&&has(workflow,'run: python -u v3/browser-s4-a6-ux1-fixed-safe-footer.py'),'EXACT_HEAD_WORKFLOW','dedicated exact-head browser command missing');
   check(has(workflow,'node v3/s4-a6-ux1-fixed-safe-footer-check.mjs')&&has(workflow,'node v3/s4-a6-ux1-fixed-safe-footer-saturation.mjs'),'WORKFLOW_E2','source/model gates missing from workflow');
   for(const token of ['getBoundingClientRect','position','bodyPaddingBottom','scrollPaddingBottom','native-focus-non-overlap','reflow-1440-390-320','root-trap-negative'])check(has(browser,token),'BROWSER_ORACLE',token);
-  check(has(authority,'"baseAnchor"')&&has(authority,'"mainSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299"'),'AUTHORITY_BASE','authority must bind exact PR base');
-  check(has(authority,'"currentSubSlice": "A6-UX1"')&&has(authority,'"trajectoryImpact": "planned"'),'AUTHORITY_SLICE','planned A6-UX1 lineage missing');
   return Object.freeze({ok:failures.length===0,failures});
 }

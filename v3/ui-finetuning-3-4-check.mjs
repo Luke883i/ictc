@@ -13,7 +13,7 @@ check(index.includes('<svg class="ictc-brand-mark"')&&!index.includes('/assets/i
 for(const token of ['--chrome-header-start','--chrome-header-mid','--chrome-header-end','--chrome-footer-start','--chrome-footer-mid','--chrome-footer-end','--landing-start','--landing-end','--landing-border','--home-action-start','--home-action-end','--home-action-text'])check((tokens.match(new RegExp(token.replace(/[-]/g,'\\-')+':','g'))||[]).length===1,`token uniqueness ${token}`);
 check(chrome.includes('var(--chrome-header-mid)')&&chrome.includes('var(--workspace-header)'),'3.3 chrome owner must retain three-stop header gradient');
 check(chrome.includes('var(--chrome-footer-mid)')&&chrome.includes('var(--workspace-footer)'),'3.3 chrome owner must retain three-stop footer gradient');
-check(chrome.includes('.stable-header .ictc-brand-mark{display:block;flex:0 0 auto;width:30px;height:30px'),'3.3 owner must retain brand geometry');
+check(chrome.includes('.topbar .ictc-brand-mark{display:block;flex:0 0 auto;width:30px;height:30px'),'3.3 live chrome owner must retain canonical brand-mark geometry');
 check(chrome.includes('.stable-footer-links a{display:inline-flex;align-items:center;min-height:44px'),'footer target contract missing');
 check(!/(?:\.stable-header|\.stable-legal-footer|\.stable-footer-product|\.stable-footer-links)/.test(enterprise),'3.2 visual layer must not retain historical stable-chrome causes');
 check(!enterprise.includes('#procedureHub'),'3.2 visual layer must not retain historical process-catalogue causes');
