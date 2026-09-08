@@ -13,13 +13,19 @@ def proof_child_order(page):
 def nav_probe(page,service):
  return page.evaluate("""service=>{const sel=`.service-nav [data-service=\"${service}\"]`,e=document.querySelector(sel),top=document.querySelector('.topbar'),active=document.querySelector('.view:not([hidden])'),dialogs=[...document.querySelectorAll('dialog[open]')].map(d=>({id:d.id||'',cls:String(d.className||''),modal:d.matches(':modal'),rect:(()=>{const r=d.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height}})()}));if(!e)return{service,count:0,activeSurface:document.documentElement.dataset.ictcSurface||null,activeView:active?.id||null,dialogs};const r=e.getBoundingClientRect(),s=getComputedStyle(e),cx=Math.max(0,Math.min(innerWidth-1,r.left+r.width/2)),cy=Math.max(0,Math.min(innerHeight-1,r.top+r.height/2)),hit=document.elementFromPoint(cx,cy),ts=top?getComputedStyle(top):null,tr=top?.getBoundingClientRect();let inert=null;for(let n=e;n;n=n.parentElement){if(n.inert||n.hasAttribute('inert')){inert={tag:n.tagName,id:n.id||'',cls:String(n.className||'')};break}}return{service,count:1,activeSurface:document.documentElement.dataset.ictcSurface||null,activeView:active?.id||null,button:{rect:{x:r.x,y:r.y,w:r.width,h:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},display:s.display,visibility:s.visibility,opacity:s.opacity,pointerEvents:s.pointerEvents,position:s.position,zIndex:s.zIndex,disabled:e.disabled,ariaCurrent:e.getAttribute('aria-current'),connected:e.isConnected},topbar:top?{rect:{x:tr.x,y:tr.y,w:tr.width,h:tr.height},display:ts.display,visibility:ts.visibility,pointerEvents:ts.pointerEvents,position:ts.position,zIndex:ts.zIndex}:null,point:{x:cx,y:cy},hit:hit?{tag:hit.tagName,id:hit.id||'',cls:String(hit.className||''),service:hit.dataset?.service||null,withinButton:e.contains(hit)}:null,dialogs,inert,transitionDirection:document.documentElement.dataset.ictcTransitionDirection||null,activeAnimations:document.getAnimations().filter(a=>a.playState==='running').slice(0,20).map(a=>({target:a.effect?.target?.id||a.effect?.target?.className||a.effect?.target?.nodeName||null,currentTime:a.currentTime,playState:a.playState}))};}""",service)
 def assert_pointer_target(probe):
- assert probe.get('count')==1,probe
- button=probe.get('button') or {};rect=button.get('rect') or {};hit=probe.get('hit') or {}
- assert rect.get('w',0)>0 and rect.get('h',0)>0,probe
- assert button.get('display')!='none' and button.get('visibility')!='hidden' and button.get('pointerEvents')!='none' and not button.get('disabled'),probe
- assert hit.get('withinButton') is True,probe
- assert not probe.get('dialogs'),probe
- assert probe.get('inert') is None,probe
+ button=probe.get('button') or {};rect=button.get('rect') or {};hit=probe.get('hit') or {};issues=[]
+ if probe.get('count')!=1:issues.append(f"count={probe.get('count')}")
+ if not (rect.get('w',0)>0 and rect.get('h',0)>0):issues.append(f"rect={rect.get('w',0)}x{rect.get('h',0)}")
+ if button.get('display')=='none':issues.append('display=none')
+ if button.get('visibility')=='hidden':issues.append('visibility=hidden')
+ if button.get('pointerEvents')=='none':issues.append('pointer=none')
+ if button.get('disabled'):issues.append('disabled=1')
+ if hit.get('withinButton') is not True:issues.append('hit=0')
+ if probe.get('dialogs'):issues.append(f"dialogs={len(probe.get('dialogs') or [])}")
+ if probe.get('inert') is not None:issues.append('inert=1')
+ if issues:
+  hit_name=f"{hit.get('tag','?')}#{hit.get('id','')}.{str(hit.get('cls',''))[:32]}"
+  raise AssertionError(f"pointer-target {'|'.join(issues)} hit={hit_name} surf={probe.get('activeSurface')} anim={len(probe.get('activeAnimations') or [])}")
 try:
  with sync_playwright() as pw:
   launch={'headless':True,'args':['--no-sandbox']}
