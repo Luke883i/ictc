@@ -1,6 +1,7 @@
 /* Shell/Admin/DEMO 2.6 closure: bounded geometry only; ui-convergence.css remains the final resolver. */
-html[data-ictc-experience="market-1"]{--shell-footer-reserve:44px}
-html[data-ictc-experience="market-1"] body{padding-bottom:calc(var(--shell-footer-reserve) + env(safe-area-inset-bottom,0px))!important}
+html[data-ictc-experience="market-1"]{--shell-footer-reserve:44px;scroll-padding-bottom:calc(var(--shell-footer-reserve) + env(safe-area-inset-bottom,0px) + 12px)}
+html[data-ictc-experience="market-1"] body{padding-bottom:calc(var(--shell-footer-reserve) + env(safe-area-inset-bottom,0px) + 12px)!important}
+html[data-ictc-experience="market-1"] main :where(button,a[href],input,select,textarea,summary,[tabindex]){scroll-margin-bottom:calc(var(--shell-footer-reserve) + env(safe-area-inset-bottom,0px) + 12px)}
 html[data-ictc-experience="market-1"] .stable-legal-footer{position:fixed!important;inset:auto 0 0 0!important;box-sizing:border-box}
 html[data-ictc-experience="market-1"] .procedure-frame-kicker{font-size:.65rem!important}
 @media(max-width:900px) and (min-width:761px){
