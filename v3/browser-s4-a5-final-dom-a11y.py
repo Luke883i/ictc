@@ -1,0 +1,46 @@
+import json, os, pathlib, traceback
+from playwright.sync_api import expect, sync_playwright
+ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
+BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');PHASE='init';RESULTS=[];PAGE_ERRORS=[]
+def phase(name):
+ global PHASE;PHASE=name
+
+def no_overflow(page,label):
+ m=page.evaluate("()=>({inner:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth})")
+ assert m['doc']<=m['inner']+2 and m['body']<=m['inner']+2,(label,m);RESULTS.append({'oracle':'reflow-1440-390-320','case':label,'metrics':m})
+def target_height(page,selector,label):
+ rows=page.locator(selector).evaluate_all("els=>els.filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'}).map(e=>({tag:e.tagName,id:e.id,cls:String(e.className||''),w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height,text:(e.textContent||'').trim().slice(0,50)}))")
+ assert rows,(label,'no visible targets');bad=[r for r in rows if r['h']<43.5];assert not bad,(label,bad);RESULTS.append({'oracle':'target-size-critical-controls','case':label,'count':len(rows),'minHeight':min(r['h'] for r in rows)})
+def footer_clear(page,label):
+ metrics=page.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const fr=f.getBoundingClientRect(),pad=parseFloat(getComputedStyle(document.body).paddingBottom)||0;const candidates=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.disabled});let overlap=0,sampled=0,worst=0;for(const e of candidates.slice(0,48)){e.scrollIntoView({block:'center',inline:'nearest'});const r=e.getBoundingClientRect(),ff=f.getBoundingClientRect();const h=Math.max(0,Math.min(r.bottom,ff.bottom)-Math.max(r.top,ff.top)),w=Math.max(0,Math.min(r.right,ff.right)-Math.max(r.left,ff.left)),a=h*w;if(a>0)overlap++;worst=Math.max(worst,a);sampled++;}return{missing:false,footerHeight:fr.height,bodyPaddingBottom:pad,sampled,overlap,worst};}""")
+ assert not metrics.get('missing'),metrics;assert metrics['bodyPaddingBottom']+1>=metrics['footerHeight'],metrics;assert metrics['overlap']==0,(label,metrics);RESULTS.append({'oracle':'footer-geometric-overlap','case':label,**metrics})
+def keyboard_focus(page):
+ page.evaluate("()=>{window.scrollTo(0,0);document.activeElement?.blur?.()}")
+ page.keyboard.press('Tab');active=page.evaluate("()=>({cls:String(document.activeElement?.className||''),tag:document.activeElement?.tagName,text:(document.activeElement?.textContent||'').trim(),visible:!!document.activeElement&&document.activeElement.getBoundingClientRect().height>0})")
+ assert 'skip-link' in active['cls'] and active['visible'],active
+ style=page.evaluate("()=>{const e=document.activeElement,s=getComputedStyle(e),r=e.getBoundingClientRect();return{focusVisible:e.matches(':focus-visible'),outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,boxShadow:s.boxShadow,top:r.top,bottom:r.bottom}}")
+ assert style['focusVisible'],style;assert style['outlineStyle']!='none' or style['boxShadow']!='none',style
+ page.keyboard.press('Enter');page.wait_for_timeout(80);assert '#main' in page.url or page.evaluate("()=>location.hash==='#main'")
+ RESULTS.append({'oracle':'keyboard-navigation','skipLink':active,'style':style});RESULTS.append({'oracle':'focus-visible-effect','style':style})
+def critical_contrast(page):
+ ratios=page.evaluate("""()=>{function rgb(v){const m=v.match(/rgba?\\(([^)]+)\\)/);if(!m)return null;const p=m[1].split(',').map(Number);return p.slice(0,3)}function lum(c){return c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)}function ratio(a,b){const x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return(hi+.05)/(lo+.05)}function solidBg(e){for(let n=e;n;n=n.parentElement){const c=rgb(getComputedStyle(n).backgroundColor);if(c&&getComputedStyle(n).backgroundColor!=='rgba(0, 0, 0, 0)')return c}return[255,255,255]}const sels=['.service-nav [data-service="home"]','.service-nav [data-service="processes"]','#homeTitle'];return sels.map(sel=>{const e=document.querySelector(sel);if(!e)return{sel,missing:true};const fg=rgb(getComputedStyle(e).color),bg=solidBg(e);return{sel,ratio:fg?ratio(fg,bg):0,fg,bg}})}""")
+ bad=[r for r in ratios if r.get('missing') or r['ratio']<4.5];assert not bad,bad;RESULTS.append({'oracle':'contrast-critical-controls','ratios':ratios})
+def reduced_motion(browser):
+ phase('reduced-motion-effect');ctx=browser.new_context(viewport={'width':1280,'height':850},reduced_motion='reduce');ctx.add_init_script("localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','processes')");p=ctx.new_page();p.goto(BASE+'/',wait_until='networkidle');p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub .procedure-card').first).to_be_visible();v=p.locator('#procedureHub .procedure-card').first.evaluate("e=>({animation:getComputedStyle(e).animationDuration,transition:getComputedStyle(e).transitionDuration})");assert v['animation'] in ('0s','0ms') and v['transition'] in ('0s','0ms'),v;RESULTS.append({'oracle':'reduced-motion-effect','computed':v});ctx.close()
+def run_viewport(browser,width,height,label):
+ phase(f'reflow-{label}');ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script("localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','home')");p=ctx.new_page();p.goto(BASE+'/',wait_until='networkidle');no_overflow(p,f'{label}:home');p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub .procedure-card')).to_have_count(7);no_overflow(p,f'{label}:processes');p.locator('.service-nav [data-service="proof"]').click();p.wait_for_timeout(100);no_overflow(p,f'{label}:proof');footer_clear(p,f'{label}:proof');ctx.close()
+def fail(exc):
+ payload={'ok':False,'slice':'S4-A5','context':'a5-final-dom','phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'results':RESULTS,'pageErrors':PAGE_ERRORS,'claimBoundary':'Automated current-browser evidence only; human assistive-technology and usability validation remain E4.'};(ART/'browser-s4-a5-final-dom-a11y-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8');print(f'::error title=browser-s4-a5-final-dom-a11y::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
+try:
+ with sync_playwright() as pw:
+  launch={'headless':True,'args':['--no-sandbox']}
+  if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
+  browser=pw.chromium.launch(**launch)
+  phase('desktop-final-dom');ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.on('pageerror',lambda e:PAGE_ERRORS.append(str(e)));page.goto(BASE+'/',wait_until='networkidle');page.wait_for_function("()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'&&!!document.querySelector('#stableLegalFooter')")
+  no_overflow(page,'desktop:home');keyboard_focus(page);critical_contrast(page);target_height(page,'.service-nav button:visible','desktop:service-nav');target_height(page,'#homePrimaryAction:visible','desktop:home-primary');target_height(page,'.stable-footer-links a:visible','desktop:footer-links');footer_clear(page,'desktop:home')
+  phase('desktop-processes');page.locator('.service-nav [data-service="processes"]').click();expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);target_height(page,'#procedureHub .procedure-card footer .primary:visible','desktop:procedure-primary');no_overflow(page,'desktop:processes');footer_clear(page,'desktop:processes');ctx.close()
+  run_viewport(browser,390,844,'mobile-390');run_viewport(browser,320,800,'mobile-320');reduced_motion(browser)
+  phase('human-at-remains-e4');assert not PAGE_ERRORS,PAGE_ERRORS
+  report={'ok':True,'slice':'S4-A5','context':'a5-final-dom','oracles':['keyboard-navigation','focus-visible-effect','reflow-1440-390-320','reduced-motion-effect','contrast-critical-controls','target-size-critical-controls','footer-geometric-overlap','human-at-remains-e4'],'results':RESULTS,'pageErrors':PAGE_ERRORS,'humanValidation':'external-e4','claimBoundary':'Exact-head automated Chromium/current-DOM evidence for critical keyboard/focus/reflow/motion/contrast/target-height/footer effects. It does not establish representative-human usability or real assistive-technology effectiveness.'};(ART/'browser-s4-a5-final-dom-a11y.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print(json.dumps({'ok':True,'slice':'S4-A5','oracles':len(report['oracles'])}),flush=True);browser.close()
+except BaseException as exc:
+ fail(exc);traceback.print_exc();raise
