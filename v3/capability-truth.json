@@ -1,17 +1,34 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "authority": "capability-truth",
   "auditedAnchor": {
     "mainSha": "9f56b4444b212b36e5957f00df6cac0be381a9b1",
     "mergedPr": 121,
     "meaning": "post-s3-runtime-reliability-contract"
   },
+  "latestReconciliation": {
+    "mainSha": "0b3bb752efb6251aea83857fe3d64b93b9527b50",
+    "mergedPr": 128,
+    "meaning": "post-s4-a5-main-reconciliation"
+  },
   "releaseClaim": {
     "stage": "candidate",
     "classification": "truth-current",
     "enterpriseCandidate": false,
     "enterpriseReady": false,
-    "claimBoundary": "Repository-proven capabilities are not deployment effectiveness. Enterprise-candidate requires S4-S5 closure; enterprise-ready additionally requires deployment/independent E4 evidence."
+    "claimBoundary": "Repository-proven capabilities are not deployment effectiveness. Enterprise-candidate requires S4-A6 and S5 closure; enterprise-ready additionally requires deployment/independent E4 evidence."
+  },
+  "s4Progress": {
+    "parentGap": "GAP-020",
+    "completed": ["S4-A0", "S4-A1", "S4-A2", "S4-A3", "S4-A4", "S4-A5"],
+    "completedThrough": "S4-A5",
+    "mainClosure": {
+      "mainSha": "0b3bb752efb6251aea83857fe3d64b93b9527b50",
+      "mergedPr": 128,
+      "meaning": "A5 exact-main all-green/quiescent observed before reconciliation PR"
+    },
+    "nextSlice": "S4-A6",
+    "claimBoundary": "A5-MAIN is repository-bounded; GAP-020 remains open until A6 and E4 remains external."
   },
   "repositoryCapabilities": [
     {"id":"distributed-presentation-authority","status":"repository-proven","evidencePaths":["docs/documentation-manifest.json","v3/current-gate-registry.mjs"],"residualBoundary":"Local presentation owners are canonical; this says nothing about production deployment quality."},
@@ -24,7 +41,13 @@
     {"id":"request-correlation-and-local-observability","status":"repository-proven","evidencePaths":["v3/runtime/operational-observability.mjs","v3/runtime/abuse-budget.mjs","docs/OPERATIONS.md"],"retiresAbsenceClaimFrom":["GAP-014"],"residualBoundary":"Collector, distributed tracing, alert routing and distributed rate limiting are deployment concerns."},
     {"id":"procedure-worklist-and-risk-reference-closure","status":"repository-proven","evidencePaths":["v3/runtime/procedure-worklist.mjs","v3/procedure-worklist-s1-check.mjs","v3/procedure-worklist-s1-saturation.mjs"],"closesGapIds":["GAP-015","GAP-016"],"residualBoundary":"The shared worklist owns interaction grammar while procedure-local providers own business semantics; it creates no global business status."},
     {"id":"ar-temporal-review-and-explicit-epistemic-effects","status":"repository-proven","evidencePaths":["v3/runtime/grc-assurance.mjs","v3/runtime/dependency-review.mjs","v3/runtime/epistemic-write-store.mjs","v3/runtime/epistemic-step.mjs","v3/s2-temporal-epistemic-check.mjs","v3/s2-temporal-epistemic-saturation.mjs"],"closesGapIds":["GAP-017","GAP-018"],"residualBoundary":"Native AR review-needed is derived from typed temporal/basis causes without rewriting prior approval; current material writes declare epistemic effects while action-name fallback remains bounded to legacy compatibility paths."},
-    {"id":"runtime-reliability-contract-s3","status":"repository-proven","evidencePaths":["v3/runtime/persistence-capability.mjs","v3/runtime/hardened-persistence.mjs","v3/runtime/scheduler-lease.mjs","v3/runtime/api-reliability.mjs","v3/runtime/reliability-slo.mjs","v3/s3-runtime-reliability-check.mjs","v3/s3-runtime-reliability-saturation.mjs"],"closesGapIds":["GAP-010","GAP-019"],"residualBoundary":"Repository-bounded reliability does not prove HA, a distributed queue/database, backend migration readiness, approved RTO/RPO, production capacity, production SLO/alert effectiveness or enterprise-ready status."}
+    {"id":"runtime-reliability-contract-s3","status":"repository-proven","evidencePaths":["v3/runtime/persistence-capability.mjs","v3/runtime/hardened-persistence.mjs","v3/runtime/scheduler-lease.mjs","v3/runtime/api-reliability.mjs","v3/runtime/reliability-slo.mjs","v3/s3-runtime-reliability-check.mjs","v3/s3-runtime-reliability-saturation.mjs"],"closesGapIds":["GAP-010","GAP-019"],"residualBoundary":"Repository-bounded reliability does not prove HA, a distributed queue/database, backend migration readiness, approved RTO/RPO, production capacity, production SLO/alert effectiveness or enterprise-ready status."},
+    {"id":"s4-a0-exact-head-observability","status":"repository-proven","evidencePaths":["v3/s4-a0-observability-check.mjs","v3/browser-s4-a0-observability.py"],"residualBoundary":"Exact build/runtime identity and browser observation are repository-bounded; they do not attest deployment provenance or production observability."},
+    {"id":"s4-a1-local-worklist-presentation","status":"repository-proven","evidencePaths":["v3/s4-a1-worklist-presentation-check.mjs","v3/browser-s4-a1-worklist-authority.py"],"residualBoundary":"Procedure-local presentation and typed targeting are proven on the current repository runtime; human comprehension remains E4."},
+    {"id":"s4-a2-local-editorial-composition","status":"repository-proven","evidencePaths":["v3/s4-a2-editorial-composition-check.mjs","v3/browser-s4-a2-editorial-composition.py"],"residualBoundary":"Owner-declared editorial order is repository-proven; it does not imply that every future local composition is usable without regression testing."},
+    {"id":"s4-a3-specialized-local-grammar","status":"repository-proven","evidencePaths":["v3/s4-a3-specialized-local-closure-check.mjs","v3/browser-s4-a3-specialized-local-closure.py"],"residualBoundary":"MC, EP and Proof specialized grammar is proven for current journeys; it does not create a universal card or legal/compliance conclusion."},
+    {"id":"s4-a4-admin-fail-partial-truth","status":"repository-proven","evidencePaths":["v3/s4-a4-admin-truth-closure-check.mjs","v3/browser-s4-a4-admin-truth-closure.py"],"residualBoundary":"Admin endpoint failure isolation and local retry are repository-proven; availability and upstream root-cause attribution remain deployment concerns."},
+    {"id":"s4-a5-final-dom-browser-a11y-oracles","status":"repository-proven","evidencePaths":["v3/s4-a5-browser-a11y-check.mjs","v3/s4-a5-browser-a11y-saturation.mjs","v3/s4-a5-holdout-10k.mjs","v3/browser-s4-a5-final-dom-a11y.py"],"residualBoundary":"Automated final-DOM keyboard/focus/reflow/motion/contrast/target-size effects are repository-proven; human AT effectiveness and usability remain independent E4 evidence."}
   ],
   "currentInternalBlockers": [
     {"id":"S4-ASSURANCE-CONTRACTION","gapIds":["GAP-020"],"targetSlice":"S4"},
