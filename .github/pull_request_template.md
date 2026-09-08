@@ -1,39 +1,58 @@
-## Human outcome
-What can a person understand, decide or complete after this change?
-
-## Epistemic boundary
-- Inputs:
-- Producer:
-- OutcomeEnvelope / state transition:
-- Limitations:
-- Receipt/readback:
-- Forbidden equivalences checked:
-
 ## Scope
-- In scope:
-- Non-goals:
 
-## Validation
-- [ ] `npm run check`
-- [ ] `node v3/authority-contract-check.mjs`
-- [ ] `node v3/docs-command-contract-check.mjs`
-- [ ] `npm test`
-- [ ] `npm run release:check` when this PR is a release candidate
-- [ ] relevant browser/UI GitHub checks inspected on the exact PR HEAD when UI is affected
-- [ ] keyboard/reduced-motion path reviewed when UI is affected
-- [ ] no new visible control without wiring manifest entry
-- [ ] no AI path can mint human-reviewed, human-owned or verified state
+Descrivi la slice semantica o tecnica e l'oggetto governato.
 
-## Deployment and rollback
-- Migration impact:
-- Rollback path:
+## Affected authority
+
+Indica l'owner corrente da `docs/authority-matrix.yaml` e spiega perché la modifica appartiene a quell'owner. Dichiarare esplicitamente se non cambia alcuna authority.
+
+## Claim boundary
+
+Cosa dimostra questa PR e cosa **non** dimostra? Se cambia AI, evidenza, mapping, rischio, applicabilità o decisione umana, esplicita il confine epistemico.
+
+## Non-goals
+
+Elenca ciò che resta intenzionalmente fuori scope e le dipendenze da PR/setting esterni.
+
+## Current semantic/runtime rail
+
+Indica la rail corrente toccata e gli eventuali prerequisite/stacked PR. Evita di promuovere test o DoD storici a current authority.
+
+## Convergence authority
+
+- Trajectory impact: `<planned|intentional-deviation|neutral|reconciliation>`
+- Convergence slice: `<slice-id|NONE>`
+- Authority: `docs/convergence/convergence-authority.json`
+
+Una modifica user-directed fuori dal piano corrente usa `intentional-deviation`: preserva la storia e aggiorna authority + workbook. Una PR realmente neutra usa `Convergence slice: NONE` e non riscrive il workbook.
+
+## Tests and falsification
+
+```text
+npm run docs:check
+node v3/convergence-authority-check.mjs
+npm test
+npm run release:check
+```
+
+Elenca i test realmente eseguiti sulla exact head. `skipped`, verde di un commit precedente e model saturation non equivalgono a runtime/browser/deployment evidence.
+
+## Documentation
+
+- [ ] product/architecture/epistemic authority aggiornata se il significato pubblico cambia
+- [ ] `docs/documentation-manifest.json` aggiornato se cambia il reticolo documentale
+- [ ] convergence authority + workbook aggiornati insieme quando richiesto dal trajectory impact
+- [ ] nessun documento lineage/source-input è stato promosso implicitamente a current
+
+## Compatibility, residual risk and rollback
+
+Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni server-side di GitHub o deployment non vanno dichiarate verificate senza osservazione esterna.
 
 ## GOV-01F — Free/private compensating governance
-- [ ] PR branch is not `main`/`master` and follows the repository branch convention
-- [ ] exact PR HEAD SHA observed before merge
-- [ ] `governance-free-private` green on the exact PR HEAD
-- [ ] all `requiredPreMergeChecks` from `.github/gov-01f-policy.json` green on that HEAD
-- [ ] merge performed through the GitHub PR flow; no direct push to `main`
-- [ ] post-merge `main` SHA and `requiredPostMergeChecks` will be observed and recorded
 
-> Boundary: GOV-01F is compensating governance. It does not make `main` server-side protected.
+- [ ] exact PR HEAD SHA osservato prima del merge
+- [ ] tutti i `requiredPreMergeChecks` da `.github/gov-01f-policy.json` verdi sullo stesso HEAD
+- [ ] merge via PR; nessun direct push a `main`
+- [ ] post-merge `main` e `requiredPostMergeChecks` saranno osservati
+
+> GOV-01F resta compensating governance: non rende `main` server-side protected.

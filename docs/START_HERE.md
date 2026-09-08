@@ -8,17 +8,20 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
 3. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
 4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
-5. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
-6. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
-7. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
-8. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
-9. [Semantic Workspace Closure 3.2.1](SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md) — owner corrente di Processi/Evidence presentation oltre alla closure copy/layout.
-10. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer.
-11. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — lineage della closure ritirata; non è current authority.
-12. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
-13. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
+5. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo, obbligo di reconciliation PR e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
+6. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
+7. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
+8. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
+9. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
+10. [Semantic Workspace Closure 3.2.1](SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md) — owner corrente di Processi/Evidence presentation oltre alla closure copy/layout.
+11. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer.
+12. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — lineage della closure ritirata; non è current authority.
+13. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
+14. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
 Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners` sono assi distinti: la presentation corrente è distribuita tra owner canonici e non esiste più un final cascade resolver globale.
+
+`docs/convergence/convergence-authority.json` è l'owner corrente della **traiettoria di sviluppo e della reconciliation PR**. La proiezione leggibile è `docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx`; è derivata e non può sostituire Git, product, runtime o claim authority. Ogni PR verso `main` dichiara `Trajectory impact` e `Convergence slice`.
 
 ## Contributor e community path
 
@@ -36,6 +39,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 | Se devi cambiare | Parti da | Non creare |
 |---|---|---|
 | product intent/confini | `docs/PRODUCT.md` | una product truth in prompt/PR/DoD |
+| traiettoria / sequenza PR / workbook | `docs/convergence/convergence-authority.json` + active workbook derivato | roadmap implicite, workbook-only authority o auto-commit CI a `main` |
 | composition root UI | `v3/public/ui/active-experience.js` | una seconda root |
 | contratto/copy 3.2 | `native-semantic-lattice-3-2.js` | copy locale divergente |
 | Home presentation | `enterprise-workspace-3-2.css` | un final resolver globale |
@@ -84,6 +88,7 @@ I documenti storici classificati come lineage non sono autorità corrente. `00_P
 npm run docs:check
 npm test
 npm run release:check
+node v3/convergence-authority-check.mjs
 ```
 
 Per lavoro specifico sulla composizione/presentation corrente:

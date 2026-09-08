@@ -1,4 +1,4 @@
-version: 13
+version: 14
 surfaces:
   product_intent:
     authority: docs/PRODUCT.md
@@ -22,6 +22,13 @@ surfaces:
     saturation: scripts/documentation-lattice-saturation.mjs
     dod: docs/DOCUMENTATION_RUNTIME_1_0_DOD.md
     classification: executable-documentation-contract
+  convergence_authority:
+    authority: docs/convergence/convergence-authority.json
+    projection: docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx
+    checker: v3/convergence-authority-check.mjs
+    receipt: artifacts/convergence-authority-receipt.json
+    classification: repository-convergence-planning-reconciliation-authority
+    scope: development-trajectory-pr-reconciliation-and-workbook-binding
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:
@@ -128,6 +135,12 @@ rules:
   - documentation lifecycle and authority topics are registered in docs/documentation-manifest.json; the registry may not replace substantive product, architecture, epistemic, UI or runtime owners
   - source-input, roadmap, lineage and generated documents may not become current authority by filename recency, PR recency or implicit reference
   - docs/PRODUCT.md is the only current product-intent authority; prompts and TO-BE documents are inputs or roadmap
+  - convergence_authority owns development sequencing and reconciliation only; it cannot redefine product, runtime, legal/compliance or Git merge facts
+  - workbook projection is derived from convergence_authority and may not become a second product/runtime authority
+  - every pull request to main declares Trajectory impact and Convergence slice; planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update convergence_authority and its workbook projection together while neutral NO_DELTA does neither
+  - a user-directed out-of-plan change is represented as intentional-deviation, preserves prior trajectory history and replans forward rather than being rejected merely because it was absent from the previous workbook
+  - post-merge convergence facts are receipts over real Git/GitHub SHAs and are not predicted or written as a self-referential future SHA inside the commit that creates them
+  - CI may verify convergence and emit untracked receipts but may not gain contents:write or auto-commit authority to main for workbook reconciliation
   - UI labels cannot redefine epistemic status
   - AI output cannot create human-reviewed or human-owned state
   - enduser_language defines the human-facing policy; semantic_foundation_vocabulary and semantic_foundation_actions implement it and may not widen legal or decision authority

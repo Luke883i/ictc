@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0.0",
+  "authority": "convergence-authority",
+  "classification": "repository-convergence-planning-reconciliation-authority",
+  "scope": [
+    "development trajectory sequencing",
+    "pull-request reconciliation obligation",
+    "active workbook projection binding"
+  ],
+  "nonAuthority": [
+    "Git merge facts",
+    "product semantics",
+    "runtime business behavior",
+    "legal or compliance conclusions",
+    "deployment or independent assurance"
+  ],
+  "baseAnchor": {
+    "mainSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
+    "mergedPr": 129,
+    "meaning": "post-a5-main-reconciliation",
+    "observationDate": "2026-09-08"
+  },
+  "observedContext": {
+    "latestMergedPr": {
+      "number": 129,
+      "mergeSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
+      "title": "A5-MAIN: reconcile post-merge capability truth"
+    },
+    "priorSemanticPr": {
+      "number": 128,
+      "mergeSha": "0b3bb752efb6251aea83857fe3d64b93b9527b50",
+      "title": "S4-A5: reconcile browser and accessibility oracles"
+    },
+    "exactMain": {
+      "combinedStatus": "success",
+      "failedRuns": 0,
+      "queuedRuns": 0,
+      "inProgressRuns": 0
+    },
+    "branchProtection": {
+      "protected": false,
+      "classification": "external-evidence-boundary"
+    }
+  },
+  "activation": {
+    "id": "GOV-CWA-1",
+    "trajectoryImpact": "intentional-deviation",
+    "stateOnPullRequest": "candidate",
+    "stateWhenThisVersionIsOnMain": "active",
+    "insertedBefore": "S4-A6",
+    "reason": "explicit user-directed activation of convergence-workbook governance before product execution resumes"
+  },
+  "activeTrajectory": {
+    "parentSlice": "S4",
+    "completedThrough": "S4-A5",
+    "nextSlice": "S4-A6",
+    "plannedOrder": [
+      "S4-A6",
+      "S5-B0",
+      "S5-B1",
+      "S5-B2"
+    ],
+    "repositoryBoundedStop": "S5-B2",
+    "externalRail": "E4"
+  },
+  "deviations": [
+    {
+      "id": "DEV-001",
+      "kind": "intentional-deviation",
+      "source": "user-directed",
+      "baseMainSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
+      "insertedSlice": "GOV-CWA-1",
+      "beforeSlice": "S4-A6",
+      "effect": "activate repository convergence governance; preserve the product sequence beginning with S4-A6",
+      "historyPreserved": true
+    }
+  ],
+  "trajectoryImpactPolicy": {
+    "field": "Trajectory impact",
+    "sliceField": "Convergence slice",
+    "allowed": [
+      "planned",
+      "intentional-deviation",
+      "neutral",
+      "reconciliation"
+    ],
+    "neutralSliceToken": "NONE",
+    "rules": {
+      "planned": "must name the current nextSlice and update authority plus workbook when trajectory-sensitive surfaces change",
+      "intentional-deviation": "must name the inserted or reshaped slice, preserve prior history, and update authority plus workbook on the exact PR base",
+      "neutral": "must use Convergence slice NONE, must not change trajectory-sensitive surfaces, authority or workbook",
+      "reconciliation": "must name the reconciled boundary and update authority plus workbook on the exact PR base"
+    }
+  },
+  "criticalPathPrefixes": [
+    "v3/",
+    "schemas/",
+    ".github/",
+    "docs/convergence/"
+  ],
+  "criticalExactPaths": [
+    "AGENTS.md",
+    "GOVERNANCE.md",
+    "package.json",
+    "package-lock.json",
+    "docs/authority-matrix.yaml",
+    "docs/documentation-manifest.json"
+  ],
+  "projection": {
+    "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
+    "version": "v3.8-gov-cwa1-minimal",
+    "classification": "derived-active-minimal-projection",
+    "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
+    "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
+    "sha256": "bac9cc3bfa2b5a65629cd6ff34eb3ee017a8e4f78055ebbd1d10b6bd68bcb187",
+    "bindingSha256": "fbd62543ba27f5349a2722d259f79a8eb92c53893b2bf624fb01f81ddc3fd63c",
+    "bindingSheet": "GOV_CWA1_BINDING",
+    "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
+  },
+  "receipt": {
+    "path": "artifacts/convergence-authority-receipt.json",
+    "saturationPath": "artifacts/convergence-authority-saturation.json",
+    "tracked": false,
+    "mergeFactAuthority": "Git/GitHub event after the SHA exists",
+    "selfReferenceForbidden": true
+  },
+  "claimBoundary": "GOV-CWA-1 establishes a repository-bounded planning/reconciliation membrane and an active workbook projection. It does not make main server-side protected, does not establish enterprise-ready, legal compliance, production effectiveness, independent review, scanner efficacy or human accessibility effectiveness."
+}
