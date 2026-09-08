@@ -88,12 +88,13 @@ jobs:
           if [[ -f "$error" ]]; then
             phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
             message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'browser contract failed').replace(/[\\r\\n]+/g,' '))")"
+            state=failure
             if [[ -f "$diagnostic" ]]; then
               compact="$(node -e "const p=require('./$diagnostic');process.stdout.write(String(p.compact||''))")"
-              message="$message | $compact"
+              description="failure ${phase}: ${compact}"
+            else
+              description="failure ${phase}: ${message}"
             fi
-            state=failure
-            description="failure ${phase}: ${message}"
           elif [[ -f "$report" ]]; then
             phase=complete
             state=success
