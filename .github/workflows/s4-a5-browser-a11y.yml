@@ -27,7 +27,7 @@ jobs:
           node --check v3/s4-a5-browser-a11y-check.mjs
           node --check v3/s4-a5-browser-a11y-saturation.mjs
           node --check v3/s4-a5-holdout-10k.mjs
-          python -m py_compile v3/browser-s4-a5-final-dom-a11y.py
+          python -m py_compile v3/browser-s4-a5-final-dom-a11y.py v3/browser-s4-a5-geometry-diagnostic.py
       - name: A5 source/user-effect contract
         run: node v3/s4-a5-browser-a11y-check.mjs
       - name: A5 source-model mutation rail
@@ -60,6 +60,9 @@ jobs:
           echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
+      - name: A5 geometry diagnostic
+        shell: bash
+        run: python -u v3/browser-s4-a5-geometry-diagnostic.py
       - name: A5 exact-head final-DOM browser and accessibility effects
         shell: bash
         run: |
@@ -81,9 +84,14 @@ jobs:
           set -u
           error='artifacts/browser-s4-a5-final-dom-a11y-error.json'
           report='artifacts/browser-s4-a5-final-dom-a11y.json'
+          diagnostic='artifacts/s4-a5-geometry-diagnostic.json'
           if [[ -f "$error" ]]; then
             phase="$(node -e "const p=require('./$error');process.stdout.write(String(p.phase||'unknown'))")"
             message="$(node -e "const p=require('./$error');process.stdout.write(String(p.message||'browser contract failed').replace(/[\\r\\n]+/g,' '))")"
+            if [[ -f "$diagnostic" ]]; then
+              compact="$(node -e "const p=require('./$diagnostic');process.stdout.write(String(p.compact||''))")"
+              message="$message | $compact"
+            fi
             state=failure
             description="failure ${phase}: ${message}"
           elif [[ -f "$report" ]]; then

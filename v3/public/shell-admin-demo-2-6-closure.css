@@ -2,7 +2,6 @@
 html[data-ictc-experience="market-1"]{--shell-footer-reserve:44px}
 html[data-ictc-experience="market-1"] body{padding-bottom:0!important}
 html[data-ictc-experience="market-1"] .stable-legal-footer{position:static!important;inset:auto!important;width:100%;box-sizing:border-box}
-html[data-ictc-experience="market-1"] .stable-legal-footer{margin-block-start:1rem}
 html[data-ictc-experience="market-1"] .procedure-frame-kicker{font-size:.65rem!important}
 @media(max-width:900px) and (min-width:761px){
   html[data-ictc-experience="market-1"] .stable-header-inner{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"brand . actions" "nav nav nav";gap:.35rem .5rem;padding-block:.35rem}
