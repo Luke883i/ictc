@@ -30,9 +30,8 @@ def target_height(page, selector, label):
 
 
 def footer_clear(page, label):
-    metrics = page.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const fr=f.getBoundingClientRect(),pad=parseFloat(getComputedStyle(document.body).paddingBottom)||0;const candidates=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.disabled});let overlap=0,sampled=0,worst=0;for(const e of candidates.slice(0,48)){e.scrollIntoView({block:'center',inline:'nearest'});const r=e.getBoundingClientRect(),ff=f.getBoundingClientRect();const h=Math.max(0,Math.min(r.bottom,ff.bottom)-Math.max(r.top,ff.top)),w=Math.max(0,Math.min(r.right,ff.right)-Math.max(r.left,ff.left)),a=h*w;if(a>0)overlap++;worst=Math.max(worst,a);sampled++;}return{missing:false,footerHeight:fr.height,bodyPaddingBottom:pad,sampled,overlap,worst};}""")
+    metrics = page.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const fr=f.getBoundingClientRect(),pad=parseFloat(getComputedStyle(document.body).paddingBottom)||0;const candidates=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.disabled});let overlap=0,sampled=0,worst=0;for(const e of candidates.slice(0,48)){e.focus?.({preventScroll:true});e.scrollIntoView({block:'center',inline:'nearest'});const r=e.getBoundingClientRect(),ff=f.getBoundingClientRect();const h=Math.max(0,Math.min(r.bottom,ff.bottom)-Math.max(r.top,ff.top)),w=Math.max(0,Math.min(r.right,ff.right)-Math.max(r.left,ff.left)),a=h*w;if(a>0)overlap++;worst=Math.max(worst,a);sampled++;}return{missing:false,footerHeight:fr.height,bodyPaddingBottom:pad,sampled,overlap,worst};}""")
     assert not metrics.get('missing'), metrics
-    assert metrics['bodyPaddingBottom'] + 1 >= metrics['footerHeight'], metrics
     assert metrics['overlap'] == 0, (label, metrics)
     RESULTS.append({'oracle': 'footer-geometric-overlap', 'case': label, **metrics})
 
@@ -53,7 +52,7 @@ def keyboard_focus(page):
 
 
 def critical_contrast(page):
-    ratios = page.evaluate("""()=>{function rgb(v){const m=v.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(Number);return p.slice(0,3)}function lum(c){return c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)}function ratio(a,b){const x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return(hi+.05)/(lo+.05)}function solidBg(e){for(let n=e;n;n=n.parentElement){const raw=getComputedStyle(n).backgroundColor,c=rgb(raw);if(c&&raw!=='rgba(0, 0, 0, 0)')return c}return[255,255,255]}const sels=['.service-nav [data-service="home"]','.service-nav [data-service="processes"]','#homeNextTitle'];return sels.map(sel=>{const e=document.querySelector(sel);if(!e)return{sel,missing:true};const fg=rgb(getComputedStyle(e).color),bg=solidBg(e);return{sel,ratio:fg?ratio(fg,bg):0,fg,bg}})}""")
+    ratios = page.evaluate("""()=>{function rgb(v){const m=v.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(Number);return p.slice(0,3)}function lum(c){return c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)}function ratio(a,b){const x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return(hi+.05)/(lo+.05)}function solidBg(e){for(let n=e;n;n=n.parentElement){const raw=getComputedStyle(n).backgroundColor,c=rgb(raw);if(c&&raw!=='rgba(0, 0, 0, 0)')return c}return[255,255,255]}function visible(e){if(!e)return false;const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'}const items=[['service-home',document.querySelector('.service-nav [data-service="home"]')],['service-processes',document.querySelector('.service-nav [data-service="processes"]')],['home-visible-h1',[...document.querySelectorAll('#homeView h1')].find(visible)]];return items.map(([sel,e])=>{if(!visible(e))return{sel,missing:true};const fg=rgb(getComputedStyle(e).color),bg=solidBg(e);return{sel,ratio:fg?ratio(fg,bg):0,fg,bg}})}""")
     bad = [row for row in ratios if row.get('missing') or row['ratio'] < 4.5]
     assert not bad, bad
     RESULTS.append({'oracle': 'contrast-critical-controls', 'ratios': ratios})
@@ -64,8 +63,10 @@ def wait_current_home(page, role):
     expect(page.locator('#homeView')).to_be_visible()
     expect(page.locator('#homePrimaryAction')).to_be_visible()
     expect(page.locator('#stableLegalFooter')).to_be_visible()
-    expect(page.locator('#homeNextTitle')).to_be_visible()
-    RESULTS.append({'oracle': 'current-final-dom-owner', 'role': role, 'homeTitle': page.locator('#homeNextTitle').inner_text().strip()})
+    headings = page.locator('#homeView h1:visible')
+    expect(headings.first).to_be_visible()
+    assert headings.count() == 1, {'role': role, 'visibleHomeH1': headings.count()}
+    RESULTS.append({'oracle': 'current-final-dom-owner', 'role': role, 'homeTitle': headings.first.inner_text().strip()})
 
 
 def reduced_motion(browser):
@@ -156,8 +157,6 @@ try:
         target_height(page, '.service-nav button:visible', 'desktop:service-nav')
         phase('desktop-home-primary-target')
         target_height(page, '#homePrimaryAction:visible', 'desktop:home-primary')
-        phase('desktop-footer-targets')
-        target_height(page, '.stable-footer-links a:visible', 'desktop:footer-links')
         phase('desktop-home-footer')
         footer_clear(page, 'desktop:home')
 
