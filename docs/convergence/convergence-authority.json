@@ -15,21 +15,21 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "190bbe0bc97ea0cef10806b1d4bba8aed043b486",
-    "mergedPr": 131,
-    "meaning": "post-a6-ux1-fixed-safe-footer",
+    "mainSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
+    "mergedPr": 132,
+    "meaning": "post-a6-ux2-chrome-palette",
     "observationDate": "2026-09-08"
   },
   "observedContext": {
     "latestMergedPr": {
+      "number": 132,
+      "mergeSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
+      "title": "S4-A6 UX2: converge canonical chrome palette"
+    },
+    "priorSemanticPr": {
       "number": 131,
       "mergeSha": "190bbe0bc97ea0cef10806b1d4bba8aed043b486",
       "title": "S4-A6 UX1: fixed-safe footer runtime contract"
-    },
-    "priorSemanticPr": {
-      "number": 130,
-      "mergeSha": "25b1dde1c6032f1057a7d63a449ab2bdb43a0299",
-      "title": "GOV-CWA-1: activate convergence workbook authority"
     },
     "exactMain": {
       "combinedStatus": "success",
@@ -52,20 +52,19 @@
     "reason": "explicit user-directed activation of convergence-workbook governance before product execution resumes"
   },
   "currentExecution": {
-    "trajectoryImpact": "planned",
+    "trajectoryImpact": "reconciliation",
     "parentSlice": "S4-A6",
-    "currentSubSlice": "A6-UX2",
-    "title": "header/footer palette convergence",
+    "currentSubSlice": "A6-UX2-MAIN",
+    "title": "post-merge convergence reconciliation",
     "stateOnPullRequest": "candidate",
     "parentRemainsOpen": true,
     "runtimeContract": [
-      "live topbar bound directly to canonical workspace chrome owner",
-      "design-tokens remains the single shared chrome color owner",
-      "business surface 2.7 no longer owns header or footer palette",
-      "business 2.7 chrome closure retired from runtime and tree",
-      "footer gradient remains darker than header gradient stop-by-stop",
-      "on-dark and muted chrome text retain at least 4.5 contrast against all canonical gradient stops",
-      "A6-UX1 fixed-safe footer geometry remains unchanged and palette-free"
+      "A6-UX2 is observed merged on exact main anchor 69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
+      "latest merged semantic PR is #132 and its merge SHA equals the base anchor",
+      "exact-main observed context is green-quiescent with zero failed, queued or in-progress workflow runs at audit time",
+      "A6-UX2 chrome ownership and A6-UX1 fixed-safe footer geometry remain unchanged",
+      "this reconciliation adds no business write, runtime route, presentation resolver or release promotion",
+      "parent S4-A6 remains open and the next planned slice remains S4-A6"
     ]
   },
   "activeTrajectory": {
@@ -90,6 +89,18 @@
       "insertedSlice": "GOV-CWA-1",
       "beforeSlice": "S4-A6",
       "effect": "activate repository convergence governance; preserve the product sequence beginning with S4-A6",
+      "historyPreserved": true
+    }
+  ],
+  "reconciliations": [
+    {
+      "id": "REC-A6-UX2-MAIN",
+      "kind": "reconciliation",
+      "source": "post-merge-observation",
+      "baseMainSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
+      "mergedPr": 132,
+      "reconciledSubSlice": "A6-UX2",
+      "result": "A6-UX2 observed on main; parent S4-A6 remains open",
       "historyPreserved": true
     }
   ],
@@ -126,12 +137,12 @@
   ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.10-a6-ux2-prepr-minimal",
+    "version": "v3.11-a6-ux2-main-reconciliation",
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "5b2641856ccb71cefc0051a9d018e4945511eae50f84dc0009e7fa5bcfb22fba",
-    "bindingSha256": "e9910d8de8474e52eba132f9821621d7e8c73c9bed204bf55d1003114c046831",
+    "sha256": "5bf4fb4bfa6d32e49284c19869f4b4eb04d16cdb07ea56a1d15b4a02aacf5f71",
+    "bindingSha256": "6c0f16e416bdb9e1048cbed7f9f77d01121e1821f4172c1da016927bfa2847e3",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
   },
@@ -142,5 +153,5 @@
     "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "A6-UX2 is a planned execution unit inside S4-A6. It contracts chrome palette ownership onto the existing token and workspace-chrome authorities, preserves A6-UX1 geometry, and adds E2/E3 automated evidence without closing S4-A6, promoting release identity, establishing branch protection, production effectiveness, human aesthetic preference, WCAG certification, independent assurance or legal compliance."
+  "claimBoundary": "A6-UX2-MAIN reconciles the observed post-merge fact that PR #132 is on main@69da13b76355e18bfa80f5ee92cd0067a97b4bc8. It changes convergence truth only: A6-UX2 runtime semantics remain unchanged, parent S4-A6 remains open, and no enterprise-candidate, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, human-accessibility or legal/compliance claim is created."
 }
