@@ -97,8 +97,20 @@ jobs:
       - name: A6-UX3 browser failure - AO
         if: steps.browser.outcome == 'failure' && (contains(steps.browser_phase.outputs.phase, 'AO-01') || startsWith(steps.browser_phase.outputs.phase, 'ao-'))
         run: exit 1
-      - name: A6-UX3 browser failure - MC admin
-        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'MC-01-owner' || steps.browser_phase.outputs.phase == 'mc-assert')
+      - name: A6-UX3 browser failure - MC framework grammar
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'MC-01-owner' || steps.browser_phase.outputs.phase == 'mc-frameworks' || steps.browser_phase.outputs.phase == 'mc-duplicates' || steps.browser_phase.outputs.phase == 'mc-scopes')
+        run: exit 1
+      - name: A6-UX3 browser failure - MC scope overlay
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-scope-open' || steps.browser_phase.outputs.phase == 'mc-scope-position' || steps.browser_phase.outputs.phase == 'mc-scope-close')
+        run: exit 1
+      - name: A6-UX3 browser failure - MC standard entry
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-standard-entries' || steps.browser_phase.outputs.phase == 'mc-standard-open')
+        run: exit 1
+      - name: A6-UX3 browser failure - MC master detail
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-standard-detail' || steps.browser_phase.outputs.phase == 'mc-standard-node' || steps.browser_phase.outputs.phase == 'mc-standard-readonly' || steps.browser_phase.outputs.phase == 'mc-standard-close')
+        run: exit 1
+      - name: A6-UX3 browser failure - MC geometry
+        if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'mc-geometry'
         run: exit 1
       - name: A6-UX3 browser failure - role boundary
         if: steps.browser.outcome == 'failure' && startsWith(steps.browser_phase.outputs.phase, 'user-')
