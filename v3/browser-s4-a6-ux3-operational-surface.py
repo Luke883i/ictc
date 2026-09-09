@@ -18,9 +18,9 @@ def no_overflow(page,label):
  RESULTS.append({'oracle':'reflow','case':label,'metrics':m})
 
 def footer_clear(page,label):
- m=page.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const fr=f.getBoundingClientRect();const visible=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.disabled};const offenders=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(visible).map(e=>{const r=e.getBoundingClientRect(),h=Math.max(0,Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top)),w=Math.max(0,Math.min(r.right,fr.right)-Math.max(r.left,fr.left));return{e,area:h*w}}).filter(x=>x.area>.5);return{missing:false,overlap:offenders.length,max:Math.max(0,...offenders.map(x=>x.area))}}""")
- assert not m.get('missing') and m['overlap']==0,(label,m)
- RESULTS.append({'oracle':'footer-clear','case':label,'metrics':m})
+ m=page.evaluate("""async()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const frame=()=>new Promise(r=>requestAnimationFrame(r));const exposed=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);if(!(r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none')||e.disabled)return false;for(let n=e.parentElement;n;n=n.parentElement){if(n.matches?.('details:not([open])')){const own=n.querySelector(':scope > summary');if(own!==e&&!own?.contains(e))return false;}}return true;};const candidates=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(exposed).slice(0,48),offenders=[];for(const e of candidates){e.focus?.();await frame();await frame();const r=e.getBoundingClientRect(),fr=f.getBoundingClientRect(),h=Math.max(0,Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top)),w=Math.max(0,Math.min(r.right,fr.right)-Math.max(r.left,fr.left)),area=h*w;if(area>.5)offenders.push({tag:e.tagName,id:e.id||'',text:(e.textContent||'').trim().replace(/\s+/g,' ').slice(0,80),area});}return{missing:false,sampled:candidates.length,overlap:offenders.length,offenders}}""")
+ assert not m.get('missing') and m['overlap']==0,(label,m.get('offenders',[])[:3])
+ RESULTS.append({'oracle':'footer-focus-clear','case':label,'metrics':m})
 
 def processes(page):return page.locator('.service-nav [data-service="processes"]')
 
@@ -59,7 +59,7 @@ try:
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch)
   admin_desktop(browser);user_boundary(browser);mobile(browser,390,844);mobile(browser,320,800)
-  report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX3','contract':'operational surface convergence','oracles':['operational-owner-matrix','standard-single-entry','scope-popup-overlay','standard-master-detail','role-boundary','reflow','footer-clear','read-only-observation'],'results':RESULTS,'claimBoundary':'Automated exact-head Chromium evidence for repository-owned operational composition. Parent S4-A6 remains open; this does not establish human usability, assistive-technology effectiveness, legal compliance, production effectiveness, enterprise-candidate status or independent assurance.'}
+  report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX3','contract':'operational surface convergence','oracles':['operational-owner-matrix','standard-single-entry','scope-popup-overlay','standard-master-detail','role-boundary','reflow','footer-focus-clear','read-only-observation'],'results':RESULTS,'claimBoundary':'Automated exact-head Chromium evidence for repository-owned operational composition. Parent S4-A6 remains open; this does not establish human usability, assistive-technology effectiveness, legal compliance, production effectiveness, enterprise-candidate status or independent assurance.'}
   (ART/'browser-s4-a6-ux3-operational-surface.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8');print(json.dumps({'ok':True,'slice':'S4-A6','executionUnit':'A6-UX3','oracles':len(report['oracles'])}),flush=True);browser.close()
 except BaseException as exc:
  fail(exc);traceback.print_exc();raise
