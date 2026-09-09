@@ -15,21 +15,21 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
-    "mergedPr": 132,
-    "meaning": "post-a6-ux2-chrome-palette",
-    "observationDate": "2026-09-08"
+    "mainSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
+    "mergedPr": 133,
+    "meaning": "post-a6-ux2-main-reconciliation",
+    "observationDate": "2026-09-09"
   },
   "observedContext": {
     "latestMergedPr": {
+      "number": 133,
+      "mergeSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
+      "title": "A6-UX2-MAIN: reconcile post-merge convergence authority"
+    },
+    "priorSemanticPr": {
       "number": 132,
       "mergeSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
       "title": "S4-A6 UX2: converge canonical chrome palette"
-    },
-    "priorSemanticPr": {
-      "number": 131,
-      "mergeSha": "190bbe0bc97ea0cef10806b1d4bba8aed043b486",
-      "title": "S4-A6 UX1: fixed-safe footer runtime contract"
     },
     "exactMain": {
       "combinedStatus": "success",
@@ -52,19 +52,21 @@
     "reason": "explicit user-directed activation of convergence-workbook governance before product execution resumes"
   },
   "currentExecution": {
-    "trajectoryImpact": "reconciliation",
+    "trajectoryImpact": "planned",
     "parentSlice": "S4-A6",
-    "currentSubSlice": "A6-UX2-MAIN",
-    "title": "post-merge convergence reconciliation",
+    "currentSubSlice": "A6-UX3",
+    "title": "operational surface convergence",
     "stateOnPullRequest": "candidate",
     "parentRemainsOpen": true,
     "runtimeContract": [
-      "A6-UX2 is observed merged on exact main anchor 69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
-      "latest merged semantic PR is #132 and its merge SHA equals the base anchor",
-      "exact-main observed context is green-quiescent with zero failed, queued or in-progress workflow runs at audit time",
-      "A6-UX2 chrome ownership and A6-UX1 fixed-safe footer geometry remain unchanged",
-      "this reconciliation adds no business write, runtime route, presentation resolver or release promotion",
-      "parent S4-A6 remains open and the next planned slice remains S4-A6"
+      "Home remains priority-first and does not restore a numeric compliance or maturity score.",
+      "RN-01 keeps source/material intake first and adds collapsible/filterable monitoring records without changing business providers.",
+      "EC-01 adds a filterable event registry and terminal records do not request a new formulation verification.",
+      "AO-01 keeps stable record identifiers, lifecycle state and fail-closed activation prerequisites visible to the local owner.",
+      "MC-01 retains one visible Comprendi standard entry per framework and retires the duplicate visible concept drilldown.",
+      "MC-01 scope editor becomes an in-page popup overlay while preserving the existing standards scope route; the standard browser remains a read-only master-detail understanding surface.",
+      "the new operational presentation layer owns no independent palette, business write API or release promotion.",
+      "A6-UX1 fixed-safe footer geometry and A6-UX2 canonical chrome palette remain unchanged."
     ]
   },
   "activeTrajectory": {
@@ -137,12 +139,12 @@
   ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.11-a6-ux2-main-reconciliation",
+    "version": "v3.12-a6-ux3-prepr-minimal",
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "5bf4fb4bfa6d32e49284c19869f4b4eb04d16cdb07ea56a1d15b4a02aacf5f71",
-    "bindingSha256": "6c0f16e416bdb9e1048cbed7f9f77d01121e1821f4172c1da016927bfa2847e3",
+    "sha256": "7e56edca698f313af0b21d7b5d34b407cb9458561c5a1349a83125ab9b3b2b7e",
+    "bindingSha256": "17af456bff97888c4dff64798ea691545652efb17b001dc990071437fca29efd",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
   },
@@ -153,5 +155,5 @@
     "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "A6-UX2-MAIN reconciles the observed post-merge fact that PR #132 is on main@69da13b76355e18bfa80f5ee92cd0067a97b4bc8. It changes convergence truth only: A6-UX2 runtime semantics remain unchanged, parent S4-A6 remains open, and no enterprise-candidate, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, human-accessibility or legal/compliance claim is created."
+  "claimBoundary": "A6-UX3 is a planned operational-surface execution unit inside S4-A6. It changes repository-owned presentation, preserves the existing business routes, and makes standard scope editing an in-page popup overlay while keeping standard understanding read-only; parent S4-A6 remains open. No enterprise-candidate, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, representative-human usability, accessibility certification or legal/compliance claim is created."
 }
