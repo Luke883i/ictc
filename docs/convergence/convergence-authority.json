@@ -154,7 +154,7 @@
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "14b780911d3ac4512d7032dfb94bb58aabe618f32a883953048f53024fd14e53",
+    "sha256": "66c084dd1c4a2c5b4e3fd4ef2b1293aad09280c5e206000d9a0c72fbfbb25456",
     "bindingSha256": "b0f824f13c46510aae191a563157244dced5667ad8d8dd3425c1c7b95663a47a",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"

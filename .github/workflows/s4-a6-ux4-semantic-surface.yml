@@ -28,11 +28,14 @@ jobs:
           node --check v3/public/ui/standard-browser.js
           node --check v3/s4-a6-ux4-semantic-surface-model.mjs
           node --check v3/s4-a6-ux4-uiux-mount-model.mjs
+          node --check v3/s4-a6-ux4-ontology-uiux-model.mjs
           node --check v3/s4-a6-ux4-semantic-surface-check.mjs
           node --check v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
           node --check v3/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
+          node --check v3/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
           node --check v3/s4-a6-ux3-operational-surface-model.mjs
           node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
+          node --check v3/current-gate-registry.mjs
           python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
       - name: A6-UX4 semantic source contract
@@ -41,6 +44,8 @@ jobs:
         run: node v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
       - name: A6-UX4 screenshot-derived UIUX mount falsification 100,000 cases
         run: node v3/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
+      - name: A6-UX4 editorial semantic visual ontological falsification 100,000 cases
+        run: node v3/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
       - name: A6-UX3 successor-lineage compatibility
         run: |
           node v3/s4-a6-ux3-operational-surface-check.mjs
@@ -84,6 +89,7 @@ jobs:
           path: |
             artifacts/s4-a6-ux4-semantic-surface-fuzz-10k.json
             artifacts/s4-a6-ux4-uiux-mount-fuzz-100k.json
+            artifacts/s4-a6-ux4-ontology-uiux-fuzz-100k.json
             artifacts/browser-s4-a6-ux4-semantic-surface*.json
             artifacts/convergence-authority-*.json
           if-no-files-found: warn
