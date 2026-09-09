@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {validateSemanticSurfaceSource} from './s4-a6-ux4-semantic-surface-model.mjs';
+import {USER_QUESTIONS,NEGATIVE_PATTERNS} from './s4-a6-ux4-uiux-mount-model.mjs';
+const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
+const sources={bootstrap:read('./public/ui/visual-epistemic-runtime.js'),runtime:read('./public/ui/semantic-surface-a6-ux4.js'),css:read('./public/a6-ux4-semantic-surface.css'),styles:read('./public/styles.css')};
+assert.deepEqual(validateSemanticSurfaceSource(sources),[]);
+for(const token of ['integrateWorklist','nativeTarget(ref)','semantic-bridge','fallback-visible','a6Ux4ScopeHidden','Azioni correnti','Tutti gli elementi','compressRegistries','compressContext','a6Ux4MaterialEntry','a6Ux4DuplicateHead','a6Ux4ReferenceBand','proofOrder'])assert.ok(sources.runtime.includes(token),`UX4 mount missing ${token}`);
+for(const token of ['[data-a6-ux4-mount="semantic-bridge"]','[data-a6-ux4-scope-hidden="true"]','a6-ux4-scope-filter','data-a6-ux4-reference-band','standard-browser-tools','grid-template-columns:minmax(0,1fr)','forced-colors','prefers-reduced-motion'])assert.ok(sources.css.includes(token),`UX4 CSS missing ${token}`);
+const standardBrowser=read('./public/ui/standard-browser.js');for(const token of ['function nodeIdentity(node)','identity.duplicate','Sintesi specifica ICTC non disponibile'])assert.ok(standardBrowser.includes(token),`standard browser dedup missing ${token}`);
+assert.equal(/\bfetch\s*\(|\bapi\s*\(/.test(sources.runtime),false,'UX4 mounting layer must not own network/business writes');
+assert.equal(/#[0-9a-fA-F]{3,8}\b/.test(sources.css),false,'UX4 mounting layer must not create independent palette values');
+assert.equal(USER_QUESTIONS.length,15);assert.ok(NEGATIVE_PATTERNS.length>=25);
+console.log(JSON.stringify({ok:true,suite:'s4-a6-ux4-semantic-surface-check',executionUnit:'A6-UX4',singleCollectionMount:true,failClosedFallback:true,semanticQuestions:USER_QUESTIONS.length,negativePatterns:NEGATIVE_PATTERNS.length,businessWriteAuthority:0,paletteAuthority:0,claimBoundary:'Repository/source contract evidence only; browser geometry and human usability remain separate evidence classes.'}));
