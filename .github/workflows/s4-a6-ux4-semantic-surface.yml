@@ -79,14 +79,32 @@ jobs:
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
           echo "ICTC_EXPECT_BUILD_SHA=$ICTC_EXPECT_BUILD_SHA" >> "$GITHUB_ENV"
       - name: A6-UX4 exact-head Chromium semantic UIUX surface
-        run: python -u v3/browser-s4-a6-ux4-semantic-surface.py
+        id: ux4_browser
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python -u v3/browser-s4-a6-ux4-semantic-surface.py
+          rc=$?
+          phase=pass
+          if [ "$rc" -ne 0 ] && [ -f artifacts/browser-s4-a6-ux4-semantic-surface-error.json ]; then
+            phase="$(python -c "import json;print(json.load(open('artifacts/browser-s4-a6-ux4-semantic-surface-error.json'))['phase'])")"
+          fi
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+      - name: A6-UX4 browser diagnostic · ${{ steps.ux4_browser.outputs.phase }}
+        if: steps.ux4_browser.outcome == 'failure'
+        shell: bash
+        run: |
+          cat artifacts/browser-s4-a6-ux4-semantic-surface-error.json || true
+          exit 1
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
-          name: s4-a6-ux4-semantic-surface-evidence
+          name: s4-a6-ux4-semantic-surface-evidence-${{ steps.ux4_browser.outputs.phase || 'pre-browser' }}
           path: |
             artifacts/s4-a6-ux4-semantic-surface-fuzz-10k.json
             artifacts/s4-a6-ux4-uiux-mount-fuzz-100k.json
