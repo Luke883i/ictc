@@ -39,7 +39,8 @@ jobs:
           from playwright.sync_api import sync_playwright
           with sync_playwright() as pw:
             b=pw.chromium.launch(headless=True,args=['--no-sandbox'],executable_path=os.environ['ICTC_CHROMIUM']);c=b.new_context(viewport={'width':1440,'height':950});c.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
-            p=c.new_page();p.set_default_timeout(5000);p.goto(os.environ['ICTC_BASE_URL']+'/?view=processes',wait_until='networkidle');p.locator('#procedureHub [data-process-code="EC-01"] :scope > footer .procedure-primary').click();p.wait_for_function("()=>document.querySelector('#incidentsView')?.offsetParent!==null&&document.querySelector('#incidentsView')?.dataset.editorialOrderValid==='true'")
+            p=c.new_page();p.set_default_timeout(5000);p.goto(os.environ['ICTC_BASE_URL']+'/?view=processes',wait_until='networkidle')
+            card=p.locator('#procedureHub [data-process-code="EC-01"]');card.locator(':scope > footer .procedure-primary').click();p.wait_for_function("()=>document.querySelector('#incidentsView')?.offsetParent!==null&&document.querySelector('#incidentsView')?.dataset.editorialOrderValid==='true'")
             old=p.locator('.procedure-frame:visible .procedure-primary');direct=p.locator('#incidentsView > .procedure-frame .procedure-primary');typed=p.locator('[data-procedure-primary="incidents"]');frame=p.locator('#incidentsView > .procedure-frame')
             oc,dc,tc,fc=old.count(),direct.count(),typed.count(),frame.count();fv=frame.is_visible() if fc==1 else False;tv=typed.is_visible() if tc==1 else False
             case='old-zero' if oc==0 else 'old-many' if oc>1 else 'direct-zero' if dc==0 else 'direct-many' if dc>1 else 'typed-zero' if tc==0 else 'typed-many' if tc>1 else 'frame-not-visible' if not fv else 'typed-not-visible' if not tv else 'green'
