@@ -13,6 +13,7 @@ const PROCESS_ICONS=Object.freeze({
   assurance:'<svg class="lucide a6-process-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4m-8-5 2 2 4-4"/></svg>'
 });
 const TERMINAL_INCIDENT_STATES=new Set(['closed','resolved','cancelled']);
+const CURRENT_MONITORING_STATES=new Set(['active','planning','draft','needs-plan']);
 
 function journey(node,{process,stage='operate',intent,authority='navigation',effect='none'}){
   if(!node)return;
@@ -114,6 +115,7 @@ function ensureFilter(details,{id,process,options,defaultValue}){
 function stateMatches(registryId,filter,stateValue){
   if(filter==='all'||!filter)return true;
   if(registryId==='monitoring'){
+    if(filter==='current')return CURRENT_MONITORING_STATES.has(stateValue);
     if(filter==='active')return stateValue==='active';
     if(filter==='draft')return ['planning','draft','needs-plan'].includes(stateValue);
     if(filter==='inactive')return stateValue==='paused';
@@ -160,7 +162,7 @@ function monitoringOwner(){
   const list=root.querySelector('#missionsList');if(!list)return;
   const byId=new Map((state.data?.missions||[]).map(item=>[item.id,item]));
   const details=registryWrap(list,{id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:true});
-  ensureFilter(details,{id:'monitoring',process:'monitoring',defaultValue:'active',options:[['active','Attivi'],['inactive','Non attivi'],['draft','Bozze'],['all','Tutti']]});
+  ensureFilter(details,{id:'monitoring',process:'monitoring',defaultValue:'current',options:[['current','Correnti'],['active','Attivi'],['inactive','Non attivi'],['draft','Bozze'],['all','Tutti']]});
   let unbound=0;
   for(const card of list.querySelectorAll('.mission-card,article')){
     const id=missionId(card),item=byId.get(id);
@@ -226,7 +228,7 @@ function coverageOwner(){
   if(library){root.classList.add('a6-ordered-flow');library.dataset.a6FlowOrder='primary';}if(attention)attention.dataset.a6FlowOrder='attention';
   for(const detail of root.querySelectorAll('.finetune-concept-drilldown')){detail.hidden=true;detail.dataset.a6RetiredDuplicate='concept-drilldown';}
   for(const detail of root.querySelectorAll('.market-scope-editor')){detail.hidden=false;detail.dataset.a6ScopePopup='native-details-overlay';}
-  for(const card of root.querySelectorAll('[data-framework-card]')){const button=card.querySelector('[data-open-standard-browser]');if(button){button.textContent='Comprendi standard';button.dataset.a6StandardEntry='single';button.dataset.a6StandardFramework=card.dataset.frameworkCard||'';}}
+  for(const card of root.querySelectorAll('[data-framework-card]')){const button=card.querySelector('[data-open-standard-browser]');if(button){button.textContent='Comprendi standard';button.dataset.a6StandardEntry='single';button.dataset.a6StandardFramework=card.dataset.frameworkCard||'';if(!button.dataset.journeyProcess)journey(button,{process:'coverage',intent:'inspect-standard-reference'});}}
 }
 
 function revealTypedTarget(event){
