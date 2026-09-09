@@ -1,0 +1,208 @@
+name: a6-ux3-ec-phase-diagnostic
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a6-ux3-ec-phase-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  v21-ec-phase:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Instrument V2.1 EC phases
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('v3/browser-v2-1-procedure-journey.py')
+          s=p.read_text(encoding='utf8')
+          repl={
+          "        page.locator('.procedure-frame:visible .procedure-primary').click()\n        expect(page.locator('#incidentDialog')).to_be_visible()\n        before = current_revision(page)\n":"        PHASE = 'EC-01-primary-click'\n        page.locator('.procedure-frame:visible .procedure-primary').click()\n        PHASE = 'EC-01-dialog-visible'\n        expect(page.locator('#incidentDialog')).to_be_visible()\n        before = current_revision(page)\n",
+          "        page.locator('#incidentDialog button[type=\"submit\"]').click()\n        expect(page.locator('#incidentDialog')).not_to_be_visible()\n        r2 = wait_advance(page, before)\n        expect(page.locator('#incidentList')).to_contain_text('EC-01 V2.1 journey')\n        if page.locator('#incidentWorkspace').is_visible():\n            page.locator('#incidentWorkspace button[aria-label=\"Chiudi\"]').click()\n        check_surface_revision(page, '#incidentsView', r2)\n        verify_process_projection(page, 'EC-01', 'incidents', r2)\n":"        PHASE = 'EC-01-submit-click'\n        page.locator('#incidentDialog button[type=\"submit\"]').click()\n        PHASE = 'EC-01-dialog-hidden'\n        expect(page.locator('#incidentDialog')).not_to_be_visible()\n        PHASE = 'EC-01-revision-advance'\n        r2 = wait_advance(page, before)\n        PHASE = 'EC-01-list-projection'\n        expect(page.locator('#incidentList')).to_contain_text('EC-01 V2.1 journey')\n        PHASE = 'EC-01-workspace-close'\n        if page.locator('#incidentWorkspace').is_visible():\n            page.locator('#incidentWorkspace button[aria-label=\"Chiudi\"]').click()\n        PHASE = 'EC-01-surface-revision'\n        check_surface_revision(page, '#incidentsView', r2)\n        PHASE = 'EC-01-process-projection'\n        verify_process_projection(page, 'EC-01', 'incidents', r2)\n"}
+          for old,new in repl.items():
+            if old not in s: raise SystemExit('instrumentation anchor missing')
+            s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf8')
+          PY
+      - name: Resolve browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for c in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$c" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$c")" >> "$GITHUB_ENV"; exit 0; fi
+          done
+          exit 1
+      - name: Start runtime
+        run: |
+          export ICTC_NO_OPEN=1 ICTC_PORT=4881 PORT=4881 ICTC_BASE_URL=http://127.0.0.1:4881
+          export ICTC_STATE_DIR="$RUNNER_TEMP/state-v21" ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime-v21" ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+          echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
+          echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
+      - name: Run V2.1 instrumented
+        id: browser
+        continue-on-error: true
+        run: python -u v3/browser-v2-1-procedure-journey.py
+      - name: Stop runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
+      - name: Capture phase
+        id: phase
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          phase='green'
+          if '${{ steps.browser.outcome }}'!='success':
+            phase=str(json.loads(p.read_text(encoding='utf8')).get('phase') if p.exists() else 'missing-artifact')
+          print('ICTC_PHASE='+phase)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('value='+phase+'\n')
+          PY
+      - name: V21 EC primary click
+        if: steps.phase.outputs.value == 'EC-01-primary-click'
+        run: exit 1
+      - name: V21 EC dialog visible
+        if: steps.phase.outputs.value == 'EC-01-dialog-visible'
+        run: exit 1
+      - name: V21 EC narrative
+        if: steps.phase.outputs.value == 'EC-01-narrative'
+        run: exit 1
+      - name: V21 EC awareness
+        if: steps.phase.outputs.value == 'EC-01-awareness'
+        run: exit 1
+      - name: V21 EC submit click
+        if: steps.phase.outputs.value == 'EC-01-submit-click'
+        run: exit 1
+      - name: V21 EC dialog hidden
+        if: steps.phase.outputs.value == 'EC-01-dialog-hidden'
+        run: exit 1
+      - name: V21 EC revision advance
+        if: steps.phase.outputs.value == 'EC-01-revision-advance'
+        run: exit 1
+      - name: V21 EC list projection
+        if: steps.phase.outputs.value == 'EC-01-list-projection'
+        run: exit 1
+      - name: V21 EC workspace close
+        if: steps.phase.outputs.value == 'EC-01-workspace-close'
+        run: exit 1
+      - name: V21 EC surface revision
+        if: steps.phase.outputs.value == 'EC-01-surface-revision'
+        run: exit 1
+      - name: V21 EC process projection
+        if: steps.phase.outputs.value == 'EC-01-process-projection'
+        run: exit 1
+      - name: V21 other phase
+        if: steps.phase.outputs.value != 'green' && !startsWith(steps.phase.outputs.value, 'EC-01')
+        run: exit 1
+      - name: V21 verdict
+        if: always()
+        run: test '${{ steps.browser.outcome }}' = success
+
+  finetuning-ec-phase:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Instrument finetuning EC phases
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('v3/browser-procedure-finetuning-1-4-base.py')
+          s=p.read_text(encoding='utf8')
+          lines=s.splitlines()
+          idx=next((i for i,x in enumerate(lines) if x.startswith("  PHASE='ec';open_process(page,'EC-01')")),None)
+          if idx is None: raise SystemExit('finetuning EC anchor missing')
+          lines[idx:idx+1]=[
+          "  PHASE='ec-open';open_process(page,'EC-01')",
+          "  PHASE='ec-compass';expect(page.locator('#incidentsView > [data-finetune-compass=\"incidents\"]')).to_be_hidden()",
+          "  PHASE='ec-context';context_closed(page,'#incidentsView')",
+          "  PHASE='ec-orphans-view';no_orphans(page,'#incidentsView')",
+          "  PHASE='ec-primary';page.locator('.procedure-frame:visible .procedure-primary').click()",
+          "  PHASE='ec-dialog';expect(page.locator('#incidentDialog')).to_be_visible()",
+          "  PHASE='ec-case-title';expect(page.locator('#incidentDialog [name=\"caseTitle\"]')).to_be_visible()",
+          "  PHASE='ec-orphans-dialog';no_orphans(page,'#incidentDialog')",
+          "  PHASE='ec-close';page.locator('#incidentDialog button[aria-label=\"Chiudi\"]').click()"]
+          p.write_text('\n'.join(lines)+'\n',encoding='utf8')
+          PY
+      - name: Resolve browser
+        run: |
+          for c in google-chrome google-chrome-stable chromium chromium-browser; do if command -v "$c" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$c")" >> "$GITHUB_ENV"; exit 0; fi; done; exit 1
+      - name: Start runtime
+        run: |
+          export ICTC_NO_OPEN=1 ICTC_PORT=4882 PORT=4882 ICTC_BASE_URL=http://127.0.0.1:4882
+          export ICTC_STATE_DIR="$RUNNER_TEMP/state-ft" ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime-ft" ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+          echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
+          echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
+      - name: Run finetuning instrumented
+        id: browser
+        continue-on-error: true
+        run: python -u v3/browser-procedure-finetuning-1-4-base.py
+      - name: Stop runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
+      - name: Capture phase
+        id: phase
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          phase='green'
+          if '${{ steps.browser.outcome }}'!='success': phase=str(json.loads(p.read_text(encoding='utf8')).get('phase') if p.exists() else 'missing-artifact')
+          print('ICTC_PHASE='+phase)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('value='+phase+'\n')
+          PY
+      - name: FT EC open
+        if: steps.phase.outputs.value == 'ec-open'
+        run: exit 1
+      - name: FT EC compass
+        if: steps.phase.outputs.value == 'ec-compass'
+        run: exit 1
+      - name: FT EC context
+        if: steps.phase.outputs.value == 'ec-context'
+        run: exit 1
+      - name: FT EC orphans view
+        if: steps.phase.outputs.value == 'ec-orphans-view'
+        run: exit 1
+      - name: FT EC primary
+        if: steps.phase.outputs.value == 'ec-primary'
+        run: exit 1
+      - name: FT EC dialog
+        if: steps.phase.outputs.value == 'ec-dialog'
+        run: exit 1
+      - name: FT EC case title
+        if: steps.phase.outputs.value == 'ec-case-title'
+        run: exit 1
+      - name: FT EC orphans dialog
+        if: steps.phase.outputs.value == 'ec-orphans-dialog'
+        run: exit 1
+      - name: FT EC close
+        if: steps.phase.outputs.value == 'ec-close'
+        run: exit 1
+      - name: FT other phase
+        if: steps.phase.outputs.value != 'green' && !startsWith(steps.phase.outputs.value, 'ec-')
+        run: exit 1
+      - name: FT verdict
+        if: always()
+        run: test '${{ steps.browser.outcome }}' = success
