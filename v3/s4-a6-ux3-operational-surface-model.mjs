@@ -4,10 +4,11 @@ export function validateOperationalSurface(s){
   const f=[];
   must(f,s.bootstrap,"import { installOperationalSurfaceA6Ux3 } from './operational-surface-a6-ux3.js'",'BOOTSTRAP_IMPORT');
   must(f,s.bootstrap,'installOperationalSurfaceA6Ux3();','BOOTSTRAP_INSTALL');
-  must(f,s.bootstrap,"document.querySelector('link[data-a6-ux3-style]')?.remove();",'BOOTSTRAP_NO_LATE_STYLE');
+  if(s.bootstrap.includes('data-a6-ux3-style')||s.bootstrap.includes('a6-ux3-operational-surface.css'))f.push({code:'BOOTSTRAP_LATE_STYLE'});
   const imports=importOrder(s.styles),ux3=imports.indexOf('./a6-ux3-operational-surface.css'),ux1=imports.indexOf('./a6-ux1-fixed-safe-footer.css');
   if(ux3<0||ux1<0||ux3>=ux1||ux1!==imports.length-1)f.push({code:'STYLE_OWNERSHIP_ORDER',detail:{ux3,ux1,last:imports.at(-1)||null}});
-  for(const token of ["const VERSION='a6-ux3'",'PROCESS_ICONS','Integrated Compliance Tower Control','data-a6-registry','Aggiungi fonte o materiale','Materiali in ingresso','missionId(card)','incidentId(card)','a6RecordBinding','a6StableRecordSearch','a6ObjectLifecycle','a6RetiredDuplicate','a6ScopePopup','ictc:work-target-resolved'])must(f,s.operational,token,`OP_${token}`);
+  for(const token of ["const VERSION='a6-ux3'",'PROCESS_ICONS','Integrated Compliance Tower Control','data-a6-registry','Aggiungi fonte o materiale','Materiali in ingresso','missionId(card)','incidentId(card)','a6RecordBinding','a6StableRecordSearch','a6ObjectLifecycle','a6RetiredDuplicate','a6ScopePopup','ictc:work-target-resolved',"const TERMINAL_INCIDENT_STATES=new Set(['closed','resolved','cancelled'])","id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:true","ensureFilter(details,{id:'monitoring',process:'monitoring',defaultValue:'active'","id:'incidents',label:'Eventi registrati',process:'incidents',count:byId.size,open:true","ensureFilter(details,{id:'incidents',process:'incidents',defaultValue:'open'"])must(f,s.operational,token,`OP_${token}`);
+  if(s.operational.includes('ensureStyle')||s.operational.includes('data-a6-ux3-style')||s.operational.includes('/a6-ux3-operational-surface.css'))f.push({code:'OP_LATE_STYLE_OWNER'});
   if(/\bapi\s*\(/.test(s.operational)||/\bfetch\s*\(/.test(s.operational))f.push({code:'OP_BUSINESS_WRITE_AUTHORITY'});
   if(s.operational.includes('items[index]')||s.operational.includes('missions[index]')||s.operational.includes('incidents[index]'))f.push({code:'OP_INDEX_BINDING'});
   if(/applyCardFilter[\s\S]{0,1800}card\.textContent/.test(s.operational))f.push({code:'OP_DOM_AS_DATA_FILTER'});
