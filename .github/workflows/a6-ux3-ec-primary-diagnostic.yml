@@ -22,15 +22,9 @@ jobs:
       - name: Resolve browser
         shell: bash
         run: |
-          set -Eeuo pipefail
-          for c in google-chrome google-chrome-stable chromium chromium-browser; do
-            if command -v "$c" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$c")" >> "$GITHUB_ENV"; exit 0; fi
-          done
-          exit 1
+          for c in google-chrome google-chrome-stable chromium chromium-browser; do if command -v "$c" >/dev/null 2>&1; then echo "ICTC_CHROMIUM=$(command -v "$c")" >> "$GITHUB_ENV"; exit 0; fi; done; exit 1
       - name: Start runtime
-        shell: bash
         run: |
-          set -Eeuo pipefail
           export ICTC_NO_OPEN=1 ICTC_PORT=4883 PORT=4883 ICTC_BASE_URL=http://127.0.0.1:4883
           export ICTC_STATE_DIR="$RUNNER_TEMP/state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
@@ -39,56 +33,45 @@ jobs:
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: Probe EC primary
         id: probe
-        shell: bash
         run: |
           python - <<'PY'
-          import json, os
+          import os
           from playwright.sync_api import sync_playwright
-          base=os.environ['ICTC_BASE_URL']
           with sync_playwright() as pw:
-            launch={'headless':True,'args':['--no-sandbox'],'executable_path':os.environ['ICTC_CHROMIUM']}
-            b=pw.chromium.launch(**launch);c=b.new_context(viewport={'width':1440,'height':950});c.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
-            p=c.new_page();p.set_default_timeout(5000);errors=[];p.on('pageerror',lambda e:errors.append(str(e)));p.goto(base+'/?view=processes',wait_until='networkidle')
-            card=p.locator('#procedureHub [data-process-code="EC-01"]');card.locator(':scope > footer .procedure-primary').click()
-            p.wait_for_function("()=>document.querySelector('#incidentsView')?.offsetParent!==null && document.querySelector('#incidentsView')?.dataset.editorialOrderValid==='true'")
-            loc=p.locator('.procedure-frame:visible .procedure-primary')
-            count=loc.count();visible=sum(1 for i in range(count) if loc.nth(i).is_visible());enabled=sum(1 for i in range(count) if loc.nth(i).is_enabled())
-            boxes=[loc.nth(i).bounding_box() for i in range(count)]
-            hidden=p.locator('#openIncident');hidden_count=hidden.count();hidden_visible=hidden.is_visible() if hidden_count else False;hidden_enabled=hidden.is_enabled() if hidden_count else False
-            click='not-run';message='';dialog=False
-            try:
-              loc.click(timeout=3000);click='ok';dialog=p.locator('#incidentDialog').is_visible()
-            except Exception as e:
-              click=type(e).__name__;message=str(e)
-            result={'count':count,'visible':visible,'enabled':enabled,'boxes':boxes,'openIncidentCount':hidden_count,'openIncidentVisible':hidden_visible,'openIncidentEnabled':hidden_enabled,'click':click,'message':message[:1000],'dialog':dialog,'pageerrors':errors}
-            print(json.dumps(result));
-            vals={
-              'case':'multi-primary' if count!=1 else 'primary-hidden' if visible!=1 else 'primary-disabled' if enabled!=1 else 'open-incident-missing' if hidden_count!=1 else 'click-exception' if click!='ok' else 'dialog-missing' if not dialog else 'green',
-              'click':click
-            }
-            with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              for k,v in vals.items():f.write(f'{k}={v}\n')
+            b=pw.chromium.launch(headless=True,args=['--no-sandbox'],executable_path=os.environ['ICTC_CHROMIUM']);c=b.new_context(viewport={'width':1440,'height':950});c.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
+            p=c.new_page();p.set_default_timeout(5000);p.goto(os.environ['ICTC_BASE_URL']+'/?view=processes',wait_until='networkidle');p.locator('#procedureHub [data-process-code="EC-01"] :scope > footer .procedure-primary').click();p.wait_for_function("()=>document.querySelector('#incidentsView')?.offsetParent!==null&&document.querySelector('#incidentsView')?.dataset.editorialOrderValid==='true'")
+            old=p.locator('.procedure-frame:visible .procedure-primary');direct=p.locator('#incidentsView > .procedure-frame .procedure-primary');typed=p.locator('[data-procedure-primary="incidents"]');frame=p.locator('#incidentsView > .procedure-frame')
+            oc,dc,tc,fc=old.count(),direct.count(),typed.count(),frame.count();fv=frame.is_visible() if fc==1 else False;tv=typed.is_visible() if tc==1 else False
+            case='old-zero' if oc==0 else 'old-many' if oc>1 else 'direct-zero' if dc==0 else 'direct-many' if dc>1 else 'typed-zero' if tc==0 else 'typed-many' if tc>1 else 'frame-not-visible' if not fv else 'typed-not-visible' if not tv else 'green'
+            print('COUNTS',oc,dc,tc,fc,'VISIBLE',fv,tv,'CASE',case)
+            with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('case='+case+'\n')
             b.close()
           PY
-      - name: EC primary multiple
-        if: steps.probe.outputs.case == 'multi-primary'
+      - name: EC old selector zero
+        if: steps.probe.outputs.case == 'old-zero'
         run: exit 1
-      - name: EC primary hidden
-        if: steps.probe.outputs.case == 'primary-hidden'
+      - name: EC old selector many
+        if: steps.probe.outputs.case == 'old-many'
         run: exit 1
-      - name: EC primary disabled
-        if: steps.probe.outputs.case == 'primary-disabled'
+      - name: EC direct primary zero
+        if: steps.probe.outputs.case == 'direct-zero'
         run: exit 1
-      - name: EC backing action missing
-        if: steps.probe.outputs.case == 'open-incident-missing'
+      - name: EC direct primary many
+        if: steps.probe.outputs.case == 'direct-many'
         run: exit 1
-      - name: EC primary click exception
-        if: steps.probe.outputs.case == 'click-exception'
+      - name: EC typed primary zero
+        if: steps.probe.outputs.case == 'typed-zero'
         run: exit 1
-      - name: EC dialog missing after click
-        if: steps.probe.outputs.case == 'dialog-missing'
+      - name: EC typed primary many
+        if: steps.probe.outputs.case == 'typed-many'
         run: exit 1
-      - name: EC primary diagnostic green
+      - name: EC frame not visible
+        if: steps.probe.outputs.case == 'frame-not-visible'
+        run: exit 1
+      - name: EC typed primary not visible
+        if: steps.probe.outputs.case == 'typed-not-visible'
+        run: exit 1
+      - name: EC selector diagnostic green
         if: steps.probe.outputs.case == 'green'
         run: echo green
       - name: Stop runtime
