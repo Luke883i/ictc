@@ -1,0 +1,74 @@
+name: s4-a6-ux3-operational-surface
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s4-a6-ux3-operational-surface-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  operational-surface:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - name: A6-UX3 syntax
+        run: |
+          node --check v3/public/ui/operational-surface-a6-ux3.js
+          node --check v3/public/ui/standard-browser.js
+          node --check v3/s4-a6-ux3-operational-surface-model.mjs
+          node --check v3/s4-a6-ux3-operational-surface-check.mjs
+          node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
+          python -m py_compile v3/browser-s4-a6-ux3-operational-surface.py
+          python -m py_compile v3/browser-procedure-finetuning-1-4-base.py
+          python -m py_compile v3/browser-v2-1-procedure-journey.py
+      - name: A6-UX3 source contract
+        run: node v3/s4-a6-ux3-operational-surface-check.mjs
+      - name: A6-UX3 100k source antagonists
+        run: node v3/s4-a6-ux3-operational-surface-saturation.mjs
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Start canonical current runtime
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4867 PORT=4867
+          export ICTC_BASE_URL="http://127.0.0.1:4867"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-a6-ux3-state"
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-a6-ux3-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          ./ictc.sh status --profile current
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+          echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
+          echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
+      - name: A6-UX3 exact-head Chromium operational surface
+        run: python -u v3/browser-s4-a6-ux3-operational-surface.py
+      - name: Stop current runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+        if: always()
+        with:
+          name: s4-a6-ux3-operational-surface-evidence
+          path: artifacts/browser-s4-a6-ux3-operational-surface*.json
+          if-no-files-found: warn
+          retention-days: 30
