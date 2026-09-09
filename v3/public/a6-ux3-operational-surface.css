@@ -1,4 +1,6 @@
 /* S4-A6 / A6-UX3 operational surface convergence. Palette-neutral: consumes existing tokens only. */
+html[data-a6-ux3-operational="a6-ux3"] #homeView{padding-bottom:max(var(--a6-ux1-footer-reserve),1rem)!important}
+html[data-a6-ux3-operational="a6-ux3"] #homeView :is(button,a[href],input,select,textarea,summary){scroll-margin-bottom:calc(var(--a6-ux1-footer-reserve) + .5rem)}
 html[data-a6-ux3-operational="a6-ux3"] #homeSummary{max-width:88ch!important}
 html[data-a6-ux3-operational="a6-ux3"] #homeTitle{max-width:none!important}
 html[data-a6-ux3-operational="a6-ux3"] .home-priority-table{gap:.35rem!important}

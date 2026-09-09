@@ -30,6 +30,9 @@ jobs:
           python -m py_compile v3/browser-s4-a6-ux3-operational-surface.py
           python -m py_compile v3/browser-procedure-finetuning-1-4-base.py
           python -m py_compile v3/browser-v2-1-procedure-journey.py
+          python -m py_compile v3/browser-shell-admin-demo-2-6.py
+          python -m py_compile v3/browser-shell-admin-demo-probe-2-6.py
+          python -m py_compile v3/browser-shell-desktop-probe-2-6.py
       - name: A6-UX3 source contract
         run: node v3/s4-a6-ux3-operational-surface-check.mjs
       - name: A6-UX3 100k source antagonists
