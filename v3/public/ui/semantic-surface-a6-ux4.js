@@ -6,11 +6,17 @@ const EXACT_LABELS=Object.freeze(new Map([
   ['Applicazione con evidenza','Uso metodologico con evidenza'],
   ['Perimetro di accesso','Vista per ruolo']
 ]));
-const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
 
-function activeGrcId(){let id=state.activeProcessId||'';try{id=id||localStorage.getItem('ictc-grc-process')||'';}catch{}return GRC_IDS.has(id)?id:'objects';}
-function worklist(id){return(state.data?.procedureSummary?.worklists?.procedures||[]).find(item=>item.id===id)||null;}
-function procedureRoot(id){if(id==='monitoring')return document.querySelector('#monitoringView');if(id==='incidents')return document.querySelector('#incidentsView');if(GRC_IDS.has(id)&&activeGrcId()===id)return document.querySelector('#grcWorkspace');return null;}
+function procedureModels(){return state.data?.procedureSummary?.worklists?.procedures||[];}
+function knownProcedure(id){return procedureModels().some(item=>item.id===id);}
+function isGrcProcedure(id){return Boolean(id&&id!=='monitoring'&&id!=='incidents'&&knownProcedure(id));}
+function activeGrcId(){
+ let id=state.activeProcessId||'';try{id=id||localStorage.getItem('ictc-grc-process')||'';}catch{}
+ if(isGrcProcedure(id))return id;
+ const owner=document.querySelector('#grcWorkspace')?.dataset.a6OperationalOwner||'';return isGrcProcedure(owner)?owner:'';
+}
+function worklist(id){return procedureModels().find(item=>item.id===id)||null;}
+function procedureRoot(id){if(id==='monitoring')return document.querySelector('#monitoringView');if(id==='incidents')return document.querySelector('#incidentsView');if(isGrcProcedure(id)&&activeGrcId()===id)return document.querySelector('#grcWorkspace');return null;}
 function attentionSection(root,id){return root?.querySelector(`:scope > [data-procedure-attention-slot="${CSS.escape(id)}"] [data-procedure-worklist]`)||null;}
 function esc(value){return CSS.escape(String(value??''));}
 function nativeTarget(ref){
@@ -90,6 +96,6 @@ function annotateActions(root=document){for(const node of root.querySelectorAll(
 function referenceTruth(root=document){for(const section of root.querySelectorAll('[data-procedure-standard-applications]'))section.dataset.a6Ux4ReferenceTruth='method-reference';for(const item of root.querySelectorAll('[data-procedure-standard-application]'))item.dataset.a6Ux4ReferenceTruth='method-reference';for(const boundary of root.querySelectorAll('.procedure-standard-boundary'))boundary.dataset.a6Ux4ClaimBoundary='non-certification';const proof=document.querySelector('#proofView');if(proof)proof.dataset.a6Ux4ClaimScope='repository-observation';}
 function proofOrder(){const proof=document.querySelector('#proofView');if(!proof)return;const snapshot=proof.querySelector('.proof-snapshot');const semantic=proof.querySelector('.proof-sections,.proof-accordion-list,[data-proof-sections]');if(snapshot&&semantic&&snapshot.compareDocumentPosition(semantic)&Node.DOCUMENT_POSITION_FOLLOWING){semantic.after(snapshot);}if(snapshot)snapshot.dataset.a6Ux4InformationRole='technical-snapshot';}
 function semanticOwners(){document.documentElement.dataset.a6Ux4Semantic=VERSION;const dialog=document.querySelector('#standardBrowserDialog');if(dialog)dialog.dataset.a6Ux4Geometry='bounded-master-detail';const home=document.querySelector('#homeView');if(home)home.dataset.a6Ux4ActionGrammar='effect-scoped';}
-function converge(){pending=false;semanticOwners();compressRegistries();for(const id of ['monitoring','incidents','objects','coverage','actions','risks','assurance'])integrateWorklist(id);compressContext();exactCopy();annotateActions();referenceTruth();proofOrder();}
+function converge(){pending=false;semanticOwners();compressRegistries();for(const model of procedureModels())integrateWorklist(model.id);compressContext();exactCopy();annotateActions();referenceTruth();proofOrder();}
 function schedule(){if(pending)return;pending=true;queueMicrotask(converge);requestAnimationFrame(converge);}
 export function installSemanticSurfaceA6Ux4(){if(installed)return;installed=true;for(const name of ['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed','ictc:editorial-slots-ready'])document.addEventListener(name,schedule);const proof=document.querySelector('#proofView');if(proof)new MutationObserver(schedule).observe(proof,{subtree:true,childList:true,characterData:true});schedule();}
