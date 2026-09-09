@@ -106,8 +106,8 @@ jobs:
       - name: A6-UX3 browser failure - MC standard entry
         if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-standard-entries' || steps.browser_phase.outputs.phase == 'mc-standard-open')
         run: exit 1
-      - name: A6-UX3 browser failure - MC master detail
-        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-standard-detail' || steps.browser_phase.outputs.phase == 'mc-standard-node' || steps.browser_phase.outputs.phase == 'mc-standard-readonly' || steps.browser_phase.outputs.phase == 'mc-standard-close')
+      - name: A6-UX3 browser failure - MC master detail / scroll
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'mc-standard-detail' || steps.browser_phase.outputs.phase == 'mc-standard-scroll' || steps.browser_phase.outputs.phase == 'mc-standard-node' || steps.browser_phase.outputs.phase == 'mc-standard-readonly' || steps.browser_phase.outputs.phase == 'mc-standard-close')
         run: exit 1
       - name: A6-UX3 browser failure - MC geometry
         if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'mc-geometry'
