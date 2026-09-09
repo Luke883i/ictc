@@ -64,10 +64,62 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: A6-UX3 exact-head Chromium operational surface
+        id: browser
+        continue-on-error: true
         run: python -u v3/browser-s4-a6-ux3-operational-surface.py
       - name: Stop current runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
+      - name: Capture A6-UX3 browser phase
+        id: browser_phase
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          path=pathlib.Path('artifacts/browser-s4-a6-ux3-operational-surface-error.json')
+          phase='green'
+          if path.exists():
+              phase=str(json.loads(path.read_text(encoding='utf8')).get('phase') or 'unknown')
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as out:
+              out.write(f'phase={phase}\n')
+          print(f'A6-UX3 browser phase: {phase}')
+          PY
+      - name: A6-UX3 browser failure - Home
+        if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'home'
+        run: exit 1
+      - name: A6-UX3 browser failure - RN
+        if: steps.browser.outcome == 'failure' && (contains(steps.browser_phase.outputs.phase, 'RN-01') || startsWith(steps.browser_phase.outputs.phase, 'rn-'))
+        run: exit 1
+      - name: A6-UX3 browser failure - EC
+        if: steps.browser.outcome == 'failure' && (contains(steps.browser_phase.outputs.phase, 'EC-01') || startsWith(steps.browser_phase.outputs.phase, 'ec-'))
+        run: exit 1
+      - name: A6-UX3 browser failure - AO
+        if: steps.browser.outcome == 'failure' && (contains(steps.browser_phase.outputs.phase, 'AO-01') || startsWith(steps.browser_phase.outputs.phase, 'ao-'))
+        run: exit 1
+      - name: A6-UX3 browser failure - MC admin
+        if: steps.browser.outcome == 'failure' && (steps.browser_phase.outputs.phase == 'MC-01-owner' || steps.browser_phase.outputs.phase == 'mc-assert')
+        run: exit 1
+      - name: A6-UX3 browser failure - role boundary
+        if: steps.browser.outcome == 'failure' && startsWith(steps.browser_phase.outputs.phase, 'user-')
+        run: exit 1
+      - name: A6-UX3 browser failure - mobile
+        if: steps.browser.outcome == 'failure' && startsWith(steps.browser_phase.outputs.phase, 'mobile-')
+        run: exit 1
+      - name: A6-UX3 browser failure - read-only boundary
+        if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'admin-read-only'
+        run: exit 1
+      - name: A6-UX3 browser failure - unknown phase
+        if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'unknown'
+        run: exit 1
+      - name: A6-UX3 exact-head browser verdict
+        if: always()
+        shell: bash
+        run: |
+          if [[ "${{ steps.browser.outcome }}" != "success" ]]; then
+            echo "A6-UX3 browser failed in phase ${{ steps.browser_phase.outputs.phase }}" >&2
+            exit 1
+          fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
