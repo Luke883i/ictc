@@ -4,7 +4,8 @@ html[data-a6-ux3-operational="a6-ux3"] #homeTitle{max-width:none!important}
 html[data-a6-ux3-operational="a6-ux3"] .home-priority-table{gap:.35rem!important}
 html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"]{display:grid!important;grid-template-columns:minmax(0,1fr) max-content 44px;align-items:center;gap:.75rem;min-height:48px!important;padding:.35rem .55rem!important}
 html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"]>.a6-priority-identity{display:contents}
-html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:.4rem}
+html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] .a6-process-icon{width:16px!important;height:16px!important;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] small{white-space:nowrap;margin:0!important}
 html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] .home-priority-open{display:grid;place-items:center;width:44px;height:44px;font-size:0}
 html[data-a6-ux3-operational="a6-ux3"] .home-business-priority[data-a6-priority-row="compact"] .home-priority-open svg{width:18px;height:18px}
