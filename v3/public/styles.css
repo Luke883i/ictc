@@ -29,4 +29,7 @@
 @import url('./a6-ux1-fixed-safe-footer.css');
 
 [hidden]{display:none!important}
+/* A6-UX3 must never use presentation display rules to defeat native hidden state. */
+html[data-a6-ux3-operational="a6-ux3"] .a6-ordered-flow[hidden]{display:none!important}
+html[data-a6-ux3-operational="a6-ux3"] .market-scope-editor[data-a6-scope-popup="native-details-overlay"][hidden]{display:none!important}
 .contribution-status{position:static;inset:auto;max-height:none;overflow:visible;margin-top:var(--space-3,1rem)}
