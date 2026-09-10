@@ -45,6 +45,7 @@ def check_frame(page,code):
         if legacy.count():
             expect(legacy).to_be_hidden()
             expect(legacy).to_have_attribute('data-a6-ux4-context','superseded')
+        page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r?.dataset.a6Ux4SingleCollection))}",arg={'root':root,'pid':process_id})
         owner=page.locator(root)
         assert owner.get_attribute('data-a6-ux4-single-collection') in ('native','fallback'), (code,owner.get_attribute('data-a6-ux4-single-collection'))
     else:
