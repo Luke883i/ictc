@@ -1,0 +1,35 @@
+name: truth0-xlsx-blob-stage
+on:
+  push:
+    branches: [agent/truth0-xlsx-blob-stage-v2]
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Assemble exact workbook and authority
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cat .blob-stage/*.bin > docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx
+          test "$(git hash-object docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx)" = "352a8dd034547482150cebcfd1d5d5277cfa7217"
+          node <<'NODE'
+          const fs=require('fs');
+          const p='docs/convergence/convergence-authority.json';
+          const a=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(a.projection.sha256!=='a0c54c1b381e5239658eed1b5d0cc1e5e6327e0a12d07fdc5042327f9ff68cca') throw new Error('unexpected preimage');
+          a.projection.sha256='991c73096f78afad1465516bad91e45d7de7bf926b851efd56443ceaf3b21629';
+          fs.writeFileSync(p,JSON.stringify(a)+'\n');
+          NODE
+          test "$(git hash-object docs/convergence/convergence-authority.json)" = "98902ab0163fb43a9eb654cbbe8f4e8e0739313d"
+      - name: Publish staging object commit
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx docs/convergence/convergence-authority.json
+          git commit -m 'stage: materialize exact TRUTH-0 workbook objects'
+          git push origin HEAD:${GITHUB_REF_NAME}
