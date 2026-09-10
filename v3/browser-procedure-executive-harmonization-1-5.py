@@ -17,14 +17,26 @@ def no_overflow(page):
     assert measured[1]<=measured[0]+2 and measured[2]<=measured[0]+2, measured
 
 def openp(page,code):
+    global PHASE
+    process_id=IDS[code]
+    root=root_for(code)
+    PHASE=f'{code}-open-nav'
     page.locator('.service-nav [data-service="processes"]').click()
+    PHASE=f'{code}-open-card'
     card=page.locator(f'#procedureHub [data-process-code="{code}"]')
     expect(card).to_be_visible()
+    PHASE=f'{code}-open-action'
     primary=card.locator(':scope > footer .procedure-primary')
     expect(primary).to_have_text(LABELS[code])
     primary.click()
-    expect(page.locator(root_for(code))).to_be_visible()
-    expect(page.locator(f'{root_for(code)} > .procedure-decision-frame[data-executive-procedure="{IDS[code]}"]')).to_be_visible()
+    PHASE=f'{code}-open-root'
+    expect(page.locator(root)).to_be_visible()
+    PHASE=f'{code}-open-frame'
+    frame=page.locator(f'{root} > .procedure-decision-frame[data-executive-procedure="{process_id}"]')
+    expect(frame).to_have_count(1)
+    ux4=page.locator('html').get_attribute('data-a6-ux4-semantic')=='a6-ux4'
+    if not ux4:
+        expect(frame).to_be_visible()
 
 def check_frame(page,code):
     global PHASE
@@ -32,23 +44,26 @@ def check_frame(page,code):
     root=root_for(code)
     frame=page.locator(f'{root} > .procedure-decision-frame[data-executive-procedure="{process_id}"]')
     expect(frame).to_have_count(1)
-    expect(frame).to_be_visible()
-    assert frame.get_attribute('data-procedure-guidance-authority')=='procedure-guidance-projection'
     ux4=page.locator('html').get_attribute('data-a6-ux4-semantic')=='a6-ux4'
+    if not ux4:
+        expect(frame).to_be_visible()
+    assert frame.get_attribute('data-procedure-guidance-authority')=='procedure-guidance-projection'
     legacy=frame.locator(':scope > details.composition-process-context')
     if ux4:
         PHASE=f'{code}-ux4-convergence'
         page.wait_for_function("""x=>{
             const r=document.querySelector(x.root);
             if(!r)return false;
+            const frame=r.querySelector(`:scope > .procedure-decision-frame[data-executive-procedure="${x.pid}"]`);
             const a=r.querySelector(`[data-procedure-anatomy="${x.pid}"][data-a6-ux4-context="canonical"]`);
             const s=a?.querySelector(':scope > summary');
-            const legacy=r.querySelector(':scope > .procedure-decision-frame details.composition-process-context');
+            const legacy=frame?.querySelector(':scope > details.composition-process-context');
             const w=r.querySelector(`:scope > [data-procedure-attention-slot="${x.pid}"] [data-procedure-worklist]`);
+            const predecessorReady=!!(frame&&frame.dataset.procedureGuidanceAuthority==='procedure-guidance-projection');
             const anatomyReady=!!(a&&a.getClientRects().length&&s?.getAttribute('aria-label')==='Contesto e tracciabilità'&&(s.textContent||'').includes('Contesto e tracciabilità'));
             const legacyReady=!legacy||(legacy.hidden&&legacy.dataset.a6Ux4Context==='superseded');
             const collectionReady=!!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r.dataset.a6Ux4SingleCollection));
-            return anatomyReady&&legacyReady&&collectionReady;
+            return predecessorReady&&anatomyReady&&legacyReady&&collectionReady;
         }""",arg={'root':root,'pid':process_id})
         PHASE=f'{code}-ux4-assert'
         anatomy=page.locator(f'{root} [data-procedure-anatomy="{process_id}"][data-a6-ux4-context="canonical"]')
@@ -134,6 +149,7 @@ try:
             'catalogueEvidenceAnnotationPreservedButHidden':True,
             'decisionContextProgressiveDisclosure':True,
             'canonicalContextOwnerAware':True,
+            'predecessorAuthorityPreservedWhenContextSuperseded':True,
             'workBeforeDecisionContext':True,
             'conditionBasedProcessReadiness':True,
             'mobileOverflow':False,
