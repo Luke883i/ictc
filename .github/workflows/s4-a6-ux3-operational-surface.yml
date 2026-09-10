@@ -13,6 +13,10 @@ jobs:
   operational-surface:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      browser_phase: ${{ steps.browser_phase.outputs.phase }}
+      scroll_signature: ${{ steps.browser_phase.outputs.scroll_signature }}
+      scroll_owner_count: ${{ steps.browser_phase.outputs.scroll_owner_count }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -76,14 +80,45 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
-          import json, os, pathlib
+          import ast, json, os, pathlib, re
           path=pathlib.Path('artifacts/browser-s4-a6-ux3-operational-surface-error.json')
-          phase='green'
+          phase='green'; message=''; owners=[]
           if path.exists():
-              phase=str(json.loads(path.read_text(encoding='utf8')).get('phase') or 'unknown')
+              payload=json.loads(path.read_text(encoding='utf8'))
+              phase=str(payload.get('phase') or 'unknown')
+              message=str(payload.get('message') or '')
+          if phase == 'mc-standard-scroll' and message:
+              try:
+                  parsed=ast.literal_eval(message)
+                  if isinstance(parsed, tuple) and len(parsed) >= 2 and isinstance(parsed[1], list):
+                      owners=[o for o in parsed[1] if isinstance(o, dict)]
+              except Exception:
+                  owners=[]
+          def owner_key(owner):
+              oid=str(owner.get('id') or '')
+              classes=set(str(owner.get('cls') or '').split())
+              if oid == 'standardBrowserDialog': return 'dialog'
+              for css,name in (
+                  ('standard-browser-shell','shell'),
+                  ('standard-browser-tools','tools'),
+                  ('standard-browser-objectives','objectives'),
+                  ('standard-browser-master-detail','master-detail'),
+                  ('standard-browser-master','master'),
+                  ('standard-browser-detail','detail'),
+                  ('standard-node-list','node-list'),
+                  ('standard-node-detail','node-detail'),
+              ):
+                  if css in classes:return name
+              tag=str(owner.get('tag') or 'node').lower()
+              token=oid or next(iter(sorted(classes)),tag)
+              return 'other-'+re.sub(r'[^a-zA-Z0-9_.-]+','_',token)[:48]
+          signature='+'.join(owner_key(o) for o in owners) if owners else ('unparsed' if phase == 'mc-standard-scroll' else 'none')
           with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as out:
               out.write(f'phase={phase}\n')
+              out.write(f'scroll_signature={signature}\n')
+              out.write(f'scroll_owner_count={len(owners)}\n')
           print(f'A6-UX3 browser phase: {phase}')
+          print(f'A6-UX3 scroll owners: count={len(owners)} signature={signature}')
           PY
       - name: A6-UX3 browser failure - Home
         if: steps.browser.outcome == 'failure' && steps.browser_phase.outputs.phase == 'home'
@@ -130,6 +165,7 @@ jobs:
         run: |
           if [[ "${{ steps.browser.outcome }}" != "success" ]]; then
             echo "A6-UX3 browser failed in phase ${{ steps.browser_phase.outputs.phase }}" >&2
+            echo "scroll owners: ${{ steps.browser_phase.outputs.scroll_signature }}" >&2
             exit 1
           fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
@@ -139,3 +175,14 @@ jobs:
           path: artifacts/browser-s4-a6-ux3-operational-surface*.json
           if-no-files-found: warn
           retention-days: 30
+  scroll-census:
+    name: A6-UX3 scroll census [${{ needs.operational-surface.outputs.scroll_signature }}]
+    needs: operational-surface
+    if: ${{ always() && needs.operational-surface.outputs.browser_phase == 'mc-standard-scroll' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Expose exact computed owner signature
+        run: |
+          echo "count=${{ needs.operational-surface.outputs.scroll_owner_count }}"
+          echo "signature=${{ needs.operational-surface.outputs.scroll_signature }}"
+          test -n "${{ needs.operational-surface.outputs.scroll_signature }}"
