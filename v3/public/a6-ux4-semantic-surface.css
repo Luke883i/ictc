@@ -47,6 +47,9 @@ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-select
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-select :is(span,strong),
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail :is(p,li,a,code,pre){min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail pre{white-space:pre-wrap}
+/* Semantic fail-closed guard: every shell descendant is non-scrollable unless it is the explicitly tagged owner. This supersedes legacy descendant overflow rules without relying on a class census. */
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell :not([data-standard-scroll-owner="master-detail"]){overflow-x:clip!important;overflow-y:visible!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog [data-standard-scroll-owner="master-detail"]{overflow-x:hidden!important;overflow-y:auto!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog button[aria-label="Chiudi"]{min-width:44px;min-height:44px}
 @media(max-width:760px){
  html[data-a6-ux4-semantic="a6-ux4"] .a6-operational-filter:has(.a6-ux4-scope-filter){grid-template-columns:minmax(0,1fr)}
