@@ -27,6 +27,7 @@ def openp(page,code):
     expect(page.locator(f'{root_for(code)} > .procedure-decision-frame[data-executive-procedure="{IDS[code]}"]')).to_be_visible()
 
 def check_frame(page,code):
+    global PHASE
     process_id=IDS[code]
     root=root_for(code)
     frame=page.locator(f'{root} > .procedure-decision-frame[data-executive-procedure="{process_id}"]')
@@ -36,6 +37,20 @@ def check_frame(page,code):
     ux4=page.locator('html').get_attribute('data-a6-ux4-semantic')=='a6-ux4'
     legacy=frame.locator(':scope > details.composition-process-context')
     if ux4:
+        PHASE=f'{code}-ux4-convergence'
+        page.wait_for_function("""x=>{
+            const r=document.querySelector(x.root);
+            if(!r)return false;
+            const a=r.querySelector(`[data-procedure-anatomy="${x.pid}"][data-a6-ux4-context="canonical"]`);
+            const s=a?.querySelector(':scope > summary');
+            const legacy=r.querySelector(':scope > .procedure-decision-frame details.composition-process-context');
+            const w=r.querySelector(`:scope > [data-procedure-attention-slot="${x.pid}"] [data-procedure-worklist]`);
+            const anatomyReady=!!(a&&a.getClientRects().length&&s?.getAttribute('aria-label')==='Contesto e tracciabilità'&&(s.textContent||'').includes('Contesto e tracciabilità'));
+            const legacyReady=!legacy||(legacy.hidden&&legacy.dataset.a6Ux4Context==='superseded');
+            const collectionReady=!!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r.dataset.a6Ux4SingleCollection));
+            return anatomyReady&&legacyReady&&collectionReady;
+        }""",arg={'root':root,'pid':process_id})
+        PHASE=f'{code}-ux4-assert'
         anatomy=page.locator(f'{root} [data-procedure-anatomy="{process_id}"][data-a6-ux4-context="canonical"]')
         expect(anatomy).to_have_count(1)
         expect(anatomy).to_be_visible()
@@ -45,10 +60,10 @@ def check_frame(page,code):
         if legacy.count():
             expect(legacy).to_be_hidden()
             expect(legacy).to_have_attribute('data-a6-ux4-context','superseded')
-        page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r?.dataset.a6Ux4SingleCollection))}",arg={'root':root,'pid':process_id})
         owner=page.locator(root)
         assert owner.get_attribute('data-a6-ux4-single-collection') in ('native','fallback'), (code,owner.get_attribute('data-a6-ux4-single-collection'))
     else:
+        PHASE=f'{code}-legacy-context'
         expect(legacy).to_have_count(1)
         expect(legacy.locator(':scope > summary')).to_have_text('Contesto decisionale')
         assert legacy.get_attribute('open') is None
@@ -86,6 +101,7 @@ try:
             PHASE=code
             openp(page,code)
             check_frame(page,code)
+            PHASE=f'{code}-overflow'
             no_overflow(page)
 
         PHASE='rc'
@@ -106,6 +122,7 @@ try:
         PHASE='mobile-ar'
         openp(m,'AR-01')
         check_frame(m,'AR-01')
+        PHASE='mobile-ar-overflow'
         no_overflow(m)
         mobile.close()
 
