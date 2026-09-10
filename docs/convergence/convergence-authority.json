@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
+  "governanceRevision": "GOV-WB4",
   "authority": "convergence-authority",
   "classification": "repository-convergence-planning-reconciliation-authority",
   "scope": [
     "development trajectory sequencing",
     "pull-request reconciliation obligation",
-    "active workbook projection binding"
+    "derived workbook binding"
   ],
   "nonAuthority": [
     "Git merge facts",
@@ -15,106 +16,451 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
-    "mergedPr": 134,
-    "meaning": "post-a6-ux3-main-reconciliation",
-    "observationDate": "2026-09-09"
+    "mainSha": "f766fc064b0f8552f4821776755d72b56b757205",
+    "mergedPr": 135,
+    "meaning": "post-a6-ux4-main",
+    "observationDate": "2026-09-10"
   },
   "observedContext": {
     "latestMergedPr": {
-      "number": 134,
-      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
-      "title": "S4-A6 UX3: converge operational surfaces"
-    },
-    "priorSemanticPr": {
-      "number": 134,
-      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
-      "title": "S4-A6 UX3: converge operational surfaces"
-    },
-    "exactMain": {
-      "combinedStatus": "success",
-      "failedRuns": 0,
-      "queuedRuns": 0,
-      "inProgressRuns": 0,
-      "classification": "green-quiescent-observed-before-ux4"
+      "number": 135,
+      "mergeSha": "f766fc064b0f8552f4821776755d72b56b757205",
+      "title": "S4-A6 UX4: converge epistemic semantic surfaces"
     },
     "branchProtection": {
       "protected": false,
       "classification": "external-evidence-boundary"
     }
   },
-  "activation": {
-    "id": "GOV-CWA-1",
-    "trajectoryImpact": "intentional-deviation",
-    "stateOnPullRequest": "candidate",
-    "stateWhenThisVersionIsOnMain": "active",
-    "insertedBefore": "S4-A6",
-    "reason": "explicit user-directed activation of convergence-workbook governance before product execution resumes"
-  },
   "currentExecution": {
     "trajectoryImpact": "planned",
-    "parentSlice": "S4-A6",
-    "currentSubSlice": "A6-UX4",
-    "title": "semantic UI/UX mounting convergence",
+    "currentSlice": "GOV-WB4",
     "stateOnPullRequest": "candidate",
-    "parentRemainsOpen": true,
-    "runtimeContract": [
-      "canonical worklist membership, actionable predicate and typed target authority remain owned by S1/A1 runtime projections; when every actionable target resolves to a native local record, the worklist mounts as a semantic bridge and only one operational collection is visible.",
-      "partial or unresolved native binding fails closed by restoring the visible canonical worklist; UI compression may never hide unresolved actionable work.",
-      "native procedure collections default to Azioni correnti and expose Tutti gli elementi in the same local toolbar instead of a second Da fare collection or Mostra altri elementi disclosure.",
-      "RN-01 merges the redundant Materiali in ingresso aside into the existing contribution entry and restores full-width source work; EC-01 retires the duplicate inner Eventi registrati heading.",
-      "legacy Contesto decisionale remains in DOM for compatibility but is visually superseded by one canonical Contesto e tracciabilita disclosure when procedure anatomy is present.",
-      "standard references visually distinguish method/reference evidence from certification and standard-node identity no longer repeats equal ref and label.",
-      "proof labels distinguish role-scoped visibility and technical coherence from access sufficiency or compliance; technical snapshot is secondary to semantic evidence sections when both are present.",
-      "the UX4 mounting layer owns no independent palette, API route, business write authority or release-promotion path."
-    ]
+    "nextAfterMerge": "TRUTH-0",
+    "parentS4A6RemainsOpen": true,
+    "reason": "determinize the convergence control plane before further product/runtime capability work"
   },
-  "activeTrajectory": {
-    "parentSlice": "S4",
-    "completedThrough": "S4-A5",
-    "nextSlice": "S4-A6",
-    "plannedOrder": [
-      "S4-A6",
-      "S5-B0",
-      "S5-B1",
-      "S5-B2"
-    ],
-    "repositoryBoundedStop": "S5-B2",
-    "externalRail": "E4"
-  },
-  "deviations": [
+  "serialChain": [
     {
-      "id": "DEV-001",
-      "kind": "intentional-deviation",
-      "source": "user-directed",
-      "baseMainSha": "28e6dae3ec5b84ebfc4c4a1a42dee69426332470",
-      "insertedSlice": "GOV-CWA-1",
-      "beforeSlice": "S4-A6",
-      "effect": "activate repository convergence governance; preserve the product sequence beginning with S4-A6",
-      "historyPreserved": true
+      "id": "GOV-WB4",
+      "order": 1,
+      "state": "candidate",
+      "dependsOn": null,
+      "purpose": "Deterministic convergence authority/workbook and historical-gate decoupling",
+      "userEffect": "No business UI change; contributors get one explicit development chain."
+    },
+    {
+      "id": "TRUTH-0",
+      "order": 2,
+      "state": "blocked",
+      "dependsOn": "GOV-WB4",
+      "purpose": "Reconcile capability, gap, debt and documentation truth to post-PR-135 main",
+      "userEffect": "Product claims and repository status stop describing stale pre-135 state."
+    },
+    {
+      "id": "SCOPE-0",
+      "order": 3,
+      "state": "blocked",
+      "dependsOn": "TRUTH-0",
+      "purpose": "Define Product Operating Model and context-of-use target envelope",
+      "userEffect": "Future product work is tied to explicit users, deployment, scale and non-goals."
+    },
+    {
+      "id": "REALITY-0",
+      "order": 4,
+      "state": "blocked",
+      "dependsOn": "SCOPE-0",
+      "purpose": "Rehearse the declared target envelope against current architecture and runtime",
+      "userEffect": "Feasibility limits are exposed before architecture is changed."
+    },
+    {
+      "id": "DECIDE-0",
+      "order": 5,
+      "state": "blocked",
+      "dependsOn": "REALITY-0",
+      "purpose": "Make architecture/product-track decisions from scope plus reality evidence",
+      "userEffect": "Only evidence-backed structural changes enter implementation."
+    },
+    {
+      "id": "S4-A6-CLOSE",
+      "order": 6,
+      "state": "blocked",
+      "dependsOn": "DECIDE-0",
+      "purpose": "Execute applicable repository workstreams and close GAP-020 only if evidence supports it",
+      "userEffect": "Remaining internal assurance debt is removed without weakening A1-A5/UX1-UX4."
+    },
+    {
+      "id": "S5-CANDIDATE-SEAL",
+      "order": 7,
+      "state": "blocked",
+      "dependsOn": "S4-A6-CLOSE",
+      "purpose": "Atomic exact-head enterprise-candidate repository seal",
+      "userEffect": "One exact SHA may be promoted to enterprise-candidate; never to enterprise-ready without external evidence."
     }
   ],
+  "conditionalWorkstreams": [
+    {
+      "id": "C1",
+      "name": "compatibility responsibility contraction",
+      "state": "todo",
+      "startAfter": "DECIDE-0",
+      "target": "S4-A6-CLOSE",
+      "debtRefs": [
+        "GAP-020"
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "secure delivery provenance/signing repository portion",
+      "state": "todo",
+      "startAfter": "TRUTH-0",
+      "target": "S4-A6-CLOSE",
+      "debtRefs": [
+        "F-06"
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "target-sized pagination/capacity contract",
+      "state": "todo",
+      "startAfter": "DECIDE-0",
+      "target": "S4-A6-CLOSE",
+      "debtRefs": [
+        "F-13"
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "AI eval/drift/rollback gate",
+      "state": "todo",
+      "startAfter": "DECIDE-0",
+      "target": "S4-A6-CLOSE",
+      "debtRefs": [
+        "F-15"
+      ]
+    },
+    {
+      "id": "C5",
+      "name": "semantic-owner compression / no hidden post-render business authority",
+      "state": "todo",
+      "startAfter": "TRUTH-0",
+      "target": "S4-A6-CLOSE",
+      "debtRefs": [
+        "GAP-020"
+      ]
+    }
+  ],
+  "sourceOfTruth": [
+    {
+      "id": "SOT-GIT",
+      "topic": "merge and exact-SHA facts",
+      "authority": "Git/GitHub",
+      "rule": "Repository files may reference observed facts but cannot predict future merge SHAs."
+    },
+    {
+      "id": "SOT-PRODUCT",
+      "topic": "product intent and boundaries",
+      "authority": "docs/PRODUCT.md",
+      "rule": "Convergence governance cannot redefine product intent."
+    },
+    {
+      "id": "SOT-ARCH",
+      "topic": "AS-IS architecture",
+      "authority": "docs/11_ARCHITECTURE.md",
+      "rule": "Planning assumptions cannot overwrite observed architecture."
+    },
+    {
+      "id": "SOT-RUNTIME",
+      "topic": "runtime business behavior",
+      "authority": "v3/server.mjs + v3/runtime/* + v3/store.mjs",
+      "rule": "Workbook is never runtime business authority."
+    },
+    {
+      "id": "SOT-CAPABILITY",
+      "topic": "repository capability truth",
+      "authority": "v3/capability-truth.json",
+      "rule": "Repository-proven is distinct from deployment effectiveness."
+    },
+    {
+      "id": "SOT-GAPS",
+      "topic": "gap state",
+      "authority": "v3/gaps.json + docs/GAP_REGISTER.md",
+      "rule": "Gap closure requires its declared evidence class."
+    },
+    {
+      "id": "SOT-REMEDIATION",
+      "topic": "audit remediation findings",
+      "authority": "audit/remediation-registry.json",
+      "rule": "E3-E5 findings cannot be self-closed by repository simulation."
+    },
+    {
+      "id": "SOT-CONVERGENCE",
+      "topic": "development sequencing and PR reconciliation",
+      "authority": "docs/convergence/convergence-authority.json",
+      "rule": "This authority sequences work only; it cannot redefine product/runtime/legal truth."
+    },
+    {
+      "id": "SOT-EXTERNAL",
+      "topic": "human, governance and deployment evidence",
+      "authority": "observed external systems / independent evidence",
+      "rule": "External evidence is referenced, never manufactured by this workbook."
+    }
+  ],
+  "internalDebt": [
+    {
+      "id": "GOV-POST135",
+      "status": "candidate-fixed",
+      "closureClass": "repository-internal",
+      "target": "GOV-WB4",
+      "meaning": "Convergence authority was anchored to PR #134 although PR #135 is merged."
+    },
+    {
+      "id": "GOV-README-PRESENTATION",
+      "status": "candidate-fixed",
+      "closureClass": "repository-internal",
+      "target": "GOV-WB4",
+      "meaning": "README still described uiPresentation 3.4 as current while runtime/manifest say local-owners."
+    },
+    {
+      "id": "GOV-UX3-PLANNING-SHADOW",
+      "status": "candidate-fixed",
+      "closureClass": "repository-internal",
+      "target": "GOV-WB4",
+      "meaning": "Historical A6-UX3 source oracle still asserted current nextSlice planning tokens."
+    },
+    {
+      "id": "TRUTH-POST135",
+      "status": "todo",
+      "closureClass": "repository-internal",
+      "target": "TRUTH-0",
+      "meaning": "capability-truth/gap/docs reconciliation still stops at A5/#128 in multiple current surfaces."
+    },
+    {
+      "id": "F-06",
+      "status": "in-remediation",
+      "closureClass": "repository-internal",
+      "target": "S4-A6-CLOSE",
+      "meaning": "Generated SBOM exists; provenance/signature pipeline repository portion remains."
+    },
+    {
+      "id": "F-13",
+      "status": "open",
+      "closureClass": "repository-internal",
+      "target": "S4-A6-CLOSE",
+      "meaning": "Versioned pagination/capacity contract remains."
+    },
+    {
+      "id": "F-15",
+      "status": "in-remediation",
+      "closureClass": "repository-internal",
+      "target": "S4-A6-CLOSE",
+      "meaning": "AI atomic budget exists; versioned eval/drift/rollback gate remains."
+    },
+    {
+      "id": "GAP-020",
+      "status": "open",
+      "closureClass": "repository-internal",
+      "target": "S4-A6-CLOSE",
+      "meaning": "S4 assurance contraction remains open after UX1-UX4."
+    },
+    {
+      "id": "GAP-021",
+      "status": "open",
+      "closureClass": "repository-internal",
+      "target": "S5-CANDIDATE-SEAL",
+      "meaning": "Candidate evidence seal remains."
+    }
+  ],
+  "externalRails": [
+    {
+      "id": "E3-HUMAN",
+      "state": "external",
+      "items": [
+        "human assistive-technology and usability evidence"
+      ]
+    },
+    {
+      "id": "E3-GOV",
+      "state": "external",
+      "items": [
+        "server-side protected delivery and required-review enforcement",
+        "independent security/review evidence"
+      ]
+    },
+    {
+      "id": "E4-DEPLOY",
+      "state": "external",
+      "items": [
+        "production scanner efficacy",
+        "externally managed key custody",
+        "approved off-host backup/restore RTO/RPO evidence",
+        "production observability/alert drills",
+        "signed build provenance verification"
+      ]
+    }
+  ],
+  "scopeDimensions": [
+    {
+      "id": "SCOPE-01",
+      "name": "primary operator and buyer",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-02",
+      "name": "must-win jobs",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-03",
+      "name": "seven-process breadth",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-04",
+      "name": "deployment topology",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-05",
+      "name": "scale and concurrency",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-06",
+      "name": "supported clients",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-07",
+      "name": "install/update/rollback support",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-08",
+      "name": "data sensitivity/residency",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-09",
+      "name": "availability/recovery/capacity",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-10",
+      "name": "integrations/master systems",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-11",
+      "name": "roles/delegation/SoD",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-12",
+      "name": "product success metrics",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    },
+    {
+      "id": "SCOPE-13",
+      "name": "feature/architecture budget and non-goals",
+      "state": "undefined",
+      "ownerSlice": "SCOPE-0"
+    }
+  ],
+  "s5Seal": {
+    "phases": [
+      {
+        "id": "B0",
+        "state": "blocked"
+      },
+      {
+        "id": "B1",
+        "state": "blocked"
+      },
+      {
+        "id": "B2",
+        "state": "blocked"
+      }
+    ],
+    "enterpriseCandidate": false,
+    "enterpriseReady": false
+  },
   "reconciliations": [
     {
       "id": "REC-A6-UX2-MAIN",
       "kind": "reconciliation",
-      "source": "post-merge-observation",
-      "baseMainSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
       "mergedPr": 132,
       "reconciledSubSlice": "A6-UX2",
-      "result": "A6-UX2 observed on main; parent S4-A6 remains open",
       "historyPreserved": true
     },
     {
       "id": "REC-A6-UX3-MAIN",
       "kind": "reconciliation",
-      "source": "post-merge-observation",
-      "baseMainSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
       "mergedPr": 134,
-      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
       "reconciledSubSlice": "A6-UX3",
-      "result": "A6-UX3 observed on main; parent S4-A6 remains open and A6-UX4 becomes the current execution unit",
       "historyPreserved": true
+    },
+    {
+      "id": "REC-A6-UX4-MAIN",
+      "kind": "reconciliation",
+      "mergedPr": 135,
+      "mergeSha": "f766fc064b0f8552f4821776755d72b56b757205",
+      "reconciledSubSlice": "A6-UX4",
+      "historyPreserved": true
+    }
+  ],
+  "auditLineage": [
+    {
+      "id": "A0",
+      "sha256": "7ba353d3bf5a19dd940daa66a4f9121f5fd9990407e98640c5b5faad6368b1",
+      "frozen": true
+    },
+    {
+      "id": "A1",
+      "sha256": "392922c18ba7cebfa1ffeb2cac8bdea68827547d5a38a001a9ecdba1948bc5fc",
+      "frozen": true
+    },
+    {
+      "id": "A2",
+      "sha256": "86bc23b38ea75873828fdf7f4a3188117a1f7c79ba8f1c552857eb4f8edff6fc",
+      "frozen": true
+    },
+    {
+      "id": "A3",
+      "sha256": "c91a4a479a4180628a9095e5ef5bf304daee093cf77bc032820ec1d56ca6152e",
+      "frozen": true
+    },
+    {
+      "id": "A4",
+      "sha256": "f522c71f8bff5bfdd44da103c66cbe9b28964e422e8b3f31ad75541a71562c45",
+      "frozen": true
+    },
+    {
+      "id": "A5",
+      "sha256": "145c4803573176d4828c033e504163421e120944c3d9e5aece9f04902a9e2ead",
+      "frozen": true
+    },
+    {
+      "id": "A6",
+      "sha256": "798d018511d2c2c6ba068308e2db00ef81c5bd422f7839e4f8e88ced27250924",
+      "frozen": true
+    },
+    {
+      "id": "A7",
+      "sha256": "68a57fbc0bf615ada5dbde2150acdf947acdc5c0682cc7cc131fc706af4817db",
+      "frozen": true
     }
   ],
   "trajectoryImpactPolicy": {
@@ -128,43 +474,25 @@
     ],
     "neutralSliceToken": "NONE",
     "rules": {
-      "planned": "must name the current nextSlice and update authority plus workbook when trajectory-sensitive surfaces change",
-      "intentional-deviation": "must name the inserted or reshaped slice, preserve prior history, and update authority plus workbook on the exact PR base",
-      "neutral": "must use Convergence slice NONE, must not change trajectory-sensitive surfaces, authority or workbook",
-      "reconciliation": "must name the reconciled boundary and update authority plus workbook on the exact PR base"
+      "planned": "candidate authority must name the PR execution slice; causal predecessors remain done and successors blocked",
+      "intentional-deviation": "preserve history and replan forward from the exact base",
+      "neutral": "use NONE and do not change trajectory-sensitive surfaces",
+      "reconciliation": "record an observed boundary without predicting a future merge SHA"
     }
   },
-  "criticalPathPrefixes": [
-    "v3/",
-    "schemas/",
-    ".github/",
-    "docs/convergence/"
-  ],
-  "criticalExactPaths": [
-    "AGENTS.md",
-    "GOVERNANCE.md",
-    "package.json",
-    "package-lock.json",
-    "docs/authority-matrix.yaml",
-    "docs/documentation-manifest.json"
-  ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.14-a6-ux4-uiux-mount-prepr",
-    "classification": "derived-active-minimal-projection",
-    "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
-    "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "66c084dd1c4a2c5b4e3fd4ef2b1293aad09280c5e206000d9a0c72fbfbb25456",
-    "bindingSha256": "b0f824f13c46510aae191a563157244dced5667ad8d8dd3425c1c7b95663a47a",
-    "bindingSheet": "GOV_CWA1_BINDING",
-    "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
+    "version": "GOV-WB4",
+    "classification": "derived-readable-projection",
+    "bindingSheet": "BINDING",
+    "sha256": "5fbf27877b1739701837db2404c5ebd63790ddc46e18d2e10e4a1c7ecead6653",
+    "bindingSha256": "f823b23e8949926309beb055ad403504bde8c2597498e35ab2a37e2908011812"
   },
   "receipt": {
     "path": "artifacts/convergence-authority-receipt.json",
     "saturationPath": "artifacts/convergence-authority-saturation.json",
     "tracked": false,
-    "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "A6-UX4 is a planned semantic UI/UX mounting execution unit inside S4-A6. It compresses duplicate visible collections only when native typed-target binding is exact, fails closed to the canonical worklist otherwise, narrows ambiguous UI claims and hardens standard-browser geometry while preserving business routes and runtime truth. Parent S4-A6 remains open. No enterprise-candidate promotion, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, representative-human usability, accessibility certification or legal/compliance claim is created."
+  "claimBoundary": "GOV-WB4 establishes repository-bounded development sequencing and a derived workbook projection. It does not close GAP-020/GAP-021, change business runtime semantics, promote enterprise-candidate/enterprise-ready, establish branch protection, deployment effectiveness, independent assurance, human usability/accessibility, certification or legal/compliance conclusions."
 }

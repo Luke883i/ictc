@@ -11,7 +11,7 @@
     "journey": {"owner": "v3/release-identity.json", "value": "2.2-sequential-onto-epistemic"},
     "constitution": {"owner": "v3/release-identity.json", "value": "C0.1"},
     "documentation": {"owner": "docs/documentation-manifest.json", "value": "1.0"},
-    "convergenceGovernance": {"owner": "docs/convergence/convergence-authority.json", "value": "GOV-CWA-1"}
+    "convergenceGovernance": {"owner": "docs/convergence/convergence-authority.json", "value": "GOV-WB4"}
   },
   "documents": [
     {"id":"readme","path":"README.md","lifecycle":"current","mode":"explanation","authorityTopic":"repository_front_door","authoritative":true},
