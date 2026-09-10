@@ -14,7 +14,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           cat .blob-stage/*.bin > docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx
-          test "$(git hash-object docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx)" = "352a8dd034547482150cebcfd1d5d5277cfa7217"
+          test "$(git hash-object docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx)" = "352a8d9598c422a41afdc92bca698855bf1ea339"
           node <<'NODE'
           const fs=require('fs');
           const p='docs/convergence/convergence-authority.json';
@@ -23,7 +23,7 @@ jobs:
           a.projection.sha256='991c73096f78afad1465516bad91e45d7de7bf926b851efd56443ceaf3b21629';
           fs.writeFileSync(p,JSON.stringify(a)+'\n');
           NODE
-          test "$(git hash-object docs/convergence/convergence-authority.json)" = "98902ab0163fb43a9eb654cbbe8f4e8e0739313d"
+          test "$(git hash-object docs/convergence/convergence-authority.json)" = "98902a7960a7c73aa0ecff592f654d346cda3a62"
       - name: Publish staging object commit
         shell: bash
         run: |
