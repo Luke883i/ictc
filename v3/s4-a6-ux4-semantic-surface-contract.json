@@ -14,7 +14,7 @@
     "standard reference headings are visually distinct, equal ref/label identities are not duplicated, and organizationalUse=undeclared is presented as Uso da dichiarare without changing persisted truth",
     "proof presentation distinguishes role visibility and technical coherence from access sufficiency, certification and compliance conclusions",
     "visible controls expose effect-scoped presentation markers without changing business action authority or write routes",
-    "standard browser geometry is bounded at desktop, 390px and 320px with >=44px close target",
+    "standard browser geometry is bounded at desktop, 390px and 320px with one dialog-owned vertical scroll authority, no local horizontal scroll, and a >=44px close target",
     "A6-UX4 owns no independent palette, API route, business write, release promotion or runtime truth provider"
   ],
   "semanticQuestions":["Cosa devo fare adesso?","Su quale elemento sto lavorando?","Perché richiede attenzione?","Qual è lo stato utile per decidere?","Posso agire o solo consultare?","Che cosa cambia se attivo questo controllo?","Da quale fonte o evidenza deriva?","Quale decisione resta umana?","Che cosa non sa ancora ICTC?","Questo significa conformità o certificazione?","Come vedo anche gli elementi senza azione corrente?","Dove vedo standard e riferimenti?","Uso organizzativo, applicabilità e mapping sono distinti?","Il percorso resta operabile senza scroll orizzontale?","Un auditor può consultare senza scrivere?"],
