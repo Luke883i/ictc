@@ -78,7 +78,7 @@ La regola corrente è **work first, explanation on demand**, con composizione lo
 
 Il lifecycle costituzionale resta **C0.1** con ordine `harmonization → presentation → integrity → journey → annotation`; il journey corrente resta `2.2-sequential-onto-epistemic`.
 
-Il design system mantiene tre assi distinti: `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = 3.4`. La closure 3.4 è l'effetto visuale finale AS-IS caricato dopo il chrome 3.3, ma resta una **effective transitional presentation closure** da assorbire nei veri owner: non è un nuovo business/design-system owner permanente.
+Il design system mantiene tre assi distinti: `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners`. La presentation corrente è distribuita fra gli owner canonici dichiarati; `workspace-finetuning-3-4.css` è ritirato e non è un resolver current.
 
 ## Evidenze ed export
 
@@ -124,7 +124,7 @@ La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario mo
 
 ## Release e presa in carico
 
-`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority. Il registry documentale registra separatamente `workspaceChrome = 3.3` e `uiPresentation = 3.4` per rappresentare l'AS-IS senza promuovere la closure transitoria a lineage permanente.
+`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority. Il registry documentale registra separatamente `workspaceChrome = 3.3` e `uiPresentation = local-owners`; la vecchia 3.4 resta lineage/retirement oracle e non current authority.
 
 La branch protection server-side e gli altri gate indipendenti/deployment non possono essere auto-prodotti dal repository: restano blocker esterni quando non disponibili.
 
