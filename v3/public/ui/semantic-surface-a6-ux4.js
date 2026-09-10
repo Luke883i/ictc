@@ -62,12 +62,13 @@ function applyIntegratedScope(root,id){
 function integrateWorklist(id){
   const root=procedureRoot(id),model=worklist(id),section=attentionSection(root,id);if(!root||!model||!section)return;
   for(const node of nativeUniverse(root,id)){delete node.dataset.a6Ux4Actionable;delete node.dataset.a6Ux4WorkId;delete node.dataset.a6Ux4ScopeHidden;}
-  const actionable=model.rows||[],bindings=actionable.map(row=>({row,node:nativeTarget(row.presentation?.targetRef)})),exact=bindings.length>0&&bindings.every(item=>item.node);
+  const actionable=model.rows||[],bindings=actionable.map(row=>({row,node:nativeTarget(row.presentation?.targetRef)})),missing=bindings.filter(item=>!item.node),exact=missing.length===0;
+  root.dataset.a6Ux4ActionableCount=String(actionable.length);root.dataset.a6Ux4BindingMissing=String(missing.length);
   section.dataset.a6Ux4Mount=exact?'semantic-bridge':'fallback-visible';
   const slot=section.closest('[data-procedure-attention-slot]');if(slot)slot.dataset.a6Ux4Mount=section.dataset.a6Ux4Mount;
   if(!exact){section.hidden=false;root.dataset.a6Ux4SingleCollection='fallback';return;}
   for(const {row,node} of bindings){node.dataset.a6Ux4Actionable='true';node.dataset.a6Ux4WorkId=row.id;}
-  section.hidden=true;root.dataset.a6Ux4SingleCollection='native';root.dataset.a6Ux4ActionableCount=String(actionable.length);
+  section.hidden=true;root.dataset.a6Ux4SingleCollection='native';
   const control=ensureScopeControl(root,id);if(control&&!control.dataset.a6Ux4Default){control.value='actionable';control.dataset.a6Ux4Default='true';}
   applyIntegratedScope(root,id);
 }

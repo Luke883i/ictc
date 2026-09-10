@@ -19,22 +19,20 @@ html[data-a6-ux4-semantic="a6-ux4"] .procedure-anatomy-standard-head[data-a6-ux4
 html[data-a6-ux4-semantic="a6-ux4"] .market-scope[data-a6-ux4-semantic-copy="Uso non dichiarato"]{display:inline-flex!important;align-items:center;min-height:32px;padding:.2rem .55rem!important;border-radius:999px;max-width:12rem;white-space:normal;line-height:1.2;font-size:.78rem!important}
 html[data-a6-ux4-semantic="a6-ux4"] #proofView [data-a6-ux4-information-role="technical-snapshot"]{margin-top:.65rem}
 
-/* Standard Browser owns one desktop vertical scroll container only: master-detail.
-   Non-owner descendants stay overflow-visible and instead wrap intrinsically; the dialog clips only
-   the outer X/Y paint boundary. This preserves the UX3 single-scroll-owner oracle without allowing
-   local horizontal scrollbars or a second nested Y scroller. */
+/* Standard Browser scroll authority: desktop master-detail is the only bounded Y owner.
+   The shell and every descendant that is not the owner are explicitly non-scrollable; wrapping absorbs
+   intrinsic pressure. On narrow viewports the dialog becomes the one Y owner and master-detail rejoins flow. */
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail{min-width:0;max-width:100%}
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog{overflow:hidden}
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell,
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools,
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list,
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail{overflow:visible!important}
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail{overflow-x:hidden!important;overflow-y:auto!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog{overflow:hidden!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell{min-height:0;overflow:hidden!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell *{overflow:visible!important;max-width:100%;min-width:0}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail{min-height:0;max-height:min(62vh,44rem);overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior:contain}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail *{overflow:visible!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools{display:grid;grid-template-columns:minmax(0,1fr) max-content;gap:.55rem;align-items:center}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools input{min-width:0;width:100%}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-objectives{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:.35rem!important}
@@ -44,6 +42,13 @@ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-select
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail :is(p,li,a,code,pre){min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail pre{white-space:pre-wrap}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog button[aria-label="Chiudi"]{min-width:44px;min-height:44px}
-@media(max-width:760px){html[data-a6-ux4-semantic="a6-ux4"] .a6-operational-filter:has(.a6-ux4-scope-filter){grid-template-columns:minmax(0,1fr)}html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools{grid-template-columns:minmax(0,1fr)}html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail{grid-template-columns:minmax(0,1fr)!important;overflow:visible!important}html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list{max-width:100%;overflow:visible!important}}
+@media(max-width:760px){
+ html[data-a6-ux4-semantic="a6-ux4"] .a6-operational-filter:has(.a6-ux4-scope-filter){grid-template-columns:minmax(0,1fr)}
+ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell{overflow:visible!important}
+ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools{grid-template-columns:minmax(0,1fr)}
+ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail{grid-template-columns:minmax(0,1fr)!important;max-height:none;overflow:visible!important}
+ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list{max-width:100%;overflow:visible!important}
+}
 @media(forced-colors:active){html[data-a6-ux4-semantic="a6-ux4"] [data-a6-ux4-reference-truth="method-reference"]{border-color:CanvasText}html[data-a6-ux4-semantic="a6-ux4"] .procedure-anatomy-standard-head[data-a6-ux4-reference-band="canonical"]{background:Canvas;color:CanvasText;border:1px solid CanvasText}}
 @media(prefers-reduced-motion:reduce){html[data-a6-ux4-semantic="a6-ux4"] *{scroll-behavior:auto!important}}
