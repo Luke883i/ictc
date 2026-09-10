@@ -33,11 +33,25 @@ def check_frame(page,code):
     expect(frame).to_have_count(1)
     expect(frame).to_be_visible()
     assert frame.get_attribute('data-procedure-guidance-authority')=='procedure-guidance-projection'
-    detail=frame.locator(':scope > details.composition-process-context')
-    expect(detail).to_have_count(1)
-    expect(detail.locator(':scope > summary')).to_have_text('Contesto decisionale')
-    assert detail.get_attribute('open') is None
-    assert frame.evaluate('e=>{const work=e.previousElementSibling;return !!work}')
+    ux4=page.locator('html').get_attribute('data-a6-ux4-semantic')=='a6-ux4'
+    legacy=frame.locator(':scope > details.composition-process-context')
+    if ux4:
+        anatomy=page.locator(f'{root} [data-procedure-anatomy="{process_id}"][data-a6-ux4-context="canonical"]')
+        expect(anatomy).to_have_count(1)
+        expect(anatomy).to_be_visible()
+        summary=anatomy.locator(':scope > summary')
+        expect(summary).to_have_attribute('aria-label','Contesto e tracciabilità')
+        expect(summary).to_contain_text('Contesto e tracciabilità')
+        if legacy.count():
+            expect(legacy).to_be_hidden()
+            expect(legacy).to_have_attribute('data-a6-ux4-context','superseded')
+        owner=page.locator(root)
+        assert owner.get_attribute('data-a6-ux4-single-collection') in ('native','fallback'), (code,owner.get_attribute('data-a6-ux4-single-collection'))
+    else:
+        expect(legacy).to_have_count(1)
+        expect(legacy.locator(':scope > summary')).to_have_text('Contesto decisionale')
+        assert legacy.get_attribute('open') is None
+        assert frame.evaluate('e=>{const work=e.previousElementSibling;return !!work}')
     return frame
 
 try:
@@ -96,11 +110,12 @@ try:
 
         out={
             'ok':True,
-            'profile':'procedure-executive-harmonization-1.5+semantic-composition-3.1+ui-finetuning-3.4',
+            'profile':'procedure-executive-harmonization-1.5+semantic-composition-3.1+ui-finetuning-3.4+a6-ux4-context-aware',
             'procedures':list(LABELS),
             'canonicalMetricSignalsPreservedButHidden':True,
             'catalogueEvidenceAnnotationPreservedButHidden':True,
             'decisionContextProgressiveDisclosure':True,
+            'canonicalContextOwnerAware':True,
             'workBeforeDecisionContext':True,
             'conditionBasedProcessReadiness':True,
             'mobileOverflow':False,
