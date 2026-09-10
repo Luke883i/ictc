@@ -29,8 +29,8 @@ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog{overflow:hidden!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell{min-height:0;overflow:hidden!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell .standard-browser-master-detail{overflow-x:hidden!important;overflow-y:auto!important;min-height:0;max-height:min(62vh,44rem);overscroll-behavior:contain}
-/* All descendants other than the declared layout owner must wrap rather than become independent vertical scrollers. */
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell :not(.standard-browser-master-detail){overflow-y:visible!important}
+/* All descendants other than the declared layout owner are non-scroll containers. Using the shorthand is intentional: visible Y can compute to auto when X is hidden, which would create a second vertical owner. */
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell :not(.standard-browser-master-detail){overflow:visible!important;max-height:none!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail>.standard-node-list,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail>.standard-node-detail,
