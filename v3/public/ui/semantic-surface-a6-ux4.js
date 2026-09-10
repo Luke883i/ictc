@@ -83,7 +83,8 @@ function compressRegistries(){
 function compressContext(){
   for(const root of [document.querySelector('#monitoringView'),document.querySelector('#incidentsView'),document.querySelector('#grcWorkspace')].filter(Boolean)){
     const anatomy=root.querySelector('[data-procedure-anatomy]');const legacy=root.querySelector('.procedure-decision-frame details.composition-process-context');
-    if(anatomy&&legacy){legacy.dataset.a6Ux4Context='superseded';legacy.hidden=true;anatomy.dataset.a6Ux4Context='canonical';}
+    if(anatomy){anatomy.dataset.a6Ux4Context='canonical';}
+    if(anatomy&&legacy){legacy.dataset.a6Ux4Context='superseded';legacy.hidden=true;}
   }
   for(const head of document.querySelectorAll('.procedure-anatomy-standard-head'))head.dataset.a6Ux4ReferenceBand='canonical';
 }
