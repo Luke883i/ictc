@@ -1,0 +1,24 @@
+{
+  "schemaVersion":"1.1.0",
+  "slice":"S4-A6",
+  "executionUnit":"A6-UX4",
+  "title":"semantic UI/UX mounting convergence",
+  "trajectoryImpact":"planned",
+  "runtimeContract":[
+    "S1/A1 worklist membership, actionable predicate and typed target remain canonical; exact native binding mounts that worklist as a semantic bridge into one visible local collection",
+    "partial binding fails closed to the visible canonical worklist instead of hiding unresolved actionable work",
+    "the local collection defaults to Azioni correnti and exposes Tutti gli elementi in the same toolbar; no visible Mostra altri elementi disclosure remains in integrated mode",
+    "RN-01 merges the redundant material aside into the contribution entry and preserves full-width source work",
+    "EC-01 exposes one Eventi registrati heading/count rather than nested duplicates",
+    "procedure context has one visible progressive label; the older decision-context DOM remains compatibility evidence but is visually superseded",
+    "standard reference headings are visually distinct, equal ref/label identities are not duplicated, and organizationalUse=undeclared is presented as Uso da dichiarare without changing persisted truth",
+    "proof presentation distinguishes role visibility and technical coherence from access sufficiency, certification and compliance conclusions",
+    "visible controls expose effect-scoped presentation markers without changing business action authority or write routes",
+    "standard browser geometry is bounded at desktop, 390px and 320px with one dialog-owned vertical scroll authority, no local horizontal scroll, and a >=44px close target",
+    "A6-UX4 owns no independent palette, API route, business write, release promotion or runtime truth provider"
+  ],
+  "semanticQuestions":["Cosa devo fare adesso?","Su quale elemento sto lavorando?","Perché richiede attenzione?","Qual è lo stato utile per decidere?","Posso agire o solo consultare?","Che cosa cambia se attivo questo controllo?","Da quale fonte o evidenza deriva?","Quale decisione resta umana?","Che cosa non sa ancora ICTC?","Questo significa conformità o certificazione?","Come vedo anche gli elementi senza azione corrente?","Dove vedo standard e riferimenti?","Uso organizzativo, applicabilità e mapping sono distinti?","Il percorso resta operabile senza scroll orizzontale?","Un auditor può consultare senza scrivere?"],
+  "falsification":{"baselineCases":10000,"baselineSuite":"v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs","additionalCases":100000,"uiuxMountSuite":"v3/s4-a6-ux4-uiux-mount-fuzz-100k.mjs","negativePatternFamilies":25,"semanticQuestions":15,"grade":"E2-model/source"},
+  "browserEvidence":"v3/browser-s4-a6-ux4-semantic-surface.py",
+  "claimBoundary":"Repository-owned semantic presentation, mounting and browser geometry candidate only. Parent S4-A6 remains open; no enterprise-candidate promotion, enterprise-ready, accessibility certification, representative-human usability, deployment-effectiveness, independent-assurance or legal/compliance claim is created."
+}

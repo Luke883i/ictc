@@ -15,28 +15,28 @@
     "deployment or independent assurance"
   ],
   "baseAnchor": {
-    "mainSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
-    "mergedPr": 133,
-    "meaning": "post-a6-ux2-main-reconciliation",
+    "mainSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
+    "mergedPr": 134,
+    "meaning": "post-a6-ux3-main-reconciliation",
     "observationDate": "2026-09-09"
   },
   "observedContext": {
     "latestMergedPr": {
-      "number": 133,
-      "mergeSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
-      "title": "A6-UX2-MAIN: reconcile post-merge convergence authority"
+      "number": 134,
+      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
+      "title": "S4-A6 UX3: converge operational surfaces"
     },
     "priorSemanticPr": {
-      "number": 132,
-      "mergeSha": "69da13b76355e18bfa80f5ee92cd0067a97b4bc8",
-      "title": "S4-A6 UX2: converge canonical chrome palette"
+      "number": 134,
+      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
+      "title": "S4-A6 UX3: converge operational surfaces"
     },
     "exactMain": {
       "combinedStatus": "success",
       "failedRuns": 0,
       "queuedRuns": 0,
       "inProgressRuns": 0,
-      "classification": "green-quiescent"
+      "classification": "green-quiescent-observed-before-ux4"
     },
     "branchProtection": {
       "protected": false,
@@ -54,19 +54,19 @@
   "currentExecution": {
     "trajectoryImpact": "planned",
     "parentSlice": "S4-A6",
-    "currentSubSlice": "A6-UX3",
-    "title": "operational surface convergence",
+    "currentSubSlice": "A6-UX4",
+    "title": "semantic UI/UX mounting convergence",
     "stateOnPullRequest": "candidate",
     "parentRemainsOpen": true,
     "runtimeContract": [
-      "Home remains priority-first and does not restore a numeric compliance or maturity score.",
-      "RN-01 keeps source/material intake first and adds collapsible/filterable monitoring records without changing business providers.",
-      "EC-01 adds a filterable event registry and terminal records do not request a new formulation verification.",
-      "AO-01 keeps stable record identifiers, lifecycle state and fail-closed activation prerequisites visible to the local owner.",
-      "MC-01 retains one visible Comprendi standard entry per framework and retires the duplicate visible concept drilldown.",
-      "MC-01 scope editor becomes an in-page popup overlay while preserving the existing standards scope route; the standard browser remains a read-only master-detail understanding surface.",
-      "the new operational presentation layer owns no independent palette, business write API or release promotion.",
-      "A6-UX1 fixed-safe footer geometry and A6-UX2 canonical chrome palette remain unchanged."
+      "canonical worklist membership, actionable predicate and typed target authority remain owned by S1/A1 runtime projections; when every actionable target resolves to a native local record, the worklist mounts as a semantic bridge and only one operational collection is visible.",
+      "partial or unresolved native binding fails closed by restoring the visible canonical worklist; UI compression may never hide unresolved actionable work.",
+      "native procedure collections default to Azioni correnti and expose Tutti gli elementi in the same local toolbar instead of a second Da fare collection or Mostra altri elementi disclosure.",
+      "RN-01 merges the redundant Materiali in ingresso aside into the existing contribution entry and restores full-width source work; EC-01 retires the duplicate inner Eventi registrati heading.",
+      "legacy Contesto decisionale remains in DOM for compatibility but is visually superseded by one canonical Contesto e tracciabilita disclosure when procedure anatomy is present.",
+      "standard references visually distinguish method/reference evidence from certification and standard-node identity no longer repeats equal ref and label.",
+      "proof labels distinguish role-scoped visibility and technical coherence from access sufficiency or compliance; technical snapshot is secondary to semantic evidence sections when both are present.",
+      "the UX4 mounting layer owns no independent palette, API route, business write authority or release-promotion path."
     ]
   },
   "activeTrajectory": {
@@ -104,6 +104,17 @@
       "reconciledSubSlice": "A6-UX2",
       "result": "A6-UX2 observed on main; parent S4-A6 remains open",
       "historyPreserved": true
+    },
+    {
+      "id": "REC-A6-UX3-MAIN",
+      "kind": "reconciliation",
+      "source": "post-merge-observation",
+      "baseMainSha": "2f1a2b0c6366620af3976cd8c2eaaec63a86cba5",
+      "mergedPr": 134,
+      "mergeSha": "04b49c4d09fec3b0ff703a9e74bfd14713993524",
+      "reconciledSubSlice": "A6-UX3",
+      "result": "A6-UX3 observed on main; parent S4-A6 remains open and A6-UX4 becomes the current execution unit",
+      "historyPreserved": true
     }
   ],
   "trajectoryImpactPolicy": {
@@ -139,12 +150,12 @@
   ],
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "v3.12-a6-ux3-prepr-minimal",
+    "version": "v3.14-a6-ux4-uiux-mount-prepr",
     "classification": "derived-active-minimal-projection",
     "sourceWorkbook": "ICTC_CONVERGENCE_AUTHORITY_WORKBOOK_v3.8_GOVERNANCE_ACTIVATION_AUDIT.xlsx",
     "sourceWorkbookSha256": "fbc7d2a2681c25a48bfd51e29ec0d2bfbe8aacb0a5c1975a3c1aea541a083a66",
-    "sha256": "7e56edca698f313af0b21d7b5d34b407cb9458561c5a1349a83125ab9b3b2b7e",
-    "bindingSha256": "17af456bff97888c4dff64798ea691545652efb17b001dc990071437fca29efd",
+    "sha256": "66c084dd1c4a2c5b4e3fd4ef2b1293aad09280c5e206000d9a0c72fbfbb25456",
+    "bindingSha256": "b0f824f13c46510aae191a563157244dced5667ad8d8dd3425c1c7b95663a47a",
     "bindingSheet": "GOV_CWA1_BINDING",
     "updateRule": "planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update authority and workbook together; neutral NO_DELTA does not rewrite the workbook; full v3.8 source lineage is retained by sourceWorkbookSha256"
   },
@@ -155,5 +166,5 @@
     "mergeFactAuthority": "Git/GitHub event after the SHA exists",
     "selfReferenceForbidden": true
   },
-  "claimBoundary": "A6-UX3 is a planned operational-surface execution unit inside S4-A6. It changes repository-owned presentation, preserves the existing business routes, and makes standard scope editing an in-page popup overlay while keeping standard understanding read-only; parent S4-A6 remains open. No enterprise-candidate, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, representative-human usability, accessibility certification or legal/compliance claim is created."
+  "claimBoundary": "A6-UX4 is a planned semantic UI/UX mounting execution unit inside S4-A6. It compresses duplicate visible collections only when native typed-target binding is exact, fails closed to the canonical worklist otherwise, narrows ambiguous UI claims and hardens standard-browser geometry while preserving business routes and runtime truth. Parent S4-A6 remains open. No enterprise-candidate promotion, enterprise-ready, branch-protection, production-effectiveness, independent-assurance, representative-human usability, accessibility certification or legal/compliance claim is created."
 }
