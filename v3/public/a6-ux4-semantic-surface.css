@@ -19,7 +19,7 @@ html[data-a6-ux4-semantic="a6-ux4"] .procedure-anatomy-standard-head[data-a6-ux4
 html[data-a6-ux4-semantic="a6-ux4"] .market-scope[data-a6-ux4-semantic-copy="Uso non dichiarato"]{display:inline-flex!important;align-items:center;min-height:32px;padding:.2rem .55rem!important;border-radius:999px;max-width:12rem;white-space:normal;line-height:1.2;font-size:.78rem!important}
 html[data-a6-ux4-semantic="a6-ux4"] #proofView [data-a6-ux4-information-role="technical-snapshot"]{margin-top:.65rem}
 
-/* One vertical-scroll authority for the modal: the dialog itself. This avoids nested scroll ownership while preserving the read-only master/detail layout. */
+/* One vertical-scroll authority for the modal: the dialog itself. Every descendant is explicitly non-scrollable; horizontal containment is provided by wrapping plus the dialog clip boundary. */
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools,
@@ -28,9 +28,8 @@ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list,
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-detail{min-width:0;max-width:100%}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog{overflow-x:hidden!important;overflow-y:auto!important;max-height:min(88vh,52rem);overscroll-behavior:contain}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell{min-height:0;overflow:visible!important}
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell .standard-browser-master-detail{overflow:visible!important;min-height:0;max-height:none!important}
-/* Descendants are layout/content containers, never independent scroll authorities. */
-html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell :not(.standard-browser-master-detail){overflow:visible!important;max-height:none!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell *,
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-shell .standard-browser-master-detail{overflow:visible!important;max-height:none!important}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools{display:grid;grid-template-columns:minmax(0,1fr) max-content;gap:.55rem;align-items:center}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-tools input{min-width:0;width:100%}
 html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-objectives{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:.35rem!important}
