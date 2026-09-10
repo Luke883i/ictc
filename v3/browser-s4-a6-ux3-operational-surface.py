@@ -18,9 +18,15 @@ def no_overflow(page,label):
  RESULTS.append({'oracle':'reflow','case':label,'metrics':m})
 
 def single_scroll_owner(page,root,label):
- script="""x=>{const r=document.querySelector(x);if(!r)return false;const owners=[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();return b.width>0&&b.height>0&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2});return owners.length<=1}"""
- page.wait_for_function(script,arg=root)
- owners=page.locator(root).evaluate("r=>[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();return b.width>0&&b.height>0&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2}).map(e=>({tag:e.tagName,id:e.id||'',cls:String(e.className||''),client:e.clientHeight,scroll:e.scrollHeight,overflowY:getComputedStyle(e).overflowY}))")
+ owners=page.locator(root).evaluate("""async r=>{
+  if(document.fonts?.ready)await document.fonts.ready;
+  const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+  await frame();await frame();await frame();await frame();
+  return [r,...r.querySelectorAll('*')].filter(e=>{
+   const s=getComputedStyle(e);
+   return e.getClientRects().length&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2;
+  }).map(e=>({tag:e.tagName,id:e.id||'',cls:String(e.className||''),client:e.clientHeight,scroll:e.scrollHeight,overflowX:getComputedStyle(e).overflowX,overflowY:getComputedStyle(e).overflowY}));
+ }""")
  assert len(owners)<=1,(label,owners)
  RESULTS.append({'oracle':'single-scroll-owner','case':label,'owners':owners})
 
