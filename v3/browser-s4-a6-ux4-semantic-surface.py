@@ -101,7 +101,7 @@ def desktop(browser):
     PHASE='proof-open'; page.locator('.service-nav [data-service="proof"]').click(); page.wait_for_function("()=>document.querySelector('#proofView')?.offsetParent!==null")
     PHASE='proof-claim-scope'; expect(page.locator('#proofView')).to_have_attribute('data-a6-ux4-claim-scope','repository-observation')
     PHASE='proof-integrity-copy'; page.wait_for_function("()=>{const e=document.querySelector('#proofIntegrity');return e&&/Coerente tecnicamente|Coerenza tecnica da verificare/.test(e.textContent||'')}")
-    PHASE='proof-role-scope-copy'; expect(page.locator('#proofView .proof-snapshot article').filter(has_text='Vista per ruolo')).to_have_count(1)
+    PHASE='proof-role-scope-copy'; page.wait_for_function("()=>{const value=document.querySelector('#evidenceActor');return value&&String(value.parentElement?.querySelector('span')?.textContent||'').trim()==='Vista per ruolo'}")
     PHASE='proof-reflow'; no_page_overflow(page,'desktop:proof')
     PHASE='proof-page-errors'; assert not ERRORS,ERRORS
     ctx.close()
