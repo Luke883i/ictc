@@ -39,7 +39,7 @@ def processes(page):return page.locator('.service-nav [data-service="processes"]
 
 def open_process(page,code):
  global PHASE
- processes(page).click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary').click();pid,root=CODES[code];PHASE=f'{code}-owner';page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&r.dataset.a6Ux3Operational==='a6-ux3'&&r.dataset.a6OperationalOwner===x.owner)}",arg={'root':root,'owner':pid});return page.locator(root)
+ processes(page).click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary').click();pid,root=CODES[code];PHASE=f'{code}-owner';page.wait_for_function("x=>{const r=document.querySelector(x.root),h=document.documentElement;return !!(r&&r.offsetParent!==null&&r.dataset.a6Ux3Operational==='a6-ux3'&&r.dataset.a6OperationalOwner===x.owner&&h.dataset.a6Ux4Semantic==='a6-ux4')}",arg={'root':root,'owner':pid});return page.locator(root)
 
 def admin_desktop(browser):
  global PHASE
