@@ -18,9 +18,11 @@ def no_overflow(page,label):
  RESULTS.append({'oracle':'reflow','case':label,'metrics':m})
 
 def single_scroll_owner(page,root,label):
- n=page.locator(root).evaluate("r=>[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();return b.width>0&&b.height>0&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2}).length")
- assert n<=1,(label,n)
- RESULTS.append({'oracle':'single-scroll-owner','case':label,'owners':n})
+ script="""x=>{const r=document.querySelector(x);if(!r)return false;const owners=[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();return b.width>0&&b.height>0&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2});return owners.length<=1}"""
+ page.wait_for_function(script,arg=root)
+ owners=page.locator(root).evaluate("r=>[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e),b=e.getBoundingClientRect();return b.width>0&&b.height>0&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2}).map(e=>({tag:e.tagName,id:e.id||'',cls:String(e.className||''),client:e.clientHeight,scroll:e.scrollHeight,overflowY:getComputedStyle(e).overflowY}))")
+ assert len(owners)<=1,(label,owners)
+ RESULTS.append({'oracle':'single-scroll-owner','case':label,'owners':owners})
 
 def footer_clear(page,label):
  m=page.evaluate("""async()=>{const f=document.querySelector('#stableLegalFooter');if(!f)return{missing:true};const frame=()=>new Promise(r=>requestAnimationFrame(r));const exposed=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);if(!(r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none')||e.disabled)return false;for(let n=e.parentElement;n;n=n.parentElement){if(n.matches?.('details:not([open])')){const own=n.querySelector(':scope > summary');if(own!==e&&!own?.contains(e))return false;}}return true;};const candidates=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(exposed).slice(0,48),offenders=[];for(const e of candidates){e.focus?.();await frame();await frame();const r=e.getBoundingClientRect(),fr=f.getBoundingClientRect(),h=Math.max(0,Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top)),w=Math.max(0,Math.min(r.right,fr.right)-Math.max(r.left,fr.left)),area=h*w;if(area>.5)offenders.push({tag:e.tagName,id:e.id||'',text:(e.textContent||'').trim().replace(/\s+/g,' ').slice(0,80),area});}return{missing:false,sampled:candidates.length,overlap:offenders.length,offenders}}""")
