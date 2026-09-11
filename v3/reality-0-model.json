@@ -1,0 +1,280 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "REALITY-0",
+  "classification": "repository-target-as-is-rehearsal",
+  "evidenceGrade": "E2-repository-runtime-semantic-rehearsal",
+  "observedMainSha": "508ac901ea9d9ab60dba8438340b7ef9db9c08c7",
+  "observedMergedPr": 139,
+  "stateOnPullRequest": "candidate",
+  "nextAfterMerge": "DECIDE-0",
+  "targetAuthority": "v3/scope-0-model.json",
+  "claimBoundary": "REALITY-0 compares the SCOPE-0 target envelope with repository/runtime-observable AS-IS. Fit is not deployment assurance; unverified and external evidence remain unresolved inputs for DECIDE-0, E3 or E4.",
+  "useCaseModel": {
+    "seed": "ictc-reality-0-usecases-2026-09-11",
+    "axes": {
+      "procedures": [
+        "RN-01",
+        "EC-01",
+        "AO-01",
+        "MC-01",
+        "AP-01",
+        "RC-01",
+        "AR-01"
+      ],
+      "roles": [
+        "admin",
+        "user",
+        "auditor"
+      ],
+      "operations": [
+        "observe",
+        "create",
+        "propose",
+        "review",
+        "decide",
+        "verify",
+        "export",
+        "recover"
+      ],
+      "evidenceStates": [
+        "absent",
+        "declared-reference",
+        "version-bound",
+        "receipt-bound"
+      ],
+      "topologies": [
+        "loopback-single",
+        "networked-single",
+        "bounded-multitenant"
+      ],
+      "aiModes": [
+        "off",
+        "assistive"
+      ],
+      "pressures": [
+        "nominal",
+        "stale-or-conflict",
+        "burst-or-failure"
+      ]
+    },
+    "expectedCases": 12096,
+    "layers": [
+      "product",
+      "ui",
+      "api",
+      "authority",
+      "store",
+      "persistence",
+      "ai",
+      "operations",
+      "epistemic"
+    ],
+    "universalInvariants": {
+      "observedDoesNotBecomeTrue": true,
+      "proposedDoesNotBecomeDecided": true,
+      "mappingDoesNotBecomeConformity": true,
+      "completedDoesNotBecomeClosedVerified": true,
+      "evidenceDoesNotBecomeConclusion": true,
+      "ratingDoesNotBecomeProbability": true,
+      "internalApprovalDoesNotBecomeIndependentAssurance": true,
+      "greenCiDoesNotBecomeDeploymentAssurance": true,
+      "aiHasNoDecisionAuthority": true,
+      "tenantSelectorDoesNotGrantMembership": true,
+      "staleOrFailedWriteDoesNotBecomeVisible": true,
+      "exportRemainsSameAsRead": true
+    }
+  },
+  "assessmentVocabulary": [
+    "fit",
+    "bounded-fit",
+    "partial-fit",
+    "unverified-envelope",
+    "external-dependent",
+    "contradiction"
+  ],
+  "assessments": [
+    {
+      "scopeId": "SCOPE-01",
+      "verdict": "partial-fit",
+      "target": "Primary operator/buyer",
+      "asIs": "Compliance-lead and auditor professional lenses plus three runtime roles exist; buyer fit and representative operator validation are not repository facts.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "v3/procedure-guidance-scenario-model.mjs"
+      ],
+      "decisionInput": "Preserve current role/persona model; require E3-HUMAN operator/task validation before broad operator-fit claims."
+    },
+    {
+      "scopeId": "SCOPE-02",
+      "verdict": "fit",
+      "target": "Seven must-win jobs",
+      "asIs": "Product journeys preserve original basis, human checkpoints, cross-process routing, evidence and verified closure while AI stays assistive.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "docs/11_ARCHITECTURE.md"
+      ],
+      "decisionInput": "No structural rewrite indicated by this dimension."
+    },
+    {
+      "scopeId": "SCOPE-03",
+      "verdict": "fit",
+      "target": "Seven-process breadth",
+      "asIs": "Exactly seven peer business procedures are canonical; EP-01 is cross-cutting and procedure disablement preserves history while blocking new work.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "docs/11_ARCHITECTURE.md"
+      ],
+      "decisionInput": "Preserve seven peer procedures and cross-cutting EP-01."
+    },
+    {
+      "scopeId": "SCOPE-04",
+      "verdict": "bounded-fit",
+      "target": "Customer-controlled single-node topology",
+      "asIs": "Loopback single-node is the default; optional multi-tenant and trusted-header network mode exist with server-side boundaries, while public bind, HA and production identity are not repository-proven.",
+      "evidenceRefs": [
+        "v3/server.mjs",
+        "docs/OPERATIONS.md"
+      ],
+      "decisionInput": "Keep single-node primary; networked deployment remains conditional on E4 identity/scanner controls."
+    },
+    {
+      "scopeId": "SCOPE-05",
+      "verdict": "unverified-envelope",
+      "target": "Workgroup capacity envelope",
+      "asIs": "Serialized writes, abuse budgets, bounded pagination and historic stress mechanisms exist, but 50 users/tenant, 10 simultaneous sessions, 5 tenants/node and 10k active records/tenant are not end-to-end capacity benchmarks.",
+      "evidenceRefs": [
+        "docs/11_ARCHITECTURE.md",
+        "docs/OPERATIONS.md",
+        "v3/s3-runtime-reliability-saturation.mjs"
+      ],
+      "decisionInput": "C3-CAPACITY-CONTRACT must establish measured budgets before any scale claim; no datastore rewrite is justified yet."
+    },
+    {
+      "scopeId": "SCOPE-06",
+      "verdict": "bounded-fit",
+      "target": "Chromium desktop plus 390px secondary review",
+      "asIs": "Canonical browser rails exercise Chromium-oriented desktop journeys and 390px responsive/a11y behavior; cross-engine and representative assistive-technology usability are outside repository proof.",
+      "evidenceRefs": [
+        "v3/uiux-scope-model.json",
+        "v3/s4-a5-browser-a11y-check.mjs"
+      ],
+      "decisionInput": "Retain bounded client target; E3-HUMAN remains required for assistive-technology and task effectiveness."
+    },
+    {
+      "scopeId": "SCOPE-07",
+      "verdict": "partial-fit",
+      "target": "Install/update/rollback support",
+      "asIs": "The launcher, schema migration refusal, compatibility-aware rollback via pre-migration recovery point and recovery CLI are present, but delivery provenance/signing remains C2.",
+      "evidenceRefs": [
+        "docs/OPERATIONS.md",
+        "v3/s3-runtime-reliability-check.mjs"
+      ],
+      "decisionInput": "Preserve recovery-based rollback semantics; close C2 before claiming governed delivery provenance."
+    },
+    {
+      "scopeId": "SCOPE-08",
+      "verdict": "bounded-fit",
+      "target": "Customer-controlled local residency",
+      "asIs": "SQLite and tenant directories are customer-local by default; AI egress and attachment scanner boundaries are explicit, while universal regulated suitability is not claimed.",
+      "evidenceRefs": [
+        "docs/11_ARCHITECTURE.md",
+        "docs/OPERATIONS.md"
+      ],
+      "decisionInput": "Preserve local-first residency; treat AI/scanner/key custody as boundary-changing deployment controls."
+    },
+    {
+      "scopeId": "SCOPE-09",
+      "verdict": "partial-fit",
+      "target": "Business-hours availability and verified recovery",
+      "asIs": "Encrypted, integrity-checked recovery points are implemented, but HA, off-host durability and approved RTO/RPO remain explicitly unproven and capacity is unverified.",
+      "evidenceRefs": [
+        "docs/OPERATIONS.md",
+        "v3/s3-runtime-reliability-check.mjs"
+      ],
+      "decisionInput": "Do not introduce HA by assumption; E4 defines recovery objectives and C3 defines capacity."
+    },
+    {
+      "scopeId": "SCOPE-10",
+      "verdict": "fit",
+      "target": "Bounded integrations/master-system authority",
+      "asIs": "Manual/source-pack/external-reference intake, trusted upstream identity, optional AI and same-as-read exports preserve external master authority without mandatory bidirectional sync.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "v3/server.mjs",
+        "docs/11_ARCHITECTURE.md"
+      ],
+      "decisionInput": "No integration platform or marketplace is justified by current target."
+    },
+    {
+      "scopeId": "SCOPE-11",
+      "verdict": "fit",
+      "target": "Roles/delegation/SoD",
+      "asIs": "Admin/user/auditor are canonical; auditor mutation is denied by permission shape, tenant membership is server-side, and AI cannot acquire decision authority.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "v3/server.mjs"
+      ],
+      "decisionInput": "Preserve three-role core; organization-specific SoD remains configuration/deployment policy rather than universal workflow."
+    },
+    {
+      "scopeId": "SCOPE-12",
+      "verdict": "external-dependent",
+      "target": "Product success metrics",
+      "asIs": "Repository gates can measure E2 structure and behavior, but representative task time, completion, comprehension, pleasantness and AT outcomes require E3-HUMAN evidence.",
+      "evidenceRefs": [
+        "v3/product-contract.json",
+        "v3/uiux-scope-model.json"
+      ],
+      "decisionInput": "Do not synthesize market-fit/compliance/maturity scores from CI; define human baselines externally."
+    },
+    {
+      "scopeId": "SCOPE-13",
+      "verdict": "fit",
+      "target": "Architecture budget/non-goals",
+      "asIs": "AS-IS is Node/vanilla/Store/SQLite with one composition root; no observed hard contradiction requires PostgreSQL, generic BPM, second store or global UI resolver.",
+      "evidenceRefs": [
+        "docs/11_ARCHITECTURE.md",
+        "docs/authority-matrix.yaml"
+      ],
+      "decisionInput": "Preserve current architecture by default; any structural change needs explicit DECIDE-0 evidence/rationale."
+    }
+  ],
+  "summary": {
+    "dimensionCount": 13,
+    "fit": 5,
+    "boundedFit": 3,
+    "partialFit": 3,
+    "unverifiedEnvelope": 1,
+    "externalDependent": 1,
+    "contradiction": 0,
+    "hardStructuralContradictions": 0
+  },
+  "decisionHandoff": {
+    "nextSlice": "DECIDE-0",
+    "inputs": [
+      "D0-01-preserve-current-architecture-unless-evidence-overrides",
+      "D0-02-measure-capacity-before-scale-claim-via-C3",
+      "D0-03-close-delivery-provenance-via-C2",
+      "D0-04-preserve-E3-human-validation-boundary",
+      "D0-05-preserve-E4-deployment-identity-scanner-recovery-alerting-boundary",
+      "D0-06-plan-uiux-convergence-with-C5-owner-compression-gate",
+      "D0-07-do-not-select-event-store-ha-oidc-or-replatforming-without-evidence"
+    ],
+    "policy": "REALITY-0 may classify fit, bounded fit, partial fit, unverified envelope, external dependency or contradiction; it may not itself authorize structural implementation. DECIDE-0 owns the decision."
+  },
+  "mutationEvidence": {
+    "seed": "ictc-reality-0-runtime-semantic-2026-09-11",
+    "useCases": 12096,
+    "trials": 1000000,
+    "materialFamilies": 63,
+    "materialKilled": 63,
+    "survivors": 0,
+    "harnessErrors": 0,
+    "grade": "E2-runtime-derived-semantic-state-plus-usecase-oracle",
+    "caseTrials": 190317,
+    "modelTrials": 206283,
+    "observationTrials": 603400,
+    "minTrialsPerFamily": 15596,
+    "digest": "76c87d415ac74c95dcb523285b80921836b0b3a282f4b77feaa9b03d5356746a"
+  }
+}
