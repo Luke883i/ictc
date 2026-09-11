@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "UIUX-SCOPE-0",
+  "classification": "repository-uiux-scope-and-rationalization-contract",
+  "evidenceGrade": "E2-repository-source-and-deterministic-model",
+  "observedMainSha": "255cb9363efd10b46c8ccb3c323427b8e222199a",
+  "claimBoundary": "This model inventories repository-mounted experience structure and defines falsifiable UIUX rationalization requirements. It does not prove aesthetic quality, representative usability, assistive-technology usability, deployment behavior, legal compliance, or enterprise readiness.",
+  "mountGraph": {
+    "compositionRoot": "v3/public/ui/active-experience.js",
+    "directInstallerCount": 45,
+    "constitutionalParticipantCount": 5,
+    "diagnosticRule": "installer count is diagnostic, not a quality KPI; persistent semantic/presentation ownership per slot must converge to one",
+    "risk": "historical and feature enhancers can layer markup/copy/styles before final constitutional convergence"
+  },
+  "surfaceInventory": [
+    {"id":"home","kind":"landing","root":"#homeView","ownerClass":"common","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"decision-strip-plus-up-to-3-priority-rows","specificity":"role-aware work attention"},
+    {"id":"processes","kind":"landing","root":"#processesView","ownerClass":"common","identityMax":1,"purposeMax":1,"primaryActionMax":0,"defaultDensity":"one-row-per-procedure-catalogue","specificity":"seven procedure routes"},
+    {"id":"monitoring","code":"RN-01","kind":"procedure","root":"#monitoringView","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"monitor-and-source-rows","specificity":"sources, monitor plans, candidate verification"},
+    {"id":"incidents","code":"EC-01","kind":"procedure","root":"#incidentsView","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"event-register-rows-with-narrative-detail","specificity":"facts, clarification, human send/close decision"},
+    {"id":"objects","code":"AO-01","kind":"procedure","root":"#grcWorkspace","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"inventory-rows","specificity":"object identity, owner, source, reattestation"},
+    {"id":"coverage","code":"MC-01","kind":"procedure","root":"#grcWorkspace","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"requirement-mapping-rows","specificity":"requirement, scope basis, mapping, gap, next decision"},
+    {"id":"actions","code":"AP-01","kind":"procedure","root":"#grcWorkspace","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"action-worklist-rows","specificity":"owner, due date, execution, closure verification"},
+    {"id":"risks","code":"RC-01","kind":"procedure","root":"#grcWorkspace","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"risk-review-rows","specificity":"scenario, human rating, treatment, review date"},
+    {"id":"assurance","code":"AR-01","kind":"procedure","root":"#grcWorkspace","ownerClass":"procedure-specific","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"request-response-rows","specificity":"request, answer version, evidence, approval"},
+    {"id":"proof","kind":"evidence","root":"#proofView","ownerClass":"auxiliary","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"fact-strip-plus-decision-evidence-rows-and-progressive-details","specificity":"recorded evidence, limits, external requirements"},
+    {"id":"epistemic","kind":"relationships","root":"#epistemicView","ownerClass":"auxiliary","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"single-toolbar-row-plus-relation-results","specificity":"basis, version, dependency, review need"},
+    {"id":"admin","kind":"administration","root":"#adminCenter","ownerClass":"auxiliary","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"attention-strip-plus-tabbed-settings-and-progressive-technical-details","specificity":"runtime policy and configuration"},
+    {"id":"ai-settings","kind":"configuration","root":"#settingsDialog","ownerClass":"subordinate","identityMax":1,"purposeMax":1,"primaryActionMax":1,"defaultDensity":"two-column-form-with-advanced-disclosure","specificity":"provider, model, instructions, egress"}
+  ],
+  "commonGrammar": {
+    "landingOrder":["identity","attention-or-purpose","controls","work","context","evidence-or-boundary"],
+    "mandatoryVisibleWhenMaterial":["state","subject","authority-or-owner","next-action","boundary"],
+    "conditionallyVisible":["basis","version","due-date","provenance"],
+    "repeatedRecordDefault":"row-or-list",
+    "cardUsePolicy":"cards are reserved for a single decision/narrative object or semantically grouped summary; repeated registries default to dense rows",
+    "singleRowRule":"compress labels, state, owner/due and CTA into one row when legible; overflow moves to progressive detail, never by deleting epistemically material fields",
+    "responsiveRule":"semantic order remains invariant; visual rows may wrap or stack without changing authority, state or action meaning",
+    "tokenRule":"common visual tokens and primitive geometry are centrally owned; procedure-specific modules may specialize content density but may not fork the design system"
+  },
+  "surfaceStrategy": {
+    "home":["remove stacked hero/dashboard duplication","show one next-decision strip","show at most three compact priority rows","move explanation/trust detail behind disclosure except the immediate reason"],
+    "processes":["replace oversized catalogue cards with compact procedure rows/tiles","one code, title, one-line purpose and route action","no second explanatory paragraph per procedure"],
+    "monitoring":["common procedure frame is the only page identity","retire duplicate legacy hero identity","monitor register and source register use dense rows","add-material is the primary work entry, plan creation is secondary/disclosed"],
+    "incidents":["common procedure frame is the only page identity","retire duplicate legacy hero identity","event register is dense","narrative remains expandable because it is semantically material"],
+    "objects":["inventory is a table/list grammar","surface owner, source and reattestation state inline","details open only for extended metadata/evidence"],
+    "coverage":["requirement/mapping rows are canonical","scope basis and unresolved gap remain visible","never render coverage as conformity score"],
+    "actions":["worklist row is canonical","owner, due date, execution state and closure-verification state stay distinct","CTA aligned on same row where legible"],
+    "risks":["scenario rows are canonical","rating is not status and not objective probability","review/treatment action remains distinct from severity"],
+    "assurance":["request/response rows are canonical","answer version and evidence basis remain visible when decision-relevant","internal approval never styled as independent assurance"],
+    "admin":["one admin identity","attention first","configuration domains as compact tabs/sections","technical readiness and diagnostic evidence progressive by default"],
+    "epistemic":["search, primary mode and essential filter occupy one toolbar row when width permits","advanced filters and technical modes remain progressive","relation list is default; graph is an optional analytical mode"],
+    "proof":["fact strip first","decision/evidence register second","secondary domains become compact accordion rows","external evidence boundaries stay explicit","avoid nine visually equivalent stacked panels"],
+    "ai-settings":["provider, model and key-environment contract remain on the first plane","advanced AI instructions remain behind disclosure","one save action; no visual treatment implies AI decision authority"]
+  },
+  "epistemicInvariants":["observed-not-equal-true","proposed-not-equal-decided","mapping-not-equal-conformity","completed-not-equal-closed-and-verified","evidence-not-equal-conclusion","rating-not-equal-objective-probability","internal-approval-not-equal-independent-assurance","green-ci-not-equal-deployment-assurance","ai-never-human-decision-authority","terminal-negative-states-remain-revealable"],
+  "trajectoryDecision": {
+    "strategy":"embed UIUX obligations into SCOPE-0/REALITY-0/DECIDE-0 and add one post-DECIDE implementation barrier UIUX-CONVERGE-0 before S4-A6-CLOSE",
+    "serialChainTarget":["GOV-WB4","TRUTH-0","SCOPE-0","REALITY-0","DECIDE-0","UIUX-CONVERGE-0","S4-A6-CLOSE","S5-CANDIDATE-SEAL"],
+    "conditionalRelationship":"C5-SEMANTIC-OWNER-COMPRESSION is eligible now and must be terminal before UIUX-CONVERGE-0 may claim owner convergence; C1-C5 still must all be terminal before S4-A6-CLOSE",
+    "workUnits":["UXW-01-COMMON-SHELL-AND-MOUNT-COMPRESSION","UXW-02-HOME","UXW-03-PROCESS-HUB","UXW-04-RN-01","UXW-05-EC-01","UXW-06-AO-01","UXW-07-MC-01","UXW-08-AP-01","UXW-09-RC-01","UXW-10-AR-01","UXW-11-ADMIN","UXW-12-EPISTEMIC","UXW-13-PROOF","UXW-14-CROSS-SURFACE-FALSIFICATION"],
+    "rejectedAlternatives":[
+      {"id":"three-extra-discovery-barriers","reason":"duplicates the cognition already owned by SCOPE-0, REALITY-0 and DECIDE-0"},
+      {"id":"seven-serial-procedure-slices","reason":"creates governance serialization without semantic necessity; procedure specializations are work units under one convergence contract"},
+      {"id":"fold-all-uiux-into-c5","reason":"C5 owns semantic owner contraction, not target experience, density grammar or procedure-specific presentation"},
+      {"id":"defer-uiux-to-s4-a6-close","reason":"closure must verify convergence, not discover or implement the experience architecture"},
+      {"id":"redesign-before-scope-and-reality","reason":"would encode unproven operator, client and density assumptions into presentation"}
+    ]
+  },
+  "humanEvidenceBoundary": {
+    "rail":"E3-HUMAN",
+    "requiredFor":["perceived pleasantness","representative comprehension","representative task efficiency","assistive-technology usability"],
+    "repositoryCanProve":["surface census","ownership uniqueness","heading/action hierarchy","density-contract conformance","token/primitive conformance","responsive semantic-order invariance","browser/a11y automation at E2"]
+  }
+}
