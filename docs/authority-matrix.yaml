@@ -1,8 +1,15 @@
-version: 14
+version: 15
 surfaces:
   product_intent:
     authority: docs/PRODUCT.md
     classification: current-product-authority
+  target_operating_model:
+    authority: v3/scope-0-model.json
+    document: docs/SCOPE_0_OPERATING_MODEL.md
+    checker: v3/scope-0-check.mjs
+    saturation: v3/scope-0-saturation.mjs
+    classification: repository-target-operating-model-envelope
+    scope: target-only-not-as-is-runtime-proof
   epistemic_contract:
     authority: docs/02_EPISTEMIC_CONTRACT.md
   user_journeys:
@@ -135,6 +142,7 @@ rules:
   - documentation lifecycle and authority topics are registered in docs/documentation-manifest.json; the registry may not replace substantive product, architecture, epistemic, UI or runtime owners
   - source-input, roadmap, lineage and generated documents may not become current authority by filename recency, PR recency or implicit reference
   - docs/PRODUCT.md is the only current product-intent authority; prompts and TO-BE documents are inputs or roadmap
+  - target_operating_model owns only the bounded target envelope; it may not redefine product identity, claim boundaries, or AS-IS runtime/architecture facts, and structural changes require REALITY-0 evidence plus DECIDE-0 authority
   - convergence_authority owns development sequencing and reconciliation only; it cannot redefine product, runtime, legal/compliance or Git merge facts
   - workbook projection is derived from convergence_authority and may not become a second product/runtime authority
   - every pull request to main declares Trajectory impact and Convergence slice; planned, intentional-deviation and reconciliation changes to trajectory-sensitive surfaces update convergence_authority and its workbook projection together while neutral NO_DELTA does neither
