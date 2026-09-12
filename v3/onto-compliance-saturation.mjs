@@ -14,7 +14,7 @@ const sourceProfile={
   businessProcedures:registry.length,
   ep01CrossCutting:meta.includes("businessProcess:false")&&meta.includes("code:'EP-01'"),
   attentionObservational:!frame.includes('semanticSignals')&&stable.includes('function attentionMetric')&&stable.includes('function normalizedReason')&&!frame.includes("'In ordine'")&&!frame.includes('Nessuna attenzione aperta'),
-  homeAttentionObservational:stable.includes('PRODUCT_PROPOSITION')&&stable.includes('function attentionMetric')&&stable.includes('function normalizedReason')&&stable.includes("homeWorkQueue='3.2'")&&stable.includes('.slice(0,5)')&&stable.includes('Nessuna attività richiede intervento nella vista corrente.')&&!/processi in ordine/i.test(stable),
+  homeAttentionObservational:stable.includes('PRODUCT_PROPOSITION')&&stable.includes('function attentionMetric')&&stable.includes('function normalizedReason')&&stable.includes("homeWorkQueue='3.2'")&&stable.includes('.slice(0,3)')&&stable.includes('Nessuna attività richiede intervento nella vista corrente.')&&!/processi in ordine/i.test(stable),
   auditorProcedureBound:frame.includes("readOnly=state.role==='auditor'")&&frame.includes("actionLabel:readOnly?'Consulta registrazioni'")&&frame.includes('openReadSurface(id)')&&!frame.includes("navigateSurface('proof')"),
   traceOwners:(anatomy.includes("editorialSlot(host,'advanced-context')")&&anatomy.includes("editorialSlot(host,'reference')")?1:0)+(frame.includes('placeTechnicalContext')?1:0),
   traceAfterWork:anatomy.includes("editorialSlot(host,'advanced-context')")&&anatomy.includes("editorialSlot(host,'reference')")&&!anatomy.includes('workAnchor(')&&!anatomy.includes('host.prepend(box)'),
