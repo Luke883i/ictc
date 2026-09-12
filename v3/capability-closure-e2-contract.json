@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "CAPABILITY-CLOSURE-E2",
+  "classification": "uiux-entry-gate-not-a-serial-slice",
+  "evidenceGrade": "E2-repository-runtime-ui-closure",
+  "observedMainSha": "e0c46998dd161d058724e0ccf1fd489190480891",
+  "observedMergedPr": 142,
+  "nextSerialSlice": "UIUX-CONVERGE-0",
+  "createsNewSerialSlice": false,
+  "status": "E2-CLOSED-CANONICAL-13",
+  "scopeRule": "Close the current canonical 13-surface UIUX inventory, not every historical module ever authored.",
+  "closureAxes": [
+    "declared",
+    "built",
+    "wired",
+    "projected-authorized",
+    "ui-exposed",
+    "actionable",
+    "durable-readback",
+    "evidenced"
+  ],
+  "identityPolicy": {
+    "rule": "A closure unit is terminal only when semantic identity is preserved across every applicable axis; component validity without relation identity is insufficient.",
+    "writeSubjectRule": "For a write-capable unit, the adapter subject family, runtime route family, OutcomeEnvelope receipt.subject, readback projection and evidence subject must remain the same semantic subject lineage.",
+    "projectionRule": "Visible state must come from canonical role/scope/revision-bound projections after the write; raw persistence entities are not UI authority.",
+    "navigationRule": "Read/navigation-only surfaces must preserve target surface identity, actor scope and projection revision without inventing a write requirement.",
+    "humanBoundary": "E2 functional closure is not representative comprehension, task efficiency, pleasantness or assistive-technology effectiveness; those remain E3-HUMAN.",
+    "deploymentBoundary": "Repository closure is not production identity, scanner, backup, alerting, HA or deployment effectiveness; those remain E4-DEPLOY.",
+    "governanceBoundary": "Repository CI can encode the oracle but cannot self-prove protected-branch enforcement; E3-GOV remains external."
+  },
+  "machineReadableDoD": {
+    "terminalState": "E2-CLOSED",
+    "rules": [
+      {"id":"MRD-01-CANONICAL-CENSUS","kind":"set-equality","required":true,"description":"Contract surface ids equal UIUX-SCOPE-0 canonical surface inventory exactly."},
+      {"id":"MRD-02-LAYER-COVERAGE","kind":"all-required-axes","required":true,"description":"Every closure unit carries evidence for every applicable closure axis."},
+      {"id":"MRD-03-IDENTITY-CONTINUITY","kind":"same-semantic-identity","required":true,"description":"No valid-but-wrong capability, subject, route, projection, root, action, receipt, readback or proof binding may survive."},
+      {"id":"MRD-04-PROCEDURE-ADAPTER-BINDING","kind":"adapter-contract","required":true,"description":"Seven business procedure units bind to canonical ProcedureAdapter id/surface/subjectTypes/writeRoutes."},
+      {"id":"MRD-05-HANDLER-BINDING","kind":"handler-registry","required":true,"description":"Every canonical procedure adapter has an active runtime handler registration."},
+      {"id":"MRD-06-BOOTSTRAP-PROJECTION","kind":"bootstrap-projection","required":true,"description":"Canonical work/procedure/decision/epistemic/export projections are mounted in /api/bootstrap."},
+      {"id":"MRD-07-UI-COMPOSITION-ROOT","kind":"composition-root","required":true,"description":"The active experience is mounted from app.js through one composition root and projection refresh."},
+      {"id":"MRD-08-WRITE-RECEIPT-SUBJECT","kind":"receipt-subject-binding","required":true,"description":"Write envelope receipt binds action, revision and canonical primary subject before persisted state becomes visible."},
+      {"id":"MRD-09-READBACK-REVISION","kind":"projection-readback","required":true,"description":"UI write journeys require projection revision advance and local projection verification."},
+      {"id":"MRD-10-DURABILITY","kind":"persist-before-visible","required":true,"description":"Store verifies persisted state/audit binding before assigning visible canonical state."},
+      {"id":"MRD-11-BROWSER-E2","kind":"browser-journey","required":true,"description":"CI executes the real seven-procedure browser journey, not only source-level semantic checks."},
+      {"id":"MRD-12-OWNER-GATE","kind":"owner-compression-boundary","required":true,"description":"C5 remains a completion gate; E2 closure does not falsely claim owner convergence."},
+      {"id":"MRD-13-EXTERNAL-BOUNDARIES","kind":"external-boundary","required":true,"description":"E3-HUMAN, E3-GOV and E4-DEPLOY remain external and cannot be closed by this gate."},
+      {"id":"MRD-14-RERUN-BEFORE-DONE","kind":"regression-gate","required":true,"description":"The same closure oracle remains blocking through UIUX-CONVERGE-0 and is rerun by cross-surface falsification before done."}
+    ],
+    "completion": {
+      "all13CanonicalSurfacesTerminal": true,
+      "sevenProcedureAdaptersBound": true,
+      "validButWrongRelationMutantsKilled": true,
+      "c5StillRequiredBeforeUiuxDone": true,
+      "externalRailsRemainExternal": true,
+      "rerunBeforeUiuxDone": true
+    }
+  },
+  "surfaceUnits": [
+    {"id":"home","kind":"landing","mode":"read-navigation","root":"#homeView","identityKey":"home","projectionRefs":["work","homeNextAction","processLandscape"],"uiEvidence":["v3/public/ui/actions.js","v3/public/ui/controller.js"],"runtimeEvidence":["v3/server.mjs"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"processes","kind":"landing","mode":"read-navigation","root":"#processesView","identityKey":"processes","projectionRefs":["procedures","procedureRegistry","procedureSummary"],"uiEvidence":["v3/public/ui/active-experience.js"],"runtimeEvidence":["v3/server.mjs"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"monitoring","code":"RN-01","kind":"procedure","mode":"write","root":"#monitoringView","identityKey":"procedure:monitoring","adapterId":"monitoring","adapterSurface":"monitoring","subjectTypes":["mission","catalog","contribution"],"writeRoutePrefixes":["/api/catalog","/api/user/monitors","/api/missions","/api/contributions","/api/manual/monitoring"],"handlerKeys":["manual-monitoring","monitoring-jobs","user-monitoring","monitoring-runtime","contributions"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"incidents","code":"EC-01","kind":"procedure","mode":"write","root":"#incidentsView","identityKey":"procedure:incidents","adapterId":"incidents","adapterSurface":"incidents","subjectTypes":["incident"],"writeRoutePrefixes":["/api/incidents","/api/manual/incidents"],"handlerKeys":["manual-incidents","incident-market","incidents"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"objects","code":"AO-01","kind":"procedure","mode":"write","root":"#grcWorkspace","identityKey":"procedure:objects","adapterId":"objects","adapterSurface":"grc","subjectTypes":["grc-object"],"writeRoutePrefixes":["/api/grc/objects"],"handlerKeys":["grc-runtime"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"coverage","code":"MC-01","kind":"procedure","mode":"write","root":"#grcWorkspace","identityKey":"procedure:coverage","adapterId":"coverage","adapterSurface":"grc","subjectTypes":["mapping","control-test","requirement-scope","standard","crosswalk"],"writeRoutePrefixes":["/api/standards","/api/grc/mappings","/api/control-tests"],"handlerKeys":["standard-library","control-test","grc-runtime"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py","v3/browser-convergent-kernel.py"],"terminal":"E2-CLOSED"},
+    {"id":"actions","code":"AP-01","kind":"procedure","mode":"write","root":"#grcWorkspace","identityKey":"procedure:actions","adapterId":"actions","adapterSurface":"grc","subjectTypes":["action"],"writeRoutePrefixes":["/api/grc/actions"],"handlerKeys":["grc-runtime"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"risks","code":"RC-01","kind":"procedure","mode":"write","root":"#grcWorkspace","identityKey":"procedure:risks","adapterId":"risks","adapterSurface":"grc","subjectTypes":["risk"],"writeRoutePrefixes":["/api/grc/risks"],"handlerKeys":["risk-action-fidelity","grc-runtime"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"assurance","code":"AR-01","kind":"procedure","mode":"write","root":"#grcWorkspace","identityKey":"procedure:assurance","adapterId":"assurance","adapterSurface":"grc","subjectTypes":["assurance-case"],"writeRoutePrefixes":["/api/grc/assurance","/api/manual/assurance"],"handlerKeys":["manual-assurance","grc-runtime"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py"],"terminal":"E2-CLOSED"},
+    {"id":"admin","kind":"administration","mode":"write","root":"#adminCenter","identityKey":"admin","writeRoutePrefixes":["/api/admin"],"projectionRefs":["experience","settings"],"runtimeEvidence":["v3/runtime/admin.mjs","v3/server.mjs"],"uiEvidence":["v3/public/ui/admin-center.js"],"journeyEvidence":["v3/browser-s4-a4-admin-truth-closure.py"],"terminal":"E2-CLOSED"},
+    {"id":"epistemic","kind":"relationships","mode":"read-navigation","root":"#epistemicView","identityKey":"epistemic","projectionRefs":["epistemic","subjectVersions","decisions"],"runtimeEvidence":["v3/runtime/epistemic-lattice.mjs","v3/runtime/epistemic-inference.mjs","v3/server.mjs"],"uiEvidence":["v3/public/ui/epistemic-lattice.js"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py","v3/browser-convergent-kernel.py"],"terminal":"E2-CLOSED"},
+    {"id":"proof","kind":"evidence","mode":"read-navigation","root":"#proofView","identityKey":"proof","projectionRefs":["exports","decisions","epistemic","subjectVersions"],"runtimeEvidence":["v3/runtime/evidence.mjs","v3/server.mjs"],"uiEvidence":["v3/public/ui/proof-surface.js"],"journeyEvidence":["v3/browser-v2-1-procedure-journey.py","v3/browser-convergent-kernel.py"],"terminal":"E2-CLOSED"},
+    {"id":"ai-settings","kind":"configuration","mode":"write","root":"#settingsDialog","identityKey":"ai-settings","writeRoutePrefixes":["/api/admin/settings","/api/admin/ai-policy"],"runtimeEvidence":["v3/server.mjs"],"uiEvidence":["v3/public/ui/actions.js"],"journeyEvidence":["v3/browser-v3-all-service.py"],"terminal":"E2-CLOSED"}
+  ],
+  "historicalReconciliation": {
+    "scope": "current-canonical-user-facing-surface-inventory",
+    "surfaceCount": 13,
+    "closedCount": 13,
+    "procedureCount": 7,
+    "claim": "100% E2 closure is supported only for the current canonical 13-surface inventory on the observed main preimage. This does not assert that every historical module, compatibility enhancer or retired surface was independently end-user validated.",
+    "remainingInternal": ["C5-SEMANTIC-OWNER-COMPRESSION","UIUX-CONVERGE-0","GAP-020","GAP-021"],
+    "remainingExternal": ["E3-HUMAN","E3-GOV","E4-DEPLOY"]
+  },
+  "mutationEvidence": {
+    "seed": "ictc-capability-closure-e2-2026-09-12",
+    "trials": 10000000,
+    "materialFamilies": 64,
+    "survivors": 0,
+    "harnessErrors": 0,
+    "digest": "545c5438dac1fea5ab17e2e06de477bb446f989e9ffcb23ff366f0169896c715",
+    "materialKilled": 64,
+    "realModelMutantsKilled": 64,
+    "appliedMutations": 10000000,
+    "minTrialsPerFamily": 155630,
+    "maxTrialsPerFamily": 157686
+  },
+  "uiuxBinding": {
+    "entryGate": true,
+    "entryGateState": "satisfied-on-candidate",
+    "rerunBeforeDone": true,
+    "crossSurfaceWorkUnit": "UXW-14-CROSS-SURFACE-FALSIFICATION",
+    "ownerCompressionGate": "C5-SEMANTIC-OWNER-COMPRESSION terminal before UIUX-CONVERGE-0 done"
+  },
+  "claimBoundary": "E2 repository/runtime/UI functional closure for the current canonical 13-surface inventory only. No representative-human usability, deployment effectiveness, protected-branch enforcement, legal/compliance conclusion, certification, market fit or enterprise-ready promotion."
+}
