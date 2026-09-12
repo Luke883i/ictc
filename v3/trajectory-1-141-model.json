@@ -1,0 +1,63 @@
+{
+  "schemaVersion":"1.0.0",
+  "auditId":"TRAJECTORY-1-141",
+  "classification":"repository-derived-trajectory-audit",
+  "evidenceGrade":"E2-repository-trajectory",
+  "observedMainSha":"122b18e8bb672774a0380492eb27580c255f9458",
+  "coverage":{"startPr":1,"endPr":141,"expectedCount":141},
+  "claimClasses":["REALIZED","PARTIALLY_REALIZED","PROJECTION_ONLY","EVIDENCE_BLOCKED","SUPERSEDED","REGRESSED","UNSUPPORTED"],
+  "epochs":[
+    {"id":"E01","start":1,"end":16,"name":"foundation-and-falsification","pattern":"early API/RBAC/runtime expansion followed by removal of synthetic readiness and tautological assurance"},
+    {"id":"E02","start":17,"end":43,"name":"workbench-and-canonicalization","pattern":"jobs, role-aware UX, durability, claims, procedure hub and centralized runtime ontology"},
+    {"id":"E03","start":44,"end":56,"name":"semantic-kernel-and-seven-procedures","pattern":"single active composition, seven procedures, SQLite/WAL, typed trace and write-authority hardening"},
+    {"id":"E04","start":57,"end":85,"name":"experience-epistemic-demo","pattern":"experience convergence, epistemic lattice, isolated demo, seven-procedure journeys and role guidance"},
+    {"id":"E05","start":86,"end":116,"name":"presentation-stratigraphy-to-retirement","pattern":"late enhancers/finalizers accumulated, then authority constitution and Presentation Authority Retirement removed global late ownership"},
+    {"id":"E06","start":117,"end":129,"name":"truth-reliability-s4","pattern":"capability truth, worklist, temporal epistemics, runtime reliability and browser-level S4 closure units"},
+    {"id":"E07","start":130,"end":135,"name":"workbook-and-a6-ux","pattern":"convergence workbook plus fixed-safe footer, palette, operational and semantic surfaces"},
+    {"id":"E08","start":136,"end":141,"name":"deterministic-convergence-control","pattern":"governance workbook, truth, UIUX scope, target scope, reality rehearsal and DECIDE lattice"}
+  ],
+  "findings":[
+    {"id":"P1-EXPAND-FALSIFY-COMPRESS","kind":"pattern","status":"SUPPORTED","effect":"healthy macro-cycle recurs across the trajectory"},
+    {"id":"P2-CANONICAL-SEMANTIC-CORE","kind":"pattern","status":"SUPPORTED","effect":"seven procedures, human decision authority and one runtime/store direction stabilize from the mid-trajectory"},
+    {"id":"P3-EVIDENCE-BOUNDARY-MATURATION","kind":"pattern","status":"SUPPORTED","effect":"repository evidence becomes separated from E3 human/governance and E4 deployment evidence"},
+    {"id":"A1-LATE-PRESENTATION-OWNERS","kind":"antipattern","status":"SUPPORTED","effect":"enhancer/finalizer/cascade-resolver ownership generated UIUX debt until retirement"},
+    {"id":"A2-POST-MERGE-TRUTH-RECONCILIATION","kind":"antipattern","status":"SUPPORTED","effect":"committed planning files repeatedly lagged a merge and required a later reconciliation PR"},
+    {"id":"A3-STACKED-TOPOLOGY-CHURN","kind":"antipattern","status":"SUPPORTED","effect":"stacked/ref/tooling failures caused rematerialization/revert churn without equivalent product gain"},
+    {"id":"A4-MUTATION-COUNT-NOT-QUALITY","kind":"antipattern","status":"SUPPORTED","effect":"large trial counts were insufficient when oracle/model correlation or semantic blind spots survived"}
+  ],
+  "debt":[
+    {"id":"D-GOV-TRUTH-LAG","class":"governance","status":"resolved-in-candidate","owner":"GOV-WB5"},
+    {"id":"D-SEMANTIC-OWNER","class":"semantic-owner","status":"open","owner":"C5-SEMANTIC-OWNER-COMPRESSION"},
+    {"id":"D-UIUX-CONVERGENCE","class":"uiux","status":"open","owner":"UIUX-CONVERGE-0"},
+    {"id":"D-COMPAT","class":"architecture","status":"open","owner":"C1-COMPAT-CONTRACTION"},
+    {"id":"D-DELIVERY","class":"delivery-provenance","status":"in-remediation","owner":"C2-DELIVERY-PROVENANCE"},
+    {"id":"D-CAPACITY","class":"capacity","status":"open","owner":"C3-CAPACITY-CONTRACT"},
+    {"id":"D-AI-EVAL","class":"ai-evaluation","status":"in-remediation","owner":"C4-AI-EVAL-DRIFT"},
+    {"id":"D-HUMAN-USABILITY","class":"external-human-evidence","status":"external","owner":"E3-HUMAN"}
+  ],
+  "governanceAssessment":{
+    "verdict":"INCOHERENT-AS-LIVE-STATE-MODEL",
+    "counterexample":{"gitMergedPr":141,"gitMainSha":"122b18e8bb672774a0380492eb27580c255f9458","committedAuthorityMergedPr":140,"committedSlice":"DECIDE-0","committedState":"candidate"},
+    "repair":"Git owns live merge/head facts; committed governance stores immutable observations plus durable dependency-derived planning state; no post-merge reconciliation is required merely to advance a merged serial milestone."
+  },
+  "prototypeAssessment":{
+    "verdict":"NO-NEW-SERIAL-BRIDGE",
+    "reason":"The repository already proves the bounded prototype substrate; remaining convergence work is naturally owned by UIUX-CONVERGE-0/C5 or existing conditional slices.",
+    "criteria":[
+      {"id":"gapPresentAsIs","passes":true},
+      {"id":"crossCutsFutureWork","passes":true},
+      {"id":"causalPrerequisite","passes":false},
+      {"id":"notOwnedByC1C5","passes":true},
+      {"id":"notNaturalPartOfUiuxConverge","passes":false},
+      {"id":"boundedIndependentPr","passes":true},
+      {"id":"observableRuntimeProductEffect","passes":false},
+      {"id":"independentDoD","passes":true},
+      {"id":"reducesFutureComplexity","passes":false},
+      {"id":"noAuthorityShadow","passes":false}
+    ],
+    "entryContract":"v3/uiux-prototype-entry-contract.json"
+  },
+  "canonicalRoadmap":{"completedThrough":"DECIDE-0","nextSerial":"UIUX-CONVERGE-0","conditionalEligible":["C1-COMPAT-CONTRACTION","C2-DELIVERY-PROVENANCE","C3-CAPACITY-CONTRACT","C4-AI-EVAL-DRIFT","C5-SEMANTIC-OWNER-COMPRESSION"],"c5TerminalBeforeUiuxDone":true,"allConditionalsTerminalBeforeS4A6Close":true},
+  "mutationEvidence":{"seed":"ictc-trajectory-governance-prototype-2026-09-12","trials":1000000,"materialFamilies":32,"materialKilled":32,"realModelMutants":25,"realModelMutantsKilled":25,"appliedMutations":1999454,"survivors":0,"harnessErrors":0,"minTrialsPerFamily":62163,"maxTrialsPerFamily":62910,"digest":"3a0ba79ac13cf4f6ea84bc5ddd0606d52c4e1ed7a6fbe5f5058185957dbc5969"},
+  "claimBoundary":"Repository/trajectory evidence only. The audit does not prove representative human usability, legal compliance, certification, market fit, production deployment effectiveness, HA, approved RTO/RPO, enterprise-candidate status or enterprise readiness."
+}
