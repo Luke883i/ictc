@@ -6,17 +6,16 @@ ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4807').rstrip('/')
 
-def experience_cycle(page):
-    return int(page.evaluate("()=>Number(document.documentElement.dataset.experienceCycle||0)"))
-
 def open_rn(page):
-    page.goto(BASE + '/?view=processes', wait_until='networkidle')
+    page.goto(BASE + '/', wait_until='networkidle')
+    page.locator('.service-nav [data-service="processes"]').click()
     card = page.locator('#procedureHub [data-process-code="RN-01"]')
     expect(card).to_be_visible()
-    before = experience_cycle(page)
     card.locator(':scope > footer .primary').click()
-    page.wait_for_function("x=>document.documentElement.dataset.ictcSurface==='monitoring'&&Number(document.documentElement.dataset.experienceCycle||0)>x&&!document.documentElement.dataset.ictcTransitionDirection", arg=before)
-    primary = page.locator('.procedure-frame:visible .procedure-primary')
+    expect(page.locator('#monitoringView')).to_be_visible()
+    frame = page.locator('#monitoringView .procedure-frame[data-procedure-frame="canonical-1-9"]:visible')
+    expect(frame).to_have_count(1)
+    primary = frame.locator('.procedure-primary')
     expect(primary).to_have_count(1)
     expect(primary).to_be_visible()
     return primary
@@ -32,7 +31,7 @@ def main(mode):
             launch['executable_path'] = os.environ['ICTC_CHROMIUM']
         browser = pw.chromium.launch(**launch)
         ctx = browser.new_context(viewport={'width': 1440, 'height': 950})
-        ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
+        ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
         page = ctx.new_page(); page.set_default_timeout(10000)
         primary = open_rn(page)
         info = hit_info(primary); out['hit'] = info
