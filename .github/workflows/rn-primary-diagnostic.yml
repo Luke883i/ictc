@@ -14,6 +14,10 @@ concurrency:
   group: rn-primary-diagnostic-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  statuses: write
+
 jobs:
   probe:
     name: rn-primary / ${{ matrix.mode }}
@@ -54,6 +58,8 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: Probe RN primary ${{ matrix.mode }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python -u v3/browser-rn-primary-diagnostic.py --mode '${{ matrix.mode }}'
       - name: Stop isolated runtime
         if: always()

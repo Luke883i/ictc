@@ -1,4 +1,4 @@
-import argparse, json, os, pathlib, traceback
+import argparse, json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -22,7 +22,27 @@ def open_rn(page):
     return primary
 
 def hit_info(primary):
-    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);return {rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},center:{x,y},viewport:{width:innerWidth,height:innerHeight},connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,hit:hit?{tag:hit.tagName,id:hit.id||'',className:String(hit.className||''),owned:hit===el||el.contains(hit)}:null};}""")
+    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);const footer=document.querySelector('#stableLegalFooter,.stable-legal-footer');const topbar=document.querySelector('.topbar');const fr=footer?.getBoundingClientRect(),tr=topbar?.getBoundingClientRect();const describe=n=>n?{tag:n.tagName,id:n.id||'',className:String(n.className||''),owned:n===el||el.contains(n),footer:!!n.closest?.('#stableLegalFooter,.stable-legal-footer'),topbar:!!n.closest?.('.topbar'),frame:!!n.closest?.('.procedure-frame')}:null;return {rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},center:{x,y},viewport:{width:innerWidth,height:innerHeight},inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,hit:describe(hit),footerRect:fr?{top:fr.top,bottom:fr.bottom,left:fr.left,right:fr.right}:null,topbarRect:tr?{top:tr.top,bottom:tr.bottom,left:tr.left,right:tr.right}:null};}""")
+
+def slug(value):
+    return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'none'))[:42] or 'none'
+
+def publish_hit(info):
+    token=os.environ.get('GH_TOKEN',''); sha=os.environ.get('GITHUB_SHA',''); repo=os.environ.get('GITHUB_REPOSITORY','')
+    if not token or len(sha)!=40 or not repo: return
+    hit=info.get('hit') or {}
+    if not info.get('inViewport'): owner='out-of-viewport'
+    elif hit.get('footer'): owner='fixed-footer'
+    elif hit.get('topbar'): owner='sticky-topbar'
+    elif hit.get('frame'): owner='procedure-frame-other'
+    elif hit: owner=f"{hit.get('tag','node')}.{hit.get('id') or hit.get('className') or 'anonymous'}"
+    else: owner='no-element-from-point'
+    center=info.get('center') or {}; rect=info.get('rect') or {}; vp=info.get('viewport') or {}
+    desc=f"owner={slug(owner)} center={round(center.get('x',0))},{round(center.get('y',0))} rect={round(rect.get('top',0))}-{round(rect.get('bottom',0))} viewport={round(vp.get('height',0))}"
+    body=json.dumps({'state':'success','context':f'ictc/rn-primary-hit/{slug(owner)}','description':desc[:140]}).encode()
+    req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+    try: urllib.request.urlopen(req,timeout=8).read()
+    except Exception as e: print(f'hit status publish failed: {e}', flush=True)
 
 def main(mode):
     out = {'mode': mode, 'ok': False}
@@ -37,7 +57,9 @@ def main(mode):
         primary = open_rn(page)
         info = hit_info(primary); out['hit'] = info
         if mode == 'hit-test':
+            publish_hit(info)
             assert info['connected'] and not info['disabled'] and info['pointerEvents'] != 'none', info
+            assert info['inViewport'], info
             assert info['hit'] and info['hit']['owned'], info
         elif mode == 'node-stability':
             primary.evaluate('el=>{window.__ictcRnPrimary=el}')
