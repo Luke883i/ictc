@@ -18,6 +18,12 @@ def fail(e):
 def processes(page):
     return page.locator('.service-nav [data-service="processes"]')
 
+def experience_cycle(page):
+    return int(page.evaluate("()=>Number(document.documentElement.dataset.experienceCycle||0)"))
+
+def wait_navigation_ready(page, surface, before):
+    page.wait_for_function("x=>document.documentElement.dataset.ictcSurface===x[0]&&Number(document.documentElement.dataset.experienceCycle||0)>x[1]&&!document.documentElement.dataset.ictcTransitionDirection", arg=[surface, before])
+
 def no_overflow(page):
     m = page.evaluate('()=>[innerWidth,document.documentElement.scrollWidth,document.body.scrollWidth]')
     assert m[1] <= m[0] + 1 and m[2] <= m[0] + 1, m
@@ -47,9 +53,10 @@ def openp(page, code):
     pid = PROCS[code]
     expect(card).to_have_attribute('data-procedure-id', pid)
     PHASE = f'{code}-open-route'
+    before = experience_cycle(page)
     card.locator(':scope > footer .primary').click()
     surface = pid if pid in ('monitoring','incidents') else 'grc'
-    page.wait_for_function('(s)=>document.documentElement.dataset.ictcSurface===s', arg=surface)
+    wait_navigation_ready(page, surface, before)
     root = '#monitoringView' if surface == 'monitoring' else '#incidentsView' if surface == 'incidents' else '#grcView'
     expect(page.locator(root)).to_be_visible()
     PHASE = f'{code}-open-frame'
