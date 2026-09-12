@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "modelId": "UIUX-PROTOTYPE-ENTRY-CONTRACT",
   "classification": "repository-bounded-entry-contract-not-a-serial-slice",
-  "observedMainSha": "122b18e8bb672774a0380492eb27580c255f9458",
+  "observedMainSha": "e0c46998dd161d058724e0ccf1fd489190480891",
   "status": "READY-TO-CONVERGE-BOUNDED",
   "nextSerialSlice": "UIUX-CONVERGE-0",
   "createsNewSerialSlice": false,
@@ -118,10 +118,33 @@
         "E3-HUMAN"
       ],
       "residual": "cannot be inferred from browser automation"
+    },
+    {
+      "id": "PR-11",
+      "name": "identity-preserving E2 capability closure across current canonical UI inventory",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "CAPABILITY-CLOSURE-E2"
+      ],
+      "residual": "13/13 current canonical surfaces are E2-closed; historical retired modules are not retroactively claimed as independently end-user validated"
     }
   ],
-  "startRule": "UIUX-CONVERGE-0 may start because DECIDE-0 is merged and the repository-bounded prototype baseline exists. PR-09 is a completion gate through C5, not a start gate.",
-  "completionNonClaim": "Completion of UIUX-CONVERGE-0 still cannot claim representative usability or assistive-technology effectiveness; E3-HUMAN remains external.",
-  "bridgeDecision": "Do not add PREP-0. Add an explicit prototype entry contract to UIUX-CONVERGE-0; keep C5 terminal-before-done and keep E3-HUMAN external.",
-  "claimBoundary": "Repository prototype operability/readiness-to-converge only. It is not representative human usability, production readiness, legal compliance, certification, market fit or enterprise readiness."
+  "capabilityClosure": {
+    "id": "CAPABILITY-CLOSURE-E2",
+    "status": "E2-CLOSED-CANONICAL-13",
+    "surfaceCount": 13,
+    "procedureCount": 7,
+    "modelPath": "v3/capability-closure-e2-contract.json",
+    "checkPath": "v3/capability-closure-e2-check.mjs",
+    "saturationPath": "v3/capability-closure-e2-saturation.mjs",
+    "mutationTrials": 10000000,
+    "mutationDigest": "545c5438dac1fea5ab17e2e06de477bb446f989e9ffcb23ff366f0169896c715",
+    "entryGate": true,
+    "rerunBeforeDone": true,
+    "rerunWorkUnit": "UXW-14-CROSS-SURFACE-FALSIFICATION"
+  },
+  "startRule": "UIUX-CONVERGE-0 may start because DECIDE-0 is merged, the repository-bounded prototype baseline exists, and CAPABILITY-CLOSURE-E2 has reconciled the current canonical 13-surface inventory. PR-09/C5 remains a completion gate, not a start gate.",
+  "completionNonClaim": "Completion of UIUX-CONVERGE-0 still cannot claim representative usability or assistive-technology effectiveness; E3-HUMAN remains external. CAPABILITY-CLOSURE-E2 must be rerun before done and does not close E3-GOV or E4-DEPLOY.",
+  "bridgeDecision": "Do not add PREP-0. CAPABILITY-CLOSURE-E2 is an entry/regression gate inside UIUX-CONVERGE-0, not a new serial slice; keep C5 terminal-before-done and keep E3/E4 external.",
+  "claimBoundary": "Repository prototype operability plus E2 functional closure for the current canonical 13-surface inventory. It is not representative human usability, production readiness, protected-branch enforcement, legal compliance, certification, market fit or enterprise readiness."
 }
