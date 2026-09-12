@@ -12,10 +12,10 @@ assert.equal(verdict.ok,true,verdict.errors.join('\n'));
 assert.deepEqual(new Set(contract.surfaceProgram.map(x=>x.id)),new Set(CANONICAL_SURFACES));
 assert.deepEqual(new Set(closure.surfaceUnits.map(x=>x.id)),new Set(CANONICAL_SURFACES));
 assert.equal(entry.nextSerialSlice,'UIUX-CONVERGE-0');assert.equal(entry.capabilityClosure.rerunBeforeDone,true);
-for(const token of ['--ui-row-compact:52px','--ui-row-max:64px','--type-display:','--weight-description:400','--transition-interactive:'])assert.ok(tokens.includes(token),`design token missing ${token}`);
+for(const token of ['--ui-control-h:44px','--ui-row-compact:52px','--ui-row-max:64px','--type-display:','--weight-description:400','--transition-interactive:'])assert.ok(tokens.includes(token),`design token missing ${token}`);
 for(const icon of ["'arrow-up-right'","'chevron-left'","'chevron-right'","'info'"])assert.ok(icons.includes(icon),`icon primitive missing ${icon}`);
 assert.ok(shell.includes(".slice(0,3)"),'Home queue must converge to max 3');
-assert.ok(shell.includes("title.textContent='Cosa richiede attenzione?'")&&shell.includes("priorities.dataset.homeWorkQueue='uiux-converge-0'"),'Home end-user abstraction missing');
+assert.ok(shell.includes("title.textContent='Cosa richiede attenzione?'")&&shell.includes("priorities.dataset.homeWorkQueue='3.2'")&&shell.includes("priorities.dataset.uiuxConverge='P1'"),'Home owner identity/P1 abstraction missing');
 assert.ok(shell.includes("uiIcon('arrow-up-right'")&&shell.includes("uiIcon('chevron-right'"),'Home directional actions must use icons');
 assert.ok(frame.includes('data-uiux-layout="row"')&&frame.includes("host.dataset.uiuxLayout='rows'"),'Process Hub row contract missing');
 assert.ok(frame.includes("uiIcon('chevron-left'")&&frame.includes("uiIcon('arrow-up-right'"),'Procedure icon affordances missing');
@@ -23,6 +23,8 @@ assert.ok(frame.includes('procedure-context-detail')&&frame.includes('procedure-
 assert.ok(native.includes("catalogueSummary:'Fonti e cambiamenti da verificare")&&native.includes("catalogueSummary:'Azioni, owner, scadenze")&&native.includes("catalogueSummary:'Richieste, risposte versionate"),'concise procedure copy missing');
 assert.ok(enterprise.includes('.home-priority-main{display:grid;grid-template-columns:4.2rem')&&enterprise.includes('transition:var(--transition-interactive)'),'Home local owner must own compact interaction rows');
 assert.ok(closureCss.includes('#procedureHub .procedure-card[data-uiux-layout="row"]')&&closureCss.includes('grid-template-areas:"code title purpose action"'),'Process Hub local owner must own row grammar');
+for(const target of ['#procedureHub .procedure-card .procedure-primary','.procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-back','.procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail>summary','.procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-primary'])assert.ok(closureCss.includes(target),`critical target selector missing ${target}`);
+assert.ok((closureCss.match(/min-height:44px/g)||[]).length>=5,'critical touched controls must preserve >=44px source contract');
 assert.ok(!closureCss.includes('repeat(3,minmax(0,1fr))')&&!closureCss.includes('min-height:226px'),'retired equal-height card matrix must not remain in current Process Hub owner');
 assert.ok(!compositionCss.includes('#homeView')&&!compositionCss.includes('#processesView')&&!compositionCss.includes('#proofView'),'shared composition layer must not retake Home/Processi/Proof local presentation');
 assert.ok(!compositionCss.includes('#procedureHub{display')&&!compositionCss.includes('.procedure-frame-main'),'shared composition layer must not override Process Hub/procedure-frame geometry');
@@ -31,4 +33,4 @@ for(const source of [shell,frame,native])assert.equal(source.includes('/api/'),f
 const gates=['v3/capability-closure-e2-check.mjs','v3/capability-closure-e2-saturation.mjs','v3/uiux-converge-0-check.mjs','v3/uiux-converge-0-style-saturation.mjs','v3/uiux-converge-0-e2e-saturation.mjs'];
 for(const gate of gates)assert.ok(registry.includes(`'${gate}'`),`current registry missing ${gate}`);
 assert.ok(registry.indexOf("'v3/capability-closure-e2-check.mjs'")<registry.indexOf("'v3/uiux-converge-0-check.mjs'"),'UIUX rail must remain downstream of capability closure');
-console.log(JSON.stringify({ok:true,profile:'UIUX-CONVERGE-0/P1',surfaces:13,procedures:7,homePriorityMax:3,processHub:'local-owner-row-list',icons:'inline-lucide-compatible-svg',latePresentationOverridesRetired:['Home','Process Hub','Procedure Frame','Proof'],businessRuntimeChanged:false,sliceTerminal:false}));
+console.log(JSON.stringify({ok:true,profile:'UIUX-CONVERGE-0/P1',surfaces:13,procedures:7,homePriorityMax:3,controlMinPx:44,processHub:'local-owner-row-list',icons:'inline-lucide-compatible-svg',latePresentationOverridesRetired:['Home','Process Hub','Procedure Frame','Proof'],businessRuntimeChanged:false,sliceTerminal:false}));

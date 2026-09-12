@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "modelId": "UIUX-CONVERGE-0",
   "classification": "runtime-semantic-uiux-convergence-candidate",
   "observedMainSha": "c7619e18b260bc23a5aa968086e312570723f8f0",
@@ -37,7 +37,7 @@
   "styleMetrics": {
     "desktopCompactRowTargetPx": 52,
     "desktopCompactRowMaxPx": 64,
-    "controlMinPx": 36,
+    "controlMinPx": 44,
     "readingMeasureCh": 68,
     "bodyWeightMax": 500,
     "descriptionWeightMax": 500,
@@ -69,6 +69,7 @@
     "no second business write authority and no global final UI resolver",
     "canonical first plane is minimal, role/action oriented and preserves material boundary information",
     "repeated work defaults to rows/lists and compact controls rather than stacked card walls",
+    "critical interactive controls remain at least 44px high",
     "canonical touched directional actions use SVG icons rather than ASCII arrows",
     "micro-transitions are bounded and disabled/reduced when prefers-reduced-motion requests it",
     "responsive changes geometry without changing semantic order, authority, state or action meaning",
@@ -77,17 +78,18 @@
     "no enterprise-ready, legal/compliance, human-usability or deployment-effectiveness promotion"
   ],
   "intermediateDoD": [
-    {"id":"U0-I1-FOUNDATIONS","criteria":["style abstraction matrix encoded","type hierarchy encoded","motion budget encoded","icon vocabulary centralized"]},
+    {"id":"U0-I1-FOUNDATIONS","criteria":["style abstraction matrix encoded","type hierarchy encoded","motion budget encoded","icon vocabulary centralized","44px critical target floor encoded"]},
     {"id":"U0-I2-LANDING","criteria":["Home is attention-first","Process Hub is one-row-per-procedure","descriptive copy is normal weight","primary CTA hierarchy is singular"]},
     {"id":"U0-I3-PROCEDURES","criteria":["seven procedures share one frame grammar","procedure descriptions are concise","boundary remains visible","secondary rationale is progressive","GRC repeated records retain row/list grammar"]},
     {"id":"U0-I4-AUXILIARY","criteria":["Proof stays evidence-first","Epistemic stays search/relationship-first","Admin stays attention/configuration-first","AI settings stay subordinate and human-authority bounded"]},
-    {"id":"U0-I5-FALSIFICATION","criteria":["100000 deterministic style mutations killed","1000000 deterministic E2 semantic lattice mutations killed","zero survivor","zero harness error","current semantic registry executes both saturation rails"]}
+    {"id":"U0-I5-FALSIFICATION","criteria":["100000 deterministic style mutations killed","1000000 deterministic source-derived semantic mutations killed","zero survivor","zero harness error","current semantic registry executes both saturation rails"]}
   ],
   "localDoD": [
     "no bold long-form purpose/value paragraphs in canonical frame markup",
     "Home priority rows carry short identity, reason and one open affordance",
     "Process Hub rows carry code, title, one concise purpose and one route action",
     "procedure frame uses icon back affordance and icon-enhanced primary action",
+    "critical touched controls are at least 44px high",
     "micro-motion never exceeds the central motion budget",
     "focus-visible remains explicit",
     "prefers-reduced-motion disables transforms and animated scrolling effects introduced by this pass",
@@ -95,7 +97,7 @@
   ],
   "falsification": {
     "style": {"seed":"ictc-uiux-converge-0-style-2026-09-12","trials":100000,"requiredSurvivors":0},
-    "e2e": {"seed":"ictc-uiux-converge-0-e2e-2026-09-12","trials":1000000,"requiredSurvivors":0}
+    "e2e": {"seed":"ictc-pr144-uiux-converge-0-ci-repair-base-c7619e18-2026-09-12","trials":1000000,"requiredSurvivors":0,"mode":"source-derived-real-bundle"}
   },
   "claimBoundary": "This candidate materially advances UIUX-CONVERGE-0 at E2 repository/runtime/UI level. It is not a terminal UIUX-CONVERGE-0 claim because C5 and final UXW-14 closure remain required. It does not prove representative human usability, assistive-technology effectiveness, production deployment effectiveness, protected-branch enforcement, legal compliance, certification, market fit or enterprise readiness."
 }

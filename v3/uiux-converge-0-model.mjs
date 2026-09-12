@@ -29,7 +29,7 @@ export function validateUiuxConvergeContract(model){
   const metrics=model?.styleMetrics||{};
   if(Number(metrics.desktopCompactRowTargetPx)>Number(metrics.desktopCompactRowMaxPx))fail(errors,'DENSITY','row target exceeds max');
   if(Number(metrics.desktopCompactRowMaxPx)>64)fail(errors,'DENSITY','row max exceeds 64px');
-  if(Number(metrics.controlMinPx)<36)fail(errors,'CONTROL','control min below 36px');
+  if(Number(metrics.controlMinPx)<44)fail(errors,'CONTROL','critical control min below 44px');
   if(Number(metrics.descriptionWeightMax)>500)fail(errors,'TYPE','description too bold');
   if(Number(metrics.motionMaxMs)>240)fail(errors,'MOTION','motion budget above 240ms');
   if(metrics.statusColorOnlyAllowed!==false)fail(errors,'STATUS','color-only status allowed');
@@ -44,10 +44,11 @@ export function validateUiuxConvergeContract(model){
   if(min.icons!=='inline-lucide-compatible-svg')fail(errors,'ICON','icon system not canonical');
   if(min.asciiDirectionalGlyphsInCanonicalTouchedActions!==false)fail(errors,'ICON','ASCII directional glyphs allowed');
   const global=model?.globalDoD||[];
-  for(const needle of ['no second business write authority','CAPABILITY-CLOSURE-E2','C5'])if(!global.some(line=>String(line).includes(needle)))fail(errors,'GLOBAL_DOD',`missing ${needle}`);
+  for(const needle of ['no second business write authority','CAPABILITY-CLOSURE-E2','C5','44px'])if(!global.some(line=>String(line).includes(needle)))fail(errors,'GLOBAL_DOD',`missing ${needle}`);
   const falsification=model?.falsification||{};
   if(falsification?.style?.trials!==100000)fail(errors,'STYLE_TRIALS','must be 100000');
   if(falsification?.e2e?.trials!==1000000)fail(errors,'E2E_TRIALS','must be 1000000');
+  if(falsification?.e2e?.mode!=='source-derived-real-bundle')fail(errors,'E2E_MODE','must be source-derived-real-bundle');
   return Object.freeze({ok:errors.length===0,errors:Object.freeze(errors)});
 }
 
@@ -109,7 +110,7 @@ export function validateSemanticState(state){
   if(state.statusColorOnly!==false)fail(errors,'STATUS','color only status');
   if(state.overflow!==false)fail(errors,'RESPONSIVE','horizontal overflow');
   if(Number(state.rowMax)>64)fail(errors,'DENSITY','row too tall');
-  if(Number(state.controlMin)<36)fail(errors,'CONTROL','control too small');
+  if(Number(state.controlMin)<44)fail(errors,'CONTROL','critical control too small');
   if(Number(state.descriptionWeightMax)>500)fail(errors,'TYPE','description too bold');
   if(Number(state.motionMax)>240)fail(errors,'MOTION','motion too slow');
   for(const invariant of ['humanAuthority','evidenceNotConclusion','mappingNotConformity','completedNotVerified','ratingNotProbability','internalApprovalNotIndependentAssurance'])if(state[invariant]!==true)fail(errors,'EPISTEMIC',invariant);
