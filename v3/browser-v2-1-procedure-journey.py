@@ -40,18 +40,27 @@ def check_surface_revision(page, selector, rev):
 
 def openp(page, code):
     global PHASE
-    PHASE = f'{code}-open'
+    PHASE = f'{code}-open-card'
     processes(page).click()
     card = page.locator(f'#procedureHub [data-process-code="{code}"]')
     expect(card).to_be_visible()
     pid = PROCS[code]
     expect(card).to_have_attribute('data-procedure-id', pid)
+    PHASE = f'{code}-open-route'
     card.locator(':scope > footer .primary').click()
-    page.wait_for_timeout(80)
-    frame = page.locator('.procedure-frame:visible')
+    surface = pid if pid in ('monitoring','incidents') else 'grc'
+    page.wait_for_function('(s)=>document.documentElement.dataset.ictcSurface===s', arg=surface)
+    root = '#monitoringView' if surface == 'monitoring' else '#incidentsView' if surface == 'incidents' else '#grcView'
+    expect(page.locator(root)).to_be_visible()
+    PHASE = f'{code}-open-frame'
+    frame = page.locator(f'{root} .procedure-frame[data-procedure-frame="canonical-1-9"]:visible')
     expect(frame).to_have_count(1)
+    expect(page.locator('.procedure-frame:visible')).to_have_count(1)
+    PHASE = f'{code}-open-code'
     expect(frame.locator('.procedure-frame-code')).to_have_text(code)
+    PHASE = f'{code}-open-context'
     expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
+    PHASE = f'{code}-open'
     return card
 
 def verify_process_projection(page, code, pid, rev):

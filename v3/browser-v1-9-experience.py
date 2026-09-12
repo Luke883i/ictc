@@ -18,7 +18,7 @@ def fail(e):
  payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v1-9-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); _publish_failure_phase(e); print(f'::error title=browser-v1-9::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def processes(page): return page.locator('.service-nav [data-service="processes"]')
 def openp(page,code):
- processes(page).click(); c=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(c).to_be_visible(); expect(c.locator(':scope > footer .primary')).to_have_count(1); c.locator(':scope > footer .primary').click(); page.wait_for_timeout(120)
+ processes(page).click(); c=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(c).to_be_visible(); expect(c.locator(':scope > footer .primary')).to_have_count(1); c.locator(':scope > footer .primary').click(); surface=P[code]; page.wait_for_function('(s)=>document.documentElement.dataset.ictcSurface===s',arg=surface); root='#monitoringView' if surface=='monitoring' else '#incidentsView' if surface=='incidents' else '#grcView'; expect(page.locator(root)).to_be_visible(); expect(page.locator(f'{root} .procedure-frame[data-procedure-frame="canonical-1-9"]:visible')).to_have_count(1)
 def no_overflow(page):
  m=page.evaluate('()=>[innerWidth,document.documentElement.scrollWidth,document.body.scrollWidth]'); assert m[1]<=m[0]+1 and m[2]<=m[0]+1,m
 def named(page):
