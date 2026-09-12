@@ -30,24 +30,22 @@ def open_rn(page):
     return primary
 
 def hit_info(primary):
-    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);const footer=document.querySelector('#stableLegalFooter,.stable-legal-footer');const topbar=document.querySelector('.topbar');const fr=footer?.getBoundingClientRect(),tr=topbar?.getBoundingClientRect();const describe=n=>n?{tag:n.tagName,id:n.id||'',className:String(n.className||''),owned:n===el||el.contains(n),footer:!!n.closest?.('#stableLegalFooter,.stable-legal-footer'),topbar:!!n.closest?.('.topbar'),frame:!!n.closest?.('.procedure-frame')}:null;return {rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},center:{x,y},viewport:{width:innerWidth,height:innerHeight},inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,transitionDirection:document.documentElement.dataset.ictcTransitionDirection||null,experienceCycle:Number(document.documentElement.dataset.experienceCycle||0),hit:describe(hit),footerRect:fr?{top:fr.top,bottom:fr.bottom,left:fr.left,right:fr.right}:null,topbarRect:tr?{top:tr.top,bottom:tr.bottom,left:tr.left,right:tr.right}:null};}""")
+    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);const footer=document.querySelector('#stableLegalFooter,.stable-legal-footer');const topbar=document.querySelector('.topbar');const fr=footer?.getBoundingClientRect(),tr=topbar?.getBoundingClientRect();const describe=n=>{if(!n)return null;const nr=n.getBoundingClientRect(),ns=getComputedStyle(n);return{tag:n.tagName,id:n.id||'',className:String(n.className||''),owned:n===el||el.contains(n),footer:!!n.closest?.('#stableLegalFooter,.stable-legal-footer'),topbar:!!n.closest?.('.topbar'),frame:!!n.closest?.('.procedure-frame'),rect:{x:nr.x,y:nr.y,width:nr.width,height:nr.height,top:nr.top,right:nr.right,bottom:nr.bottom,left:nr.left},pointerEvents:ns.pointerEvents,position:ns.position,zIndex:ns.zIndex};};const ancestors=[];for(let n=el;n;n=n.parentElement){const ns=getComputedStyle(n);ancestors.push({tag:n.tagName,id:n.id||'',className:String(n.className||''),pointerEvents:ns.pointerEvents,position:ns.position,zIndex:ns.zIndex,inert:!!(n.inert||n.hasAttribute('inert'))});if(n===document.body)break;}return {rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},center:{x,y},viewport:{width:innerWidth,height:innerHeight},inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,transitionDirection:document.documentElement.dataset.ictcTransitionDirection||null,experienceCycle:Number(document.documentElement.dataset.experienceCycle||0),hit:describe(hit),ancestors,footerRect:fr?{top:fr.top,bottom:fr.bottom,left:fr.left,right:fr.right}:null,topbarRect:tr?{top:tr.top,bottom:tr.bottom,left:tr.left,right:tr.right}:null};}""")
 
 def slug(value):
-    return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'none'))[:42] or 'none'
+    return ''.join(c if c.isalnum() or c in '._-' else '-' for c in str(value or 'none'))[:54] or 'none'
 
 def publish_hit(info):
     token=os.environ.get('GH_TOKEN',''); sha=os.environ.get('GITHUB_SHA',''); repo=os.environ.get('GITHUB_REPOSITORY','')
     if not token or len(sha)!=40 or not repo: return
     hit=info.get('hit') or {}
-    if not info.get('inViewport'): owner='out-of-viewport'
-    elif hit.get('footer'): owner='fixed-footer'
-    elif hit.get('topbar'): owner='sticky-topbar'
-    elif hit.get('frame'): owner='procedure-frame-other'
-    elif hit: owner=f"{hit.get('tag','node')}.{hit.get('id') or hit.get('className') or 'anonymous'}"
-    else: owner='no-element-from-point'
-    center=info.get('center') or {}; rect=info.get('rect') or {}; vp=info.get('viewport') or {}
-    desc=f"owner={slug(owner)} center={round(center.get('x',0))},{round(center.get('y',0))} rect={round(rect.get('top',0))}-{round(rect.get('bottom',0))} viewport={round(vp.get('height',0))} cycle={info.get('experienceCycle',0)}"
-    body=json.dumps({'state':'success','context':f'ictc/rn-ready-hit/{slug(owner)}','description':desc[:140]}).encode()
+    raw=f"{hit.get('tag','none')}#{hit.get('id','')}.{hit.get('className','')}"
+    bad_ancestor=next((a for a in info.get('ancestors',[]) if a.get('pointerEvents')=='none' or a.get('inert')),None)
+    owner='out-of-viewport' if not info.get('inViewport') else raw
+    center=info.get('center') or {}; rect=info.get('rect') or {}; hrect=hit.get('rect') or {}
+    ancestor='none' if not bad_ancestor else f"{bad_ancestor.get('tag')}#{bad_ancestor.get('id')}.{bad_ancestor.get('className')}:{bad_ancestor.get('pointerEvents')}:inert={bad_ancestor.get('inert')}"
+    desc=f"hit={slug(owner)} hitbox={round(hrect.get('left',0))},{round(hrect.get('top',0))}-{round(hrect.get('right',0))},{round(hrect.get('bottom',0))} badAncestor={slug(ancestor)}"
+    body=json.dumps({'state':'success','context':f'ictc/rn-ready-hit-exact/{slug(owner)}','description':desc[:140]}).encode()
     req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
     try: urllib.request.urlopen(req,timeout=8).read()
     except Exception as e: print(f'hit status publish failed: {e}', flush=True)
