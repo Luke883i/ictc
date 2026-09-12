@@ -5,6 +5,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4807').rstrip('/')
+PRIMARY_SELECTOR = '#monitoringView .procedure-frame[data-procedure-frame="canonical-1-9"]:visible .procedure-primary'
 
 def open_rn(page):
     page.goto(BASE + '/', wait_until='networkidle')
@@ -21,7 +22,7 @@ def open_rn(page):
     return primary
 
 def hit_info(primary):
-    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);return {rect:{x:r.x,y:r.y,width:r.width,height:r.height},center:{x,y},connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,hit:hit?{tag:hit.tagName,id:hit.id||'',className:String(hit.className||''),owned:hit===el||el.contains(hit)}:null};}""")
+    return primary.evaluate("""el=>{const r=el.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);const s=getComputedStyle(el);return {rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},center:{x,y},viewport:{width:innerWidth,height:innerHeight},connected:el.isConnected,disabled:!!el.disabled,pointerEvents:s.pointerEvents,visibility:s.visibility,display:s.display,opacity:s.opacity,hit:hit?{tag:hit.tagName,id:hit.id||'',className:String(hit.className||''),owned:hit===el||el.contains(hit)}:null};}""")
 
 def main(mode):
     out = {'mode': mode, 'ok': False}
@@ -35,9 +36,16 @@ def main(mode):
         page = ctx.new_page(); page.set_default_timeout(10000)
         primary = open_rn(page)
         info = hit_info(primary); out['hit'] = info
-        if mode == 'actionability':
+        if mode == 'hit-test':
             assert info['connected'] and not info['disabled'] and info['pointerEvents'] != 'none', info
             assert info['hit'] and info['hit']['owned'], info
+        elif mode == 'node-stability':
+            primary.evaluate('el=>{window.__ictcRnPrimary=el}')
+            page.wait_for_timeout(750)
+            stable = page.evaluate("""()=>{const now=document.querySelector('#monitoringView .procedure-frame[data-procedure-frame="canonical-1-9"] .procedure-primary');return !!window.__ictcRnPrimary&&window.__ictcRnPrimary.isConnected&&window.__ictcRnPrimary===now}""")
+            out['stableAfter750ms'] = stable
+            assert stable, {'before': info, 'after': hit_info(page.locator(PRIMARY_SELECTOR))}
+        elif mode == 'trial-click':
             primary.click(trial=True, timeout=5000)
         elif mode == 'dom-dispatch':
             primary.evaluate('el=>el.click()')
@@ -54,7 +62,8 @@ def main(mode):
     return out
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(); p.add_argument('--mode', required=True, choices=['actionability','dom-dispatch','browser-click']); args = p.parse_args()
+    modes = ['hit-test','node-stability','trial-click','dom-dispatch','browser-click']
+    p = argparse.ArgumentParser(); p.add_argument('--mode', required=True, choices=modes); args = p.parse_args()
     path = ART / f'rn-primary-{args.mode}.json'
     try:
         result = main(args.mode); path.write_text(json.dumps(result, indent=2), encoding='utf8'); print(json.dumps(result), flush=True)
