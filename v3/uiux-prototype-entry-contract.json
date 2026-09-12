@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "UIUX-PROTOTYPE-ENTRY-CONTRACT",
+  "classification": "repository-bounded-entry-contract-not-a-serial-slice",
+  "observedMainSha": "122b18e8bb672774a0380492eb27580c255f9458",
+  "status": "READY-TO-CONVERGE-BOUNDED",
+  "nextSerialSlice": "UIUX-CONVERGE-0",
+  "createsNewSerialSlice": false,
+  "requirements": [
+    {
+      "id": "PR-01",
+      "name": "canonical launch/bootstrap and exact runtime identity",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR2",
+        "PR123"
+      ],
+      "residual": "deployment identity effectiveness is external"
+    },
+    {
+      "id": "PR-02",
+      "name": "seven canonical procedure surfaces and role-scoped work projection",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR46",
+        "PR60",
+        "PR118",
+        "PR124"
+      ],
+      "residual": "representative comprehension is external"
+    },
+    {
+      "id": "PR-03",
+      "name": "state-changing writes persist before visible state and survive reload/recovery semantics",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR32",
+        "PR49",
+        "PR121"
+      ],
+      "residual": "production RTO/RPO remains external/unproven"
+    },
+    {
+      "id": "PR-04",
+      "name": "deterministic isolated demo/reference data",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR69",
+        "PR85",
+        "PR100",
+        "PR106"
+      ],
+      "residual": "synthetic/demo coherence is not market or legal evidence"
+    },
+    {
+      "id": "PR-05",
+      "name": "actionable worklist / next-action projection",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR40",
+        "PR42",
+        "PR118",
+        "PR124"
+      ],
+      "residual": "provider-local actionability remains authoritative; no global status"
+    },
+    {
+      "id": "PR-06",
+      "name": "Admin failure isolation and local retry",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR127"
+      ],
+      "residual": "deployment availability is not proven"
+    },
+    {
+      "id": "PR-07",
+      "name": "browser responsive/focus/overflow/footer geometry baseline",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR128",
+        "PR131",
+        "PR132",
+        "PR134",
+        "PR135"
+      ],
+      "residual": "human/AT usability remains E3-HUMAN"
+    },
+    {
+      "id": "PR-08",
+      "name": "evidence/epistemic surfaces preserve basis, version, authority and claim boundaries",
+      "status": "repository-proven-bounded",
+      "evidence": [
+        "PR59",
+        "PR91",
+        "PR126",
+        "PR135"
+      ],
+      "residual": "evidence does not become conclusion"
+    },
+    {
+      "id": "PR-09",
+      "name": "semantic owner convergence",
+      "status": "not-yet-terminal",
+      "evidence": [
+        "PR116",
+        "PR125",
+        "PR138",
+        "C5"
+      ],
+      "residual": "owned by C5 and UIUX-CONVERGE-0; not a prerequisite to start convergence"
+    },
+    {
+      "id": "PR-10",
+      "name": "representative human usability and assistive-technology effectiveness",
+      "status": "external",
+      "evidence": [
+        "E3-HUMAN"
+      ],
+      "residual": "cannot be inferred from browser automation"
+    }
+  ],
+  "startRule": "UIUX-CONVERGE-0 may start because DECIDE-0 is merged and the repository-bounded prototype baseline exists. PR-09 is a completion gate through C5, not a start gate.",
+  "completionNonClaim": "Completion of UIUX-CONVERGE-0 still cannot claim representative usability or assistive-technology effectiveness; E3-HUMAN remains external.",
+  "bridgeDecision": "Do not add PREP-0. Add an explicit prototype entry contract to UIUX-CONVERGE-0; keep C5 terminal-before-done and keep E3-HUMAN external.",
+  "claimBoundary": "Repository prototype operability/readiness-to-converge only. It is not representative human usability, production readiness, legal compliance, certification, market fit or enterprise readiness."
+}
