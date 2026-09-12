@@ -11,7 +11,7 @@ for(let i=0;i<TRIALS;i++){
     case 2: violation=!p.value||!p.boundary;break;
     case 3: violation=/Fonte \+|Scope \+|Prova$/i.test(p.catalogueSummary);break;
     case 4: violation=!WORKSPACE_COPY.proof.investigationTitle||!WORKSPACE_COPY.proof.traceTitle||!WORKSPACE_COPY.proof.decisionsTitle;break;
-    case 5: violation=variant===7&&p.catalogueSummary.length<80;break;
+    case 5: violation=variant===7&&p.catalogueSummary.length>=p.workspacePurpose.length;break;
     case 6: violation=!p.primary||!p.entry;break;
     case 7: violation=p.boundary.length<24;break;
   }
@@ -20,4 +20,4 @@ for(let i=0;i<TRIALS;i++){
 }
 const unresolved=[...seen].filter(x=>!x).length;
 if(killed||unresolved||novel!==FAMILIES){console.error(JSON.stringify({ok:false,trials:TRIALS,killed,novel,lastNovel,unresolved}));process.exit(1);}
-console.log(JSON.stringify({ok:true,campaign:'semantic-workspace-closure-3.2.1',trials:TRIALS,failureFamilies:FAMILIES,killed,novel,lastNovel,noNoveltyAfter:TRIALS-lastNovel-1,note:'deterministic model-vocabulary saturation; not browser or code mutation executions'}));
+console.log(JSON.stringify({ok:true,campaign:'semantic-workspace-closure-3.2.1',trials:TRIALS,failureFamilies:FAMILIES,killed,novel,lastNovel,noNoveltyAfter:TRIALS-lastNovel-1,note:'deterministic model-vocabulary saturation; catalogue summaries remain concise relative to workspace purpose under the row/list UI grammar; not browser or code mutation executions'}));
