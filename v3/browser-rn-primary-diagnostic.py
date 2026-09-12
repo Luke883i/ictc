@@ -11,9 +11,10 @@ def experience_cycle(page):
 
 def open_rn(page):
     page.goto(BASE + '/?view=processes', wait_until='networkidle')
-    expect(page.locator('#procedureHub [data-process-code="RN-01"]')).to_be_visible()
+    card = page.locator('#procedureHub [data-process-code="RN-01"]')
+    expect(card).to_be_visible()
     before = experience_cycle(page)
-    page.locator('#procedureHub [data-process-code="RN-01"] :scope > footer .primary').click()
+    card.locator(':scope > footer .primary').click()
     page.wait_for_function("x=>document.documentElement.dataset.ictcSurface==='monitoring'&&Number(document.documentElement.dataset.experienceCycle||0)>x&&!document.documentElement.dataset.ictcTransitionDirection", arg=before)
     primary = page.locator('.procedure-frame:visible .procedure-primary')
     expect(primary).to_have_count(1)
