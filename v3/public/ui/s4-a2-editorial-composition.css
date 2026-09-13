@@ -5,6 +5,12 @@
 #incidentsView > .hero > .hero-copy,
 #grcWorkspace > .grc-head > .workspace-return,
 #grcWorkspace > .grc-head > div { display:none !important; }
+/* The canonical compact frame is the sole visible procedure identity. Historical
+   presentation layers may still target generic process headings; the A2 owner
+   explicitly keeps the canonical H1 rendered while retiring only legacy identity. */
+#monitoringView > .procedure-frame h1,
+#incidentsView > .procedure-frame h1,
+#grcWorkspace > .procedure-frame h1 { display:block !important; visibility:visible !important; }
 #monitoringView > .hero,
 #incidentsView > .hero { display:block; margin:0; padding:0; background:none; border:0; box-shadow:none; }
 #grcWorkspace > .grc-head { min-height:0; }

@@ -56,12 +56,23 @@ jobs:
           trap './ictc.sh stop --profile current || true' EXIT
           status=0
           python -u v3/browser-uiux-enduser-p2-runtime-1m.py || status=$?
-          phase=complete
+          detail=complete
           if [[ -f artifacts/browser-uiux-enduser-p2-runtime-1m-error.json ]]; then
-            phase="$(python -c "import json; print(json.load(open('artifacts/browser-uiux-enduser-p2-runtime-1m-error.json')).get('phase','unknown'))")"
+            detail="$(python - <<'PY'
+import json,re
+p=json.load(open('artifacts/browser-uiux-enduser-p2-runtime-1m-error.json',encoding='utf8'))
+phase=str(p.get('phase','unknown'))
+message=str(p.get('message',''))
+# Keep both the beginning (surface/families) and tail (kill/survivor/harness counts).
+if len(message)>260:
+    message=message[:130]+'-'+message[-130:]
+value=phase+'-'+message
+value=re.sub(r'[^A-Za-z0-9._-]+','-',value).strip('-')
+print(value[:220] or 'unknown')
+PY
+)"
           fi
-          phase="$(printf '%s' "$phase" | tr -cs 'A-Za-z0-9._-' '-')"
-          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+          echo "phase=$detail" >> "$GITHUB_OUTPUT"
           exit "$status"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
