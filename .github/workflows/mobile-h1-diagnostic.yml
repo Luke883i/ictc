@@ -1,0 +1,67 @@
+name: mobile-h1-diagnostic
+
+on:
+  push:
+    branches:
+      - agent/uiux-converge-0-common-grammar
+
+concurrency:
+  group: mobile-h1-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  probe:
+    name: diagnostic / mobile-h1-geometry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Resolve system browser
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          test -n "$browser" -a -x "$browser"
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+      - name: Probe mobile H1 geometry
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4807 PORT=4807 ICTC_BASE_URL=http://127.0.0.1:4807
+          export ICTC_STATE_DIR="$RUNNER_TEMP/mobile-h1-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/mobile-h1-runtime" ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          trap './ictc.sh stop --profile current || true' EXIT
+          python - <<'PY'
+          import json, os, urllib.request
+          from playwright.sync_api import sync_playwright, expect
+          BASE=os.environ['ICTC_BASE_URL']; token=os.environ['GH_TOKEN']; repo=os.environ['GITHUB_REPOSITORY']; sha=os.environ['GITHUB_SHA']
+          def safe(v,n=125): return str(v).replace('\n',' ').replace('\r',' ')[:n]
+          def post(ctx,desc):
+              body=json.dumps({'state':'success','context':ctx,'description':safe(desc,140)}).encode()
+              req=urllib.request.Request(f'https://api.github.com/repos/{repo}/statuses/{sha}',data=body,method='POST',headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'})
+              urllib.request.urlopen(req,timeout=10).read()
+          with sync_playwright() as pw:
+              launch={'headless':True,'args':['--no-sandbox'],'executable_path':os.environ['ICTC_CHROMIUM']}
+              b=pw.chromium.launch(**launch); c=b.new_context(viewport={'width':390,'height':844}); c.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')"); p=c.new_page(); p.set_default_timeout(15000); p.goto(BASE+'/',wait_until='networkidle')
+              p.locator('.service-nav [data-service="processes"]').click(); card=p.locator('#procedureHub [data-process-code="RN-01"]'); expect(card).to_be_visible(); card.locator(':scope > footer .primary').click(); frame=p.locator('#monitoringView .procedure-frame[data-procedure-frame="canonical-1-9"]:visible'); expect(frame).to_have_count(1)
+              data=frame.evaluate("""f=>{const pick=n=>{if(!n)return null;const r=n.getBoundingClientRect(),s=getComputedStyle(n);return{tag:n.tagName,cls:n.className,text:(n.textContent||'').trim().slice(0,60),rect:[r.x,r.y,r.width,r.height],display:s.display,visibility:s.visibility,overflow:s.overflow,position:s.position,fontSize:s.fontSize,lineHeight:s.lineHeight,gridCols:s.gridTemplateColumns,gridArea:s.gridArea,minWidth:s.minWidth,width:s.width,height:s.height}};const h=f.querySelector('h1'),id=f.querySelector('.procedure-frame-identity'),copy=f.querySelector('.procedure-frame-copy'),main=f.querySelector('.procedure-frame-main');return{visibleH1:[...document.querySelectorAll('h1')].filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden'&&getComputedStyle(e).display!=='none').map(e=>(e.textContent||'').trim()),h:pick(h),identity:pick(id),copy:pick(copy),main:pick(main),frame:pick(f),hiddenAncestor:(()=>{for(let n=h;n;n=n.parentElement){const s=getComputedStyle(n),r=n.getBoundingClientRect();if(s.display==='none'||s.visibility==='hidden'||!r.width||!r.height)return pick(n)}return null})()}}""")
+              post('ictc/mobile-h1/summary',f"visible={data['visibleH1']} hidden={data['hiddenAncestor']}")
+              for key in ['h','identity','copy','main','frame']:
+                  x=data[key] or {}; post(f'ictc/mobile-h1/{key}',f"rect={x.get('rect')} disp={x.get('display')} vis={x.get('visibility')} fs={x.get('fontSize')} cols={x.get('gridCols')} area={x.get('gridArea')}")
+              c.close(); b.close()
+          PY
