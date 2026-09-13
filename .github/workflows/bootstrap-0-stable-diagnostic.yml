@@ -12,6 +12,9 @@ jobs:
     name: stable-sequence
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      semantic_failed_gate: ${{ steps.current_semantic.outputs.failed_check }}
+      semantic_outcome: ${{ steps.current_semantic.outcome }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with: {ref: "${{ github.event.pull_request.head.sha || github.sha }}", fetch-depth: 0, persist-credentials: false}
@@ -69,6 +72,19 @@ jobs:
       - name: stable 21 / process hardening
         run: node v3/v1-stable-process-hardening-check.mjs
       - name: current semantic
-        run: npm run test:current:semantic
+        id: current_semantic
+        continue-on-error: true
+        run: node v3/current-semantic-3-2.mjs
       - name: current runtime
+        if: steps.current_semantic.outcome == 'success'
         run: npm run test:current:runtime
+      - name: propagate semantic failure
+        if: steps.current_semantic.outcome == 'failure'
+        run: exit 1
+  semantic-failure-report:
+    needs: stable-sequence
+    if: always() && needs.stable-sequence.outputs.semantic_failed_gate != ''
+    name: semantic-failure / ${{ needs.stable-sequence.outputs.semantic_failed_gate }}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: exit 1
