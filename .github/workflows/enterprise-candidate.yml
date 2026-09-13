@@ -24,50 +24,60 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: node v3/enterprise-gate-manifest-check.mjs
       - run: node v3/convergence-authority-check.mjs
-      - run: npm run release:check
-      - run: node v3/runtime-enterprise-boundaries-ci.mjs
-      - run: node v3/browser-local-write-boundary-check.mjs
-      - run: node v3/command-identity-boundary-check.mjs
-      - run: node v3/privacy-erasure-race-check.mjs
-      - run: node v3/ai-secret-policy-check.mjs
-      - run: node v3/tenant-identity-coherence-check.mjs
-      - run: node v3/attachment-scanner-tenant-check.mjs
-      - run: node v3/csv-export-security-check.mjs
-      - run: node v3/ai-network-policy-check.mjs
-      - run: node v3/security-enterprise-dod-check.mjs
-      - run: node v3/enterprise-t-saturation.mjs
-      - run: node v3/enterprise-invariant-convergence.mjs
-      - run: node v3/enterprise-t-audit.mjs
-      - run: node v3/enterprise-t-runtime-stress.mjs
-      - run: node v3/ci-truth-check.mjs
-      - run: node v3/enterprise-candidate-saturation.mjs
+      - name: stable prefix / syntax
+        run: node scripts/syntax-check.mjs
+      - name: stable prefix / bootstrap contract
+        run: node v3/bootstrap-contract-check.mjs
+      - name: stable 01 / release contract
+        run: node v3/v1-stable-release-contract-check.mjs
+      - name: stable 02 / ui contract
+        run: node v3/v1-stable-ui-contract-check.mjs
+      - name: stable 03 / visual epistemic runtime
+        run: node v3/visual-epistemic-runtime-check.mjs
+      - name: stable 04 / visual epistemic saturation
+        run: node v3/visual-epistemic-runtime-saturation.mjs
+      - name: stable 05 / finetuning intent coverage
+        run: node v3/procedure-finetuning-intent-coverage-check.mjs
+      - name: stable 06 / finetuning check
+        run: node v3/procedure-finetuning-check.mjs
+      - name: stable 07 / compliance onto epistemic
+        run: node v3/procedure-compliance-onto-epistemic-check.mjs
+      - name: stable 08 / finetuning saturation
+        run: node v3/procedure-finetuning-saturation.mjs
+      - name: stable 09 / compliance onto saturation
+        run: node v3/procedure-compliance-onto-epistemic-saturation.mjs
+      - name: stable 10 / executive harmonization
+        run: node v3/procedure-executive-harmonization-check.mjs
+      - name: stable 11 / executive harmonization saturation
+        run: node v3/procedure-executive-harmonization-saturation.mjs
+      - name: stable 12 / demo procedure ontology
+        run: node v3/demo-procedure-ontology-check.mjs
+      - name: stable 13 / demo operating year
+        run: node v3/demo-operating-year-check.mjs
+      - name: stable 14 / demo operating year saturation
+        run: node v3/demo-operating-year-saturation.mjs
+      - name: stable 15 / ui ux finetuning
+        run: node v3/procedure-ui-ux-finetuning-check-1-6-1.mjs
+      - name: stable 16 / ui ux finetuning saturation
+        run: node v3/procedure-ui-ux-finetuning-saturation.mjs
+      - name: stable 17 / intent convergence
+        run: node v3/procedure-intent-convergence-check.mjs
+      - name: stable 18 / rn contribution boundary
+        run: node v3/rn-contribution-boundary-check.mjs
+      - name: stable 19 / intent convergence saturation
+        run: node v3/procedure-intent-convergence-saturation.mjs
+      - name: stable 20 / experience saturation
+        run: node v3/v1-stable-experience-saturation.mjs
+      - name: stable 21 / process hardening
+        run: node v3/v1-stable-process-hardening-check.mjs
+      - name: current semantic
+        run: npm run test:current:semantic
+      - name: current runtime
+        run: npm run test:current:runtime
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
-          name: enterprise-candidate-evidence
-          path: |
-            artifacts/enterprise-candidate-saturation.json
-            artifacts/ci-truth.json
-            artifacts/enterprise-t-audit.json
-            artifacts/enterprise-t-runtime-stress.json
-            artifacts/convergence-authority-receipt.json
-            artifacts/convergence-authority-saturation.json
+          name: bootstrap-sequential-diagnostic
+          path: artifacts/*.json
           if-no-files-found: warn
-          retention-days: 30
-  bootstrap-0-prefix-leaf-diagnostic:
-    name: bootstrap-prefix / ${{ matrix.script }}
-    strategy:
-      fail-fast: false
-      matrix:
-        script:
-          - scripts/syntax-check.mjs
-          - v3/bootstrap-contract-check.mjs
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with: {ref: "${{ github.event.pull_request.head.sha || github.sha }}", persist-credentials: false}
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with: {node-version: '22', cache: npm}
-      - run: npm ci --ignore-scripts
-      - run: node "${{ matrix.script }}"
+          retention-days: 7
