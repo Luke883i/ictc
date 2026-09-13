@@ -43,6 +43,7 @@ jobs:
           echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
           "$browser" --version
       - name: Run isolated live DOM mutation rail
+        id: runtime
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -53,11 +54,19 @@ jobs:
           export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-uiux-enduser-p2-runtime-1m.py
+          status=0
+          python -u v3/browser-uiux-enduser-p2-runtime-1m.py || status=$?
+          phase=complete
+          if [[ -f artifacts/browser-uiux-enduser-p2-runtime-1m-error.json ]]; then
+            phase="$(python -c "import json; print(json.load(open('artifacts/browser-uiux-enduser-p2-runtime-1m-error.json')).get('phase','unknown'))")"
+          fi
+          phase="$(printf '%s' "$phase" | tr -cs 'A-Za-z0-9._-' '-')"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+          exit "$status"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
-          name: uiux-enduser-p2-runtime-evidence
+          name: uiux-enduser-p2-runtime-evidence-${{ steps.runtime.outputs.phase }}
           path: |
             artifacts/browser-uiux-enduser-p2-runtime-1m*.json
           if-no-files-found: warn
