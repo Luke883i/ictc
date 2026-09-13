@@ -1,0 +1,48 @@
+name: bootstrap-0-stable-diagnostic
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: bootstrap-0-stable-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  stable-leaf:
+    name: stable-leaf / ${{ matrix.script }}
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        script:
+          - v3/v1-stable-release-contract-check.mjs
+          - v3/v1-stable-ui-contract-check.mjs
+          - v3/visual-epistemic-runtime-check.mjs
+          - v3/visual-epistemic-runtime-saturation.mjs
+          - v3/procedure-finetuning-intent-coverage-check.mjs
+          - v3/procedure-finetuning-check.mjs
+          - v3/procedure-compliance-onto-epistemic-check.mjs
+          - v3/procedure-finetuning-saturation.mjs
+          - v3/procedure-compliance-onto-epistemic-saturation.mjs
+          - v3/procedure-executive-harmonization-check.mjs
+          - v3/procedure-executive-harmonization-saturation.mjs
+          - v3/demo-procedure-ontology-check.mjs
+          - v3/demo-operating-year-check.mjs
+          - v3/demo-operating-year-saturation.mjs
+          - v3/procedure-ui-ux-finetuning-check-1-6-1.mjs
+          - v3/procedure-ui-ux-finetuning-saturation.mjs
+          - v3/procedure-intent-convergence-check.mjs
+          - v3/rn-contribution-boundary-check.mjs
+          - v3/procedure-intent-convergence-saturation.mjs
+          - v3/v1-stable-experience-saturation.mjs
+          - v3/v1-stable-process-hardening-check.mjs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node "${{ matrix.script }}"
