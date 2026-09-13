@@ -84,22 +84,26 @@ Il design system mantiene tre assi distinti: `uiComposition = 3.2`, `workspaceCh
 
 Evidenze ICTC collega pratica, decisione, evidenza e limite nel perimetro autorizzato. Gli export **PDF, XML, Markdown e ZIP** sono rappresentazioni dello stesso dossier autorizzato e non ampliano RBAC o scope. Receipt, digest e hash provano proprietà del record software entro il modello ICTC, non firma qualificata, trusted timestamp, autenticità esterna o non-ripudio.
 
-## Avvio
+## Avvio portabile — BOOTSTRAP-0
+
+L'ingresso foreground canonico è Node/npm ed è adatto a workstation, CI e supervisor/PaaS:
 
 ```bash
-npm ci
+npm ci --ignore-scripts
+npm start
+```
+
+La demo sintetica usa gli stessi byte applicativi ma uno stato isolato e la Suite 2.2:
+
+```bash
+npm run demo
+```
+
+Il launcher locale resta disponibile come supervisor e converge sullo stesso `v3/bootstrap.mjs`:
+
+```bash
 ./ictc.sh start
-```
-
-Demo sintetica:
-
-```bash
 ./ictc.sh demo
-```
-
-Operazioni comuni:
-
-```bash
 ./ictc.sh status
 ./ictc.sh logs
 ./ictc.sh doctor
@@ -107,9 +111,20 @@ Operazioni comuni:
 ./ictc.sh restart
 ```
 
+Per servizi Node/PaaS che richiedono Build e Start command, incluso Render, usare:
+
+```text
+Build: npm ci --ignore-scripts && npm run build
+Start: npm start
+```
+
+`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind e proxy secret). Il devcontainer è il container locale canonico e conserva il bind loopback con port forwarding privato.
+
 ## Verifica
 
 ```bash
+npm run bootstrap:check
+npm run bootstrap:saturation
 npm test
 npm run release:check
 node v3/current-semantic-3-2.mjs
@@ -120,7 +135,7 @@ node v3/native-semantic-lattice-3-2-saturation.mjs
 node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario modellato** su 220 famiglie dichiarate. Non sono 10 milioni di mutazioni del codice o browser session. Lo stress 3.2 esercita invece il contratto eseguibile C0.1 di ordinamento/validazione dei participant su un milione di casi deterministici. Browser journey ed exact-head CI restano evidenze separate.
+`bootstrap:saturation` esercita 1.000.000 di composizioni deterministiche su famiglie semantiche source-derived del bootstrap; non sono un milione di deploy o process launch. La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario modellato** su 220 famiglie dichiarate. Non sono 10 milioni di mutazioni del codice o browser session. Lo stress 3.2 esercita invece il contratto eseguibile C0.1 di ordinamento/validazione dei participant su un milione di casi deterministici. Browser journey ed exact-head CI restano evidenze separate.
 
 ## Release e presa in carico
 

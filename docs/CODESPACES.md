@@ -2,14 +2,16 @@
 
 ## Avvio
 
-Creare o ricostruire il Codespace. Il dev container esegue:
+Creare o ricostruire il Codespace. Il dev container usa Node 22 ed esegue:
 
 1. `npm ci --ignore-scripts`;
 2. doctor del launcher;
 3. gap audit e UX audit;
-4. avvio del profilo corrente sulla porta 4173.
+4. `./ictc.sh start --no-open` sulla porta 4173.
 
-La porta è configurata come privata. Aprirla dal pannello **Ports** oppure dal link stampato nel terminale.
+Il processo resta bindato a loopback; il port forwarding del devcontainer espone la porta privata al client Codespaces senza richiedere `ICTC_HOST=0.0.0.0`. Questo mantiene la stessa boundary locale usata su workstation.
+
+Il vecchio comando `./ictc.sh codespace` resta un alias compatibile di `start --no-open`, ma il `postStartCommand` usa la forma canonica esplicita.
 
 ## Diagnosi
 
@@ -17,10 +19,11 @@ La porta è configurata come privata. Aprirla dal pannello **Ports** oppure dal 
 ./ictc.sh doctor
 ./ictc.sh status
 ./ictc.sh logs
+npm run bootstrap:check
 ```
 
-Se il Codespace è stato arrestato, il processo applicativo deve essere riavviato; `postStartCommand` lo fa durante il riavvio del container.
+Se il Codespace è stato arrestato, `postStartCommand` riavvia il supervisor locale al riavvio del container.
 
 ## Sicurezza
 
-La porta privata è accessibile al creatore autenticato. La visibilità pubblica non è necessaria per lo sviluppo ordinario e può essere limitata dalle policy dell'organizzazione.
+La porta configurata dal devcontainer resta privata. BOOTSTRAP-0 non abilita un bind pubblico e non sostituisce identity, TLS o altre evidenze E4 del deployment.

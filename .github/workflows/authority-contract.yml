@@ -20,6 +20,10 @@ jobs:
         with: {node-version: '22'}
       - name: Validate executable authority
         run: node v3/authority-contract-check.mjs
+      - name: Validate portable bootstrap authority
+        run: node v3/bootstrap-contract-check.mjs
+      - name: Falsify portable bootstrap authority
+        run: node v3/bootstrap-contract-saturation-1m.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
