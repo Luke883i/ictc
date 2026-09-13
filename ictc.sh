@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PORT="${ICTC_PORT:-${PORT:-4173}}"
+PORT="${PORT:-${ICTC_PORT:-4173}}"
 HOST="${ICTC_HOST:-127.0.0.1}"
 STATE="${ICTC_STATE_DIR:-$ROOT/.ictc}"
 RUNTIME_OVERRIDE="${ICTC_RUNTIME_DIR:-}"
@@ -13,6 +13,7 @@ COMMAND=""
 while (($#)); do
   case "$1" in
     start|stop|restart|status|logs|doctor|test|audit) COMMAND="$1" ;;
+    codespace) COMMAND="start"; NO_OPEN=1 ;;
     demo) COMMAND="start"; DEMO_SUITE=2.2 ;;
     --demo-suite) DEMO_SUITE=2.2 ;;
     --demo-seed|-demoseed) DEMO_SUITE=2.2 ;;
@@ -66,7 +67,7 @@ start(){
   rm -f "$PID"
   (
     cd "$ROOT"
-    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SUITE="$DEMO_SUITE" ICTC_BUILD_SHA="$build_sha" ICTC_BUILD_DIRTY="$build_dirty" nohup node v3/server.mjs >>"$OUT" 2>&1 &
+    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SUITE="$DEMO_SUITE" ICTC_BUILD_SHA="$build_sha" ICTC_BUILD_DIRTY="$build_dirty" nohup node v3/bootstrap.mjs >>"$OUT" 2>&1 &
     echo $! >"$PID.tmp"
   )
   mv "$PID.tmp" "$PID"
@@ -74,11 +75,7 @@ start(){
   if [[ "$DEMO_SUITE" = 2.2 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
   for _ in $(seq 1 "$attempts"); do
     if alive && health; then
-      if [[ "$DEMO_SUITE" = 2.2 ]]; then
-        echo "ICTC DEMO Suite 2.2 attivo: $URL · runtime=$RUNTIME"
-      else
-        echo "ICTC attivo: $URL · runtime=$RUNTIME"
-      fi
+      if [[ "$DEMO_SUITE" = 2.2 ]]; then echo "ICTC DEMO Suite 2.2 attivo: $URL · runtime=$RUNTIME"; else echo "ICTC attivo: $URL · runtime=$RUNTIME"; fi
       [[ "$NO_OPEN" = 1 ]] || { command -v xdg-open >/dev/null && xdg-open "$URL" >/dev/null 2>&1 & }
       return
     fi
@@ -89,41 +86,26 @@ start(){
   exit 1
 }
 
-stop(){
-  if alive; then
-    local p
-    p="$(pid)"
-    kill "$p" 2>/dev/null || true
-    for _ in $(seq 1 30); do kill -0 "$p" 2>/dev/null || break; sleep .1; done
-  fi
-  rm -f "$PID"
-  echo 'ICTC arrestato'
-}
+stop(){ if alive; then local p; p="$(pid)"; kill "$p" 2>/dev/null || true; for _ in $(seq 1 30); do kill -0 "$p" 2>/dev/null || break; sleep .1; done; fi; rm -f "$PID"; echo 'ICTC arrestato'; }
 
 case "$COMMAND" in
   start) start ;;
   stop) stop ;;
   restart) stop; start ;;
-  status)
-    if alive && health; then
-      echo "ICTC attivo: $URL pid=$(pid)"
-      curl -fsS "$URL/api/health"; echo
-    else
-      echo "ICTC non attivo: $URL"; exit 1
-    fi
-    ;;
+  status) if alive && health; then echo "ICTC attivo: $URL pid=$(pid)"; curl -fsS "$URL/api/health"; echo; else echo "ICTC non attivo: $URL"; exit 1; fi ;;
   logs) touch "$OUT"; tail -f "$OUT" ;;
   doctor) echo "node=$(node --version) url=$URL runtime=$RUNTIME demoSuite=${DEMO_SUITE:-off}" ;;
   test) (cd "$ROOT" && npm test) ;;
   audit) (cd "$ROOT" && npm run audit) ;;
   help)
     echo 'Uso:'
-    echo '  ./ictc.sh start [--no-open]                 # modalità standard, .ictc/runtime'
-    echo '  ./ictc.sh demo [--no-open]                  # DEMO Suite 2.2 canonica, .ictc/demo-runtime-2-2'
-    echo '  ./ictc.sh start --demo-suite [--no-open]    # equivalente esplicito di demo'
-    echo '  ./ictc.sh start --demo-seed [--no-open]     # alias compatibile: monta sempre Suite 2.2'
-    echo '  ./ictc.sh start -demoseed [--no-open]       # alias compatibile: monta sempre Suite 2.2'
+    echo '  npm start                                      # foreground standard, adatto a supervisor/PaaS'
+    echo '  npm run demo                                   # foreground DEMO Suite 2.2'
+    echo '  ./ictc.sh start [--no-open]                    # supervisor locale standard'
+    echo '  ./ictc.sh demo [--no-open]                     # supervisor locale DEMO Suite 2.2'
+    echo '  ./ictc.sh codespace                            # alias compatibile: start --no-open'
     echo '  ./ictc.sh stop | restart | status | logs | doctor | test | audit'
+    echo 'Build PaaS canonica: npm ci --ignore-scripts && npm run build; start: npm start.'
     echo 'La modalità DEMO monta esclusivamente Suite 2.2 sugli stessi owner/runtime ICTC; i 188 record positivi sono sintetici e i 512 mutanti di stress restano test-only.'
     echo 'Il bootstrap DEMO può richiedere più tempo del runtime standard; ICTC_DEMO_STARTUP_ATTEMPTS consente di modificare il budget di readiness senza cambiare i dati.'
     echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale o una vecchia demo-runtime-v2 per Suite 2.2.'
