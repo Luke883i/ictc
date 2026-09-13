@@ -18,6 +18,12 @@ def fail(e):
 def processes(page):
     return page.locator('.service-nav [data-service="processes"]')
 
+def experience_cycle(page):
+    return int(page.evaluate("()=>Number(document.documentElement.dataset.experienceCycle||0)"))
+
+def wait_navigation_ready(page, surface, before):
+    page.wait_for_function("x=>document.documentElement.dataset.ictcSurface===x[0]&&Number(document.documentElement.dataset.experienceCycle||0)>x[1]&&!document.documentElement.dataset.ictcTransitionDirection", arg=[surface, before])
+
 def no_overflow(page):
     m = page.evaluate('()=>[innerWidth,document.documentElement.scrollWidth,document.body.scrollWidth]')
     assert m[1] <= m[0] + 1 and m[2] <= m[0] + 1, m
@@ -40,18 +46,28 @@ def check_surface_revision(page, selector, rev):
 
 def openp(page, code):
     global PHASE
-    PHASE = f'{code}-open'
+    PHASE = f'{code}-open-card'
     processes(page).click()
     card = page.locator(f'#procedureHub [data-process-code="{code}"]')
     expect(card).to_be_visible()
     pid = PROCS[code]
     expect(card).to_have_attribute('data-procedure-id', pid)
+    PHASE = f'{code}-open-route'
+    before = experience_cycle(page)
     card.locator(':scope > footer .primary').click()
-    page.wait_for_timeout(80)
-    frame = page.locator('.procedure-frame:visible')
+    surface = pid if pid in ('monitoring','incidents') else 'grc'
+    wait_navigation_ready(page, surface, before)
+    root = '#monitoringView' if surface == 'monitoring' else '#incidentsView' if surface == 'incidents' else '#grcView'
+    expect(page.locator(root)).to_be_visible()
+    PHASE = f'{code}-open-frame'
+    frame = page.locator(f'{root} .procedure-frame[data-procedure-frame="canonical-1-9"]:visible')
     expect(frame).to_have_count(1)
+    expect(page.locator('.procedure-frame:visible')).to_have_count(1)
+    PHASE = f'{code}-open-code'
     expect(frame.locator('.procedure-frame-code')).to_have_text(code)
+    PHASE = f'{code}-open-context'
     expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
+    PHASE = f'{code}-open'
     return card
 
 def verify_process_projection(page, code, pid, rev):

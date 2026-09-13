@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.1.0",
+  "modelId": "UIUX-CONVERGE-0",
+  "classification": "runtime-semantic-uiux-convergence-candidate",
+  "observedMainSha": "c7619e18b260bc23a5aa968086e312570723f8f0",
+  "serialSlice": "UIUX-CONVERGE-0",
+  "candidatePass": "P1-COMMON-GRAMMAR-LOCAL-OWNERS",
+  "sliceTerminal": false,
+  "terminalBlockers": [
+    "C5-SEMANTIC-OWNER-COMPRESSION must be terminal before UIUX-CONVERGE-0 can be done",
+    "UXW-14 must rerun CAPABILITY-CLOSURE-E2 after the complete UIUX slice",
+    "E3-HUMAN remains external for representative comprehension, efficiency, pleasantness and assistive-technology effectiveness"
+  ],
+  "designIntent": "Make the current E2-closed ICTC product feel and behave like one deliberately designed professional workbench: minimal first plane, dense scannable work rows, one semantic owner per slot, local specialization, explicit epistemic boundaries, bounded motion, and no new business authority.",
+  "abstractionMatrix": [
+    {"level":"L0","name":"foundations","owns":["color","typography","spacing","radius","elevation","motion"],"rule":"tokens only; no surface-specific semantic truth"},
+    {"level":"L1","name":"controls-and-icons","owns":["button","icon","label","badge","input","focus"],"rule":"one interaction vocabulary; inline Lucide-compatible SVG; no ASCII arrows in canonical touched actions"},
+    {"level":"L2","name":"semantic-primitives","owns":["identity-line","attention-row","action-row","boundary-note","evidence-row","progressive-detail"],"rule":"semantic role controls hierarchy; status meaning never depends on color alone"},
+    {"level":"L3","name":"surface-grammar","owns":["landing","catalogue","procedure","evidence","relationships","administration","configuration"],"rule":"identity -> attention/purpose -> controls -> work -> context -> evidence/boundary"},
+    {"level":"L4","name":"procedure-specialization","owns":["RN-01","EC-01","AO-01","MC-01","AP-01","RC-01","AR-01"],"rule":"specialize content and density, never fork design tokens or business authority"},
+    {"level":"L5","name":"responsive-motion-accessibility","owns":["semantic-order","wrap-stack","reduced-motion","focus","overflow"],"rule":"geometry may change; authority, state and action meaning may not"},
+    {"level":"L6","name":"e2-falsification","owns":["surface-census","owner-binding","actionability","boundary","capability-closure"],"rule":"style cannot override semantic/runtime correctness; CAPABILITY-CLOSURE-E2 remains blocking"}
+  ],
+  "minimalityRules": {
+    "singleLineWhenLegible": true,
+    "longDescriptionBoldForbidden": true,
+    "repeatedRecordsDefault": "row-or-list",
+    "cardPolicy": "single decision/narrative object or grouped summary only",
+    "firstPlaneMaxPrimaryActions": 1,
+    "firstPlaneTechnicalDefault": false,
+    "progressiveDisclosureForSecondaryContext": true,
+    "materialBoundaryMustRemainVisible": true,
+    "shortLabelsPreferVerbObject": true,
+    "icons": "inline-lucide-compatible-svg",
+    "asciiDirectionalGlyphsInCanonicalTouchedActions": false
+  },
+  "styleMetrics": {
+    "desktopCompactRowTargetPx": 52,
+    "desktopCompactRowMaxPx": 64,
+    "controlMinPx": 44,
+    "readingMeasureCh": 68,
+    "bodyWeightMax": 500,
+    "descriptionWeightMax": 500,
+    "motionFastMs": 120,
+    "motionStandardMs": 170,
+    "motionMaxMs": 240,
+    "primaryActionsPerSurfaceMax": 1,
+    "statusColorOnlyAllowed": false,
+    "mobileHorizontalOverflowAllowed": false
+  },
+  "surfaceProgram": [
+    {"id":"home","workUnit":"UXW-02-HOME","kind":"landing","firstPlane":"attention","density":"decision-strip-plus-up-to-3-priority-rows","owner":"stable-shell.js","primaryMax":1},
+    {"id":"processes","workUnit":"UXW-03-PROCESS-HUB","kind":"catalogue","firstPlane":"catalogue","density":"one-row-per-procedure","owner":"procedure-frame.js","primaryMax":0},
+    {"id":"monitoring","workUnit":"UXW-04-RN-01","kind":"procedure","firstPlane":"work","density":"dense-register","owner":"procedure-frame.js","primaryMax":1},
+    {"id":"incidents","workUnit":"UXW-05-EC-01","kind":"procedure","firstPlane":"work","density":"dense-register-narrative-progressive","owner":"procedure-frame.js","primaryMax":1},
+    {"id":"objects","workUnit":"UXW-06-AO-01","kind":"procedure","firstPlane":"work","density":"inventory-rows","owner":"grc-workspace-3-2.js","primaryMax":1},
+    {"id":"coverage","workUnit":"UXW-07-MC-01","kind":"procedure","firstPlane":"work","density":"requirement-mapping-rows","owner":"grc-workspace-3-2.js","primaryMax":1},
+    {"id":"actions","workUnit":"UXW-08-AP-01","kind":"procedure","firstPlane":"work","density":"action-worklist-rows","owner":"grc-workspace-3-2.js","primaryMax":1},
+    {"id":"risks","workUnit":"UXW-09-RC-01","kind":"procedure","firstPlane":"work","density":"risk-review-rows","owner":"grc-workspace-3-2.js","primaryMax":1},
+    {"id":"assurance","workUnit":"UXW-10-AR-01","kind":"procedure","firstPlane":"work","density":"request-response-rows","owner":"grc-workspace-3-2.js","primaryMax":1},
+    {"id":"admin","workUnit":"UXW-11-ADMIN","kind":"administration","firstPlane":"attention","density":"compact-tabs-progressive-technical","owner":"admin-workspace-3-2.js","primaryMax":1},
+    {"id":"epistemic","workUnit":"UXW-12-EPISTEMIC","kind":"relationships","firstPlane":"relationships","density":"single-toolbar-plus-list","owner":"epistemic-workspace-3-2.js","primaryMax":1},
+    {"id":"proof","workUnit":"UXW-13-PROOF","kind":"evidence","firstPlane":"decision-evidence","density":"fact-strip-plus-evidence-rows","owner":"proof-workspace-3-2.js","primaryMax":1},
+    {"id":"ai-settings","workUnit":"UXW-11-ADMIN","kind":"configuration","firstPlane":"configuration","density":"two-column-progressive","owner":"actions.js/admin","primaryMax":1}
+  ],
+  "globalDoD": [
+    "13 canonical surfaces remain represented exactly once in the convergence contract",
+    "seven business procedures retain existing business semantics and human decision authority",
+    "no second business write authority and no global final UI resolver",
+    "canonical first plane is minimal, role/action oriented and preserves material boundary information",
+    "repeated work defaults to rows/lists and compact controls rather than stacked card walls",
+    "critical interactive controls remain at least 44px high",
+    "canonical touched directional actions use SVG icons rather than ASCII arrows",
+    "micro-transitions are bounded and disabled/reduced when prefers-reduced-motion requests it",
+    "responsive changes geometry without changing semantic order, authority, state or action meaning",
+    "CAPABILITY-CLOSURE-E2 remains registered and blocking",
+    "C5 remains terminal-before-done",
+    "no enterprise-ready, legal/compliance, human-usability or deployment-effectiveness promotion"
+  ],
+  "intermediateDoD": [
+    {"id":"U0-I1-FOUNDATIONS","criteria":["style abstraction matrix encoded","type hierarchy encoded","motion budget encoded","icon vocabulary centralized","44px critical target floor encoded"]},
+    {"id":"U0-I2-LANDING","criteria":["Home is attention-first","Process Hub is one-row-per-procedure","descriptive copy is normal weight","primary CTA hierarchy is singular"]},
+    {"id":"U0-I3-PROCEDURES","criteria":["seven procedures share one frame grammar","procedure descriptions are concise","boundary remains visible","secondary rationale is progressive","GRC repeated records retain row/list grammar"]},
+    {"id":"U0-I4-AUXILIARY","criteria":["Proof stays evidence-first","Epistemic stays search/relationship-first","Admin stays attention/configuration-first","AI settings stay subordinate and human-authority bounded"]},
+    {"id":"U0-I5-FALSIFICATION","criteria":["100000 deterministic style mutations killed","1000000 deterministic source-derived semantic mutations killed","zero survivor","zero harness error","current semantic registry executes both saturation rails"]}
+  ],
+  "localDoD": [
+    "no bold long-form purpose/value paragraphs in canonical frame markup",
+    "Home priority rows carry short identity, reason and one open affordance",
+    "Process Hub rows carry code, title, one concise purpose and one route action",
+    "procedure frame uses icon back affordance and icon-enhanced primary action",
+    "critical touched controls are at least 44px high",
+    "micro-motion never exceeds the central motion budget",
+    "focus-visible remains explicit",
+    "prefers-reduced-motion disables transforms and animated scrolling effects introduced by this pass",
+    "no source-level business route, subject, store or receipt contract is changed by this pass"
+  ],
+  "falsification": {
+    "style": {"seed":"ictc-uiux-converge-0-style-2026-09-12","trials":100000,"requiredSurvivors":0},
+    "e2e": {"seed":"ictc-pr144-uiux-converge-0-ci-repair-base-c7619e18-2026-09-12","trials":1000000,"requiredSurvivors":0,"mode":"source-derived-real-bundle"}
+  },
+  "claimBoundary": "This candidate materially advances UIUX-CONVERGE-0 at E2 repository/runtime/UI level. It is not a terminal UIUX-CONVERGE-0 claim because C5 and final UXW-14 closure remain required. It does not prove representative human usability, assistive-technology effectiveness, production deployment effectiveness, protected-branch enforcement, legal compliance, certification, market fit or enterprise readiness."
+}
