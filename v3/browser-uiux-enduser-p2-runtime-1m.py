@@ -28,7 +28,6 @@ SPECS={
 JS_SURFACE=r"""({spec,trials,seed})=>{
  const root=document.querySelector(spec.root);if(!root)throw new Error('missing root '+spec.root);
  const visible=e=>!!e&&getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden'&&e.getClientRects().length>0;
- const first=(scope,sel)=>scope?.querySelector(sel)||null;
  let x=seed>>>0;const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return x>>>0};
  const families=[];
  const identity=root.querySelector(spec.identity);if(identity)families.push('duplicate-identity');
@@ -60,7 +59,12 @@ JS_SURFACE=r"""({spec,trials,seed})=>{
    }else if(family==='metric-role-promotion'){
     const oldRole=metric.dataset.metricRole,oldOwner=metric.dataset.primaryCountOwner;metric.dataset.metricRole='attention';metric.dataset.primaryCountOwner='true';detected=metric.dataset.metricRole==='attention'&&metric.dataset.primaryCountOwner==='true';undo=()=>{if(oldRole===undefined)delete metric.dataset.metricRole;else metric.dataset.metricRole=oldRole;if(oldOwner===undefined)delete metric.dataset.primaryCountOwner;else metric.dataset.primaryCountOwner=oldOwner};
    }else if(family==='legacy-identity-resurrection'){
-    const old=legacy.getAttribute('style');legacy.style.setProperty('display','block','important');legacy.style.setProperty('visibility','visible','important');detected=visible(legacy);undo=()=>old===null?legacy.removeAttribute('style'):legacy.setAttribute('style',old);
+    const shell=legacy.closest('.hero,.grc-head')||legacy.parentElement;
+    const oldLegacy=legacy.getAttribute('style'),oldShell=shell?.getAttribute('style')??null,oldShellHidden=shell?.hasAttribute('hidden')??false;
+    if(shell){shell.removeAttribute('hidden');shell.style.setProperty('display','block','important');shell.style.setProperty('visibility','visible','important');}
+    legacy.removeAttribute('hidden');legacy.style.setProperty('display','block','important');legacy.style.setProperty('visibility','visible','important');
+    detected=visible(legacy);
+    undo=()=>{oldLegacy===null?legacy.removeAttribute('style'):legacy.setAttribute('style',oldLegacy);if(shell){oldShell===null?shell.removeAttribute('style'):shell.setAttribute('style',oldShell);if(oldShellHidden)shell.setAttribute('hidden','');else shell.removeAttribute('hidden');}};
    }
    if(detected)killed++;else survivors++;undo();
   }catch(e){harnessErrors++;}
