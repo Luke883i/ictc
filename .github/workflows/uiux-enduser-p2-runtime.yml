@@ -58,19 +58,7 @@ jobs:
           python -u v3/browser-uiux-enduser-p2-runtime-1m.py || status=$?
           detail=complete
           if [[ -f artifacts/browser-uiux-enduser-p2-runtime-1m-error.json ]]; then
-            detail="$(python - <<'PY'
-import json,re
-p=json.load(open('artifacts/browser-uiux-enduser-p2-runtime-1m-error.json',encoding='utf8'))
-phase=str(p.get('phase','unknown'))
-message=str(p.get('message',''))
-# Keep both the beginning (surface/families) and tail (kill/survivor/harness counts).
-if len(message)>260:
-    message=message[:130]+'-'+message[-130:]
-value=phase+'-'+message
-value=re.sub(r'[^A-Za-z0-9._-]+','-',value).strip('-')
-print(value[:220] or 'unknown')
-PY
-)"
+            detail="$(python -c "import json,re; p=json.load(open('artifacts/browser-uiux-enduser-p2-runtime-1m-error.json',encoding='utf8')); phase=str(p.get('phase','unknown')); m=str(p.get('message','')); m=(m if len(m)<=260 else m[:130]+'-'+m[-130:]); v=re.sub(r'[^A-Za-z0-9._-]+','-',phase+'-'+m).strip('-'); print(v[:220] or 'unknown')")"
           fi
           echo "phase=$detail" >> "$GITHUB_OUTPUT"
           exit "$status"
