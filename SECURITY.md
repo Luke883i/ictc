@@ -12,9 +12,11 @@ Do not publish suspected vulnerabilities, credentials, personal data or exploit 
 
 ICTC defaults to loopback binding. Network exposure and trusted-header identity are guarded by runtime checks and must not be enabled by treating a reverse proxy header as inherently trustworthy. TLS termination, proxy hardening and trusted identity remain deployment responsibilities.
 
-AI egress is governed by explicit network policy and SSRF/rebinding defenses. AI remains proposal-only and does not gain write authority from network availability.
+API abuse control is layered: a coarse tenant + remote edge budget protects the pre-authentication path, while authenticated trusted-header traffic is additionally isolated by tenant + subject. These in-process budgets are not a distributed multi-host rate-limit authority; horizontally scaled deployments require deployment-specific abuse-control evidence.
 
-Attachments are stored with restrictive local permissions and carry a trust posture. Registration, checksum or download does not mean malware-clean; production operators remain responsible for scanning/quarantine controls appropriate to the deployment.
+AI egress is governed by explicit network policy and SSRF/rebinding defenses. `ICTC_ALLOW_PRIVATE_AI` and `ICTC_ALLOW_INSECURE_AI` are independent opt-ins: authorizing private destinations does not authorize cleartext HTTP. AI remains proposal-only and does not gain write authority from network availability.
+
+Attachments are stored with restrictive local permissions and carry a trust posture. Attachment identifiers are canonicalized as single path segments before filesystem resolution. Registration, checksum or download does not mean malware-clean; production operators remain responsible for scanning/quarantine controls appropriate to the deployment.
 
 ## Persistence and integrity
 
@@ -28,10 +30,12 @@ PDF, XML, Markdown and ZIP evidence representations are `same-as-read`; they mus
 
 ## CI security posture
 
-The repository always runs dependency audit and the ICTC static-analysis-posture gate in the security workflow. CodeQL is conditional on the repository variable `ICTC_ENABLE_GHAS == 'true'`; when the job is skipped it must be reported as **not executed**, not as a passing SAST result.
+The security workflow unconditionally runs dependency audit, the first-party security SAST rail, the runtime security DoD, targeted implementation mutants, the deterministic 1M remediation saturation and a Chromium FI-01 DOM regression. CodeQL remains supplemental and conditional on `ICTC_ENABLE_GHAS == 'true'`; when skipped it must be reported as **not executed**, not as a passing CodeQL result.
+
+First-party SAST is deliberately bounded to repository security-sensitive sinks and is not equivalent to an independent commercial SAST product. GitHub check conclusions remain the execution authority for CI runs.
 
 ## Deployment boundary
 
-ICTC is application software, not a complete security perimeter. Production operators remain responsible for at least: TLS, trusted identity, secret management, host/network hardening, backups and restore tests, malware scanning, dependency response, centralized logging/monitoring, incident response, availability/HA and applicable privacy/security controls.
+ICTC is application software, not a complete security perimeter. Production operators remain responsible for at least: TLS, trusted identity, secret/KMS management, host/network hardening, distributed abuse controls where multiple instances exist, backups and restore tests, malware scanning, dependency response, centralized logging/monitoring, incident response, availability/HA and applicable privacy/security controls.
 
 Never expose an untrusted installation directly to the public Internet solely because repository tests are green. Deployment assurance requires deployment-specific evidence.

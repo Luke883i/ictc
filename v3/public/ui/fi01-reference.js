@@ -1,5 +1,6 @@
 import { $, api, closeDialog, notify, openDialog, showReceipt, state } from './common.js';
 import { refresh } from './controller.js';
+import { internalReferencePanelMarkup } from './security-encoding.js';
 
 const DIALOG_ID = 'internalSourceReferenceDialog';
 
@@ -125,7 +126,7 @@ function decorateInternalReference() {
     panel.className = 'lens-panel';
     body.prepend(panel);
   }
-  panel.innerHTML = `<p class="eyebrow">Sistema master</p><h3>${reference.masterSystem} · ${reference.masterId}</h3><div class="provenance-list"><div class="provenance-row"><span class="origin-tag">Versione</span><span>${reference.masterVersion}</span></div><div class="provenance-row"><span class="origin-tag">SHA-256</span><span class="hash">${reference.contentSha256}</span></div><div class="provenance-row"><span class="origin-tag">Autorità</span><span>Documento autorevole nel sistema esterno dichiarato</span></div></div><a class="secondary" target="_blank" rel="noreferrer" href="${reference.referenceUrl}">Apri nel sistema master</a>`;
+  panel.innerHTML = internalReferencePanelMarkup(reference);
 }
 
 function syncVisibility() {

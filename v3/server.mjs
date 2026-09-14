@@ -7,7 +7,7 @@ import { ROLES, now, publicSettings } from './domain.mjs';
 import { VERSION } from './version.mjs';
 import { accessProfileFor } from './access-profile.mjs';
 import { standardProofProjection } from './standard-proof.mjs';
-import { actorFrom, assertSafeRuntimeBinding, bodyJson, commandFrom, httpError, json, requirePermission, serveStatic } from './runtime/http.mjs';
+import { actorFrom, assertBrowserWriteBoundary, assertSafeRuntimeBinding, bodyJson, commandFrom, httpError, json, requirePermission, serveStatic } from './runtime/http.mjs';
 import { incidentProjection, validateSettings, visibleState } from './runtime/model.mjs';
 import { createMonitoringRuntime } from './runtime/monitoring.mjs';
 import { createGrcEvidenceStore } from './runtime/grc-evidence-store.mjs';
@@ -45,6 +45,7 @@ import { createTenantAuthority } from './runtime/tenant-authority.mjs';
 import { ensurePrivacyState, privacyLifecycleProjection } from './runtime/privacy-lifecycle.mjs';
 import { createOperationalObservability } from './runtime/operational-observability.mjs';
 import { createAbuseBudget } from './runtime/abuse-budget.mjs';
+import { authenticatedRateLimitKey, edgeRateLimitKey } from './runtime/security-boundaries.mjs';
 import { evaluateRuntimeSlo } from './runtime/reliability-slo.mjs';
 
 const PRODUCT_EDITION='1.2 Market Candidate';
@@ -76,14 +77,15 @@ const missionLocks=new Set();
 const runningMissions={has(value){return missionLocks.has(`${tenantAuthority.current().tenantId}\u0000${value}`);},add(value){missionLocks.add(`${tenantAuthority.current().tenantId}\u0000${value}`);return this;},delete(value){return missionLocks.delete(`${tenantAuthority.current().tenantId}\u0000${value}`);}};
 const monitoring=createMonitoringRuntime({store,permissions,runningMissions});
 const observability=createOperationalObservability();
+const edgeAbuseBudget=createAbuseBudget({capacity:Number(process.env.ICTC_EDGE_RATE_LIMIT_BURST||2000),refillPerSecond:Number(process.env.ICTC_EDGE_RATE_LIMIT_PER_SECOND||100),maxKeys:Number(process.env.ICTC_EDGE_RATE_LIMIT_KEYS||4096)});
 const abuseBudget=createAbuseBudget({capacity:Number(process.env.ICTC_RATE_LIMIT_BURST||120),refillPerSecond:Number(process.env.ICTC_RATE_LIMIT_PER_SECOND||2),maxKeys:Number(process.env.ICTC_RATE_LIMIT_KEYS||4096)});
-function runtimePosture(){const state=store.snapshot();const base={integrity:store.verifyChain(),safeBinding:true,identityProvider:process.env.ICTC_IDENTITY_MODE==='trusted-header',identityStrategy:state.settings.identity?.strategy||'legacy-role-header',attachmentTrust:attachmentTrustPosture(process.env),scanner:scannerRuntimePosture(process.env),tenancy:tenantAuthority.projection(),privacy:privacyLifecycleProjection(state)};return readinessRuntimeFromDeployment(base,deploymentEvidencePosture(process.env));}
+function runtimePosture(){const state=store.snapshot();const base={integrity:store.verifyChain(),safeBinding:true,identityProvider:process.env.ICTC_IDENTITY_MODE==='trusted-header',identityStrategy:state.settings.identity?.strategy||'legacy-role-header',attachmentTrust:attachmentTrustPosture(process.env),scanner:scannerRuntimePosture(process.env),tenancy:tenantAuthority.projection(),privacy:privacyLifecycleProjection(state),abuseControl:{edge:edgeAbuseBudget.projection(),subject:abuseBudget.projection()}};return readinessRuntimeFromDeployment(base,deploymentEvidencePosture(process.env));}
 const runtimeHandlers=createRuntimeHandlers({store,permissions,monitoring,evidenceStore,posture:runtimePosture});
 const handlers=runtimeHandlers.handlers;
 function proofFor(actor){const posture=runtimePosture();return standardProofProjection({actor,version:VERSION,readiness:enterpriseReadiness(store.snapshot(),posture),integrity:posture.integrity});}
 function applyProcedureSummary(procedures,summary){const byId=new Map(summary.rows.map(row=>[row.id,row]));return procedures.map(item=>{const row=byId.get(item.id);return row?{...item,label:row.label,attentionCount:row.attention,metrics:row.metrics}:item;});}
 function demoPosture(state){const demo=demoSuite22Projection(state);return demo.enabled?{...demo,schedulerEnabled:false,schedulerMode:'disabled-in-demo'}:demo;}
-function operationalSnapshot(){const telemetry=observability.snapshot();return{...telemetry,slo:evaluateRuntimeSlo(telemetry),storage:store.persistence.runtimeStoragePosture?.()||null,abuseBudget:abuseBudget.projection(),tenant:tenantAuthority.projection()};}
+function operationalSnapshot(){const telemetry=observability.snapshot();return{...telemetry,slo:evaluateRuntimeSlo(telemetry),storage:store.persistence.runtimeStoragePosture?.()||null,abuseBudget:abuseBudget.projection(),edgeAbuseBudget:edgeAbuseBudget.projection(),tenant:tenantAuthority.projection()};}
 
 async function handleApi(request,response,url,actor){
   const pathname=url.pathname,method=request.method||'GET',snapshot=store.snapshot();
@@ -106,7 +108,7 @@ async function handleApi(request,response,url,actor){
 const server=http.createServer(async(request,response)=>{
   const url=new URL(request.url||'/',`http://${request.headers.host||'localhost'}`),trace=observability.start({method:request.method||'GET',pathname:url.pathname,tenantId:'unresolved'});response.setHeader('x-request-id',trace.requestId);let errorCode=null,rateLimited=false;
   try{
-    if(url.pathname.startsWith('/api/'))await tenantAuthority.runRequest(request,async resolved=>{const key=`${resolved.tenantId}|${request.socket?.remoteAddress||'unknown'}`,budget=abuseBudget.consume(key);if(!budget.allowed){rateLimited=true;response.setHeader('retry-after',String(budget.retryAfterSeconds));throw httpError(429,'Troppe richieste','rate-limited',{retryAfterSeconds:budget.retryAfterSeconds});}const state=store.snapshot(),actor=authorizeEnterpriseActor(actorFrom(request,permissions,state.settings.identity),state);await handleApi(request,response,url,actor);});else await serveStatic(response,url.pathname,publicRoot,mime);
+    if(url.pathname.startsWith('/api/'))await tenantAuthority.runRequest(request,async resolved=>{assertBrowserWriteBoundary(request);const remoteAddress=request.socket?.remoteAddress,edgeKey=edgeRateLimitKey({tenantId:resolved.tenantId,remoteAddress}),edgeBudget=edgeAbuseBudget.consume(edgeKey);if(!edgeBudget.allowed){rateLimited=true;response.setHeader('retry-after',String(edgeBudget.retryAfterSeconds));throw httpError(429,'Troppe richieste','edge-rate-limited',{retryAfterSeconds:edgeBudget.retryAfterSeconds});}const state=store.snapshot(),actor=authorizeEnterpriseActor(actorFrom(request,permissions,state.settings.identity),state),key=authenticatedRateLimitKey({tenantId:resolved.tenantId,actor,remoteAddress}),budget=abuseBudget.consume(key);if(!budget.allowed){rateLimited=true;response.setHeader('retry-after',String(budget.retryAfterSeconds));throw httpError(429,'Troppe richieste','rate-limited',{retryAfterSeconds:budget.retryAfterSeconds});}await handleApi(request,response,url,actor);});else await serveStatic(response,url.pathname,publicRoot,mime);
   }catch(error){errorCode=error.code||'internal-error';if(!response.headersSent)json(response,error.status||500,{schemaVersion:'1.0.0',error:error.message||'Errore interno',code:errorCode,details:error.details||null,requestId:trace.requestId});else response.end();}
   finally{trace.finish({status:response.statusCode||500,code:errorCode,rateLimited});}
 });
