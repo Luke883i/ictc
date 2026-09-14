@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.1.0",
+  "authority": "screenshot-finding-allocation",
+  "classification": "repository-bounded-audit-allocation",
+  "sourceCorpus": {
+    "screenshotCount": 15,
+    "consolidatedGroups": ["R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11","R12"],
+    "groupToImages": {
+      "R1":[1,3,4,7,9,12],
+      "R2":[2,5,7],
+      "R3":[2,5,7],
+      "R4":[2,5,7,8,12],
+      "R5":[1,6,9,13],
+      "R6":[1],
+      "R7":[9],
+      "R8":[10],
+      "R9":[11],
+      "R10":[14],
+      "R11":[15],
+      "R12":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    },
+    "accountingRule": "The explicit image-to-R-family map comes from the consolidated second-pass audit. R12 is transversal and is therefore bound to the whole 15-image corpus."
+  },
+  "split": {
+    "totalFindings": 28,
+    "p3aOwned": 22,
+    "p3bOwned": 6,
+    "duplicateOwnershipAllowed": false,
+    "unownedAllowed": false,
+    "mergeRule": "15/15 screenshots mapped, 12/12 R families represented, 28/28 granular findings owned, 0 duplicated, 0 unowned; owner-specific observable oracles must be green."
+  },
+  "findings": [
+    {"id":"A01","owner":"P3A","groups":["R2"],"description":"RN-01 competing registry heading is retired; one visible registry identity remains.","oracle":"final-dom"},
+    {"id":"A02","owner":"P3A","groups":["R3"],"description":"RN-01 exposes visible-versus-total count semantics.","oracle":"final-dom"},
+    {"id":"A03","owner":"P3A","groups":["R2"],"description":"EC-01 competing registry heading is retired; one visible registry identity remains.","oracle":"final-dom"},
+    {"id":"A04","owner":"P3A","groups":["R3"],"description":"EC-01 exposes visible-versus-total count semantics.","oracle":"final-dom"},
+    {"id":"A05","owner":"P3A","groups":["R4"],"description":"Semantic scope Vista converges into the existing ControlRail rather than creating a competing control row.","oracle":"final-dom"},
+    {"id":"A06","owner":"P3A","groups":["R1"],"description":"Procedure purpose and material claim boundary remain distinct information roles.","oracle":"final-dom"},
+    {"id":"A07","owner":"P3A","groups":["R1"],"description":"Operational work remains before technical or explanatory planes.","oracle":"final-dom"},
+    {"id":"A08","owner":"P3A","groups":["R7"],"description":"Visible state values carry an explicit semantic state axis.","oracle":"final-dom"},
+    {"id":"A09","owner":"P3A","groups":["R7"],"description":"State meaning is encoded as text plus style and never color-only.","oracle":"final-dom"},
+    {"id":"A10","owner":"P3A","groups":["R5"],"description":"Process directory preserves canonical title hierarchy and row grammar.","oracle":"final-dom"},
+    {"id":"A11","owner":"P3A","groups":["R5"],"description":"Process CTA geometry is bounded while canonical click actionability is preserved.","oracle":"historical-browser+final-dom"},
+    {"id":"A12","owner":"P3A","groups":["R5"],"description":"Proof and reference disclosure rows preserve bounded readable geometry.","oracle":"final-dom"},
+    {"id":"A13","owner":"P3A","groups":["R11"],"description":"Command-palette results expose typed result kinds.","oracle":"final-dom"},
+    {"id":"A14","owner":"P3A","groups":["R11"],"description":"Command keyboard hints are explicit text or kbd semantics rather than ambiguous glyph-only instructions.","oracle":"final-dom"},
+    {"id":"A15","owner":"P3A","groups":["R8"],"description":"Standard Browser exposes content provenance and limitation for the selected node.","oracle":"runtime+final-dom"},
+    {"id":"A16","owner":"P3A","groups":["R8"],"description":"Official-public standards have a bounded complete versioned source-pack path distinct from licensed/reference paths.","oracle":"runtime-contract"},
+    {"id":"A17","owner":"P3A","groups":["R8"],"description":"ICTC does not manufacture protected standard text when authoritative text is unavailable.","oracle":"runtime+final-dom"},
+    {"id":"A18","owner":"P3A","groups":["R9"],"description":"MC-01 mapping is requirement-first and keeps proposal semantics explicit.","oracle":"final-dom"},
+    {"id":"A19","owner":"P3A","groups":["R9"],"description":"Standard Browser can hand a selected requirement into the mapping flow without creating a decision.","oracle":"final-dom"},
+    {"id":"A20","owner":"P3A","groups":["R6"],"description":"Null and missing secondary reason language does not amplify an absence into a stronger claim.","oracle":"final-dom"},
+    {"id":"A21","owner":"P3A","groups":["R12"],"description":"No new competing active primary/registry writer is introduced; the canonical Process Hub writer remains authoritative.","oracle":"source+historical-browser"},
+    {"id":"A22","owner":"P3A","groups":["R4","R5"],"description":"Responsive rails, dialogs and rows preserve action visibility and avoid local horizontal overflow.","oracle":"final-dom"},
+    {"id":"B01","owner":"P3B","groups":["R10"],"description":"Provider-specific request, response and authentication protocol mapping is first-class for OpenAI, Anthropic and DeepSeek.","oracle":"runtime-contract"},
+    {"id":"B02","owner":"P3B","groups":["R10"],"description":"AI settings provide guided provider selection with safe defaults and an advanced custom path.","oracle":"final-dom"},
+    {"id":"B03","owner":"P3B","groups":["R10"],"description":"Provider health probe is authenticated, permission-gated and uses the same bounded AI call path.","oracle":"runtime+final-dom"},
+    {"id":"B04","owner":"P3B","groups":["R10"],"description":"Provider verification state is visible and becomes dirty after configuration changes.","oracle":"final-dom"},
+    {"id":"B05","owner":"P3B","groups":["R10"],"description":"A custom OpenAI-compatible endpoint remains configurable without becoming a parallel AI authority.","oracle":"runtime+final-dom"},
+    {"id":"B06","owner":"P3B","groups":["R10","R12"],"description":"Network policy, budget reservation, schema validation and human-decision boundaries remain mandatory for provider calls.","oracle":"runtime-contract"}
+  ]
+}

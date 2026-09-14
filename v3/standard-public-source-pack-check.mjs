@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { standardCatalog } from './runtime/standard-library-market.mjs';
+import { importOfficialPublicSourcePack, overlayOfficialPublicText, publicSourcePackStatus } from './runtime/standard-public-source-pack.mjs';
+const framework=standardCatalog().frameworks.find(item=>item.id==='eu-nis2-2022-2555');
+assert.ok(framework,'NIS2 public framework missing');assert.ok(String(framework.contentPolicy).startsWith('public-'));assert.equal(framework.nodes.length,46);
+const actor={id:'admin-test'},state={};
+assert.throws(()=>importOfficialPublicSourcePack(state,framework.id,{officialSourceConfirmed:true,sourceUrl:framework.sourceUrl,nodes:framework.nodes.slice(0,45).map(node=>({ref:node.ref,text:`official ${node.ref}`}))},actor),error=>error.code==='standard-public-source-incomplete');
+const nodes=framework.nodes.map(node=>({ref:node.ref,text:`TEST FIXTURE — exact official text slot for ${node.ref}`}));
+const pack=importOfficialPublicSourcePack(state,framework.id,{officialSourceConfirmed:true,sourceUrl:framework.sourceUrl,sourceAuthority:framework.sourceAuthority,edition:framework.edition,nodes},actor);
+assert.equal(pack.complete,true);assert.equal(pack.nodeCount,46);assert.equal(pack.nodes.every(node=>node.sha256&&node.text),true);
+const overlaid=overlayOfficialPublicText(framework,state);assert.equal(overlaid.contentPolicy,'public-official-versioned-pack');assert.equal(overlaid.nodes.length,46);assert.equal(overlaid.nodes.every(node=>node.contentMode==='official-public-text'&&node.officialText===true&&node.sourceDigest),true);assert.equal(overlaid.publicSourceContent.state,'complete-official-text');
+assert.equal(publicSourcePackStatus({},framework.id).state,'official-text-not-materialized');
+const iso=standardCatalog().frameworks.find(item=>String(item.id).startsWith('iso-'));assert.ok(iso);assert.throws(()=>importOfficialPublicSourcePack({},iso.id,{officialSourceConfirmed:true,nodes:[]},actor),error=>error.code==='standard-public-source-not-eligible');
+console.log(JSON.stringify({ok:true,suite:'standard-public-source-pack-check',framework:framework.id,nodes:46,rule:'public official text requires a complete versioned source pack; licensed standards remain on authorized-pack/reference paths'}));
