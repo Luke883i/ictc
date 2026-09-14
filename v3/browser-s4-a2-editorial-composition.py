@@ -15,11 +15,18 @@ def open_process(page,code,pid,host):
  PHASE=f'{code}-catalogue'; page.locator('.service-nav [data-service="processes"]').click(); page.wait_for_function("()=>!document.querySelector('#processesView')?.hidden")
  card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
  PHASE=f'{code}-owner-ready'; page.wait_for_function("x=>{const h=document.querySelector(x.host),a=h?.querySelector(`:scope > [data-procedure-attention-slot=\"${x.pid}\"]`),adv=h?.querySelector(':scope > [data-editorial-slot=\"advanced-context\"]'),ref=h?.querySelector(':scope > [data-editorial-slot=\"reference\"]');return !!(h&&h.offsetParent!==null&&h.dataset.editorialOwner===x.owner&&h.dataset.editorialOrderValid==='true'&&a&&adv?.dataset.editorialSlotOwner===x.owner&&ref?.dataset.editorialSlotOwner===x.owner)}",arg={'host':host,'owner':OWNER[pid],'pid':pid})
+def h1_diagnostic(root):
+ nodes=root.locator(':scope > .procedure-frame h1'); total=nodes.count()
+ if total<1:return {'count':0,'text':0,'d':'missing','v':'missing','cv':'missing','w':0,'h':0,'pd':'missing','p2d':'missing'}
+ return nodes.first.evaluate("""e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect(),p=e.parentElement,p2=p?.parentElement,ps=p?getComputedStyle(p):null,p2s=p2?getComputedStyle(p2):null;return{count:e.parentElement?.querySelectorAll(':scope > h1').length||1,text:(e.textContent||'').trim().length,d:s.display,v:s.visibility,cv:s.contentVisibility||'visible',w:Math.round(r.width),h:Math.round(r.height),pd:ps?.display||'',p2d:p2s?.display||''}}""")
 def audit(page,code,pid,host):
  global PHASE
  open_process(page,code,pid,host)
  root=page.locator(host); frame=root.locator(':scope > .procedure-frame'); expect(frame).to_have_count(1); expect(frame).to_be_visible()
- PHASE=f'{code}-identity-canonical-h1'; assert root.locator(':scope > .procedure-frame h1:visible').count()==1,(pid,'canonical h1',root.locator(':scope > .procedure-frame h1:visible').count())
+ PHASE=f'{code}-identity-canonical-h1'; visible_h1=root.locator(':scope > .procedure-frame h1:visible').count()
+ if visible_h1!=1:
+  d=h1_diagnostic(root); PHASE=f"{code}-h1-c{d['count']}-t{d['text']}-d{d['d']}-v{d['v']}-cv{d['cv']}-r{d['w']}x{d['h']}-p{d['pd']}-{d['p2d']}"[:180]
+ assert visible_h1==1,(pid,'canonical h1',visible_h1,h1_diagnostic(root))
  PHASE=f'{code}-identity-legacy-orientation'; legacy=root.locator(':scope > .hero .hero-copy:visible,:scope > .grc-head > div:visible'); assert legacy.count()==0,(pid,'duplicate orientation visible',legacy.count())
  PHASE=f'{code}-identity-legacy-back'; legacy_back=root.locator(':scope > .workspace-return:visible,:scope > .grc-head > .workspace-return:visible'); assert legacy_back.count()==0,(pid,'legacy back visible',legacy_back.count())
  PHASE=f'{code}-order'; order=(root.get_attribute('data-editorial-order') or '').split('>'); assert order[:3]==['attention','controls','primary'],(pid,order); assert root.get_attribute('data-editorial-owner')==OWNER[pid],(pid,'root owner',root.get_attribute('data-editorial-owner'),OWNER[pid]); assert root.get_attribute('data-editorial-order-valid')=='true',(pid,'order valid',root.get_attribute('data-editorial-order-valid'))
