@@ -74,11 +74,8 @@ html[data-enduser-composition="p2"] .procedure-work-item .procedure-work-busines
 html[data-enduser-composition="p2"] .procedure-worklist-reveal{margin-top:.3rem;border-top:1px solid var(--p2-row-rule)}
 html[data-enduser-composition="p2"] .procedure-worklist-reveal>summary{min-height:44px;display:flex;align-items:center;font-size:var(--type-caption);font-weight:var(--weight-label)}
 
-/* Common procedure identity: one identity block, purpose below it, material boundary never clipped. */
+/* Common procedure identity: shared semantics only; local owner 3.2.1 owns geometry. */
 html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity{
-  display:flex;
-  align-items:baseline;
-  gap:.45rem;
   min-width:0;
 }
 html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1{min-width:0;white-space:normal}
