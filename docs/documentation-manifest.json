@@ -11,10 +11,11 @@
     "journey": {"owner": "v3/release-identity.json", "value": "2.2-sequential-onto-epistemic"},
     "constitution": {"owner": "v3/release-identity.json", "value": "C0.1"},
     "documentation": {"owner": "docs/documentation-manifest.json", "value": "1.0"},
-    "convergenceGovernance": {"owner": "docs/convergence/convergence-authority.json", "value": "GOV-WB4"}
+    "convergenceGovernance": {"owner": "docs/convergence/convergence-authority.json", "value": "GOV-WB5"}
   },
   "documents": [
     {"id":"readme","path":"README.md","lifecycle":"current","mode":"explanation","authorityTopic":"repository_front_door","authoritative":true},
+    {"id":"v3-readme","path":"v3/README.md","lifecycle":"operating","mode":"reference","authorityTopic":null,"authoritative":false},
     {"id":"start","path":"docs/START_HERE.md","lifecycle":"current","mode":"reference","authorityTopic":"documentation_navigation","authoritative":true},
     {"id":"product","path":"docs/PRODUCT.md","lifecycle":"current","mode":"reference","authorityTopic":"product_intent","authoritative":true},
     {"id":"epistemic","path":"docs/02_EPISTEMIC_CONTRACT.md","lifecycle":"current","mode":"reference","authorityTopic":"epistemic_contract","authoritative":true},

@@ -2,13 +2,31 @@
 
 Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing: non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
 
-## Percorso minimo
+## Router per tipo di modifica
+
+Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il contratto eseguibile `v3/semantic-owner-contract.json` rende questa proiezione verificabile senza creare una seconda authority.
+
+| Route | Se stai cambiando… | Parti da | Feedback più vicino | Prima della PR |
+|---|---|---|---|---|
+| `ui` | layout, label, componenti, responsive, interazioni locali | owner della surface in `v3/semantic-owner-contract.json` + `authority-matrix.yaml` | `node v3/uiux-converge-0-check.mjs` | `npm test` |
+| `api` | route HTTP, request/response, permessi | `docs/openapi.yaml` + handler runtime | `node v3/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
+| `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node v3/ai-network-policy-check.mjs` | `npm test` |
+| `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
+| `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
+| `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node v3/convergence-authority-check.mjs` | `npm test` |
+| `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node v3/security-boundary-check.mjs` | `npm run release:check` |
+| `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node v3/evidence-check.mjs` | `npm run test:current:runtime` |
+| `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
+
+Per una correzione locale non serve leggere l'intera genealogia. Se la modifica altera significato, authority, persistence, epistemic state o una surface condivisa, approfondisci i documenti proprietari indicati sotto. Se il problema richiede un nuovo layer, prima dimostra che nessun owner corrente possa assorbirlo.
+
+## Percorso di approfondimento
 
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
 2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
 3. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
 4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
-5. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo, obbligo di reconciliation PR e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
+5. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
 6. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
 7. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
 8. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
@@ -21,7 +39,7 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 
 Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners` sono assi distinti: la presentation corrente è distribuita tra owner canonici e non esiste più un final cascade resolver globale.
 
-`docs/convergence/convergence-authority.json` è l'owner corrente della **traiettoria di sviluppo e della reconciliation PR**. La proiezione leggibile è `docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx`; è derivata e non può sostituire Git, product, runtime o claim authority. Ogni PR verso `main` dichiara `Trajectory impact` e `Convergence slice`.
+`docs/convergence/convergence-authority.json` è l'owner corrente della **traiettoria di sviluppo**. La proiezione leggibile è `docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx`; è derivata e non può sostituire Git, product, runtime o claim authority. Ogni PR verso `main` dichiara `Trajectory impact` e `Convergence slice`.
 
 ## Contributor e community path
 
@@ -102,6 +120,14 @@ node v3/ui-finetuning-3-4-check.mjs
 node v3/ui-finetuning-3-4-saturation.mjs
 node v3/native-semantic-lattice-3-2-saturation.mjs
 node v3/native-semantic-lattice-3-2-stress.mjs
+```
+
+Per il contratto C5 di owner/freshness:
+
+```bash
+node v3/c5-semantic-owner-check.mjs
+node v3/c5-semantic-owner-saturation.mjs
+node v3/c5-needs-audit-saturation.mjs
 ```
 
 I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il **ritiro** della 3.4 e la relocation degli invarianti negli owner correnti. `npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
