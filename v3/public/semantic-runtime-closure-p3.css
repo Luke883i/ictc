@@ -3,16 +3,20 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-heade
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-boundary{justify-self:start;text-align:left;max-width:78ch}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{justify-self:start}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail[open]{grid-column:1/-1;width:100%}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy,
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy>*,
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-value{min-width:0;max-width:100%;overflow-wrap:anywhere}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-value{max-width:90ch;margin:.2rem 0 0!important}
 
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>h2{font-size:1rem!important;font-weight:760!important;overflow:visible!important;text-overflow:clip!important}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{font-size:.82rem!important;line-height:1.35!important}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{min-width:9.6rem;justify-content:center;text-align:center;font-size:.78rem!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{width:9.6rem;min-width:9.6rem;justify-content:center;text-align:center;font-size:.78rem!important}
 
 html[data-native-semantic-lattice="3.2.0"] .a6-operational-registry>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.55rem}
 html[data-native-semantic-lattice="3.2.0"] [data-a6-registry-count-group]{display:flex;align-items:baseline;gap:.18rem;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-description)}
 html[data-native-semantic-lattice="3.2.0"] [data-a6-registry-count-group]>b{color:var(--color-text);font-size:.84rem}
-html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{display:grid!important;grid-template-columns:minmax(12rem,1fr) minmax(9rem,auto) minmax(9rem,auto) auto auto;align-items:end!important;gap:.45rem!important;width:100%;margin:.35rem 0 .5rem}
+html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{display:grid!important;grid-template-columns:minmax(12rem,1fr) minmax(9rem,auto) minmax(9rem,auto) auto auto;align-items:end!important;gap:.45rem!important;width:100%;margin:.35rem 0 .5rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]>*{min-width:0;max-width:100%}
 html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]>label{min-width:0;margin:0!important}
 html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"] input[type="search"]{width:100%}
 html[data-native-semantic-lattice="3.2.0"] .a6-ux4-scope-filter{align-self:end}

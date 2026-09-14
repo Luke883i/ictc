@@ -3,6 +3,8 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
+for stale in ['browser-uiux-semantic-runtime-closure-p3.json','browser-uiux-semantic-runtime-closure-p3-error.json']:
+    (ART/stale).unlink(missing_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4868').rstrip('/')
 PHASE='init'; RESULTS=[]
 CODES={'RN-01':('monitoring','#monitoringView'),'EC-01':('incidents','#incidentsView'),'AO-01':('objects','#grcWorkspace'),'MC-01':('coverage','#grcWorkspace'),'AP-01':('actions','#grcWorkspace')}
