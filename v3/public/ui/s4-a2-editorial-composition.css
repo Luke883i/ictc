@@ -5,6 +5,46 @@
 #incidentsView > .hero > .hero-copy,
 #grcWorkspace > .grc-head > .workspace-return,
 #grcWorkspace > .grc-head > div { display:none !important; }
+/* The canonical compact frame is the sole visible procedure identity. Historical
+   presentation layers may still target generic process headings; the A2 owner
+   explicitly keeps the complete SurfaceIdentity chain rendered while retiring
+   only legacy identity. P2 has a three-row copy grammar (identity, purpose,
+   context); pin those direct children to the single canonical copy column so
+   stale pre-P2 grid placement cannot collapse SurfaceIdentity. */
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy,
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy,
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy { display:grid !important; visibility:visible !important; }
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy,
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy,
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy {
+  grid-template-columns:minmax(0,1fr) !important;
+  grid-auto-flow:row !important;
+  grid-auto-columns:minmax(0,1fr) !important;
+}
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy > :is(.procedure-frame-identity,.procedure-purpose,.procedure-frame-context),
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy > :is(.procedure-frame-identity,.procedure-purpose,.procedure-frame-context),
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy > :is(.procedure-frame-identity,.procedure-purpose,.procedure-frame-context) {
+  grid-column:1 !important;
+  min-width:0;
+}
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity,
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity,
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity {
+  display:grid !important;
+  grid-template-columns:auto minmax(0,1fr) !important;
+  align-items:baseline;
+  justify-self:stretch !important;
+  gap:.42rem;
+  visibility:visible !important;
+  min-width:0;
+  width:auto !important;
+}
+#monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
+#incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1 { display:block !important; visibility:visible !important; min-width:0; min-height:1em; width:auto !important; max-width:100%; white-space:normal; }
 #monitoringView > .hero,
 #incidentsView > .hero { display:block; margin:0; padding:0; background:none; border:0; box-shadow:none; }
 #grcWorkspace > .grc-head { min-height:0; }

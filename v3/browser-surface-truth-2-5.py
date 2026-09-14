@@ -74,16 +74,15 @@ try:
   expect(page.locator('#proofView [data-surface-information-value]')).to_have_count(0)
   investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]'); trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]'); decision=page.locator('#proofContent > details[data-proof-domain="decisions"]'); standards=page.locator('#proofContent > details[data-proof-domain="evidence-basis"]')
   for disclosure in [investigation,trace,decision,standards]: expect(disclosure).to_be_visible()
-  expect(decision).to_have_attribute('open','')
-  for disclosure in [standards,trace,investigation]: expect(disclosure).not_to_have_attribute('open','')
-  expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico'); expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro'); expect(decision.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità'); expect(standards.locator(':scope > summary')).to_contain_text('Evidenze e basi')
+  for disclosure in [decision,standards,trace,investigation]: expect(disclosure).not_to_have_attribute('open','')
+  expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico'); expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro'); expect(decision.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità'); expect(standards.locator(':scope > summary')).to_contain_text('Riferimenti e basi')
   order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['decisions','evidence-basis','trace-reconstruction','epistemic-investigation','external','integrity','interpretation','export']; assert [x for x in order if x in expected_details]==expected_details,order
   reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]'); expect(reading).to_be_visible(); assert reading.get_attribute('open') is None
 
   PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); snapshot(page,'epistemic','#epistemicView')
   expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
   rules=page.locator('#epistemicView details[data-epistemic-workspace="rules"]'); expect(rules).to_be_visible(); assert rules.get_attribute('open') is None
-  expect(rules.locator('.epistemic-claim-boundary')).to_have_count(1)
+  expect(rules.locator('.epistemic-claim-boundary')).to_have_count(0); expect(page.locator('#epistemicView > .epistemic-claim-boundary,#epistemicView .surface-panel > .epistemic-claim-boundary')).to_have_count(1); expect(page.locator('.epistemic-claim-boundary')).to_be_visible()
 
   PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
   PHASE='settings'; open_profile(page); page.locator('#stableProfileMenu #openSettings').dispatch_event('click'); expect(page.locator('#settingsDialog')).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); expect(page.locator('#settingsDialog details.advanced')).not_to_have_attribute('open',''); page.keyboard.press('Escape')
@@ -93,7 +92,7 @@ try:
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
   assert aggregate_cov>=.95,aggregate_cov; assert aggregate_critical==1,aggregate_critical; assert not VIOLATIONS,VIOLATIONS
-  out={'ok':True,'profile':'surface-truth-2.5+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1+s4-a3','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'proofHierarchy':'facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export','technicalProgressive':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
-  (ART/'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8'); print('browser-surface-truth-2-5+s4-a3: complete',flush=True); ctx.close(); browser.close()
+  out={'ok':True,'profile':'surface-truth-2.5+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1+p2','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'proofHierarchy':'facts+secondary-closed>decisions>evidence-basis>trace>epistemic>external>integrity>method>export','technicalProgressive':True,'epistemicBoundaryFrontstage':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
+  (ART/'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8'); print('browser-surface-truth-2-5+p2: complete',flush=True); ctx.close(); browser.close()
 except BaseException as exc:
  fail(exc); traceback.print_exc(); raise

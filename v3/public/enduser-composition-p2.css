@@ -1,0 +1,246 @@
+/* UIUX-CONVERGE-0 / P2 end-user composition primitives.
+   This file owns shared semantic primitives only. Existing local 3.2/3.2.1/3.3
+   owners remain the final surface/chrome presentation authorities. */
+html[data-enduser-composition="p2"]{
+  --p2-reference-bg:color-mix(in srgb,var(--color-info) 5%,var(--color-surface));
+  --p2-reference-line:color-mix(in srgb,var(--color-info) 28%,var(--color-border));
+  --p2-evidence-bg:color-mix(in srgb,var(--color-accent) 5%,var(--color-surface));
+  --p2-evidence-line:color-mix(in srgb,var(--color-accent) 30%,var(--color-border));
+  --p2-boundary-bg:color-mix(in srgb,var(--color-warning) 5%,var(--color-surface));
+  --p2-boundary-line:color-mix(in srgb,var(--color-warning) 32%,var(--color-border));
+  --p2-technical-bg:var(--color-surface-subtle);
+  --p2-row-rule:color-mix(in srgb,var(--color-border) 78%,transparent);
+}
+
+/* Editorial primitives */
+html[data-enduser-composition="p2"] [data-enduser-primitive="BoundaryNote"],
+html[data-enduser-composition="p2"] [data-information-role="boundary"]{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  overflow-wrap:anywhere;
+}
+html[data-enduser-composition="p2"] .p2-record-row{
+  min-width:0;
+  max-width:100%;
+  box-shadow:none;
+}
+html[data-enduser-composition="p2"] .p2-attention-strip{
+  margin:.2rem 0 .6rem;
+  padding:.65rem .75rem;
+  border:1px solid var(--color-border);
+  border-radius:12px;
+  background:var(--color-surface);
+}
+html[data-enduser-composition="p2"] .p2-attention-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+  gap:.65rem;
+}
+html[data-enduser-composition="p2"] .p2-attention-head h2{margin:.06rem 0 .14rem;font-size:var(--type-heading);line-height:1.2}
+html[data-enduser-composition="p2"] .p2-attention-head p{margin:0;max-width:var(--ui-reading);font-size:var(--type-caption);font-weight:var(--weight-description);color:var(--color-muted)}
+html[data-enduser-composition="p2"] .p2-attention-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:2.1rem;
+  min-height:2.1rem;
+  padding:.2rem .5rem;
+  border:1px solid var(--color-border);
+  border-radius:999px;
+  background:var(--color-surface-subtle);
+  color:var(--color-text);
+  font-size:var(--type-label);
+  font-weight:var(--weight-label);
+}
+html[data-enduser-composition="p2"] .procedure-worklist-items{display:grid;gap:.25rem}
+html[data-enduser-composition="p2"] .procedure-work-item.p2-record-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:.65rem;
+  min-height:var(--ui-row-compact);
+  padding:.48rem .55rem;
+  border:0;
+  border-top:1px solid var(--p2-row-rule);
+  border-radius:0;
+  background:transparent;
+}
+html[data-enduser-composition="p2"] .procedure-work-item.p2-record-row:first-child{border-top:0}
+html[data-enduser-composition="p2"] .procedure-work-item h3{margin:.04rem 0;font-size:.88rem;line-height:1.22}
+html[data-enduser-composition="p2"] .procedure-work-item p{margin:.08rem 0;font-size:var(--type-caption);font-weight:var(--weight-description);line-height:var(--leading-caption);color:var(--color-muted)}
+html[data-enduser-composition="p2"] .procedure-work-item .procedure-work-business-kind{font-size:.68rem;font-weight:var(--weight-label);letter-spacing:.02em;color:var(--color-muted)}
+html[data-enduser-composition="p2"] .procedure-worklist-reveal{margin-top:.3rem;border-top:1px solid var(--p2-row-rule)}
+html[data-enduser-composition="p2"] .procedure-worklist-reveal>summary{min-height:44px;display:flex;align-items:center;font-size:var(--type-caption);font-weight:var(--weight-label)}
+
+/* Common procedure identity: shared semantics only; local owner 3.2.1 owns geometry. */
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity{
+  min-width:0;
+}
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1{min-width:0;white-space:normal}
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy>.procedure-purpose{
+  display:block;
+  max-width:var(--ui-reading);
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  min-width:0;
+}
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-boundary{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:var(--ui-reading);
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:var(--leading-caption);
+}
+html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{flex:0 0 auto}
+
+/* Header compression: preserve all semantic controls while reducing visual competition. */
+html[data-enduser-composition="p2"] .topbar .demo-context-card-copy small,
+html[data-enduser-composition="p2"] .topbar .stable-profile-menu>summary small{display:none}
+html[data-enduser-composition="p2"] .topbar .demo-context-card{gap:.3rem;padding-inline:.45rem}
+html[data-enduser-composition="p2"] .topbar #runtimeStatus{max-width:9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--type-caption)}
+html[data-enduser-composition="p2"] .topbar .global-command-trigger{padding-inline:.5rem}
+
+/* Home: attention desk. Existing role guidance survives as a compact secondary object. */
+html[data-enduser-composition="p2"] #homeView .home-next{
+  align-self:start;
+  padding:.55rem .65rem;
+  border:1px solid var(--color-border);
+  border-radius:12px;
+  background:var(--color-surface-subtle);
+  box-shadow:none;
+}
+html[data-enduser-composition="p2"] #homeView .home-next h2{margin:.08rem 0;font-size:.86rem}
+html[data-enduser-composition="p2"] #homeView .home-next p{margin:.12rem 0;font-size:var(--type-caption);font-weight:var(--weight-description);line-height:var(--leading-caption)}
+html[data-enduser-composition="p2"] #homeView .home-next .eyebrow{font-size:.66rem}
+html[data-enduser-composition="p2"] #homeView .home-next .assist-note{color:var(--color-muted)}
+
+/* Process catalogue remains a pure route directory. */
+html[data-enduser-composition="p2"] #processesView .processes-head{margin-bottom:.4rem}
+html[data-enduser-composition="p2"] #procedureHub .procedure-card[data-enduser-primitive="RecordRow"]{box-shadow:none}
+
+/* RN-01: modern librarian grammar. */
+html[data-enduser-composition="p2"] #monitoringView[data-enduser-surface="monitoring"]{--p2-local-accent:var(--color-info)}
+html[data-enduser-composition="p2"] #monitoringView #missionsList,
+html[data-enduser-composition="p2"] #monitoringView #catalogList{display:grid;gap:.3rem}
+html[data-enduser-composition="p2"] #monitoringView :is(.mission-card,.catalog-card){
+  min-height:0;
+  margin:0;
+  padding:.65rem .72rem;
+  border:1px solid var(--color-border);
+  border-radius:10px;
+  background:var(--color-surface);
+  box-shadow:none;
+}
+html[data-enduser-composition="p2"] #monitoringView :is(.mission-card,.catalog-card):hover{border-color:color-mix(in srgb,var(--color-info) 24%,var(--color-border));box-shadow:var(--elevation-rest);transform:none}
+html[data-enduser-composition="p2"] #monitoringView :is(.mission-card,.catalog-card) .procedure-record-facts{display:flex;flex-wrap:wrap;gap:.25rem;margin:.3rem 0}
+html[data-enduser-composition="p2"] #monitoringView :is(.mission-card,.catalog-card) .surface-chip{background:var(--p2-reference-bg);border-color:var(--p2-reference-line)}
+html[data-enduser-composition="p2"] #monitoringView .contribute-card[data-enduser-primitive="NarrativeCard"]{min-height:0;padding:.75rem;border-radius:12px;background:var(--color-surface-subtle);box-shadow:none}
+html[data-enduser-composition="p2"] #monitoringView .section-head .counter{font-size:var(--type-caption);font-weight:var(--weight-label);background:var(--color-surface-subtle);color:var(--color-muted)}
+
+/* EC-01: compact case ledger, narrative in the selected workspace. */
+html[data-enduser-composition="p2"] #incidentsView #incidentList{display:grid;gap:.3rem}
+html[data-enduser-composition="p2"] #incidentsView .incident-card{min-height:0;padding:.68rem .75rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);box-shadow:none}
+html[data-enduser-composition="p2"] #incidentsView .incident-card .procedure-record-summary{max-width:var(--ui-reading);font-size:var(--type-caption);font-weight:var(--weight-description);color:var(--color-muted)}
+
+/* GRC common: attention is primary; aggregate metrics and analysis are secondary. */
+html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-kpis[data-metric-role="distribution"]{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.35rem;
+  margin:.35rem 0;
+  padding:.35rem .45rem;
+  border:1px solid var(--color-border);
+  border-radius:10px;
+  background:var(--color-surface-subtle);
+  box-shadow:none;
+}
+html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-kpis .grc-kpi{min-width:0;padding:.25rem .4rem;border:0;background:transparent;box-shadow:none}
+html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-kpis .grc-kpi strong{font-size:.95rem}
+html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-list{display:grid;gap:.3rem}
+html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-list>article.p2-record-row{min-height:0;padding:.68rem .75rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);box-shadow:none}
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="objects"] .grc-list>article{border-left:3px solid color-mix(in srgb,var(--color-info) 45%,var(--color-border))}
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] .grc-list>article,
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] [data-framework-card]{border-left:3px solid var(--p2-reference-line)}
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="actions"] .grc-list>article{border-left:3px solid color-mix(in srgb,var(--color-brand) 38%,var(--color-border))}
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="risks"] .grc-list>article{border-left:3px solid color-mix(in srgb,var(--color-warning) 36%,var(--color-border))}
+html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="assurance"] .grc-list>article{border-left:3px solid var(--p2-evidence-line)}
+html[data-enduser-composition="p2"] #grcWorkspace .grc-heat[data-metric-role="analysis"]{margin:.45rem 0;padding:.6rem .7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--p2-technical-bg);box-shadow:none}
+html[data-enduser-composition="p2"] #grcWorkspace .grc-heat[data-metric-role="analysis"] h3{font-size:.9rem}
+html[data-enduser-composition="p2"] #grcWorkspace #grcPrimaryForm[data-secondary-disclosure="true"]{margin:.45rem 0;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface)}
+
+/* Admin configuration rows. */
+html[data-enduser-composition="p2"] #adminCenter[data-enduser-composition="P2"] .procedure-policy-list{gap:.3rem}
+html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row.p2-configuration-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:.8rem;
+  min-height:var(--ui-row-compact);
+  padding:.48rem .6rem;
+  border:0;
+  border-top:1px solid var(--p2-row-rule);
+  border-radius:0;
+  background:transparent;
+}
+html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row.p2-configuration-row:first-child{border-top:0}
+html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row b{font-size:.82rem}
+html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row small{font-size:.7rem;color:var(--color-muted)}
+html[data-enduser-composition="p2"] #adminCenter #procedurePolicyCount[data-metric-role="inventory"]{font-size:var(--type-caption);font-weight:var(--weight-label);color:var(--color-muted)}
+
+/* AI settings: bounded setup first, advanced instructions progressive. */
+html[data-enduser-composition="p2"] #settingsDialog .two-pane-form{gap:.85rem}
+html[data-enduser-composition="p2"] #settingsDialog .two-pane-form>section{align-content:start}
+html[data-enduser-composition="p2"] #settingsDialog details.advanced{grid-column:1/-1;border-top:1px solid var(--color-border)}
+html[data-enduser-composition="p2"] #settingsDialog details.advanced>summary{min-height:44px;display:flex;align-items:center;font-size:var(--type-label);font-weight:var(--weight-label)}
+
+/* Proof: semantic cluster skins; all secondary rows start collapsed in runtime owner. */
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="decision"]{border-left:3px solid color-mix(in srgb,var(--color-brand) 38%,var(--color-border));background:var(--color-surface)}
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="reference"]{border-left:3px solid var(--p2-reference-line);background:var(--p2-reference-bg)}
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="evidence"]{border-left:3px solid var(--p2-evidence-line);background:var(--p2-evidence-bg)}
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="relationship"]{border-left:3px solid color-mix(in srgb,var(--color-brand) 24%,var(--color-border));background:color-mix(in srgb,var(--color-brand) 3%,var(--color-surface))}
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="external"]{border-left:3px solid var(--p2-boundary-line);background:var(--p2-boundary-bg)}
+html[data-enduser-composition="p2"] #proofContent>details[data-enduser-cluster="technical"]{background:var(--p2-technical-bg);border-color:var(--color-border)}
+html[data-enduser-composition="p2"] #proofContent>details>summary b{font-size:.82rem}
+html[data-enduser-composition="p2"] #proofContent>details>summary small{max-width:var(--ui-reading)}
+
+/* EP-01: one progressive trajectory, deep tools are subordinate. */
+html[data-enduser-composition="p2"] #epistemicView[data-enduser-composition="P2"] .epistemic-claim-boundary{margin:.1rem 0 .45rem;padding:.55rem .65rem;border-left:3px solid var(--p2-boundary-line);background:var(--p2-boundary-bg);font-size:var(--type-caption);line-height:var(--leading-body)}
+html[data-enduser-composition="p2"] #epistemicView .surface-toolbar[data-enduser-primitive="ControlRail"]{align-items:start}
+html[data-enduser-composition="p2"] #epistemicView .epistemic-filter-group{flex:1 1 auto}
+html[data-enduser-composition="p2"] #epistemicView .epistemic-filter-group label:first-child{flex:1 1 24rem}
+html[data-enduser-composition="p2"] #epistemicView .epistemic-filter-group input[type="search"]{width:100%;min-width:0}
+html[data-enduser-composition="p2"] #epistemicView details[data-epistemic-a3="deep-tools"]{margin-top:.5rem;border:1px solid var(--color-border);border-radius:10px;background:var(--p2-technical-bg)}
+html[data-enduser-composition="p2"] #epistemicView details[data-epistemic-a3="deep-tools"]>summary{min-height:44px;display:flex;align-items:center;padding:.45rem .6rem;font-size:var(--type-label);font-weight:var(--weight-label)}
+html[data-enduser-composition="p2"] #epistemicView [data-epistemic-a3-body="deep-tools"]{display:grid;gap:.6rem;padding:.6rem}
+html[data-enduser-composition="p2"] #epistemicView #epistemicProfessionalTools,
+html[data-enduser-composition="p2"] #epistemicView #epistemicInferencePanel{margin:0;box-shadow:none}
+
+@media(max-width:760px){
+  html[data-enduser-composition="p2"] .p2-attention-head{grid-template-columns:minmax(0,1fr) auto}
+  html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{align-items:flex-start;flex-direction:column;gap:.15rem}
+  html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{align-self:flex-start}
+  html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row.p2-configuration-row{grid-template-columns:minmax(0,1fr);gap:.35rem}
+  html[data-enduser-composition="p2"] #adminCenter .procedure-policy-row .procedure-switch{justify-self:start}
+}
+@media(max-width:520px){
+  html[data-enduser-composition="p2"] .procedure-work-item.p2-record-row{grid-template-columns:minmax(0,1fr)}
+  html[data-enduser-composition="p2"] .procedure-work-item.p2-record-row>button{justify-self:start}
+  html[data-enduser-composition="p2"] .topbar #runtimeStatus{max-width:3.2rem}
+  html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-kpis[data-metric-role="distribution"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-enduser-composition="p2"] :where(.p2-record-row,.p2-attention-strip,[data-enduser-primitive]){transition:none;animation:none;transform:none}
+}
+@media(forced-colors:active){
+  html[data-enduser-composition="p2"] :where([data-enduser-cluster],.p2-attention-strip,.p2-record-row,.p2-configuration-row){background:Canvas;color:CanvasText;border-color:CanvasText}
+}
