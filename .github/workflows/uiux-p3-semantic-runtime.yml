@@ -14,6 +14,9 @@ jobs:
   semantic-runtime-closure:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      browser_phase: ${{ steps.browser_phase.outputs.phase }}
+      browser_outcome: ${{ steps.browser.outcome }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -24,10 +27,14 @@ jobs:
       - name: Syntax and semantic closure contract
         run: |
           node --check v3/public/ui/semantic-state-projection-p3.js
+          node --check v3/public/ui/provider-settings-p3.js
+          node --check v3/runtime/standard-public-source-pack.mjs
+          node --check v3/standard-public-source-pack-check.mjs
           node --check v3/uiux-semantic-runtime-closure-p3-model.mjs
           node --check v3/uiux-semantic-runtime-closure-p3-check.mjs
           node --check v3/uiux-semantic-runtime-closure-p3-saturation.mjs
           python -m py_compile v3/browser-uiux-semantic-runtime-closure-p3.py
+          node v3/standard-public-source-pack-check.mjs
           node v3/uiux-semantic-runtime-closure-p3-check.mjs
       - name: 100,000,000 semantic mutations
         run: node v3/uiux-semantic-runtime-closure-p3-saturation.mjs
@@ -57,7 +64,23 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: Exact-head final DOM screenshot-findings oracle
+        id: browser
+        continue-on-error: true
         run: python -u v3/browser-uiux-semantic-runtime-closure-p3.py
+      - name: Capture P3 browser phase
+        id: browser_phase
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          path=pathlib.Path('artifacts/browser-uiux-semantic-runtime-closure-p3-error.json')
+          phase='green'
+          if path.exists():
+              phase=str(json.loads(path.read_text(encoding='utf8')).get('phase') or 'unknown')
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as out: out.write(f'phase={phase}\n')
+          print('P3 browser phase:',phase)
+          PY
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
@@ -68,3 +91,17 @@ jobs:
           path: artifacts/browser-uiux-semantic-runtime-closure-p3*.json
           if-no-files-found: warn
           retention-days: 30
+  browser-verdict:
+    name: P3 final-DOM verdict [${{ needs.semantic-runtime-closure.outputs.browser_phase }}]
+    needs: semantic-runtime-closure
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Preserve final-DOM acceptance
+        shell: bash
+        run: |
+          phase='${{ needs.semantic-runtime-closure.outputs.browser_phase }}'
+          outcome='${{ needs.semantic-runtime-closure.outputs.browser_outcome }}'
+          echo "phase=$phase outcome=$outcome"
+          test "$phase" = green
+          test "$outcome" = success
