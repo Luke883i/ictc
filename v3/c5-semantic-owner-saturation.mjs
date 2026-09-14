@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { validateSemanticOwnerContract } from './semantic-owner-runtime.mjs';
+const contract=JSON.parse(await readFile(new URL('./semantic-owner-contract.json',import.meta.url),'utf8'));
+const clone=value=>structuredClone(value);
+let x=0xC5202609;const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296};const pick=array=>array[Math.floor(rnd()*array.length)];
+const mutations=[
+['remove-surface',m=>m.surfaceOwners.splice(Math.floor(rnd()*m.surfaceOwners.length),1)],['duplicate-surface-slot',m=>m.surfaceOwners.push({...m.surfaceOwners[0]})],['unown-surface',m=>{pick(m.surfaceOwners).owner=''}],['invalid-owner-class',m=>{pick(m.surfaceOwners).class='OBSERVER'}],['global-final-resolver',m=>{m.constitutionalOwners.finalGlobalResolver='v3/public/ui/final-resolver.js'}],['procedure-count',m=>{m.constitutionalOwners.businessProcedureCount=8}],['surface-count',m=>{m.constitutionalOwners.surfaceCount=12}],['drop-owner-class',m=>{delete m.ownerClasses.RETIRED}],['drop-task-route',m=>m.taskRoutes.splice(Math.floor(rnd()*m.taskRoutes.length),1)],['drop-route-owner',m=>{pick(m.taskRoutes).authority=''}],['drop-route-nearest',m=>{pick(m.taskRoutes).nearestCheck=''}],['drop-route-convergence',m=>{pick(m.taskRoutes).convergenceRail=''}],['disable-freshness',m=>{m.freshness.staleMustFail=false}],['duplicate-freshness-input',m=>m.freshness.inputs.push(m.freshness.inputs[0])],['break-c5-order',m=>{m.trajectory.mustBeTerminalBefore=['S4-A6-CLOSE']}],['launder-external',m=>{m.trajectory.externalRailsRemainExternal=['E3-HUMAN','E3-GOV']}],['p3a-regression',m=>{m.p3Prestate.p3a.status='candidate'}],['p3b-regression',m=>{m.p3Prestate.p3b.pr=148}],['intent-loss',m=>{m.intentAccounting.items=m.intentAccounting.items.slice(0,30)}]
+];
+const baseline=validateSemanticOwnerContract(contract);assert.equal(baseline.ok,true,baseline.failures.join('\n'));
+const familyKills=new Map(mutations.map(([name])=>[name,0]));let killed=0,survivors=0;
+for(let i=0;i<10000;i++){const mutant=clone(contract),[name,apply]=pick(mutations);apply(mutant);const verdict=validateSemanticOwnerContract(mutant);if(verdict.ok){survivors++;console.error(JSON.stringify({survivor:i,name}));break;}killed++;familyKills.set(name,familyKills.get(name)+1);}
+assert.equal(killed,10000);assert.equal(survivors,0);for(const [name,count] of familyKills)assert.ok(count>0,`mutation family not sampled: ${name}`);
+console.log(JSON.stringify({ok:true,slice:'C5-SEMANTIC-OWNER-COMPRESSION',seed:'0xC5202609',trials:10000,families:mutations.length,killed,survivors,killRate:killed/10000,familyKills:Object.fromEntries(familyKills),claimBoundary:'Deterministic contract mutations only; not 10k browser sessions, code mutants, contributor studies or correctness probability.'}));
