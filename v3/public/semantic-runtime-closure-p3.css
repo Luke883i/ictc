@@ -1,0 +1,47 @@
+/* UIUX semantic runtime closure P3 — shared primitive geometry only; semantic authority stays with local owners. */
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.2rem .55rem!important;padding-top:.08rem}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-boundary{justify-self:start;text-align:left;max-width:78ch}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{justify-self:start}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail[open]{grid-column:1/-1;width:100%}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-value{max-width:90ch;margin:.2rem 0 0!important}
+
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>h2{font-size:1rem!important;font-weight:760!important;overflow:visible!important;text-overflow:clip!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{font-size:.82rem!important;line-height:1.35!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{min-width:9.6rem;justify-content:center;text-align:center;font-size:.78rem!important}
+
+html[data-native-semantic-lattice="3.2.0"] .a6-operational-registry>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.55rem}
+html[data-native-semantic-lattice="3.2.0"] [data-a6-registry-count-group]{display:flex;align-items:baseline;gap:.18rem;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-description)}
+html[data-native-semantic-lattice="3.2.0"] [data-a6-registry-count-group]>b{color:var(--color-text);font-size:.84rem}
+html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{display:grid!important;grid-template-columns:minmax(12rem,1fr) minmax(9rem,auto) minmax(9rem,auto) auto auto;align-items:end!important;gap:.45rem!important;width:100%;margin:.35rem 0 .5rem}
+html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]>label{min-width:0;margin:0!important}
+html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"] input[type="search"]{width:100%}
+html[data-native-semantic-lattice="3.2.0"] .a6-ux4-scope-filter{align-self:end}
+
+html[data-native-semantic-lattice="3.2.0"] .catalog-card [data-missing-value="reason"]{display:inline-flex;align-items:center;justify-content:flex-start;width:auto;margin:.2rem 0;color:var(--color-muted);font-size:var(--type-caption);text-align:left}
+
+html[data-native-semantic-lattice="3.2.0"] .procedure-anatomy-standard-head>span{font-size:.96rem;font-weight:780}
+html[data-native-semantic-lattice="3.2.0"] .procedure-standard-name{font-size:.84rem;font-weight:620}
+html[data-native-semantic-lattice="3.2.0"] .procedure-standard-meta{font-size:.72rem}
+
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary{display:flex!important;align-items:center;justify-content:space-between;gap:.6rem}
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary>span{display:flex!important;align-items:center;gap:.4rem;min-width:0;flex:1}
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary>span>b{min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary>span>small{margin-left:auto;text-align:right}
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary::marker{font-size:.8em}
+
+html[data-native-semantic-lattice="3.2.0"] [data-mapping-journey="requirement-first"]>summary{display:flex;align-items:center;justify-content:space-between;gap:.65rem}
+html[data-native-semantic-lattice="3.2.0"] [data-mapping-journey="requirement-first"]>summary small{color:var(--color-muted);font-weight:var(--weight-description)}
+html[data-native-semantic-lattice="3.2.0"] [data-mapping-step]{position:relative}
+html[data-native-semantic-lattice="3.2.0"] [data-mapping-step]::before{content:attr(data-mapping-step);display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;margin-right:.35rem;border:1px solid var(--color-border);border-radius:999px;color:var(--color-muted);font-size:.7rem;font-weight:700}
+
+.ai-provider-selector{order:-10}
+.ai-provider-advanced{margin:.25rem 0;border:1px solid var(--color-border);border-radius:10px;padding:.35rem .5rem}
+.ai-provider-advanced>summary{cursor:pointer;font-weight:650}
+[data-ai-provider-advanced-body]{display:grid;gap:.45rem;margin-top:.45rem}
+.ai-provider-status{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.55rem .65rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+.ai-provider-status[data-ai-provider-status="ok"]{border-color:color-mix(in srgb,#198754 45%,var(--color-border))}
+.ai-provider-status[data-ai-provider-status="error"]{border-color:color-mix(in srgb,#b42318 45%,var(--color-border))}
+.command-dialog footer kbd{display:inline-flex;min-width:1.45rem;min-height:1.4rem;align-items:center;justify-content:center;padding:0 .25rem;border:1px solid var(--color-border);border-radius:5px;background:var(--color-surface);font:inherit;font-size:.75rem}
+
+@media(max-width:900px){html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:minmax(0,1fr) minmax(8rem,auto) minmax(8rem,auto);}}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{grid-template-columns:1fr}html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:1fr!important;align-items:stretch!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{min-width:0;width:100%}.ai-provider-status{align-items:flex-start;flex-direction:column}}
