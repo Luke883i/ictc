@@ -83,8 +83,14 @@ function procedureCard(item) {
 
 function renderProcedureHub() {
   const host = $('.process-lanes');
+  if (!host) return false;
+  if (host.id === 'procedureHub' && host.dataset.procedureHub === 'semantic-workspace-closure-3-2-1') {
+    host.dataset.enterprise2Processes = 'compatibility-observer';
+    setText($('.workbench-home-rule'), 'Le procedure disponibili derivano dal ruolo e dallo stato corrente. La priorità suggerita resta una sola.');
+    return true;
+  }
   const procedures = state.data?.procedures;
-  if (!host || !Array.isArray(procedures) || !procedures.length) return false;
+  if (!Array.isArray(procedures) || !procedures.length) return false;
   const signature = JSON.stringify(procedures.map(item => [item.id, item.state, item.attentionCount, item.metrics, item.actionLabel, item.description]));
   if (host.dataset.procedureSignature !== signature) {
     host.innerHTML = procedures.map(procedureCard).join('');
