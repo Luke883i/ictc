@@ -8,7 +8,9 @@
 /* The canonical compact frame is the sole visible procedure identity. Historical
    presentation layers may still target generic process headings; the A2 owner
    explicitly keeps the complete SurfaceIdentity chain rendered while retiring
-   only legacy identity. */
+   only legacy identity. The P2 identity has exactly two semantic children:
+   procedure code + title, so its desktop track model matches the existing mobile
+   two-track model instead of retaining the pre-P2 three-track shape. */
 #monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
 #incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
 #grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
@@ -17,10 +19,17 @@
 #grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy { display:grid !important; visibility:visible !important; }
 #monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity,
 #incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity,
-#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity { display:grid !important; visibility:visible !important; min-width:0; }
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity {
+  display:grid !important;
+  grid-template-columns:auto minmax(0,1fr) !important;
+  align-items:baseline;
+  gap:.42rem;
+  visibility:visible !important;
+  min-width:0;
+}
 #monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
 #incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
-#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1 { display:block !important; visibility:visible !important; min-width:0; min-height:1em; }
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1 { display:block !important; visibility:visible !important; min-width:0; min-height:1em; width:auto !important; max-width:100%; white-space:normal; }
 #monitoringView > .hero,
 #incidentsView > .hero { display:block; margin:0; padding:0; background:none; border:0; box-shadow:none; }
 #grcWorkspace > .grc-head { min-height:0; }
