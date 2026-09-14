@@ -24,7 +24,7 @@ Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di conver
 | security boundary | `node v3/security-boundary-check.mjs` | `npm run release:check` |
 | docs/routing/authority projection | `npm run docs:check` | `npm run docs:saturation` |
 | convergence/workbook planning | `node v3/convergence-authority-check.mjs` | `npm test` |
-| C5 owner/freshness | `node v3/c5-semantic-owner-check.mjs` | `node v3/c5-semantic-owner-saturation.mjs && node v3/c5-needs-audit-saturation.mjs && npm test` |
+| C5 owner/freshness | `node v3/c5-semantic-owner-check.mjs` | `node v3/c5-semantic-owner-saturation.mjs`, `node v3/c5-needs-audit-saturation.mjs`, poi `npm test` |
 
 Se una modifica locale richiede di leggere o cambiare molte authority non correlate, fermati e verifica prima il routing in `docs/START_HERE.md` e `v3/semantic-owner-contract.json`: la soluzione preferita resta nel proprietario esistente.
 
