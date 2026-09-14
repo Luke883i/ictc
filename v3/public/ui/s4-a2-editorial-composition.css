@@ -10,7 +10,7 @@
    explicitly keeps the complete SurfaceIdentity chain rendered while retiring
    only legacy identity. The P2 identity has exactly two semantic children:
    procedure code + title. Pin the identity to the canonical explicit copy track
-   so stale named/implicit-grid placement cannot collapse the end-user title. */
+   and neutralize legacy visual/positioning collapse on that bounded node only. */
 #monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
 #incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
 #grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main,
@@ -27,6 +27,16 @@
   justify-self:stretch;
   gap:.42rem;
   visibility:visible !important;
+  opacity:1 !important;
+  position:static !important;
+  inset:auto !important;
+  transform:none !important;
+  translate:none !important;
+  rotate:none !important;
+  scale:1 !important;
+  clip-path:none !important;
+  contain:none !important;
+  content-visibility:visible !important;
   min-width:0;
   width:100% !important;
   max-width:100%;
@@ -34,7 +44,7 @@
 }
 #monitoringView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
 #incidentsView > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1,
-#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1 { display:block !important; visibility:visible !important; min-width:0; min-height:1em; width:auto !important; max-width:100%; white-space:normal; }
+#grcWorkspace > .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity h1 { display:block !important; visibility:visible !important; opacity:1 !important; transform:none !important; translate:none !important; rotate:none !important; scale:1 !important; clip-path:none !important; min-width:0; min-height:1em; width:auto !important; max-width:100%; white-space:normal; }
 #monitoringView > .hero,
 #incidentsView > .hero { display:block; margin:0; padding:0; background:none; border:0; box-shadow:none; }
 #grcWorkspace > .grc-head { min-height:0; }
