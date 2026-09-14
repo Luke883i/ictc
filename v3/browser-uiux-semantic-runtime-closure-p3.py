@@ -20,7 +20,11 @@ def fail(exc):
 def processes(page): return page.locator('.service-nav [data-service="processes"]')
 def open_process(page,code):
     global PHASE
-    processes(page).click(); card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible(); card.locator('.procedure-primary').click(); pid,root=CODES[code]; PHASE=f'{code}-mounted'; page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.semanticRuntimeClosure==='p3')}",arg={'root':root}); return page.locator(root)
+    PHASE=f'{code}-catalogue-nav';processes(page).click();page.wait_for_function("()=>!document.querySelector('#processesView')?.hidden")
+    PHASE=f'{code}-catalogue-card-visible';card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible()
+    PHASE=f'{code}-catalogue-primary-visible';primary=card.locator('.procedure-primary,.primary').first;expect(primary).to_be_visible()
+    PHASE=f'{code}-catalogue-primary-click';primary.click()
+    pid,root=CODES[code];PHASE=f'{code}-mounted';page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.semanticRuntimeClosure==='p3')}",arg={'root':root});return page.locator(root)
 
 def run(browser):
     global PHASE
@@ -40,11 +44,12 @@ def run(browser):
 
     ec=open_process(page,'EC-01'); PHASE='ec-single-owner';assert visible_exact(page,'Eventi registrati')==1;ereg=ec.locator('[data-a6-registry="incidents"]');expect(ereg).to_be_visible();ecrail=ec.locator('[data-control-rail="incidents"]');expect(ecrail).to_have_count(1);expect(ecrail.locator('[data-a6-ux4-scope="incidents"]')).to_have_count(1);record('ec-single-registry',ereg.locator('[data-a6-registry-count-group]').inner_text())
 
-    ao=open_process(page,'AO-01'); PHASE='ao-control-rail';aorail=ao.locator('.procedure-queue-tools[data-enduser-primitive="ControlRail"]');expect(aorail).to_have_count(1);expect(aorail.locator('[data-a6-ux4-scope="objects"]')).to_have_count(1);record('ao-control-rail')
-    ap=open_process(page,'AP-01'); PHASE='ap-control-rail';aprail=ap.locator('.procedure-queue-tools[data-enduser-primitive="ControlRail"]');expect(aprail).to_have_count(1);expect(aprail.locator('[data-a6-ux4-scope="actions"]')).to_have_count(1);record('ap-control-rail')
+    ao=open_process(page,'AO-01'); PHASE='ao-control-rail';aorail=ao.locator('[data-enduser-primitive="ControlRail"][data-control-rail="objects"]');expect(aorail).to_have_count(1);expect(aorail.locator('[data-a6-ux4-scope="objects"]')).to_have_count(1);record('ao-control-rail')
 
     mc=open_process(page,'MC-01'); PHASE='mc-state-axis';scopes=mc.locator('.market-scope[data-state-axis="organizational-use"]');assert scopes.count()>0,scopes.count();entries=mc.locator('[data-open-standard-browser]');expect(entries.first).to_be_visible();target=mc.locator('[data-framework-card="eu-nis2-2022-2555"] [data-open-standard-browser]');(target if target.count() else entries.first).click();dialog=page.locator('#standardBrowserDialog');expect(dialog).to_be_visible();PHASE='standard-origin';expect(dialog.locator('[data-standard-content-origin]')).to_be_visible();origin=dialog.locator('[data-standard-content-origin]').get_attribute('data-standard-content-origin');assert origin in ['official-public-reference','authorized-licensed','ictc-operational-formulation','reference-only'],origin
     if target.count():expect(dialog.locator('.standard-source-link')).to_be_visible();mapper=dialog.locator('[data-standard-map]');expect(mapper).to_be_visible();mapper.click();PHASE='mapping-context';mapping=mc.locator('[data-mapping-journey="requirement-first"]');expect(mapping).to_be_visible();assert 'Requisito' in mapping.locator(':scope > summary').inner_text();record('standard-and-mapping-context',origin)
+
+    ap=open_process(page,'AP-01'); PHASE='ap-control-rail';aprail=ap.locator('[data-enduser-primitive="ControlRail"][data-control-rail="actions"]');expect(aprail).to_have_count(1);expect(aprail.locator('[data-a6-ux4-scope="actions"]')).to_have_count(1);record('ap-control-rail')
 
     PHASE='command-palette';page.locator('#globalCommandTrigger').click();cmd=page.locator('#globalCommandDialog');expect(cmd).to_be_visible();expect(cmd.locator('footer kbd')).to_have_count(4);footer=cmd.locator('footer').inner_text();assert 'sposta selezione' in footer and 'Invio' in footer and 'Esc' in footer;cmd.locator('[data-command-close]').click();record('command-keyboard-legend')
 
