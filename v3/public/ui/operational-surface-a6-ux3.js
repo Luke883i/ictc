@@ -81,19 +81,38 @@ function homeOwner(){
   }
 }
 
+function retireLegacyRegistryHead(host,id){
+  const section=host?.closest('.section-block');
+  const head=section?.querySelector(':scope > .section-head');
+  if(!head)return;
+  head.hidden=true;
+  head.dataset.a6Ux3SemanticOwner='retired';
+  head.dataset.a6Ux3RetiredBy=id;
+  const legacyCount=head.querySelector('.counter,[id$="Count"]');
+  if(legacyCount){
+    legacyCount.dataset.semanticCountOwner='retired';
+    legacyCount.setAttribute('aria-hidden','true');
+  }
+}
+
 function registryWrap(host,{id,label,process,count,open=false}){
   if(!host)return null;
-  const existing=host.closest(`[data-a6-registry="${id}"]`);
-  if(existing)return existing;
-  const details=document.createElement('details');
-  details.className='a6-operational-registry';
-  details.dataset.a6Registry=id;
-  details.open=open;
-  const summary=document.createElement('summary');
-  summary.innerHTML=`<span>${label}</span><small data-a6-registry-count>${Number(count||0)}</small>`;
-  journey(summary,{process,intent:`inspect-${id}-registry`});
-  host.parentElement?.insertBefore(details,host);
-  details.append(summary,host);
+  retireLegacyRegistryHead(host,id);
+  let details=host.closest(`[data-a6-registry="${id}"]`);
+  if(!details){
+    details=document.createElement('details');
+    details.className='a6-operational-registry';
+    details.dataset.a6Registry=id;
+    details.open=open;
+    const summary=document.createElement('summary');
+    summary.innerHTML=`<span>${label}</span><small data-a6-registry-count-group data-semantic-count-owner="primary"><b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span></small>`;
+    journey(summary,{process,intent:`inspect-${id}-registry`});
+    host.parentElement?.insertBefore(details,host);
+    details.append(summary,host);
+  }
+  details.dataset.a6RegistryTotal=String(Number(count||0));
+  const total=details.querySelector('[data-a6-registry-total]');
+  if(total)total.textContent=`${Number(count||0)} totali`;
   return details;
 }
 
@@ -104,6 +123,8 @@ function ensureFilter(details,{id,process,options,defaultValue}){
     tools=document.createElement('div');
     tools.className='a6-operational-filter';
     tools.dataset.a6Filter=id;
+    tools.dataset.enduserPrimitive='ControlRail';
+    tools.dataset.controlRail=id;
     tools.innerHTML=`<label><span>Cerca</span><input type="search" data-a6-search="${id}" aria-label="Cerca nel registro ${id}"></label><label><span>Stato</span><select data-a6-state="${id}" aria-label="Filtra stato ${id}">${options.map(([value,label])=>`<option value="${value}">${label}</option>`).join('')}</select></label>`;
     details.insertBefore(tools,details.children[1]||null);
   }
@@ -131,7 +152,8 @@ function applyCardFilter(id){
   const details=document.querySelector(`[data-a6-registry="${id}"]`);
   if(!details)return;
   const query=String(details.querySelector(`[data-a6-search="${id}"]`)?.value||'').trim().toLocaleLowerCase('it-IT');
-  const filter=String(details.querySelector(`[data-a6-state="${id}"]`)?.value||'all');
+  const select=details.querySelector(`[data-a6-state="${id}"]`);
+  const filter=String(select?.value||'all');
   let shown=0;
   for(const card of details.querySelectorAll('[data-a6-filter-card]')){
     const recordText=String(card.dataset.a6RecordSearch||'');
@@ -141,8 +163,14 @@ function applyCardFilter(id){
     if(visible)shown++;
   }
   const count=details.querySelector('[data-a6-registry-count]');
+  const label=details.querySelector('[data-a6-registry-count-label]');
+  const total=Number(details.dataset.a6RegistryTotal||0);
   if(count)count.textContent=String(shown);
+  if(label)label.textContent=filter==='all'&&!query?'':' '+String(select?.selectedOptions?.[0]?.textContent||'visibili').toLocaleLowerCase('it-IT');
+  const totalNode=details.querySelector('[data-a6-registry-total]');
+  if(totalNode)totalNode.hidden=shown===total&&filter==='all'&&!query;
   details.dataset.a6VisibleCount=String(shown);
+  details.dataset.a6CountSemantics=filter==='all'&&!query?'total':'visible-filtered';
 }
 
 function missionId(card){
