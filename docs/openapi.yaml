@@ -297,6 +297,10 @@ paths:
     put:
       summary: Aggiorna configurazione organizzativa e AI
       responses: { '200': { description: Configurazione aggiornata con receipt } }
+  /api/admin/ai/test:
+    post:
+      summary: Verifica la connessione al provider AI con la configurazione proposta senza salvarla
+      responses: { '200': { description: Esito bounded del probe provider; nessuna decisione di business } }
   /api/admin/ai-policy:
     put:
       summary: Aggiorna la policy AI governata
