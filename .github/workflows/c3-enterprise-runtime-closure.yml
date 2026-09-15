@@ -53,6 +53,12 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
+      - name: PostgreSQL schema and application-role setup
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs setup
+      - name: PostgreSQL RLS and NOBYPASSRLS application connection
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs rls
+      - name: PostgreSQL first enterprise subject commit
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs commit
       - name: Real PostgreSQL two-replica semantic integration
         run: node v3/c3-enterprise-bench-integration-check.mjs
       - name: Two-process HTTP 1000-client concurrency canary
