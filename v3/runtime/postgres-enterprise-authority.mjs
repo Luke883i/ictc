@@ -155,6 +155,11 @@ function emptyBucketRoot(){return enterpriseBucketDigest([]);}
 function decodeCursor(value){if(!value)return null;try{const decoded=Buffer.from(String(value),'base64url').toString('utf8'),[type,id]=decoded.split('\u0000');return type&&id?{type,id}:null;}catch{return null;}}
 function encodeCursor(type,id){return Buffer.from(`${type}\u0000${id}`,'utf8').toString('base64url');}
 function isCommandResultUnique(error){return error?.code==='23505'&&String(error?.constraint||'').includes('ictc_command_result');}
+export function enterpriseSubjectAdvisoryLockKey(tenantId,subject={}){
+  const tenant=normalizeEnterpriseTenantId(tenantId),type=text(subject?.type,80),id=text(subject?.id,300);
+  if(!type||!id)fail('enterprise-subject-lock-key-invalid','Subject type/id required for advisory lock',{tenantId:tenant,subject});
+  return createHash('sha256').update(`${tenant}\u0000${type}\u0000${id}`,'utf8').digest().readBigInt64BE(0).toString();
+}
 
 export class PostgresEnterpriseAuthority{
   constructor(pool,{clock=()=>new Date().toISOString()}={}){this.pool=pool;this.clock=clock;}
@@ -175,7 +180,7 @@ export class PostgresEnterpriseAuthority{
     const perform=()=>this._tenantTx(tenant,async client=>{
       const replay=await this.findCommandResult(tenant,command,{client});
       if(replay){if(replay.actorId!==actor||replay.action!==operation)fail('command-id-conflict','Command id already used for another operation');return Object.freeze({...replay.envelope,replayed:true});}
-      for(const write of writes)await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',[`${tenant}\u0000${write.subject.type}\u0000${write.subject.id}`]);
+      for(const write of writes)await client.query('SELECT pg_advisory_xact_lock($1::bigint)',[enterpriseSubjectAdvisoryLockKey(tenant,write.subject)]);
       const replayAfterLock=await this.findCommandResult(tenant,command,{client});
       if(replayAfterLock){if(replayAfterLock.actorId!==actor||replayAfterLock.action!==operation)fail('command-id-conflict','Command id already used for another operation');return Object.freeze({...replayAfterLock.envelope,replayed:true});}
       const committed=[];const changedBuckets=new Set();
