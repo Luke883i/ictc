@@ -1,0 +1,21 @@
+name: c3-enterprise-runtime-closure
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: Enterprise runtime closure contract
+        run: node v3/c3-enterprise-runtime-closure-check.mjs
+      - name: Three-million semantic mutations per runtime gap
+        run: node v3/c3-enterprise-runtime-gap-mutation-45m.mjs
+      - name: One-million cross-gap collapse mutations
+        run: node v3/c3-enterprise-runtime-collapse-1m.mjs

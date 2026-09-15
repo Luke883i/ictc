@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "C3-ENTERPRISE-RUNTIME-CLOSURE",
+  "observedMain": "a10f6fc2d0c3468a42b203d9202b564f1bcbc37c",
+  "runtimeKernel": {
+    "requirements": 16,
+    "enterpriseKernelImplemented": 16,
+    "currentLocalCompatibilityModeImplemented": 1,
+    "currentLocalCompatibilityModePartial": 4,
+    "currentLocalCompatibilityModeBlocked": 11,
+    "postgresAuthority": "injected-client concrete adapter",
+    "tenantIsolation": "FORCE RLS + explicit tenant key",
+    "integrity": "256-bucket incremental state root",
+    "work": "durable fenced claims + async provider queue",
+    "blob": "shared object storage authority",
+    "rate": "signed distributed ingress decision",
+    "projection": "bounded keyset + delta + gap recovery",
+    "replicas": "no process-local business authority in enterprise profile",
+    "telemetry": "external sink"
+  },
+  "gapMutation": {
+    "seed": "0xC3153001",
+    "trialsPerGap": 3000000,
+    "gaps": 15,
+    "totalTrials": 45000000,
+    "digest": "5acf204585f4719d4f7ae356033ef89fd1d03b62b1de23b45e94b6047567193f",
+    "globalChecksum": "47f5136f",
+    "results": [
+      {"gap":"sharedDurableAuthority","ready":1583545,"blocked":1416455,"mismatches":0,"checksum":"b9b4d95e","mutantKills":[215560,216588,215652,215817,216240],"thresholdMutantKills":0},
+      {"gap":"tenantIsolationRls","ready":1582125,"blocked":1417875,"mismatches":0,"checksum":"e216391c","mutantKills":[216417,216801,216480,216007,214995],"thresholdMutantKills":0},
+      {"gap":"subjectScopedConcurrency","ready":1583292,"blocked":1416708,"mismatches":0,"checksum":"992b5500","mutantKills":[215526,216266,215902,216007,215727],"thresholdMutantKills":0},
+      {"gap":"incrementalIntegrity","ready":1584545,"blocked":1415455,"mismatches":0,"checksum":"d34ad981","mutantKills":[215654,214732,215797,215968,215989],"thresholdMutantKills":0},
+      {"gap":"atomicBoundedCommitReceipt","ready":1581720,"blocked":1418280,"mismatches":0,"checksum":"499fd098","mutantKills":[216539,216623,216433,215388,215907],"thresholdMutantKills":0},
+      {"gap":"orderedTenantAuditHead","ready":922942,"blocked":2077058,"mismatches":0,"checksum":"78dab250","mutantKills":[126457,126890,125844,126070,125757],"thresholdMutantKills":660002},
+      {"gap":"durableWorkClaims","ready":1582397,"blocked":1417603,"mismatches":0,"checksum":"9c81c606","mutantKills":[215707,215811,216193,216046,215667],"thresholdMutantKills":0},
+      {"gap":"durableAsyncProviderWork","ready":1583859,"blocked":1416141,"mismatches":0,"checksum":"7919287e","mutantKills":[215802,215062,215758,216007,215503],"thresholdMutantKills":0},
+      {"gap":"sharedBlobAuthority","ready":1583035,"blocked":1416965,"mismatches":0,"checksum":"fc069acd","mutantKills":[215638,215170,216367,216115,215523],"thresholdMutantKills":0},
+      {"gap":"distributedRateAuthority","ready":1582283,"blocked":1417717,"mismatches":0,"checksum":"c1e812fa","mutantKills":[216846,215457,216523,215890,215558],"thresholdMutantKills":0},
+      {"gap":"boundedQueryProjections","ready":1039241,"blocked":1960759,"mismatches":0,"checksum":"ebff8be2","mutantKills":[142599,141525,141819,141877,141712],"thresholdMutantKills":545249},
+      {"gap":"projectionDeltaReceipts","ready":1582724,"blocked":1417276,"mismatches":0,"checksum":"6d7cc155","mutantKills":[216306,215657,216176,216094,215893],"thresholdMutantKills":0},
+      {"gap":"revisionGapRecovery","ready":1798619,"blocked":1201381,"mismatches":0,"checksum":"d34c9f4f","mutantKills":[245405,246156,245725,245124],"thresholdMutantKills":0},
+      {"gap":"statelessReplicas","ready":1266197,"blocked":1733803,"mismatches":0,"checksum":"7fa297a2","mutantKills":[172862,173260,173164,172422,173140],"thresholdMutantKills":316156},
+      {"gap":"externalObservability","ready":1583998,"blocked":1416002,"mismatches":0,"checksum":"53537fce","mutantKills":[215524,216105,216134,215288,215755],"thresholdMutantKills":0}
+    ]
+  },
+  "collapseMutation": {
+    "seed": "0xC315C011",
+    "trials": 1000000,
+    "ready": 22160,
+    "blocked": 977840,
+    "mismatches": 0,
+    "checksum": "35edfc70",
+    "digest": "a2492135a0afd4ac010396c3c1707cdd9c04203e6e9ededdc3be7a3144a46a86",
+    "ablationKills": {"sharedDurableAuthority":353,"tenantIsolationRls":307,"subjectScopedConcurrency":350,"incrementalIntegrity":334,"atomicBoundedCommitReceipt":341,"orderedTenantAuditHead":329,"durableWorkClaims":321,"durableAsyncProviderWork":323,"sharedBlobAuthority":342,"distributedRateAuthority":336,"boundedQueryProjections":397,"projectionDeltaReceipts":342,"revisionGapRecovery":333,"statelessReplicas":350,"externalObservability":359},
+    "targetKills": {"users":1084,"hotWrites":5445,"writeP95":7377,"nodeFailure":219}
+  },
+  "claimBoundary": "Repository runtime substrate and executable contracts support a strong +1000-user scalability hypothesis. They do not constitute exact-head multi-process deployment-load, HA, failover, managed-service or production-capacity proof; C3 operationalReady remains false until qualifying deployment evidence exists."
+}
