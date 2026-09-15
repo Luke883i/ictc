@@ -6,7 +6,11 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const json = path => JSON.parse(read(path));
 const contract = json('./uiux-beauty-p4-contract.json');
 const owners = json('./semantic-owner-contract.json');
-const css = read('./public/screenshot-semantic-closure-p3a.css');
+const tokens = read('./public/design-tokens.css');
+const enterprise = read('./public/enterprise-workspace-3-2.css');
+const procedure = read('./public/semantic-workspace-closure-3-2-1.css');
+const shared = read('./public/enduser-composition-p2.css');
+const retired = read('./public/screenshot-semantic-closure-p3a.css');
 const workspace = read('./public/ui/native-workspace-3-2.js');
 
 assert.equal(contract.modelId, 'UIUX-BEAUTY-P4');
@@ -22,9 +26,7 @@ for (const surface of contract.surfaceCensus) {
 assert.equal(canonicalOwners.size, 13, 'C5 canonical owner denominator drifted');
 assert.ok(contract.secondarySurfaces.length >= 6, 'secondary overlay census incomplete');
 
-for (const required of contract.copyContract.requiredProductTerms) {
-  assert.ok(PRODUCT_PROPOSITION.includes(required), `product proposition lost ${required}`);
-}
+for (const required of contract.copyContract.requiredProductTerms) assert.ok(PRODUCT_PROPOSITION.includes(required), `product proposition lost ${required}`);
 assert.ok(PRODUCT_PROPOSITION.length <= 280, 'product proposition became too long for the home first plane');
 assert.ok(!/\bowner\b/i.test(Object.values(PROCEDURE_WORKSPACE).flatMap(x => [x.catalogueSummary, x.workspacePurpose]).join(' ')), 'avoidable English owner jargon remains in canonical procedure copy');
 for (const [id, copy] of Object.entries(PROCEDURE_WORKSPACE)) {
@@ -33,20 +35,23 @@ for (const [id, copy] of Object.entries(PROCEDURE_WORKSPACE)) {
   assert.ok(copy.boundary.length >= 25, `${id} boundary became decorative or empty`);
 }
 
-assert.ok(css.includes('P4 beauty convergence'), 'P4 must extend the existing screenshot closure, not create a new presentation layer');
 assert.ok(!workspace.includes('beauty-p4.css'), 'P4 must not mount a new CSS layer');
-const requiredCss = [
-  '#homeView #homeSummary{max-width:var(--p4-reading-wide)!important;font-size:.95rem!important;line-height:1.5!important}',
-  '#processesView .processes-head p{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.5!important}',
-  '#procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{font-size:.9rem!important;line-height:1.42!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important',
-  '.procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.45!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}',
-  '#grcWorkspace .grc-list>article>header{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"status title" ". meta";align-items:center',
-  '.status-pill{grid-area:status;justify-self:start;align-self:center;min-height:26px;padding:.22rem .5rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface-subtle);font-size:.78rem!important;font-weight:var(--weight-label);letter-spacing:.01em;text-transform:none;opacity:1}',
-  '#proofContent>details.proof-section>summary small{font-size:.8rem!important;line-height:1.38!important}',
-  '#adminCenter .procedure-policy-row small{font-size:.78rem!important;line-height:1.4!important;color:var(--color-muted)}',
-  '#settingsDialog .settings-section-18>summary small{font-size:.8rem;line-height:1.38;color:var(--color-muted)}'
+assert.ok(!workspace.includes('/screenshot-semantic-closure-p3a.css'), 'P4 presentation must be absorbed before P5, not retained as screenshot ownership');
+assert.ok(retired.includes('owns no runtime presentation'), 'P3A source marker must state retirement');
+const requiredByOwner = [
+  [tokens, '--ui-reading-wide:76ch', 'reading measure token'],
+  [tokens, '--ui-state-h:26px', 'state height token'],
+  [enterprise, '#homeView #homeSummary{max-width:var(--ui-reading-wide)', 'home readability'],
+  [procedure, '#processesView .processes-head p{max-width:var(--ui-reading-wide)', 'process catalogue lead'],
+  [procedure, '.procedure-card[data-uiux-layout="row"]>.procedure-purpose{grid-area:purpose', 'process purpose wrapping'],
+  [procedure, '.procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{min-width:0;max-width:var(--ui-reading-wide)', 'procedure lead'],
+  [shared, '[data-surface-archetype="registry"] .grc-list>article>header{', 'GRC record hierarchy'],
+  [shared, '[data-enduser-primitive="StateChip"]{', 'canonical state grammar'],
+  [procedure, '#proofContent>details.proof-section>summary small{font-size:var(--type-control)', 'proof secondary copy'],
+  [enterprise, '#adminCenter .procedure-policy-row small{font-size:var(--type-label)', 'admin row copy'],
+  [enterprise, '#settingsDialog .settings-section-18>summary small{font-size:var(--type-control)', 'settings hierarchy']
 ];
-for (const fragment of requiredCss) assert.ok(css.includes(fragment), `missing beauty contract CSS: ${fragment.slice(0, 80)}`);
+for (const [source, fragment, name] of requiredByOwner) assert.ok(source.includes(fragment), `missing absorbed P4 contract: ${name}`);
 
 assert.equal(contract.visualContract.canonicalPurposeEllipsisAllowed, false);
 assert.equal(contract.visualContract.statusUppercaseForced, false);
@@ -61,6 +66,7 @@ console.log(JSON.stringify({
   secondarySurfaces: contract.secondarySurfaces.length,
   procedures: Object.keys(PROCEDURE_WORKSPACE).length,
   presentationOwnerAdded: false,
+  screenshotPresentationOwnerRetired: true,
   mutationTrialsDeclared: contract.mutationCampaigns.reduce((sum, item) => sum + item.trials, 0),
   claimBoundary: contract.claimBoundary
 }));

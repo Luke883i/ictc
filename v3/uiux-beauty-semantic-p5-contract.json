@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "UIUX-BEAUTY-SEMANTIC-P5",
+  "classification": "rebased-runtime-semantic-beauty-authority-pr-candidate",
+  "intent": "Compress ICTC visual beauty into semantic runtime authorities so that the same meaning has the same visual grammar without a late screenshot or beauty resolver.",
+  "canonicalSurfaces": [
+    "home",
+    "processes",
+    "monitoring",
+    "incidents",
+    "objects",
+    "coverage",
+    "actions",
+    "risks",
+    "assurance",
+    "proof",
+    "epistemic",
+    "admin",
+    "ai-settings"
+  ],
+  "archetypeFamilies": {
+    "orientation": [
+      "home",
+      "processes"
+    ],
+    "operational": [
+      "monitoring",
+      "incidents"
+    ],
+    "registry": [
+      "objects",
+      "coverage",
+      "actions",
+      "risks",
+      "assurance"
+    ],
+    "evidence-knowledge": [
+      "proof",
+      "epistemic"
+    ],
+    "configuration": [
+      "admin",
+      "ai-settings"
+    ]
+  },
+  "minimumLattice": [
+    {
+      "id": "M1_VISUAL_AUTHORITY",
+      "definition": "One semantic role maps to one current presentation authority and a bounded token vocabulary."
+    },
+    {
+      "id": "M2_SEMANTIC_HIERARCHY",
+      "definition": "Visual emphasis follows epistemic and decision meaning; evidence, proposals, ratings and internal approvals never visually imply stronger claims."
+    },
+    {
+      "id": "M3_OBJECT_INTERACTION_GRAMMAR",
+      "definition": "Records, states, actions, controls and disclosures reuse canonical semantic primitives."
+    },
+    {
+      "id": "M4_CONTEXTUAL_ADAPTATION",
+      "definition": "The shared grammar specializes by surface archetype and viewport without changing semantic order."
+    }
+  ],
+  "absorbedInsufficientStrategies": [
+    "token-only",
+    "cascade-only",
+    "responsive-only",
+    "epistemic-badges-only",
+    "local-page-polish"
+  ],
+  "runtimeAuthority": {
+    "tokens": "v3/public/design-tokens.css",
+    "sharedSemanticObjects": "v3/public/enduser-composition-p2.css",
+    "homeEvidenceConfiguration": "v3/public/enterprise-workspace-3-2.css",
+    "processProcedureProof": "v3/public/semantic-workspace-closure-3-2-1.css",
+    "operationalRegistry": "v3/public/a6-ux3-operational-surface.css",
+    "surfaceIdentityAndArchetype": "v3/public/ui/semantic-composition-runtime.js",
+    "stateProjection": "v3/public/ui/semantic-state-projection-p3.js"
+  },
+  "retiredRuntimePresentationOwners": [
+    "v3/public/screenshot-semantic-closure-p3a.css"
+  ],
+  "invariants": {
+    "canonicalAiSettingsId": "ai-settings",
+    "surfaceCount": 13,
+    "archetypeFamilyCount": 5,
+    "businessProcedureCount": 7,
+    "newBeautyStylesheetAllowed": false,
+    "screenshotStylesheetMounted": false,
+    "stateRequiresTextAndStyle": true,
+    "semanticReorderOnResponsiveAllowed": false,
+    "humanDecisionBoundaryRequired": true
+  },
+  "mutationCampaign": {
+    "model": "ICTC-ONTO-EPISTEMIC-DESIGN-MUTATION-1M",
+    "seed": "0x15C0FFEE",
+    "trials": 1000000,
+    "expectedSurvivors": 0,
+    "multiDefectExpected": 563215
+  },
+  "definitionOfDone": {
+    "global": [
+      "All 13 canonical surfaces resolve to exactly one of five visual archetype families.",
+      "No canonical surface id aliases exist between blueprint, grammar and local-owner registries.",
+      "The screenshot-specific P3A stylesheet is not mounted at runtime.",
+      "P4 readability and geometry obligations survive in current semantic owners.",
+      "State is encoded as text plus style and GRC status pills enter the canonical StateChip primitive.",
+      "No new beauty-specific stylesheet is introduced.",
+      "Existing semantic/runtime CI gates remain green where executable locally."
+    ],
+    "epistemic": [
+      "Evidence does not visually become a verdict.",
+      "Internal approval does not visually become independent certification.",
+      "A risk rating does not visually become objective probability.",
+      "Observed does not visually become applicable; proposed does not visually become decided; completed does not visually become verified.",
+      "AI assistance does not visually become a human decision."
+    ],
+    "external": [
+      "Representative human pleasantness remains an external E3-HUMAN gate.",
+      "Fresh browser rendering is required when a browser without sandbox URLBlocklist is available.",
+      "Green local CI is not deployment assurance, accessibility effectiveness, legal compliance or enterprise readiness."
+    ]
+  },
+  "claimBoundary": "P5 is a runtime semantic-design authority-compression PR candidate rebased and adversarially falsified against the recorded new-main observation. Mutation closure is deterministic source/contract model evidence, not one million users or browser sessions. Exact-head CI is the integration authority; human rendered pleasantness and deployment assurance remain external.",
+  "baseObservation": {
+    "mainSha": "08d4f6db531a2c48a8d22be6659742066d43bdb9",
+    "mergedThroughPr": 156,
+    "previousLocalBaseSha": "bd7a2cdc11f5aeff87839a6fa70d0f05ae71277d"
+  },
+  "newMainAdversarialCampaign": {
+    "model": "UIUX-BEAUTY-SEMANTIC-P5-NEW-MAIN-ADVERSARIAL",
+    "seed": "0x5EED9156",
+    "trials": 1000000,
+    "expectedSurvivors": 0,
+    "contract": "v3/uiux-beauty-semantic-p5-new-main-contract.json"
+  }
+}
