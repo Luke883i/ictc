@@ -1,38 +1,47 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "id": "C3-ENTERPRISE-RUNTIME-CLOSURE",
   "inherits": ["C3-CAPACITY-CONTRACT", "C3-ENTERPRISE-SCALE-PACK"],
   "observedMain": "a10f6fc2d0c3468a42b203d9202b564f1bcbc37c",
   "runtimeMode": {
     "enterprise": "v3/runtime/enterprise-runtime-kernel.mjs",
+    "enterpriseBenchMount": "v3/enterprise-bench-server.mjs",
     "compatibility": "existing RuntimeStore/SQLite market-candidate path",
-    "rule": "The enterprise kernel is the horizontal-scale runtime substrate. Compatibility mode is preserved but is not evidence for the enterprise-scale claim."
+    "rule": "The enterprise kernel is the horizontal-scale runtime substrate. The dedicated bench mount exercises that substrate against shared PostgreSQL. Compatibility mode is preserved but is not evidence for the enterprise-scale claim."
   },
   "implementation": {
     "sharedDurableAuthority": "v3/runtime/postgres-enterprise-authority.mjs",
-    "tenantIsolationRls": "PostgreSQL FORCE ROW LEVEL SECURITY plus explicit tenant_id on every key",
-    "subjectScopedConcurrency": "subject current row lock + expected subject version; tenant revision is audit order only",
+    "tenantIsolationRls": "PostgreSQL FORCE ROW LEVEL SECURITY plus explicit transaction-local tenant_id",
+    "subjectScopedConcurrency": "ordered subject advisory lock + subject current row lock + expected subject version; tenant revision is audit order only",
     "incrementalIntegrity": "256 deterministic subject buckets + compact tenant state root",
     "atomicBoundedCommitReceipt": "bounded receipt committed with command ledger and audit event",
     "orderedTenantAuditHead": "late tenant-head FOR UPDATE after subject/bucket work",
     "durableWorkClaims": "durable work item row + SKIP LOCKED + monotonic fence",
     "durableAsyncProviderWork": "provider work queued in the same durable commit and returned as queued",
-    "sharedBlobAuthority": "shared object-storage port with tenant-prefixed quarantine/clean namespaces",
+    "sharedBlobAuthority": "shared blob port; PostgreSQL bytea bench adapter plus object-storage adapter boundary",
     "distributedRateAuthority": "signed ingress rate decision verified by application runtime",
-    "boundedQueryProjections": "keyset/cursor bounded current-subject projection, limit 10..200 with total truth",
+    "boundedQueryProjections": "repeatable-read keyset/cursor bounded current-subject projection, limit 10..200 with total truth",
     "projectionDeltaReceipts": "bounded dirty subjects and projection owners per tenant revision",
     "revisionGapRecovery": "contiguous apply, equal noop, gap/ahead refetch",
-    "statelessReplicas": "enterprise profile rejects process-local business/work authority",
-    "externalObservability": "external collector sink with bounded low-cardinality telemetry"
+    "statelessReplicas": "enterprise profile and bench server contain no process-local business/work authority",
+    "externalObservability": "external sink port; PostgreSQL shared bench sink verifies cross-process export semantics"
   },
-  "deliberatelyNotRequired": ["redis", "kafka", "microservices", "full-event-store", "parallel-audit-dag"],
+  "deliberatelyNotRequired": ["redis", "kafka", "orm", "microservices", "full-event-store", "parallel-audit-dag"],
   "dod": {
     "runtimeSubstrateImplemented": true,
     "gapFalsificationTrialsEach": 3000000,
     "gapCount": 15,
     "crossGapCollapseTrials": 1000000,
+    "benchDod": "v3/c3-enterprise-bench-dod.json",
+    "benchAspectFalsificationTrialsEach": 1000000,
+    "benchAspectCount": 18,
+    "benchEdgeStressTrials": 1000000,
+    "realPostgresCiRequired": true,
+    "twoReplicaHttpCanaryRequired": true,
+    "concurrentClientCanary": 1000,
     "semanticOracleMismatches": 0,
     "deploymentLoadProofRequired": true,
+    "enterpriseBenchReadyClaimAllowedAfterExactHeadGreen": true,
     "productionScaleClaimAllowedWithoutDeploymentEvidence": false
   }
 }
