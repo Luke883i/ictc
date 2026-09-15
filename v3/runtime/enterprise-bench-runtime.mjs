@@ -13,7 +13,7 @@ export function enterpriseBenchConfig(env=process.env){
   const databaseUrl=text(env.ICTC_ENTERPRISE_DATABASE_URL,2000),rateSecret=text(env.ICTC_ENTERPRISE_RATE_SECRET,2000);
   if(!databaseUrl)fail('enterprise-database-url-required','ICTC_ENTERPRISE_DATABASE_URL is required');
   if(rateSecret.length<32)fail('enterprise-rate-secret-required','ICTC_ENTERPRISE_RATE_SECRET must contain at least 32 characters');
-  const max=Math.max(2,Math.min(128,Number(env.ICTC_ENTERPRISE_POOL_MAX||24)||24));
+  const requestedPoolMax=Number(env.ICTC_ENTERPRISE_POOL_MAX||32)||32,max=Math.max(32,Math.min(128,requestedPoolMax));
   const connectionTimeoutMillis=Math.max(1000,Math.min(30000,Number(env.ICTC_ENTERPRISE_CONNECT_TIMEOUT_MS||5000)||5000));
   const statementTimeout=Math.max(1000,Math.min(120000,Number(env.ICTC_ENTERPRISE_STATEMENT_TIMEOUT_MS||30000)||30000));
   return Object.freeze({databaseUrl,rateSecret,max,connectionTimeoutMillis,statementTimeout});

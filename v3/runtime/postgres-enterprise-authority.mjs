@@ -165,7 +165,7 @@ export class PostgresEnterpriseAuthority{
   constructor(pool,{clock=()=>new Date().toISOString()}={}){this.pool=pool;this.clock=clock;}
   async init(){const {client,release}=await acquire(this.pool);try{await client.query(ENTERPRISE_POSTGRES_DDL);}finally{release();}return this;}
   async ping(){const result=await this.pool.query('SELECT 1 AS ok');return result.rows?.[0]?.ok===1;}
-  runtimePosture(){return Object.freeze({schemaVersion:'1.1.0',backend:'postgresql',scope:'shared-durable',tenantIsolation:'rls+explicit-tenant-key',concurrency:'subject-version',integrity:'bucketed-state-root',commitReceipt:'bounded-atomic',auditOrdering:'tenant-head-row-lock',claims:'durable-fenced',asyncProviderWork:true,projections:'bounded-cursor',projectionDelta:true,revisionGapRecovery:true,processLocalBusinessAuthority:false,limitations:['Deployment must supply a PostgreSQL role that cannot bypass FORCE ROW LEVEL SECURITY and must prove latency/failover under exact-head load.']});}
+  runtimePosture(){return Object.freeze({schemaVersion:'1.2.0',backend:'postgresql',scope:'shared-durable',tenantIsolation:'rls+explicit-tenant-key',concurrency:'subject-version',integrity:'bucketed-state-root',commitReceipt:'bounded-atomic',auditOrdering:'tenant-head-row-lock',claims:'durable-fenced',asyncProviderWork:true,projections:'bounded-cursor',projectionDelta:true,revisionGapRecovery:true,processLocalBusinessAuthority:false,limitations:['Deployment must supply a PostgreSQL role that cannot bypass FORCE ROW LEVEL SECURITY and must prove latency/failover under exact-head load.']});}
   _tenantTx(tenantId,fn){return withTenantTransaction(this.pool,tenantId,fn);}
   _tenantRead(tenantId,fn){return withTenantReadTransaction(this.pool,tenantId,fn);}
   async findCommandResult(tenantId,commandId,{client=null}={}){
@@ -178,38 +178,59 @@ export class PostgresEnterpriseAuthority{
     const tenant=normalizeEnterpriseTenantId(tenantId),command=text(commandId,200),actor=text(actorId,240),operation=text(action,240),writes=orderedSubjectWriteSet(subjects),at=this.clock();
     if(!command||!actor||!operation||!writes.length)fail('enterprise-commit-input-invalid','Enterprise commit requires command, actor, action and at least one subject');
     const perform=()=>this._tenantTx(tenant,async client=>{
-      const replay=await this.findCommandResult(tenant,command,{client});
-      if(replay){if(replay.actorId!==actor||replay.action!==operation)fail('command-id-conflict','Command id already used for another operation');return Object.freeze({...replay.envelope,replayed:true});}
       for(const write of writes)await client.query('SELECT pg_advisory_xact_lock($1::bigint)',[enterpriseSubjectAdvisoryLockKey(tenant,write.subject)]);
       const replayAfterLock=await this.findCommandResult(tenant,command,{client});
       if(replayAfterLock){if(replayAfterLock.actorId!==actor||replayAfterLock.action!==operation)fail('command-id-conflict','Command id already used for another operation');return Object.freeze({...replayAfterLock.envelope,replayed:true});}
       const committed=[];const changedBuckets=new Set();
       for(const write of writes){
-        const current=(await client.query('SELECT version,payload_sha256 FROM ictc_subject_current WHERE tenant_id=$1 AND subject_type=$2 AND subject_id=$3 FOR UPDATE',[tenant,write.subject.type,write.subject.id])).rows?.[0]||null;
-        const decision=subjectOccDecision({expectedVersion:write.expectedVersion,currentVersion:current?.version??null,exists:Boolean(current)});
-        if(!decision.ok)fail('subject-version-conflict','Subject version changed',{subject:write.subject,expectedVersion:decision.expectedVersion,currentVersion:decision.currentVersion});
-        const bucket=enterpriseSubjectBucket(tenant,write.subject);changedBuckets.add(bucket);
-        await client.query(`INSERT INTO ictc_subject_current(tenant_id,subject_type,subject_id,version,payload_sha256,payload_json,bucket,updated_at) VALUES($1,$2,$3,$4,$5,$6::jsonb,$7,$8) ON CONFLICT(tenant_id,subject_type,subject_id) DO UPDATE SET version=excluded.version,payload_sha256=excluded.payload_sha256,payload_json=excluded.payload_json,bucket=excluded.bucket,updated_at=excluded.updated_at`,[tenant,write.subject.type,write.subject.id,decision.nextVersion,write.payloadSha256,JSON.stringify(write.payload),bucket,at]);
-        await client.query('INSERT INTO ictc_subject_version(tenant_id,subject_type,subject_id,version,payload_sha256,payload_json,command_id,created_at) VALUES($1,$2,$3,$4,$5,$6::jsonb,$7,$8)',[tenant,write.subject.type,write.subject.id,decision.nextVersion,write.payloadSha256,JSON.stringify(write.payload),command,at]);
-        committed.push({subject:write.subject,version:decision.nextVersion,payloadSha256:write.payloadSha256,bucket});
+        const bucket=enterpriseSubjectBucket(tenant,write.subject),payloadJson=JSON.stringify(write.payload),base=[tenant,write.subject.type,write.subject.id,write.payloadSha256,payloadJson,bucket,command,at];changedBuckets.add(bucket);
+        const creating=write.expectedVersion==null||write.expectedVersion===0;
+        const sql=creating?`WITH changed AS (
+          INSERT INTO ictc_subject_current(tenant_id,subject_type,subject_id,version,payload_sha256,payload_json,bucket,updated_at)
+          VALUES($1,$2,$3,1,$4,$5::jsonb,$6,$8)
+          ON CONFLICT(tenant_id,subject_type,subject_id) DO NOTHING
+          RETURNING version
+        ), history AS (
+          INSERT INTO ictc_subject_version(tenant_id,subject_type,subject_id,version,payload_sha256,payload_json,command_id,created_at)
+          SELECT $1,$2,$3,version,$4,$5::jsonb,$7,$8 FROM changed
+          RETURNING version
+        ) SELECT version FROM changed`:`WITH changed AS (
+          UPDATE ictc_subject_current SET version=version+1,payload_sha256=$4,payload_json=$5::jsonb,bucket=$6,updated_at=$8
+          WHERE tenant_id=$1 AND subject_type=$2 AND subject_id=$3 AND version=$9
+          RETURNING version
+        ), history AS (
+          INSERT INTO ictc_subject_version(tenant_id,subject_type,subject_id,version,payload_sha256,payload_json,command_id,created_at)
+          SELECT $1,$2,$3,version,$4,$5::jsonb,$7,$8 FROM changed
+          RETURNING version
+        ) SELECT version FROM changed`;
+        const result=await client.query(sql,creating?base:[...base,write.expectedVersion]),nextVersion=Number(result.rows?.[0]?.version||0);
+        if(!nextVersion){
+          const current=(await client.query('SELECT version FROM ictc_subject_current WHERE tenant_id=$1 AND subject_type=$2 AND subject_id=$3',[tenant,write.subject.type,write.subject.id])).rows?.[0]||null;
+          const decision=subjectOccDecision({expectedVersion:write.expectedVersion,currentVersion:current?.version??null,exists:Boolean(current)});
+          if(!decision.ok)fail('subject-version-conflict','Subject version changed',{subject:write.subject,expectedVersion:decision.expectedVersion,currentVersion:decision.currentVersion});
+          fail('subject-write-not-applied','Subject OCC write was not applied',{subject:write.subject});
+        }
+        committed.push({subject:write.subject,version:nextVersion,payloadSha256:write.payloadSha256,bucket});
       }
       for(const bucket of [...changedBuckets].sort((a,b)=>a-b)){
-        await client.query('INSERT INTO ictc_state_bucket(tenant_id,bucket,root_sha256,leaf_count) VALUES($1,$2,$3,0) ON CONFLICT(tenant_id,bucket) DO NOTHING',[tenant,bucket,emptyBucketRoot()]);
-        await client.query('SELECT bucket FROM ictc_state_bucket WHERE tenant_id=$1 AND bucket=$2 FOR UPDATE',[tenant,bucket]);
+        await client.query('INSERT INTO ictc_state_bucket(tenant_id,bucket,root_sha256,leaf_count,updated_at) VALUES($1,$2,$3,0,$4) ON CONFLICT(tenant_id,bucket) DO UPDATE SET root_sha256=ictc_state_bucket.root_sha256 RETURNING bucket',[tenant,bucket,emptyBucketRoot(),at]);
         const rows=(await client.query('SELECT subject_type,subject_id,version,payload_sha256 FROM ictc_subject_current WHERE tenant_id=$1 AND bucket=$2 ORDER BY subject_type,subject_id',[tenant,bucket])).rows||[];
         const leaves=rows.map(row=>enterpriseLeafDigest({tenantId:tenant,subject:{type:row.subject_type,id:row.subject_id},version:Number(row.version),payloadSha256:row.payload_sha256})),root=enterpriseBucketDigest(leaves);
         await client.query('UPDATE ictc_state_bucket SET root_sha256=$3,leaf_count=$4,updated_at=$5 WHERE tenant_id=$1 AND bucket=$2',[tenant,bucket,root,rows.length,at]);
       }
       const initialRoot=enterpriseStateRoot({});
-      await client.query("INSERT INTO ictc_tenant_head(tenant_id,revision,audit_hash,state_root,updated_at) VALUES($1,0,'GENESIS',$2,$3) ON CONFLICT(tenant_id) DO NOTHING",[tenant,initialRoot,at]);
-      const previous=(await client.query('SELECT revision,audit_hash,state_root FROM ictc_tenant_head WHERE tenant_id=$1 FOR UPDATE',[tenant])).rows?.[0];
+      const previous=(await client.query("INSERT INTO ictc_tenant_head(tenant_id,revision,audit_hash,state_root,updated_at) VALUES($1,0,'GENESIS',$2,$3) ON CONFLICT(tenant_id) DO UPDATE SET tenant_id=EXCLUDED.tenant_id RETURNING revision,audit_hash,state_root",[tenant,initialRoot,at])).rows?.[0];
       const bucketRows=(await client.query('SELECT bucket,root_sha256 FROM ictc_state_bucket WHERE tenant_id=$1 ORDER BY bucket',[tenant])).rows||[];
       const bucketRoots=Object.fromEntries(bucketRows.map(row=>[Number(row.bucket),row.root_sha256])),stateRoot=enterpriseStateRoot(bucketRoots),eventDigest=sha256({tenantId:tenant,commandId:command,actorId:actor,action:operation,subjects:committed,event,at}),head=nextTenantAuditHead({tenantId:tenant,previousHead:{revision:Number(previous.revision),hash:previous.audit_hash},eventDigest,stateRoot,at});
-      const receipt=boundedCommitReceipt({commandId:command,tenantId:tenant,tenantRevision:head.revision,auditHash:head.hash,stateRoot,subjects:committed,projectionOwners,workItems:workItems.map(item=>item.workKey)}),envelope=Object.freeze({receipt,replayed:false});
-      await client.query('UPDATE ictc_subject_version SET tenant_revision=$3 WHERE tenant_id=$1 AND command_id=$2 AND tenant_revision IS NULL',[tenant,command,head.revision]);
-      await client.query('INSERT INTO ictc_audit_event(tenant_id,revision,hash,previous_hash,state_root,event_json,created_at) VALUES($1,$2,$3,$4,$5,$6::jsonb,$7)',[tenant,head.revision,head.hash,head.previousHash,stateRoot,JSON.stringify({schemaVersion:'1.1.0',...event,tenantId:tenant,commandId:command,actorId:actor,action:operation,subjects:committed,projectionOwners,at}),at]);
-      await client.query('UPDATE ictc_tenant_head SET revision=$2,audit_hash=$3,state_root=$4,updated_at=$5 WHERE tenant_id=$1',[tenant,head.revision,head.hash,stateRoot,at]);
-      await client.query('INSERT INTO ictc_command_result(tenant_id,command_id,actor_id,action,envelope_json,stored_at) VALUES($1,$2,$3,$4,$5::jsonb,$6)',[tenant,command,actor,operation,JSON.stringify(envelope),at]);
+      const receipt=boundedCommitReceipt({commandId:command,tenantId:tenant,tenantRevision:head.revision,auditHash:head.hash,stateRoot,subjects:committed,projectionOwners,workItems:workItems.map(item=>item.workKey)}),envelope=Object.freeze({receipt,replayed:false}),eventJson=JSON.stringify({schemaVersion:'1.2.0',...event,tenantId:tenant,commandId:command,actorId:actor,action:operation,subjects:committed,projectionOwners,at}),envelopeJson=JSON.stringify(envelope);
+      await client.query(`WITH versioned AS (
+        UPDATE ictc_subject_version SET tenant_revision=$3 WHERE tenant_id=$1 AND command_id=$2 AND tenant_revision IS NULL RETURNING version
+      ), audited AS (
+        INSERT INTO ictc_audit_event(tenant_id,revision,hash,previous_hash,state_root,event_json,created_at) VALUES($1,$3,$4,$5,$6,$7::jsonb,$8) RETURNING revision
+      ), headed AS (
+        UPDATE ictc_tenant_head SET revision=$3,audit_hash=$4,state_root=$6,updated_at=$8 WHERE tenant_id=$1 RETURNING revision
+      )
+      INSERT INTO ictc_command_result(tenant_id,command_id,actor_id,action,envelope_json,stored_at) VALUES($1,$2,$9,$10,$11::jsonb,$8)`,[tenant,command,head.revision,head.hash,head.previousHash,stateRoot,eventJson,at,actor,operation,envelopeJson]);
       for(const item of workItems)await this._enqueueWorkClient(client,tenant,item);
       return assertBoundedCommitReceipt(receipt)&&envelope;
     });
@@ -228,7 +249,7 @@ export class PostgresEnterpriseAuthority{
       const filters=['tenant_id=$1'],params=[tenant];if(types.length){params.push(types);filters.push(`subject_type = ANY($${params.length}::text[])`);}if(after){params.push(after.type,after.id);filters.push(`(subject_type,subject_id) > ($${params.length-1},$${params.length})`);}const where=filters.join(' AND ');
       const total=Number((await client.query(`SELECT count(*)::bigint AS c FROM ictc_subject_current WHERE tenant_id=$1${types.length?' AND subject_type = ANY($2::text[])':''}`,types.length?[tenant,types]:[tenant])).rows?.[0]?.c||0);params.push(bounded+1);
       const rows=(await client.query(`SELECT subject_type,subject_id,version,payload_sha256,payload_json FROM ictc_subject_current WHERE ${where} ORDER BY subject_type,subject_id LIMIT $${params.length}`,params)).rows||[],hasMore=rows.length>bounded,selected=rows.slice(0,bounded),last=selected.at(-1);
-      return Object.freeze({schemaVersion:'1.1.0',tenantId:tenant,limit:bounded,returned:selected.length,total,nextCursor:hasMore&&last?encodeCursor(last.subject_type,last.subject_id):null,records:Object.freeze(selected.map(row=>({subject:{type:row.subject_type,id:row.subject_id},version:Number(row.version),payloadSha256:row.payload_sha256,payload:row.payload_json})))});
+      return Object.freeze({schemaVersion:'1.2.0',tenantId:tenant,limit:bounded,returned:selected.length,total,nextCursor:hasMore&&last?encodeCursor(last.subject_type,last.subject_id):null,records:Object.freeze(selected.map(row=>({subject:{type:row.subject_type,id:row.subject_id},version:Number(row.version),payloadSha256:row.payload_sha256,payload:row.payload_json})))});
     });
   }
   async _enqueueWorkClient(client,tenantId,{workKey,kind,payload={},availableAt=this.clock()}={}){const key=text(workKey,500),type=text(kind,120);if(!key||!type)fail('work-item-invalid','Work item key/kind required');await client.query(`INSERT INTO ictc_work_item(tenant_id,work_key,kind,payload_json,state,available_at,updated_at) VALUES($1,$2,$3,$4::jsonb,'queued',$5,$5) ON CONFLICT(tenant_id,work_key) DO NOTHING`,[tenantId,key,type,JSON.stringify(payload),availableAt]);return{tenantId,workKey:key,kind:type,state:'queued'};}
