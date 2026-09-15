@@ -12,6 +12,36 @@ html[data-enduser-composition="p2"]{
   --p2-row-rule:color-mix(in srgb,var(--color-border) 78%,transparent);
 }
 
+
+/* P5 beauty semantics: shared object grammar keyed by runtime archetype, not screenshot selectors. */
+html[data-enduser-composition="p2"] :is(.pill,.surface-chip,.origin-tag,[data-enduser-primitive="StateChip"]){
+  display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-inline-start:0;line-height:1.15;
+}
+html[data-enduser-composition="p2"] :is(.pill,.surface-chip,.origin-tag){font-size:.76rem;min-height:var(--ui-state-h)}
+html[data-enduser-composition="p2"] [data-enduser-primitive="StateChip"]{
+  min-height:var(--ui-state-h);padding:.22rem .5rem;border:1px solid var(--color-border);border-radius:999px;
+  background:var(--color-surface-subtle);font-size:var(--type-label);font-weight:var(--weight-label);letter-spacing:.01em;
+  text-transform:none;opacity:1;white-space:nowrap;
+}
+html[data-enduser-composition="p2"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{
+  display:grid;grid-template-columns:minmax(12rem,1fr) minmax(9rem,auto) minmax(9rem,auto) auto auto;
+  align-items:end;gap:.45rem;width:100%;margin:.35rem 0 .5rem;min-width:0;
+}
+html[data-enduser-composition="p2"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]>*{min-width:0;max-width:100%}
+html[data-enduser-composition="p2"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"] input[type="search"]{width:100%}
+html[data-enduser-composition="p2"] [data-surface-archetype="operational"] .section-head h2{font-size:clamp(1.2rem,2vw,1.45rem);line-height:1.18;letter-spacing:-.02em}
+html[data-enduser-composition="p2"] [data-surface-archetype="operational"] .section-head p{max-width:var(--ui-reading-wide);font-size:var(--type-body);line-height:1.48}
+html[data-enduser-composition="p2"] [data-surface-archetype="operational"] :is(.mission-card,.catalog-card,.incident-card) p{font-size:.86rem;line-height:1.46}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header{
+  display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"status title" ". meta";
+  align-items:center;column-gap:.55rem;row-gap:.12rem;min-width:0;
+}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header>.status-pill{grid-area:status;justify-self:start;align-self:center}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header>h3{grid-area:title;min-width:0;margin:0;font-size:1rem;line-height:1.25}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header>small{grid-area:meta;min-width:0;margin:0;font-size:var(--type-label);line-height:1.35;color:var(--color-muted)}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>p{max-width:var(--ui-reading-wide);font-size:.86rem;line-height:1.48}
+html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-kpis .grc-kpi :is(small,span){font-size:.76rem;line-height:1.3;opacity:.82}
+
 /* Editorial primitives */
 html[data-enduser-composition="p2"] [data-enduser-primitive="BoundaryNote"],
 html[data-enduser-composition="p2"] [data-information-role="boundary"]{
@@ -225,7 +255,13 @@ html[data-enduser-composition="p2"] #epistemicView [data-epistemic-a3-body="deep
 html[data-enduser-composition="p2"] #epistemicView #epistemicProfessionalTools,
 html[data-enduser-composition="p2"] #epistemicView #epistemicInferencePanel{margin:0;box-shadow:none}
 
+@media(max-width:900px){
+  html[data-enduser-composition="p2"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:minmax(0,1fr) minmax(8rem,auto) minmax(8rem,auto)}
+}
 @media(max-width:760px){
+  html[data-enduser-composition="p2"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:1fr;align-items:stretch}
+  html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header{grid-template-columns:minmax(0,1fr);grid-template-areas:"status" "title" "meta";align-items:start}
+  html[data-enduser-composition="p2"] [data-surface-archetype="registry"] .grc-list>article>header>.status-pill{justify-self:start}
   html[data-enduser-composition="p2"] .p2-attention-head{grid-template-columns:minmax(0,1fr) auto}
   html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{align-items:flex-start;flex-direction:column;gap:.15rem}
   html[data-enduser-composition="p2"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{align-self:flex-start}
@@ -244,3 +280,8 @@ html[data-enduser-composition="p2"] #epistemicView #epistemicInferencePanel{marg
 @media(forced-colors:active){
   html[data-enduser-composition="p2"] :where([data-enduser-cluster],.p2-attention-strip,.p2-record-row,.p2-configuration-row){background:Canvas;color:CanvasText;border-color:CanvasText}
 }
+/* P5 authority absorption: cross-surface semantic objects formerly carried by the P3A screenshot closure. */
+html[data-enduser-composition="p2"] .catalog-card [data-missing-value="reason"]{display:inline-flex;align-items:center;justify-content:flex-start;width:auto;margin:.2rem 0;color:var(--color-muted);font-size:var(--type-caption);text-align:left}
+html[data-enduser-composition="p2"] [data-mapping-journey="requirement-first"]>summary{display:flex;align-items:center;justify-content:space-between;gap:.65rem}
+html[data-enduser-composition="p2"] [data-mapping-journey="requirement-first"]>summary small{color:var(--color-muted);font-weight:var(--weight-description)}
+html[data-enduser-composition="p2"] [data-mapping-step]::before{content:attr(data-mapping-step);display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;margin-right:.35rem;border:1px solid var(--color-border);border-radius:999px;color:var(--color-muted);font-size:.7rem;font-weight:700}

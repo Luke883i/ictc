@@ -1,7 +1,7 @@
 export const SEMANTIC_COMPOSITION_VERSION='3.1.0';
 
 export const INFORMATION_ROLES=Object.freeze([
-  'identity','context','attention','decision','action','evidence','consequence','boundary','technical'
+  'identity','context','attention','decision','action','state','evidence','consequence','boundary','technical'
 ]);
 
 export const COMPLIANCE_BASIS=Object.freeze({
@@ -34,7 +34,7 @@ export const SURFACE_BLUEPRINTS=Object.freeze({
   proof:Object.freeze({root:'#proofView',kind:'evidence',title:'Evidenze ICTC',purpose:'Ricostruisci quali decisioni sono registrate, quali evidenze le sostengono e quali aspetti richiedono ancora prova esterna.',first:'decision-evidence',technicalDefault:false}),
   epistemic:Object.freeze({root:'#epistemicView',kind:'relationships',title:'Relazioni tra decisioni, fonti ed evidenze',purpose:'Esplora dipendenze, versioni e basi registrate per capire da dove nasce un’informazione e quale lavoro può richiedere riesame.',first:'relationships',technicalDefault:false}),
   admin:Object.freeze({root:'#adminCenter',kind:'administration',title:'Amministrazione ICTC',purpose:'Gestisci configurazioni che cambiano accessi, uso AI, processi disponibili e controlli tecnici del runtime.',first:'attention',technicalDefault:false}),
-  aiSettings:Object.freeze({root:'#settingsDialog',kind:'configuration',title:'Configurazione AI',purpose:'Definisci provider, modello e istruzioni che determinano egress e uso dell’AI; le decisioni restano umane.',first:'configuration',technicalDefault:false})
+  'ai-settings':Object.freeze({root:'#settingsDialog',kind:'configuration',title:'Configurazione AI',purpose:'Definisci provider, modello e istruzioni che determinano egress e uso dell’AI; le decisioni restano umane.',first:'configuration',technicalDefault:false})
 });
 
 export const COMPOSITION_INVARIANTS=Object.freeze(['identity-one','purpose-one','operative-first','no-numeric-home-dashboard','no-tautology','one-primary-action','attention-before-metric','metric-with-decision','business-first','concrete-copy','why-bounded','action-consequence','evidence-near-decision','progressive-technical','disclosure-on-demand','list-before-cards','empty-is-actionable','landing-not-manual','single-copy-owner','canonical-lexicon','regulatory-boundary','value-concrete']);
