@@ -127,9 +127,10 @@
 
 .procedure-standard-name {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-weight: 720;
   color: var(--text, #172033);
 }

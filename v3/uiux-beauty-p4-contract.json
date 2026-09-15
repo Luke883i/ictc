@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "UIUX-BEAUTY-P4",
+  "classification": "repository-bounded-final-presentation-and-copy-convergence-candidate",
+  "baseObservation": {
+    "mainSha": "3453651240609364a69709bef0ac7c4c17847648",
+    "mergedThroughPr": 151,
+    "meaning": "immutable preimage only; Git owns live facts"
+  },
+  "intent": "Make the already-converged ICTC interface visually calm, legible and deliberately enterprise-grade without adding a presentation layer, changing business authority or broadening claims.",
+  "surfaceCensus": [
+    {"id":"home","kind":"landing","cluster":"orientation-and-attention","scope":"global","firstPlane":"attention","owner":"v3/public/ui/stable-shell.js","beautyFocus":["proposition measure","priority legibility","hierarchy"]},
+    {"id":"processes","kind":"catalogue","cluster":"orientation-and-routing","scope":"global","firstPlane":"catalogue","owner":"v3/public/ui/procedure-frame.js","beautyFocus":["title scale","purpose wrap","row balance","CTA proportion"]},
+    {"id":"monitoring","code":"RN-01","kind":"procedure","cluster":"operational-work","scope":"process","firstPlane":"work","owner":"v3/public/ui/procedure-frame.js","beautyFocus":["purpose measure","section hierarchy","record copy","tags"]},
+    {"id":"incidents","code":"EC-01","kind":"procedure","cluster":"operational-work","scope":"process","firstPlane":"work","owner":"v3/public/ui/procedure-frame.js","beautyFocus":["purpose measure","section hierarchy","record copy","tags"]},
+    {"id":"objects","code":"AO-01","kind":"procedure","cluster":"grc-system-of-record","scope":"process","firstPlane":"work","owner":"v3/public/ui/grc-workspace-3-2.js","beautyFocus":["record hierarchy","status alignment","metadata scale"]},
+    {"id":"coverage","code":"MC-01","kind":"procedure","cluster":"grc-system-of-record","scope":"process","firstPlane":"work","owner":"v3/public/ui/grc-workspace-3-2.js","beautyFocus":["record hierarchy","status alignment","requirement readability"]},
+    {"id":"actions","code":"AP-01","kind":"procedure","cluster":"grc-system-of-record","scope":"process","firstPlane":"work","owner":"v3/public/ui/grc-workspace-3-2.js","beautyFocus":["record hierarchy","status alignment","action readability"]},
+    {"id":"risks","code":"RC-01","kind":"procedure","cluster":"grc-system-of-record","scope":"process","firstPlane":"work","owner":"v3/public/ui/grc-workspace-3-2.js","beautyFocus":["record hierarchy","status alignment","analysis balance"]},
+    {"id":"assurance","code":"AR-01","kind":"procedure","cluster":"grc-system-of-record","scope":"process","firstPlane":"work","owner":"v3/public/ui/grc-workspace-3-2.js","beautyFocus":["record hierarchy","status alignment","approval readability"]},
+    {"id":"admin","kind":"administration","cluster":"configuration-and-control","scope":"global","firstPlane":"configuration","owner":"v3/public/ui/admin-workspace-3-2.js","beautyFocus":["row typography","support copy","technical disclosure"]},
+    {"id":"ai-settings","kind":"configuration","cluster":"configuration-and-control","scope":"global","firstPlane":"configuration","owner":"v3/public/ui/settings-1-8-fix.js","beautyFocus":["section hierarchy","field guidance","progressive detail"]},
+    {"id":"epistemic","kind":"relationships","cluster":"evidence-and-knowledge","scope":"cross-process","firstPlane":"relationships","owner":"v3/public/ui/epistemic-workspace-3-2.js","beautyFocus":["toolbar readability","purpose measure","progressive detail"]},
+    {"id":"proof","kind":"evidence","cluster":"evidence-and-knowledge","scope":"cross-process","firstPlane":"decision-evidence","owner":"v3/public/ui/proof-workspace-3-2.js","beautyFocus":["summary hierarchy","secondary copy","fact-strip legibility"]}
+  ],
+  "secondarySurfaces": [
+    {"id":"contribution-intake","kind":"task-dialog","cluster":"operational-overlay"},
+    {"id":"monitoring-plan-review","kind":"decision-dialog","cluster":"operational-overlay"},
+    {"id":"incident-intake","kind":"task-dialog","cluster":"operational-overlay"},
+    {"id":"grc-human-decision","kind":"decision-dialog","cluster":"operational-overlay"},
+    {"id":"global-command","kind":"navigation-dialog","cluster":"utility-overlay"},
+    {"id":"demo-context","kind":"context-dialog","cluster":"utility-overlay"}
+  ],
+  "semanticClusters": {
+    "orientation": ["home","processes"],
+    "operationalWork": ["monitoring","incidents","objects","coverage","actions","risks","assurance"],
+    "evidenceKnowledge": ["proof","epistemic"],
+    "configuration": ["admin","ai-settings"]
+  },
+  "copyContract": {
+    "tone": "serious enterprise compliance platform: direct, bounded, operational, non-promotional",
+    "firstPlane": "one concise purpose sentence before work; internal architecture vocabulary stays out of primary copy",
+    "sentenceRule": "prefer verb + governed object + outcome; keep claim boundary separate",
+    "languageRule": "prefer clear Italian business terms over avoidable English implementation terms",
+    "minimalityRule": "remove duplication before shortening meaning; no ellipsis for canonical purpose copy",
+    "requiredProductTerms": ["governance","assurance interna","GDPR","NIS2"]
+  },
+  "visualContract": {
+    "designSystemPolicy": "reuse existing tokens and presentation owners; no new CSS layer or component technology",
+    "readingMeasureCh": 76,
+    "processTitleMinRem": 1.03,
+    "processPurposeMinRem": 0.90,
+    "procedurePurposeMinRem": 0.90,
+    "secondaryReadableMinRem": 0.76,
+    "statusReadableMinRem": 0.78,
+    "criticalControlMinPx": 44,
+    "canonicalPurposeEllipsisAllowed": false,
+    "statusUppercaseForced": false,
+    "statusOpacityMin": 1,
+    "desktopProcessPurposeWrap": true,
+    "mobileHorizontalOverflowAllowed": false,
+    "badgeAlignment": "inline-center with adjacent record title; mobile stacks deliberately"
+  },
+  "maxYieldMinCost": {
+    "selectedLevers": [
+      "natural-wrap-canonical-purpose",
+      "raise-process-purpose-scale",
+      "raise-procedure-purpose-scale",
+      "align-status-with-record-title",
+      "raise-secondary-copy-floor",
+      "strengthen-proof-summary-hierarchy",
+      "strengthen-admin-row-hierarchy",
+      "strengthen-dialog-lead-copy",
+      "normalize-section-heading-scale"
+    ],
+    "rejectedLowYieldLever": "global decorative restyling",
+    "reason": "The dominant residual defects come from inherited truncation, compressed local typography and metadata alignment, not from the palette, tokens or chrome."
+  },
+  "mutationCampaigns": [
+    {"id":"P4-M1-ANOMALY","trials":1000000,"seed":"ictc-p4-anomaly-2026-09-14","purpose":"kill typical visual anomalies such as truncation, tiny text, offset badges, overflow and weak hierarchy"},
+    {"id":"P4-M2-YIELD-COST","trials":1000000,"seed":"ictc-p4-yield-cost-2026-09-14","purpose":"search the declared beauty lever space for maximum cognitive yield at minimum change cost"},
+    {"id":"P4-M3-BEAUTY","trials":1000000,"seed":"ictc-p4-beauty-only-2026-09-14","purpose":"kill beauty-only regressions while preserving semantics, actionability and responsive order"}
+  ],
+  "acceptance": [
+    "13/13 canonical surfaces remain owned exactly once by the C5 contract",
+    "7/7 business procedures remain unchanged as business procedures",
+    "Process directory canonical titles and purposes are readable without desktop ellipsis",
+    "Canonical procedure purpose text wraps naturally instead of occupying an artificially narrow single line",
+    "GRC status badges align with record titles and are readable without forced uppercase or reduced opacity",
+    "Proof, Admin, AI settings and dialog secondary text preserve a readable floor",
+    "desktop/tablet/mobile geometry preserves actions and avoids horizontal overflow",
+    "three deterministic 1,000,000-trial model campaigns complete with zero unexplained survivors",
+    "rendered browser beauty check covers all 13 canonical surfaces on desktop and mobile",
+    "existing P2/P3A semantic/browser rails remain blocking and unchanged"
+  ],
+  "claimBoundary": "P4 can establish repository and rendered-browser evidence for typography, wrapping, alignment, copy shape and responsive geometry. Mutation counts are synthetic model evidence, not three million users or browser sessions. Automated visual rules do not establish representative human pleasantness, accessibility effectiveness, deployment assurance, legal compliance or enterprise readiness; E3-HUMAN remains external."
+}

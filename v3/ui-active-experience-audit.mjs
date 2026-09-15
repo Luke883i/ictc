@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const v3 = path.dirname(fileURLToPath(import.meta.url));
 const publicRoot = path.join(v3, 'public');
-const historical = /(?:reborn-3|stable-1-4|standard-proof-1-[67]|clarity-1-7|workbench-1-8|settings-1-8|labels-1-8|enterprise-1-[78]|enterprise-2)/;
+const historical = /(?:reborn-3|stable-1-4|standard-proof-1-[67]|clarity-1-7|workbench-1-8|labels-1-8|enterprise-1-[78]|enterprise-2)/;
 const prototypeUi = /\/public\/js\//;
 
 function imports(source) {
@@ -63,6 +63,7 @@ const directInstallerModules = directAppImports.filter(file => /\/ui\/.*experien
 assert.deepEqual(directInstallerModules.map(file=>path.basename(file)), ['active-experience.js'], 'only active-experience may be composed directly by app.js');
 assert.ok(jsGraph.files.some(file=>file.endsWith('experience-lifecycle.js')), 'constitutional lifecycle must be reachable from active experience');
 assert.ok(jsGraph.files.some(file=>file.endsWith('procedure-sequential-ux-2-2.js')), 'journey overlay must remain reachable through active experience');
+assert.ok(jsGraph.files.some(file=>file.endsWith('settings-1-8-fix.js')), 'current AI settings owner must remain reachable through active experience');
 
 const cssGraph = await graph(stylesPath, cssImports);
 for (const file of cssGraph.files) assert.doesNotMatch(file.replaceAll('\\', '/'), historical, `historical runtime CSS loaded: ${file}`);
@@ -74,7 +75,7 @@ for (const fixture of [
 ]) await access(path.join(publicRoot, fixture));
 
 for (const sample of ['ui/workbench-1-8.js','enterprise-2.css','ui/standard-proof-1-7.js']) assert.match(sample, historical, `negative detector missed ${sample}`);
-for (const sample of ['ui/active-experience.js','active-experience.css','ui/proof-surface.js']) assert.doesNotMatch(sample, historical, `canonical path misclassified ${sample}`);
+for (const sample of ['ui/active-experience.js','ui/settings-1-8-fix.js','active-experience.css','ui/proof-surface.js']) assert.doesNotMatch(sample, historical, `canonical path misclassified ${sample}`);
 
 const common = await readFile(path.join(publicRoot, 'ui/common.js'), 'utf8');
 assert.match(common, /state\.data\?\.ontology\?\.states/);

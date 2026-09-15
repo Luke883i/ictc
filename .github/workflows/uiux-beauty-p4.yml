@@ -1,0 +1,107 @@
+name: uiux-beauty-p4
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: uiux-beauty-p4-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  beauty-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      failure_signature: ${{ steps.diagnose.outputs.signature }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: P4 surface/copy/presentation contract
+        run: node v3/uiux-beauty-p4-check.mjs
+      - name: Three million deterministic beauty mutations
+        run: node v3/uiux-beauty-p4-mutation-3m.mjs
+      - name: Browser rail syntax
+        run: python -m py_compile v3/browser-uiux-beauty-p4.py
+      - name: Resolve system Chromium
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          if [[ -z "$browser" || ! -x "$browser" ]]; then echo 'No supported system Chromium browser found on the runner' >&2; exit 1; fi
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Render 13 surfaces on desktop tablet and mobile
+        id: render
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4831 PORT=4831
+          export ICTC_BASE_URL="http://127.0.0.1:4831"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-p4-state"
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-p4-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-uiux-beauty-p4.py
+      - name: Expose browser failure signature
+        id: diagnose
+        if: always()
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ "${{ steps.render.outcome }}" == "success" ]]; then
+            echo 'signature=green' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, pathlib, re
+          p = pathlib.Path('artifacts/uiux-beauty-p4/error.json')
+          if not p.exists():
+              print('signature=browser-failed-no-error-artifact')
+          else:
+              data = json.loads(p.read_text(encoding='utf8'))
+              message = str(data.get('message', ''))
+              match = re.search(r'"id"\s*:\s*"([^"]+)"', message)
+              phase = str(data.get('phase', 'unknown')).replace('\n', ' ').replace('\r', ' ')
+              check = match.group(1) if match else 'unknown-check'
+              signature = f'{phase}|{check}'[:180]
+              print('signature=' + signature)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+        if: always()
+        with:
+          name: uiux-beauty-p4-rendered-evidence
+          path: |
+            artifacts/uiux-beauty-p4-mutation-3m.json
+            artifacts/uiux-beauty-p4/**
+          if-no-files-found: warn
+          retention-days: 30
+  beauty-verdict:
+    needs: beauty-closure
+    if: always()
+    name: beauty-verdict [${{ needs.beauty-closure.outputs.failure_signature }}]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce rendered browser verdict
+        env:
+          SIGNATURE: ${{ needs.beauty-closure.outputs.failure_signature }}
+        run: |
+          if [[ "$SIGNATURE" != "green" ]]; then
+            echo "Rendered browser failure: $SIGNATURE" >&2
+            exit 1
+          fi

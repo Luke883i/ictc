@@ -21,3 +21,47 @@ html[data-native-semantic-lattice="3.2.0"] [data-mapping-step]::before{content:a
 .command-dialog footer kbd{display:inline-flex;min-width:1.45rem;min-height:1.4rem;align-items:center;justify-content:center;padding:0 .25rem;border:1px solid var(--color-border);border-radius:5px;background:var(--color-surface);font:inherit;font-size:.75rem}
 @media(max-width:900px){html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:minmax(0,1fr) minmax(8rem,auto) minmax(8rem,auto)}}
 @media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{grid-template-columns:1fr}html[data-native-semantic-lattice="3.2.0"] :is(.a6-operational-filter,.procedure-queue-tools)[data-enduser-primitive="ControlRail"]{grid-template-columns:1fr!important;align-items:stretch!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{min-width:0;width:100%}}
+
+/* P4 beauty convergence — no new presentation owner: this extends the existing screenshot-facing closure only. */
+html[data-native-semantic-lattice="3.2.0"]{--p4-reading-wide:76ch;--p4-copy-floor:.78rem;--p4-body-copy:.9rem}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homeSummary{max-width:var(--p4-reading-wide)!important;font-size:.95rem!important;line-height:1.5!important}
+html[data-native-semantic-lattice="3.2.0"] #homePriorities .home-priority-label{font-size:.9rem!important;line-height:1.3!important}
+html[data-native-semantic-lattice="3.2.0"] #homePriorities .home-priority-reason{font-size:.78rem!important;line-height:1.35!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head p{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.5!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:4.4rem minmax(0,.72fr) minmax(0,1.35fr) auto!important;gap:.8rem!important;min-height:64px!important;padding:.58rem .72rem!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>h2{font-size:1.03rem!important;line-height:1.25!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{font-size:.9rem!important;line-height:1.42!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;line-clamp:unset!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-code{font-size:.78rem!important;line-height:1.2!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{width:auto;min-width:8.75rem;padding-inline:.7rem!important;font-size:.8rem!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"]{padding:.72rem .82rem!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-copy{gap:.3rem!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] h1{font-size:clamp(1.35rem,1.7vw,1.62rem)!important;white-space:normal!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.45!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-boundary{max-width:88ch;font-size:.8rem!important;line-height:1.42!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] :is(.procedure-frame-code,.procedure-back,.procedure-context-detail>summary,.procedure-primary){font-size:.8rem!important}
+html[data-native-semantic-lattice="3.2.0"] :is(#monitoringView,#incidentsView) .section-head h2{font-size:clamp(1.2rem,2vw,1.45rem)!important;line-height:1.18!important;letter-spacing:-.02em!important}
+html[data-native-semantic-lattice="3.2.0"] :is(#monitoringView,#incidentsView) .section-head p{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.48!important}
+html[data-native-semantic-lattice="3.2.0"] :is(#monitoringView,#incidentsView) :is(.mission-card,.catalog-card,.incident-card) p{font-size:.86rem;line-height:1.46}
+html[data-native-semantic-lattice="3.2.0"] :is(.pill,.surface-chip,.origin-tag,.status-pill){display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-inline-start:0;line-height:1.15}
+html[data-native-semantic-lattice="3.2.0"] :is(.pill,.surface-chip,.origin-tag){font-size:.76rem;min-height:26px}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"status title" ". meta";align-items:center;column-gap:.55rem;row-gap:.12rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header>.status-pill{grid-area:status;justify-self:start;align-self:center;min-height:26px;padding:.22rem .5rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface-subtle);font-size:.78rem!important;font-weight:var(--weight-label);letter-spacing:.01em;text-transform:none;opacity:1}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header>h3{grid-area:title;min-width:0;margin:0;font-size:1rem;line-height:1.25}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header>small{grid-area:meta;min-width:0;margin:0;font-size:.78rem;line-height:1.35;color:var(--color-muted)}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>p{max-width:var(--p4-reading-wide);font-size:.86rem;line-height:1.48}
+html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-kpis .grc-kpi :is(small,span){font-size:.76rem!important;line-height:1.3!important;opacity:.82}
+html[data-native-semantic-lattice="3.2.0"] #proofView .proof-head #proofTitle+p{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.48!important}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary b{font-size:.92rem;line-height:1.25}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary small{font-size:.8rem!important;line-height:1.38!important}
+html[data-native-semantic-lattice="3.2.0"] #proofContent>.proof-fact-strip article small{font-size:.76rem!important;line-height:1.35!important}
+html[data-native-semantic-lattice="3.2.0"] #epistemicView .procedure-purpose{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.45!important}
+html[data-native-semantic-lattice="3.2.0"] #epistemicView :is(.surface-toolbar label,.epistemic-a3-detail>summary,.epistemic-workspace-rules>summary){font-size:.82rem;line-height:1.35}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row b{font-size:.88rem!important;line-height:1.3}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row small{font-size:.78rem!important;line-height:1.4!important;color:var(--color-muted)}
+html[data-native-semantic-lattice="3.2.0"] #procedureAdminPanel .procedure-admin-head .microcopy{max-width:var(--p4-reading-wide)!important;font-size:.86rem!important;line-height:1.48!important}
+html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>summary span{display:grid;gap:.12rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>summary b{font-size:.94rem;line-height:1.25}
+html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>summary small{font-size:.8rem;line-height:1.38;color:var(--color-muted)}
+html[data-native-semantic-lattice="3.2.0"] dialog .dialog-shell>header p:not(.eyebrow){max-width:var(--p4-reading-wide);font-size:.88rem;line-height:1.45}
+@media(max-width:1100px) and (min-width:720px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:4.2rem minmax(0,1fr) auto!important;grid-template-areas:"code title action" "purpose purpose action"!important;align-items:center!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{padding-left:0}}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]{min-height:0!important;padding:.62rem .68rem!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card .procedure-primary{width:100%;min-width:0}html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header{grid-template-columns:minmax(0,1fr);grid-template-areas:"status" "title" "meta";align-items:start}html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>article>header>.status-pill{justify-self:start}}
