@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "C3-ENTERPRISE-SCALE-PACK",
+  "observedMain": "bd7a2cdc11f5aeff87839a6fa70d0f05ae71277d",
+  "semanticCoverage": {"requirements":16,"accounted":16,"percent":100.0},
+  "currentRuntime": {"implemented":1,"partial":4,"blocked":11,"operationalReady":false,"implementedRequirement":"durableCommandLedger"},
+  "mutationFalsification": {"trials":1000000,"seed":"0xC3E5A126","ready":1370,"blocked":998630,"oracleMismatches":0,"digest":"e2450986a4b08a2a45cebc7007cfe3356bd3469f26a3b17c77f8215b80e632cf","mutantEscapes":{"trustSimulation":0,"ignoreSubjectOcc":0,"ignoreIncrementalIntegrity":0,"ignoreProjectionDelta":0,"ignoreWorkClaims":0,"ignoreAsyncProviderWork":0,"ignoreObjectStorage":0,"ignoreRateAuthority":0,"ignoreTenantRls":0,"ignoreStateless":0,"ignoreNodeFailure":0,"looseLatency":0,"ignoreAuditHead":0}},
+  "remainingOperationalGaps": ["sharedDurableAuthority","tenantIsolationRls","subjectScopedConcurrency","incrementalIntegrity","atomicBoundedCommitReceipt","orderedTenantAuditHead","durableWorkClaims","durableAsyncProviderWork","sharedBlobAuthority","distributedRateAuthority","boundedQueryProjections","projectionDeltaReceipts","revisionGapRecovery","statelessReplicas","externalObservability"],
+  "claimBoundary": "This receipt certifies repository semantic accounting and deterministic model falsification only. It does not certify production scale, shared infrastructure, failover, or deployment-load behavior."
+}
