@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "C3-ENTERPRISE-BENCH-DOD",
+  "inherits": ["C3-ENTERPRISE-RUNTIME-CLOSURE", "C3-ENTERPRISE-SCALE-PACK"],
+  "targetClaim": "ICTC is ready to be placed on a +1000-concurrent-user enterprise benchmark; this is not a production capacity or HA claim.",
+  "minimalReticulum": ["POSTGRES_SHARED_AUTHORITY", "SUBJECT_OCC", "INCREMENTAL_INTEGRITY", "TENANT_AUDIT_HEAD", "DURABLE_WORK_FENCE", "SHARED_BLOB", "SIGNED_DISTRIBUTED_RATE", "BOUNDED_DELTA_PROJECTION", "STATELESS_HTTP_REPLICAS", "EXTERNAL_TELEMETRY"],
+  "newApplicationDependencies": {"pg": "8.23.0"},
+  "deliberatelyNotRequired": ["redis", "kafka", "orm", "microservices", "event-store-framework", "parallel-audit-dag"],
+  "aspects": ["dependencyPinned", "postgresSharedAuthority", "tenantRlsDefaultDeny", "subjectScopedOcc", "crossReplicaCommandReplay", "incrementalIntegrity", "orderedTenantAuditHead", "durableWorkFence", "asyncProviderQueue", "sharedBlobCrossReplica", "distributedRateAttestation", "boundedProjection", "revisionGapRecovery", "statelessReplicaMount", "externalTelemetrySink", "httpKernelMount", "nodeDeathDurability", "thousandClientHarness"],
+  "canary": {"minimumConcurrentClients":1000,"minimumReplicas":2,"maximumReplicas":32,"minimumHotTenantConcurrentWrites":200,"maximumFailedWrites":0,"maximumSameSubjectLostUpdates":0,"maximumDuplicateCommittedEffects":0,"maximumAcceptedWritesLostOnReplicaDeath":0,"maximumCiCanaryP95Ms":5000},
+  "requiredExecutableEvidence": ["npm ci", "C3 runtime closure check", "1m mutations for each of 18 bench aspects", "1m edge/stress collapse", "real PostgreSQL RLS/OCC/replay/work/blob/delta integration check", "two-process HTTP 1000-client concurrency canary", "accepted-write replica-death survival"],
+  "productionEvidenceStillRequired": ["exact-head sustained workload at representative request mix", "ordinary write receipt p95 <=300ms", "ordinary reconcile p95 <=500ms", "ordinary read p95 <=250ms", "hot-tenant sustained >=200 writes/s", "fleet sustained >=500 writes/s", "managed PostgreSQL failover", "production object/blob authority", "distributed ingress", "external collector/alerting", "RTO/RPO approval"],
+  "dod": {"repositoryRuntimeSubstrate":true,"realPostgresCi":true,"realTwoReplicaHttpMount":true,"concurrentClientCanary":1000,"semanticMutationTrialsPerAspect":1000000,"semanticAspectCount":18,"edgeStressMutationTrials":1000000,"oracleMismatchesAllowed":0,"productionScaleClaimAllowed":false,"benchReadyClaimAllowed":true},
+  "claimBoundary": "Passing this DoD supports the strong hypothesis that ICTC's enterprise runtime architecture is suitable to undergo a +1000 concurrent-user benchmark. It does not establish production capacity until the deployment-load evidence pack passes on representative infrastructure."
+}

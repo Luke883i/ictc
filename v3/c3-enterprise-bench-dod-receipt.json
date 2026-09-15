@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "C3-ENTERPRISE-BENCH-DOD",
+  "baseHead": "dabbc0b8da04bdc3efa44a6a476792f1453d5cb8",
+  "dependency": {"name":"pg","version":"8.23.0","reason":"single conventional PostgreSQL client dependency; no ORM/Redis/Kafka"},
+  "aspectMutation": {"seed":"0xC3B3A118","trialsPerAspect":1000000,"aspectCount":18,"totalTrials":18000000,"globalChecksum":"f051a7d2","digest":"96f964674af928b1e043e0797d79904ce4a80f22ea11829961a64073a65699fb","mismatches":0,"allOmissionMutantsKilled":true},
+  "edgeStressMutation": {"seed":"0xC3ED6311","trials":1000000,"ready":106403,"blocked":893597,"mismatches":0,"checksum":"dbe79912","digest":"58a2d31df2ea97f2704ab2da6f9e1c946ff4e6589350d15b36ceba3ea500883f","mutantClasses":10,"allMutantsKilled":true},
+  "postgresIntegration": {"class":"CI-REAL-SHARED-BACKEND","required":true,"assertions":["RLS default deny", "cross-tenant isolation", "same-subject OCC", "independent-subject concurrency", "cross-replica concurrent command replay", "ordered audit head", "durable fenced work", "shared blob cross-replica", "external telemetry cross-replica", "bounded keyset projection", "revision-gap recovery", "accepted write survives replica close"]},
+  "httpCanary": {"class":"CI-LOCAL-CONCURRENCY-CANARY","required":true,"replicas":2,"concurrentClients":1000,"hotTenantConcurrentWrites":200,"sameSubjectAttempts":32,"expectedAcceptedSameSubject":1,"concurrentReplayAttempts":32,"expectedCommittedReplayEffects":1,"nodeDeathAfterAcceptedWrite":true,"p95GateMs":5000,"productionSloGate":false},
+  "claimBoundary": "Mutation receipts and CI-local PostgreSQL/HTTP canaries are repository evidence for benchmark readiness, not production capacity evidence."
+}

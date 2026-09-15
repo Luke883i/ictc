@@ -5,9 +5,9 @@ on:
 permissions:
   contents: read
 jobs:
-  runtime-closure:
+  semantic-closure:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -15,7 +15,79 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Enterprise runtime closure contract
         run: node v3/c3-enterprise-runtime-closure-check.mjs
-      - name: Three-million semantic mutations per runtime gap
+      - name: Three-million semantic mutations per original runtime gap
         run: node v3/c3-enterprise-runtime-gap-mutation-45m.mjs
-      - name: One-million cross-gap collapse mutations
+      - name: One-million original cross-gap collapse mutations
         run: node v3/c3-enterprise-runtime-collapse-1m.mjs
+      - name: Enterprise benchmark DoD contract
+        run: node v3/c3-enterprise-bench-dod-check.mjs
+      - name: One-million semantic mutations for each benchmark aspect
+        run: node v3/c3-enterprise-bench-aspect-mutation-18m.mjs
+      - name: One-million benchmark edge and stress mutations
+        run: node v3/c3-enterprise-bench-edge-stress-1m.mjs
+
+  postgres-bench:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ictc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ictc"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      ICTC_ENTERPRISE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/ictc
+      ICTC_ENTERPRISE_DATABASE_URL: postgresql://ictc_app:ictc_bench_password@127.0.0.1:5432/ictc
+      ICTC_ENTERPRISE_APP_ROLE: ictc_app
+      ICTC_ENTERPRISE_APP_PASSWORD: ictc_bench_password
+      ICTC_ENTERPRISE_RATE_SECRET: c3-enterprise-bench-rate-secret-0123456789abcdef
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: PostgreSQL schema and application-role setup
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs setup
+      - name: Enterprise runtime factory profile
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs factory
+      - name: PostgreSQL RLS and NOBYPASSRLS application connection
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs rls
+      - name: PostgreSQL transaction-local tenant context
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs tenant-tx
+      - name: PostgreSQL advisory subject lock
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs advisory
+      - name: PostgreSQL subject current and version write
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs subject-write
+      - name: PostgreSQL tenant ledger write
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs ledger-write
+      - name: PostgreSQL first enterprise subject commit
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs commit
+      - name: Real PostgreSQL two-replica semantic integration
+        run: node v3/c3-enterprise-bench-integration-check.mjs
+      - name: HTTP replica health boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs health
+      - name: HTTP 1000-client zero-error boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-status
+      - name: HTTP 1000-client latency boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-latency
+      - name: HTTP 1000-client fleet write boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet
+      - name: HTTP hot-tenant 200-write boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs hot
+      - name: HTTP same-subject contention boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs contention
+      - name: HTTP concurrent replay boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs replay
+      - name: HTTP cross-replica blob boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs blob
+      - name: HTTP accepted-write node-death boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs death
+      - name: Two-process HTTP 1000-client concurrency canary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs all
