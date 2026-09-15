@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "C3-ENTERPRISE-SCALE-EVIDENCE-PACK",
+  "observedMainSha": "bd7a2cdc11f5aeff87839a6fa70d0f05ae71277d",
+  "classification": "E2-SIMULATED+MEASURED-LOCAL",
+  "claimBoundary": "This pack is architecture falsification and local measurement evidence. It is not deployment-load, HA, failover, managed-service, or production-capacity proof.",
+  "evidence": {
+    "clientServerModel1m": {"trials":1000000,"seed":"0x50F7A11C2026","currentWriteAckP95Ms":406.8,"currentFullConfirmP95Ms":711.4,"boundedIncrementalWriteAckP95Ms":230.9,"latticeAuthoritativeReconcileP95Ms":339.9,"singleConvergenceNavigationP95Ms":8.8},
+    "enterpriseArchitectureModel10m": {"trials":10000000,"seed":"0x1C7C1000","minimumEnterprisePassPercent":99.947,"minimumEnterpriseWriteReconcileP95Ms":96.8,"minimumEnterpriseWriteReconcileP99Ms":123.4,"ablations":{"withoutSubjectOccPercent":0.0,"withoutIncrementalIntegrityPercent":31.902,"withoutProjectionDeltaPercent":47.155,"withoutDistributedCoordinationPercent":22.734,"withoutObjectStoragePercent":10.741,"withoutDistributedRateAuthorityPercent":58.123,"withoutAsyncProviderWorkPercent":68.472,"extraRedisKafkaPercent":99.947,"parallelAuditPercent":100.0}},
+    "exact1000UserModel2m": {"trials":2000000,"activeUsers":1000,"modeledFailures":0,"writeAckP95Ms":89.2,"writeAckP99Ms":112.1,"reconciledP95Ms":94.7,"reconciledP99Ms":117.7,"writesPerSecondP99":141.6,"hotTenantWritesPerSecondP99":68.5,"maximumModeledUtilization":0.756},
+    "sqliteBoundedReadbackProbe": {"auditEvents":10000,"currentReadbackP50Ms":51.435,"boundedReadbackP50Ms":1.44,"headOnlyP50ApproxMs":0.03},
+    "domProbe": {"fullRenderP95Ms":19.5,"targetedRenderP95Ms":2.0,"fullToTargetMedianRatio":11.0}
+  },
+  "convergedMinimumReticulum": ["shared-relational-durable-authority","tenant-isolation-rls","subject-scoped-optimistic-concurrency","incremental-integrity-and-bounded-readback","ordered-tenant-audit-head","durable-command-ledger","durable-work-claims","durable-async-provider-work","object-storage-byte-authority","distributed-rate-authority","bounded-query-projections","projection-delta-receipts","revision-gap-recovery","stateless-node-replicas","external-telemetry-collector"],
+  "notRequiredByCurrentEvidence": ["redis","kafka","microservices","full-event-store","parallel-audit-dag","active-active-business-database"]
+}
