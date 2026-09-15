@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
+import { REQUIRED_CONTRIBUTOR_ROUTE_IDS } from './contributor-runtime.mjs';
 
 export const OWNER_CLASSES=Object.freeze(['OWNER','ADAPTER','OBSERVER','COMPATIBILITY','RETIRED']);
+export const REQUIRED_TASK_ROUTE_IDS=REQUIRED_CONTRIBUTOR_ROUTE_IDS;
 export const sha256=value=>createHash('sha256').update(typeof value==='string'?value:JSON.stringify(value)).digest('hex');
 
 export function validateSemanticOwnerContract(contract){
@@ -20,14 +22,24 @@ export function validateSemanticOwnerContract(contract){
   check(contract?.constitutionalOwners?.finalGlobalResolver===null,'global-final-resolver');
   check(contract?.constitutionalOwners?.globalAnnotationClass==='OBSERVER','global-annotation-class');
   const routes=Array.isArray(contract?.taskRoutes)?contract.taskRoutes:[];
-  check(routes.length>=9,'task-route-count');
-  check(new Set(routes.map(item=>item.id)).size===routes.length,'duplicate-task-route');
+  check(JSON.stringify(routes.map(item=>item.id))===JSON.stringify(REQUIRED_TASK_ROUTE_IDS),'task-route-identity');
+  check(new Set(routes.map(item=>item.id)).size===REQUIRED_TASK_ROUTE_IDS.length,'duplicate-task-route');
   for(const route of routes){
     check(Boolean(route.entry),`task-route-entry:${route.id}`);
     check(Boolean(route.authority),`task-route-authority:${route.id}`);
     check(Boolean(route.nearestCheck),`task-route-nearest:${route.id}`);
     check(Boolean(route.convergenceRail),`task-route-convergence:${route.id}`);
   }
+  const contributor=contract?.contributorDoD||{};
+  check(contributor.classification==='derived-contributor-runtime-projection','contributor-classification');
+  check(contributor.createsNewAuthority===false,'contributor-authority-widening');
+  check(contributor.branchPolicy?.source==='.github/gov-01f-policy.json','contributor-branch-policy');
+  check(contributor.branchPolicy?.directMainAllowed===false,'contributor-direct-main');
+  check(contributor.enterpriseRuntime?.mustRemainDistinct===true,'contributor-runtime-mode-collapse');
+  check(contributor.enterpriseRuntime?.enterpriseOwner==='v3/runtime/enterprise-runtime-kernel.mjs','contributor-enterprise-owner');
+  check(contributor.enterpriseRuntime?.durableOwner==='v3/runtime/postgres-enterprise-authority.mjs','contributor-durable-owner');
+  check(contributor.codeowners?.canonical==='.github/CODEOWNERS'&&contributor.codeowners?.rootMode==='pointer-only','contributor-codeowners');
+  check(contributor.externalHumanValidation==='E3-HUMAN','contributor-human-boundary');
   const freshness=contract?.freshness||{};
   check(Array.isArray(freshness.inputs)&&freshness.inputs.length>=8,'freshness-inputs');
   check(new Set(freshness.inputs||[]).size===(freshness.inputs||[]).length,'duplicate-freshness-input');
@@ -55,7 +67,7 @@ export function validateSemanticOwnerContract(contract){
   check(Number(contract?.metrics?.atomicIntentCoverageMin)>=.99,'metric-intent');
   check(Number(contract?.metrics?.mutationTrials)===10000,'metric-mutation-trials');
   check(Number(contract?.metrics?.needsAuditTrials)===10000,'metric-needs-audit-trials');
-  return Object.freeze({ok:failures.length===0,failures,intentCoverage,surfaceOwnerCoverage:surfaces.length===13?1:surfaces.length/13,taskRouteCoverage:routes.length>=9?1:routes.length/9});
+  return Object.freeze({ok:failures.length===0,failures,intentCoverage,surfaceOwnerCoverage:surfaces.length===13?1:surfaces.length/13,taskRouteCoverage:routes.length===REQUIRED_TASK_ROUTE_IDS.length?1:routes.length/REQUIRED_TASK_ROUTE_IDS.length});
 }
 
 export function taskRoute(contract,id){return (contract.taskRoutes||[]).find(item=>item.id===id)||null;}

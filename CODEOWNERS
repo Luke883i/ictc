@@ -1,5 +1,2 @@
-* @Luke883i
-/docs/domain/ @Luke883i
-/schemas/ @Luke883i
-/lib/ @Luke883i
-/.github/workflows/ @Luke883i
+# Non-canonical pointer for human readers.
+# GitHub ownership authority lives in .github/CODEOWNERS.
