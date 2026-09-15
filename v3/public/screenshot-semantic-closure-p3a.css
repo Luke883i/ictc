@@ -28,7 +28,7 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homeSummary{max-width:var(
 html[data-native-semantic-lattice="3.2.0"] #homePriorities .home-priority-label{font-size:.9rem!important;line-height:1.3!important}
 html[data-native-semantic-lattice="3.2.0"] #homePriorities .home-priority-reason{font-size:.78rem!important;line-height:1.35!important}
 html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head p{max-width:var(--p4-reading-wide)!important;font-size:.9rem!important;line-height:1.5!important}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:4.4rem minmax(13.5rem,.72fr) minmax(20rem,1.35fr) auto!important;gap:.8rem!important;min-height:68px!important;padding:.58rem .72rem!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:4.4rem minmax(13.5rem,.72fr) minmax(20rem,1.35fr) auto!important;gap:.8rem!important;min-height:64px!important;padding:.58rem .72rem!important}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>h2{font-size:1.03rem!important;line-height:1.25!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{font-size:.9rem!important;line-height:1.42!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;line-clamp:unset!important}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-code{font-size:.78rem!important;line-height:1.2!important}
