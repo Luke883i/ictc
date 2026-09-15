@@ -55,8 +55,18 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: PostgreSQL schema and application-role setup
         run: node v3/c3-enterprise-bench-postgres-smoke.mjs setup
+      - name: Enterprise runtime factory profile
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs factory
       - name: PostgreSQL RLS and NOBYPASSRLS application connection
         run: node v3/c3-enterprise-bench-postgres-smoke.mjs rls
+      - name: PostgreSQL transaction-local tenant context
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs tenant-tx
+      - name: PostgreSQL advisory subject lock
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs advisory
+      - name: PostgreSQL subject current and version write
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs subject-write
+      - name: PostgreSQL tenant ledger write
+        run: node v3/c3-enterprise-bench-postgres-smoke.mjs ledger-write
       - name: PostgreSQL first enterprise subject commit
         run: node v3/c3-enterprise-bench-postgres-smoke.mjs commit
       - name: Real PostgreSQL two-replica semantic integration
