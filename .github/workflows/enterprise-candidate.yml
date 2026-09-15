@@ -24,6 +24,10 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: node v3/enterprise-gate-manifest-check.mjs
       - run: node v3/convergence-authority-check.mjs
+      - name: Contributor runtime contract
+        run: node v3/contributor-runtime-check.mjs
+      - name: Contributor runtime adversarial saturation 100k
+        run: node v3/contributor-runtime-saturation-100k.mjs
       - run: npm run release:check
       - run: node v3/runtime-enterprise-boundaries-ci.mjs
       - run: node v3/browser-local-write-boundary-check.mjs

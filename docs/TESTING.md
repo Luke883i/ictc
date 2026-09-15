@@ -25,8 +25,22 @@ Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di conver
 | docs/routing/authority projection | `npm run docs:check` | `npm run docs:saturation` |
 | convergence/workbook planning | `node v3/convergence-authority-check.mjs` | `npm test` |
 | C5 owner/freshness | `node v3/c5-semantic-owner-check.mjs` | `node v3/c5-semantic-owner-saturation.mjs`, `node v3/c5-needs-audit-saturation.mjs`, poi `npm test` |
+| enterprise runtime/PostgreSQL orizzontale | `node v3/c3-enterprise-bench-dod-check.mjs` | `npm test` + exact-head `c3-enterprise-runtime-closure` |
 
 Se una modifica locale richiede di leggere o cambiare molte authority non correlate, fermati e verifica prima il routing in `docs/START_HERE.md` e `v3/semantic-owner-contract.json`: la soluzione preferita resta nel proprietario esistente.
+
+## Diagnosi dei failure di contribuibilità
+
+Quando un check rosso è già classificato, riproduci prima il falsificatore locale del suo owner; non allentare il gate insieme al prodotto.
+
+| Failure/check | Route | Riproduzione locale |
+|---|---|---|
+| `docs-command-contract` | `docs` | `node v3/docs-command-contract-check.mjs` |
+| `c5-semantic-owner` | `governance` | `node v3/c5-semantic-owner-check.mjs` |
+| `c3-enterprise-runtime` | `enterprise-runtime` | `node v3/c3-enterprise-bench-dod-check.mjs` |
+| `enterprise-candidate` | `runtime` | `npm run release:check` |
+
+Il workflow PostgreSQL C3 resta exact-head evidence separata: una riproduzione locale senza PostgreSQL non equivale al canary a due repliche.
 
 ## Rail corrente
 

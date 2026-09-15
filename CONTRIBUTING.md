@@ -6,6 +6,15 @@ ICTC is an evidence-first compliance operations project. Contributions are welco
 
 Read `docs/START_HERE.md` first. It routes current product, architecture, semantic, testing and governance authorities. `docs/documentation-manifest.json` classifies current, operating, policy, lineage, source-input and roadmap documents; file recency does not create authority.
 
+## Percorso minimo prima del primo push
+
+1. Scegli la route del cambiamento in `docs/START_HERE.md`; per il runtime distingui il percorso locale/compatibility da `enterprise-runtime`.
+2. Crea un branch dedicato usando un prefisso ammesso dalla policy canonica `.github/gov-01f-policy.json`: `agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`. `main` non è un branch di lavoro.
+3. Esegui prima il "feedback più vicino" della route; usa poi la rail di convergenza indicata.
+4. Apri una PR dalla exact head corrente e usa il template; il verde di uno SHA precedente non vale per la nuova head.
+
+La policy GOV-01F resta compensating governance: questi prefissi e i check repository non rendono `main` server-side protected.
+
 ## Before changing code or documentation
 
 1. Describe the business or engineering problem and affected process/capability.
