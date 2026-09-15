@@ -73,6 +73,10 @@ jobs:
         run: node v3/c3-enterprise-bench-integration-check.mjs
       - name: HTTP replica health boundary
         run: node v3/c3-enterprise-bench-http-1000-check.mjs health
+      - name: HTTP 1000-client zero-error boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-status
+      - name: HTTP 1000-client latency boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-latency
       - name: HTTP 1000-client fleet write boundary
         run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet
       - name: HTTP hot-tenant 200-write boundary
