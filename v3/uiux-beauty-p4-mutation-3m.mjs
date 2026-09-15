@@ -71,7 +71,7 @@ function yieldCostCampaign(spec) {
     { id:'strengthen-admin-row-hierarchy', benefit:8, cost:1 },
     { id:'strengthen-dialog-lead-copy', benefit:6, cost:1 },
     { id:'normalize-section-heading-scale', benefit:8, cost:1 },
-    { id:'global-decorative-restyling', benefit:1, cost:4 }
+    { id:'global decorative restyling', benefit:1, cost:4 }
   ];
   const penalty = 2;
   const expectedMask = levers.reduce((mask, lever, index) => lever.benefit - penalty * lever.cost > 0 ? mask | (1 << index) : mask, 0);
