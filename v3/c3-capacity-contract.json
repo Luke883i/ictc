@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "C3-CAPACITY-CONTRACT",
+  "authority": "runtime-scale-claim-boundary",
+  "reconciledMainSha": "3bb5fb2327135eb1f18e6a8ad2147f9c56ebf94e",
+  "sourceEvidence": {
+    "class": "E2-SIMULATED+MEASURED-LOCAL",
+    "priorMainSha": "3453651240609364a69709bef0ac7c4c17847648",
+    "threeMillionDigest": "d1d1a55244a20ee7ee11e6c514645afed2e242f2f0c1f12d2ef2faab17497739",
+    "claimBoundary": "Architecture falsification evidence only; it cannot satisfy deployment-load evidence requirements."
+  },
+  "targetEnvelope": {
+    "minimumActiveConcurrentUsersFleet": 1000,
+    "minimumHotTenantActiveConcurrentUsers": 1000,
+    "stressActiveConcurrentUsers": 5000,
+    "minimumApplicationReplicas": 2,
+    "maximumApplicationReplicas": 32,
+    "ordinaryWriteReceiptP95Ms": 300,
+    "ordinaryReconcileP95Ms": 500,
+    "ordinaryReadP95Ms": 250,
+    "independentSubjectFalseConflicts": 0,
+    "sameSubjectLostUpdates": 0,
+    "duplicateCommittedCommandEffects": 0,
+    "revisionGapMustRecover": true
+  },
+  "architectureRequirements": [
+    "sharedDurableAuthority",
+    "tenantIsolationEnforced",
+    "subjectScopedConcurrency",
+    "atomicCommitReceipt",
+    "incrementalIntegrity",
+    "durableCommandLedger",
+    "durableWorkClaims",
+    "projectionDelta",
+    "revisionGapRecovery",
+    "sharedBlobAuthority",
+    "distributedIngressBudget",
+    "statelessReplicas",
+    "externalObservability"
+  ],
+  "minimumLattice": ["TENANT","TRANSACTION","WORK","PROJECTION","BLOB","EDGE"],
+  "evidenceRequirements": {
+    "kind": "deployment-load",
+    "exactHead": true,
+    "multiProcess": true,
+    "multiTenant": true,
+    "hotTenant": true
+  },
+  "claimBoundary": "C3 runtime semantics can declassify unsupported scale claims. Scale-ready requires every architecture requirement plus qualifying exact-head multi-process deployment-load evidence; simulated or measured-local evidence never closes this contract."
+}
