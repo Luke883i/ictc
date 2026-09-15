@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { C3_ENTERPRISE_SCALE_PACK, C3_ENTERPRISE_SCALE_REQUIREMENTS, enterpriseScalePackProjection } from './runtime/enterprise-scale-pack.mjs';
 
 const TRIALS=1_000_000;
@@ -49,4 +50,7 @@ for(let i=0;i<TRIALS;i++){
 }
 assert.equal(mismatches,0);assert.ok(ready>0);assert.ok(blocked>0);
 for(const [name,count] of Object.entries(mutantEscapes))assert.equal(count,0,`${name} escaped`);
-console.log(JSON.stringify({ok:true,trials:TRIALS,seed:'0xC3E5A126',ready,blocked,mismatches,mutantEscapes,digest:digest.digest('hex'),claim:'semantic mutation/falsification rail only; not production load proof'}));
+const output={ok:true,trials:TRIALS,seed:'0xC3E5A126',ready,blocked,mismatches,mutantEscapes,digest:digest.digest('hex'),claim:'semantic mutation/falsification rail only; not production load proof'};
+const receipt=JSON.parse(readFileSync(new URL('./c3-enterprise-scale-pack-receipt.json',import.meta.url),'utf8')).mutationFalsification;
+assert.equal(output.seed,receipt.seed);assert.equal(output.trials,receipt.trials);assert.equal(output.ready,receipt.ready);assert.equal(output.blocked,receipt.blocked);assert.equal(output.mismatches,receipt.oracleMismatches);assert.equal(output.digest,receipt.digest);assert.deepEqual(output.mutantEscapes,receipt.mutantEscapes);
+console.log(JSON.stringify(output));
