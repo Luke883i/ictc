@@ -71,5 +71,19 @@ jobs:
         run: node v3/c3-enterprise-bench-postgres-smoke.mjs commit
       - name: Real PostgreSQL two-replica semantic integration
         run: node v3/c3-enterprise-bench-integration-check.mjs
+      - name: HTTP replica health boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs health
+      - name: HTTP 1000-client fleet write boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet
+      - name: HTTP hot-tenant 200-write boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs hot
+      - name: HTTP same-subject contention boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs contention
+      - name: HTTP concurrent replay boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs replay
+      - name: HTTP cross-replica blob boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs blob
+      - name: HTTP accepted-write node-death boundary
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs death
       - name: Two-process HTTP 1000-client concurrency canary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs
+        run: node v3/c3-enterprise-bench-http-1000-check.mjs all
