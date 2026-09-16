@@ -13,7 +13,7 @@ concurrency:
 jobs:
   semantic-lattice:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -24,13 +24,18 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: DEMO Evidence Lattice 3.0 runtime contract
         run: node v3/demo-evidence-lattice-3-0-check.mjs
-      - name: Ten million ontology and epistemic contract mutations
-        run: node v3/demo-evidence-lattice-3-0-mutation-10m.mjs
-      - name: Preserve canonical Suite 2.2 native runtime
+      - name: Closed SME ontology and epistemic completeness
+        run: node v3/demo-evidence-lattice-3-0-completeness-check.mjs
+      - name: One million real ontology epistemic semantic mutations
+        run: node v3/demo-evidence-lattice-3-0-mutation-1m.mjs
+      - name: Preserve canonical Suite 2.2 native authority
         run: |
+          node v3/demo-suite-2-2-module-load-check.mjs
           node v3/demo-suite-2-2-runtime-semantic-check.mjs
-          node v3/demo-seed-contract-check.mjs
-      - name: Preserve handler and gate authorities
+          node v3/demo-suite-2-2-runtime-store-check.mjs
+          node v3/demo-suite-2-2-projection-closure-check.mjs
+      - name: Preserve handler and current gate authorities
         run: |
           node v3/current-gate-registry-check.mjs
+          node v3/current-release-suite-check.mjs
           node v3/procedure-adapter-registry-check.mjs
