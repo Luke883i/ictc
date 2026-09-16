@@ -23,12 +23,7 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: DEMO Evidence Lattice 3.0 runtime contract
-        id: lattice
-        continue-on-error: true
         run: node v3/demo-evidence-lattice-3-0-check.mjs
-      - name: Lattice verdict · ${{ steps.lattice.outputs.reason }}
-        if: steps.lattice.outcome != 'success'
-        run: exit 1
       - name: Closed SME ontology and epistemic completeness
         run: node v3/demo-evidence-lattice-3-0-completeness-check.mjs
       - name: Ten million real ontology epistemic semantic mutations
