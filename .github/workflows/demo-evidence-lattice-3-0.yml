@@ -1,0 +1,36 @@
+name: demo-evidence-lattice-3-0
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: demo-evidence-lattice-3-0-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic-lattice:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: DEMO Evidence Lattice 3.0 runtime contract
+        run: node v3/demo-evidence-lattice-3-0-check.mjs
+      - name: Ten million ontology and epistemic contract mutations
+        run: node v3/demo-evidence-lattice-3-0-mutation-10m.mjs
+      - name: Preserve canonical Suite 2.2 native runtime
+        run: |
+          node v3/demo-suite-2-2-runtime-semantic-check.mjs
+          node v3/demo-seed-contract-check.mjs
+      - name: Preserve handler and gate authorities
+        run: |
+          node v3/current-gate-registry-check.mjs
+          node v3/procedure-adapter-registry-check.mjs
