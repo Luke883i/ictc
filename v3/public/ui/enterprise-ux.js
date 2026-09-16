@@ -6,15 +6,15 @@ function capability(name) { return Array.isArray(state.data?.capabilities) && st
 function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-header';}
 function syncRuntimeStatus(){
   const status=$('#runtimeStatus');if(!status||!state.data)return;
-  const role=state.data.actor?.role||state.role||'user',llm=state.data.settings?.llm||{};
+  const role=state.data.actor?.role||state.role||'user',roleLabel=roleLabels[role]||role,llm=state.data.settings?.llm||{};
   const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
-  const label=role==='auditor'?'Sola lettura':llm.ready?'AI pronta':'AI non attiva';
+  const aiLabel=role==='auditor'?'Sola lettura':llm.ready?'AI pronta':'AI non attiva';
   const icon=llm.ready?'sparkles':'triangle-alert';
-  status.innerHTML=`${uiIcon(icon,'ui-icon runtime-status-icon')}<span>${label}</span>`;
+  status.innerHTML=`${uiIcon(icon,'ui-icon runtime-status-icon')}<span>${roleLabel} · ${aiLabel}</span>`;
   status.dataset.aiState=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
   status.dataset.actorRole=role;
-  status.title=`${roleLabels[role]||role} · ${detail}`;
-  status.setAttribute('aria-label',`${roleLabels[role]||role}. ${detail}`);
+  status.title=`${roleLabel} · ${detail}`;
+  status.setAttribute('aria-label',`${roleLabel}. ${detail}`);
 }
 function applyCapabilities() {
   if (!state.data) return;

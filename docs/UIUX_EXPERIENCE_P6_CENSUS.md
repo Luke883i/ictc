@@ -23,7 +23,8 @@ P6 chooses the product identity already expected by the A6 browser contract as t
 - Repeated controls preserve 44 px minimum target height; compact record rows remain 52–64 px when content permits.
 - Process-directory CTA geometry remains uniform and is formalized at 8.75 rem minimum width.
 - `Vai a…` becomes `Vai a` with a search icon. Search-result metadata expresses kind/code/state once: no `Procedura · RN-01 · Procedura` or `Azione · Azioni · stato`.
-- AI readiness uses an immediate icon plus short visible labels (`AI pronta`, `AI non attiva`); precise configuration detail remains in `title` and `aria-label`.
+- AI readiness uses an immediate icon and short AI label while preserving the active role in visible text; precise configuration detail remains in `title` and `aria-label`.
+- The compressed product proposition retains governance, assurance interna, GDPR/NIS2 applicability context, `L’AI assiste` and the human-decision boundary.
 - Color is never a compliance verdict. AI-ready/attention color communicates only local feature readiness.
 
 ## Surface census — at least five convergence opportunities each
@@ -49,11 +50,10 @@ P6 chooses the product identity already expected by the A6 browser contract as t
 Final P6 harness seed: `ictc-uiux-experience-p6-2026-09-16`.
 
 - 67 material mutation families;
-- 67/67 single-family mutants killed before campaign counting;
-- 10,000,000 deterministic symbolic trials;
-- 7,497,720 multi-mutation trials (depth 2–4);
-- 0 survivors;
-- 0 harness errors;
-- digest `306b020f78ed5636987d1e4a70d8163a5d81cb3f6049a80248c9502ea4ee1fb7`.
+- 67/67 single-family contract mutants are materially executed and killed before schedule counting;
+- 10,000,000 deterministic symbolic mutation schedules exercise depth 1–4 family combinations;
+- every family is sampled by the schedule campaign;
+- the 10M count is schedule coverage, not 10M executed contract clones, browser sessions or users;
+- E3-HUMAN pleasantness, comprehension, task efficiency and assistive-technology evidence remain external.
 
-The earlier exploratory 55-family harness was discarded when the source/contract oracle was strengthened. Only the result above is the P6 canonical mutation artifact.
+This distinction prevents schedule enumeration from being laundered into runtime or human evidence.
