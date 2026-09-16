@@ -2,6 +2,8 @@ import { sha256 } from '../domain.mjs';
 import { DEMO_SUITE_22_ID, DEMO_SUITE_22_SCENARIO } from './demo-suite-2-2.mjs';
 import { effectiveRiskReview, effectiveRiskTreatment, riskLifecycleState } from './grc-risks.mjs';
 import { currentAssuranceApprovedVersion } from './grc-assurance.mjs';
+import { procedureAdapters } from './procedure-adapters.mjs';
+import { canonicalProcedureContracts } from './procedure-contracts.mjs';
 
 export const DEMO_EVIDENCE_LATTICE_VERSION='3.0';
 export const DEMO_EVIDENCE_LATTICE_ID='demo-evidence-lattice-3-0';
@@ -10,15 +12,12 @@ export const DEMO_EPISTEMIC_STATES=Object.freeze(['observed','declared','propose
 export const DEMO_LATTICE_NODE_KINDS=Object.freeze(['organization','period','procedure','actor','subject','event','decision','claim','evidence','circumstance']);
 export const DEMO_LATTICE_EDGE_KINDS=Object.freeze(['membership','temporal','about','performed-by','supports','expresses','context','correlation']);
 
-const PROCEDURES=Object.freeze([
-  Object.freeze({id:'monitoring',code:'RN-01',collection:'missions',nativeType:'mission',semanticRole:'public-source-monitoring'}),
-  Object.freeze({id:'incidents',code:'EC-01',collection:'incidents',nativeType:'incident',semanticRole:'observed-operational-event'}),
-  Object.freeze({id:'objects',code:'AO-01',collection:'grcObjects',nativeType:'grc-object',semanticRole:'governed-identity'}),
-  Object.freeze({id:'coverage',code:'MC-01',collection:'grcMappings',nativeType:'mapping',semanticRole:'declared-requirement-mapping'}),
-  Object.freeze({id:'actions',code:'AP-01',collection:'grcActions',nativeType:'action',semanticRole:'remediation-commitment'}),
-  Object.freeze({id:'risks',code:'RC-01',collection:'grcRisks',nativeType:'risk',semanticRole:'risk-governance'}),
-  Object.freeze({id:'assurance',code:'AR-01',collection:'grcAssurance',nativeType:'assurance-case',semanticRole:'assurance-response'})
-]);
+const PROCEDURE_CONTRACT_BY_ID=new Map(canonicalProcedureContracts().map(item=>[item.id,item]));
+const PROCEDURES=Object.freeze(procedureAdapters().map(adapter=>{
+  const contract=PROCEDURE_CONTRACT_BY_ID.get(adapter.id),nativeType=adapter.subjectTypes?.[0],collection=nativeType?adapter.stateCollections?.[nativeType]:null;
+  if(!contract||!nativeType||!collection)throw new Error(`DEMO lattice procedure authority incomplete: ${adapter.id}`);
+  return Object.freeze({id:adapter.id,code:contract.code,collection,nativeType,semanticRole:contract.purpose||contract.archetype||adapter.surface});
+}));
 const PROCEDURE_BY_ID=new Map(PROCEDURES.map(item=>[item.id,item]));
 const clone=value=>structuredClone(value);
 const asIso=value=>{const ms=Date.parse(value||'');return Number.isFinite(ms)?new Date(ms).toISOString():null;};

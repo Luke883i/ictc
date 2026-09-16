@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { appendFile, readFile } from 'node:fs/promises';
 import { buildDemoSuite22State, DEMO_SUITE_22_SCENARIO } from './runtime/demo-suite-2-2.mjs';
 import { buildClosedDemoEvidenceLattice30, DEMO_SME_CLOSED_ONTOLOGY, ICTC_CANONICAL_EPISTEMIC_FAMILIES } from './runtime/demo-evidence-lattice-3-0-closure.mjs';
 import { DEMO_EVIDENCE_LEVELS } from './runtime/demo-evidence-lattice-3-0.mjs';
 
 const built=await buildDemoSuite22State();
 const graph=buildClosedDemoEvidenceLattice30(built.state,{asOf:`${DEMO_SUITE_22_SCENARIO.operatingYear?.referenceDate||'2026-06-30'}T23:59:59.999Z`});
-assert.equal(graph.enabled,true,'Suite 2.2 must materialize the lattice');assert.equal(graph.ok,true,`lattice violations: ${[...(graph.violations||[]),...(graph.closure?.reasons||[])].slice(0,30).join('; ')}`);assert.equal(graph.closure.closed,true);
+const graphReasons=[...new Set([...(graph.violations||[]),...(graph.closure?.reasons||[])])];
+const diagnosticReason=(graphReasons.slice(0,8).join(' | ')||'none').replace(/[\r\n%]/g,'_').slice(0,900);
+if(process.env.GITHUB_OUTPUT)await appendFile(process.env.GITHUB_OUTPUT,`reason=${diagnosticReason}\n`);
+assert.equal(graph.enabled,true,'Suite 2.2 must materialize the lattice');assert.equal(graph.ok,true,`lattice violations: ${graphReasons.slice(0,30).join('; ')}`);assert.equal(graph.closure.closed,true);
 assert.equal(graph.summary.subjects,188);assert.deepEqual(graph.summary.procedureCounts,DEMO_SUITE_22_SCENARIO.expectedCounts);assert.equal(graph.summary.period.months,12);assert.equal(graph.summary.period.quarters,4);assert.equal(graph.summary.closedWorld.danglingEdges,0);assert.ok(graph.summary.decisions>0);assert.ok(graph.summary.claims>0);assert.ok(graph.summary.evidence>0);assert.ok(graph.summary.correlations>0);assert.ok(graph.closure.crossProcedureRelations>0);
 for(const dimension of DEMO_SME_CLOSED_ONTOLOGY)assert.equal(graph.summary.ontologyCoverage[dimension],true,`missing SME ontology dimension ${dimension}`);for(const family of ICTC_CANONICAL_EPISTEMIC_FAMILIES)assert.equal(graph.summary.epistemicCoverage[family],true,`missing epistemic family ${family}`);for(const level of DEMO_EVIDENCE_LEVELS)assert.equal(graph.summary.evidenceCoverage[level],true,`missing evidence level ${level}`);
 assert.ok(graph.nodes.some(node=>node.kind==='portfolio'&&node.evidenceLevel==='E5-portfolio-view'));assert.ok(graph.nodes.filter(node=>node.kind==='event').some(node=>node.worldAt&&node.knownAt));assert.ok(graph.nodes.some(node=>node.kind==='claim'&&node.claimType==='unknown'&&node.epistemicStatus==='unknown'));assert.ok(graph.nodes.some(node=>node.kind==='claim'&&node.claimType==='mapping-disposition'&&/does not mean effective or compliant/i.test(node.data?.meaning||'')));assert.ok(graph.nodes.some(node=>node.kind==='claim'&&node.claimType==='risk-rating'&&/not objective probability/i.test(node.data?.meaning||'')));assert.ok(graph.nodes.some(node=>node.kind==='decision'&&node.eventType==='assurance-approved'&&/not independent assurance/i.test(node.data?.meaning||'')));assert.ok(graph.edges.filter(edge=>edge.kind==='correlation').every(edge=>edge.causal===false&&edge.authorityTransfer==='none'&&edge.basis));
