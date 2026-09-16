@@ -18,4 +18,4 @@ The lattice is more than a list of records when all of the following hold simult
 
 ## Falsification
 
-The dedicated exact-head rail validates the real Suite 2.2 graph and then executes 1,000,000 deterministic mutations of a compact invariant projection derived from that graph across ontology, epistemic and semantic axes. The campaign is repository/model evidence. It is not evidence from one million companies, legal analyses, users or independent full-graph clones.
+The dedicated exact-head rail validates the real Suite 2.2 graph and then executes 10,000,000 deterministic mutations of a compact invariant projection derived from that graph across ontology, epistemic and semantic axes. The campaign is repository/model evidence. It is not evidence from ten million companies, legal analyses, users or independent full-graph clones.

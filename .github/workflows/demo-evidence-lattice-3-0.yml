@@ -31,8 +31,8 @@ jobs:
         run: exit 1
       - name: Closed SME ontology and epistemic completeness
         run: node v3/demo-evidence-lattice-3-0-completeness-check.mjs
-      - name: One million real ontology epistemic semantic mutations
-        run: node v3/demo-evidence-lattice-3-0-mutation-1m.mjs
+      - name: Ten million real ontology epistemic semantic mutations
+        run: node v3/demo-evidence-lattice-3-0-mutation-10m.mjs
       - name: Preserve canonical Suite 2.2 native authority
         run: |
           node v3/demo-suite-2-2-module-load-check.mjs
