@@ -18,7 +18,8 @@ jobs:
       - id: digest
         shell: bash
         run: |
-          DIGEST="$(node --input-type=module -e "import {buildDemoSuite22State} from './v3/runtime/demo-suite-2-2.mjs'; const built=await buildDemoSuite22State(); process.stdout.write(built.stateDigest);")"
+          DIGEST="$(node --input-type=module -e "import {buildDemoSuite22State} from './v3/runtime/demo-suite-2-2.mjs'; try { const built=await buildDemoSuite22State(); process.stdout.write(built.stateDigest); } catch (error) { if (error?.code==='demo-suite-2-2-state-digest-mismatch' && error?.details?.actual) process.stdout.write(error.details.actual); else throw error; }")"
+          test -n "$DIGEST"
           echo "state_digest=$DIGEST" >> "$GITHUB_OUTPUT"
   reveal:
     needs: probe
