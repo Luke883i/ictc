@@ -1,70 +1,32 @@
 {
   "schemaVersion": "1.0.0",
-  "modelId": "UIUX-EXPERIENCE-P6",
-  "classification": "end-user-experience-compression-without-authority-change",
-  "intent": "Reduce avoidable visual and lexical friction in the existing ICTC experience without creating a new presentation owner, changing business semantics, or weakening epistemic boundaries.",
-  "baseObservation": {
-    "mainSha": "ebba9c7e0bb57077c507a12c8be6e8dd04aae5ae",
-    "mergedThroughPr": 158
-  },
-  "invariants": {
-    "canonicalSurfaceCount": 13,
-    "businessProcedureCount": 7,
-    "newPresentationOwnerAllowed": false,
-    "newBusinessRouteAllowed": false,
-    "writeAuthorityChangeAllowed": false,
-    "globalFinalResolverAllowed": false,
-    "newBeautyStylesheetAllowed": false,
-    "humanDecisionAuthorityRequired": true,
-    "aiAssistOnlyRequired": true,
-    "p5SemanticBeautyMustRemainBlocking": true,
-    "exactHeadCiRequired": true
-  },
-  "experienceDelta": {
-    "palette": {
-      "background": "#eef2f6",
-      "header": ["#24415f", "#315b7c", "#3f7092"],
-      "footer": ["#1b324b", "#274966", "#365f7f"],
-      "landing": ["#f7f9fc", "#edf2f7"],
-      "purpose": "Lower chrome heaviness while preserving dark-chrome contrast and existing semantic colors."
-    },
-    "navigation": {
-      "triggerLabel": "Vai a",
-      "dialogEyebrow": "Ricerca e navigazione",
-      "placeholder": "Cerca processo, oggetto, fonte o evento",
-      "typedKinds": ["Vista", "Processo", "Monitoraggio", "Fonte", "Evento", "Oggetto", "Requisito", "Azione", "Rischio", "Richiesta"],
-      "iconRequired": "search",
-      "keyboardShortcutPreserved": true
-    },
-    "productProposition": {
-      "requiredTerms": ["governance", "assurance interna", "GDPR", "NIS2"],
-      "requiredDecisionBoundary": "decisioni restano umane",
-      "requiredAiBoundary": "AI assiste",
-      "maxCharacters": 240
-    },
-    "iconVocabulary": ["search", "sparkles", "triangle-alert"]
-  },
-  "nativeRail": {
-    "check": "v3/uiux-experience-p6-check.mjs",
-    "saturation": "v3/uiux-experience-p6-saturation-10m.mjs",
-    "mustExecuteAfter": "v3/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs"
-  },
-  "mutationCampaign": {
-    "model": "UIUX-EXPERIENCE-P6-ADVERSARIAL-10M",
-    "seed": "0xC0FFEE26",
-    "trials": 10000000,
-    "failureFamilies": 32,
-    "expectedSurvivors": 0
-  },
-  "definitionOfDone": [
-    "P6 source changes are bounded to existing semantic/presentation owners plus executable evidence.",
-    "The product proposition is shorter but retains governance, assurance interna, GDPR/NIS2 applicability context, AI-assist-only and human-decision boundaries.",
-    "Global navigation exposes a plain-language Vai a search with typed result kinds and an accessible iconized trigger while preserving keyboard navigation.",
-    "Header, footer, page background and landing gradients use the declared calmer token values without changing semantic status colors.",
-    "P6 check and adversarial saturation execute in the native gate rail after P5.",
-    "P5 beauty-semantic authority and UIUX convergence gates remain blocking.",
-    "No business route, persistence contract, write authority, procedure count or canonical surface count changes.",
-    "Exact-head GitHub CI is green before merge."
+  "profile": "UIUX-EXPERIENCE-P6",
+  "observedMain": "ebba9c7e0bb57077c507a12c8be6e8dd04aae5ae",
+  "classification": "repository-bounded-E2-design-convergence",
+  "createsNewAuthority": false,
+  "principle": "Converge copy, geometry and palette through existing local owners; do not add a global final resolver.",
+  "canonicalTitle": "Integrated Compliance Tower Control",
+  "commonPrimitives": ["Chrome","SurfaceIdentity","SurfacePurposeBoundary","AttentionStrip","ControlRail","RecordRow","PrimaryAction","StateChip","ProgressiveDetail","EvidenceConfigurationRow"],
+  "palette": {"pageBackground":"#eef2f6","header":["#24415f","#315b7c","#3f7092"],"footer":["#1b324b","#274966","#365f7f"],"landing":["#f7f9fc","#edf2f7"],"onChrome":"#ffffff","relationship":"landing lighter than chrome; page background slightly darker than landing start"},
+  "geometry": {"controlMinPx":44,"compactRowPx":52,"rowMaxPx":64,"processListActionMinRem":8.75,"iconPx":16},
+  "homeMount": {"staticTitle":"Integrated Compliance Tower Control","stableShellTitleRewrite":false,"a6Ux3TitleRewrite":false,"expectedVisibleTitleTransitions":0,"solution":"Static markup owns the canonical product title; stable-shell owns Home data composition and A6-UX3 may annotate compatibility but may not rewrite Home title copy."},
+  "globalNavigation": {"trigger":"Vai a","dialogTitle":"Vai a","searchIcon":"search","rule":"Kind, code and state are each expressed once; no Procedura/Procedura or Azione/Azioni duplication."},
+  "aiStatus": {"readyLabel":"AI pronta","notReadyLabel":"AI non attiva","readOnlyLabel":"Sola lettura","readyIcon":"sparkles","attentionIcon":"triangle-alert","detailRule":"Precise configuration state remains in title and aria-label."},
+  "surfaces": [
+    {"id":"home","owner":"stable-shell.js","archetype":"orientation","opportunities":["Eliminate temporal title rewrites and make initial DOM canonical","Keep product identity distinct from attention queue","Limit first-plane priorities to three","Use concise proposition and one clear route to all processes","Use calm landing tint and consistent action geometry"]},
+    {"id":"processes","owner":"procedure-frame.js","archetype":"orientation","opportunities":["Keep seven processes in one row-list grammar","Standardize CTA minimum width and target height","Align code title purpose and action columns","Use one-line plain-language catalogue summaries","Preserve one primary route per process"]},
+    {"id":"monitoring","owner":"procedure-frame.js","archetype":"operational","opportunities":["Use canonical procedure frame as sole identity","Keep acquisition material copy concise and evidence-aware","Normalize monitor/source control rails","Standardize record actions and state chips","Keep AI setup subordinate to the work surface"]},
+    {"id":"incidents","owner":"procedure-frame.js","archetype":"operational","opportunities":["Use canonical procedure frame as sole identity","Compress repeated event records into ledger rows","Standardize open/evidence actions","Keep facts unknowns and decisions visually distinct","Keep legal-notification boundary adjacent but secondary"]},
+    {"id":"objects","owner":"grc-workspace-3-2.js","archetype":"registry","opportunities":["Normalize inventory row geometry","Expose owner source and reattestation inline when material","Standardize search and state controls","Distinguish lifecycle state from evidence basis","Use consistent record action width and hierarchy"]},
+    {"id":"coverage","owner":"grc-workspace-3-2.js","archetype":"registry","opportunities":["Normalize requirement/mapping row geometry","Keep scope basis visible without overclaim","Separate mapping state from compliance conclusion","Standardize standard-browser and mapping actions","Reduce repeated explanatory copy through progressive detail"]},
+    {"id":"actions","owner":"grc-workspace-3-2.js","archetype":"registry","opportunities":["Normalize remediation worklist rows","Keep owner due execution and verification distinct","Standardize quick action geometry","Make completed distinct from closed-and-verified","Use concise next-action copy"]},
+    {"id":"risks","owner":"grc-workspace-3-2.js","archetype":"registry","opportunities":["Normalize scenario review rows","Keep rating distinct from probability and workflow state","Standardize treatment/review controls","Use color for emphasis not verdict","Keep next review and treatment basis scannable"]},
+    {"id":"assurance","owner":"grc-workspace-3-2.js","archetype":"registry","opportunities":["Normalize request/response ledger rows","Keep answer version and evidence basis visible","Standardize draft/review/approve actions","Keep internal approval distinct from independent assurance","Use one primary action in the first plane"]},
+    {"id":"proof","owner":"proof-workspace-3-2.js","archetype":"evidence-knowledge","opportunities":["Make fact and decision/evidence ledger dominant","Compress secondary domains into progressive disclosure","Standardize evidence row geometry","Keep external-evidence boundaries explicit","Reduce equal-weight vertical sections"]},
+    {"id":"epistemic","owner":"epistemic-workspace-3-2.js","archetype":"evidence-knowledge","opportunities":["Keep list-first analytical default","Normalize search/filter toolbar","Use compact relation rows","Keep graph and technical tools progressive","Use emphasis without implying epistemic verdict"]},
+    {"id":"admin","owner":"admin-workspace-3-2.js","archetype":"configuration","opportunities":["Normalize configuration-row geometry","Use one action hierarchy across domains","Keep diagnostics progressive","Compress AI/policy copy without losing boundaries","Standardize inputs state chips and buttons"]},
+    {"id":"ai-settings","owner":"settings-1-8-fix.js","archetype":"configuration","opportunities":["Keep guided provider setup bounded and simple","Use concise provider/model/credential labels","Put advanced instructions behind disclosure","Use immediate readiness icon with precise accessible detail","Never imply provider configuration grants decision authority"]}
   ],
-  "claimBoundary": "P6 establishes repository/source evidence for a bounded experience-compression candidate. The 10M campaign is deterministic contract-model falsification, not ten million users, browser sessions, independent code mutants or evidence of representative human pleasantness, accessibility effectiveness, legal compliance, deployment assurance or enterprise readiness."
+  "falsification": {"seed":"ictc-uiux-experience-p6-2026-09-16","trials":10000000,"minimumFamilies":55,"claimBoundary":"Deterministic semantic/design-contract mutations are repository E2 falsification, not ten million browser sessions, users, accessibility studies or proof of aesthetic quality."},
+  "humanEvidenceBoundary": "Pleasantness, comprehension, task efficiency and assistive-technology usability remain E3-HUMAN."
 }

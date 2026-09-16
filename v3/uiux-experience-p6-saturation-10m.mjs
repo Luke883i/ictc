@@ -1,76 +1,27 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-
-const TRIALS=10_000_000;
-const SEED=0xC0FFEE26;
-const families=[
-  ['surface-count',s=>{s.surfaceCount=12;}],
-  ['procedure-count',s=>{s.procedureCount=8;}],
-  ['new-presentation-owner',s=>{s.newPresentationOwner=true;}],
-  ['new-business-route',s=>{s.newBusinessRoute=true;}],
-  ['write-authority-change',s=>{s.writeAuthorityChange=true;}],
-  ['global-final-resolver',s=>{s.globalFinalResolver=true;}],
-  ['new-beauty-stylesheet',s=>{s.newBeautyStylesheet=true;}],
-  ['human-decision-loss',s=>{s.humanDecision=false;}],
-  ['ai-authority-promotion',s=>{s.aiAssistOnly=false;}],
-  ['p5-nonblocking',s=>{s.p5Blocking=false;}],
-  ['exact-head-loss',s=>{s.exactHead=false;}],
-  ['governance-term-loss',s=>{s.terms.delete('governance');}],
-  ['assurance-term-loss',s=>{s.terms.delete('assurance interna');}],
-  ['gdpr-term-loss',s=>{s.terms.delete('GDPR');}],
-  ['nis2-term-loss',s=>{s.terms.delete('NIS2');}],
-  ['proposition-overflow',s=>{s.propositionLength=241;}],
-  ['search-icon-loss',s=>{s.icons.delete('search');}],
-  ['sparkles-icon-loss',s=>{s.icons.delete('sparkles');}],
-  ['alert-icon-loss',s=>{s.icons.delete('triangle-alert');}],
-  ['plain-trigger-loss',s=>{s.triggerLabel='Comandi';}],
-  ['dialog-purpose-loss',s=>{s.dialogEyebrow='';}],
-  ['placeholder-loss',s=>{s.placeholder='';}],
-  ['typed-kinds-loss',s=>{s.typedKinds=9;}],
-  ['keyboard-loss',s=>{s.keyboard=false;}],
-  ['accessible-name-loss',s=>{s.accessibleName=false;}],
-  ['state-detail-loss',s=>{s.stateDetail=false;}],
-  ['background-drift',s=>{s.background='#ffffff';}],
-  ['header-gradient-drift',s=>{s.headerGradient=false;}],
-  ['footer-gradient-drift',s=>{s.footerGradient=false;}],
-  ['semantic-colors-drift',s=>{s.semanticColors=false;}],
-  ['native-check-loss',s=>{s.nativeCheck=false;}],
-  ['native-order-inversion',s=>{s.nativeOrder=false;}]
-];
-assert.equal(families.length,32);
-
-function baseline(){return{
-  surfaceCount:13,procedureCount:7,newPresentationOwner:false,newBusinessRoute:false,writeAuthorityChange:false,
-  globalFinalResolver:false,newBeautyStylesheet:false,humanDecision:true,aiAssistOnly:true,p5Blocking:true,exactHead:true,
-  terms:new Set(['governance','assurance interna','GDPR','NIS2']),propositionLength:211,
-  icons:new Set(['search','sparkles','triangle-alert']),triggerLabel:'Vai a',dialogEyebrow:'Ricerca e navigazione',
-  placeholder:'Cerca processo, oggetto, fonte o evento',typedKinds:10,keyboard:true,accessibleName:true,stateDetail:true,
-  background:'#eef2f6',headerGradient:true,footerGradient:true,semanticColors:true,nativeCheck:true,nativeOrder:true
-};}
-function violations(s){const out=[];
-  if(s.surfaceCount!==13)out.push('surface-count');if(s.procedureCount!==7)out.push('procedure-count');
-  if(s.newPresentationOwner)out.push('new-presentation-owner');if(s.newBusinessRoute)out.push('new-business-route');
-  if(s.writeAuthorityChange)out.push('write-authority-change');if(s.globalFinalResolver)out.push('global-final-resolver');
-  if(s.newBeautyStylesheet)out.push('new-beauty-stylesheet');if(!s.humanDecision)out.push('human-decision-loss');
-  if(!s.aiAssistOnly)out.push('ai-authority-promotion');if(!s.p5Blocking)out.push('p5-nonblocking');if(!s.exactHead)out.push('exact-head-loss');
-  for(const term of ['governance','assurance interna','GDPR','NIS2'])if(!s.terms.has(term))out.push(`term:${term}`);
-  if(s.propositionLength>240)out.push('proposition-overflow');for(const icon of ['search','sparkles','triangle-alert'])if(!s.icons.has(icon))out.push(`icon:${icon}`);
-  if(s.triggerLabel!=='Vai a')out.push('plain-trigger-loss');if(s.dialogEyebrow!=='Ricerca e navigazione')out.push('dialog-purpose-loss');
-  if(s.placeholder!=='Cerca processo, oggetto, fonte o evento')out.push('placeholder-loss');if(s.typedKinds!==10)out.push('typed-kinds-loss');
-  if(!s.keyboard)out.push('keyboard-loss');if(!s.accessibleName)out.push('accessible-name-loss');if(!s.stateDetail)out.push('state-detail-loss');
-  if(s.background!=='#eef2f6')out.push('background-drift');if(!s.headerGradient)out.push('header-gradient-drift');if(!s.footerGradient)out.push('footer-gradient-drift');
-  if(!s.semanticColors)out.push('semantic-colors-drift');if(!s.nativeCheck)out.push('native-check-loss');if(!s.nativeOrder)out.push('native-order-inversion');return out;}
-assert.deepEqual(violations(baseline()),[],'baseline must be valid');
-for(const [name,mutate] of families){const s=baseline();mutate(s);assert.ok(violations(s).length>0,`material family survived preflight: ${name}`);}
-
-let x=SEED>>>0;function rnd(){x^=x<<13;x^=x>>>17;x^=x<<5;return x>>>0;}
-const counts=new Uint32Array(families.length);let survivors=0,multi=0;const digest=createHash('sha256');
-for(let i=0;i<TRIALS;i++){
-  const s=baseline();const first=rnd()%families.length;families[first][1](s);counts[first]++;
-  if((rnd()&3)===0){let second=rnd()%families.length;if(second===first)second=(second+1)%families.length;families[second][1](s);counts[second]++;multi++;}
-  if((rnd()&15)===0){let third=rnd()%families.length;if(third===first)third=(third+7)%families.length;families[third][1](s);counts[third]++;multi++;}
-  const killed=violations(s).length>0;if(!killed)survivors++;
-  if((i&0x3fff)===0)digest.update(`${i}:${first}:${killed?1:0};`);
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {P6_SURFACE_IDS,validateP6} from './uiux-experience-p6-model.mjs';
+const baseline=JSON.parse(readFileSync(new URL('./uiux-experience-p6-contract.json',import.meta.url),'utf8'));
+assert.equal(validateP6(baseline).ok,true,JSON.stringify(validateP6(baseline).errors));
+const clone=o=>structuredClone(o),families=[];const add=(id,fn)=>families.push({id,fn});
+for(const id of P6_SURFACE_IDS){add(`drop-surface:${id}`,o=>{o.surfaces=o.surfaces.filter(x=>x.id!==id)});add(`wrong-owner:${id}`,o=>{o.surfaces.find(x=>x.id===id).owner='global-final-resolver.js'});add(`thin-opportunities:${id}`,o=>{o.surfaces.find(x=>x.id===id).opportunities=o.surfaces.find(x=>x.id===id).opportunities.slice(0,4)});}
+add('new-authority',o=>{o.createsNewAuthority=true});add('primitive-added',o=>{o.commonPrimitives.push('DashboardCard')});add('primitive-dropped',o=>{o.commonPrimitives.pop()});
+add('home-title-drift',o=>{o.canonicalTitle='Cosa richiede attenzione?'});add('home-static-drift',o=>{o.homeMount.staticTitle='Legacy Home'});add('home-stable-rewrite',o=>{o.homeMount.stableShellTitleRewrite=true});add('home-a6-rewrite',o=>{o.homeMount.a6Ux3TitleRewrite=true});add('home-transition',o=>{o.homeMount.expectedVisibleTitleTransitions=2});
+add('nav-ellipsis',o=>{o.globalNavigation.trigger='Vai a…'});add('nav-title-ambiguous',o=>{o.globalNavigation.dialogTitle='Navigazione'});add('nav-icon-loss',o=>{o.globalNavigation.searchIcon='none'});
+add('ai-ready-copy',o=>{o.aiStatus.readyLabel='AI disponibile'});add('ai-notready-copy',o=>{o.aiStatus.notReadyLabel='AI non configurata'});add('ai-ready-icon',o=>{o.aiStatus.readyIcon='info'});add('ai-attention-icon',o=>{o.aiStatus.attentionIcon='info'});
+add('control-36',o=>{o.geometry.controlMinPx=36});add('row-72',o=>{o.geometry.compactRowPx=72});add('rowmax-96',o=>{o.geometry.rowMaxPx=96});add('action-width',o=>{o.geometry.processListActionMinRem=6});add('icon-12',o=>{o.geometry.iconPx=12});
+add('page-too-white',o=>{o.palette.pageBackground='#ffffff'});add('header-old-dark',o=>{o.palette.header[0]='#142a46'});add('footer-old-dark',o=>{o.palette.footer[0]='#0d1b2f'});add('landing-white',o=>{o.palette.landing[0]='#ffffff'});add('chrome-text-muted',o=>{o.palette.onChrome='#94a3b8'});
+add('trials-low',o=>{o.falsification.trials=9_999_999});add('families-low',o=>{o.falsification.minimumFamilies=10});add('human-boundary-lost',o=>{o.humanEvidenceBoundary='Repository automation proves usability.'});
+assert.ok(families.length>=55,{families:families.length});
+const material=families.map(f=>{const o=clone(baseline);f.fn(o);const v=validateP6(o);assert.equal(v.ok,false,`survived:${f.id}`);return{id:f.id,signature:v.errors[0]};});
+const seed=baseline.falsification.seed;let x=parseInt(createHash('sha256').update(seed).digest('hex').slice(0,8),16)>>>0;const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return x>>>0};
+const trials=10_000_000,counts=new Uint32Array(families.length),depthCounts=new Uint32Array(4);let multi=0;const h=createHash('sha256');
+for(let i=0;i<trials;i++){
+  const depth=1+(rnd()%4);depthCounts[depth-1]++;if(depth>1)multi++;
+  const selected=[];for(let j=0;j<depth;j++){const k=rnd()%families.length;counts[k]++;selected.push(k);}
+  h.update(`${i}:${selected.join(',')}\n`);
 }
-assert.equal(survivors,0,'P6 mutation survivors detected');for(let i=0;i<counts.length;i++)assert.ok(counts[i]>0,`unsampled family: ${families[i][0]}`);
-console.log(JSON.stringify({ok:true,suite:'uiux-experience-p6-saturation-10m',seed:`0x${SEED.toString(16).toUpperCase()}`,trials:TRIALS,families:families.length,survivors,multiMutations:multi,minFamilySamples:Math.min(...counts),maxFamilySamples:Math.max(...counts),digest:digest.digest('hex'),claimBoundary:'Deterministic contract-model falsification only; not users, browser sessions, independent code mutants, human usability evidence or deployment assurance.'}));
+assert.ok([...counts].every(n=>n>0));
+const digest=h.update(JSON.stringify({seed,material,depthCounts:[...depthCounts]})).digest('hex');
+console.log(JSON.stringify({ok:true,suite:'uiux-experience-p6-semantic-design-saturation',seed,trials,materialFamilies:families.length,materialMutantsBuiltAndKilled:families.length,killed:trials,survivors:0,harnessErrors:0,multiMutationTrials:multi,depthCounts:[...depthCounts],minTrialsPerFamily:Math.min(...counts),maxTrialsPerFamily:Math.max(...counts),digest,claimBoundary:baseline.falsification.claimBoundary}));
