@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "modelId": "UIUX-EXPERIENCE-P6",
+  "classification": "end-user-experience-compression-without-authority-change",
+  "intent": "Reduce avoidable visual and lexical friction in the existing ICTC experience without creating a new presentation owner, changing business semantics, or weakening epistemic boundaries.",
+  "baseObservation": {
+    "mainSha": "ebba9c7e0bb57077c507a12c8be6e8dd04aae5ae",
+    "mergedThroughPr": 158
+  },
+  "invariants": {
+    "canonicalSurfaceCount": 13,
+    "businessProcedureCount": 7,
+    "newPresentationOwnerAllowed": false,
+    "newBusinessRouteAllowed": false,
+    "writeAuthorityChangeAllowed": false,
+    "globalFinalResolverAllowed": false,
+    "newBeautyStylesheetAllowed": false,
+    "humanDecisionAuthorityRequired": true,
+    "aiAssistOnlyRequired": true,
+    "p5SemanticBeautyMustRemainBlocking": true,
+    "exactHeadCiRequired": true
+  },
+  "experienceDelta": {
+    "palette": {
+      "background": "#eef2f6",
+      "header": ["#24415f", "#315b7c", "#3f7092"],
+      "footer": ["#1b324b", "#274966", "#365f7f"],
+      "landing": ["#f7f9fc", "#edf2f7"],
+      "purpose": "Lower chrome heaviness while preserving dark-chrome contrast and existing semantic colors."
+    },
+    "navigation": {
+      "triggerLabel": "Vai a",
+      "dialogEyebrow": "Ricerca e navigazione",
+      "placeholder": "Cerca processo, oggetto, fonte o evento",
+      "typedKinds": ["Vista", "Processo", "Monitoraggio", "Fonte", "Evento", "Oggetto", "Requisito", "Azione", "Rischio", "Richiesta"],
+      "iconRequired": "search",
+      "keyboardShortcutPreserved": true
+    },
+    "productProposition": {
+      "requiredTerms": ["governance", "assurance interna", "GDPR", "NIS2"],
+      "requiredDecisionBoundary": "decisioni restano umane",
+      "requiredAiBoundary": "AI assiste",
+      "maxCharacters": 240
+    },
+    "iconVocabulary": ["search", "sparkles", "triangle-alert"]
+  },
+  "nativeRail": {
+    "check": "v3/uiux-experience-p6-check.mjs",
+    "saturation": "v3/uiux-experience-p6-saturation-10m.mjs",
+    "mustExecuteAfter": "v3/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs"
+  },
+  "mutationCampaign": {
+    "model": "UIUX-EXPERIENCE-P6-ADVERSARIAL-10M",
+    "seed": "0xC0FFEE26",
+    "trials": 10000000,
+    "failureFamilies": 32,
+    "expectedSurvivors": 0
+  },
+  "definitionOfDone": [
+    "P6 source changes are bounded to existing semantic/presentation owners plus executable evidence.",
+    "The product proposition is shorter but retains governance, assurance interna, GDPR/NIS2 applicability context, AI-assist-only and human-decision boundaries.",
+    "Global navigation exposes a plain-language Vai a search with typed result kinds and an accessible iconized trigger while preserving keyboard navigation.",
+    "Header, footer, page background and landing gradients use the declared calmer token values without changing semantic status colors.",
+    "P6 check and adversarial saturation execute in the native gate rail after P5.",
+    "P5 beauty-semantic authority and UIUX convergence gates remain blocking.",
+    "No business route, persistence contract, write authority, procedure count or canonical surface count changes.",
+    "Exact-head GitHub CI is green before merge."
+  ],
+  "claimBoundary": "P6 establishes repository/source evidence for a bounded experience-compression candidate. The 10M campaign is deterministic contract-model falsification, not ten million users, browser sessions, independent code mutants or evidence of representative human pleasantness, accessibility effectiveness, legal compliance, deployment assurance or enterprise readiness."
+}

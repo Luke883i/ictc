@@ -1,0 +1,34 @@
+name: uiux-experience-p6
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: uiux-experience-p6-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  experience-convergence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --ignore-scripts
+      - name: P6 end-user experience contract
+        run: node v3/uiux-experience-p6-check.mjs
+      - name: P6 ten million semantic design mutations
+        run: node v3/uiux-experience-p6-saturation-10m.mjs
+      - name: Preserve P5 semantic beauty authority
+        run: |
+          node v3/uiux-beauty-semantic-p5-check.mjs
+          node v3/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs
+      - name: Preserve current UIUX convergence
+        run: node v3/uiux-converge-0-check.mjs
