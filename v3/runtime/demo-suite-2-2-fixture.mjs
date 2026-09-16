@@ -4,7 +4,7 @@ import { gunzipSync } from 'node:zlib';
 
 export const DEMO_SUITE_22_VERSION='2.2';
 export const DEMO_SUITE_22_ENV='ICTC_DEMO_SUITE';
-export const DEMO_SUITE_22_EXPECTED_DIGEST='22031f08dc2049d4e9e16a1ee2a9b5b303ebd58880288eecf946b33f7b6d452d';
+export const DEMO_SUITE_22_EXPECTED_DIGEST='f8190542d217def98a67e0a59353913d181bd24abc2a704724d80ea866455960';
 export const DEMO_SUITE_22_FIXTURE_INTEGRITY=Object.freeze({parts:12,encodedBytes:60792,encodedSha256:'266717d889408848d0c9a308964fa807bd6ae907119551ae2fca131b34ab7909',gzipBytes:45593,gzipSha256:'b582f7b24773ab854cfb4d2a61d68b432c17311d36c4cf47d8ba0cf96a4a652f',jsonBytes:757277,jsonSha256:'462761889d5ef74abf97993fbc37f2eb664b72ff87d10dffe7af956e5a22162a'});
 const PARTS=Array.from({length:DEMO_SUITE_22_FIXTURE_INTEGRITY.parts},(_,index)=>String(index+1).padStart(2,'0'));
 const sha=value=>createHash('sha256').update(value).digest('hex');
