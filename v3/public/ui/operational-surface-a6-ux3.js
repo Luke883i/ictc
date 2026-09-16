@@ -64,8 +64,6 @@ function homeOwner(){
   const root=document.querySelector('#homeView'),queue=document.querySelector('#homePriorities');
   if(!root||!queue)return;
   owner(root,'home');
-  const title=root.querySelector('#homeTitle');
-  if(title)title.textContent='Integrated Compliance Tower Control';
   queue.dataset.a6OperationalQueue='priority-first';
   queue.dataset.a6OperationalOwner='home-worklist';
   for(const button of queue.querySelectorAll('.home-business-priority')){

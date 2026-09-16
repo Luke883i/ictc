@@ -3,7 +3,7 @@ import { COMPLIANCE_BASIS } from './semantic-composition-model.js';
 export const NATIVE_SEMANTIC_LATTICE_VERSION='3.2.0';
 export const SEMANTIC_WORKSPACE_CLOSURE_VERSION='3.2.1';
 export const ENDUSER_COMPOSITION_VERSION='P2';
-export const PRODUCT_PROPOSITION='ICTC supporta governance e assurance interna della compliance: collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, rischi, azioni ed evidenze. Le decisioni restano umane, tracciabili e separate dai limiti del claim.';
+export const PRODUCT_PROPOSITION='ICTC collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, rischi, azioni ed evidenze per la governance e l’assurance interna della compliance. L’AI assiste; le decisioni restano umane.';
 
 export const PROCEDURE_WORKSPACE=Object.freeze({
   monitoring:Object.freeze({code:'RN-01',catalogueSummary:'Fonti e cambiamenti da verificare prima di generare nuovo lavoro.',workspacePurpose:'Monitora fonti e materiali e porta a verifica ciò che può richiedere nuovo lavoro.',basis:COMPLIANCE_BASIS.obligationToAssess,value:'Collega un cambiamento verificato ai requisiti o alle attività da riesaminare.',boundary:'Fonte osservata ≠ obbligo applicabile; proposta ≠ decisione.',primary:'Aggiungi materiale',entry:'Sorveglia fonti'}),
