@@ -10,7 +10,7 @@ function syncRuntimeStatus(){
   const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
   const aiLabel=role==='auditor'?'Sola lettura':llm.ready?'AI pronta':'AI non attiva';
   const icon=llm.ready?'sparkles':'triangle-alert';
-  status.innerHTML=`${uiIcon(icon,'ui-icon runtime-status-icon')}<span>${roleLabel} · ${aiLabel}</span>`;
+  status.innerHTML=`${uiIcon(icon,'ui-icon runtime-status-icon')}<span class="runtime-role-label">${roleLabel}</span><span class="runtime-ai-separator" aria-hidden="true">·</span><span class="runtime-ai-label">${aiLabel}</span>`;
   status.dataset.aiState=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
   status.dataset.actorRole=role;
   status.title=`${roleLabel} · ${detail}`;
