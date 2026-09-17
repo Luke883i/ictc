@@ -1,0 +1,244 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "CEP-0-RUNTIME-LATTICE-PROPOSAL",
+  "classification": "non-authoritative-architecture-proposal",
+  "observedMain": {
+    "sha": "0c7ab1620963557aae319381047541b88cc5ba5f",
+    "mergedThroughPr": 162,
+    "meaning": "immutable AS-IS observation; Git/GitHub remains live-fact authority"
+  },
+  "purpose": "Define a falsifiable Candidate Enterprise Posture (CEP) and the minimum semantic runtime slice lattice required to move ICTC from the current market-candidate runtime plus separate enterprise benchmark kernel to one enterprise-mountable product runtime without laundering repository evidence into production readiness.",
+  "cepDefinition": {
+    "name": "Candidate Enterprise Posture",
+    "short": "CEP",
+    "positiveClaim": "On one exact repository head, ICTC exposes the same seven-procedure business and epistemic semantics through a canonical runtime contract that can be mounted in an enterprise deployment mode backed by shared durable authorities, with fail-closed identity, tenant, concurrency, evidence, AI, observability and delivery boundaries and with executable repository evidence for the declared candidate envelope.",
+    "negativeClaims": [
+      "CEP is not enterprise-ready or production-ready.",
+      "CEP is not proof of legal compliance, certification, market fit, HA, approved RTO/RPO, production scanner efficacy, production IdP effectiveness or independent assurance.",
+      "CEP does not allow a benchmark-only enterprise kernel to stand in for the canonical product runtime.",
+      "CEP does not allow SQLite/local process authorities to be described as distributed enterprise authorities.",
+      "CEP does not require microservices, Kafka, Redis, a full event store, an ORM or a managed SaaS control plane unless later evidence reopens them."
+    ],
+    "mandatoryTruth": "The enterprise product path and the local compatibility path may use different technical adapters, but they may not have different business semantics, claim boundaries, procedure identities, human-decision authority or receipt/evidence meaning."
+  },
+  "abstractionLevels": [
+    {"id":"L0","name":"product-and-claim","cepRequirement":"Exactly seven peer business procedures; EP-01 cross-cutting only; AI proposal-only; repository green never equals deployment assurance."},
+    {"id":"L1","name":"operating-model","cepRequirement":"Customer-controlled deployment remains a first-class target; distributed contributors, accountable function ownership and read-oriented assurance remain explicit."},
+    {"id":"L2","name":"business-capability","cepRequirement":"RN-01, EC-01, AO-01, MC-01, AP-01, RC-01 and AR-01 retain native checkpoints, worklists, handoffs, verified closure and evidence semantics."},
+    {"id":"L3","name":"semantic-and-epistemic","cepRequirement":"Observed/proposed/decided/attested, applicability/mapping/effectiveness, completion/verification and evidence/conclusion remain non-collapsible axes with versioned subject identity and explicit basis."},
+    {"id":"L4","name":"api-and-authorization","cepRequirement":"One HTTP/business contract, role/scope/tenant authorization before mutation, same-as-read exports, bounded projections and stable error/receipt contracts."},
+    {"id":"L5","name":"application-runtime","cepRequirement":"One Semantic Runtime Port owns business read/write semantics; local and enterprise adapters implement it without becoming parallel business authorities."},
+    {"id":"L6","name":"data-concurrency-and-work","cepRequirement":"Enterprise mode uses shared durable authority, tenant isolation, subject-scoped OCC, command replay, bounded atomic receipts, incremental integrity, durable fenced work and revision-gap recovery."},
+    {"id":"L7","name":"objects-and-evidence","cepRequirement":"Shared blob/object authority preserves quarantine/clean states, digest binding, scanner attestation and same-as-read evidence; byte storage never creates authenticity claims."},
+    {"id":"L8","name":"identity-security-and-privacy","cepRequirement":"Enterprise identity is upstream-authenticated and fail-closed; tenant membership is server-side; secrets are external references; privacy retention/hold/erasure and abuse controls remain explicit."},
+    {"id":"L9","name":"ai-and-integrations","cepRequirement":"OpenAI, Anthropic, DeepSeek and custom-compatible adapters remain protocol-specific behind one AI boundary; provider/background work is durable async where appropriate; AI never becomes decision authority."},
+    {"id":"L10","name":"reliability-observability-and-recovery","cepRequirement":"Stateless replicas, external telemetry port, health/integrity distinction, encrypted recovery points, migration/rollback policy and failure drills have explicit evidence classes."},
+    {"id":"L11","name":"delivery-and-governance","cepRequirement":"Exact-head CI, dependency/provenance/SBOM/signing policy, branch/review governance, immutable release identity and deployment evidence envelopes are separated from product claims."},
+    {"id":"L12","name":"human-and-external-assurance","cepRequirement":"E3-HUMAN, E3-GOV and E4-DEPLOY remain external rails; CEP requires their absence to remain visible rather than synthesized by repository tests."}
+  ],
+  "typicalEnterprisePlatformCatalog": [
+    "product/tenant configuration",
+    "identity federation and authorization",
+    "audit and evidence lineage",
+    "relational durable state and concurrency",
+    "object/blob lifecycle",
+    "background jobs and scheduler fencing",
+    "integration/API gateway",
+    "AI/provider governance",
+    "secret and key custody",
+    "malware/quarantine controls",
+    "privacy lifecycle and retention",
+    "observability/logging/metrics/tracing",
+    "backup/restore and disaster recovery",
+    "capacity/load/failure testing",
+    "schema migration and rollback",
+    "artifact provenance/SBOM/signing",
+    "CI/CD and change governance",
+    "accessibility/human usability evidence",
+    "incident response and operational runbooks"
+  ],
+  "concurrentSemanticMutations": [
+    {
+      "id":"M1-HARDENED-LOCAL",
+      "shape":"Keep current RuntimeStore/SQLite as canonical; add external TLS/IdP/scanner/backup controls.",
+      "verdict":"reject-as-CEP-core",
+      "reason":"Improves deployment hygiene but leaves shared durable authority, cross-replica concurrency, durable distributed work and stateless replica semantics absent; the repository itself classifies RuntimeStore as scale-blocked."
+    },
+    {
+      "id":"M2-DUAL-MODE-SEMANTIC-PORT",
+      "shape":"One business/epistemic runtime contract; SQLite local adapter and PostgreSQL enterprise adapter implement the same semantic port.",
+      "verdict":"survives-core",
+      "reason":"Preserves local simplicity while preventing two business truths and permits enterprise capabilities without rewriting product semantics."
+    },
+    {
+      "id":"M3-POSTGRES-ONLY-CUTOVER",
+      "shape":"Replace the canonical local runtime entirely with PostgreSQL enterprise authority.",
+      "verdict":"partial-survivor",
+      "reason":"Valid enterprise path, but mandatory removal of the bounded local mode is not required by current evidence and would increase install friction without semantic gain."
+    },
+    {
+      "id":"M4-MICROSERVICE-FLEET",
+      "shape":"Split procedures/services behind Kafka/Redis/service mesh with independent stores.",
+      "verdict":"reject",
+      "reason":"Adds authority, consistency and operational complexity without a demonstrated product requirement; conflicts with one-authority-per-semantic-slot and current evidence does not require it."
+    },
+    {
+      "id":"M5-FULL-EVENT-SOURCING",
+      "shape":"Rewrite state as a complete event store and reconstruct all projections exclusively from events.",
+      "verdict":"reject",
+      "reason":"Current semantics already separate snapshot, audit, subject versions and epistemic steps; full reconstruction is not needed for CEP and would create a large migration/authority rewrite."
+    },
+    {
+      "id":"M6-MANAGED-SAAS-FIRST",
+      "shape":"Make cloud multi-tenant SaaS the primary topology with organization control plane and shared managed services.",
+      "verdict":"reject-for-current-CEP",
+      "reason":"Contradicts the current customer-controlled primary topology and introduces product/operating-model scope beyond the bounded target."
+    },
+    {
+      "id":"M7-CUSTOMER-CONTROLLED-APPLIANCE",
+      "shape":"Stateless ICTC app replicas plus customer-controlled PostgreSQL, shared object storage, upstream identity, ingress and telemetry.",
+      "verdict":"survives-deployment-envelope",
+      "reason":"Matches the product operating model, reuses the existing enterprise kernel and keeps external infrastructure as deployment authority."
+    },
+    {
+      "id":"M8-DIRECT-IDP-IN-APP",
+      "shape":"Embed OIDC/SAML session authority directly inside ICTC.",
+      "verdict":"reject-as-mandatory",
+      "reason":"Enterprise identity is required, but direct embedded identity is not; the existing trusted-header/Shibboleth boundary can remain the minimal application contract when upstream authentication is proven."
+    },
+    {
+      "id":"M9-ASYNC-EVERYTHING",
+      "shape":"Turn every write into queued work and return eventual receipts.",
+      "verdict":"reject",
+      "reason":"Business mutations and human decisions require atomic accepted/rejected write truth and readback; only provider/background work benefits from durable async execution."
+    },
+    {
+      "id":"M10-ASSURANCE-FIRST",
+      "shape":"Treat provenance, evidence envelopes, external controls and explicit evidence grades as first-class closure conditions around the runtime.",
+      "verdict":"survives-cross-cutting",
+      "reason":"Prevents repository/runtime evidence from being laundered into deployment, human or independent assurance and gives CEP a falsifiable claim boundary."
+    }
+  ],
+  "collapse": {
+    "survivingComposition": ["M2-DUAL-MODE-SEMANTIC-PORT","M7-CUSTOMER-CONTROLLED-APPLIANCE","M10-ASSURANCE-FIRST","enterprise-path-of-M3"],
+    "semanticInvariants": [
+      "one canonical business/epistemic contract across runtime modes",
+      "exactly seven business procedures and EP-01 cross-cutting",
+      "human authority preserved at decision checkpoints",
+      "subject identity/version and command identity are persistence-independent",
+      "enterprise mode is mounted by the real product server path, not only a benchmark server",
+      "enterprise mode uses PostgreSQL shared durable authority with RLS and subject-scoped OCC",
+      "local SQLite mode remains explicitly local/compatibility and cannot satisfy enterprise-scale posture",
+      "durable provider/background work is asynchronous; ordinary accepted business mutations retain atomic receipt semantics",
+      "shared blob/quarantine/scanner semantics are adapter-backed and same-as-read",
+      "identity, distributed rate authority, telemetry, key custody and scanner efficacy remain deployment-bound where appropriate",
+      "exact-head repository evidence and external E3/E4 evidence remain distinct",
+      "technology is admitted only when it closes a named invariant or evidence gap"
+    ]
+  },
+  "minimumTechnologySupplyChain": [
+    {"slot":"application-runtime","minimum":"Node.js >=22.16; existing vanilla UI and HTTP application","repoOwned":true},
+    {"slot":"enterprise-relational-authority","minimum":"PostgreSQL with transaction support and FORCE RLS-capable role","repoOwned":"adapter/schema yes; service operation external"},
+    {"slot":"shared-object-authority","minimum":"S3-compatible/Azure-Blob-equivalent object service behind ICTC blob port; PostgreSQL bytea remains bench/test adapter only","repoOwned":"port/trust semantics yes; production service external"},
+    {"slot":"identity","minimum":"Enterprise IdP plus trusted reverse proxy/header bridge with immutable subject/groups and deployment-secret boundary","repoOwned":"mapping/authorization yes; authentication external"},
+    {"slot":"ingress-abuse-control","minimum":"Gateway/rate authority that emits verifiable distributed decisions; local token buckets remain defense in depth","repoOwned":"verification contract yes; distributed decision service external"},
+    {"slot":"secret-key-custody","minimum":"Secret manager/KMS/HSM for DB, provider, recovery, scanner and signing material","repoOwned":false},
+    {"slot":"malware-control","minimum":"External scanner/quarantine engine producing bound attestations","repoOwned":"attestation protocol yes; detection engine external"},
+    {"slot":"telemetry","minimum":"OpenTelemetry-compatible collector or equivalent external sink plus alert/retention backend","repoOwned":"sink port/correlation yes; collector operations external"},
+    {"slot":"recovery","minimum":"Encrypted database/object backup with off-host target and restore drill","repoOwned":"recovery primitive/verification yes; off-host durability and objectives external"},
+    {"slot":"delivery-provenance","minimum":"Pinned build environment, dependency inventory/SBOM, signed artifact/provenance and exact-head verification","repoOwned":"policy/checks partly; signer custody/governance external"},
+    {"slot":"llm-providers","minimum":"Optional OpenAI/Anthropic/DeepSeek/custom-compatible endpoint through current provider/network/budget/schema boundary","repoOwned":"adapters yes; provider service external"}
+  ],
+  "sliceLattice": [
+    {
+      "id":"CEP-R0-TRUTH-RECONCILIATION",
+      "dependsOn":[],
+      "effect":"control-plane",
+      "purpose":"Reconcile post-PR141/162 truth: release identity, capability truth, enterprise-candidate terminology, convergence state and exact current runtime facts without changing business behavior.",
+      "dod":["main@162 observed","no stale enterpriseCandidate contradiction","market-candidate vs CEP vs enterprise-ready terms have non-overlapping definitions","enterprise bench kernel and canonical server mounts are separately declared"]
+    },
+    {
+      "id":"CEP-R1-SEMANTIC-RUNTIME-PORT",
+      "dependsOn":["CEP-R0-TRUTH-RECONCILIATION"],
+      "effect":"runtime-contract",
+      "purpose":"Define the persistence-independent Semantic Runtime Port for canonical reads, business commands, receipts, subject versions, work, blobs, evidence and projection deltas.",
+      "dod":["no second business authority","current seven ProcedureAdapters bind to the port","local and enterprise adapters expose identical semantic capability IDs","whole-state draft mutation is not part of the enterprise contract"]
+    },
+    {
+      "id":"CEP-R2-DECLARATIVE-COMMAND-PLANS",
+      "dependsOn":["CEP-R1-SEMANTIC-RUNTIME-PORT"],
+      "effect":"business-write-path",
+      "purpose":"Migrate handler writes from callback mutation of a whole Store draft to declarative subject-scoped command plans that preserve epistemic effects and cross-subject lineage.",
+      "dod":["actor/action/commandId/primarySubject/secondarySubjects/effects/basis are explicit","expected subject version replaces tenant-global revision as enterprise conflict authority","receipt semantics remain stable","all seven procedures and 24 handoff predicates retain native invariants"]
+    },
+    {
+      "id":"CEP-R3-ENTERPRISE-DURABLE-ADAPTER",
+      "dependsOn":["CEP-R2-DECLARATIVE-COMMAND-PLANS"],
+      "effect":"persistence-concurrency",
+      "purpose":"Bind Semantic Runtime Port to the existing PostgreSQL enterprise authority/kernel and close read/write parity against the local adapter.",
+      "dod":["FORCE RLS tenant isolation","subject OCC","cross-replica command replay","incremental integrity/state root","bounded atomic commit receipt","durable fenced work","bounded projection + delta recovery","no process-local business authority in enterprise mode"]
+    },
+    {
+      "id":"CEP-R4-SHARED-BLOB-TRUST",
+      "dependsOn":["CEP-R1-SEMANTIC-RUNTIME-PORT","CEP-R3-ENTERPRISE-DURABLE-ADAPTER"],
+      "effect":"evidence-object-storage",
+      "purpose":"Mount a shared blob authority for attachments/evidence while preserving quarantine, digest, scanner attestation, tenant isolation and erasure semantics.",
+      "dod":["shared bytes survive replica loss","quarantine cannot be read as clean","scanner attestation tenant+digest bound","erasure/legal-hold semantics span metadata and shared bytes","same-as-read evidence never widens access"]
+    },
+    {
+      "id":"CEP-R5-ENTERPRISE-IDENTITY-TENANCY",
+      "dependsOn":["CEP-R1-SEMANTIC-RUNTIME-PORT"],
+      "effect":"identity-authorization",
+      "purpose":"Close enterprise request identity and tenant selection over the canonical product server.",
+      "dod":["upstream authentication required for networked enterprise mode","proxy/identity boundary fail-closed","tenant membership server-side","role mapping and deny rules deterministic","no header can grant tenant membership","local development identity remains visibly non-enterprise"]
+    },
+    {
+      "id":"CEP-R6-DURABLE-AI-AND-WORK",
+      "dependsOn":["CEP-R2-DECLARATIVE-COMMAND-PLANS","CEP-R3-ENTERPRISE-DURABLE-ADAPTER","CEP-R5-ENTERPRISE-IDENTITY-TENANCY"],
+      "effect":"async-work-ai",
+      "purpose":"Move provider/background execution to durable fenced work while preserving current provider protocol, egress, budget, schema and proposal-only boundaries.",
+      "dod":["provider request accepted as durable queued work when async","retry/replay cannot duplicate committed business effect","provider credentials remain external references","AI result remains proposed","manual path remains available where product contract requires it"]
+    },
+    {
+      "id":"CEP-R7-EDGE-OBSERVABILITY-RECOVERY",
+      "dependsOn":["CEP-R3-ENTERPRISE-DURABLE-ADAPTER","CEP-R4-SHARED-BLOB-TRUST","CEP-R5-ENTERPRISE-IDENTITY-TENANCY"],
+      "effect":"operations",
+      "purpose":"Bind distributed ingress decisions, external telemetry, health/integrity/SLO semantics and enterprise backup/restore evidence to one deployment identity.",
+      "dod":["distributed rate decision verifiable","request/command/tenant correlation exported","collector absence is visible","database+blob recovery set is coherent","restore verifies tenant revision/audit/state root/object manifest","RTO/RPO remain external approvals"]
+    },
+    {
+      "id":"CEP-R8-CANONICAL-PRODUCT-MOUNT",
+      "dependsOn":["CEP-R2-DECLARATIVE-COMMAND-PLANS","CEP-R3-ENTERPRISE-DURABLE-ADAPTER","CEP-R4-SHARED-BLOB-TRUST","CEP-R5-ENTERPRISE-IDENTITY-TENANCY","CEP-R6-DURABLE-AI-AND-WORK"],
+      "effect":"product-cutover",
+      "purpose":"Make the ordinary ICTC bootstrap/server able to select enterprise mode and execute the real Home/procedure/Admin/Evidence/API journeys against the enterprise adapter; the bench server becomes test tooling rather than a separate product runtime.",
+      "dod":["npm/launcher enterprise profile reaches canonical server","13 canonical UI surfaces consume enterprise-backed projections","seven procedures write/read/restart across >=2 replicas","receipt/readback semantics unchanged","no benchmark-only endpoint is required by the UI","local mode remains explicit compatibility/development profile"]
+    },
+    {
+      "id":"CEP-R9-DELIVERY-PROVENANCE",
+      "dependsOn":["CEP-R0-TRUTH-RECONCILIATION"],
+      "effect":"supply-chain-governance",
+      "purpose":"Close C2-class delivery provenance without turning repository mechanics into deployment certification.",
+      "dod":["pinned build dependencies/actions","SBOM/dependency inventory","artifact digest and signature/provenance","migration compatibility declaration","rollback/recovery precondition","exact-head required check policy and review-governance evidence explicitly classified"]
+    },
+    {
+      "id":"CEP-R10-CANDIDATE-ENTERPRISE-SEAL",
+      "dependsOn":["CEP-R7-EDGE-OBSERVABILITY-RECOVERY","CEP-R8-CANONICAL-PRODUCT-MOUNT","CEP-R9-DELIVERY-PROVENANCE"],
+      "effect":"candidate-posture",
+      "purpose":"Issue a bounded CEP receipt only when the enterprise product path is canonical-mountable and all repository-owned CEP invariants are exact-head green.",
+      "dod":["canonical enterprise product E2E green on PostgreSQL/shared authorities","1000-client benchmark remains benchmark evidence, not production capacity","all residual external E3/E4 rails listed as unresolved or externally evidenced","no enterprise-ready flag","no legal/compliance/certification claim","CEP receipt is stale on semantic input or dependency receipt drift"]
+    }
+  ],
+  "criticalFalsifiers": [
+    "Any enterprise-mode business write still depends on Store.mutate whole-state draft semantics after R2.",
+    "Canonical server.mjs cannot mount the enterprise adapter without using the separate bench API.",
+    "A local/process-only authority is accepted as evidence for a distributed enterprise invariant.",
+    "SQLite and PostgreSQL modes produce different business/epistemic outcomes for the same command sequence.",
+    "Tenant membership can be granted by request-controlled input rather than server-side identity context.",
+    "A provider result can become decided/verified without authorized human action.",
+    "A clean attachment/evidence object can be served without the required trust transition.",
+    "A replica loss can erase an acknowledged enterprise business mutation or produce a duplicate committed effect.",
+    "CEP can become green while canonical enterprise product E2E is unexecuted.",
+    "CEP can become enterprise-ready solely from repository/CI evidence."
+  ],
+  "claimBoundary": "This proposal is a design/falsification artifact only. It does not modify current ICTC authority, runtime, convergence planning or release maturity. Adoption requires an explicit authority/convergence decision and subsequent executable slices."
+}
