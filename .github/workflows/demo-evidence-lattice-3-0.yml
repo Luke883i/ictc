@@ -30,7 +30,20 @@ jobs:
         run: node v3/demo-suite-3-0-ui-check.mjs
       - name: DEMO Suite 3.0 lattice authority
         run: node v3/demo-suite-3-0-lattice-check.mjs
-      - name: DEMO Suite 3.0 real runtime via demo command
+      - name: DEMO Suite 3.0 runtime health
+        env: {ICTC_DEMO_E2E_PHASE: health}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 runtime bootstrap truth
+        env: {ICTC_DEMO_E2E_PHASE: bootstrap}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 native procedure projections
+        env: {ICTC_DEMO_E2E_PHASE: procedures}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 runtime lattice
+        env: {ICTC_DEMO_E2E_PHASE: lattice}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 restart idempotence
+        env: {ICTC_DEMO_E2E_PHASE: restart}
         run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
       - name: One million Suite 3.0 cutover mutations
         run: node v3/demo-suite-3-0-cutover-mutation-1m.mjs
