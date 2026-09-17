@@ -30,6 +30,21 @@ jobs:
         run: node v3/demo-suite-3-0-ui-check.mjs
       - name: DEMO Suite 3.0 lattice authority
         run: node v3/demo-suite-3-0-lattice-check.mjs
+      - name: DEMO init Store
+        env: {ICTC_DEMO_INIT_PHASE: store}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Enterprise
+        env: {ICTC_DEMO_INIT_PHASE: enterprise}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Privacy
+        env: {ICTC_DEMO_INIT_PHASE: privacy}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Suite 3.0
+        env: {ICTC_DEMO_INIT_PHASE: demo}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Tenant authority
+        env: {ICTC_DEMO_INIT_PHASE: tenant}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
       - name: DEMO Suite 3.0 server starts
         env: {ICTC_DEMO_E2E_PHASE: start}
         run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
