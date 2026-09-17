@@ -51,6 +51,12 @@ paths:
     get:
       summary: Proietta il panorama processi dalla stessa authority runtime
       responses: { '200': { description: Process landscape role-scoped e derivato } }
+  /api/demo/evidence-lattice:
+    get:
+      summary: Proietta il reticolo annuale DEMO derivato dalla Suite 2.2 canonica
+      responses:
+        '200': { description: Reticolo read-only di eventi, evidenze, decisioni, circostanze e correlazioni dichiaratamente non causali }
+        '404': { description: Reticolo non disponibile fuori dalla DEMO Suite 2.2 canonica }
   /api/cross-procedure/create:
     get:
       summary: Elenca target di draft cross-procedure dichiarati

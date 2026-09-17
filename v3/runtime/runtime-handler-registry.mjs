@@ -24,11 +24,12 @@ import { createEpistemicLatticeHandler } from './epistemic-lattice.mjs';
 import { createEpistemicInferenceHandler } from './epistemic-inference.mjs';
 import { createAttachmentScannerHandler } from './attachment-scanner-handler.mjs';
 import { createPrivacyLifecycleHandler } from './privacy-lifecycle-handler.mjs';
+import { createDemoEvidenceLattice30Handler } from './demo-evidence-lattice-handler.mjs';
 import { procedureAdapters } from './procedure-adapters.mjs';
 import { epistemicWriteStore } from './epistemic-write-store.mjs';
 
 const HANDLER_KEYS=Object.freeze({monitoring:['manual-monitoring','monitoring-jobs','user-monitoring','monitoring-runtime','contributions'],incidents:['manual-incidents','incident-market','incidents'],objects:['grc-runtime'],coverage:['standard-library','control-test','grc-runtime'],actions:['grc-runtime'],risks:['risk-action-fidelity','grc-runtime'],assurance:['manual-assurance','grc-runtime']});
-const SHARED_KEYS=Object.freeze(['work-orchestration','process-landscape','process-handoffs','cross-procedure-create','insights','workbench','procedure-invariant','review-needs','epistemic-lattice','epistemic-inference','evidence','attachment-scanner','privacy-lifecycle','admin']);
+const SHARED_KEYS=Object.freeze(['work-orchestration','process-landscape','process-handoffs','cross-procedure-create','insights','workbench','procedure-invariant','review-needs','epistemic-lattice','epistemic-inference','evidence','attachment-scanner','privacy-lifecycle','demo-evidence-lattice','admin']);
 for(const adapter of procedureAdapters())if(!HANDLER_KEYS[adapter.id])throw new Error(`Missing runtime handler registration for ${adapter.id}`);
 export function runtimeHandlerKeysByProcedure(){return structuredClone(HANDLER_KEYS);}
 export function runtimeHandlerPlan(){const ordered=[...SHARED_KEYS];for(const adapter of procedureAdapters())for(const key of HANDLER_KEYS[adapter.id])if(!ordered.includes(key))ordered.push(key);return ordered;}
@@ -59,5 +60,6 @@ export function createRuntimeHandlers({store,permissions,monitoring,evidenceStor
   'evidence':()=>createEvidenceHandler({store:evidenceStore,permissions}),
   'attachment-scanner':()=>createAttachmentScannerHandler({store,permissions}),
   'privacy-lifecycle':()=>createPrivacyLifecycleHandler({store,permissions}),
+  'demo-evidence-lattice':()=>createDemoEvidenceLattice30Handler({store,permissions}),
   'admin':()=>createAdminHandler({store,permissions,posture})
 };const plan=runtimeHandlerPlan();for(const key of plan)if(!factories[key])throw new Error(`Missing runtime handler factory: ${key}`);return{authority:'procedure-adapter-handler-registry',plan,handlers:plan.map(key=>factories[key]())};}
