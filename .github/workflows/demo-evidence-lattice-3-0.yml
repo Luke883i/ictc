@@ -30,7 +30,62 @@ jobs:
         run: node v3/demo-suite-3-0-ui-check.mjs
       - name: DEMO Suite 3.0 lattice authority
         run: node v3/demo-suite-3-0-lattice-check.mjs
-      - name: DEMO Suite 3.0 real runtime via demo command
+      - name: DEMO init Store
+        env: {ICTC_DEMO_INIT_PHASE: store}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Enterprise
+        env: {ICTC_DEMO_INIT_PHASE: enterprise}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Privacy
+        env: {ICTC_DEMO_INIT_PHASE: privacy}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 build corpus
+        env: {ICTC_DEMO_INIT_PHASE: build}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 seed call
+        env: {ICTC_DEMO_INIT_PHASE: seed-call}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 seed receipt
+        env: {ICTC_DEMO_INIT_PHASE: seed-receipt}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 seed projection
+        env: {ICTC_DEMO_INIT_PHASE: seed-projection}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Enterprise defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-enterprise}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Privacy defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-privacy}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Enterprise and Privacy defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-enterprise-privacy}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO init Tenant authority
+        env: {ICTC_DEMO_INIT_PHASE: tenant}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 server starts
+        env: {ICTC_DEMO_E2E_PHASE: start}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health enabled
+        env: {ICTC_DEMO_E2E_PHASE: health-enabled}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health version
+        env: {ICTC_DEMO_E2E_PHASE: health-version}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health authority
+        env: {ICTC_DEMO_E2E_PHASE: health-authority}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 runtime bootstrap truth
+        env: {ICTC_DEMO_E2E_PHASE: bootstrap}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 native procedure projections
+        env: {ICTC_DEMO_E2E_PHASE: procedures}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 runtime lattice
+        env: {ICTC_DEMO_E2E_PHASE: lattice}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 restart idempotence
+        env: {ICTC_DEMO_E2E_PHASE: restart}
         run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
       - name: One million Suite 3.0 cutover mutations
         run: node v3/demo-suite-3-0-cutover-mutation-1m.mjs
