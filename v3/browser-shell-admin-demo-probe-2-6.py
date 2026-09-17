@@ -13,7 +13,7 @@ with sync_playwright() as pw:
  if PROBE=='desktop':
   expect(p.locator('.service-nav > [data-service]')).to_have_count(3);expect(p.locator('#stableProfileMenu')).to_contain_text('Amministratore');expect(p.locator('#stableProfileMenu')).to_contain_text('Ruolo attivo');f=p.locator('#stableLegalFooter');expect(f).to_be_visible();footer_effect(p)
   if DEMO:
-   c=p.locator('#ictcDemoCard');expect(c).to_be_visible();expect(c).to_contain_text('Suite 2.2');expect(p.locator('#ictcDemoBanner')).to_have_count(0);c.click();d=p.locator('#ictcDemoDialog');expect(d).to_be_visible();expect(d).to_contain_text('188 record positivi');expect(d).to_contain_text('512 mutanti esclusi');expect(d).to_contain_text('demo-suite-2-2');expect(d).to_contain_text('Dimostrazione, non verdetto');assert p.locator('html').get_attribute('data-ictc-demo-projection')=='demo-suite-2-2'
+   c=p.locator('#ictcDemoCard');expect(c).to_be_visible();expect(c).to_contain_text('Suite 3.0');expect(p.locator('#ictcDemoBanner')).to_have_count(0);c.click();d=p.locator('#ictcDemoDialog');expect(d).to_be_visible();expect(d).to_contain_text('188 record business 3.0');expect(d).to_contain_text('512 fixture escluse');expect(d).to_contain_text('Evidence Lattice');expect(d).to_contain_text('Suite 2.2 deprecata');expect(d).to_contain_text('demo-suite-3-0');expect(d).to_contain_text('Dimostrazione, non verdetto');assert p.locator('html').get_attribute('data-ictc-demo-projection')=='demo-suite-3-0';assert p.locator('html').get_attribute('data-ictc-demo-suite')=='3.0'
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
@@ -21,4 +21,4 @@ with sync_playwright() as pw:
  elif PROBE=='mobile':
   m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m;open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
  else:raise SystemExit(f'unknown probe {PROBE}')
- print({'ok':True,'probe':PROBE,'demo':DEMO,'demoProjectionAuthority':'demo-suite-2-2' if DEMO else None});ctx.close();browser.close()
+ print({'ok':True,'probe':PROBE,'demo':DEMO,'demoProjectionAuthority':'demo-suite-3-0' if DEMO else None});ctx.close();browser.close()
