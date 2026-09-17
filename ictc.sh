@@ -14,8 +14,8 @@ while (($#)); do
   case "$1" in
     start|stop|restart|status|logs|doctor|test|audit) COMMAND="$1" ;;
     codespace) COMMAND="start"; NO_OPEN=1 ;;
-    demo) COMMAND="start"; DEMO_SUITE=2.2 ;;
-    --demo-suite) DEMO_SUITE=2.2 ;;
+    demo) COMMAND="start"; DEMO_SUITE=3.0 ;;
+    --demo-suite) DEMO_SUITE=3.0 ;;
     --demo-seed|-demoseed) DEMO_SUITE=2.2 ;;
     --no-open) NO_OPEN=1 ;;
     --profile)
@@ -31,6 +31,8 @@ done
 COMMAND="${COMMAND:-help}"
 if [[ -n "$RUNTIME_OVERRIDE" ]]; then
   RUNTIME="$RUNTIME_OVERRIDE"
+elif [[ "$DEMO_SUITE" = 3.0 ]]; then
+  RUNTIME="$STATE/demo-runtime-3-0"
 elif [[ "$DEMO_SUITE" = 2.2 ]]; then
   RUNTIME="$STATE/demo-runtime-2-2"
 else
@@ -72,10 +74,10 @@ start(){
   )
   mv "$PID.tmp" "$PID"
   local attempts="${ICTC_STARTUP_ATTEMPTS:-160}"
-  if [[ "$DEMO_SUITE" = 2.2 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
+  if [[ "$DEMO_SUITE" = 3.0 || "$DEMO_SUITE" = 2.2 ]]; then attempts="${ICTC_DEMO_STARTUP_ATTEMPTS:-900}"; fi
   for _ in $(seq 1 "$attempts"); do
     if alive && health; then
-      if [[ "$DEMO_SUITE" = 2.2 ]]; then echo "ICTC DEMO Suite 2.2 attivo: $URL · runtime=$RUNTIME"; else echo "ICTC attivo: $URL · runtime=$RUNTIME"; fi
+      if [[ "$DEMO_SUITE" = 3.0 ]]; then echo "ICTC DEMO Suite 3.0 attivo: $URL · runtime=$RUNTIME"; elif [[ "$DEMO_SUITE" = 2.2 ]]; then echo "ICTC DEMO Suite 2.2 legacy attivo: $URL · runtime=$RUNTIME"; else echo "ICTC attivo: $URL · runtime=$RUNTIME"; fi
       [[ "$NO_OPEN" = 1 ]] || { command -v xdg-open >/dev/null && xdg-open "$URL" >/dev/null 2>&1 & }
       return
     fi
@@ -100,14 +102,16 @@ case "$COMMAND" in
   help)
     echo 'Uso:'
     echo '  npm start                                      # foreground standard, adatto a supervisor/PaaS'
-    echo '  npm run demo                                   # foreground DEMO Suite 2.2'
+    echo '  npm run demo                                   # foreground DEMO Suite 3.0 canonica'
     echo '  ./ictc.sh start [--no-open]                    # supervisor locale standard'
-    echo '  ./ictc.sh demo [--no-open]                     # supervisor locale DEMO Suite 2.2'
+    echo '  ./ictc.sh demo [--no-open]                     # supervisor locale DEMO Suite 3.0'
+    echo '  ./ictc.sh --demo-seed [--no-open]              # compatibilità deprecata Suite 2.2'
     echo '  ./ictc.sh codespace                            # alias compatibile: start --no-open'
     echo '  ./ictc.sh stop | restart | status | logs | doctor | test | audit'
     echo 'Build PaaS canonica: npm ci --ignore-scripts && npm run build; start: npm start.'
-    echo 'La modalità DEMO monta esclusivamente Suite 2.2 sugli stessi owner/runtime ICTC; i 188 record positivi sono sintetici e i 512 mutanti di stress restano test-only.'
+    echo 'La modalità DEMO canonica monta esclusivamente Suite 3.0: 188 record business sintetici nativi; Evidence Lattice 3.0 è derivato read-only; 512 stress fixture e campagne di mutazione restano test-only.'
+    echo 'Suite 2.2 è deprecata e resta selezionabile solo tramite alias legacy esplicito per regressione/generazione.'
     echo 'Il bootstrap DEMO può richiedere più tempo del runtime standard; ICTC_DEMO_STARTUP_ATTEMPTS consente di modificare il budget di readiness senza cambiare i dati.'
-    echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare una runtime reale o una vecchia demo-runtime-v2 per Suite 2.2.'
+    echo 'ICTC_RUNTIME_DIR può sovrascrivere la directory di stato: non riusare runtime reali o vecchie demo-runtime tra versioni di Suite.'
     ;;
 esac

@@ -2,14 +2,20 @@
 
 ## Autorità BOOTSTRAP-0
 
-ICTC ha due profili applicativi canonici: `standard` e `demo`. Entrambi eseguono gli stessi byte applicativi tramite `v3/bootstrap.mjs`; cambiano soltanto il runtime state e, per la demo, `ICTC_DEMO_SUITE=2.2`.
+ICTC ha due profili applicativi canonici: `standard` e `demo`. Entrambi eseguono gli stessi byte applicativi tramite `v3/bootstrap.mjs`; cambiano soltanto il runtime state. Il profilo DEMO canonico seleziona `ICTC_DEMO_SUITE=3.0`. La Suite 2.2 è deprecata e resta disponibile soltanto come percorso legacy esplicito di regressione/generazione.
 
 | Profilo | Foreground | Supervisor locale | Stato predefinito |
 |---|---|---|---|
 | standard | `npm start` | `./ictc.sh start` | `.ictc/runtime` |
-| demo | `npm run demo` | `./ictc.sh demo` | `.ictc/demo-runtime-2-2` |
+| demo | `npm run demo` | `./ictc.sh demo` | `.ictc/demo-runtime-3-0` |
 
-`ICTC_RUNTIME_DIR` può sostituire la directory di stato. `ICTC_STATE_DIR` sposta la root mantenendo la separazione standard/demo.
+`ICTC_RUNTIME_DIR` può sostituire la directory di stato. `ICTC_STATE_DIR` sposta la root mantenendo la separazione standard/demo. Una runtime Suite 2.2 non deve essere riutilizzata come runtime 3.0: il materializzatore 3.0 rifiuta fail-closed marker o dati business legacy già presenti.
+
+## Dataset DEMO 3.0
+
+`npm run demo` materializza esclusivamente il dataset DEMO Suite 3.0: 188 record business sintetici nelle sette procedure native, più il corpus di supporto marcato 3.0. I record business hanno `scenarioId`/`datasetId` 3.0; l'eventuale provenienza dalla costruzione 2.2 è conservata soltanto come lineage `sourceScenarioId`/`legacySource` deprecata.
+
+Evidence Lattice 3.0 è una proiezione derivata read-only dello stesso runtime: non è un ottavo processo e non crea una seconda popolazione business. I 512 stress fixture e le campagne di mutazione non vengono persistiti né mostrati come record operativi.
 
 ## Installazione e build
 
@@ -24,9 +30,9 @@ npm run build
 
 ## Foreground e supervisor
 
-`npm start` è l'ingresso foreground per supervisor, CI e PaaS. `ictc.sh` aggiunge soltanto funzioni locali di supervisione: PID, log, readiness polling, apertura browser, stop/restart/status. Il launcher non avvia più `v3/server.mjs` direttamente; converge sullo stesso `v3/bootstrap.mjs` usato da npm.
+`npm start` è l'ingresso foreground per supervisor, CI e PaaS. `ictc.sh` aggiunge soltanto funzioni locali di supervisione: PID, log, readiness polling, apertura browser, stop/restart/status. Il launcher non avvia `v3/server.mjs` direttamente; converge sullo stesso `v3/bootstrap.mjs` usato da npm.
 
-Il vecchio `./ictc.sh codespace` resta alias compatibile di `./ictc.sh start --no-open`.
+Il vecchio `./ictc.sh codespace` resta alias compatibile di `./ictc.sh start --no-open`. L'alias `--demo-seed` resta esclusivamente come percorso deprecato Suite 2.2 e non è il comando DEMO canonico.
 
 ## Porta e health
 
@@ -56,7 +62,9 @@ Il devcontainer è quindi la forma containerizzata locale canonica. Un'immagine 
 ```bash
 npm run bootstrap:check
 npm run bootstrap:saturation
-./ictc.sh doctor
+node v3/demo-suite-3-0-cutover-check.mjs
+node v3/demo-suite-3-0-runtime-e2e-check.mjs
+node v3/demo-suite-3-0-cutover-mutation-1m.mjs
 ```
 
-La saturation BOOTSTRAP-0 è source/model-level: un milione di composizioni deterministiche su package/toolchain, profili, state authority, command graph, devcontainer, PaaS projection e network boundary. Non sostituisce una prova di deployment E4.
+La saturation BOOTSTRAP-0 e il cutover mutation rail sono source/model-level; il gate E2E avvia invece il runtime reale locale e verifica il profilo DEMO 3.0. Nessuna di queste prove sostituisce una prova di deployment E4 o una conclusione di conformità.
