@@ -39,8 +39,17 @@ jobs:
       - name: DEMO init Privacy
         env: {ICTC_DEMO_INIT_PHASE: privacy}
         run: node v3/demo-suite-3-0-server-init-check.mjs
-      - name: DEMO init Suite 3.0
-        env: {ICTC_DEMO_INIT_PHASE: demo}
+      - name: DEMO Suite 3.0 on fresh Store
+        env: {ICTC_DEMO_INIT_PHASE: demo-fresh}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Enterprise defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-enterprise}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Privacy defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-privacy}
+        run: node v3/demo-suite-3-0-server-init-check.mjs
+      - name: DEMO Suite 3.0 after Enterprise and Privacy defaults
+        env: {ICTC_DEMO_INIT_PHASE: demo-after-enterprise-privacy}
         run: node v3/demo-suite-3-0-server-init-check.mjs
       - name: DEMO init Tenant authority
         env: {ICTC_DEMO_INIT_PHASE: tenant}
