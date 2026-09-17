@@ -1,7 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import { CURRENT_RUNTIME, CURRENT_SEMANTIC } from './current-release-suite.mjs';
 import { ASSURANCE_COVERAGE_CONTRACT } from './assurance-risk-model.mjs';
-import { LEGACY_DEMO_GATES, DEMO_SUITE_GATES, NATIVE_GATES, CURRENT_AUTHORITY_VECTOR } from './current-gate-registry.mjs';
+import { LEGACY_DEMO_GATES, DEPRECATED_DEMO_SUITE_GATES, DEMO_SUITE_GATES, NATIVE_GATES, CURRENT_AUTHORITY_VECTOR } from './current-gate-registry.mjs';
 
 const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
 const ci=await readFile(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
@@ -42,9 +42,13 @@ for(const gate of native32){
 }
 const legacyDemo=['v3/demo-seed-contract-check.mjs','v3/demo-seed-saturation.mjs','v3/demo-outcome-audit-check.mjs','v3/demo-outcome-saturation.mjs','v3/demo-reality-context-check.mjs','v3/demo-procedure-ontology-check.mjs','v3/demo-operating-year-check.mjs','v3/demo-operating-year-saturation.mjs'];
 check(JSON.stringify([...LEGACY_DEMO_GATES])===JSON.stringify(legacyDemo),'legacy DEMO retirement registry drift');
-const suite22=['v3/demo-suite-2-2-module-load-check.mjs','v3/demo-suite-2-2-runtime-semantic-check.mjs','v3/demo-suite-2-2-runtime-store-check.mjs','v3/demo-suite-2-2-projection-closure-check.mjs'];
-check(JSON.stringify([...DEMO_SUITE_GATES])===JSON.stringify(suite22),'Suite 2.2 acceptance registry drift');
-for(const gate of suite22){try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`Suite 2.2 gate path missing: ${gate}`);}}
+const suite30=['v3/bootstrap-demo-3-0-cutover-check.mjs','v3/demo-suite-3-0-module-check.mjs','v3/demo-suite-3-0-runtime-store-check.mjs','v3/demo-suite-3-0-cutover-check.mjs','v3/demo-suite-3-0-ui-check.mjs','v3/demo-suite-3-0-lattice-check.mjs','v3/demo-suite-3-0-runtime-e2e-check.mjs','v3/demo-suite-3-0-cutover-mutation-1m.mjs'];
+check(JSON.stringify([...DEMO_SUITE_GATES])===JSON.stringify(suite30),'Suite 3.0 current acceptance registry drift');
+for(const gate of suite30){try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`Suite 3.0 gate path missing: ${gate}`);}}
+const deprecatedSuite22=['v3/demo-suite-2-2-module-load-check.mjs','v3/demo-suite-2-2-runtime-semantic-check.mjs','v3/demo-suite-2-2-runtime-store-check.mjs','v3/demo-suite-2-2-projection-closure-check.mjs'];
+check(JSON.stringify([...DEPRECATED_DEMO_SUITE_GATES])===JSON.stringify(deprecatedSuite22),'deprecated Suite 2.2 generator registry drift');
+for(const gate of deprecatedSuite22){try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`deprecated Suite 2.2 gate path missing: ${gate}`);}}
+for(const gate of deprecatedSuite22)check(!DEMO_SUITE_GATES.includes(gate),`deprecated Suite 2.2 gate leaked into current DEMO authority: ${gate}`);
 const presentationRetirement=['v3/ui-finetuning-3-4-check.mjs','v3/ui-finetuning-3-4-saturation.mjs'];
 const beautySemanticP5=['v3/uiux-beauty-semantic-p5-check.mjs','v3/uiux-beauty-semantic-p5-mutation-1m.mjs','v3/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs'];
 for(const gate of beautySemanticP5){check(NATIVE_GATES.includes(gate),`P5 beauty-semantic gate missing from native registry: ${gate}`);try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`P5 beauty-semantic gate path missing: ${gate}`);}}
@@ -52,9 +56,11 @@ for(const gate of presentationRetirement){
   check(NATIVE_GATES.includes(gate),`presentation-retirement gate missing from native registry: ${gate}`);
   try{await access(new URL(`./${gate.replace('v3/','')}`,import.meta.url));}catch{failures.push(`presentation-retirement gate path missing: ${gate}`);}
 }
-check(currentSemantic32.includes('CURRENT_SEMANTIC_ACTIVE')&&currentSemantic32.includes('LEGACY_DEMO_GATES')&&currentSemantic32.includes('DEMO_SUITE_GATES')&&currentSemantic32.includes('NATIVE_GATES'),'semantic wrapper must consume explicit current/replaced/Suite 2.2/native registry classes');
+check(currentSemantic32.includes('CURRENT_SEMANTIC_ACTIVE')&&currentSemantic32.includes('LEGACY_DEMO_GATES')&&currentSemantic32.includes('DEPRECATED_DEMO_SUITE_GATES')&&currentSemantic32.includes('DEMO_SUITE_GATES')&&currentSemantic32.includes('NATIVE_GATES'),'semantic wrapper must consume explicit current/replaced/current-DEMO/deprecated-generator/native registry classes');
+check(currentSemantic32.includes('current-semantic-demo-3.0'),'semantic wrapper must execute Suite 3.0 as the current DEMO authority');
+check(!currentSemantic32.includes('current-semantic-demo-2.2'),'semantic wrapper must not execute Suite 2.2 as current DEMO authority');
 check(CURRENT_AUTHORITY_VECTOR.uiPresentation?.value==='local-owners','current authority vector must publish local presentation owners');
 check(CURRENT_AUTHORITY_VECTOR.uiPresentation?.classification==='canonical-distributed-presentation','current presentation classification must be canonical distributed ownership');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,legacyDemoGatesRetired:legacyDemo.length,demoSuite22Gates:suite22.length,presentationRetirementGates:presentationRetirement.length,beautySemanticP5Gates:beautySemanticP5.length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0',semanticClosureContract:'2.8.0',runtimeStabilizationContract:'2.9.0',semanticFoundationContract:'3.0.1',nativeSemanticLatticeContract:'3.2.0',uiPresentationContract:'local-owners',versionedGateAttribution:'direct+registry+wrapper',defaultCheckTimeoutMs:60000,ioHeavyCommandLedgerTimeoutMs:180000}));
+console.log(JSON.stringify({ok:true,semanticChecks:CURRENT_SEMANTIC.length,runtimeChecks:CURRENT_RUNTIME.length,uniqueChecks:paths.length,coverageFamilies:Object.keys(ASSURANCE_COVERAGE_CONTRACT).length,legacyDemoGatesRetired:legacyDemo.length,currentDemoSuite30Gates:suite30.length,deprecatedDemoSuite22Gates:deprecatedSuite22.length,presentationRetirementGates:presentationRetirement.length,beautySemanticP5Gates:beautySemanticP5.length,procedureFineTuningContract:'2.4.0',surfaceTruthContract:'2.5.0',shellAdminDemoContract:'2.6.0',semanticClosureContract:'2.8.0',runtimeStabilizationContract:'2.9.0',semanticFoundationContract:'3.0.1',nativeSemanticLatticeContract:'3.2.0',uiPresentationContract:'local-owners',versionedGateAttribution:'direct+registry+wrapper',defaultCheckTimeoutMs:60000,ioHeavyCommandLedgerTimeoutMs:180000}));
