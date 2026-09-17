@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const [owner,active,shell]=await Promise.all([readFile(new URL('./public/ui/demo-suite-3-0-ui.js',import.meta.url),'utf8'),readFile(new URL('./public/ui/active-experience.js',import.meta.url),'utf8'),readFile(new URL('./public/ui/stable-shell.js',import.meta.url),'utf8')]);
-for(const token of ["projectionAuthority!=='demo-suite-3-0'",'Suite 3.0','188','Evidence Lattice','read-only derivato','fixture escluse','Suite 2.2 deprecata'])assert.ok(owner.includes(token),`Suite 3.0 UI disclosure missing ${token}`);
+for(const token of ["projectionAuthority!=='demo-suite-3-0'",'Suite 3.0','Evidence Lattice','read-only derivato','fixture escluse','Suite 2.2 deprecata'])assert.ok(owner.includes(token),`Suite 3.0 UI disclosure missing ${token}`);
+assert.ok(owner.includes('Number(demo.positiveRecords||0)'),'Suite 3.0 UI must render the runtime positive-record truth dynamically');
+assert.ok(owner.includes('Number(demo.stressFixtures||0)'),'Suite 3.0 UI must render the runtime stress-fixture truth dynamically');
 assert.ok(owner.includes("document.documentElement.dataset.ictcDemoSuite='3.0'"));
 assert.ok(owner.includes("document.addEventListener('ictc:rendered'"));
 assert.ok(active.includes("from './demo-suite-3-0-ui.js'"),'Suite 3.0 UI owner not imported by composition root');
 assert.ok(active.includes('installDemoSuite30Ui'),'Suite 3.0 UI owner not installed by composition root');
 assert.ok(shell.includes('ictcDemoCard')&&shell.includes('ictcDemoDialog'),'base progressive disclosure surface missing');
-console.log(JSON.stringify({ok:true,control:'DEMO-SUITE-3.0-UI',projectionAuthority:'demo-suite-3-0',suite:'3.0',legacy22:'deprecated-generator-only'}));
+console.log(JSON.stringify({ok:true,control:'DEMO-SUITE-3.0-UI',projectionAuthority:'demo-suite-3-0',suite:'3.0',recordCountBinding:'runtime-projection',legacy22:'deprecated-generator-only'}));
