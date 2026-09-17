@@ -18,10 +18,10 @@
 :is(h1,h2,h3,p,.procedure-purpose,.procedure-boundary,.microcopy){
   min-width:0;
   max-width:none!important;
-  white-space:normal!important;
-  text-overflow:clip!important;
-  overflow-wrap:break-word!important;
-  word-break:normal!important;
+  white-space:normal;
+  text-overflow:clip;
+  overflow-wrap:break-word;
+  word-break:normal;
 }
 :where(.procedure-purpose,.procedure-boundary,.procedure-standard-name,.procedure-standard-meta,.procedure-standard-boundary,.admin-view-head p,.admin-head-copy p,.dialog-shell>header p){
   text-wrap:pretty;
