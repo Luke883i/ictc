@@ -7,7 +7,7 @@ const [ui,lensUi,browser,suite,lattice,active] = await Promise.all([
   read('./public/ui/epistemic-lattice.js'),
   read('./public/ui/epistemic-professional-lenses.js'),
   read('./browser-epistemic-professional-demo.py'),
-  read('./runtime/demo-suite-2-2.mjs'),
+  read('./runtime/demo-suite-3-0.mjs'),
   read('./runtime/epistemic-lattice.mjs'),
   read('./public/ui/active-experience.js'),
 ]);
@@ -40,12 +40,12 @@ assert.ok(browser.includes('LENSES') && browser.includes('for lens_id in LENSES'
 for (const lensId of expected) assert.ok(browser.includes(`'${lensId}'`), `professional browser taxonomy missing ${lensId}`);
 assert.ok(browser.includes("shot(page, f'epistemic-lens-{lens_id}.png')") || browser.includes("shot(page,f'epistemic-lens-{lens_id}.png')"), 'browser must materialize one screenshot per enumerated lens');
 
-for (const token of ['DEMO_SUITE_22_VERSION','demoSuite22Projection','projectionAuthority','stressVisible:false','positiveRecords:188']) {
-  assert.ok(suite.includes(token), `Suite 2.2 professional DEMO contract missing ${token}`);
+for (const token of ['DEMO_SUITE_30_VERSION','demoSuite30Projection','projectionAuthority','stressVisible:false','positiveRecords:marker.positiveRecords||0','datasetId:DEMO_SUITE_30_ID']) {
+  assert.ok(suite.includes(token), `Suite 3.0 professional DEMO contract missing ${token}`);
 }
-assert.ok(suite.includes("from './demo-suite-2-2-fixture.mjs'") && suite.includes('export { DEMO_SUITE_22_ENV, DEMO_SUITE_22_EXPECTED_DIGEST, DEMO_SUITE_22_ID, DEMO_SUITE_22_SCENARIO, DEMO_SUITE_22_VERSION'), 'Suite 2.2 version/digest identity must remain owned by fixture and re-exported by runtime owner');
-for (const token of ["demo['projectionAuthority']", "'demo-suite-2-2'", "demo['positiveRecords']", '188', "demo['stressVisible']", 'False']) {
-  assert.ok(browser.includes(token), `professional browser Suite 2.2 projection assertion missing ${token}`);
+assert.ok(suite.includes("from './demo-suite-2-2-fixture.mjs'") && suite.includes("from './demo-suite-2-2-replay.mjs'") && suite.includes("status:'deprecated-generator'"), 'Suite 3.0 must retain Suite 2.2 only as explicit deprecated generator lineage');
+for (const token of ["demo['suiteVersion']", "'3.0'", "demo['projectionAuthority']", "'demo-suite-3-0'", "demo['datasetId']", "'ictc-demo-suite-3-0'", "demo['positiveRecords']", '188', "demo['stressVisible']", 'False', "demo['coherent']", "demo['violations']"]) {
+  assert.ok(browser.includes(token), `professional browser Suite 3.0 projection assertion missing ${token}`);
 }
 
 assert.ok(browser.includes('wait_canonical_evidence_entry'), 'professional browser must synchronize on the canonical Evidence entry');
@@ -58,6 +58,6 @@ assert.ok(browser.includes("'duplicateProofMetaEntry':False") || browser.include
 
 assert.ok(lensUi.includes('currentThread') && lensUi.includes('data-epistemic-basis') && lensUi.includes('epistemicContextSearch'), 'EP-01 professional context search must route back through canonical atom navigation');
 assert.ok(lattice.includes("schemaVersion:'1.3.0'") && lattice.includes('epistemicProfessionalDiagnostics') && lattice.includes('rnSemanticAtoms'), 'lattice projection v1.3 must expose diagnostics plus bounded RN semantic atoms without changing decision authority');
-assert.ok(browser.includes('sameProjectionDigestAcrossLenses') && browser.includes('demoProjectionAuthority'), 'browser must prove lens digest conservation and Suite 2.2 projection authority');
+assert.ok(browser.includes('sameProjectionDigestAcrossLenses') && browser.includes('demoProjectionAuthority'), 'browser must prove lens digest conservation and Suite 3.0 projection authority');
 
-console.log('epistemic-professional-use-check: ok (12 bounded lenses / A3 progressive EP-01 authority after evidence meaning / EP-01 v1.3 / deterministic lens mount / Suite 2.2 synthetic projection / screenshot matrix contract)');
+console.log('epistemic-professional-use-check: ok (12 bounded lenses / A3 progressive EP-01 authority after evidence meaning / EP-01 v1.3 / deterministic lens mount / Suite 3.0 canonical synthetic projection / deprecated 2.2 generator lineage / screenshot matrix contract)');
