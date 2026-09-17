@@ -30,8 +30,17 @@ jobs:
         run: node v3/demo-suite-3-0-ui-check.mjs
       - name: DEMO Suite 3.0 lattice authority
         run: node v3/demo-suite-3-0-lattice-check.mjs
-      - name: DEMO Suite 3.0 runtime health
-        env: {ICTC_DEMO_E2E_PHASE: health}
+      - name: DEMO Suite 3.0 server starts
+        env: {ICTC_DEMO_E2E_PHASE: start}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health enabled
+        env: {ICTC_DEMO_E2E_PHASE: health-enabled}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health version
+        env: {ICTC_DEMO_E2E_PHASE: health-version}
+        run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
+      - name: DEMO Suite 3.0 health authority
+        env: {ICTC_DEMO_E2E_PHASE: health-authority}
         run: node v3/demo-suite-3-0-runtime-e2e-check.mjs
       - name: DEMO Suite 3.0 runtime bootstrap truth
         env: {ICTC_DEMO_E2E_PHASE: bootstrap}
