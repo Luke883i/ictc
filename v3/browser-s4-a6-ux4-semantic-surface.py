@@ -48,17 +48,17 @@ def audit_procedure(page,code,pid,root):
     r=open_process(page,code,pid,root)
     PHASE=f'{code}-single-collection-mount'
     section=r.locator(f':scope > [data-procedure-attention-slot="{pid}"] [data-procedure-worklist]')
-    expect(section).to_have_attribute('data-a6-ux4-mount','semantic-bridge'); expect(section).to_be_hidden(); expect(r).to_have_attribute('data-a6-ux4-single-collection','native')
-    PHASE=f'{code}-single-collection-scope'
-    scope=r.locator(f'[data-a6-ux4-scope="{pid}"]'); expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
-    PHASE=f'{code}-single-collection-equivalence'
-    expected=int(r.get_attribute('data-a6-ux4-actionable-count') or '0'); missing=int(r.get_attribute('data-a6-ux4-binding-missing') or '0')
-    visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count()
+    mount=section.get_attribute('data-a6-ux4-mount'); expected=int(r.get_attribute('data-a6-ux4-actionable-count') or '0'); missing=int(r.get_attribute('data-a6-ux4-binding-missing') or '0'); hidden=int(r.get_attribute('data-a6-ux4-binding-hidden') or '0')
     assert missing==0,(code,'typed binding missing',missing)
-    assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected)
-    assert r.locator('.procedure-worklist-reveal:visible').count()==0
-    PHASE=f'{code}-scope-control'
-    scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
+    if pid=='monitoring' and mount=='fallback-visible':
+        PHASE=f'{code}-secondary-target-fallback'; expect(section).to_be_visible(); expect(r).to_have_attribute('data-a6-ux4-single-collection','fallback'); assert hidden>0,(code,'fallback requires hidden progressive target',hidden)
+    else:
+        expect(section).to_have_attribute('data-a6-ux4-mount','semantic-bridge'); expect(section).to_be_hidden(); expect(r).to_have_attribute('data-a6-ux4-single-collection','native'); assert hidden==0,(code,'semantic bridge cannot hide bound targets',hidden)
+        PHASE=f'{code}-single-collection-scope'
+        scope=r.locator(f'[data-a6-ux4-scope="{pid}"]'); expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
+        PHASE=f'{code}-single-collection-equivalence'
+        visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
+        PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
     PHASE=f'{code}-context'
     anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]'); expect(anatomy).to_have_count(1); expect(anatomy).to_be_visible()
     assert r.locator('.procedure-decision-frame details.composition-process-context:visible').count()==0
@@ -81,7 +81,7 @@ def audit_procedure(page,code,pid,root):
         if strong.count(): assert strong.inner_text().strip().lower()!=span.inner_text().strip().lower(),(span.inner_text(),strong.inner_text())
         PHASE='MC-01-standard-close-target'; close=dialog.locator('button[aria-label="Chiudi"]'); box=close.bounding_box(); assert box and box['width']>=44 and box['height']>=44,box; close.click()
     PHASE=f'{code}-page-reflow'; no_page_overflow(page,f'desktop:{code}')
-    RESULTS.append({'oracle':'procedure-semantic-questions','code':code,'procedureId':pid,'answers':{'next-action':True,'subject':True,'authority':True,'effect':True,'scope':True,'reference':bool(refs.count()),'claim-boundary':True},'singleVisibleOperationalCollection':True,'actionableCount':expected})
+    RESULTS.append({'oracle':'procedure-semantic-questions','code':code,'procedureId':pid,'answers':{'next-action':True,'subject':True,'authority':True,'effect':True,'scope':True,'reference':bool(refs.count()),'claim-boundary':True},'singleVisibleOperationalCollection':mount=='semantic-bridge','actionableCount':expected,'hiddenProgressiveTargets':hidden})
 
 def desktop(browser):
     global PHASE
