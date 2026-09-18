@@ -170,4 +170,11 @@ try:
    first=list(unique.values())[0];raise AssertionError(f"onto-compliance visual audit found {len(anomalies)} observations / {len(unique)} unique signatures; first={first['kind']}:{first['surface']}:{first['role']}:{first['viewport']}")
   print(f'browser-onto-compliance-v1: complete scenes={len(scenes)} screenshots={len(screenshots)} anomalies=0 visual+editorial+lexical+epistemic=ok',flush=True);browser.close()
 except BaseException as error:
- payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc(),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots};(ART/'browser-onto-compliance-v1-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8');print(f'::error title=browser-onto-compliance-v1::{PHASE}: {type(error).__name__}: {error}',flush=True);traceback.print_exc();raise
+ payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc(),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots};(ART/'browser-onto-compliance-v1-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8')
+ summary=os.environ.get('GITHUB_STEP_SUMMARY')
+ if summary:
+  unique={x['signature']:x for x in anomalies}
+  with open(summary,'a',encoding='utf8') as fh:
+   fh.write(f"### browser-onto-compliance-v1 failure\n- phase: `{PHASE}`\n- type: `{type(error).__name__}`\n- message: `{str(error)[:1200]}`\n")
+   for item in list(unique.values())[:12]: fh.write(f"- anomaly: `{item['kind']}` / `{item['surface']}` / `{item['role']}` / `{item['viewport']}` → `{str(item['measured'])[:500]}`\n")
+ print(f'::error title=browser-onto-compliance-v1::{PHASE}: {type(error).__name__}: {error}',flush=True);traceback.print_exc();raise

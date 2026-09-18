@@ -8,7 +8,11 @@ PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>int
 PHASE='init'
 
 def fail(error):
-    (ART/'browser-pr60-polish-error.json').write_text(json.dumps({'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()},indent=2),encoding='utf8')
+    payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
+    (ART/'browser-pr60-polish-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
+    summary=os.environ.get('GITHUB_STEP_SUMMARY')
+    if summary:
+        with open(summary,'a',encoding='utf8') as fh: fh.write(f"### browser-pr60-polish failure\n- phase: `{PHASE}`\n- type: `{type(error).__name__}`\n- message: `{str(error)[:1200]}`\n")
     print(f'::error title=browser-pr60-polish::{PHASE}: {type(error).__name__}: {error}',flush=True)
 
 def no_overflow(page):
