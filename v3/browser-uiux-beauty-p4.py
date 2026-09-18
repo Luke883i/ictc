@@ -232,15 +232,18 @@ def audit_coverage_overlays(page, viewport, width):
         page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=rev_before_save)
         PHASE=f'{viewport}:coverage:scope-overlay:save-badge-readback'
         page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-reload'
+        page.reload(wait_until='networkidle')
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-rehydrate'
+        page.wait_for_function('()=>document.documentElement.dataset.enduserComposition==="p2"&&document.querySelector("#grcWorkspace")?.dataset.compositionSurface==="coverage"')
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
+        expect(card).to_be_visible()
+        require('scope-save-badge-durable',card.locator('.market-scope').inner_text().strip()==expected_badge,{'expected':expected_badge,'actual':card.locator('.market-scope').inner_text().strip()})
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-reopen'
-        for _ in range(3):
-            if scope.get_attribute('open') is not None:
-                break
+        if scope.get_attribute('open') is None:
             scope.locator(':scope > summary').click()
-            page.wait_for_timeout(80)
-        require('scope-reopen-after-save',scope.get_attribute('open') is not None,{'framework':framework_id,'open':scope.get_attribute('open')})
+        expect(scope).to_have_attribute('open','')
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-decision-readback'
         page.wait_for_function('args=>document.querySelector("[data-framework-card=\\""+args[0]+"\\"] [data-standard-scope-decision]")?.value===args[1]',arg=[framework_id,decision])
         require('scope-save-decision-readback',scope.locator('[data-standard-scope-decision]').input_value()==decision,{'expected':decision,'actual':scope.locator('[data-standard-scope-decision]').input_value()})
