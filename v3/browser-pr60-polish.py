@@ -108,6 +108,9 @@ try:
                 menu_summary.click();expect(menu).to_have_attribute('open','')
             base=menu.get_attribute('data-evidence-base');assert base,('missing evidence base',fmt)
             button=menu.locator(f'[data-evidence-download="{fmt}"]');expect(button).to_be_visible()
+            PHASE=f'evidence-downloads-{fmt}-hit-target'
+            hit=button.evaluate("""node=>{const r=node.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,top=document.elementFromPoint(x,y);return{ok:!!top&&(top===node||node.contains(top)),top:top?.tagName||null,topClass:top?.className||'',x,y}}""")
+            assert hit.get('ok'),(fmt,'occluded evidence action',hit)
             before=page.evaluate("()=>window.__ictcEvidenceDownloads.length")
             before_anchor=page.evaluate("()=>window.__ictcEvidenceAnchorClicks.length")
             PHASE=f'evidence-downloads-{fmt}-request'
