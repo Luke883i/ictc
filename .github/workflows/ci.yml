@@ -105,6 +105,85 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic phase / pr60 proof-init
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'evidence-meaning-first','evidence-render-idempotence'} else 0)
+          PY
+      - name: Diagnostic phase / pr60 refresh-keyboard
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'evidence-refresh-ownership','evidence-keyboard-disclosure'} else 0)
+          PY
+      - name: Diagnostic phase / pr60 rn-seed-download
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'evidence-download-disclosure','evidence-downloads','evidence-seed-open-scheduler','evidence-seed-monitoring-form','evidence-seed-submit','evidence-seed-materialized'} else 0)
+          PY
+      - name: Diagnostic phase / pr60 escape-mobile
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'evidence-escape','mobile-evidence'} else 0)
+          PY
+      - name: Diagnostic phase / onto home-shell
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); phase=d.get('phase',''); kinds={x.get('kind') for x in d.get('anomalies',[])}
+          sys.exit(1 if phase.endswith('-bootstrap') or {'home-page-scroll','home-scroll-clipped','ai-status-truth','top-navigation-language'} & kinds else 0)
+          PY
+      - name: Diagnostic phase / onto procedure
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); phase=d.get('phase',''); kinds={x.get('kind') for x in d.get('anomalies',[])}
+          proc=any(code in phase for code in ['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'])
+          proc_kinds={'editorial-order-prefix','technical-trace-not-visible','context-not-before-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis'}
+          sys.exit(1 if proc or proc_kinds & kinds else 0)
+          PY
+      - name: Diagnostic phase / onto proof-ep
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); phase=d.get('phase','')
+          sys.exit(1 if phase.endswith('-proof') or 'EP-01' in phase or phase=='aggregate-verdict' else 0)
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
