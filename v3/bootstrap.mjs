@@ -2,11 +2,12 @@ import {mkdirSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {BOOTSTRAP_CONTRACT,resolveBootstrap} from './bootstrap-contract.mjs';
+import {assertBootstrapTransport,BOOTSTRAP_CONTRACT,resolveBootstrap} from './bootstrap-contract.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
 const resolved=resolveBootstrap({requested:process.argv[2]||'auto',env:process.env,root});
+assertBootstrapTransport({host:resolved.host,env:process.env});
 mkdirSync(resolved.runtimeDir,{recursive:true});
 process.env.PORT=resolved.port;
 process.env.ICTC_HOST=resolved.host;
