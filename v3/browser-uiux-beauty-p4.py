@@ -174,10 +174,13 @@ def audit_coverage_overlays(page, viewport, width):
         if not condition:
             raise AssertionError(json.dumps([{'id':check_id,'detail':detail}],ensure_ascii=False,default=str))
     PHASE=f'{viewport}:coverage:scope-overlay'
+    PHASE=f'{viewport}:coverage:scope-overlay:locate'
     scope=page.locator('#grcWorkspace .market-scope-editor[data-a6-scope-popup="native-details-overlay"]').first
     expect(scope).to_be_visible()
     if scope.get_attribute('open') is None:
+        PHASE=f'{viewport}:coverage:scope-overlay:open'
         scope.locator(':scope > summary').click()
+    PHASE=f'{viewport}:coverage:scope-overlay:opened'
     expect(scope).to_have_attribute('open','')
     scope_metrics=scope.evaluate("""node=>{const c=getComputedStyle(node),summary=node.querySelector(':scope > summary'),save=node.querySelector('[data-standard-scope]'),b=getComputedStyle(save),before=getComputedStyle(summary,'::before');return{background:c.backgroundColor,opacity:c.opacity,position:c.position,saveBackground:b.backgroundColor,saveTextAlign:b.textAlign,saveWidth:save.getBoundingClientRect().width,summaryBefore:before.content,summaryText:(summary.innerText||'').trim(),summaryAria:summary.getAttribute('aria-label')||'',summaryWidth:summary.getBoundingClientRect().width};}""")
     require('scope-overlay-opacity',scope_metrics['opacity']=='1',scope_metrics)
@@ -200,26 +203,35 @@ def audit_coverage_overlays(page, viewport, width):
         card.locator('[data-standard-scope-decision]').select_option(decision)
         card.locator('[data-standard-scope-reason]').fill(reason)
         rev_before=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+        PHASE=f'{viewport}:coverage:scope-overlay:cancel-close'
         scope.locator(':scope > summary').click()
         expect(scope).not_to_have_attribute('open','')
         page.wait_for_timeout(120)
         rev_after_cancel=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
         require('scope-cancel-no-write',rev_after_cancel==rev_before,{'before':rev_before,'after':rev_after_cancel})
 
+        PHASE=f'{viewport}:coverage:scope-overlay:cancel-reload'
         page.reload(wait_until='networkidle')
+        PHASE=f'{viewport}:coverage:scope-overlay:cancel-rehydrate'
         page.wait_for_function('()=>document.documentElement.dataset.enduserComposition==="p2"&&document.querySelector("#grcWorkspace")?.dataset.compositionSurface==="coverage"')
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         expect(card).to_be_visible()
         require('scope-cancel-readback-unchanged',card.locator('.market-scope').inner_text().strip()==badge_before,{'before':badge_before,'after':card.locator('.market-scope').inner_text().strip()})
 
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
+        PHASE=f'{viewport}:coverage:scope-overlay:save-open'
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-reopen'
         scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
+        PHASE=f'{viewport}:coverage:scope-overlay:save-edit'
         scope.locator('[data-standard-scope-decision]').select_option(decision)
         scope.locator('[data-standard-scope-reason]').fill(reason)
         rev_before_save=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+        PHASE=f'{viewport}:coverage:scope-overlay:save-submit'
         scope.locator('[data-standard-scope]').click()
+        PHASE=f'{viewport}:coverage:scope-overlay:save-revision'
         page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=rev_before_save)
+        PHASE=f'{viewport}:coverage:scope-overlay:save-badge-readback'
         page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
@@ -234,9 +246,10 @@ def audit_coverage_overlays(page, viewport, width):
         scope.locator(':scope > summary').click()
         expect(scope).not_to_have_attribute('open','')
 
-    PHASE=f'{viewport}:coverage:standard-browser'
+    PHASE=f'{viewport}:coverage:standard-browser:locate'
     open_button=page.locator('#grcWorkspace [data-open-standard-browser]').first
     expect(open_button).to_be_visible()
+    PHASE=f'{viewport}:coverage:standard-browser:open'
     open_button.click()
     dialog=page.locator('#standardBrowserDialog')
     expect(dialog).to_be_visible()
