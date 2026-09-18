@@ -3,7 +3,7 @@ const [slots,rn,grc,anatomy,anatomyCss,render,router,admin,standard,publicPack,b
 for(const owner of[rn,grc])assert.ok(owner.includes("['advanced-context','reference','attention','controls','primary']"));
 assert.ok(slots.includes('insertDeclared')&&slots.includes('for(let i=order.length-1;i>=0;i--')&&!slots.includes('MutationObserver'));
 assert.ok(anatomy.includes('<details class="procedure-anatomy-standards"')&&anatomy.includes('outerOpen')&&anatomy.includes('procedure-anatomy-boundary'));
-assert.ok(anatomyCss.includes('.procedure-frame .procedure-frame-context{display:none}')&&anatomyCss.includes('.procedure-standard-name{font-weight:400}'));
+assert.ok(anatomyCss.includes('.procedure-frame .procedure-boundary{display:none}')&&anatomyCss.includes('.procedure-standard-name{font-weight:400}'));
 assert.ok(render.includes('data-source-state')&&!render.includes('Motivazione non disponibile')&&!render.includes('slice(0,110)')&&render.includes('esc(item.originalNarrative)'));
 assert.ok(p2.includes('catalog-state-label')&&p2.includes('text-overflow:clip'));
 for(const token of['market-scope.tracked','market-scope.reference','market-scope.not-used','market-scope.undeclared','inline-size:12rem'])assert.ok(ux4.includes(token));
