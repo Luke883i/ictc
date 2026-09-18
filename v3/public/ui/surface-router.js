@@ -11,6 +11,7 @@ const SURFACES = Object.freeze({
   epistemic: '#epistemicView'
 });
 const GRC_PROCEDURES = new Set(['objects', 'coverage', 'actions', 'risks', 'assurance']);
+const SURFACE_PROCEDURE=Object.freeze({monitoring:'monitoring',incidents:'incidents'});
 const BACK_LABELS = Object.freeze({
   home: `Torna a ${SURFACE_LABELS.home}`,
   processes: `Torna a ${SURFACE_LABELS.processes}`,
@@ -31,6 +32,8 @@ function normalizeSurface(value) {
 function normalizeProcedure(value) {
   return GRC_PROCEDURES.has(value) ? value : null;
 }
+function enabledProcedureSet(){const enabled=state.data?.experience?.procedurePolicy?.enabled;return Array.isArray(enabled)&&enabled.length?new Set(enabled):null;}
+function blockedProcedure(route){const enabled=enabledProcedureSet();if(!enabled)return null;const id=route.surface==='grc'?route.procedureId:SURFACE_PROCEDURE[route.surface];return id&&!enabled.has(id)?id:null;}
 function storedProcedure() {
   try { return normalizeProcedure(localStorage.getItem('ictc-grc-process')); }
   catch { return null; }
@@ -41,7 +44,8 @@ function currentProcedure() {
 function routeFor(surface = state.service, procedureId = null) {
   const route = { surface: normalizeSurface(surface) };
   if (route.surface === 'grc') route.procedureId = normalizeProcedure(procedureId) || currentProcedure();
-  return route;
+  const blocked=blockedProcedure(route);
+  return blocked?{surface:'processes',blockedProcedureId:blocked,reason:'procedure-disabled'}:route;
 }
 function sameRoute(left, right) {
   return Boolean(left && right && left.surface === right.surface && (left.procedureId || null) === (right.procedureId || null));
@@ -120,8 +124,9 @@ function focusAfterTransition(transition, surface, targetSelector) {
   }
   Promise.resolve(transition.ready).catch(() => {}).then(() => focusSurface(surface, targetSelector));
 }
+function guardCurrentRoute(){const requested={surface:normalizeSurface(state.service)};if(requested.surface==='grc')requested.procedureId=normalizeProcedure(state.activeProcessId)||currentProcedure();const next=routeFor(requested.surface,requested.procedureId);if(!sameRoute(requested,next)){const from=lastRoute||requested;applyRoute(next);commitHistory(next,'replace',from);return next;}return requested;}
 export function renderSurfaceNavigation() {
-  const active = normalizeSurface(state.service);
+  const guarded=guardCurrentRoute(),active = normalizeSurface(guarded.surface);
   state.service = active;
   for (const [surface, selector] of Object.entries(SURFACES)) {
     const view = $(selector);
@@ -167,7 +172,7 @@ export function navigateSurface(value, {
   const direction = transitionDirection(from, next, historyMode);
   applyRoute(next);
   commitHistory(next, historyMode, origin || from);
-  const transition = commitSurfaceNavigation(next, from, direction);
+  const transition = commitSurfaceNavigation(next, from, direction,{blockedProcedureId:next.blockedProcedureId||null});
   if (focus) focusAfterTransition(transition, next.surface, focusTarget);
   return next.surface;
 }
@@ -191,15 +196,15 @@ function restoreFromHistory(event) {
   if (!route) return;
   const from = routeFor(state.service);
   const next = applyRoute(route);
-  const transition = commitSurfaceNavigation(next, from, 'back', { history: 'pop' });
+  const transition = commitSurfaceNavigation(next, from, 'back', { history: 'pop', blockedProcedureId:next.blockedProcedureId||null });
   focusAfterTransition(transition, next.surface, null);
 }
 export function installSurfaceRouter() {
   if (installed) return;
   installed = true;
   const initial = routeFromUrl() || routeFor(state.service);
-  applyRoute(initial);
-  commitHistory(initial, 'replace', null);
+  const committedInitial = applyRoute(initial);
+  commitHistory(committedInitial, 'replace', null);
   window.addEventListener('popstate', restoreFromHistory);
   window.addEventListener('click', event => {
     const back = event.target.closest?.('[data-nav-back]');

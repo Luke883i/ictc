@@ -9,7 +9,7 @@ const [router, primitives, styles, css] = await Promise.all([
   read('./public/procedure-journey-2-1.css')
 ]);
 
-for (const token of ['document.startViewTransition', 'prefers-reduced-motion: reduce', 'ictcTransitionDirection', 'transitionDirection', 'focusAfterTransition', 'announceSurfaceChanged', 'commitSurfaceNavigation']) {
+for (const token of ['document.startViewTransition', 'prefers-reduced-motion: reduce', 'ictcTransitionDirection', 'transitionDirection', 'focusAfterTransition', 'announceSurfaceChanged', 'commitSurfaceNavigation', 'committedInitial', 'blockedProcedureId']) {
   assert.ok(router.includes(token), `surface transition contract missing ${token}`);
 }
 for (const token of ["setAttribute('aria-current'", 'document.documentElement.dataset.ictcSurface', "new CustomEvent('ictc:surface-changed'", 'routeUrl(route)', 'commitHistory(route']) {
@@ -28,11 +28,11 @@ assert.equal(router.includes('await document.startViewTransition'), false, 'navi
 const start = router.indexOf('export function navigateSurface');
 const end = router.indexOf('export function getBackLabel');
 const nav = router.slice(start, end);
-for (const token of ['applyRoute(next)', 'commitHistory(next', 'commitSurfaceNavigation(next, from, direction)']) {
+for (const token of ['applyRoute(next)', 'commitHistory(next', 'commitSurfaceNavigation(next, from, direction,']) {
   assert.ok(nav.includes(token), `navigateSurface missing committed contract ${token}`);
 }
 assert.ok(nav.indexOf('applyRoute(next)') < nav.indexOf('commitHistory(next'), 'route state must precede History commit');
-assert.ok(nav.indexOf('commitHistory(next') < nav.indexOf('commitSurfaceNavigation(next, from, direction)'), 'History must be committed before the surface DOM/semantic commit');
+assert.ok(nav.indexOf('commitHistory(next') < nav.indexOf('commitSurfaceNavigation(next, from, direction,'), 'History must be committed before the surface DOM/semantic commit');
 
 const commitStart=router.indexOf('function commitSurfaceNavigation');
 const commitEnd=router.indexOf('export function navigateSurface');
@@ -42,6 +42,6 @@ assert.ok(committed.indexOf('renderSurfaceNavigation();') < committed.indexOf('a
 const restoreStart=router.indexOf('function restoreFromHistory');
 const restoreEnd=router.indexOf('export function installSurfaceRouter');
 const restore=router.slice(restoreStart,restoreEnd);
-assert.ok(restore.includes("commitSurfaceNavigation(next, from, 'back', { history: 'pop' })"),'popstate must use the same committed surface boundary');
+assert.ok(restore.includes("commitSurfaceNavigation(next, from, 'back', { history: 'pop', blockedProcedureId:"),'popstate must use the same committed surface boundary and preserve fail-closed provenance');
 
 console.log('journey-navigation-check: ok (synchronous route/history state + committed visible-surface semantic event + progressive transitions; no redundant breadcrumb owner)');

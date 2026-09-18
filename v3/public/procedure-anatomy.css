@@ -248,3 +248,12 @@
     flex-direction: column;
   }
 }
+
+/* UI-INTENT-9: first plane stays action-oriented; context/reference become compact disclosures immediately below. */
+.procedure-frame .procedure-boundary{display:none}.procedure-frame .procedure-context-detail{margin-top:.25rem}
+.procedure-anatomy-boundary{margin:.55rem 12px;color:var(--muted,#667085)}
+.procedure-anatomy-standards{margin:8px 0 0;border:1px solid var(--line,#d9dee7);border-radius:12px;background:color-mix(in srgb,var(--panel,#fff) 96%,transparent)}
+.procedure-anatomy-standards>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:44px;padding:9px 12px;list-style:none;cursor:pointer;color:var(--muted,#667085)}
+.procedure-anatomy-standards>summary::-webkit-details-marker{display:none}
+.procedure-anatomy-standard-body{padding:0 12px 10px}
+.procedure-standard-name{font-weight:400}

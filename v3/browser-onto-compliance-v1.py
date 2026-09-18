@@ -50,13 +50,13 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  if frame.locator('.procedure-primary').count() and frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height')<43.5:anomaly('process-primary-target-too-small',role,vp,proc['code'],frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height'),'>=44px')
  if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I):anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
- if order[:3]!=['attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['attention','controls','primary'])
+ if order[:3]!=['advanced-context','reference','attention']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['advanced-context','reference','attention'])
  context=page.locator(proc['context']);anatomy=page.locator(proc['anatomy']);work=page.locator(proc['work']).first
  try:context.wait_for(state='visible',timeout=5000);anatomy.wait_for(state='visible',timeout=5000);work.wait_for(state='visible',timeout=5000)
  except Exception:anomaly('technical-trace-not-visible',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'owner-declared context slot with visible anatomy after native work');return
  if context.get_attribute('data-editorial-slot-owner')!=OWNER[proc['id']]:anomaly('technical-context-owner',role,vp,proc['code'],context.get_attribute('data-editorial-slot-owner'),OWNER[proc['id']])
- work_before_context=page.evaluate("x=>{const w=document.querySelector(x.w),c=document.querySelector(x.c);return !!(w&&c&&(w.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'w':proc['work'],'c':proc['context']})
- if not work_before_context:anomaly('technical-trace-before-native-work',role,vp,proc['code'],False,True)
+ context_before_work=page.evaluate("x=>{const w=document.querySelector(x.w),c=document.querySelector(x.c);return !!(w&&c&&(c.compareDocumentPosition(w)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'w':proc['work'],'c':proc['context']})
+ if not context_before_work:anomaly('context-not-before-native-work',role,vp,proc['code'],False,True)
  was_open=anatomy.get_attribute('open') is not None
  if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).to_have_attribute('open','')
  body=anatomy.locator('.procedure-anatomy-grid')
@@ -67,6 +67,14 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  boundary=(contract or {}).get('claimBoundary','')
  if boundary and boundary not in (anatomy.text_content() or ''):anomaly('claim-boundary-not-present-in-process-trace',role,vp,proc['code'],False,'canonical claim boundary visible after disclosure')
  if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).not_to_have_attribute('open','')
+ if proc['code']=='RN-01':
+  cards=page.locator('#catalogList .catalog-card')
+  if cards.count():
+   if 'Motivazione non disponibile' in page.locator('#catalogList').inner_text():anomaly('rn-missing-reason-placeholder',role,vp,proc['code'],True,False)
+   missing_state=cards.evaluate_all("ns=>ns.filter(n=>!n.dataset.sourceState).length")
+   if missing_state:anomaly('rn-source-state-rail',role,vp,proc['code'],missing_state,0)
+ if proc['code']=='EC-01':
+  if page.locator('#incidentList .incident-card h3').count() and any(x.strip().endswith('…') for x in page.locator('#incidentList .incident-card h3').all_inner_texts()):anomaly('ec-title-ellipsis',role,vp,proc['code'],page.locator('#incidentList .incident-card h3').all_inner_texts(),'no renderer ellipsis')
  if proc['code']=='MC-01' and role=='admin':
   opened=page.locator('.market-scope-editor[open]:visible').count()
   if opened:anomaly('coverage-scope-editors-expanded-by-default',role,vp,proc['code'],opened,0)
@@ -140,20 +148,34 @@ try:
   browser=pw.chromium.launch(**launch)
   for role in ROLES:
    for vp,width,height in VIEWPORTS:
-    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families
+    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
+    if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
+    page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&document.documentElement.dataset.ictcSurface==='home'&&document.querySelector('#homePriorities')?.dataset.homeWorkQueue==='3.2'")
     labels=page.locator('.service-nav [data-service]').all_text_contents();expected=['Home','Processi di Compliance','Evidenze ICTC']
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
-    no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
+    no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');
+    if width>=1280:
+     m=page.evaluate('()=>({inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow})')
+     if max(m['html'],m['body'])>m['inner']+1:anomaly('home-page-scroll',role,vp,'home',m,'page <= viewport+1 without clipping')
+     if m['overflow']=='hidden':anomaly('home-scroll-clipped',role,vp,'home',m,'body overflow must remain scroll-capable')
+    shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
     if h['count']!=7:anomaly('process-hub-count',role,vp,'processes',h['count'],7)
     if h['columns']!=expected_cols:anomaly('process-hub-columns',role,vp,'processes',h['columns'],expected_cols)
     if any(x<43.5 for x in h['primaryHeights']):anomaly('process-card-target-too-small',role,vp,'processes',h['primaryHeights'],'all >=44px')
     no_overflow(page,role,vp,'processes');one_h1(page,role,vp,'processes');shot(page,role,vp,'processes',width)
     for proc in PROCEDURES:audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
     audit_proof(page,role,vp,width);audit_ep(page,role,vp,width,list(registry.keys())+['epistemic-lattice'],revision);ctx.close()
-  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a3-specialized-local-closure-runtime-audit+p2-secondary-closed','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'row-list-1-column','proofHierarchy':PROOF_READING_ORDER,'editorialHierarchy':'attention>controls>primary>advanced-context>reference','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
+  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a3-specialized-local-closure-runtime-audit+p2-secondary-closed','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'row-list-1-column','proofHierarchy':PROOF_READING_ORDER,'editorialHierarchy':'advanced-context>reference>attention>controls>primary','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
   if anomalies:
    for x in list(unique.values())[:40]:print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
    first=list(unique.values())[0];raise AssertionError(f"onto-compliance visual audit found {len(anomalies)} observations / {len(unique)} unique signatures; first={first['kind']}:{first['surface']}:{first['role']}:{first['viewport']}")
   print(f'browser-onto-compliance-v1: complete scenes={len(scenes)} screenshots={len(screenshots)} anomalies=0 visual+editorial+lexical+epistemic=ok',flush=True);browser.close()
 except BaseException as error:
- payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc(),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots};(ART/'browser-onto-compliance-v1-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8');print(f'::error title=browser-onto-compliance-v1::{PHASE}: {type(error).__name__}: {error}',flush=True);traceback.print_exc();raise
+ payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc(),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots};(ART/'browser-onto-compliance-v1-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8')
+ summary=os.environ.get('GITHUB_STEP_SUMMARY')
+ if summary:
+  unique={x['signature']:x for x in anomalies}
+  with open(summary,'a',encoding='utf8') as fh:
+   fh.write(f"### browser-onto-compliance-v1 failure\n- phase: `{PHASE}`\n- type: `{type(error).__name__}`\n- message: `{str(error)[:1200]}`\n")
+   for item in list(unique.values())[:12]: fh.write(f"- anomaly: `{item['kind']}` / `{item['surface']}` / `{item['role']}` / `{item['viewport']}` → `{str(item['measured'])[:500]}`\n")
+ print(f'::error title=browser-onto-compliance-v1::{PHASE}: {type(error).__name__}: {error}',flush=True);traceback.print_exc();raise

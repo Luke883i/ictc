@@ -17,8 +17,10 @@ assert.doesNotMatch(frame,/normalizeNativeEntry|replaceChildren\(|procedureLegac
 assert.doesNotMatch(anatomy,/workAnchor\(|\.after\(box\)|insertAdjacentHTML\('afterend'/,'anatomy cannot choose hierarchy position');
 assert.match(anatomy,/editorialSlot\(host,'advanced-context'\)/);
 assert.match(anatomy,/editorialSlot\(host,'reference'\)/);
-assert.match(helper,/insertAdjacentElement\('afterend',slot\)/,'attention may be inserted only on first construction');
-assert.match(helper,/if\(!slot\)/,'existing attention slot must not be repaired by reparent');
+assert.match(helper,/function insertDeclared\(/,'synthetic slots must be born in the declared position');
+assert.match(helper,/previous=index===0\?frame:roleNode\(host,order\[index-1\],config\)/,'synthetic slots must anchor to the preceding declared role');
+assert.match(helper,/for\(const name of order\)/,'synthetic slots must be constructed left-to-right without late repair');
+assert.doesNotMatch(helper,/insertAdjacentElement\('afterend',slot\)/,'attention-specific adjacency authority is retired');
 assert.match(helper,/host\.querySelectorAll\(selector\).*node=>node\.parentElement===host/,'direct-role selector resolution must preserve :scope semantics and reject nested matches');
 assert.match(helper,/editorialOrderValid/);
 assert.match(rn,/RN_EC_EDITORIAL_ORDER/);
@@ -32,8 +34,8 @@ assert.doesNotMatch(helper,/setTimeout|setInterval|requestAnimationFrame/,'helpe
 assert.doesNotMatch(helper,/querySelectorAll\('\.view|querySelectorAll\("\.view/,'helper must not scan all surfaces');
 const declared=(src,name)=>{const m=src.match(new RegExp(`${name}=Object\\.freeze\\(\\{([\\s\\S]*?)\\}\\);`));assert.ok(m,`${name} missing`);return m[1];};
 const rnDecl=declared(rn,'RN_EC_EDITORIAL_ORDER'),grcDecl=declared(grc,'GRC_EDITORIAL_ORDER');
-for(const id of ['monitoring','incidents'])assert.match(rnDecl,new RegExp(`${id}:Object\\.freeze\\(\\['attention','controls','primary'`));
-for(const id of ['objects','coverage','actions','risks','assurance'])assert.match(grcDecl,new RegExp(`${id}:Object\\.freeze\\(\\['attention','controls','primary'`));
+for(const id of ['monitoring','incidents'])assert.match(rnDecl,new RegExp(`${id}:Object\\.freeze\\(\\['advanced-context','reference','attention'`));
+for(const id of ['objects','coverage','actions','risks','assurance'])assert.match(grcDecl,new RegExp(`${id}:Object\\.freeze\\(\\['advanced-context','reference','attention'`));
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
 const report={ok:true,slice:'S4-A2',baseMainSha:'cfe544fe730aeecf43228e19bd58dbb5e254f8a7',localOwners:owners,metrics:{localOwnerCoverage:'7/7',directRoleSelectorBinding:'direct-only',lateReparentAuthority:0,mutationObserverHierarchyAuthority:0,globalFinalizer:0,visibleDuplicateOrientationCssRetired:true},claimBoundary:'E2 source-contract evidence only; not browser/deployment/human evidence.'};
 writeFileSync(new URL('../artifacts/s4-a2-editorial-composition-contract.json',import.meta.url),JSON.stringify(report,null,2));
