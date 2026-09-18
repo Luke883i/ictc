@@ -203,8 +203,8 @@ export function installSurfaceRouter() {
   if (installed) return;
   installed = true;
   const initial = routeFromUrl() || routeFor(state.service);
-  applyRoute(initial);
-  commitHistory(initial, 'replace', null);
+  const committedInitial = applyRoute(initial);
+  commitHistory(committedInitial, 'replace', null);
   window.addEventListener('popstate', restoreFromHistory);
   window.addEventListener('click', event => {
     const back = event.target.closest?.('[data-nav-back]');
