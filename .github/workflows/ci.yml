@@ -184,6 +184,99 @@ jobs:
           d=json.loads(p.read_text()); phase=d.get('phase','')
           sys.exit(1 if phase.endswith('-proof') or 'EP-01' in phase or phase=='aggregate-verdict' else 0)
           PY
+      - name: Diagnostic exact / pr60 open-scheduler
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-seed-open-scheduler' else 0)
+          PY
+      - name: Diagnostic exact / pr60 monitoring-form
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-seed-monitoring-form' else 0)
+          PY
+      - name: Diagnostic exact / pr60 submit
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-seed-submit' else 0)
+          PY
+      - name: Diagnostic exact / pr60 materialized
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-seed-materialized' else 0)
+          PY
+      - name: Diagnostic exact / pr60 disclosure
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-download-disclosure' else 0)
+          PY
+      - name: Diagnostic exact / pr60 downloads
+        if: ${{ always() && matrix.id == 'pr60-polish' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-downloads' else 0)
+          PY
+      - name: Diagnostic exact / onto home-scroll
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('anomalies',[])}
+          sys.exit(1 if 'home-page-scroll' in kinds else 0)
+          PY
+      - name: Diagnostic exact / onto ai-truth
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('anomalies',[])}
+          sys.exit(1 if 'ai-status-truth' in kinds else 0)
+          PY
+      - name: Diagnostic exact / onto shell-language-or-clipping
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('anomalies',[])}
+          sys.exit(1 if {'home-scroll-clipped','top-navigation-language'} & kinds else 0)
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:
