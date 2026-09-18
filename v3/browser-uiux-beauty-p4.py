@@ -238,7 +238,11 @@ def audit_coverage_overlays(page, viewport, width):
         if scope.get_attribute('open') is None:
             scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-decision-readback'
+        page.wait_for_function('args=>document.querySelector("[data-framework-card=\\""+args[0]+"\\"] [data-standard-scope-decision]")?.value===args[1]',arg=[framework_id,decision])
         require('scope-save-decision-readback',scope.locator('[data-standard-scope-decision]').input_value()==decision,{'expected':decision,'actual':scope.locator('[data-standard-scope-decision]').input_value()})
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-reason-readback'
+        page.wait_for_function('args=>document.querySelector("[data-framework-card=\\""+args[0]+"\\"] [data-standard-scope-reason]")?.value===args[1]',arg=[framework_id,reason])
         require('scope-save-reason-readback',scope.locator('[data-standard-scope-reason]').input_value()==reason,{'expected':reason,'actual':scope.locator('[data-standard-scope-reason]').input_value()})
         scope.locator(':scope > summary').click()
         expect(scope).not_to_have_attribute('open','')
