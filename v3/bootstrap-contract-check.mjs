@@ -27,7 +27,7 @@ for(const text of[runProfiles,readme]){assert.ok(text.includes('npm ci --ignore-
 assert.ok(runProfiles.includes('npm ci --ignore-scripts && npm run build'));assert.ok(runProfiles.includes('trusted-header'));
 assert.ok(runProfiles.includes('ICTC_HOST=0.0.0.0'),'Render non-loopback bind guidance missing');
 assert.ok(runProfiles.includes('RENDER_SERVICE_TYPE'),'Render platform diagnostic contract missing');
-assert.ok(runProfiles.includes('filesystem effimero'),'Render storage boundary missing');
+assert.ok(runProfiles.includes('filesystem Render è effimero'),'Render storage boundary missing');
 const http=read('v3/runtime/http.mjs');
 assert.ok(http.includes('assertSafeRuntimeBinding'),'runtime network guard missing');
 assert.ok(http.includes("ICTC_ALLOW_NETWORK_BIND==='1'"),'explicit network allow guard missing');
