@@ -118,7 +118,7 @@ Build: npm ci --ignore-scripts && npm run build
 Start: npm start
 ```
 
-`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind e proxy secret). Il devcontainer è il container locale canonico e conserva il bind loopback con port forwarding privato.
+`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Per Render inbound (`RENDER=true`, `RENDER_SERVICE_TYPE=web|pserv`) un host loopback fallisce esplicitamente con `paas-network-bind-required`; impostare `ICTC_HOST=0.0.0.0` soddisfa soltanto il requisito di trasporto e **non** concede fiducia identitaria. Un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind, proxy secret e proxy/IdP upstream autorizzato). Il filesystem Render è effimero per default e un persistent disk single-instance non equivale a shared durable enterprise authority. Il devcontainer resta il container locale canonico e conserva il bind loopback con port forwarding privato. Questa diagnostica non introduce un profilo enterprise e non anticipa le slice CEP-R* proposte in PR #163.
 
 ## Verifica
 

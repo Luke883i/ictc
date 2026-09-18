@@ -1,5 +1,7 @@
+const RENDER_INBOUND_SERVICE_TYPES=Object.freeze(['web','pserv']);
+
 export const BOOTSTRAP_CONTRACT=Object.freeze({
-  schemaVersion:'1.1.0',
+  schemaVersion:'1.2.0',
   authority:'BOOTSTRAP-0',
   node:Object.freeze({engine:'>=22.16.0',major:22}),
   packageManager:'npm',
@@ -10,6 +12,9 @@ export const BOOTSTRAP_CONTRACT=Object.freeze({
   }),
   deprecatedDemo:Object.freeze({suiteVersion:'2.2',runtimeRelative:'.ictc/demo-runtime-2-2',selection:'explicit-env-only'}),
   precedence:Object.freeze({port:['PORT','ICTC_PORT','4173'],runtime:['ICTC_RUNTIME_DIR','ICTC_STATE_DIR/profile','repo/.ictc/profile'],host:['ICTC_HOST','127.0.0.1']}),
+  platforms:Object.freeze({
+    render:Object.freeze({detection:'RENDER=true',inboundServiceTypes:RENDER_INBOUND_SERVICE_TYPES,requiredBind:'non-loopback',hostAutoOverride:false,identityAutoTrust:false,filesystemDefault:'ephemeral',persistentDiskShared:false,persistentDiskMultiInstance:false})
+  }),
   commands:Object.freeze({
     install:'npm ci --ignore-scripts',
     build:'npm run build',
@@ -31,9 +36,27 @@ export const BOOTSTRAP_CONTRACT=Object.freeze({
     'health-authority-api-health',
     'npm-lock-authoritative',
     'devcontainer-remains-loopback',
-    'network-deployment-requires-existing-trusted-identity-boundary'
+    'network-deployment-requires-existing-trusted-identity-boundary',
+    'platform-detection-never-grants-network-or-identity-trust',
+    'render-inbound-loopback-fails-before-server-import',
+    'render-storage-posture-does-not-promote-enterprise-readiness'
   ])
 });
+
+export function isLoopbackBootstrapHost(value){const host=String(value||'').trim().toLowerCase();return host==='::1'||host==='localhost'||host==='127.0.0.1'||host.startsWith('127.')||host.startsWith('::ffff:127.');}
+
+export function deploymentPlatformProjection(env={}){
+  const render=String(env.RENDER||'').trim().toLowerCase()==='true';
+  const serviceType=render?String(env.RENDER_SERVICE_TYPE||'').trim().toLowerCase():'';
+  const inbound=render&&RENDER_INBOUND_SERVICE_TYPES.includes(serviceType);
+  return Object.freeze({provider:render?'render':'generic',serviceType:serviceType||null,inbound,requiresNonLoopback:inbound});
+}
+
+export function assertBootstrapTransport({host,env={}}={}){
+  const platform=deploymentPlatformProjection(env);
+  if(platform.requiresNonLoopback&&isLoopbackBootstrapHost(host))throw Object.assign(new Error(`Render ${platform.serviceType} service requires ICTC_HOST=0.0.0.0 (or another non-loopback bind host) so the platform proxy can reach ICTC. BOOTSTRAP-0 never widens the bind automatically; the existing trusted identity/network boundary still applies.`),{code:'paas-network-bind-required',platform:platform.provider,serviceType:platform.serviceType});
+  return platform;
+}
 
 export function resolveBootstrap({requested='auto',env={},root='.'}={}){
   if(!['auto','demo'].includes(requested))throw Object.assign(new Error(`Unknown bootstrap profile: ${requested}`),{code:'bootstrap-profile-unknown'});
@@ -62,6 +85,10 @@ export function validateBootstrapModel(model){
   if(model?.devcontainerHostOverride!==false||model?.devcontainerStart!=='./ictc.sh start --no-open')fail('devcontainer');
   if(model?.renderBuild!=='npm ci --ignore-scripts && npm run build'||model?.renderStart!=='npm start')fail('render');
   if(model?.publicNetworkRequiresTrustedIdentity!==true)fail('deployment-boundary');
+  if(model?.renderDetection!=='RENDER=true+RENDER_SERVICE_TYPE:web|pserv'||model?.renderInboundRequiresNonLoopback!==true)fail('render-transport');
+  if(model?.renderHostAutoOverride!==false||model?.renderIdentityAutoTrust!==false)fail('render-no-auto-trust');
+  if(model?.renderFilesystemDefault!=='ephemeral'||model?.renderPersistentDiskShared!==false||model?.renderPersistentDiskMultiInstance!==false)fail('render-storage-boundary');
+  if(model?.cepBootstrapProfile!==false)fail('cep-non-anticipation');
   return {ok:errors.length===0,errors};
 }
 
@@ -70,5 +97,7 @@ export function baselineBootstrapModel(){return {
   standardRuntime:'.ictc/runtime',demoRuntime:'.ictc/demo-runtime-3-0',demoSuite:'3.0',deprecatedDemoSuite:'2.2',defaultHost:'127.0.0.1',networkBypass:false,
   portPrecedence:'PORT>ICTC_PORT>4173',healthPath:'/api/health',npmStart:'node v3/bootstrap.mjs',npmDemo:'node v3/bootstrap.mjs demo',
   shellDirectServer:false,shellBootstrap:true,devcontainerHostOverride:false,devcontainerStart:'./ictc.sh start --no-open',
-  renderBuild:'npm ci --ignore-scripts && npm run build',renderStart:'npm start',publicNetworkRequiresTrustedIdentity:true
+  renderBuild:'npm ci --ignore-scripts && npm run build',renderStart:'npm start',publicNetworkRequiresTrustedIdentity:true,
+  renderDetection:'RENDER=true+RENDER_SERVICE_TYPE:web|pserv',renderInboundRequiresNonLoopback:true,renderHostAutoOverride:false,renderIdentityAutoTrust:false,
+  renderFilesystemDefault:'ephemeral',renderPersistentDiskShared:false,renderPersistentDiskMultiInstance:false,cepBootstrapProfile:false
 };}

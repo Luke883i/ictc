@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {baselineBootstrapModel,validateBootstrapModel} from './bootstrap-contract.mjs';
+import {assertBootstrapTransport,baselineBootstrapModel,deploymentPlatformProjection,isLoopbackBootstrapHost,validateBootstrapModel} from './bootstrap-contract.mjs';
 
 const mutations=[
  ['authority','runtime-profile',m=>m.authority='OTHER'],
@@ -23,7 +23,15 @@ const mutations=[
  ['devcontainer-start','devcontainer',m=>m.devcontainerStart='./ictc.sh codespace'],
  ['render-build','paas-command-projection',m=>m.renderBuild='yarn'],
  ['render-start','paas-command-projection',m=>m.renderStart='node v3/server.mjs'],
- ['deployment-boundary','network-boundary',m=>m.publicNetworkRequiresTrustedIdentity=false]
+ ['deployment-boundary','network-boundary',m=>m.publicNetworkRequiresTrustedIdentity=false],
+ ['render-detection','paas-transport',m=>m.renderDetection='PORT-only'],
+ ['render-loopback','paas-transport',m=>m.renderInboundRequiresNonLoopback=false],
+ ['render-host-auto','network-boundary',m=>m.renderHostAutoOverride=true],
+ ['render-identity-auto','identity-boundary',m=>m.renderIdentityAutoTrust=true],
+ ['render-filesystem','persistence-boundary',m=>m.renderFilesystemDefault='durable'],
+ ['render-disk-shared','persistence-boundary',m=>m.renderPersistentDiskShared=true],
+ ['render-disk-scale','persistence-boundary',m=>m.renderPersistentDiskMultiInstance=true],
+ ['cep-profile','cep-non-anticipation',m=>m.cepBootstrapProfile=true]
 ];
 
 const M=mutations.length;
@@ -55,10 +63,62 @@ function composite(maxDepth=6){
   return [...used];
 }
 
+
+const deploymentWorlds=Object.freeze({
+  platforms:['local','ci','render','docker','kubernetes','systemd','future-appliance'],
+  renderTypes:['web','pserv','worker','cron','static',''],
+  hosts:['127.0.0.1','localhost','::1','0.0.0.0','10.20.0.5','::'],
+  identities:['local','trusted-header'],
+  storages:['ephemeral','render-disk','sqlite-local','postgres-shared'],
+  ingresses:['none','render-edge','trusted-identity-proxy','ingress-controller','reverse-proxy'],
+  instances:[1,2,3,8]
+});
+function classifyWorld(world){
+  const env=world.platform==='render'?{RENDER:'true',RENDER_SERVICE_TYPE:world.renderType}:{};
+  const platform=deploymentPlatformProjection(env);
+  let transport=true,transportCode=null;
+  try{assertBootstrapTransport({host:world.host,env});}catch(error){transport=false;transportCode=error.code;}
+  const loopback=isLoopbackBootstrapHost(world.host),secretOk=world.secretLength>=32;
+  const networkSecurity=loopback||(world.identity==='trusted-header'&&world.allowNetwork&&secretOk);
+  const upstreamIdentity=world.identity==='trusted-header'&&world.ingress==='trusted-identity-proxy';
+  const interactive=transport&&networkSecurity&&(loopback?world.identity==='local':upstreamIdentity);
+  const persistenceValid=!(world.storage==='render-disk'&&world.instances>1);
+  const durable=world.storage==='postgres-shared'||(world.storage==='render-disk'&&world.instances===1);
+  const distributedDurable=world.storage==='postgres-shared'&&world.instances>1;
+  const cepLike=interactive&&distributedDurable&&world.ingress==='trusted-identity-proxy';
+  return{platform,transport,transportCode,loopback,networkSecurity,interactive,persistenceValid,durable,distributedDurable,cepLike,cepAchieved:false};
+}
+let d=0x243f6a88>>>0;
+const drnd=()=>{d^=d<<13;d^=d>>>17;d^=d<<5;return d>>>0;},pick=array=>array[drnd()%array.length];
+const deploymentTrials=1000;
+let transportRejects=0,securityRejects=0,interactive=0,ephemeral=0,invalidDiskScale=0,cepLike=0;
+for(let i=0;i<deploymentTrials;i++){
+  const world={platform:pick(deploymentWorlds.platforms),renderType:pick(deploymentWorlds.renderTypes),host:pick(deploymentWorlds.hosts),identity:pick(deploymentWorlds.identities),storage:pick(deploymentWorlds.storages),ingress:pick(deploymentWorlds.ingresses),instances:pick(deploymentWorlds.instances),allowNetwork:Boolean(drnd()%2),secretLength:[0,16,32,64][drnd()%4]};
+  const result=classifyWorld(world),isRenderInbound=world.platform==='render'&&['web','pserv'].includes(world.renderType);
+  if(isRenderInbound&&result.loopback){assert.equal(result.transport,false,'Render inbound loopback survived transport preflight');assert.equal(result.transportCode,'paas-network-bind-required');}
+  if(!isRenderInbound&&result.loopback)assert.equal(result.transport,true,'non-Render/local loopback was widened into a platform failure');
+  if(!result.loopback&&world.identity==='local')assert.equal(result.networkSecurity,false,'non-loopback local identity gained network trust');
+  if(!result.loopback&&world.identity==='trusted-header'&&(!world.allowNetwork||world.secretLength<32))assert.equal(result.networkSecurity,false,'incomplete trusted-header posture survived');
+  if(world.platform==='render'&&world.storage==='ephemeral')assert.equal(result.durable,false,'Render ephemeral filesystem became durable');
+  if(world.storage==='render-disk'&&world.instances>1)assert.equal(result.persistenceValid,false,'Render disk became multi-instance shared authority');
+  assert.equal(result.cepAchieved,false,'deployment shape must never promote CEP from BOOTSTRAP-0');
+  if(!result.transport)transportRejects++;if(result.transport&&!result.networkSecurity)securityRejects++;if(result.interactive)interactive++;if(world.platform==='render'&&world.storage==='ephemeral')ephemeral++;if(!result.persistenceValid)invalidDiskScale++;if(result.cepLike)cepLike++;
+}
+for(const scenario of[
+  {world:{platform:'render',renderType:'web',host:'127.0.0.1',identity:'local',storage:'ephemeral',ingress:'render-edge',instances:1,allowNetwork:false,secretLength:0},expected:{transport:false,transportCode:'paas-network-bind-required'}},
+  {world:{platform:'render',renderType:'web',host:'0.0.0.0',identity:'local',storage:'ephemeral',ingress:'render-edge',instances:1,allowNetwork:false,secretLength:0},expected:{transport:true,networkSecurity:false,interactive:false}},
+  {world:{platform:'render',renderType:'web',host:'0.0.0.0',identity:'trusted-header',storage:'ephemeral',ingress:'render-edge',instances:1,allowNetwork:true,secretLength:64},expected:{transport:true,networkSecurity:true,interactive:false}},
+  {world:{platform:'render',renderType:'web',host:'0.0.0.0',identity:'trusted-header',storage:'render-disk',ingress:'trusted-identity-proxy',instances:1,allowNetwork:true,secretLength:64},expected:{interactive:true,persistenceValid:true,durable:true,distributedDurable:false,cepAchieved:false}},
+  {world:{platform:'render',renderType:'web',host:'0.0.0.0',identity:'trusted-header',storage:'render-disk',ingress:'trusted-identity-proxy',instances:2,allowNetwork:true,secretLength:64},expected:{persistenceValid:false,cepAchieved:false}},
+  {world:{platform:'future-appliance',renderType:'',host:'0.0.0.0',identity:'trusted-header',storage:'postgres-shared',ingress:'trusted-identity-proxy',instances:3,allowNetwork:true,secretLength:64},expected:{interactive:true,distributedDurable:true,cepLike:true,cepAchieved:false}}
+]){
+  const observed=classifyWorld(scenario.world);for(const[key,value]of Object.entries(scenario.expected))assert.equal(observed[key],value,key);
+}
+
 // Requested reticular campaign: 100k semantic composites distributed across abstraction levels.
 const reticularTrials=100_000;
 for(let i=0;i<reticularTrials;i++) kill(composite(7),`reticular-${i}`);
-assert.equal(killedLevels.size,7,'not all abstraction levels were exercised');
+assert.equal(killedLevels.size,new Set(mutations.map(item=>item[1])).size,'not all abstraction levels were exercised');
 
 // Preserve the existing million-trial proof rail.
 const millionTrials=1_000_000;
@@ -86,6 +146,8 @@ console.log(JSON.stringify({
   suite:'bootstrap-contract-saturation',
   M,
   depthSaturation:`1..${M}`,
+  deploymentTrials,
+  deployment:{transportRejects,securityRejects,interactive,ephemeral,invalidDiskScale,cepLike},
   reticularTrials,
   millionTrials,
   holdoutTrials,
@@ -95,6 +157,6 @@ console.log(JSON.stringify({
   errorClasses:[...expectedErrorClasses].sort(),
   survivors:0,
   novelErrors,
-  seeds:{main:'0x9e3779b9',holdout:'0x85ebca6b'},
-  claimBoundary:'Deterministic source/model semantic mutation evidence; not deployment, network, identity-provider or process-launch assurance.'
+  seeds:{main:'0x9e3779b9',deployment:'0x243f6a88',holdout:'0x85ebca6b'},
+  claimBoundary:'Deterministic source/model semantic mutation evidence for bootstrap and deployment boundaries; not one million deploys, network requests, identity-provider proofs, process launches, production capacity evidence or CEP attainment.'
 }));

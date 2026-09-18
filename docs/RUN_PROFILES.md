@@ -49,7 +49,11 @@ Start Command: npm start
 
 Non usare `yarn`: il repository è npm-authoritative e non contiene `yarn.lock`.
 
-Questi comandi standardizzano build e avvio, ma **non** trasformano un servizio pubblico in un deployment sicuro. Il default host resta `127.0.0.1`; un bind non-loopback continua a richiedere `ICTC_IDENTITY_MODE=trusted-header`, `ICTC_ALLOW_NETWORK_BIND=1` e un `ICTC_TRUSTED_PROXY_SECRET` robusto, oltre a un proxy/IdP che produca gli header autorizzati. BOOTSTRAP-0 non bypassa questa boundary.
+Render assegna `PORT` al processo e, per i servizi HTTP inbound (`RENDER=true` con `RENDER_SERVICE_TYPE=web` o `pserv`), richiede che l'applicazione sia raggiungibile su un bind non-loopback. ICTC **non** amplia automaticamente l'esposizione di rete: su Render inbound, lasciare il default `127.0.0.1` produce un fail-fast `paas-network-bind-required` prima dell'import del server. L'operatore deve dichiarare esplicitamente, per esempio, `ICTC_HOST=0.0.0.0`.
+
+Il bind di trasporto non crea fiducia identitaria. Un bind non-loopback continua a richiedere la boundary già esistente: `ICTC_IDENTITY_MODE=trusted-header`, `ICTC_ALLOW_NETWORK_BIND=1`, un `ICTC_TRUSTED_PROXY_SECRET` robusto e un vero proxy/IdP upstream che produca gli header autorizzati. Il reverse proxy della piattaforma non viene trattato automaticamente come identity proxy ICTC e BOOTSTRAP-0 non introduce un nuovo identity mode.
+
+Il filesystem Render è effimero per default. Un persistent disk può rendere persistente il path montato per una singola istanza, ma non è una shared durable authority e non va descritto come chiusura della postura enterprise/CEP; in particolare non sostituisce il futuro adapter enterprise condiviso delineato da CEP-0. BOOTSTRAP-0 mantiene soltanto i profili `standard` e `demo`: questa diagnostica PaaS non anticipa `CEP-R1`–`CEP-R8`.
 
 ## Devcontainer / Codespaces
 
