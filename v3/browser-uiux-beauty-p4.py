@@ -10,6 +10,7 @@ VIEWPORTS = [
     ('desktop', 1440, 1000),
     ('tablet', 820, 980),
     ('mobile', 390, 844),
+    ('narrow', 320, 780),
 ]
 SURFACES = [
     ('home', 'home', None, '#homeView'),
@@ -64,6 +65,15 @@ JS_AUDIT = r'''({surface,width}) => {
     check('home-hierarchy', px(title)>px(summary), {title:px(title),summary:px(summary)});
     check('home-summary-measure', summary.getBoundingClientRect().width >= Math.min(520, root.getBoundingClientRect().width*.62) || width<720, {summaryWidth:summary.getBoundingClientRect().width});
     uncapped('home-summary-no-artificial-cap',summary);
+    const ai=document.querySelector('#runtimeStatus'), profile=document.querySelector('#stableProfileMenu summary');
+    if(ai){
+      const a=style(ai), box=ai.getBoundingClientRect(), aria=ai.getAttribute('aria-label')||'', tooltip=ai.dataset.tooltip||'';
+      check('header-ai-icon-only',(ai.innerText||'').trim()===''&&!!ai.querySelector('svg.runtime-status-icon'),{text:(ai.innerText||'').trim(),state:ai.dataset.aiState});
+      check('header-ai-tooltip',aria.startsWith('AI ')&&tooltip===aria&&ai.title===aria,{aria,tooltip,title:ai.title});
+      check('header-ai-state',['ready','key-missing','unconfigured'].includes(ai.dataset.aiState),{state:ai.dataset.aiState});
+      check('header-ai-compact',box.width<=44&&box.height>=36&&a.display!=='none',{width:box.width,height:box.height,display:a.display});
+      check('header-role-owned-elsewhere',!!profile&&(profile.textContent||'').trim().length>0,{profile:(profile?.textContent||'').trim()});
+    }
   }
   if(surface==='processes'){
     const cards=[...root.querySelectorAll('#procedureHub .procedure-card')];
@@ -166,21 +176,68 @@ def audit_coverage_overlays(page, viewport, width):
     if scope.get_attribute('open') is None:
         scope.locator(':scope > summary').click()
     expect(scope).to_have_attribute('open','')
-    scope_metrics=scope.evaluate("""node=>{const c=getComputedStyle(node),summary=node.querySelector(':scope > summary'),save=node.querySelector('[data-standard-scope]'),s=getComputedStyle(summary),b=getComputedStyle(save),before=getComputedStyle(summary,'::before');return{background:c.backgroundColor,opacity:c.opacity,position:c.position,saveBackground:b.backgroundColor,saveTextAlign:b.textAlign,saveWidth:save.getBoundingClientRect().width,summaryBefore:before.content,summaryWidth:summary.getBoundingClientRect().width};}""")
+    scope_metrics=scope.evaluate("""node=>{const c=getComputedStyle(node),summary=node.querySelector(':scope > summary'),save=node.querySelector('[data-standard-scope]'),b=getComputedStyle(save),before=getComputedStyle(summary,'::before');return{background:c.backgroundColor,opacity:c.opacity,position:c.position,saveBackground:b.backgroundColor,saveTextAlign:b.textAlign,saveWidth:save.getBoundingClientRect().width,summaryBefore:before.content,summaryText:(summary.innerText||'').trim(),summaryAria:summary.getAttribute('aria-label')||'',summaryWidth:summary.getBoundingClientRect().width};}""")
     assert scope_metrics['opacity']=='1',scope_metrics
     assert scope_metrics['background'] not in ('transparent','rgba(0, 0, 0, 0)'),scope_metrics
     assert scope_metrics['position']=='fixed',scope_metrics
     assert scope_metrics['saveTextAlign']=='center',scope_metrics
     assert scope_metrics['saveBackground']!=scope_metrics['background'],scope_metrics
     assert '←' in scope_metrics['summaryBefore'],scope_metrics
-    results.append({'oracle':'scope-overlay-opaque-distinct-save','viewport':viewport,'metrics':scope_metrics})
-    scope.locator(':scope > summary').click(); expect(scope).not_to_have_attribute('open','')
+    assert scope_metrics['summaryText']=='Indietro senza salvare',scope_metrics
+    assert 'non salva' in scope_metrics['summaryAria'],scope_metrics
+    results.append({'oracle':'scope-overlay-opaque-explicit-save-cancel','viewport':viewport,'metrics':scope_metrics})
+
+    if viewport=='desktop':
+        card=scope.locator('xpath=ancestor::*[@data-framework-card][1]')
+        framework_id=card.get_attribute('data-framework-card')
+        badge_before=card.locator('.market-scope').inner_text().strip()
+        decision='reference' if badge_before!='Riferimento' else 'in-scope'
+        expected_badge='Riferimento' if decision=='reference' else 'In perimetro'
+        reason='P4 PR164: scelta esplicita persistita; il ritorno senza salvataggio non scrive.'
+        card.locator('[data-standard-scope-decision]').select_option(decision)
+        card.locator('[data-standard-scope-reason]').fill(reason)
+        rev_before=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+        scope.locator(':scope > summary').click()
+        expect(scope).not_to_have_attribute('open','')
+        page.wait_for_timeout(120)
+        rev_after_cancel=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+        assert rev_after_cancel==rev_before,(rev_before,rev_after_cancel)
+
+        page.reload(wait_until='networkidle')
+        page.wait_for_function('()=>document.documentElement.dataset.enduserComposition==="p2"&&document.querySelector("#grcWorkspace")?.dataset.compositionSurface==="coverage"')
+        card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
+        expect(card).to_be_visible()
+        assert card.locator('.market-scope').inner_text().strip()==badge_before,(badge_before,card.locator('.market-scope').inner_text())
+
+        scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
+        scope.locator(':scope > summary').click()
+        expect(scope).to_have_attribute('open','')
+        scope.locator('[data-standard-scope-decision]').select_option(decision)
+        scope.locator('[data-standard-scope-reason]').fill(reason)
+        rev_before_save=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
+        scope.locator('[data-standard-scope]').click()
+        page.wait_for_function('(old)=>Number(document.documentElement.dataset.ictcProjectionRevision||0)>old',arg=rev_before_save)
+        page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
+        card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
+        scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
+        scope.locator(':scope > summary').click()
+        expect(scope).to_have_attribute('open','')
+        assert scope.locator('[data-standard-scope-decision]').input_value()==decision
+        assert scope.locator('[data-standard-scope-reason]').input_value()==reason
+        scope.locator(':scope > summary').click()
+        expect(scope).not_to_have_attribute('open','')
+        results.append({'oracle':'scope-cancel-no-write-save-readback','viewport':viewport,'framework':framework_id,'cancelRevisionStable':True,'savedDecision':decision,'readback':True})
+    else:
+        scope.locator(':scope > summary').click()
+        expect(scope).not_to_have_attribute('open','')
 
     PHASE=f'{viewport}:coverage:standard-browser'
     open_button=page.locator('#grcWorkspace [data-open-standard-browser]').first
-    expect(open_button).to_be_visible(); open_button.click()
-    dialog=page.locator('#standardBrowserDialog'); expect(dialog).to_be_visible()
-    browser_metrics=dialog.evaluate("""node=>{const nav=node.querySelector('.standard-node-list'),detail=node.querySelector('.standard-node-detail'),selected=node.querySelector('.standard-node-select[aria-current="true"]'),n=getComputedStyle(nav),d=getComputedStyle(detail),s=selected?getComputedStyle(selected):null;return{dialogWidth:node.getBoundingClientRect().width,navWidth:nav.getBoundingClientRect().width,detailWidth:detail.getBoundingClientRect().width,navBackground:n.backgroundColor,detailBackground:d.backgroundColor,selectedBackground:s?.backgroundColor||'',nodeCount:node.querySelectorAll('.standard-node-select').length};}""")
+    expect(open_button).to_be_visible()
+    open_button.click()
+    dialog=page.locator('#standardBrowserDialog')
+    expect(dialog).to_be_visible()
+    browser_metrics=dialog.evaluate("""node=>{const nav=node.querySelector('.standard-node-list'),detail=node.querySelector('.standard-node-detail'),selected=node.querySelector('.standard-node-select[aria-current="true"]'),n=getComputedStyle(nav),d=getComputedStyle(detail),sel=selected?getComputedStyle(selected):null;return{dialogWidth:node.getBoundingClientRect().width,navWidth:nav.getBoundingClientRect().width,detailWidth:detail.getBoundingClientRect().width,navBackground:n.backgroundColor,detailBackground:d.backgroundColor,selectedBackground:sel?.backgroundColor||'',nodeCount:node.querySelectorAll('.standard-node-select').length};}""")
     assert browser_metrics['nodeCount']>0,browser_metrics
     assert browser_metrics['navBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics
     assert browser_metrics['detailBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics
@@ -189,7 +246,8 @@ def audit_coverage_overlays(page, viewport, width):
         assert browser_metrics['dialogWidth']>=900,browser_metrics
         assert browser_metrics['detailWidth']>browser_metrics['navWidth'],browser_metrics
     results.append({'oracle':'standard-browser-index-detail-legibility','viewport':viewport,'metrics':browser_metrics})
-    dialog.locator('button[aria-label="Chiudi"]').click(); expect(dialog).not_to_be_visible()
+    dialog.locator('button[aria-label="Chiudi"]').click()
+    expect(dialog).not_to_be_visible()
     return results
 
 def fail(error):
