@@ -235,7 +235,8 @@ def audit_coverage_overlays(page, viewport, width):
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-reopen'
-        scope.locator(':scope > summary').click()
+        if scope.get_attribute('open') is None:
+            scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
         require('scope-save-decision-readback',scope.locator('[data-standard-scope-decision]').input_value()==decision,{'expected':decision,'actual':scope.locator('[data-standard-scope-decision]').input_value()})
         require('scope-save-reason-readback',scope.locator('[data-standard-scope-reason]').input_value()==reason,{'expected':reason,'actual':scope.locator('[data-standard-scope-reason]').input_value()})
