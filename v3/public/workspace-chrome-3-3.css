@@ -35,4 +35,3 @@ html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-
 @media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar *,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer *{transition:none!important;animation:none!important}}
 
 /* PR164: AI capability is icon-led; role identity remains owned by the profile control. */
-@media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar #runtimeStatus::after{background:Canvas;color:CanvasText;border-color:CanvasText}}
