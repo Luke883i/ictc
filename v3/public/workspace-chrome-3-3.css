@@ -35,3 +35,7 @@ html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-
 @media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar *,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer *{transition:none!important;animation:none!important}}
 
 /* PR164: AI capability is icon-led; role identity remains owned by the profile control. */
+
+/* UI-INTENT-9: concise visible brand; anchor aria-label preserves full product identity. */
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand small{display:none!important}
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand b{font-size:18px;line-height:1;font-weight:760}
