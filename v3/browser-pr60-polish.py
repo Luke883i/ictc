@@ -115,7 +115,7 @@ try:
             assert response.status==200,(fmt,response.status,response.url)
             disposition=response.headers.get('content-disposition','')
             assert f'.{fmt}' in disposition.lower(),(fmt,disposition)
-            body=response.body();assert len(body)>0,(fmt,'empty body')
+            length=int(response.headers.get('content-length','0') or 0);assert length>0,(fmt,'empty body',response.url)
             page.wait_for_function("(n)=>window.__ictcEvidenceDownloads.length>n",arg=before,timeout=30000)
             completed=page.evaluate("()=>window.__ictcEvidenceDownloads.at(-1)")
             assert completed and completed.get('format')==fmt and completed.get('base')==base and completed.get('menuClosed') is True,(fmt,completed)

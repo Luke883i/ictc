@@ -14,7 +14,7 @@ assert.ok(chrome.includes('.topbar .stable-header-inner{height:100%!important}')
 assert.ok(home.includes('#homeView{height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))'));
 assert.ok(footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important'));
 assert.ok(evidence.includes("ictc:evidence-download-complete")&&evidence.includes('menuClosed: true'));
-assert.ok(browser.includes("page.expect_response")&&browser.includes("__ictcEvidenceDownloads")&&!browser.includes('page.expect_download(timeout=60000)'));
+assert.ok(browser.includes("page.expect_response")&&browser.includes("__ictcEvidenceDownloads")&&browser.includes("content-length")&&!browser.includes("response.body()")&&!browser.includes('page.expect_download(timeout=60000)'));
 assert.ok(workflow.includes("phase.startswith('evidence-downloads-')"));
 
 const FORMATS=['pdf','xml','md','zip'];
