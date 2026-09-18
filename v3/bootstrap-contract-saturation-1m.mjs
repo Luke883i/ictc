@@ -35,12 +35,14 @@ const mutations=[
  ['public-demo-opt-in','public-demo-boundary',m=>m.publicDemoOptIn='auto'],
  ['public-demo-suite','public-demo-boundary',m=>m.publicDemoSuite='2.2'],
  ['public-demo-runtime','public-demo-boundary',m=>m.publicDemoRuntimeBasename='runtime'],
- ['public-demo-role','public-demo-boundary',m=>m.publicDemoFixedRole='admin'],
- ['public-demo-actor','public-demo-boundary',m=>m.publicDemoFixedActor='local-admin'],
+ ['public-demo-roles','public-demo-boundary',m=>m.publicDemoRoles='auditor'],
+ ['public-demo-default-role','public-demo-boundary',m=>m.publicDemoDefaultRole='root'],
+ ['public-demo-actor-strategy','public-demo-boundary',m=>m.publicDemoActorStrategy='client-derived'],
  ['public-demo-readonly','public-demo-boundary',m=>m.publicDemoReadOnly=false],
  ['public-demo-proxy-secret','public-demo-boundary',m=>m.publicDemoTrustedProxySecretAllowed=true],
  ['public-demo-multitenant','public-demo-boundary',m=>m.publicDemoMultiTenant=true],
- ['public-demo-client-identity','public-demo-boundary',m=>m.publicDemoClientIdentityHeadersAuthoritative=true]
+ ['public-demo-client-actor','public-demo-boundary',m=>m.publicDemoClientActorIdAuthoritative=true],
+ ['public-demo-client-role-unbounded','public-demo-boundary',m=>m.publicDemoClientRoleHeaderBounded=false]
 ];
 
 const M=mutations.length;
