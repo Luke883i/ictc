@@ -220,7 +220,6 @@ def audit_coverage_overlays(page, viewport, width):
 
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
         PHASE=f'{viewport}:coverage:scope-overlay:save-open'
-        PHASE=f'{viewport}:coverage:scope-overlay:persisted-reopen'
         scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
         PHASE=f'{viewport}:coverage:scope-overlay:save-edit'
@@ -235,6 +234,7 @@ def audit_coverage_overlays(page, viewport, width):
         page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-reopen'
         scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
         require('scope-save-decision-readback',scope.locator('[data-standard-scope-decision]').input_value()==decision,{'expected':decision,'actual':scope.locator('[data-standard-scope-decision]').input_value()})

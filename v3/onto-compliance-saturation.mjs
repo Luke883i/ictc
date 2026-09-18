@@ -22,7 +22,7 @@ const sourceProfile={
   tabletHomeCollapse:css.includes('@media(max-width:820px)')&&css.includes('.home-hero{grid-template-columns:minmax(0,1fr)}'),
   zeroAttentionNeutral:css.includes('.procedure-state.ready')&&css.includes('background:#f1f4f8'),
   scopeNeutral:css.includes('.market-scope.in-scope')&&css.includes('background:#eef1ff'),
-  scopeDisclosure:market.includes('market-scope-editor')&&market.includes("decision===value?'selected':''")&&market.includes('f.scope?.reason'),
+  scopeDisclosure:market.includes('market-scope-editor')&&market.includes("current===value?'selected':''")&&market.includes('standardUse(value)')&&market.includes("'tracked','Tracciato'")&&market.includes("'not-used','Non utilizzato'")&&market.includes('Uso da dichiarare')&&market.includes('f.scope?.reason'),
   scopeDefaultClosed:!market.includes('<details class="market-scope-editor" open'),
   proposedDistinct:epistemicCss.includes('[data-status="proposed"]')||epistemicCss.includes('proposed'),
   minControlTarget:controlMin,
