@@ -99,20 +99,33 @@ try:
         PHASE='evidence-keyboard-disclosure';reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]');summary=reading.locator(':scope > summary');summary.focus();summary.press('Enter');expect(reading).to_have_attribute('open','');expect(page.locator('#proofMethodTitle')).to_be_visible();expect(page.locator('.proof-reading-card')).to_have_count(3);summary.press(' ');expect(reading).not_to_have_attribute('open','');expect(summary).to_be_focused();summary.press('Enter');expect(reading).to_have_attribute('open','');page.screenshot(path=str(ART/'ux-pr60-evidence-desktop.png'),full_page=True)
         PHASE='evidence-download-disclosure';menu=ensure_rn_evidence_menu(page);menu_summary=menu.locator(':scope > summary');menu_summary.focus();menu_summary.press('Enter');expect(menu).to_have_attribute('open','');expect(menu.locator('[data-evidence-download]')).to_have_count(4);min_height(page,'.evidence-export-menu > summary');min_height(page,'.evidence-export-menu [data-evidence-download]')
         PHASE='evidence-downloads';downloaded=[]
+        page.evaluate("""()=>{window.__ictcEvidenceAnchorClicks=[];document.addEventListener('click',event=>{const a=event.target?.closest?.('a[download]');if(a)window.__ictcEvidenceAnchorClicks.push({download:a.download,href:a.href});},true)}""")
         for fmt in ['pdf','xml','md','zip']:
+            PHASE=f'evidence-downloads-{fmt}'
             menu=page.locator('.evidence-export-menu:visible').first;expect(menu).to_be_visible()
             menu_summary=menu.locator(':scope > summary')
             if menu.get_attribute('open') is None:
                 menu_summary.click();expect(menu).to_have_attribute('open','')
+            base=menu.get_attribute('data-evidence-base');assert base,('missing evidence base',fmt)
             button=menu.locator(f'[data-evidence-download="{fmt}"]');expect(button).to_be_visible()
-            with page.expect_download(timeout=60000) as pending:
+            before=page.evaluate("()=>window.__ictcEvidenceAnchorClicks.length")
+            with page.expect_response(lambda response: response.url.endswith(f'.{fmt}') and '/api/evidence/' in response.url,timeout=60000) as pending:
                 button.click()
-            download=pending.value
-            assert download.suggested_filename.endswith('.'+fmt),(fmt,download.suggested_filename)
+            response=pending.value
+            assert response.status==200,(fmt,response.status,response.url)
+            headers=response.headers
+            disposition=headers.get('content-disposition','')
+            assert f'.{fmt}' in disposition.lower(),(fmt,disposition)
+            body=response.body()
+            assert len(body)>0,(fmt,'empty body')
+            page.wait_for_function("(n)=>window.__ictcEvidenceAnchorClicks.length>n",arg=before,timeout=30000)
+            click=page.evaluate("()=>window.__ictcEvidenceAnchorClicks.at(-1)")
+            assert click and click['download'].endswith('.'+fmt),(fmt,click)
+            assert str(click['href']).startswith('blob:'),(fmt,click)
             downloaded.append(fmt)
             expect(menu).not_to_have_attribute('open','')
             page.wait_for_function("()=>!document.querySelector('.evidence-export-menu[open]')")
-            page.wait_for_timeout(80)
+        PHASE='evidence-downloads'
         PHASE='evidence-escape';menu_summary.click();expect(menu).to_have_attribute('open','');page.keyboard.press('Escape');expect(menu).not_to_have_attribute('open','');expect(menu_summary).to_be_focused();no_overflow(page)
         PHASE='mobile-evidence';mobile_ctx=browser.new_context(viewport={'width':390,'height':844});mobile_ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','proof')");mobile=mobile_ctx.new_page();mobile.set_default_timeout(30000);mobile.goto(BASE+'/?view=proof',wait_until='networkidle');ready(mobile);mobile_reading=assert_meaning_first(mobile);mobile_reading.locator(':scope > summary').click();expect(mobile.locator('#proofMethodTitle')).to_be_visible();no_overflow(mobile);mobile.screenshot(path=str(ART/'ux-pr60-evidence-mobile.png'),full_page=True);mobile_ctx.close()
 
