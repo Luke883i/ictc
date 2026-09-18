@@ -170,6 +170,9 @@ def mount(page, surface, view, procedure, root):
 def audit_coverage_overlays(page, viewport, width):
     global PHASE
     results=[]
+    def require(check_id, condition, detail):
+        if not condition:
+            raise AssertionError(json.dumps([{'id':check_id,'detail':detail}],ensure_ascii=False,default=str))
     PHASE=f'{viewport}:coverage:scope-overlay'
     scope=page.locator('#grcWorkspace .market-scope-editor[data-a6-scope-popup="native-details-overlay"]').first
     expect(scope).to_be_visible()
@@ -177,14 +180,14 @@ def audit_coverage_overlays(page, viewport, width):
         scope.locator(':scope > summary').click()
     expect(scope).to_have_attribute('open','')
     scope_metrics=scope.evaluate("""node=>{const c=getComputedStyle(node),summary=node.querySelector(':scope > summary'),save=node.querySelector('[data-standard-scope]'),b=getComputedStyle(save),before=getComputedStyle(summary,'::before');return{background:c.backgroundColor,opacity:c.opacity,position:c.position,saveBackground:b.backgroundColor,saveTextAlign:b.textAlign,saveWidth:save.getBoundingClientRect().width,summaryBefore:before.content,summaryText:(summary.innerText||'').trim(),summaryAria:summary.getAttribute('aria-label')||'',summaryWidth:summary.getBoundingClientRect().width};}""")
-    assert scope_metrics['opacity']=='1',scope_metrics
-    assert scope_metrics['background'] not in ('transparent','rgba(0, 0, 0, 0)'),scope_metrics
-    assert scope_metrics['position']=='fixed',scope_metrics
-    assert scope_metrics['saveTextAlign']=='center',scope_metrics
-    assert scope_metrics['saveBackground']!=scope_metrics['background'],scope_metrics
-    assert '←' in scope_metrics['summaryBefore'],scope_metrics
-    assert scope_metrics['summaryText']=='Indietro senza salvare',scope_metrics
-    assert 'non salva' in scope_metrics['summaryAria'],scope_metrics
+    require('scope-overlay-opacity',scope_metrics['opacity']=='1',scope_metrics)
+    require('scope-overlay-opaque',scope_metrics['background'] not in ('transparent','rgba(0, 0, 0, 0)'),scope_metrics)
+    require('scope-overlay-fixed',scope_metrics['position']=='fixed',scope_metrics)
+    require('scope-save-centered',scope_metrics['saveTextAlign']=='center',scope_metrics)
+    require('scope-save-distinct',scope_metrics['saveBackground']!=scope_metrics['background'],scope_metrics)
+    require('scope-back-icon-visible','←' in scope_metrics['summaryBefore'],scope_metrics)
+    require('scope-back-copy',scope_metrics['summaryText']=='Indietro senza salvare',scope_metrics)
+    require('scope-back-accessible-boundary','non salva' in scope_metrics['summaryAria'],scope_metrics)
     results.append({'oracle':'scope-overlay-opaque-explicit-save-cancel','viewport':viewport,'metrics':scope_metrics})
 
     if viewport=='desktop':
@@ -201,13 +204,13 @@ def audit_coverage_overlays(page, viewport, width):
         expect(scope).not_to_have_attribute('open','')
         page.wait_for_timeout(120)
         rev_after_cancel=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0)
-        assert rev_after_cancel==rev_before,(rev_before,rev_after_cancel)
+        require('scope-cancel-no-write',rev_after_cancel==rev_before,{'before':rev_before,'after':rev_after_cancel})
 
         page.reload(wait_until='networkidle')
         page.wait_for_function('()=>document.documentElement.dataset.enduserComposition==="p2"&&document.querySelector("#grcWorkspace")?.dataset.compositionSurface==="coverage"')
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         expect(card).to_be_visible()
-        assert card.locator('.market-scope').inner_text().strip()==badge_before,(badge_before,card.locator('.market-scope').inner_text())
+        require('scope-cancel-readback-unchanged',card.locator('.market-scope').inner_text().strip()==badge_before,{'before':badge_before,'after':card.locator('.market-scope').inner_text().strip()})
 
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
         scope.locator(':scope > summary').click()
@@ -222,8 +225,8 @@ def audit_coverage_overlays(page, viewport, width):
         scope=card.locator('.market-scope-editor[data-a6-scope-popup="native-details-overlay"]')
         scope.locator(':scope > summary').click()
         expect(scope).to_have_attribute('open','')
-        assert scope.locator('[data-standard-scope-decision]').input_value()==decision
-        assert scope.locator('[data-standard-scope-reason]').input_value()==reason
+        require('scope-save-decision-readback',scope.locator('[data-standard-scope-decision]').input_value()==decision,{'expected':decision,'actual':scope.locator('[data-standard-scope-decision]').input_value()})
+        require('scope-save-reason-readback',scope.locator('[data-standard-scope-reason]').input_value()==reason,{'expected':reason,'actual':scope.locator('[data-standard-scope-reason]').input_value()})
         scope.locator(':scope > summary').click()
         expect(scope).not_to_have_attribute('open','')
         results.append({'oracle':'scope-cancel-no-write-save-readback','viewport':viewport,'framework':framework_id,'cancelRevisionStable':True,'savedDecision':decision,'readback':True})
@@ -238,13 +241,13 @@ def audit_coverage_overlays(page, viewport, width):
     dialog=page.locator('#standardBrowserDialog')
     expect(dialog).to_be_visible()
     browser_metrics=dialog.evaluate("""node=>{const nav=node.querySelector('.standard-node-list'),detail=node.querySelector('.standard-node-detail'),selected=node.querySelector('.standard-node-select[aria-current="true"]'),n=getComputedStyle(nav),d=getComputedStyle(detail),sel=selected?getComputedStyle(selected):null;return{dialogWidth:node.getBoundingClientRect().width,navWidth:nav.getBoundingClientRect().width,detailWidth:detail.getBoundingClientRect().width,navBackground:n.backgroundColor,detailBackground:d.backgroundColor,selectedBackground:sel?.backgroundColor||'',nodeCount:node.querySelectorAll('.standard-node-select').length};}""")
-    assert browser_metrics['nodeCount']>0,browser_metrics
-    assert browser_metrics['navBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics
-    assert browser_metrics['detailBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics
-    assert browser_metrics['selectedBackground'] not in ('','transparent','rgba(0, 0, 0, 0)'),browser_metrics
+    require('standard-browser-has-index',browser_metrics['nodeCount']>0,browser_metrics)
+    require('standard-browser-index-opaque',browser_metrics['navBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics)
+    require('standard-browser-detail-opaque',browser_metrics['detailBackground'] not in ('transparent','rgba(0, 0, 0, 0)'),browser_metrics)
+    require('standard-browser-selection-visible',browser_metrics['selectedBackground'] not in ('','transparent','rgba(0, 0, 0, 0)'),browser_metrics)
     if width>=1000:
-        assert browser_metrics['dialogWidth']>=900,browser_metrics
-        assert browser_metrics['detailWidth']>browser_metrics['navWidth'],browser_metrics
+        require('standard-browser-desktop-width',browser_metrics['dialogWidth']>=900,browser_metrics)
+        require('standard-browser-detail-dominates-index',browser_metrics['detailWidth']>browser_metrics['navWidth'],browser_metrics)
     results.append({'oracle':'standard-browser-index-detail-legibility','viewport':viewport,'metrics':browser_metrics})
     dialog.locator('button[aria-label="Chiudi"]').click()
     expect(dialog).not_to_be_visible()
