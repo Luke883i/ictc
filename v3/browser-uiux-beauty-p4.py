@@ -233,10 +233,8 @@ def audit_coverage_overlays(page, viewport, width):
         PHASE=f'{viewport}:coverage:scope-overlay:save-badge-readback'
         page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-remount'
-        page.goto(f'{BASE}/?view=grc&procedure=coverage',wait_until='networkidle')
-        expect(page.locator('#grcView')).to_be_visible()
+        mount(page,'coverage','grc','coverage','#grcWorkspace')
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-rehydrate'
-        page.wait_for_function('()=>document.documentElement.dataset.enduserComposition==="p2"&&document.querySelector("#grcWorkspace")?.dataset.compositionSurface==="coverage"')
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
         expect(card).to_be_visible()
         require('scope-save-badge-durable',card.locator('.market-scope').inner_text().strip()==expected_badge,{'expected':expected_badge,'actual':card.locator('.market-scope').inner_text().strip()})
