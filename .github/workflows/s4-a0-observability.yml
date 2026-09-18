@@ -22,7 +22,7 @@ jobs:
         run: node v3/s4-a0-observability-check.mjs
       - name: S4-A0 identity saturation
         run: node v3/s4-a0-observability-saturation.mjs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
           name: ictc-s4-a0-contract
@@ -76,7 +76,7 @@ jobs:
             FAILED_BROWSER_SCRIPT='v3/browser-s4-a0-observability.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
           name: ictc-s4-a0-browser-evidence

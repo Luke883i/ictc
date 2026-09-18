@@ -50,7 +50,7 @@ jobs:
           node v3/v4-stable-governance-check.mjs
           node v3/v4-stable-persistence-check.mjs
           node v3/v4-stable-real-saturation.mjs
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
           name: v1-2-market-candidate-semantic-evidence
@@ -94,7 +94,7 @@ jobs:
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
           name: v1-2-market-candidate-browser-evidence
