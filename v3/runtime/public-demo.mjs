@@ -1,17 +1,18 @@
 import path from 'node:path';
 
-export const PUBLIC_DEMO_ACTOR_ID='local-auditor';
-export const PUBLIC_DEMO_ROLE='auditor';
+export const PUBLIC_DEMO_ROLES=Object.freeze(['admin','user','auditor']);
+export const PUBLIC_DEMO_DEFAULT_ROLE='auditor';
 export const PUBLIC_DEMO_SUITE='3.0';
 export const PUBLIC_DEMO_RUNTIME_BASENAME='demo-runtime-3-0';
 
 const text=(value,max=1000)=>String(value??'').trim().slice(0,max);
+const demoRole=value=>PUBLIC_DEMO_ROLES.includes(text(value,20).toLowerCase())?text(value,20).toLowerCase():PUBLIC_DEMO_DEFAULT_ROLE;
 
 export function publicDemoRequested(env=process.env){return env.ICTC_PUBLIC_DEMO==='1';}
 
 export function publicDemoConfiguration(env=process.env){
   const enabled=publicDemoRequested(env),errors=[];
-  if(!enabled)return Object.freeze({enabled:false,valid:true,errors:Object.freeze([]),suite:null,role:null,actorId:null,readOnly:false,anonymous:false,syntheticOnly:false,runtimeDir:null});
+  if(!enabled)return Object.freeze({enabled:false,valid:true,errors:Object.freeze([]),suite:null,roles:Object.freeze([]),defaultRole:null,actorStrategy:null,readOnly:false,anonymous:false,syntheticOnly:false,runtimeDir:null});
   const suite=text(env.ICTC_DEMO_SUITE,40);
   const runtimeDir=text(env.ICTC_RUNTIME_DIR,2000);
   const identityMode=text(env.ICTC_IDENTITY_MODE,80);
@@ -27,7 +28,7 @@ export function publicDemoConfiguration(env=process.env){
   if(multiTenant)errors.push('public-demo-single-tenant-only');
   if(actorSwitch)errors.push('public-demo-actor-switch-forbidden');
   if(tenantSwitch)errors.push('public-demo-tenant-switch-forbidden');
-  return Object.freeze({enabled:true,valid:errors.length===0,errors:Object.freeze(errors),suite,runtimeDir,role:PUBLIC_DEMO_ROLE,actorId:PUBLIC_DEMO_ACTOR_ID,readOnly:true,anonymous:true,syntheticOnly:true});
+  return Object.freeze({enabled:true,valid:errors.length===0,errors:Object.freeze(errors),suite,runtimeDir,roles:PUBLIC_DEMO_ROLES,defaultRole:PUBLIC_DEMO_DEFAULT_ROLE,actorStrategy:'server-derived-by-role',readOnly:true,anonymous:true,syntheticOnly:true});
 }
 
 export function assertPublicDemoConfiguration(env=process.env){
@@ -39,12 +40,12 @@ export function assertPublicDemoConfiguration(env=process.env){
   return posture;
 }
 
-export function publicDemoActor(permissions,env=process.env){
+export function publicDemoActor(permissions,env=process.env,requestedRole=PUBLIC_DEMO_DEFAULT_ROLE){
   const posture=assertPublicDemoConfiguration(env);
   if(!posture.enabled)return null;
-  const permissionSet=permissions?.[PUBLIC_DEMO_ROLE];
-  if(!(permissionSet instanceof Set))throw Object.assign(new Error('Permessi auditor non disponibili per Public DEMO'),{status:503,code:'public-demo-auditor-permissions-missing'});
-  return Object.freeze({id:PUBLIC_DEMO_ACTOR_ID,role:PUBLIC_DEMO_ROLE,identityMode:'public-demo',identityStrategy:'fixed-public-demo',permissions:Object.freeze([...permissionSet])});
+  const role=demoRole(requestedRole),permissionSet=permissions?.[role];
+  if(!(permissionSet instanceof Set))throw Object.assign(new Error(`Permessi ${role} non disponibili per Public DEMO`),{status:503,code:'public-demo-role-permissions-missing',details:{role}});
+  return Object.freeze({id:`local-${role}`,role,identityMode:'public-demo',identityStrategy:'synthetic-demo-role',permissions:Object.freeze([...permissionSet])});
 }
 
 export function assertPublicDemoRequestBoundary(request,env=process.env){
