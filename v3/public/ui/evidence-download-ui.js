@@ -67,6 +67,9 @@ export function installEvidenceDownloads() {
     try {
       await downloadProtected(`${base}.${format}`, `ictc-evidence.${format}`);
       menu.removeAttribute('open');
+      document.dispatchEvent(new CustomEvent('ictc:evidence-download-complete', {
+        detail: { format, base, menuClosed: true }
+      }));
       notify(format === 'pdf' ? 'PDF stampabile scaricato' : 'Fascicolo evidenze scaricato');
     } catch (error) {
       notify(error.message, true);

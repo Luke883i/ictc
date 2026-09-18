@@ -136,7 +136,7 @@ jobs:
           p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
           if not p.exists(): sys.exit(0)
           phase=json.loads(p.read_text()).get('phase','')
-          sys.exit(1 if phase in {'evidence-download-disclosure','evidence-downloads','evidence-seed-open-scheduler','evidence-seed-monitoring-form','evidence-seed-submit','evidence-seed-materialized'} else 0)
+          sys.exit(1 if phase in {'evidence-download-disclosure','evidence-downloads','evidence-seed-open-scheduler','evidence-seed-monitoring-form','evidence-seed-submit','evidence-seed-materialized'} or phase.startswith('evidence-downloads-') else 0)
           PY
       - name: Diagnostic phase / pr60 escape-mobile
         if: ${{ always() && matrix.id == 'pr60-polish' }}
@@ -242,7 +242,8 @@ jobs:
           import json,pathlib,sys
           p=pathlib.Path('artifacts/browser-pr60-polish-error.json')
           if not p.exists(): sys.exit(0)
-          sys.exit(1 if json.loads(p.read_text()).get('phase')=='evidence-downloads' else 0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase=='evidence-downloads' or phase.startswith('evidence-downloads-') else 0)
           PY
       - name: Diagnostic exact / onto home-scroll
         if: ${{ always() && matrix.id == 'onto-compliance-v1' }}

@@ -34,6 +34,12 @@ html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-
 @media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer{background:Canvas!important;color:CanvasText!important;border-color:CanvasText!important;box-shadow:none!important}html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand *,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer :where(b,a){color:CanvasText!important}}
 @media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar *,html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer *{transition:none!important;animation:none!important}}
 
+/* UI-INTENT-9 convergence: the canonical chrome token owns the effective desktop header box. */
+@media(min-width:761px){
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar{height:var(--ui-header-h)!important;min-height:var(--ui-header-h)!important}
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .stable-header-inner{height:100%!important}
+}
+
 /* PR164: AI capability is icon-led; role identity remains owned by the profile control. */
 
 /* UI-INTENT-9: concise visible brand; anchor aria-label preserves full product identity. */
