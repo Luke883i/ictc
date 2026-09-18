@@ -150,6 +150,7 @@ try:
    for vp,width,height in VIEWPORTS:
     PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
     if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
+    page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&document.documentElement.dataset.ictcSurface==='home'&&document.querySelector('#homePriorities')?.dataset.homeWorkQueue==='3.2'")
     labels=page.locator('.service-nav [data-service]').all_text_contents();expected=['Home','Processi di Compliance','Evidenze ICTC']
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
     no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');
