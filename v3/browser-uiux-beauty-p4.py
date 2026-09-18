@@ -265,7 +265,7 @@ def audit_coverage_overlays(page, viewport, width):
         expect(scope).not_to_have_attribute('open','')
 
     PHASE=f'{viewport}:coverage:standard-browser:locate'
-    open_button=page.locator('#grcWorkspace [data-open-standard-browser]').first
+    open_button=page.locator('#grcWorkspace [data-open-standard-browser]:visible').first
     expect(open_button).to_be_visible()
     PHASE=f'{viewport}:coverage:standard-browser:open'
     open_button.click()
