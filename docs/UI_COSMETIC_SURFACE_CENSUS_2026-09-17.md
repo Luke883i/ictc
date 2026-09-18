@@ -10,7 +10,7 @@ The common rule is: identity/title/subtitle/purpose copy may use the full width 
 
 ## Screenshot mining
 
-Image 4 is intentionally excluded.
+The earlier draft marked Image 4 as excluded. PR164 final closure no longer treats omission as success: every repository-recovered screenshot-history intent is reconciled through the G01–G16 ledger from `FINAL_VIEW_COMPRESSION_AUDIT.md`, while handwriting that is not independently available as machine-readable repository evidence remains explicitly non-transcribed rather than guessed.
 
 | Image | Surface / selector | Owner anchors | Observation | Treatment |
 | --- | --- | --- | --- | --- |
@@ -83,3 +83,16 @@ This targets premature line breaks without turning every long paragraph into an 
 ## Verification anchors
 
 `v3/browser-uiux-beauty-p4.py` remains the rendered browser oracle across 13 surfaces and desktop/tablet/mobile viewports. This PR extends the same oracle to check equal Processi CTA geometry, removal of artificial copy caps, Admin feature-flag compactness/canonical labels, scope-overlay opacity/save affordance and Standard Browser master/detail readability. Existing A6-UX1/A6-UX3/A6-UX4 checks continue to protect final footer ownership, scope behavior, single-scroll authority and read-only standard navigation.
+
+
+## PR164 final intent lattice
+
+The temporary \`cosmetic-convergence-3-5.css\` file was an incubator, not a presentation authority. Its surviving rules are absorbed into the existing owners: semantic workspace closure (copy flow, action geometry and RN-01), A6-UX4 (context/reference, scope decision and Standard Browser), enterprise workspace (Admin/dialogs), and workspace chrome (AI indicator). The temporary stylesheet is no longer mounted.
+
+Repository-recovered screenshot-history G01–G16 is reconciled as follows: header/control-plane noise is reduced by the icon-only AI capability indicator and existing profile ownership (G01/G11); heading and first-plane density remain bounded by canonical workspace owners (G02/G03/G08/G15); the seven-process catalogue stays singular and action-oriented (G04/G05/G07); non-action state stays subordinate while material state remains visible (G06); technical identity stays progressive in proof surfaces (G09); Admin is compressed into comparable operational-availability rows (G10); evidence/claim, identity-source and progressive-disclosure boundaries remain unchanged (G12–G14/G16). None of these mappings is a claim that unavailable handwritten pixels were re-transcribed.
+
+### Mutation / falsification ladder
+
+PR164 adds four deterministic mutation budgets: 1,000 local geometry schedules, 10,000 component schedules, 100,000 cross-surface semantic schedules and 1,000,000 global schedules. Material mutants cover wrapping, action clusters, state-axis separation, canonical DOM order, scope cancel/save behavior, Standard Browser hierarchy, Admin copy/density, AI icon/tooltip/role separation, 320px coverage and authority/claim containment. Every schedule must be killed. This is repository/model evidence, not a user study or one million browser sessions.
+
+The existing P4 three-by-one-million campaign, P2 runtime mutation rail, P6 ten-million semantic-design saturation and exact-head browser/workflow gates remain independent predecessor falsifiers.
