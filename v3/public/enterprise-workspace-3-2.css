@@ -40,7 +40,7 @@ html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>
 html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>summary b{font-size:.94rem;line-height:1.25}
 html[data-native-semantic-lattice="3.2.0"] #settingsDialog .settings-section-18>summary small{font-size:var(--type-control);line-height:1.38;color:var(--color-muted)}
 html[data-native-semantic-lattice="3.2.0"] dialog .dialog-shell>header p:not(.eyebrow){max-width:var(--ui-reading-wide);font-size:.88rem;line-height:1.45}
-html[data-native-semantic-lattice="3.2.0"] #procedureAdminPanel label[hidden]{display:none!important}
+html[data-native-semantic-lattice="3.2.0"] #procedureAdminPanel labelhtml[data-native-semantic-lattice="3.2.0"] #homeView [hidden]{display:none!important}
 html[data-native-semantic-lattice="3.2.0"] .command-dialog{width:min(620px,calc(100vw - 2rem))!important}
 html[data-native-semantic-lattice="3.2.0"] .command-shell{grid-template-columns:1fr!important}
 html[data-native-semantic-lattice="3.2.0"] .command-results{width:100%!important;min-width:0!important}
