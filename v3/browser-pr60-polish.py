@@ -109,17 +109,22 @@ try:
             base=menu.get_attribute('data-evidence-base');assert base,('missing evidence base',fmt)
             button=menu.locator(f'[data-evidence-download="{fmt}"]');expect(button).to_be_visible()
             before=page.evaluate("()=>window.__ictcEvidenceDownloads.length")
+            PHASE=f'evidence-downloads-{fmt}-request'
             with page.expect_response(lambda response: response.url.endswith(f'.{fmt}') and '/api/evidence/' in response.url,timeout=60000) as pending:
                 button.click()
+            PHASE=f'evidence-downloads-{fmt}-response'
             response=pending.value
             assert response.status==200,(fmt,response.status,response.url)
+            PHASE=f'evidence-downloads-{fmt}-headers'
             disposition=response.headers.get('content-disposition','')
             assert f'.{fmt}' in disposition.lower(),(fmt,disposition)
             length=int(response.headers.get('content-length','0') or 0);assert length>0,(fmt,'empty body',response.url)
+            PHASE=f'evidence-downloads-{fmt}-completion'
             page.wait_for_function("(n)=>window.__ictcEvidenceDownloads.length>n",arg=before,timeout=30000)
             completed=page.evaluate("()=>window.__ictcEvidenceDownloads.at(-1)")
             assert completed and completed.get('format')==fmt and completed.get('base')==base and completed.get('menuClosed') is True,(fmt,completed)
             downloaded.append(fmt)
+            PHASE=f'evidence-downloads-{fmt}-close'
             expect(menu).not_to_have_attribute('open','')
             page.wait_for_function("()=>!document.querySelector('.evidence-export-menu[open]')")
         PHASE='evidence-downloads'
