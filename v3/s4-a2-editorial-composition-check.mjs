@@ -18,7 +18,8 @@ assert.doesNotMatch(anatomy,/workAnchor\(|\.after\(box\)|insertAdjacentHTML\('af
 assert.match(anatomy,/editorialSlot\(host,'advanced-context'\)/);
 assert.match(anatomy,/editorialSlot\(host,'reference'\)/);
 assert.match(helper,/function insertDeclared\(/,'synthetic slots must be born in the declared position');
-assert.match(helper,/for\(let i=order.length-1;i>=0;i--\)/,'synthetic slots must be constructed right-to-left without late repair');
+assert.match(helper,/previous=index===0\?frame:roleNode\(host,order\[index-1\],config\)/,'synthetic slots must anchor to the preceding declared role');
+assert.match(helper,/for\(const name of order\)/,'synthetic slots must be constructed left-to-right without late repair');
 assert.doesNotMatch(helper,/insertAdjacentElement\('afterend',slot\)/,'attention-specific adjacency authority is retired');
 assert.match(helper,/host\.querySelectorAll\(selector\).*node=>node\.parentElement===host/,'direct-role selector resolution must preserve :scope semantics and reject nested matches');
 assert.match(helper,/editorialOrderValid/);
