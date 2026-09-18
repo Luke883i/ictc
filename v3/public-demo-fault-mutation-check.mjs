@@ -67,6 +67,8 @@ function semanticOracle(m){
       [{...valid(),ICTC_ALLOW_LOCAL_TENANT_SWITCH:'0'},'public-demo-tenant-switch-forbidden']
     ];
     for(const [env,code] of invalids)if(!expectCode(()=>m.assertPublicDemoConfiguration(env),code,503))return false;
+    const aggregate={...valid(),ICTC_DEMO_SUITE:'2.2',ICTC_RUNTIME_DIR:'/tmp/ictc/runtime',ICTC_IDENTITY_MODE:'trusted-header',ICTC_TRUSTED_PROXY_SECRET:'x'.repeat(64),ICTC_MULTI_TENANT:'1'};
+    if(!expectCode(()=>m.assertPublicDemoConfiguration(aggregate),'public-demo-requires-suite-3-0',503))return false;
     return true;
   }catch{return false;}
 }
