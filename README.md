@@ -93,7 +93,7 @@ npm ci --ignore-scripts
 npm start
 ```
 
-La demo sintetica usa gli stessi byte applicativi ma uno stato isolato e la Suite 2.2:
+La demo sintetica usa gli stessi byte applicativi ma uno stato isolato e la Suite 3.0:
 
 ```bash
 npm run demo
@@ -118,7 +118,25 @@ Build: npm ci --ignore-scripts && npm run build
 Start: npm start
 ```
 
-`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Per Render inbound (`RENDER=true`, `RENDER_SERVICE_TYPE=web|pserv`) un host loopback fallisce esplicitamente con `paas-network-bind-required`; impostare `ICTC_HOST=0.0.0.0` soddisfa soltanto il requisito di trasporto e **non** concede fiducia identitaria. Un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind, proxy secret e proxy/IdP upstream autorizzato). Il filesystem Render è effimero per default e un persistent disk single-instance non equivale a shared durable enterprise authority. Il devcontainer resta il container locale canonico e conserva il bind loopback con port forwarding privato. Questa diagnostica non introduce un profilo enterprise e non anticipa le slice CEP-R* proposte in PR #163.
+`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Per Render inbound (`RENDER=true`, `RENDER_SERVICE_TYPE=web|pserv`) un host loopback fallisce esplicitamente con `paas-network-bind-required`; impostare `ICTC_HOST=0.0.0.0` soddisfa soltanto il requisito di trasporto e **non** concede fiducia identitaria. Nel profilo standard, un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind, proxy secret e proxy/IdP upstream autorizzato). L'unica eccezione applicativa è la Public DEMO sintetica, anonima e read-only descritta sotto. Il filesystem Render è effimero per default e un persistent disk single-instance non equivale a shared durable enterprise authority. Il devcontainer resta il container locale canonico e conserva il bind loopback con port forwarding privato. Questa diagnostica non introduce un profilo enterprise e non anticipa le slice CEP-R* proposte in PR #163.
+
+### Render · DEMO pubblica sintetica in sola lettura
+
+Per pubblicare **solo** la DEMO Suite 3.0 sintetica su un Render Web Service:
+
+```text
+Build: npm ci --ignore-scripts && npm run build
+Start: npm run demo
+
+Environment:
+ICTC_HOST=0.0.0.0
+ICTC_ALLOW_NETWORK_BIND=1
+ICTC_PUBLIC_DEMO=1
+```
+
+Non impostare `PORT`: Render la assegna al servizio e ICTC le dà già precedenza. Non impostare `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` o `ICTC_ALLOW_LOCAL_TENANT_SWITCH`; se presenti da una configurazione precedente, rimuoverli. `npm run demo` seleziona Suite 3.0 e la runtime isolata `demo-runtime-3-0`.
+
+`ICTC_PUBLIC_DEMO=1` è un opt-in separato dal deployment standard: espone **soltanto dati sintetici DEMO**, usa server-side l'identità fissa `local-auditor`, ignora come autorità gli header client di ruolo/attore/proxy e accetta sulle API solo `GET`/`HEAD`. Nessun proxy secret viene inviato al browser. La modalità è non autenticata e non va usata per dati reali, riservati o per assurance enterprise. Il deployment standard non-loopback continua a richiedere `trusted-header` e un vero proxy/IdP upstream. Il filesystem Render resta effimero per default.
 
 ## Verifica
 

@@ -51,9 +51,24 @@ Non usare `yarn`: il repository è npm-authoritative e non contiene `yarn.lock`.
 
 Render assegna `PORT` al processo e, per i servizi HTTP inbound (`RENDER=true` con `RENDER_SERVICE_TYPE=web` o `pserv`), richiede che l'applicazione sia raggiungibile su un bind non-loopback. ICTC **non** amplia automaticamente l'esposizione di rete: su Render inbound, lasciare il default `127.0.0.1` produce un fail-fast `paas-network-bind-required` prima dell'import del server. L'operatore deve dichiarare esplicitamente, per esempio, `ICTC_HOST=0.0.0.0`.
 
-Il bind di trasporto non crea fiducia identitaria. Un bind non-loopback continua a richiedere la boundary già esistente: `ICTC_IDENTITY_MODE=trusted-header`, `ICTC_ALLOW_NETWORK_BIND=1`, un `ICTC_TRUSTED_PROXY_SECRET` robusto e un vero proxy/IdP upstream che produca gli header autorizzati. Il reverse proxy della piattaforma non viene trattato automaticamente come identity proxy ICTC e BOOTSTRAP-0 non introduce un nuovo identity mode.
+Il bind di trasporto non crea fiducia identitaria. Nel profilo standard, un bind non-loopback continua a richiedere la boundary già esistente: `ICTC_IDENTITY_MODE=trusted-header`, `ICTC_ALLOW_NETWORK_BIND=1`, un `ICTC_TRUSTED_PROXY_SECRET` robusto e un vero proxy/IdP upstream che produca gli header autorizzati. Il reverse proxy della piattaforma non viene trattato automaticamente come identity proxy ICTC. La sola eccezione è la Public DEMO sintetica read-only, esplicitamente opt-in e descritta sotto.
 
 Il filesystem Render è effimero per default. Un persistent disk può rendere persistente il path montato per una singola istanza, ma non è una shared durable authority e non va descritto come chiusura della postura enterprise/CEP; in particolare non sostituisce il futuro adapter enterprise condiviso delineato da CEP-0. BOOTSTRAP-0 mantiene soltanto i profili `standard` e `demo`: questa diagnostica PaaS non anticipa `CEP-R1`–`CEP-R8`.
+
+### Render · DEMO pubblica sintetica read-only
+
+Configurazione operatore:
+
+```text
+Build Command: npm ci --ignore-scripts && npm run build
+Start Command: npm run demo
+
+ICTC_HOST=0.0.0.0
+ICTC_ALLOW_NETWORK_BIND=1
+ICTC_PUBLIC_DEMO=1
+```
+
+`PORT` è fornita da Render. Il bootstrap DEMO imposta Suite 3.0 e la runtime isolata `demo-runtime-3-0`; non serve impostare manualmente `ICTC_RUNTIME_DIR`. In Public DEMO devono essere assenti `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` e `ICTC_ALLOW_LOCAL_TENANT_SWITCH`. Il runtime usa un auditor fisso server-side e rifiuta tutti i metodi API diversi da GET/HEAD. Questa eccezione non trasforma il reverse proxy Render in identity proxy, non abilita il profilo standard pubblico e non anticipa CEP. Il filesystem Render è effimero per default.
 
 ## Devcontainer / Codespaces
 

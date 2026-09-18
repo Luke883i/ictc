@@ -1,7 +1,7 @@
 const RENDER_INBOUND_SERVICE_TYPES=Object.freeze(['web','pserv']);
 
 export const BOOTSTRAP_CONTRACT=Object.freeze({
-  schemaVersion:'1.2.0',
+  schemaVersion:'1.3.0',
   authority:'BOOTSTRAP-0',
   node:Object.freeze({engine:'>=22.16.0',major:22}),
   packageManager:'npm',
@@ -15,6 +15,7 @@ export const BOOTSTRAP_CONTRACT=Object.freeze({
   platforms:Object.freeze({
     render:Object.freeze({detection:'RENDER=true',inboundServiceTypes:RENDER_INBOUND_SERVICE_TYPES,requiredBind:'non-loopback',hostAutoOverride:false,identityAutoTrust:false,filesystemDefault:'ephemeral',persistentDiskShared:false,persistentDiskMultiInstance:false})
   }),
+  publicDemo:Object.freeze({optIn:'ICTC_PUBLIC_DEMO=1',suite:'3.0',runtimeBasename:'demo-runtime-3-0',fixedActor:'local-auditor',fixedRole:'auditor',anonymous:true,readOnly:true,syntheticOnly:true,multiTenant:false,clientIdentityHeadersAuthoritative:false,trustedProxySecretAllowed:false}),
   commands:Object.freeze({
     install:'npm ci --ignore-scripts',
     build:'npm run build',
@@ -36,7 +37,12 @@ export const BOOTSTRAP_CONTRACT=Object.freeze({
     'health-authority-api-health',
     'npm-lock-authoritative',
     'devcontainer-remains-loopback',
-    'network-deployment-requires-existing-trusted-identity-boundary',
+    'standard-network-deployment-requires-existing-trusted-identity-boundary',
+    'public-demo-network-exception-is-explicit-synthetic-read-only',
+    'public-demo-runtime-remains-suite-3-0-isolated',
+    'public-demo-fixed-auditor-ignores-client-identity-headers',
+    'public-demo-never-consumes-trusted-proxy-secret',
+    'public-demo-single-tenant-only',
     'platform-detection-never-grants-network-or-identity-trust',
     'render-inbound-loopback-fails-before-server-import',
     'render-storage-posture-does-not-promote-enterprise-readiness'
@@ -54,7 +60,7 @@ export function deploymentPlatformProjection(env={}){
 
 export function assertBootstrapTransport({host,env={}}={}){
   const platform=deploymentPlatformProjection(env);
-  if(platform.requiresNonLoopback&&isLoopbackBootstrapHost(host))throw Object.assign(new Error(`Render ${platform.serviceType} service requires ICTC_HOST=0.0.0.0 (or another non-loopback bind host) so the platform proxy can reach ICTC. BOOTSTRAP-0 never widens the bind automatically; the existing trusted identity/network boundary still applies.`),{code:'paas-network-bind-required',platform:platform.provider,serviceType:platform.serviceType});
+  if(platform.requiresNonLoopback&&isLoopbackBootstrapHost(host))throw Object.assign(new Error(`Render ${platform.serviceType} service requires ICTC_HOST=0.0.0.0 (or another non-loopback bind host) so the platform proxy can reach ICTC. BOOTSTRAP-0 never widens the bind automatically; the runtime must still authorize either the standard trusted-identity boundary or the explicit synthetic read-only Public DEMO boundary.`),{code:'paas-network-bind-required',platform:platform.provider,serviceType:platform.serviceType});
   return platform;
 }
 
@@ -84,7 +90,8 @@ export function validateBootstrapModel(model){
   if(model?.shellDirectServer!==false||model?.shellBootstrap!==true)fail('shell-entry');
   if(model?.devcontainerHostOverride!==false||model?.devcontainerStart!=='./ictc.sh start --no-open')fail('devcontainer');
   if(model?.renderBuild!=='npm ci --ignore-scripts && npm run build'||model?.renderStart!=='npm start')fail('render');
-  if(model?.publicNetworkRequiresTrustedIdentity!==true)fail('deployment-boundary');
+  if(model?.standardNetworkRequiresTrustedIdentity!==true)fail('deployment-boundary');
+  if(model?.publicDemoOptIn!=='ICTC_PUBLIC_DEMO=1'||model?.publicDemoSuite!=='3.0'||model?.publicDemoRuntimeBasename!=='demo-runtime-3-0'||model?.publicDemoFixedRole!=='auditor'||model?.publicDemoFixedActor!=='local-auditor'||model?.publicDemoReadOnly!==true||model?.publicDemoAnonymous!==true||model?.publicDemoSyntheticOnly!==true||model?.publicDemoTrustedProxySecretAllowed!==false||model?.publicDemoMultiTenant!==false||model?.publicDemoClientIdentityHeadersAuthoritative!==false)fail('public-demo-boundary');
   if(model?.renderDetection!=='RENDER=true+RENDER_SERVICE_TYPE:web|pserv'||model?.renderInboundRequiresNonLoopback!==true)fail('render-transport');
   if(model?.renderHostAutoOverride!==false||model?.renderIdentityAutoTrust!==false)fail('render-no-auto-trust');
   if(model?.renderFilesystemDefault!=='ephemeral'||model?.renderPersistentDiskShared!==false||model?.renderPersistentDiskMultiInstance!==false)fail('render-storage-boundary');
@@ -97,7 +104,8 @@ export function baselineBootstrapModel(){return {
   standardRuntime:'.ictc/runtime',demoRuntime:'.ictc/demo-runtime-3-0',demoSuite:'3.0',deprecatedDemoSuite:'2.2',defaultHost:'127.0.0.1',networkBypass:false,
   portPrecedence:'PORT>ICTC_PORT>4173',healthPath:'/api/health',npmStart:'node v3/bootstrap.mjs',npmDemo:'node v3/bootstrap.mjs demo',
   shellDirectServer:false,shellBootstrap:true,devcontainerHostOverride:false,devcontainerStart:'./ictc.sh start --no-open',
-  renderBuild:'npm ci --ignore-scripts && npm run build',renderStart:'npm start',publicNetworkRequiresTrustedIdentity:true,
+  renderBuild:'npm ci --ignore-scripts && npm run build',renderStart:'npm start',standardNetworkRequiresTrustedIdentity:true,
+  publicDemoOptIn:'ICTC_PUBLIC_DEMO=1',publicDemoSuite:'3.0',publicDemoRuntimeBasename:'demo-runtime-3-0',publicDemoFixedRole:'auditor',publicDemoFixedActor:'local-auditor',publicDemoReadOnly:true,publicDemoAnonymous:true,publicDemoSyntheticOnly:true,publicDemoTrustedProxySecretAllowed:false,publicDemoMultiTenant:false,publicDemoClientIdentityHeadersAuthoritative:false,
   renderDetection:'RENDER=true+RENDER_SERVICE_TYPE:web|pserv',renderInboundRequiresNonLoopback:true,renderHostAutoOverride:false,renderIdentityAutoTrust:false,
   renderFilesystemDefault:'ephemeral',renderPersistentDiskShared:false,renderPersistentDiskMultiInstance:false,cepBootstrapProfile:false
 };}
