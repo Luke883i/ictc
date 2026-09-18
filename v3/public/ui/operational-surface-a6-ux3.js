@@ -97,6 +97,10 @@ function registryWrap(host,{id,label,process,count,open=false}){
   if(!host)return null;
   retireLegacyRegistryHead(host,id);
   let details=host.closest(`[data-a6-registry="${id}"]`);
+  if(!details&&id==='monitoring'){
+    const canonical=host.closest('[data-rn-monitoring-secondary]');
+    if(canonical){details=canonical;details.dataset.a6Registry=id;details.classList.add('a6-operational-registry');}
+  }
   if(!details){
     details=document.createElement('details');
     details.className='a6-operational-registry';
@@ -107,6 +111,12 @@ function registryWrap(host,{id,label,process,count,open=false}){
     journey(summary,{process,intent:`inspect-${id}-registry`});
     host.parentElement?.insertBefore(details,host);
     details.append(summary,host);
+  }
+  const summary=details.querySelector(':scope > summary');
+  if(summary){
+    journey(summary,{process,intent:`inspect-${id}-registry`});
+    let countGroup=summary.querySelector('[data-a6-registry-count-group]');
+    if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span>';summary.append(countGroup);}
   }
   details.dataset.a6RegistryTotal=String(Number(count||0));
   const total=details.querySelector('[data-a6-registry-total]');
