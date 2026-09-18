@@ -5,7 +5,7 @@ assert.ok(slots.includes('insertSupport')&&slots.includes('validPhysicalOrder')&
 assert.ok(anatomy.includes('<details class="procedure-anatomy-standards"')&&anatomy.includes('outerOpen')&&anatomy.includes('procedure-anatomy-boundary')&&anatomy.includes('Perché serve'));assert.ok(frame.includes('procedure-support-rail')&&!frame.includes('Perché conta'));assert.ok(index.indexOf('data-rn-primary-work="sources"')<index.indexOf('data-rn-monitoring-secondary'));
 assert.ok(anatomyCss.includes('.procedure-frame .procedure-boundary{display:none}')&&anatomyCss.includes('.procedure-standard-name{font-weight:400}'));
 assert.ok(render.includes('data-source-state')&&!render.includes('Motivazione non disponibile')&&!render.includes('slice(0,110)')&&render.includes('esc(item.originalNarrative)'));
-assert.ok(p2.includes('catalog-state-label')&&p2.includes('grid-template-columns:7.25rem minmax(0,1fr) auto')&&p2.includes('rn-monitoring-secondary')&&p2.includes('border-left-color:var(--color-border)!important')&&p2.includes('text-overflow:clip'));
+assert.ok(p2.includes('catalog-state-label')&&p2.includes('grid-template-columns:7.25rem minmax(0,1fr) auto')&&p2.includes('rn-monitoring-secondary')&&p2.includes('border-left-color:var(--color-border)')&&p2.includes('text-overflow:clip'));
 for(const token of['market-scope.tracked','market-scope.reference','market-scope.not-used','market-scope.undeclared','inline-size:12rem'])assert.ok(ux4.includes(token));
 assert.ok(router.includes('procedurePolicy?.enabled')&&router.includes("reason:'procedure-disabled'")&&router.includes('guardCurrentRoute'));
 assert.ok(admin.includes('ackRow')&&admin.includes('actions.hidden=!dirty')&&admin.includes('Salva disponibilità operativa'));
