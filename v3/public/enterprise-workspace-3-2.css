@@ -54,3 +54,24 @@ html[data-native-semantic-lattice="3.2.0"] .command-results::after{display:none!
 @media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"] :is(.home-business-priority,.home-priority-head>button){transition:none!important;animation:none!important;transform:none!important}}
 /* P5 authority absorption: command utility detail formerly carried by the P3A screenshot closure. */
 html[data-native-semantic-lattice="3.2.0"] .command-dialog footer kbd{display:inline-flex;min-width:1.45rem;min-height:1.4rem;align-items:center;justify-content:center;padding:0 .25rem;border:1px solid var(--color-border);border-radius:5px;background:var(--color-surface);font:inherit;font-size:.75rem}
+
+/* PR164 — Admin and dialog cosmetic convergence absorbed by the configuration owner. */
+html[data-native-semantic-lattice="3.2.0"] #adminCenter :is(.admin-head-copy,.admin-view-head,.procedure-admin-head){min-width:0;max-width:none!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedureAdminPanel{padding:.75rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList,html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-list{display:grid!important;grid-template-columns:minmax(0,1fr);gap:.3rem!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{min-height:52px;padding:.4rem .52rem!important;border:1px solid var(--color-border)!important;border-radius:8px!important;background:var(--color-surface)!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row :is(label,span,div){min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row b{font-size:var(--type-control)!important;line-height:1.25}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row small{margin-top:.08rem;color:var(--color-muted)!important;font-size:var(--type-label)!important;line-height:1.32}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row input[type="checkbox"]{width:1.05rem;height:1.05rem;accent-color:var(--color-brand)}
+html[data-native-semantic-lattice="3.2.0"] dialog,html[data-native-semantic-lattice="3.2.0"] dialog :is(.dialog-shell,.admin-shell,.standard-browser-shell,.proof-detail-shell,.clarity-context-shell){background-color:var(--color-surface);color:var(--color-text);opacity:1}
+html[data-native-semantic-lattice="3.2.0"] dialog :is(.dialog-shell,.proof-detail-shell,.clarity-context-shell)>header>div{min-width:0;flex:1 1 auto;max-width:none}
+html[data-native-semantic-lattice="3.2.0"] dialog :is(.dialog-shell,.proof-detail-shell,.clarity-context-shell)>header :is(h2,h3,p){max-width:none!important;white-space:normal;overflow-wrap:break-word;word-break:normal}
+html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer) :is(button,a[href]){box-sizing:border-box;min-height:44px;inline-size:12rem;min-inline-size:12rem;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+@media(max-width:760px){html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList,html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-list{grid-template-columns:minmax(0,1fr)}html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer){width:100%}html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer) :is(button,a[href]){inline-size:100%;min-inline-size:0}}
+
+/* PR164 — Home/EP text flow remains with the bounded 3.2 owner. */
+html[data-native-semantic-lattice="3.2.0"] :is(#homeView .home-intro,#epistemicView .epistemic-head>div){min-width:0;width:100%;max-width:none!important}
+html[data-native-semantic-lattice="3.2.0"] :is(#homeView .home-intro,#epistemicView .epistemic-head) :is(h1,h2,h3,p,.procedure-purpose,.microcopy){min-width:0;max-width:none!important;white-space:normal;text-overflow:clip;overflow-wrap:break-word;word-break:normal}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homeSummary{max-width:none!important}
+html[data-native-semantic-lattice="3.2.0"] #epistemicView .procedure-purpose{max-width:none!important}

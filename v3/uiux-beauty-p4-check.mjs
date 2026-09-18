@@ -12,6 +12,11 @@ const procedure = read('./public/semantic-workspace-closure-3-2-1.css');
 const shared = read('./public/enduser-composition-p2.css');
 const retired = read('./public/screenshot-semantic-closure-p3a.css');
 const workspace = read('./public/ui/native-workspace-3-2.js');
+const styles = read('./public/styles.css');
+const ux4 = read('./public/a6-ux4-semantic-surface.css');
+const chrome = read('./public/workspace-chrome-3-3.css');
+const market = read('./public/ui/procedure-market-ux.js');
+const enterpriseUx = read('./public/ui/enterprise-ux.js');
 
 assert.equal(contract.modelId, 'UIUX-BEAUTY-P4');
 assert.equal(contract.surfaceCensus.length, 13, 'P4 must census exactly 13 canonical surfaces');
@@ -36,6 +41,7 @@ for (const [id, copy] of Object.entries(PROCEDURE_WORKSPACE)) {
 }
 
 assert.ok(!workspace.includes('beauty-p4.css'), 'P4 must not mount a new CSS layer');
+assert.ok(!styles.includes('cosmetic-convergence-3-5.css'), 'PR164 temporary cosmetic resolver must be absorbed into canonical owners');
 assert.ok(!workspace.includes('/screenshot-semantic-closure-p3a.css'), 'P4 presentation must be absorbed before P5, not retained as screenshot ownership');
 assert.ok(retired.includes('owns no runtime presentation'), 'P3A source marker must state retirement');
 const requiredByOwner = [
@@ -58,6 +64,10 @@ assert.equal(contract.visualContract.statusUppercaseForced, false);
 assert.equal(contract.visualContract.mobileHorizontalOverflowAllowed, false);
 assert.deepEqual(contract.mutationCampaigns.map(x => x.trials), [1_000_000, 1_000_000, 1_000_000]);
 assert.equal(contract.maxYieldMinCost.rejectedLowYieldLever, 'global decorative restyling');
+for(const token of ['data-scope-back-label','Salva scelta','Tornare indietro non salva la scelta'])assert.ok(market.includes(token),`scope decision affordance missing ${token}`);
+for(const token of ['#standardBrowserDialog','standard-node-select[aria-current="true"]','market-scope-editor[open] [data-scope-back-label]'])assert.ok(ux4.includes(token),`UX4 PR164 absorption missing ${token}`);
+for(const token of ['#runtimeStatus::after','content:attr(data-tooltip)'])assert.ok(chrome.includes(token),`AI tooltip chrome missing ${token}`);
+assert.ok(enterpriseUx.includes("llm.ready?'sparkles':llm.configured?'triangle-alert':'info'")&&!enterpriseUx.includes('runtime-role-label'),'AI header must be icon-only and keep role outside the AI chip');
 
 console.log(JSON.stringify({
   ok: true,
