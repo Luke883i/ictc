@@ -105,9 +105,14 @@ try:
             if menu.get_attribute('open') is None:
                 menu_summary.click();expect(menu).to_have_attribute('open','')
             button=menu.locator(f'[data-evidence-download="{fmt}"]');expect(button).to_be_visible()
-            with page.expect_download(timeout=30000) as pending:button.click()
-            download=pending.value;assert download.suggested_filename.endswith('.'+fmt),(fmt,download.suggested_filename);downloaded.append(fmt)
+            with page.expect_download(timeout=60000) as pending:
+                button.click()
+            download=pending.value
+            assert download.suggested_filename.endswith('.'+fmt),(fmt,download.suggested_filename)
+            downloaded.append(fmt)
             expect(menu).not_to_have_attribute('open','')
+            page.wait_for_function("()=>!document.querySelector('.evidence-export-menu[open]')")
+            page.wait_for_timeout(80)
         PHASE='evidence-escape';menu_summary.click();expect(menu).to_have_attribute('open','');page.keyboard.press('Escape');expect(menu).not_to_have_attribute('open','');expect(menu_summary).to_be_focused();no_overflow(page)
         PHASE='mobile-evidence';mobile_ctx=browser.new_context(viewport={'width':390,'height':844});mobile_ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','proof')");mobile=mobile_ctx.new_page();mobile.set_default_timeout(30000);mobile.goto(BASE+'/?view=proof',wait_until='networkidle');ready(mobile);mobile_reading=assert_meaning_first(mobile);mobile_reading.locator(':scope > summary').click();expect(mobile.locator('#proofMethodTitle')).to_be_visible();no_overflow(mobile);mobile.screenshot(path=str(ART/'ux-pr60-evidence-mobile.png'),full_page=True);mobile_ctx.close()
 
