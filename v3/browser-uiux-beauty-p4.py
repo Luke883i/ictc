@@ -197,8 +197,8 @@ def audit_coverage_overlays(page, viewport, width):
         card=scope.locator('xpath=ancestor::*[@data-framework-card][1]')
         framework_id=card.get_attribute('data-framework-card')
         badge_before=card.locator('.market-scope').inner_text().strip()
-        decision='reference' if badge_before!='Riferimento' else 'in-scope'
-        expected_badge='Riferimento' if decision=='reference' else 'In perimetro'
+        decision='reference' if badge_before!='Riferimento' else 'tracked'
+        expected_badge='Riferimento' if decision=='reference' else 'Tracciato'
         reason='P4 PR164: scelta esplicita persistita; il ritorno senza salvataggio non scrive.'
         card.locator('[data-standard-scope-decision]').select_option(decision)
         card.locator('[data-standard-scope-reason]').fill(reason)

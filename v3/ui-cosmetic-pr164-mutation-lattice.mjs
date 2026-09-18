@@ -10,7 +10,7 @@ const read=p=>readFileSync(path.join(here,p),'utf8');
 const baseline=Object.freeze({
   wrap:{identitySaturates:true,naturalWrap:true,technicalOverflowOwned:true,mutationSafe:true},
   action:{clusterLocal:true,minTargetPx:44,mobileReflow:true},
-  state:{axesSeparate:true,unknownStaysUnknown:true},
+  state:{axesSeparate:true,unknownStaysUnknown:true,standardUseVocabulary:'tracked/reference/not-used/undeclared',undeclaredLabel:'Uso da dichiarare'},
   context:{canonicalOrder:true,progressive:true,referenceSubordinate:true},
   scope:{opaque:true,cancelWrites:false,explicitSave:true,persistenceReadback:true},
   standardBrowser:{masterDetail:true,selectedVisible:true,provenanceVisible:true,singleDesktopScrollOwner:true,narrowReflow:true},
@@ -23,7 +23,7 @@ function validate(o){
   const f=[];
   if(!o.wrap.identitySaturates||!o.wrap.naturalWrap||!o.wrap.technicalOverflowOwned||!o.wrap.mutationSafe)f.push('wrap');
   if(!o.action.clusterLocal||o.action.minTargetPx<44||!o.action.mobileReflow)f.push('action');
-  if(!o.state.axesSeparate||!o.state.unknownStaysUnknown)f.push('state');
+  if(!o.state.axesSeparate||!o.state.unknownStaysUnknown||o.state.standardUseVocabulary!=='tracked/reference/not-used/undeclared'||o.state.undeclaredLabel!=='Uso da dichiarare')f.push('state');
   if(!o.context.canonicalOrder||!o.context.progressive||!o.context.referenceSubordinate)f.push('context');
   if(!o.scope.opaque||o.scope.cancelWrites!==false||!o.scope.explicitSave||!o.scope.persistenceReadback)f.push('scope');
   if(!o.standardBrowser.masterDetail||!o.standardBrowser.selectedVisible||!o.standardBrowser.provenanceVisible||!o.standardBrowser.singleDesktopScrollOwner||!o.standardBrowser.narrowReflow)f.push('standard-browser');
@@ -44,6 +44,8 @@ add('target-36',o=>o.action.minTargetPx=36,'local');
 add('mobile-action-overflow',o=>o.action.mobileReflow=false,'local');
 add('axis-collapse',o=>o.state.axesSeparate=false,'semantic');
 add('unknown-negative',o=>o.state.unknownStaysUnknown=false,'semantic');
+add('legacy-standard-use-vocabulary',o=>o.state.standardUseVocabulary='in-scope/reference/out-of-scope/not-assessed','semantic');
+add('undeclared-collapsed-to-evaluation',o=>o.state.undeclaredLabel='Da valutare','semantic');
 add('css-visual-reorder',o=>o.context.canonicalOrder=false,'component');
 add('context-wall',o=>o.context.progressive=false,'component');
 add('reference-dominates-work',o=>o.context.referenceSubordinate=false,'component');
@@ -115,7 +117,7 @@ const ai=read('public/ui/enterprise-ux.js');
 const browser=read('browser-uiux-beauty-p4.py');
 assert.ok(!styles.includes('cosmetic-convergence-3-5.css'),'temporary resolver still mounted');
 for(const token of ['PR164','max-width:none!important','overflow-wrap:break-word'])assert.ok(shared.includes(token),'shared owner missing '+token);
-for(const token of ['data-scope-back-label','Salva scelta','Tornare indietro non salva la scelta'])assert.ok(market.includes(token),'scope runtime missing '+token);
+for(const token of ['data-scope-back-label','Salva scelta','Tornare indietro non salva la scelta',"'tracked','Tracciato'","'not-used','Non utilizzato'",'Uso da dichiarare',"['tracked','reference'].includes(standardUse(f.scope?.decision))"])assert.ok(market.includes(token),'scope runtime missing '+token);
 for(const token of ['market-scope-editor[open] [data-scope-back-label]','#standardBrowserDialog','standard-node-select[aria-current="true"]'])assert.ok(ux4.includes(token),'UX4 owner missing '+token);
 for(const token of ['#procedurePolicyList','dialog .dialog-shell>footer'])assert.ok(enterprise.includes(token),'enterprise owner missing '+token);
 for(const token of ['#runtimeStatus::after','content:attr(data-tooltip)'])assert.ok(chrome.includes(token),'chrome owner missing '+token);
