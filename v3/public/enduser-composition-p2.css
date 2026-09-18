@@ -287,10 +287,23 @@ html[data-enduser-composition="p2"] [data-mapping-journey="requirement-first"]>s
 html[data-enduser-composition="p2"] [data-mapping-step]::before{content:attr(data-mapping-step);display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;margin-right:.35rem;border:1px solid var(--color-border);border-radius:999px;color:var(--color-muted);font-size:.7rem;font-weight:700}
 
 /* UI-INTENT-9: RN source state is a structural rail; record titles keep full runtime text. */
-html[data-enduser-composition="p2"] #monitoringView .catalog-card{position:relative;border-left-width:4px;border-left-style:solid}
-html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state="candidate"]{border-left-color:color-mix(in srgb,var(--color-brand) 70%,var(--color-border))}
-html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state="verified"]{border-left-color:color-mix(in srgb,var(--color-accent) 70%,var(--color-border))}
-html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state="rejected"],html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state="superseded"]{border-left-color:var(--color-muted)}
-html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{display:inline-block;margin:0 0 .15rem;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-label)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card{position:relative;border-left:1px solid var(--color-border)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state]{border-left-color:var(--color-border)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{display:inline-flex;margin:0;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-label);background:var(--color-surface-subtle);border-color:var(--color-border)}
 html[data-enduser-composition="p2"] #monitoringView .catalog-card h3,html[data-enduser-composition="p2"] #incidentsView .incident-card h3{max-width:none;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;word-break:normal}
 html[data-enduser-composition="p2"] #monitoringView .catalog-reason{margin:.25rem 0;color:var(--color-muted)}
+
+/* PR166/167 semantic convergence: source review is RN primary work; scheduled monitoring is secondary. */
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary{margin:.55rem 0;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface-subtle)}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>summary{display:flex;align-items:center;justify-content:space-between;gap:.7rem;min-height:44px;padding:.55rem .7rem;cursor:pointer;list-style:none}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>summary::-webkit-details-marker{display:none}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>summary span:first-child{display:grid;gap:.08rem;text-align:left}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>summary small{color:var(--color-muted);font-size:var(--type-caption)}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>summary b{font-size:.9rem}
+html[data-enduser-composition="p2"] #monitoringView .rn-monitoring-secondary>#missionsList{padding:.15rem .55rem .6rem}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card{display:grid;grid-template-columns:7.25rem minmax(0,1fr) auto;align-items:start;gap:.65rem;border-left:1px solid var(--color-border)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card[data-source-state]{border-left-color:var(--color-border)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{grid-column:1;justify-self:start;align-self:start;margin:0;background:var(--color-surface-subtle);border-color:var(--color-border);color:var(--color-muted)}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card-content{grid-column:2;min-width:0;text-align:left}
+html[data-enduser-composition="p2"] #monitoringView .catalog-card>span[aria-hidden="true"]{grid-column:3;align-self:center}
+@media(max-width:620px){html[data-enduser-composition="p2"] #monitoringView .catalog-card{grid-template-columns:minmax(0,1fr) auto}html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{grid-column:1/-1}html[data-enduser-composition="p2"] #monitoringView .catalog-card-content{grid-column:1}}

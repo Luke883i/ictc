@@ -39,7 +39,7 @@ for(const token of ["ENDUSER_COMPOSITION_VERSION='P2'",'ENDUSER_PRIMITIVES','END
 check(!native.includes('proof-decisions-default'),'P2_RETIRED_PROOF_DEFAULT');
 check(workspace.includes("ensureStyle('/enduser-composition-p2.css','data-enduser-composition-p2')")&&workspace.includes("dataset.enduserComposition=ENDUSER_COMPOSITION_VERSION.toLowerCase()"),'P2_BOOTSTRAP');
 check(workspace.indexOf('enduser-composition-p2.css')<workspace.indexOf('enterprise-workspace-3-2.css'),'P2_SHARED_BEFORE_LOCAL');
-for(const token of ['data-enduser-primitive="SurfaceIdentity"','data-enduser-primitive="SurfacePurpose"','data-enduser-primitive="BoundaryNote"','data-enduser-primitive="PrimaryAction"','data-secondary-disclosure="true"'])check(frame.includes(token),'P2_FRAME_PRIMITIVE',token);
+for(const token of ['data-enduser-primitive="SurfaceIdentity"','data-enduser-primitive="SurfacePurpose"','data-enduser-primitive="PrimaryAction"','procedure-support-rail','data-enduser-primitive="ProgressiveDetail"'])check(frame.includes(token),'P2_FRAME_PRIMITIVE',token);
 check(frame.includes("frame.dataset.uiuxConverge='P2'")&&frame.includes('view.dataset.enduserComposition=ENDUSER_COMPOSITION_VERSION'),'P2_FRAME_MARKER');
 check(!frame.includes('<div class="procedure-frame-identity"><span class="procedure-frame-kicker"')||frame.includes('</div><p class="procedure-purpose"'),'P2_FRAME_PURPOSE_SEPARATION');
 for(const token of ['p2-attention-strip','data-metric-role="attention"','data-primary-count-owner="true"','data-enduser-primitive="RecordRow"','data-enduser-primitive="ControlRail"'])check(worklist.includes(token),'P2_WORKLIST',token);

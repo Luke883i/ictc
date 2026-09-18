@@ -67,6 +67,10 @@ def ensure_rn_evidence_menu(page):
     form.locator('button[type="submit"]').click();expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#jobDialog')).to_be_visible();close_plan(page);close_scheduler(page)
     PHASE='evidence-seed-materialized'
     page.wait_for_function("()=>document.querySelectorAll('#missionsList .mission-card').length>0&&!!document.querySelector('.evidence-export-menu')")
+    registry=page.locator('#monitoringView > [data-rn-monitoring-secondary][data-a6-registry="monitoring"]')
+    if registry.count() and registry.get_attribute('open') is None:
+        registry.locator(':scope > summary').click()
+        expect(registry).to_have_attribute('open','')
     menu=page.locator('.evidence-export-menu:visible').first;expect(menu).to_be_visible();return menu
 
 def direct_order(page):

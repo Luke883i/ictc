@@ -8,10 +8,10 @@ const server=read('v3/server.mjs'),ui=read('v3/public/ui/enterprise-ux.js'),runt
 const tenant=server.indexOf('tenantAuthority.runRequest(request'),browser=server.indexOf('assertBrowserWriteBoundary(request)'),edge=server.indexOf('edgeRateLimitKey({tenantId:resolved.tenantId,remoteAddress})'),guard=server.indexOf('assertPublicDemoRequestBoundary(request,process.env)'),auth=server.indexOf('authorizeEnterpriseActor(actorFrom(request,permissions,state.settings.identity),state)'),rate=server.indexOf('authenticatedRateLimitKey({tenantId:resolved.tenantId,actor,remoteAddress})'),handle=server.indexOf('await handleApi(request,response,url,actor)');
 assert.ok(tenant>=0&&tenant<browser&&browser<edge&&edge<guard&&guard<auth&&auth<rate&&rate<handle,'security ordering drift');
 assert.equal((server.match(/assertPublicDemoRequestBoundary\(request,process\.env\)/g)||[]).length,1);
-assert.ok(/identityMode==='trusted-header'\|\|state\.data\?\.actor\?\.identityMode==='public-demo'/.test(ui));
+assert.ok(/identityMode==='trusted-header'/.test(ui)&&!ui.includes("identityMode==='trusted-header'||state.data?.actor?.identityMode==='public-demo'"));
 assert.ok(/roleControl\.hidden=trustedIdentity\(\)/.test(ui));
 assert.ok(ui.includes("menu.dataset.identityMode=state.data?.actor?.identityMode||'local'"));
-for(const token of['local-auditor',"PUBLIC_DEMO_ROLE='auditor'",'public-demo-read-only','public-demo-proxy-secret-must-be-unset','public-demo-single-tenant-only'])assert.ok(runtime.includes(token),token);
+for(const token of["PUBLIC_DEMO_ROLES=Object.freeze(['admin','user','auditor'])","PUBLIC_DEMO_DEFAULT_ROLE='auditor'",'synthetic-demo-role','public-demo-read-only','public-demo-proxy-secret-must-be-unset','public-demo-single-tenant-only'])assert.ok(runtime.includes(token),token);
 for(const text of[readme,profiles])for(const token of['ICTC_PUBLIC_DEMO=1','ICTC_HOST=0.0.0.0','ICTC_ALLOW_NETWORK_BIND=1','npm run demo','ICTC_TRUSTED_PROXY_SECRET','demo-runtime-3-0'])assert.ok(text.includes(token),`docs missing ${token}`);
 assert.ok(pkg.scripts['public-demo:check']?.includes('public-demo-runtime-check.mjs'));
 assert.equal(pkg.scripts['public-demo:saturation'],'node v3/public-demo-mutation-1m.mjs');

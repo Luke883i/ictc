@@ -3,7 +3,7 @@ import { uiIcon } from './ui-icons.js';
 
 const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
 function capability(name) { return Array.isArray(state.data?.capabilities) && state.data.capabilities.includes(name); }
-function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-header'||state.data?.actor?.identityMode==='public-demo';}
+function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-header';}
 function aiStatusView(llm={}){
   const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
   const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';

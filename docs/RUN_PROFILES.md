@@ -68,7 +68,7 @@ ICTC_ALLOW_NETWORK_BIND=1
 ICTC_PUBLIC_DEMO=1
 ```
 
-`PORT` è fornita da Render. Il bootstrap DEMO imposta Suite 3.0 e la runtime isolata `demo-runtime-3-0`; non serve impostare manualmente `ICTC_RUNTIME_DIR`. In Public DEMO devono essere assenti `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` e `ICTC_ALLOW_LOCAL_TENANT_SWITCH`. Il runtime usa un auditor fisso server-side e rifiuta tutti i metodi API diversi da GET/HEAD. Questa eccezione non trasforma il reverse proxy Render in identity proxy, non abilita il profilo standard pubblico e non anticipa CEP. Il filesystem Render è effimero per default.
+`PORT` è fornita da Render. Il bootstrap DEMO imposta Suite 3.0 e la runtime isolata `demo-runtime-3-0`; non serve impostare manualmente `ICTC_RUNTIME_DIR`. In Public DEMO devono essere assenti `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` e `ICTC_ALLOW_LOCAL_TENANT_SWITCH`. Il runtime consente di esplorare le persone dimostrative `admin`, `user` e `auditor`; il ruolo è bounded a questa allowlist e l'actor `local-<role>` è derivato server-side, mentre l'actor-id client non è autorevole. Tutti i metodi API diversi da GET/HEAD restano rifiutati. Questa eccezione non trasforma il reverse proxy Render in identity proxy, non abilita il profilo standard pubblico e non anticipa CEP. Il filesystem Render è effimero per default.
 
 ## Devcontainer / Codespaces
 

@@ -136,7 +136,7 @@ ICTC_PUBLIC_DEMO=1
 
 Non impostare `PORT`: Render la assegna al servizio e ICTC le dà già precedenza. Non impostare `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` o `ICTC_ALLOW_LOCAL_TENANT_SWITCH`; se presenti da una configurazione precedente, rimuoverli. `npm run demo` seleziona Suite 3.0 e la runtime isolata `demo-runtime-3-0`.
 
-`ICTC_PUBLIC_DEMO=1` è un opt-in separato dal deployment standard: espone **soltanto dati sintetici DEMO**, usa server-side l'identità fissa `local-auditor`, ignora come autorità gli header client di ruolo/attore/proxy e accetta sulle API solo `GET`/`HEAD`. Nessun proxy secret viene inviato al browser. La modalità è non autenticata e non va usata per dati reali, riservati o per assurance enterprise. Il deployment standard non-loopback continua a richiedere `trusted-header` e un vero proxy/IdP upstream. Il filesystem Render resta effimero per default.
+`ICTC_PUBLIC_DEMO=1` è un opt-in separato dal deployment standard: espone **soltanto dati sintetici DEMO**, espone le tre persone dimostrative `admin`, `user` e `auditor`; il ruolo richiesto è limitato a questa allowlist e l'actor corrispondente (`local-admin`, `local-user`, `local-auditor`) è derivato server-side. L'header client dell'actor e gli header proxy non sono autorità; le API restano limitate a `GET`/`HEAD`. Nessun proxy secret viene inviato al browser. La modalità è non autenticata e non va usata per dati reali, riservati o per assurance enterprise. Il deployment standard non-loopback continua a richiedere `trusted-header` e un vero proxy/IdP upstream. Il filesystem Render resta effimero per default.
 
 ## Verifica
 

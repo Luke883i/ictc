@@ -220,6 +220,9 @@ try:
         verify_process_projection(page, 'RN-01', 'monitoring', r1)
 
         openp(page, 'EC-01')
+        PHASE = 'EC-01-projection-ready'
+        check_surface_revision(page, '#incidentsView', current_revision(page))
+        PHASE = 'EC-01-open-intake'
         page.locator('.procedure-frame:visible .procedure-primary').click()
         expect(page.locator('#incidentDialog')).to_be_visible()
         before = current_revision(page)
