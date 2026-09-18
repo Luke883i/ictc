@@ -67,6 +67,14 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  boundary=(contract or {}).get('claimBoundary','')
  if boundary and boundary not in (anatomy.text_content() or ''):anomaly('claim-boundary-not-present-in-process-trace',role,vp,proc['code'],False,'canonical claim boundary visible after disclosure')
  if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).not_to_have_attribute('open','')
+ if proc['code']=='RN-01':
+  cards=page.locator('#catalogList .catalog-card')
+  if cards.count():
+   if 'Motivazione non disponibile' in page.locator('#catalogList').inner_text():anomaly('rn-missing-reason-placeholder',role,vp,proc['code'],True,False)
+   missing_state=cards.evaluate_all("ns=>ns.filter(n=>!n.dataset.sourceState).length")
+   if missing_state:anomaly('rn-source-state-rail',role,vp,proc['code'],missing_state,0)
+ if proc['code']=='EC-01':
+  if page.locator('#incidentList .incident-card h3').count() and any(x.strip().endswith('…') for x in page.locator('#incidentList .incident-card h3').all_inner_texts()):anomaly('ec-title-ellipsis',role,vp,proc['code'],page.locator('#incidentList .incident-card h3').all_inner_texts(),'no renderer ellipsis')
  if proc['code']=='MC-01' and role=='admin':
   opened=page.locator('.market-scope-editor[open]:visible').count()
   if opened:anomaly('coverage-scope-editors-expanded-by-default',role,vp,proc['code'],opened,0)
@@ -140,10 +148,16 @@ try:
   browser=pw.chromium.launch(**launch)
   for role in ROLES:
    for vp,width,height in VIEWPORTS:
-    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families
+    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
+    if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
     labels=page.locator('.service-nav [data-service]').all_text_contents();expected=['Home','Processi di Compliance','Evidenze ICTC']
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
-    no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
+    no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');
+    if width>=1280:
+     m=page.evaluate('()=>({inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow})')
+     if max(m['html'],m['body'])>m['inner']+1:anomaly('home-page-scroll',role,vp,'home',m,'page <= viewport+1 without clipping')
+     if m['overflow']=='hidden':anomaly('home-scroll-clipped',role,vp,'home',m,'body overflow must remain scroll-capable')
+    shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
     if h['count']!=7:anomaly('process-hub-count',role,vp,'processes',h['count'],7)
     if h['columns']!=expected_cols:anomaly('process-hub-columns',role,vp,'processes',h['columns'],expected_cols)
     if any(x<43.5 for x in h['primaryHeights']):anomaly('process-card-target-too-small',role,vp,'processes',h['primaryHeights'],'all >=44px')
