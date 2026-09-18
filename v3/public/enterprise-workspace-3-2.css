@@ -58,7 +58,7 @@ html[data-native-semantic-lattice="3.2.0"] .command-dialog footer kbd{display:in
 /* PR164 — Admin and dialog cosmetic convergence absorbed by the configuration owner. */
 html[data-native-semantic-lattice="3.2.0"] #adminCenter :is(.admin-head-copy,.admin-view-head,.procedure-admin-head){min-width:0;max-width:none!important}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedureAdminPanel{padding:.75rem}
-html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList,html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem .55rem!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList,html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-list{display:grid!important;grid-template-columns:minmax(0,1fr);gap:.3rem!important}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{min-height:52px;padding:.4rem .52rem!important;border:1px solid var(--color-border)!important;border-radius:8px!important;background:var(--color-surface)!important}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row :is(label,span,div){min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row b{font-size:var(--type-control)!important;line-height:1.25}
