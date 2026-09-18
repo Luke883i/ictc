@@ -234,8 +234,15 @@ def audit_coverage_overlays(page, viewport, width):
         page.wait_for_function('args=>{const el=document.querySelector("[data-framework-card=\\"" + args[0] + "\\"] .market-scope");return (el?.textContent||"").trim()===args[1]}',arg=[framework_id,expected_badge])
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-remount'
         mount(page,'coverage','grc','coverage','#grcWorkspace')
-        PHASE=f'{viewport}:coverage:scope-overlay:persisted-card-visible'
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-default-scope'
+        scope_filter=page.locator('#grcWorkspace [data-a6-ux4-scope="coverage"]')
+        expect(scope_filter).to_be_visible()
+        require('scope-default-actionable',scope_filter.input_value()=='actionable',{'actual':scope_filter.input_value()})
         card=page.locator(f'#grcWorkspace [data-framework-card="{framework_id}"]')
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-show-all'
+        scope_filter.select_option('all')
+        page.wait_for_function('id=>{const el=document.querySelector("[data-framework-card=\\""+id+"\\"]");return el&&el.dataset.a6Ux4ScopeHidden!=="true"}',arg=framework_id)
+        PHASE=f'{viewport}:coverage:scope-overlay:persisted-card-visible'
         expect(card).to_be_visible()
         PHASE=f'{viewport}:coverage:scope-overlay:persisted-badge'
         require('scope-save-badge-durable',card.locator('.market-scope').inner_text().strip()==expected_badge,{'expected':expected_badge,'actual':card.locator('.market-scope').inner_text().strip()})
