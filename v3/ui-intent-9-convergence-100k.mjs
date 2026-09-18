@@ -14,11 +14,11 @@ assert.ok(chrome.includes('.topbar .stable-header-inner{height:100%!important}')
 assert.ok(home.includes('#homeView{height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))'));
 assert.ok(footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important'));
 assert.ok(evidence.includes("ictc:evidence-download-complete")&&evidence.includes('menuClosed: true'));
-assert.ok(browser.includes("page.expect_response")&&browser.includes("__ictcEvidenceDownloads")&&browser.includes("content-length")&&!browser.includes("response.body()")&&!browser.includes('page.expect_download(timeout=60000)'));
+assert.ok(browser.includes("page.expect_response")&&browser.includes("__ictcEvidenceDownloads")&&browser.includes("__ictcEvidenceAnchorClicks")&&browser.includes("HTMLAnchorElement.prototype.click")&&browser.includes("content-length")&&!browser.includes("response.body()")&&!browser.includes('page.expect_download(timeout=60000)'));
 assert.ok(workflow.includes("phase.startswith('evidence-downloads-')"));
 
 const FORMATS=['pdf','xml','md','zip'];
-const FAMILIES=['header-owner','header-token','home-budget','footer-reserve','body-scroll','format-set','fetch-status','payload-bytes','completion-order','completion-format','completion-base','menu-close','phase-prefix','authority-count'];
+const FAMILIES=['header-owner','header-token','home-budget','footer-reserve','body-scroll','format-set','fetch-status','payload-bytes','completion-order','completion-format','completion-base','menu-close','phase-prefix','authority-count','native-download-side-effect'];
 let seed=0x166c011a;
 const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
 const ri=n=>rnd()%n;
@@ -28,7 +28,7 @@ const valid=()=>({
   fetchStatus:200,payloadBytes:1+ri(2_000_000),lifecycleOrderValid:true,
   completionFormat:'pdf',requestedFormat:'pdf',
   completionBase:'/api/evidence/mission/x',requestedBase:'/api/evidence/mission/x',
-  menuClosed:true,phase:'evidence-downloads-pdf',presentationOwners:1
+  menuClosed:true,phase:'evidence-downloads-pdf',presentationOwners:1,nativeDownloadSuppressed:true
 });
 function failures(s){
   const out=[];
@@ -47,6 +47,7 @@ function failures(s){
   if(!s.menuClosed)out.push('menu-close');
   if(!/^evidence-downloads-(pdf|xml|md|zip)$/.test(s.phase))out.push('phase-prefix');
   if(s.presentationOwners!==1)out.push('authority-count');
+  if(!s.nativeDownloadSuppressed)out.push('native-download-side-effect');
   return out;
 }
 function mutate(s,family){
@@ -65,6 +66,7 @@ function mutate(s,family){
     case'menu-close':s.menuClosed=false;break;
     case'phase-prefix':s.phase='evidence-downloads';break;
     case'authority-count':s.presentationOwners=2;break;
+    case'native-download-side-effect':s.nativeDownloadSuppressed=false;break;
   }
 }
 const coverage=Object.fromEntries(FAMILIES.map(x=>[x,0]));
@@ -80,4 +82,4 @@ for(let i=0;i<100_000;i++){
   for(const family of chosen)assert.ok(observed.includes(family),`mutation survived: ${family}; observed=${observed.join(',')}`);
 }
 assert.ok(Object.values(coverage).every(n=>n>5000),coverage);
-console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-plus-fixed-footer-fits-viewport','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));
+console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-plus-fixed-footer-fits-viewport','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority','sequential-browser-harness-suppresses-native-download-manager-side-effect'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));

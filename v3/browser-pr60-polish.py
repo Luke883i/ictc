@@ -99,7 +99,7 @@ try:
         PHASE='evidence-keyboard-disclosure';reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]');summary=reading.locator(':scope > summary');summary.focus();summary.press('Enter');expect(reading).to_have_attribute('open','');expect(page.locator('#proofMethodTitle')).to_be_visible();expect(page.locator('.proof-reading-card')).to_have_count(3);summary.press(' ');expect(reading).not_to_have_attribute('open','');expect(summary).to_be_focused();summary.press('Enter');expect(reading).to_have_attribute('open','');page.screenshot(path=str(ART/'ux-pr60-evidence-desktop.png'),full_page=True)
         PHASE='evidence-download-disclosure';menu=ensure_rn_evidence_menu(page);menu_summary=menu.locator(':scope > summary');menu_summary.focus();menu_summary.press('Enter');expect(menu).to_have_attribute('open','');expect(menu.locator('[data-evidence-download]')).to_have_count(4);min_height(page,'.evidence-export-menu > summary');min_height(page,'.evidence-export-menu [data-evidence-download]')
         PHASE='evidence-downloads';downloaded=[]
-        page.evaluate("()=>{window.__ictcEvidenceDownloads=[];document.addEventListener('ictc:evidence-download-complete',event=>window.__ictcEvidenceDownloads.push(event.detail),true)}")
+        page.evaluate("""()=>{window.__ictcEvidenceDownloads=[];window.__ictcEvidenceAnchorClicks=[];const original=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){if(this.hasAttribute('download')&&String(this.href||'').startsWith('blob:')){window.__ictcEvidenceAnchorClicks.push({download:this.download,href:this.href});return;}return original.call(this);};document.addEventListener('ictc:evidence-download-complete',event=>window.__ictcEvidenceDownloads.push(event.detail),true)}""")
         for fmt in ['pdf','xml','md','zip']:
             PHASE=f'evidence-downloads-{fmt}'
             menu=page.locator('.evidence-export-menu:visible').first;expect(menu).to_be_visible()
@@ -109,6 +109,7 @@ try:
             base=menu.get_attribute('data-evidence-base');assert base,('missing evidence base',fmt)
             button=menu.locator(f'[data-evidence-download="{fmt}"]');expect(button).to_be_visible()
             before=page.evaluate("()=>window.__ictcEvidenceDownloads.length")
+            before_anchor=page.evaluate("()=>window.__ictcEvidenceAnchorClicks.length")
             PHASE=f'evidence-downloads-{fmt}-request'
             with page.expect_response(lambda response: response.url.endswith(f'.{fmt}') and '/api/evidence/' in response.url,timeout=60000) as pending:
                 button.click()
@@ -121,8 +122,11 @@ try:
             length=int(response.headers.get('content-length','0') or 0);assert length>0,(fmt,'empty body',response.url)
             PHASE=f'evidence-downloads-{fmt}-completion'
             page.wait_for_function("(n)=>window.__ictcEvidenceDownloads.length>n",arg=before,timeout=30000)
+            page.wait_for_function("(n)=>window.__ictcEvidenceAnchorClicks.length>n",arg=before_anchor,timeout=30000)
             completed=page.evaluate("()=>window.__ictcEvidenceDownloads.at(-1)")
+            click=page.evaluate("()=>window.__ictcEvidenceAnchorClicks.at(-1)")
             assert completed and completed.get('format')==fmt and completed.get('base')==base and completed.get('menuClosed') is True,(fmt,completed)
+            assert click and click.get('download','').endswith('.'+fmt) and str(click.get('href','')).startswith('blob:'),(fmt,click)
             downloaded.append(fmt)
             PHASE=f'evidence-downloads-{fmt}-close'
             expect(menu).not_to_have_attribute('open','')
