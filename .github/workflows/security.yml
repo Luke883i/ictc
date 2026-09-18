@@ -46,6 +46,8 @@ jobs:
       - run: node v3/security-implementation-mutants.mjs
       - run: node v3/security-main-mutation-1m.mjs
       - run: node v3/security-attack-saturation.mjs
+      - run: npm run public-demo:check
+      - run: npm run public-demo:saturation
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
         if: always()
         with:

@@ -28,10 +28,14 @@ assert.ok(runProfiles.includes('npm ci --ignore-scripts && npm run build'));asse
 assert.ok(runProfiles.includes('ICTC_HOST=0.0.0.0'),'Render non-loopback bind guidance missing');
 assert.ok(runProfiles.includes('RENDER_SERVICE_TYPE'),'Render platform diagnostic contract missing');
 assert.ok(runProfiles.includes('filesystem Render è effimero'),'Render storage boundary missing');
+for(const token of['ICTC_PUBLIC_DEMO=1','ICTC_ALLOW_NETWORK_BIND=1','Start Command: npm run demo','ICTC_IDENTITY_MODE','ICTC_TRUSTED_PROXY_SECRET','demo-runtime-3-0'])assert.ok(runProfiles.includes(token),`Public DEMO Render guidance missing: ${token}`);
 const http=read('v3/runtime/http.mjs');
 assert.ok(http.includes('assertSafeRuntimeBinding'),'runtime network guard missing');
 assert.ok(http.includes("ICTC_ALLOW_NETWORK_BIND==='1'"),'explicit network allow guard missing');
 assert.ok(http.includes('local-identity-loopback-only'),'local identity loopback guard missing');
+const publicDemo=read('v3/runtime/public-demo.mjs');
+for(const token of['ICTC_PUBLIC_DEMO','public-demo-read-only','fixed-public-demo','local-auditor','public-demo-runtime-dir-required','public-demo-proxy-secret-must-be-unset','public-demo-single-tenant-only'])assert.ok(publicDemo.includes(token),`public demo boundary missing: ${token}`);
+assert.ok(read('v3/server.mjs').includes('assertPublicDemoRequestBoundary(request,process.env)'),'server public demo read-only guard missing');
 const renderWebEnv={RENDER:'true',RENDER_SERVICE_TYPE:'web',PORT:'10000'};
 const renderPrivateEnv={RENDER:'true',RENDER_SERVICE_TYPE:'pserv',PORT:'10000'};
 const renderWorkerEnv={RENDER:'true',RENDER_SERVICE_TYPE:'worker'};
@@ -47,6 +51,8 @@ const renderResolved=resolveBootstrap({env:{...renderWebEnv,ICTC_HOST:'0.0.0.0'}
 assert.equal(renderResolved.port,'10000');assert.equal(renderResolved.host,'0.0.0.0');
 assert.equal(BOOTSTRAP_CONTRACT.platforms.render.hostAutoOverride,false);assert.equal(BOOTSTRAP_CONTRACT.platforms.render.identityAutoTrust,false);
 assert.equal(BOOTSTRAP_CONTRACT.platforms.render.filesystemDefault,'ephemeral');assert.equal(BOOTSTRAP_CONTRACT.platforms.render.persistentDiskShared,false);assert.equal(BOOTSTRAP_CONTRACT.platforms.render.persistentDiskMultiInstance,false);
+assert.equal(BOOTSTRAP_CONTRACT.publicDemo.optIn,'ICTC_PUBLIC_DEMO=1');assert.equal(BOOTSTRAP_CONTRACT.publicDemo.suite,'3.0');assert.equal(BOOTSTRAP_CONTRACT.publicDemo.runtimeBasename,'demo-runtime-3-0');assert.equal(BOOTSTRAP_CONTRACT.publicDemo.fixedRole,'auditor');assert.equal(BOOTSTRAP_CONTRACT.publicDemo.fixedActor,'local-auditor');assert.equal(BOOTSTRAP_CONTRACT.publicDemo.readOnly,true);assert.equal(BOOTSTRAP_CONTRACT.publicDemo.trustedProxySecretAllowed,false);
+const bootstrapModel=baselineBootstrapModel();assert.equal(bootstrapModel.standardNetworkRequiresTrustedIdentity,true);assert.equal(bootstrapModel.publicDemoOptIn,'ICTC_PUBLIC_DEMO=1');assert.equal(bootstrapModel.publicDemoSuite,'3.0');assert.equal(bootstrapModel.publicDemoRuntimeBasename,'demo-runtime-3-0');assert.equal(bootstrapModel.publicDemoFixedRole,'auditor');assert.equal(bootstrapModel.publicDemoFixedActor,'local-auditor');assert.equal(bootstrapModel.publicDemoReadOnly,true);assert.equal(bootstrapModel.publicDemoAnonymous,true);assert.equal(bootstrapModel.publicDemoSyntheticOnly,true);assert.equal(bootstrapModel.publicDemoTrustedProxySecretAllowed,false);assert.equal(bootstrapModel.publicDemoMultiTenant,false);assert.equal(bootstrapModel.publicDemoClientIdentityHeadersAuthoritative,false);
 assert.deepEqual(Object.keys(BOOTSTRAP_CONTRACT.profiles),['standard','demo'],'BOOTSTRAP-0 must not anticipate CEP enterprise runtime profiles');
 const result=validateBootstrapModel(baselineBootstrapModel());assert.equal(result.ok,true,result.errors.join(','));
 console.log(JSON.stringify({ok:true,suite:'bootstrap-contract',authority:BOOTSTRAP_CONTRACT.authority,profiles:Object.keys(BOOTSTRAP_CONTRACT.profiles),packageManager:'npm',foreground:'v3/bootstrap.mjs',supervisor:'ictc.sh',renderTransport:'fail-fast-on-loopback-for-inbound-render-services',claimBoundary:'portable execution convergence diagnoses platform transport requirements without auto-widening network exposure, granting identity trust, changing persistence authority, implementing CEP runtime slices or proving deployment assurance'}));

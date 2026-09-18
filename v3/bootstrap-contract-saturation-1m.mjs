@@ -23,7 +23,7 @@ const mutations=[
  ['devcontainer-start','devcontainer',m=>m.devcontainerStart='./ictc.sh codespace'],
  ['render-build','paas-command-projection',m=>m.renderBuild='yarn'],
  ['render-start','paas-command-projection',m=>m.renderStart='node v3/server.mjs'],
- ['deployment-boundary','network-boundary',m=>m.publicNetworkRequiresTrustedIdentity=false],
+ ['deployment-boundary','network-boundary',m=>m.standardNetworkRequiresTrustedIdentity=false],
  ['render-detection','paas-transport',m=>m.renderDetection='PORT-only'],
  ['render-loopback','paas-transport',m=>m.renderInboundRequiresNonLoopback=false],
  ['render-host-auto','network-boundary',m=>m.renderHostAutoOverride=true],
@@ -31,7 +31,16 @@ const mutations=[
  ['render-filesystem','persistence-boundary',m=>m.renderFilesystemDefault='durable'],
  ['render-disk-shared','persistence-boundary',m=>m.renderPersistentDiskShared=true],
  ['render-disk-scale','persistence-boundary',m=>m.renderPersistentDiskMultiInstance=true],
- ['cep-profile','cep-non-anticipation',m=>m.cepBootstrapProfile=true]
+ ['cep-profile','cep-non-anticipation',m=>m.cepBootstrapProfile=true],
+ ['public-demo-opt-in','public-demo-boundary',m=>m.publicDemoOptIn='auto'],
+ ['public-demo-suite','public-demo-boundary',m=>m.publicDemoSuite='2.2'],
+ ['public-demo-runtime','public-demo-boundary',m=>m.publicDemoRuntimeBasename='runtime'],
+ ['public-demo-role','public-demo-boundary',m=>m.publicDemoFixedRole='admin'],
+ ['public-demo-actor','public-demo-boundary',m=>m.publicDemoFixedActor='local-admin'],
+ ['public-demo-readonly','public-demo-boundary',m=>m.publicDemoReadOnly=false],
+ ['public-demo-proxy-secret','public-demo-boundary',m=>m.publicDemoTrustedProxySecretAllowed=true],
+ ['public-demo-multitenant','public-demo-boundary',m=>m.publicDemoMultiTenant=true],
+ ['public-demo-client-identity','public-demo-boundary',m=>m.publicDemoClientIdentityHeadersAuthoritative=true]
 ];
 
 const M=mutations.length;
