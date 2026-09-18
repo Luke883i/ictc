@@ -96,3 +96,11 @@ html[data-a6-ux3-operational="a6-ux3"] .a6-operational-registry>summary{display:
 html[data-a6-ux3-operational="a6-ux3"] [data-a6-registry-count-group]{display:flex;align-items:baseline;gap:.18rem;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-description)}
 html[data-a6-ux3-operational="a6-ux3"] [data-a6-registry-count-group]>b{color:var(--color-text);font-size:.84rem}
 @media(max-width:390px){html[data-a6-ux3-operational="a6-ux3"] .a6-operational-registry>summary{grid-template-columns:1fr;align-items:start}}
+
+/* PR164 — operational-surface text/action/RN cosmetics remain with A6-UX3. */
+html[data-a6-ux3-operational="a6-ux3"] :where(#monitoringView,#incidentsView,#grcWorkspace) :is(.hero-copy,.section-head>div,.grc-head>div){min-width:0;width:100%;max-width:none!important}
+html[data-a6-ux3-operational="a6-ux3"] :where(#monitoringView,#incidentsView,#grcWorkspace) :is(.hero-copy,.section-head,.grc-head) :is(h1,h2,h3,p,.microcopy){min-width:0;max-width:none!important;white-space:normal;text-overflow:clip;overflow-wrap:break-word;word-break:normal}
+html[data-a6-ux3-operational="a6-ux3"] :where(#monitoringView,#incidentsView,#grcWorkspace) .card-actions :is(button,a[href]){box-sizing:border-box;min-height:44px;inline-size:12rem;min-inline-size:12rem;display:inline-flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap}
+html[data-a6-ux3-operational="a6-ux3"] #monitoringView .catalog-card :is(.pill,.status-badge,[data-status]){min-height:28px;padding:.28rem .58rem;border-radius:999px;font-weight:var(--weight-label)}
+html[data-a6-ux3-operational="a6-ux3"] #monitoringView .catalog-card [data-missing-value="reason"]{display:flex;width:100%;margin:.28rem 0 0;justify-content:flex-start;text-align:left}
+@media(max-width:760px){html[data-a6-ux3-operational="a6-ux3"] :where(#monitoringView,#incidentsView,#grcWorkspace) .card-actions{width:100%}html[data-a6-ux3-operational="a6-ux3"] :where(#monitoringView,#incidentsView,#grcWorkspace) .card-actions :is(button,a[href]){inline-size:100%;min-inline-size:0}}

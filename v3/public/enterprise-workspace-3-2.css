@@ -69,3 +69,9 @@ html[data-native-semantic-lattice="3.2.0"] dialog :is(.dialog-shell,.proof-detai
 html[data-native-semantic-lattice="3.2.0"] dialog :is(.dialog-shell,.proof-detail-shell,.clarity-context-shell)>header :is(h2,h3,p){max-width:none!important;white-space:normal;overflow-wrap:break-word;word-break:normal}
 html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer) :is(button,a[href]){box-sizing:border-box;min-height:44px;inline-size:12rem;min-inline-size:12rem;display:inline-flex;align-items:center;justify-content:center;text-align:center}
 @media(max-width:760px){html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList,html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-list{grid-template-columns:minmax(0,1fr)}html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer){width:100%}html[data-native-semantic-lattice="3.2.0"] :is(.admin-actions,dialog .dialog-shell>footer) :is(button,a[href]){inline-size:100%;min-inline-size:0}}
+
+/* PR164 — Home/EP text flow remains with the bounded 3.2 owner. */
+html[data-native-semantic-lattice="3.2.0"] :is(#homeView .home-intro,#epistemicView .epistemic-head>div){min-width:0;width:100%;max-width:none!important}
+html[data-native-semantic-lattice="3.2.0"] :is(#homeView .home-intro,#epistemicView .epistemic-head) :is(h1,h2,h3,p,.procedure-purpose,.microcopy){min-width:0;max-width:none!important;white-space:normal;text-overflow:clip;overflow-wrap:break-word;word-break:normal}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homeSummary{max-width:none!important}
+html[data-native-semantic-lattice="3.2.0"] #epistemicView .procedure-purpose{max-width:none!important}
