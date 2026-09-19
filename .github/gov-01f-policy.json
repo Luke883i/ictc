@@ -5,7 +5,7 @@
   "mode": "FREE_PRIVATE_COMPENSATING",
   "serverSidePrevention": false,
   "defaultBranch": "main",
-  "allowedBranchPrefixes": ["agent/", "codex/", "fix/", "feat/", "docs/", "chore/", "refactor/", "test/", "ci/"],
+  "allowedBranchPrefixes": ["agent/", "codex/", "fix/", "feat/", "docs/", "chore/", "refactor/", "test/", "ci/", "dependabot/"],
   "gateManifest": ".github/enterprise-gate-manifest.json",
   "requiredPreMergeChecks": ["enterprise-candidate"],
   "requiredPostMergeChecks": ["enterprise-candidate"],
