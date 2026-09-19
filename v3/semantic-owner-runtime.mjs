@@ -3,6 +3,7 @@ import { REQUIRED_CONTRIBUTOR_ROUTE_IDS } from './contributor-runtime.mjs';
 
 export const OWNER_CLASSES=Object.freeze(['OWNER','ADAPTER','OBSERVER','COMPATIBILITY','RETIRED']);
 export const REQUIRED_TASK_ROUTE_IDS=REQUIRED_CONTRIBUTOR_ROUTE_IDS;
+export const COHERENCE_FINDING_IDS=Object.freeze(['F1','F2','F3','F4','F5','F6','F7','F8']);
 export const sha256=value=>createHash('sha256').update(typeof value==='string'?value:JSON.stringify(value)).digest('hex');
 
 export function validateSemanticOwnerContract(contract){
@@ -45,6 +46,23 @@ export function validateSemanticOwnerContract(contract){
   check(new Set(freshness.inputs||[]).size===(freshness.inputs||[]).length,'duplicate-freshness-input');
   check(freshness.staleMustFail===true,'stale-must-fail');
   check(Array.isArray(freshness.receiptRequiredFields)&&freshness.receiptRequiredFields.includes('receiptDigest'),'receipt-schema');
+  const debt=contract?.repositoryCoherenceDebt||{},findings=Array.isArray(debt.findings)?debt.findings:[],findingIds=findings.map(item=>item.id),byId=Object.fromEntries(findings.map(item=>[item.id,item]));
+  check(debt.id==='D-RSC'&&debt.classification==='repository-semantic-coherence-debt','coherence-debt-class');
+  check(debt.status==='open'&&debt.createsNewAuthority===false,'coherence-debt-boundary');
+  check(debt.systemicFinding==='F8','coherence-systemic-finding');
+  check(JSON.stringify(findingIds)===JSON.stringify(COHERENCE_FINDING_IDS)&&new Set(findingIds).size===COHERENCE_FINDING_IDS.length,'coherence-finding-census');
+  check(findings.every(item=>item.owner&&Array.isArray(item.evidenceRefs)&&item.evidenceRefs.length>=2&&item.falsifier&&item.limitation),'coherence-finding-evidence');
+  check(['F1','F2','F3'].every(id=>byId[id]?.status==='resolved-in-candidate'&&byId[id]?.candidateRemediation),'coherence-candidate-remediation');
+  check(byId.F4?.status==='mitigated-open'&&/historical mismatch does not by itself prove the current convergence planning state is wrong/i.test(byId.F4?.limitation||''),'coherence-f4-governance-bound');
+  check(byId.F5?.status==='blocked-external'&&byId.F5?.closureClass==='external-evidence'&&byId.F5?.linkedGap==='GAP-022'&&byId.F5?.owner==='E3-GOV','coherence-f5-external');
+  check(byId.F6?.status==='evidence-bounded'&&byId.F6?.closureClass==='evidence-limitation'&&byId.F6?.blocking===false,'coherence-f6-evidence-bound');
+  check(byId.F7?.closureClass==='repository-internal'&&/not evidence of current runtime output/i.test(byId.F7?.limitation||''),'coherence-f7-lineage-bound');
+  check(byId.F8?.status==='in-remediation'&&byId.F8?.systemic===true&&/Fresh means unchanged/i.test(byId.F8?.limitation||'')&&byId.F8?.mitigation,'coherence-f8-freshness-bound');
+  check(debt.coherenceRule?.freshnessIsNecessaryNotSufficient===true&&debt.coherenceRule?.semanticConsistencyRequiresExecutableOwnerComparison===true&&debt.coherenceRule?.routeParityDoesNotImplySemanticFreshness===true,'coherence-rule');
+  const negative=Array.isArray(debt.negativeControls)?debt.negativeControls:[];
+  check(negative.length>=8&&new Set(negative.map(item=>item.id)).size===negative.length,'coherence-negative-control-census');
+  check(negative.every(item=>item.evidenceClass==='bounded-observation'&&item.universalAbsenceProof===false),'coherence-negative-control-boundary');
+  check(/not a second gap register/i.test(debt.claimBoundary||'')&&/GAP-022 remains canonically owned/i.test(debt.claimBoundary||''),'coherence-claim-boundary');
   check(contract?.trajectory?.slice==='C5-SEMANTIC-OWNER-COMPRESSION','trajectory-slice');
   check(contract?.trajectory?.createsNewSerialSlice===false,'serial-slice-widening');
   check((contract?.trajectory?.mustBeTerminalBefore||[]).includes('UIUX-CONVERGE-0'),'c5-before-uiux');

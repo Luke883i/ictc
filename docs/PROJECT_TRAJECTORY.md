@@ -48,6 +48,14 @@ Il repository separa runtime standard e substrate enterprise C3/PostgreSQL, disc
 5. **Same-circuit assurance.** Modello, implementazione, oracle e closure nello stesso circuito non creano indipendenza.
 6. **Second-source repair.** Correggere una proiezione aggiungendo una nuova authority sposta il problema invece di chiuderlo.
 
+## Stratigrafia Git
+
+La traiettoria ha lasciato molti branch nominati perché le slice sono state sviluppate come candidate state isolate. Visti retrospettivamente, sono **etichette su fotografie t-1, t-2, …, tn**: la fotografia precisa è però lo SHA del commit/PR head, perché un branch è un puntatore mutabile e può avanzare o essere riutilizzato.
+
+La permanenza di un branch non significa che quella slice sia ancora attiva o autorevole. Il numero di branch non misura debito, maturità o parallelismo corrente; branch scratch/tmp/noop possono essere puro residuo di tooling. La storia canonica resta nel commit graph e nelle PR merged, mentre l'AS-IS resta su `main` e negli owner correnti.
+
+Analogamente, i molti workflow sono una stratigrafia di falsificatori: rail nate per una failure family possono restare come regression oracle sulla HEAD corrente senza diventare release authority. Il punto di convergenza è l'evidenza exact-SHA, non il nome storico della rail.
+
 ## Metodo che emerge dalla storia
 
 Il metodo operativo corrente è in `docs/DEVELOPMENT.md`:
