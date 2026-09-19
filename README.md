@@ -35,6 +35,15 @@ CI verde ≠ deployment assurance
 
 L'AI può preparare, cercare, riassumere o proporre. I checkpoint che producono decisioni business restano umani e autorizzati.
 
+## Come leggere questo repository
+
+ICTC è anche un repository ingegneristicamente atipico: runtime, contratti semantici, owner map, regression oracle, falsificatori, lineage e prove di CI convivono nello stesso albero. **Recenza, nome del file e volume dei test non creano authority.**
+
+- Per **capire la forma del repository, la storia, il metodo e i limiti di inferenza**, parti da [Repository Atlas](docs/REPOSITORY_ATLAS.md).
+- Per **modificare il repository**, parti da [START_HERE](docs/START_HERE.md), che instrada verso l'owner e il falsificatore più vicini.
+
+L'Atlas è orientamento canonico, non una seconda product/runtime truth. I fatti Git live restano di Git/GitHub; le authority sostanziali restano quelle registrate.
+
 ## Architettura AS-IS
 
 ```text

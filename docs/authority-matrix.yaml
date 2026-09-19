@@ -3,6 +3,10 @@ surfaces:
   product_intent:
     authority: docs/PRODUCT.md
     classification: current-product-authority
+  repository_self_description:
+    authority: docs/REPOSITORY_ATLAS.md
+    classification: canonical-repository-orientation
+    scope: repository-morphology-reading-protocol-and-knowledge-boundaries-only
   target_operating_model:
     authority: v3/scope-0-model.json
     document: docs/SCOPE_0_OPERATING_MODEL.md

@@ -4,6 +4,12 @@ export function validateDocumentationModel(model){
  const e=[]; const check=(c,m)=>{if(!c)e.push(m)};
  check(model.entrypoint==='docs/START_HERE.md','entrypoint');
  check(model.productAuthority==='docs/PRODUCT.md','product-authority');
+ check(model.repositoryAtlas==='docs/REPOSITORY_ATLAS.md','repository-atlas');
+ check(model.rootRoutesAtlas,'root-atlas-route'); check(model.startRoutesAtlas,'start-atlas-route');
+ check(model.atlasBoundary,'atlas-boundary'); check(model.atlasGitBoundary,'atlas-git-boundary');
+ check(model.atlasAiReadOnly,'atlas-ai-readonly'); check(model.atlasRuntimeSplit,'atlas-runtime-split');
+ check(model.atlasDemoSplit,'atlas-demo-split'); check(model.atlasExternalBoundary,'atlas-external-boundary');
+ check(model.atlasNoLiveSha,'atlas-no-live-sha');
  check(model.promptLifecycle==='source-input'&&!model.promptAuthoritative,'prompt-source-input');
  check(model.uniqueIds,'unique-ids'); check(model.uniquePaths,'unique-paths'); check(model.uniqueTopics,'unique-authority-topics');
  check(model.currentLifecycleSound,'current-lifecycle-sound'); check(model.maxAuthorityDepth<=2,'authority-depth'); check(model.brokenLinks===0,'broken-links');
