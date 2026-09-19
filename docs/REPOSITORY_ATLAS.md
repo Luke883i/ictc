@@ -55,6 +55,68 @@ Il pattern storico produttivo è:
 
 La storia e gli anti-pattern sono in `docs/PROJECT_TRAJECTORY.md`.
 
+## Perché i workflow hanno questa forma
+
+I file in `.github/workflows/` sono **canali eseguibili di evidenza**, non servizi applicativi e non authority equivalenti. La loro stratificazione riflette failure family nate in epoche diverse e ambienti che conviene mantenere isolati.
+
+| Classe | Perché esiste | Come leggerla |
+|---|---|---|
+| convergenza corrente | esercita semantic/runtime/browser/launcher sul candidato corrente | produce leaf evidence sulla HEAD, ma non possiede la release identity |
+| rail specializzata / regression oracle | conserva una failure family, un ambiente o una prova costosa/specifica | il nome può essere storico; se gira sulla HEAD corrente prova quella HEAD, non riattiva una vecchia release |
+| diagnostica | raccoglie informazione utile senza diventare blocker | i check `diagnostic /` sono riportati ma non entrano nel verdetto required |
+| aggregazione exact-head | osserva i check dello stesso SHA e ne pubblica il verdetto stabile | `ictc/actions-census` è il singolo aggregate status authority; i leaf restano la provenance del failure |
+| post-merge evidence | riesegue evidenza sul commit entrato in `main` | è separata dalla pre-merge acceptance perché il merge produce un nuovo SHA |
+
+Perciò **molti workflow non significano molte autorità di merge**. Alcuni workflow sono required leaf quando il loro trigger si applica, altri sono diagnostici, altri esistono solo su `main` o su dispatch. Non tutti girano a ogni evento. Il conteggio dei file workflow è una fotografia volatile e non va fissato nella documentazione come metrica di maturità o complessità.
+
+La topologia evita anche un mega-workflow unico: le prove restano isolate per ambiente e failure family, mentre l'aggregazione avviene dopo, sullo stesso SHA. `GOV-01F` osserva provenance e gate exact-SHA come controllo compensativo; non crea branch protection server-side.
+
+## PR come slice semantica: il loop same-SHA
+
+Una PR ICTC è una **unità di esecuzione semantica bounded**: può toccare uno o molti file, e può essere runtime, test, governance o documentazione, ma deve avere una responsabilità falsificabile unica.
+
+```text
+utente/agente formula la slice
+        ↓
+branch dedicato → commit Hn
+        ↓
+PR descrive intent / owner / boundary
+        ↓
+GitHub esegue leaf e rail applicabili su Hn
+        ↓
+ictc/actions-census osserva gli stessi check di Hn
+        ↓
+failure → nuova modifica → Hn+1 → il verde di Hn diventa genealogia
+        ↓
+required exact-head convergenti
+        ↓
+merge umano/autorizzato
+        ↓
+main riceve Mn → post-merge evidence su Mn
+```
+
+L'**utente-agente orchestra esternamente** questo ciclo: legge Git/GitHub, propone/modifica la candidate head, interpreta i failure e decide quando chiedere nuova evidenza. Non è CI authority, non assegna da sé il verde e non acquisisce merge authority. GitHub esegue e registra i check; il repository definisce i contratti; il merge resta un'azione umana/autorizzata.
+
+Questo è un **repository execution loop**, non il runtime applicativo ICTC. “Same-SHA” significa che le evidenze usate per accettare una PR devono riferirsi alla stessa HEAD candidata. Un nuovo commit crea un nuovo SHA e riapre l'accettazione; il merge commit su `main` è un altro SHA e viene osservato separatamente.
+
+## Perché restano molti branch
+
+Un branch Git è un **puntatore nominato e mutabile** a un commit. La fotografia immutabile è lo SHA; il branch è l'etichetta accanto alla fotografia.
+
+Per leggere i branch residui, il modello più utile è:
+
+```text
+t-3        t-2        t-1        t0
+H3         H2         H1         main
+↑          ↑          ↑
+branch     branch     branch
+(label)    (label)    (label)
+```
+
+Molti branch storici possono quindi essere letti come segnalibri di candidate state precedenti. Non sono automaticamente lavoro attivo, current authority o debito. Alcuni nomi `scratch`, `tmp` o `noop` sono residui di test/tooling e **non devono ricevere significato semantico**. Uno stesso branch può anche essere riutilizzato e avanzare: per la fotografia storica precisa usare sempre il PR head SHA / commit graph, non il nome del branch.
+
+La retention del branch è opzionale: eliminare un branch dopo il merge non elimina la storia canonica già conservata da commit e PR. Mantenerlo può aiutare l'archeologia; cancellarlo può ridurre rumore. In entrambi i casi `main` e gli owner correnti restano la fonte per l'AS-IS. Anche il numero di branch è quindi una fotografia volatile, non un KPI.
+
 ## Inferenza assistita da AI
 
 Un AI assistant può accelerare software archaeology, dependency tracing, confronto di authority, mining delle PR e falsificazione di ipotesi. Il suo output resta un'analisi/proposta, non repository authority.

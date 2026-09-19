@@ -2,6 +2,8 @@
 
 Descrivi la slice semantica o tecnica e l'oggetto governato.
 
+Una PR ICTC è una **unità di esecuzione semantica**: una responsabilità falsificabile, anche se tocca più file o non modifica il runtime applicativo. La HEAD corrente è la candidate state; un nuovo commit crea un nuovo SHA e invalida il verde precedente.
+
 ## Affected authority
 
 Indica l'owner corrente da `docs/authority-matrix.yaml` e spiega perché la modifica appartiene a quell'owner. Dichiarare esplicitamente se non cambia alcuna authority.

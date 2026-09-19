@@ -92,6 +92,20 @@ Compression mutant: rimuovere un owner/guard/binding necessario deve riaprire al
 
 Il rail C5 esegue 10.000 mutazioni deterministiche del contratto owner/freshness e 10.000 audit sintetici multi-layer di routing. Sono evidence E2 sul modello dichiarato: non sono browser session, contributor study, codice mutato/compilato, deployment test o probabilità di correttezza.
 
+## Topologia GitHub Actions e verdetto same-SHA
+
+La presenza di molti workflow non implica molti verdetti concorrenti. ICTC separa **leaf evidence**, rail specializzate, diagnostica e aggregazione:
+
+- i job/rail required falsificano failure family o ambienti distinti sulla HEAD candidata;
+- i check con prefisso `diagnostic /` sono osservazionali e non gating;
+- `ictc/actions-census` osserva i check-run della **exact HEAD SHA** e pubblica il singolo aggregate acceptance status, preferendo la provenance del leaf al failure aggregato;
+- `GOV-01F` è un controllo compensativo di provenance + required exact-SHA gate, non branch protection;
+- il post-merge su `main` valuta il merge SHA separatamente dalla PR head.
+
+Un workflow con un nome storico può restare regression evidence sul codice corrente; il nome non promuove una vecchia release o slice a current authority. Non tutti i workflow hanno gli stessi trigger e non tutti girano a ogni evento.
+
+L'orchestrazione utente/agente è esterna: una correzione crea una nuova HEAD e invalida l'accettazione precedente. L'agente può osservare, materializzare una nuova candidate e diagnosticare; non può trasformare un check in successo né sostituire la decisione di merge.
+
 ## Exact-head e freshness
 
 Il colore appartiene allo SHA eseguito. Dopo una correzione, il verde del commit precedente è genealogia. PR acceptance richiede gli artifact/check della exact PR HEAD corrente; `skipped` significa non eseguito, non passed.

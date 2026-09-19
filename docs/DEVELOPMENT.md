@@ -46,6 +46,14 @@ Fermati quando la causa è chiusa nell'owner corretto, il falsificatore discrimi
 
 Per software archaeology assistita da AI, usa [Repository Atlas](REPOSITORY_ATLAS.md): distingue checkout inference da live Git facts e definisce il minimo GitHub connector read-only utile alla presa in carico.
 
+### PR = unità di esecuzione semantica
+
+Una PR raccoglie **una responsabilità falsificabile**, non necessariamente un solo file o una modifica al runtime. La sua HEAD è la candidate state eseguita. I check GitHub applicabili devono convergere sulla stessa HEAD; se un agente o una persona aggiunge un commit, nasce una nuova candidate state e il verde precedente resta solo genealogia.
+
+Il loop operativo è esterno al runtime applicativo: utente/agente osserva → modifica → pubblica HEAD → GitHub esegue → utente/agente legge il failure → corregge → ripubblica. L'orchestratore non diventa test authority né merge authority. Il merge avviene solo sull'exact head accettata secondo la governance applicabile; il nuovo commit di `main` riceve poi evidenza post-merge separata.
+
+Il branch è trasporto e segnalibro, non current truth. Può restare dopo il merge per archeologia oppure essere eliminato senza cancellare commit/PR history. Per confrontare due momenti usare gli SHA, non il conteggio o il nome dei branch.
+
 ## Ciclo canonico
 
 ```bash
