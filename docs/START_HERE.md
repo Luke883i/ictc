@@ -34,7 +34,7 @@ Per una correzione locale non serve leggere l'intera genealogia. Se la modifica 
 
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
 2. [Repository Atlas](REPOSITORY_ATLAS.md) — forma del repository, classi di verità, metodo di lettura e inferenza assistita.
-4. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
+3. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
 4. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
 5. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
 6. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
