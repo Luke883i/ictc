@@ -87,3 +87,34 @@ html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView #
 html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView #homePriorities .home-business-priority{min-height:44px!important;padding:.34rem .52rem!important}
 }
 [hidden]{display:none!important}
+
+
+/* UI-INTENT-RUNTIME: Admin is one compact control plane; AI settings live inside its AI tab. */
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList{border:1px solid var(--color-border);border-radius:10px;overflow:clip;background:var(--color-surface)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{grid-template-columns:minmax(0,1fr) 9.5rem!important;min-height:48px!important;margin:0;padding:.42rem .58rem!important;border:0!important;border-top:1px solid var(--color-border)!important;border-radius:0!important;background:transparent!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row:first-of-type{border-top:0!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-copy{display:grid;gap:.08rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch{justify-self:end;display:inline-grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.35rem;min-width:9rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch em{font-style:normal;font-size:var(--type-caption);color:var(--color-muted);white-space:nowrap}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-readonly{grid-column:1/-1;margin:0;padding:.5rem .6rem;border-bottom:1px solid var(--color-border);background:var(--color-surface-subtle);color:var(--color-muted);font-size:var(--type-caption)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyImpact{margin-top:.35rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyForm>.check{margin:.35rem 0 0;padding:.38rem .5rem;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyForm>.admin-actions{justify-content:flex-end;margin-top:.35rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .admin-ai-grid{grid-template-columns:minmax(0,1fr);gap:.55rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .admin-ai-settings-panel{grid-column:1/-1}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #adminAiSettingsHost{min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings{display:grid;gap:.45rem;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings>header{display:none}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings>.settings-18{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings .settings-section-18{margin:0;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings .settings-section-18[data-settings-section="policy"]{grid-column:1/-1}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings>footer{display:flex;justify-content:flex-end;gap:.4rem;padding-top:.4rem;border-top:1px solid var(--color-border)}
+@media(max-width:760px){html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{grid-template-columns:minmax(0,1fr)!important}html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch{justify-self:start}html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm.admin-embedded-settings>.settings-18{grid-template-columns:minmax(0,1fr)}}
+
+/* Home viewport budget: header + main + reserved fixed footer equals the viewport; no document scroll is used as a layout patch. */
+@media(min-width:761px) and (min-height:680px){
+html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] main{box-sizing:border-box;height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px));min-height:0;max-height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px));padding-top:0!important;padding-bottom:0!important}
+html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView{box-sizing:border-box;width:100%;height:100%!important;max-height:100%;min-height:0;display:grid;align-content:center;align-items:stretch;padding-block:0!important;margin:0!important}
+html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView>.home-hero{box-sizing:border-box;max-height:100%;margin:0!important}
+}
+@media(min-width:761px) and (max-height:760px){html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView .home-hero{padding:.48rem .7rem!important}html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView #homeTitle{font-size:clamp(1.45rem,3vh,2rem)!important}html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homePriorities{margin-top:.25rem!important;gap:.12rem!important}html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homePriorities .home-business-priority{min-height:42px!important;padding:.26rem .45rem!important}}

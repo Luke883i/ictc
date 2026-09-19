@@ -100,3 +100,17 @@ html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-content-ori
 html[data-a6-ux4-semantic="a6-ux4"] .standard-node-select small{display:block;margin-top:.12rem;color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-description);line-height:1.25}
 html[data-a6-ux4-semantic="a6-ux4"] .standard-official-text{border-left:3px solid color-mix(in srgb,var(--color-info) 55%,var(--color-border));padding-left:.7rem}
 html[data-a6-ux4-semantic="a6-ux4"] .standard-neutral-index{border-left:3px solid var(--color-border);padding-left:.7rem;color:var(--color-muted)}
+
+
+/* UI-INTENT-RUNTIME: detail-first Standard Browser. Index is a compact navigator, never a second content plane. */
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master-detail{grid-template-columns:minmax(10.5rem,14rem) minmax(0,1fr)!important}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master{min-width:0;max-width:14rem}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list{min-width:0;max-width:14rem}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-select{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:.06rem!important;align-content:start;min-height:38px!important;padding:.35rem .42rem!important;text-align:left}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-select small{margin:0!important;display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-detail{min-width:0;width:100%}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-official-document{margin:.45rem 0;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface)}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-official-document>summary{min-height:44px;display:flex;align-items:center;padding:.45rem .6rem;font-weight:var(--weight-label);cursor:pointer}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-official-document pre{max-height:38vh;margin:0;padding:.65rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid var(--color-border);font:inherit;font-size:var(--type-control);line-height:1.45}
+html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-neutral-keywords{margin-top:.35rem;color:var(--color-muted);font-size:var(--type-caption)}
+@media(max-width:760px){html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-browser-master,html[data-a6-ux4-semantic="a6-ux4"] #standardBrowserDialog .standard-node-list{max-width:100%}}

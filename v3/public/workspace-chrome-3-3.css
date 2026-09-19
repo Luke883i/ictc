@@ -45,3 +45,9 @@ html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar 
 /* UI-INTENT-9: concise visible brand; anchor aria-label preserves full product identity. */
 html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand small{display:none!important}
 html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand b{font-size:18px;line-height:1;font-weight:760}
+
+
+/* AI status truth: only ready may use the positive/green treatment. */
+html[data-workspace-chrome="3.3"] #runtimeStatus[data-ai-state="ready"]{box-shadow:none}
+html[data-workspace-chrome="3.3"] #runtimeStatus[data-ai-state="unconfigured"]{background:var(--chrome-control-bg)!important;color:var(--chrome-control-text)!important;border-color:var(--chrome-control-border)!important;box-shadow:none!important}
+html[data-workspace-chrome="3.3"] #runtimeStatus[data-ai-state="key-missing"]{box-shadow:none!important}
