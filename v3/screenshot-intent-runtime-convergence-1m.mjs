@@ -24,7 +24,7 @@ const sourceChecks=[
  [S.publicPack.includes('officialSourceConfirmed')&&S.publicPack.includes('standard-public-source-incomplete')&&S.publicPack.includes("contentMode:'official-public-text'"),'public-exact-text-proof-boundary'],
  [S.a6.includes('grid-template-columns:minmax(11rem,15rem) minmax(0,1fr)'),'standard-detail-space'],
  [S.home.includes('padding-top:0!important;padding-bottom:0!important;min-height:0!important')&&S.home.includes('box-sizing:border-box;height:calc(100dvh')&&S.home.includes('max-height:calc(100dvh')&&S.home.includes('align-content:center;overflow:visible'),'home-real-viewport-budget'],
- [S.p2.includes('.procedure-switch>i{display:none!important}')&&S.p2.includes('[data-rn-job-summary]'),'composition-formatting'],
+ [!S.p2.includes('!important')&&S.p2.includes('.procedure-switch{display:grid')&&S.p2.includes('[data-rn-job-summary]')&&S.home.includes('#adminCenter .procedure-switch>i{display:none!important}'),'composition-formatting-and-local-owner'],
  [S.anatomy.includes('procedure-support-rail .procedure-context-detail'),'support-rail-css-owner']
 ];
 for(const[ok,label]of sourceChecks)assert.ok(ok,label);
