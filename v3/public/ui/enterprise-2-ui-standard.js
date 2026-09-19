@@ -150,8 +150,8 @@ function reconcileServerIssuedAdminVisibility() {
   if (!role) return;
   const settings = $('#openSettings');
   if (!settings) return;
-  settings.hidden = role !== 'admin';
-  settings.dataset.uiAuthoritySource = 'server-actor-role';
+  settings.hidden = true;
+  settings.dataset.uiAuthoritySource = 'admin-ai-tab';
 }
 
 let scheduled = false;
