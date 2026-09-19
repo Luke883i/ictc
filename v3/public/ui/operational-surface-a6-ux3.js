@@ -119,7 +119,7 @@ function registryWrap(host,{id,label,process,count,open=false}){
     if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span>';summary.append(countGroup);}
   }
   details.dataset.a6RegistryTotal=String(Number(count||0));
-  if(id==='monitoring'){details.dataset.rnJobRegistry='visible-truth';details.open=Number(count||0)>0;}
+  if(id==='monitoring'){details.dataset.rnJobRegistry='visible-truth';details.open=true;}
   const total=details.querySelector('[data-a6-registry-total]');
   if(total)total.textContent=`${Number(count||0)} totali`;
   return details;
