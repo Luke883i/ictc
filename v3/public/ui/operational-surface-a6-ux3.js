@@ -119,6 +119,7 @@ function registryWrap(host,{id,label,process,count,open=false}){
     if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span>';summary.append(countGroup);}
   }
   details.dataset.a6RegistryTotal=String(Number(count||0));
+  if(id==='monitoring'){details.dataset.rnJobRegistry='visible-truth';details.open=Number(count||0)>0;}
   const total=details.querySelector('[data-a6-registry-total]');
   if(total)total.textContent=`${Number(count||0)} totali`;
   return details;
@@ -197,7 +198,7 @@ function monitoringOwner(){
   const material=root.querySelector('.contribute-card');if(material){const h=material.querySelector('h2'),p=material.querySelector('h2 + p');if(h)h.textContent='Materiali in ingresso';if(p)p.textContent='Originali conservati che possono generare una fonte candidata, ma non sono ancora fonti verificate.';}
   const list=root.querySelector('#missionsList');if(!list)return;
   const byId=new Map((state.data?.missions||[]).map(item=>[item.id,item]));
-  const details=registryWrap(list,{id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:true});
+  const details=registryWrap(list,{id:'monitoring',label:'Job di mining',process:'monitoring',count:byId.size,open:true});
   ensureFilter(details,{id:'monitoring',process:'monitoring',defaultValue:'current',options:[['current','Correnti'],['active','Attivi'],['inactive','Non attivi'],['draft','Bozze'],['all','Tutti']]});
   let unbound=0;
   for(const card of list.querySelectorAll('.mission-card,article')){

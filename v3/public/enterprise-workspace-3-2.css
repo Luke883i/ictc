@@ -96,3 +96,14 @@ html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm[data-admin
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm[data-admin-embedded="true"]>.settings-18,html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm[data-admin-embedded="true"]>.dialog-body{min-height:0;max-height:none;overflow:visible}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm[data-admin-embedded="true"]>footer{display:flex;justify-content:flex-end;gap:.5rem;padding:.55rem 0 0;border-top:1px solid var(--color-border)}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsForm[data-admin-embedded="true"]>footer [data-close="settingsDialog"]{display:none}
+
+/* Runtime semantic convergence: procedure availability uses readable native checkboxes and one explicit save row. */
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyList{gap:.42rem!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{grid-template-columns:minmax(0,1fr) minmax(8.5rem,auto)!important;min-height:58px!important;padding:.55rem .7rem!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch{display:grid;grid-template-columns:24px minmax(0,1fr);align-items:center;gap:.45rem;justify-self:end;min-width:8.5rem;padding:.28rem .45rem;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface-subtle)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch input[type="checkbox"]{appearance:auto!important;width:20px!important;height:20px!important;margin:0!important;accent-color:var(--color-brand)}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch i{display:none!important}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch em{font-style:normal;font-size:var(--type-label);font-weight:var(--weight-label);white-space:nowrap}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyImpact{margin-top:.45rem}
+html[data-native-semantic-lattice="3.2.0"] #adminCenter #procedurePolicyForm>.admin-actions{justify-content:flex-end;margin-top:.45rem}
+@media(max-width:760px){html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-policy-row.p2-configuration-row{grid-template-columns:minmax(0,1fr)!important}html[data-native-semantic-lattice="3.2.0"] #adminCenter .procedure-switch{justify-self:stretch;width:100%}}
