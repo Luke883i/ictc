@@ -106,6 +106,16 @@ Un workflow con un nome storico può restare regression evidence sul codice corr
 
 L'orchestrazione utente/agente è esterna: una correzione crea una nuova HEAD e invalida l'accettazione precedente. L'agente può osservare, materializzare una nuova candidate e diagnosticare; non può trasformare un check in successo né sostituire la decisione di merge.
 
+## Freshness vs coerenza semantica
+
+C5 freshness e documentation freshness sono controlli di **immutabilità relativa**: rilevano che un input/receipt è cambiato o è rimasto uguale. Non dimostrano, da soli, coerenza semantica cross-owner.
+
+Il debito noto è registrato come `D-RSC` in `v3/semantic-owner-contract.json`. Il documentation runtime esercita ora anche le failure family note: legacy authority classificata come current, UI prose che diverge da Home/Process Hub executable owners, OpenAPI che nomina la Suite DEMO sbagliata, PR governance declaration senza corrispondenza nel diff, laundering di GAP-022/CodeQL/legacy residue e confusione fra freshness e consistency.
+
+Questo non è un solver globale di equivalenza semantica. Se emerge un nuovo drift, va aggiunto al vocabolario D-RSC e al falsificatore pertinente. Method/path parity di un'API non implica semantic freshness della descrizione.
+
+CodeQL resta supplemental/conditional: se l'exact-head check è `skipped`, l'evidenza CodeQL è **non eseguita**, non verde. I rail first-party required mantengono il proprio verdetto indipendente.
+
 ## Exact-head e freshness
 
 Il colore appartiene allo SHA eseguito. Dopo una correzione, il verde del commit precedente è genealogia. PR acceptance richiede gli artifact/check della exact PR HEAD corrente; `skipped` significa non eseguito, non passed.

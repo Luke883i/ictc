@@ -90,7 +90,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 
 La regola UI corrente è **work first, explanation on demand**. `active-experience.js` installa gli owner locali 3.2 e solo dopo il kernel globale di annotazione. Il kernel è annotation-only: non possiede la gerarchia locale, non introduce copy business e non riordina il DOM locale.
 
-Processi di Compliance è un catalogo di capability eterogenee e usa una matrice responsive 3 → 2 → 1. I record business ripetuti e comparabili usano invece list/row grammar. Il lifecycle costituzionale resta C0.1: `harmonization → presentation → integrity → journey → annotation`.
+Processi di Compliance usa il contratto corrente **one-row-per-procedure / row-list**; su viewport stretti la singola riga rifluisce senza tornare alla vecchia matrice di card. Anche i record business ripetuti e comparabili usano list/row grammar. Il lifecycle costituzionale resta C0.1: `harmonization → presentation → integrity → journey → annotation`.
 
 ## Presentation corrente: owner locali + Workspace Chrome 3.3
 

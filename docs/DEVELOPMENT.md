@@ -54,6 +54,14 @@ Il loop operativo è esterno al runtime applicativo: utente/agente osserva → m
 
 Il branch è trasporto e segnalibro, non current truth. Può restare dopo il merge per archeologia oppure essere eliminato senza cancellare commit/PR history. Per confrontare due momenti usare gli SHA, non il conteggio o il nome dei branch.
 
+### Freshness non basta
+
+Una receipt fresca dice che i suoi input non sono cambiati; **non** dimostra che README, START_HERE, OpenAPI, authority map ed executable owner dicano la stessa cosa. Per una modifica current confronta quindi la frase/proiezione con il proprietario eseguibile e aggiungi o aggiorna il falsificatore della failure family.
+
+Il debito noto di questo tipo è `D-RSC` nel `repositoryCoherenceDebt` di `v3/semantic-owner-contract.json`. Un finding interno si chiude solo quando causa/proiezione sono riallineate e il relativo falsificatore non riproduce più il drift. Un finding E3/E4 non si chiude con CI repository.
+
+Per PR trajectory-sensitive vale un controllo ulteriore: se il body dichiara `planned` / `intentional-deviation` o afferma che convergence authority e workbook “si muovono insieme”, il **diff reale deve contenerli**. Altrimenti va corretta la dichiarazione prima del merge; il testo della PR non è evidenza del file change.
+
 ## Ciclo canonico
 
 ```bash

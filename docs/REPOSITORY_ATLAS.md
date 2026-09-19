@@ -117,6 +117,29 @@ Molti branch storici possono quindi essere letti come segnalibri di candidate st
 
 La retention del branch è opzionale: eliminare un branch dopo il merge non elimina la storia canonica già conservata da commit e PR. Mantenerlo può aiutare l'archeologia; cancellarlo può ridurre rumore. In entrambi i casi `main` e gli owner correnti restano la fonte per l'AS-IS. Anche il numero di branch è quindi una fotografia volatile, non un KPI.
 
+## Debito di coerenza del repository — D-RSC
+
+Il runtime core può essere più coerente della sua meta-descrizione. ICTC tratta questo scarto come **Repository Semantic Coherence Debt (D-RSC)**: drift o ambiguità fra authority dichiarate, documentazione/API current, governance evidence ed executable owner. La proiezione machine-readable è `v3/semantic-owner-contract.json#repositoryCoherenceDebt`; non è un secondo gap register, una roadmap o una runtime authority.
+
+| Finding | Stato nella candidate ATLAS-1 | Significato / closure |
+|---|---|---|
+| F1 · authority-map fossilization | resolved-in-candidate | `ui_wiring` e `schemas` sono ora esplicitamente `legacy-lineage-debt`; i current owner restano v3/UI/API runtime |
+| F2 · current-doc semantic drift | resolved-in-candidate | README/START_HERE sono riallineati a Home max 3 e Process Hub one-row-per-procedure |
+| F3 · OpenAPI semantic freshness | resolved-in-candidate | `/api/demo/evidence-lattice` descrive Suite 3.0; 2.2 resta deprecated generator lineage |
+| F4 · PR declaration/diff mismatch | mitigated-open | il template richiede coerenza fra dichiarazione di trajectory/workbook e diff reale; il precedente storico non viene riscritto |
+| F5 · preventive server governance | blocked-external | resta `GAP-022 / E3-GOV`; GOV-01F è compensating e non può auto-creare branch protection |
+| F6 · security evidence bounded | evidence-bounded | CodeQL conta solo se eseguito con successo sulla exact SHA; `skipped` resta “not executed” e non invalida per osmosi gli altri rail required |
+| F7 · legacy tooling residue | open | script/literal legacy vanno ritirati o marcati senza scambiarli per runtime corrente |
+| F8 · freshness ≠ semantic consistency | in-remediation | freshness digest rileva cambiamento, non accordo fra owner; il documentation runtime aggiunge falsificatori per le failure family oggi note |
+
+**Regola:** `fresh` è necessario, non sufficiente. Una proiezione current deve anche essere confrontata con l'executable owner della semantica che descrive. Una route HTTP presente non rende automaticamente fresca la sua descrizione OpenAPI.
+
+### Negative controls dell'audit
+
+L'audit corrente non ha trovato, nella superficie osservata, una seconda business write authority, un ottavo processo, un AI decision path autonomo, un evidente quarantine bypass, un selector cross-tenant non membership-bound, un export che allarghi RBAC o un percorso standard che promuova il benchmark PostgreSQL a production proof. Questi sono **bounded observations**, non prove formali di assenza: una nuova failure family o un nuovo path deve poterle riaprire.
+
+D-RSC non ingloba i rail esterni: E3-HUMAN, E3-GOV ed E4-DEPLOY restano esterni. In particolare F5 è un link al GAP-022 canonico, non un duplicato.
+
 ## Inferenza assistita da AI
 
 Un AI assistant può accelerare software archaeology, dependency tracing, confronto di authority, mining delle PR e falsificazione di ipotesi. Il suo output resta un'analisi/proposta, non repository authority.

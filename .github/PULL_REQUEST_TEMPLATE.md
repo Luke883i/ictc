@@ -28,6 +28,9 @@ Indica la rail corrente toccata e gli eventuali prerequisite/stacked PR. Evita d
 
 Una modifica user-directed fuori dal piano corrente usa `intentional-deviation`: preserva la storia e aggiorna authority + workbook. Una PR realmente neutra usa `Convergence slice: NONE` e non riscrive il workbook.
 
+- [ ] Se il body dichiara `planned` / `intentional-deviation` o afferma che convergence authority + workbook cambiano insieme, i file dichiarati sono realmente presenti nel diff; altrimenti la dichiarazione è stata corretta prima del merge.
+- [ ] Se la PR crea, mitiga o chiude un finding `D-RSC`, `v3/semantic-owner-contract.json#repositoryCoherenceDebt` e il relativo falsificatore restano coerenti.
+
 ## Tests and falsification
 
 ```text
