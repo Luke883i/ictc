@@ -6,8 +6,8 @@ function capability(name) { return Array.isArray(state.data?.capabilities) && st
 function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-header';}
 function aiStatusView(llm={}){
   const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
-  const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
-  const tooltip=llm.ready?detail:`${detail} · I percorsi manuali restano disponibili`;
+  const detail=llm.ready?'AI configurata e disponibile':llm.configured?'AI configurata, ma chiave non disponibile':'AI non configurata';
+  const tooltip=llm.ready?detail:`${detail}. I percorsi manuali restano disponibili.`;
   const icon=llm.ready?'sparkles':llm.configured?'triangle-alert':'info';
   return {stateId,detail,tooltip,icon};
 }
@@ -17,6 +17,8 @@ function syncRuntimeStatus(){
   const view=aiStatusView(llm);
   status.innerHTML=uiIcon(view.icon,'ui-icon runtime-status-icon');
   status.dataset.aiState=view.stateId;
+  delete status.dataset.state;
+  delete status.dataset.tone;
   status.dataset.actorRole=role;
   status.dataset.tooltip=view.tooltip;
   status.title=view.tooltip;

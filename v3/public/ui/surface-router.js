@@ -32,7 +32,7 @@ function normalizeSurface(value) {
 function normalizeProcedure(value) {
   return GRC_PROCEDURES.has(value) ? value : null;
 }
-function enabledProcedureSet(){const enabled=state.data?.experience?.procedurePolicy?.enabled;return Array.isArray(enabled)&&enabled.length?new Set(enabled):null;}
+function enabledProcedureSet(){const enabled=state.data?.experience?.procedurePolicy?.enabled;return Array.isArray(enabled)?new Set(enabled):null;}
 function blockedProcedure(route){const enabled=enabledProcedureSet();if(!enabled)return null;const id=route.surface==='grc'?route.procedureId:SURFACE_PROCEDURE[route.surface];return id&&!enabled.has(id)?id:null;}
 function storedProcedure() {
   try { return normalizeProcedure(localStorage.getItem('ictc-grc-process')); }
