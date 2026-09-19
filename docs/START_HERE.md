@@ -19,7 +19,7 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 | `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
 | `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `v3/c3-enterprise-runtime-closure.json` + `v3/runtime/enterprise-runtime-kernel.mjs` | `node v3/c3-enterprise-bench-dod-check.mjs` | `npm test` |
 
-Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/gov-01f-policy.json` (`agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`). Il routing distingue `runtime` locale/compatibility da `enterprise-runtime`: il secondo parte dal contratto C3 e non usa SQLite/RuntimeStore come prova del runtime orizzontale.
+Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/gov-01f-policy.json` (`agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `dependabot/`; `dependabot/` è riservato agli aggiornamenti automatici). Il routing distingue `runtime` locale/compatibility da `enterprise-runtime`: il secondo parte dal contratto C3 e non usa SQLite/RuntimeStore come prova del runtime orizzontale.
 
 Per una correzione locale non serve leggere l'intera genealogia. Se la modifica altera significato, authority, persistence, epistemic state o una surface condivisa, approfondisci i documenti proprietari indicati sotto. Se il problema richiede un nuovo layer, prima dimostra che nessun owner corrente possa assorbirlo.
 
