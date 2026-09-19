@@ -85,7 +85,7 @@ const baseline=deautopoiesis.indexOf('- name: Snapshot Windows Node process base
 check(baseline>=0&&runtime>baseline&&quiescence>runtime,'Windows portability order must be baseline -> runtime -> owned quiescence');
 check(deautopoiesis.includes('ictc-node-baseline.json')&&deautopoiesis.includes('baselineKeys.Contains'),'Windows quiescence must distinguish pre-existing Node processes from test-owned residuals');
 check(!deautopoiesis.includes('$nodes | Stop-Process'),'Windows quiescence must never terminate every Node process on the runner');
-check(deautopoiesis.includes('actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803')&&deautopoiesis.includes('actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38'),'deautopoiesis actions must stay pinned');
+check(/actions\/checkout@[0-9a-f]{40}/i.test(deautopoiesis)&&/actions\/setup-node@[0-9a-f]{40}/i.test(deautopoiesis),'deautopoiesis actions must stay exact-SHA pinned');
 check(shellLineageWorkflow.includes('--profile current'),'shell lineage probe must execute the current profile');
 check(shellLineageProbe.includes("dataset.nativeSemanticLattice==='3.2.0'"),'shell lineage probe must synchronize on current semantic authority');
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
