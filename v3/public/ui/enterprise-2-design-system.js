@@ -69,7 +69,8 @@ function statusKey(value) {
 }
 
 function normalizeStatuses(root = document) {
-  for (const node of $$('.pill,.runtime-status,.origin-tag,.status-badge,[data-status]', root)) {
+  for (const node of $('.pill,.runtime-status,.origin-tag,.status-badge,[data-status]', root)) {
+    if(node.id==='runtimeStatus'&&node.dataset.aiState){node.dataset.tone=({ready:'positive','key-missing':'attention',unconfigured:'neutral'})[node.dataset.aiState]||'neutral';continue;}
     node.dataset.tone = statusKey(node.textContent);
   }
 }
