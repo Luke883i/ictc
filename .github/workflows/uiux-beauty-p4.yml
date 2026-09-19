@@ -84,7 +84,7 @@ jobs:
               signature = f'{phase}|{check}'[:180]
               print('signature=' + signature)
           PY
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
           name: uiux-beauty-p4-rendered-evidence

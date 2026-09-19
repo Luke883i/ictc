@@ -35,7 +35,7 @@ jobs:
         run: node v3/v3-saturation-100k.mjs
       - name: Global V4 DoD
         run: node v3/v4-global-dod-check.mjs
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
           name: v4-dod-saturation

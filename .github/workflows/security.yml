@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p artifacts
           npm sbom --sbom-format cyclonedx > artifacts/ictc-sbom.cdx.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         with:
           name: ictc-sbom
           path: artifacts/ictc-sbom.cdx.json
@@ -48,7 +48,7 @@ jobs:
       - run: node v3/security-attack-saturation.mjs
       - run: npm run public-demo:check
       - run: npm run public-demo:saturation
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
           name: ictc-security-runtime-dod
@@ -70,7 +70,7 @@ jobs:
       - run: node v3/workflow-action-pin-check.mjs
       - run: node v3/security-sast-check.mjs
       - run: node v3/security-static-analysis-posture.mjs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         with:
           name: ictc-security-sast
           path: |
@@ -99,7 +99,7 @@ jobs:
           "$browser" --version
       - run: node --check v3/security-fi01-dom-cdp-check.mjs
       - run: node v3/security-fi01-dom-cdp-check.mjs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
           name: ictc-security-fi01-dom
