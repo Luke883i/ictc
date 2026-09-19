@@ -1,29 +1,61 @@
 # Traiettoria del progetto ICTC
 
-Questo documento è **lineage progettuale**, non autorità dell'AS-IS. In caso di conflitto prevalgono `docs/authority-matrix.yaml`, runtime eseguibile e release identity corrente.
+Questo documento è **lineage progettuale**, non autorità dell'AS-IS e non live mirror di GitHub. In caso di conflitto prevalgono l'owner della classe di verità, il runtime eseguibile e i fatti Git osservati. Una PR open/draft, un file più recente o un alto numero di mutation trial non diventano current truth per recenza.
 
-## Origine → convergenza corrente
+## Lettura per epoche
 
-L'analisi delle PR merged dall'origine alla PR #59 mostra quattro movimenti ricorrenti.
+La storia completa delle singole PR resta in Git/GitHub. Questa pagina comprime la genealogia in movimenti ingegneristici utili a capire perché gli owner correnti hanno questa forma.
 
-### 1. Fondazione epistemica e primi journey
-Le prime generazioni hanno fissato separazione tra osservazione, proposta, decisione umana ed evidenza; hanno costruito ingestion, incidenti, monitoring e primi contratti UI/runtime.
+### E1 · Fondazione e falsificazione
+Le prime generazioni costruiscono API, RBAC, monitoring, incidenti, evidenza e runtime iniziale. La crescita rende visibile presto un rischio ricorrente: una capability dichiarata o un test interno non equivalgono a readiness esterna.
 
-### 2. Espansione dei processi e hardening
-Le generazioni successive hanno aggiunto GRC, registry/procedure adapters, identity, security boundary, enterprise posture, persistenza e audit. La crescita ha prodotto sia capacità sia duplicazioni storiche, poi progressivamente compresse.
+### E2 · Workbench e canonicalizzazione
+Il prodotto amplia i journey e introduce persistenza, audit, procedure, identity/security boundary e strutture GRC. La varietà funzionale viene progressivamente ricondotta a owner, registry e contratti condivisi.
 
-### 3. Convergenza delle autorità
-Le PR di stabilizzazione hanno spostato il prodotto verso owner espliciti: authority matrix, semantic projections, SubjectVersion, EpistemicStep, evidence graph, integrity binding, standard library e procedure policy. La persistenza corrente è migrata a SQLite mentre parte della documentazione storica era rimasta ancorata a `state.json`.
+### E3 · Kernel semantico e sette procedure
+Si stabilizzano esattamente sette business procedure, la centralità della decisione umana, SQLite/WAL come persistenza standard, SubjectVersion/EpistemicStep e una direzione unica per write authority, readback e receipt. EP-01 resta vista trasversale, non ottavo processo.
 
-### 4. Convergenza esperienziale
-PR #57 ha consolidato Experience V1.9; PR #58 ha corretto difetti visuali reali e introdotto primitive/polish assurance; PR #59 ha introdotto EP-01, inferenza human-ON e cross-procedure creation; PR #60 percorre realmente tutte le sette procedure, rende revision-bound il refresh delle superfici, introduce navigazione progressiva del reticolo e completa la convergenza di Postura/evidence export/documentazione.
+### E4 · Experience, epistemic lattice e demo isolata
+Experience convergence, reticolo epistemico, journey reali delle sette procedure, demo sintetica isolata e role guidance spostano il focus dalla sola correttezza del dominio alla comprensibilità operativa.
+
+### E5 · Stratigrafia di presentation e retirement
+L'accumulo di enhancer, finalizer e late CSS resolver produce debito di ownership. La risposta diventa compressione: owner locali, composition root unico, annotation-only globale e retirement dei layer concorrenti.
+
+### E6 · Truth, reliability e assurance boundaries
+Capability truth, temporalità epistemica, runtime reliability e browser evidence rafforzano la distinzione tra repository proof ed evidenze umane, di governance o deployment.
+
+### E7 · Convergence governance e owner compression
+Workbook, target scope, reality rehearsal, semantic-owner contract e convergence authority rendono esplicito che Git possiede i live merge facts mentre i file committati possiedono planning durevole e osservazioni, non un contatore live.
+
+### E8 · Capacity, delivery, demo e runtime-semantic convergence
+Il repository separa runtime standard e substrate enterprise C3/PostgreSQL, disciplina bootstrap/PaaS, Public DEMO read-only, provider AI e semantic owner/freshness.
 
 ## Pattern da preservare
 
-La traiettoria più sana è stata **espansione → falsificazione → compressione → nuova capacità**. Il progetto degrada quando una nuova generazione aggiunge un secondo owner, un nuovo vocabolario o un override senza ritirare quello precedente.
+`expansion -> falsification -> compression -> new capability`
 
-Per questo la candidate corrente adotta tre regole:
+- **Expansion** crea una capacità o un'ipotesi utile.
+- **Falsification** cerca failure family, collisioni di authority, regressioni e claim eccessivi.
+- **Compression** elimina duplicazioni, riduce owner concorrenti e rende esplicito il boundary.
+- **New capability** riparte quando la responsabilità precedente è leggibile e falsificabile.
 
-1. un dato autorevole può avere molte rappresentazioni ma un solo owner;
-2. ogni nuovo layer deve giustificare una responsabilità non assorbibile da quelli esistenti;
-3. la documentazione corrente descrive l'AS-IS; la storia resta qui, separata e non normativa.
+## Anti-pattern osservati
+
+1. **Late presentation ownership.** Enhancer/finalizer/resolver tardivi accumulano autorità implicita.
+2. **Post-merge truth reconciliation.** Un file committato che tenta di essere live mirror di Git crea lag e PR di riconciliazione.
+3. **Stacked topology churn.** Ref/branch/tooling churn può produrre molte modifiche senza equivalente incremento di prodotto.
+4. **Mutation-count inflation.** Molti trial non compensano un oracle correlato o una failure family assente.
+5. **Same-circuit assurance.** Modello, implementazione, oracle e closure nello stesso circuito non creano indipendenza.
+6. **Second-source repair.** Correggere una proiezione aggiungendo una nuova authority sposta il problema invece di chiuderlo.
+
+## Metodo che emerge dalla storia
+
+Il metodo operativo corrente è in `docs/DEVELOPMENT.md`:
+
+`observe -> bound -> owner -> falsifier -> minimal change -> adversarial mutation -> exact-head evidence -> human merge`
+
+Il repository matura quando una nuova generazione **riduce l'ambiguità di responsabilità** almeno quanto aumenta la capacità.
+
+## Confine temporale
+
+Questo documento viene aggiornato per epoche e pattern, non a ogni merge. Per HEAD corrente, PR merged/open e check correnti, interrogare Git/GitHub. Questa storia non sostituisce `v3/release-identity.json`, `docs/PRODUCT.md`, `docs/11_ARCHITECTURE.md` o `docs/convergence/convergence-authority.json`.

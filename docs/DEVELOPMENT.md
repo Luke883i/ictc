@@ -25,6 +25,27 @@ Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 9. Per UI condivisa, C0.1 deve restare l'ultimo converger semantico.
 10. Se cambia documentazione current/policy/operating aggiorna manifest e `docs:check`; se cambia il significato pubblico aggiorna l'authority sostanziale, non soltanto README.
 
+## Metodo ingegneristico canonico
+
+Il ciclo di sviluppo è una sequenza epistemica, non una sequenza di file:
+
+`observe -> bound -> owner -> falsifier -> minimal change -> adversarial mutation -> exact-head evidence -> human merge`
+
+1. **Observe** — ricostruisci il fatto corrente da owner eseguibili e, se serve un live Git fact, da Git/GitHub.
+2. **Bound** — dichiara claim boundary, non-goal e proprietà esterne non verificabili dal repository.
+3. **Owner** — modifica l'owner esistente; una seconda authority richiede una responsabilità realmente nuova.
+4. **Falsifier** — formula il difetto come invariante e identifica il feedback più vicino prima di cambiare codice.
+5. **Minimal change** — chiudi la causa con la slice semantica più piccola; "slice" significa responsabilità coerente, non numero minimo di file.
+6. **Adversarial mutation** — prova failure family e controesempi; il numero di trial non è probabilità di correttezza.
+7. **Exact-head evidence** — riesegui il rail pertinente sulla head finale; verde precedente o output derivato non chiudono la PR.
+8. **Human merge** — l'automazione propone e falsifica; l'accettazione resta una decisione di repository governance.
+
+### Stop condition
+
+Fermati quando la causa è chiusa nell'owner corretto, il falsificatore discrimina la regressione, le authority non si sono allargate, il boundary è documentato e l'exact-head evidence richiesta è convergente. Non continuare ad aggiungere layer, test o copy solo per aumentare il volume di evidenza.
+
+Per software archaeology assistita da AI, usa [Repository Atlas](REPOSITORY_ATLAS.md): distingue checkout inference da live Git facts e definisce il minimo GitHub connector read-only utile alla presa in carico.
+
 ## Ciclo canonico
 
 ```bash

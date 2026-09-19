@@ -15,6 +15,7 @@
   },
   "documents": [
     {"id":"readme","path":"README.md","lifecycle":"current","mode":"explanation","authorityTopic":"repository_front_door","authoritative":true},
+    {"id":"repo-atlas","path":"docs/REPOSITORY_ATLAS.md","lifecycle":"operating","mode":"explanation","authorityTopic":"repository_self_description","authoritative":true},
     {"id":"v3-readme","path":"v3/README.md","lifecycle":"operating","mode":"reference","authorityTopic":null,"authoritative":false},
     {"id":"start","path":"docs/START_HERE.md","lifecycle":"current","mode":"reference","authorityTopic":"documentation_navigation","authoritative":true},
     {"id":"product","path":"docs/PRODUCT.md","lifecycle":"current","mode":"reference","authorityTopic":"product_intent","authoritative":true},

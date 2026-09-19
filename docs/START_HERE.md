@@ -2,6 +2,13 @@
 
 Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing: non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
 
+## Due ingressi, due problemi diversi
+
+- Se devi **capire che tipo di repository stai guardando**, prima leggi [Repository Atlas](REPOSITORY_ATLAS.md): forma del repository, classi di verità, storia/metodo e limiti di inferenza.
+- Se devi **modificare qualcosa**, resta qui e parti dal problema concreto: questa pagina instrada verso authority, feedback locale e rail di convergenza.
+
+Il Repository Atlas non sostituisce questo router e questo router non replica la storia del progetto.
+
 ## Router per tipo di modifica
 
 Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il contratto eseguibile `v3/semantic-owner-contract.json` rende questa proiezione verificabile senza creare una seconda authority.
@@ -26,19 +33,20 @@ Per una correzione locale non serve leggere l'intera genealogia. Se la modifica 
 ## Percorso di approfondimento
 
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
-2. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
-3. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
-4. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
-5. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
-6. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
-7. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
-8. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
-9. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
-10. [Semantic Workspace Closure 3.2.1](SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md) — owner corrente di Processi/Evidence presentation oltre alla closure copy/layout.
-11. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer.
-12. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — lineage della closure ritirata; non è current authority.
-13. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
-14. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
+2. [Repository Atlas](REPOSITORY_ATLAS.md) — forma del repository, classi di verità, metodo di lettura e inferenza assistita.
+3. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
+4. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
+5. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
+6. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
+7. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.
+8. [Epistemic contract](02_EPISTEMIC_CONTRACT.md) — versioni, basis, authority e read/write boundary.
+9. [End-user language](03_ENDUSER_LANGUAGE.md) e [User journeys](04_USER_JOURNEYS.md) — policy linguistica e journey correnti.
+10. [Native Semantic Lattice 3.2](NATIVE_SEMANTIC_LATTICE_3_2_DOD.md) — composizione UI/UX corrente; path canonico `docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md`.
+11. [Semantic Workspace Closure 3.2.1](SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md) — owner corrente di Processi/Evidence presentation oltre alla closure copy/layout.
+12. [Workspace Chrome Design System 3.3](21_DESIGN_SYSTEM.md) — token e owner bounded di header/footer.
+13. [UI Fine-Tuning 3.4](UI_FINE_TUNING_3_4_DOD.md) — lineage della closure ritirata; non è current authority.
+14. [Testing](TESTING.md) e [Development](DEVELOPMENT.md) — gate e flusso operativo.
+15. [Documentation Standard](DOCUMENTATION_STANDARD.md) e [Documentation Runtime 1.0](DOCUMENTATION_RUNTIME_1_0_DOD.md) — policy e gate del reticolo documentale; path canonico `docs/DOCUMENTATION_STANDARD.md`.
 
 Il registry machine-readable è [documentation-manifest.json](documentation-manifest.json). La data più recente non crea authority: lifecycle e topic sono espliciti. `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners` sono assi distinti: la presentation corrente è distribuita tra owner canonici e non esiste più un final cascade resolver globale.
 
