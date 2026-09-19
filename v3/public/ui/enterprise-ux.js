@@ -7,9 +7,10 @@ function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-hea
 function aiStatusView(llm={}){
   const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
   const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
-  const tooltip=llm.ready?detail:`${detail} · I percorsi manuali restano disponibili`;
+  const tooltip=llm.ready?'AI disponibile · supporto assistivo attivo; le decisioni restano umane':llm.configured?'Chiave AI non disponibile · funzioni AI bloccate; i percorsi manuali restano disponibili':'AI non configurata · funzioni AI non disponibili; registrazione ed evidenze manuali restano disponibili';
   const icon=llm.ready?'sparkles':llm.configured?'triangle-alert':'info';
-  return {stateId,detail,tooltip,icon};
+  const tone=llm.ready?'positive':llm.configured?'attention':'neutral';
+  return {stateId,detail,tooltip,icon,tone};
 }
 function syncRuntimeStatus(){
   const status=$('#runtimeStatus');if(!status||!state.data)return;
@@ -18,6 +19,8 @@ function syncRuntimeStatus(){
   status.innerHTML=uiIcon(view.icon,'ui-icon runtime-status-icon');
   status.dataset.aiState=view.stateId;
   status.dataset.actorRole=role;
+  status.dataset.tone=view.tone;
+  delete status.dataset.state;
   status.dataset.tooltip=view.tooltip;
   status.title=view.tooltip;
   status.setAttribute('aria-label',view.tooltip);
