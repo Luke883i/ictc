@@ -21,7 +21,7 @@ check(ciVerdictJob.includes('GITHUB_STEP_SUMMARY')&&ciVerdictJob.includes('exit 
 check(browserJourneyJob.includes('name: browser / ${{ matrix.script }}'),'browser native check name must expose its source script');
 check(browserJourneyJob.includes('fail-fast: false'),'browser matrix must complete sibling journeys after a leaf failure');
 check(browserJourneyJob.includes('max-parallel: 4'),'browser matrix parallelism must stay bounded');
-check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===10,'canonical required browser matrix must retain ten non-overlapping journeys');
+check((browserJourneyJob.match(/script: v3\/browser-/g)||[]).length===11,'canonical required browser matrix must retain eleven non-overlapping journeys');
 check(!browserJourneyJob.includes('browser-information-value.py'),'information-value must not remain a duplicate required browser authority');
 check(!/statuses:\s*write/.test(browserJourneyJob)&&!/statuses:\s*write/.test(professionalBrowserJob),'browser jobs must not hold status-write authority');
 check(!browserJourneyJob.includes('GH_TOKEN:')&&!browserJourneyJob.includes('HEAD_SHA:'),'browser matrix must not receive status publication metadata');

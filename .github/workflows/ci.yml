@@ -67,6 +67,7 @@ jobs:
           - {id: procedure-ui-ux-1-6, script: v3/browser-procedure-ui-ux-1-6.py}
           - {id: risk-drilldown, script: v3/browser-risk-drilldown.py}
           - {id: ao-activation, script: v3/browser-ao-activation.py}
+          - {id: ui-runtime-intent, script: v3/browser-ui-runtime-intent-convergence.py}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
