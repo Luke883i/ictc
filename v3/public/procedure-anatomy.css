@@ -258,7 +258,7 @@
 .procedure-anatomy-standard-body{padding:0 12px 10px}
 .procedure-standard-name{font-weight:400}
 
-/* PR166/167 convergence: one support rail directly under the canonical procedure header. */
+/* Runtime convergence: one support rail is a host-level sibling immediately below the canonical procedure header. */
 .procedure-support-rail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem;margin-top:.55rem}
 .procedure-support-rail>[data-editorial-slot]{min-width:0}
 .procedure-support-rail .procedure-anatomy,.procedure-support-rail .procedure-anatomy-standards{margin:0}
