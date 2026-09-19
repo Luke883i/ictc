@@ -7,9 +7,10 @@ function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-hea
 function aiStatusView(llm={}){
   const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
   const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
-  const tooltip=llm.ready?detail:`${detail} · I percorsi manuali restano disponibili`;
+  const tooltip=llm.ready?detail:llm.configured?`${detail} · Verifica la chiave in Amministrazione > AI. I percorsi manuali restano disponibili`:`${detail} · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili`;
   const icon=llm.ready?'sparkles':llm.configured?'triangle-alert':'info';
-  return {stateId,detail,tooltip,icon};
+  const tone=llm.ready?'positive':llm.configured?'attention':'neutral';
+  return {stateId,detail,tooltip,icon,tone};
 }
 function syncRuntimeStatus(){
   const status=$('#runtimeStatus');if(!status||!state.data)return;
@@ -17,6 +18,7 @@ function syncRuntimeStatus(){
   const view=aiStatusView(llm);
   status.innerHTML=uiIcon(view.icon,'ui-icon runtime-status-icon');
   status.dataset.aiState=view.stateId;
+  status.dataset.tone=view.tone;
   status.dataset.actorRole=role;
   status.dataset.tooltip=view.tooltip;
   status.title=view.tooltip;
