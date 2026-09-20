@@ -1,0 +1,63 @@
+name: uiux-prework-audit
+on:
+  push:
+    branches:
+      - agent/uiux-ontology-audit-20260920
+    paths:
+      - v3/browser-uiux-prework-audit.py
+      - .github/workflows/uiux-prework-audit.yml
+permissions:
+  contents: write
+jobs:
+  prework:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0
+      - name: Resolve system Chromium
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          test -n "$browser"
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+      - name: Start current runtime
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ICTC_NO_OPEN=1 ICTC_PORT=4871 PORT=4871
+          export ICTC_BASE_URL="http://127.0.0.1:4871"
+          export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-prework-state"
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-prework-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
+          ./ictc.sh start --profile current --no-open
+          echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
+      - name: Observe business pre-work composition
+        run: python -u v3/browser-uiux-prework-audit.py
+      - name: Commit evidence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name "ictc-uiux-audit-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add audit/uiux-prework-20260920
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "audit: pre-work composition evidence [skip ci]"
+          git push origin HEAD:agent/uiux-ontology-audit-20260920
+      - name: Stop runtime
+        if: always()
+        run: ./ictc.sh stop --profile current || true
