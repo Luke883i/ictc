@@ -22,7 +22,7 @@ const projection={
 };
 const verdict=validateContributorRuntimeModel({contract,policy,projection});assert.equal(verdict.ok,true,verdict.failures.join('\n'));
 assert.equal(policy.defaultBranch,'main');assert.equal(policy.serverSidePrevention,false,'GOV-01F must not launder branch protection');
-assert.equal(branchAccepted('feat/example',policy),true);assert.equal(branchAccepted('agent/example',policy),true);assert.equal(branchAccepted('main',policy),false);assert.equal(branchAccepted('random/example',policy),false);
+assert.equal(branchAccepted('feat/example',policy),true);assert.equal(branchAccepted('agent/example',policy),true);assert.equal(branchAccepted('research/example',policy),true);assert.equal(branchAccepted('main',policy),false);assert.equal(branchAccepted('random/example',policy),false);
 assert.deepEqual(contract.taskRoutes.map(item=>item.id),[...REQUIRED_CONTRIBUTOR_ROUTE_IDS]);
 assert.equal(failureRoute(contract,'c3-enterprise-runtime')?.routeId,'enterprise-runtime');
 assert.ok(testing.includes('## Diagnosi dei failure di contribuibilità'));

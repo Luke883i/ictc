@@ -9,7 +9,7 @@ Read `docs/START_HERE.md` first. It routes current product, architecture, semant
 ## Percorso minimo prima del primo push
 
 1. Scegli la route del cambiamento in `docs/START_HERE.md`; per il runtime distingui il percorso locale/compatibility da `enterprise-runtime`.
-2. Crea un branch dedicato usando un prefisso ammesso dalla policy canonica `.github/gov-01f-policy.json`: `agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `dependabot/`. `dependabot/` è riservato agli aggiornamenti automatici; `main` non è un branch di lavoro.
+2. Crea un branch dedicato usando un prefisso ammesso dalla policy canonica `.github/gov-01f-policy.json`: `agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `research/`, `dependabot/`. `dependabot/` è riservato agli aggiornamenti automatici; `main` non è un branch di lavoro.
 3. Esegui prima il "feedback più vicino" della route; usa poi la rail di convergenza indicata.
 4. Apri una PR dalla exact head corrente e usa il template; il verde di uno SHA precedente non vale per la nuova head.
 
