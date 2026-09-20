@@ -1,0 +1,4999 @@
+{
+  "sha": "b76897a7ffb7a539aedfab3af674bd99d8c5cad1",
+  "rows": [
+    {
+      "surface": "monitoring",
+      "root": {
+        "tag": "section",
+        "id": "monitoringView",
+        "className": "view surface-canvas a6-ordered-flow",
+        "text": "Torna al monitoraggio RN-01 Monitoraggio normativo e fonti Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana ciò che può generare nuovo lavoro. Aggiungi materiale Programma mining AI Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applica",
+        "rect": {
+          "top": 48,
+          "bottom": 711.9,
+          "height": 663.9,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "section-block split-block surface-panel",
+        "text": "Fonti Risultati dei monitoraggi e dei materiali acquisiti. Una fonte entra nel catalogo accettato soltanto dopo una decisione umana. 0 Tutti gli stati Da verificare Verificate Escluse Vista Azioni correnti Tutti gli elementi Nessuna fonte corrisponde ai filtri.",
+        "rect": {
+          "top": 223.4,
+          "bottom": 530.8,
+          "height": 307.5,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "",
+          "text": "Fonti Risultati dei monitoraggi e dei materiali acquisiti. Una fonte entra nel catalogo accettato soltanto dopo una decisione umana. 0 Tutti gli stati Da verificare Verificate Escluse Vista Azioni correnti Tutti gli elementi Nessuna fonte corrisponde ai filtri.",
+          "rect": {
+            "top": 233.8,
+            "bottom": 514.8,
+            "height": 281.1,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al monitoraggio",
+          "rect": {
+            "top": 63.7,
+            "bottom": 107.7,
+            "height": 44,
+            "width": 191.8,
+            "left": 139.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi materiale",
+          "rect": {
+            "top": 136.5,
+            "bottom": 180.5,
+            "height": 44,
+            "width": 192,
+            "left": 910.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary procedure-secondary",
+          "text": "Programma mining AI",
+          "rect": {
+            "top": 136.5,
+            "bottom": 180.5,
+            "height": 44,
+            "width": 192,
+            "left": 1108.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "catalogSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 281.6,
+            "bottom": 332.5,
+            "height": 50.9,
+            "width": 987.6,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "catalogState",
+          "className": "",
+          "text": "Tutti gli stati Da verificare Verificate Escluse",
+          "rect": {
+            "top": 281.6,
+            "bottom": 332.5,
+            "height": 50.9,
+            "width": 190,
+            "left": 1124.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 364.8,
+            "bottom": 408.8,
+            "height": 44,
+            "width": 987.6,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 548.6,
+            "bottom": 592.6,
+            "height": 44,
+            "width": 588.4,
+            "left": 126.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 548.6,
+            "bottom": 592.6,
+            "height": 44,
+            "width": 588.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Nessun job configurato Attività periodiche Monitoraggi 0 0 correnti · 0 totali",
+          "rect": {
+            "top": 609.8,
+            "bottom": 686.1,
+            "height": 76.3,
+            "width": 1186.8,
+            "left": 126.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1000,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "incidents",
+      "root": {
+        "tag": "section",
+        "id": "incidentsView",
+        "className": "view surface-canvas",
+        "text": "Torna agli eventi EC-01 Incidenti e quasi incidenti Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chiusura. Registra evento Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta Eventi registrati 0",
+        "rect": {
+          "top": 48,
+          "bottom": 521.4,
+          "height": 473.4,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "section-block surface-panel",
+        "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+        "rect": {
+          "top": 258.1,
+          "bottom": 515,
+          "height": 256.9,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "a6-operational-registry",
+          "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+          "rect": {
+            "top": 274.9,
+            "bottom": 492.7,
+            "height": 217.8,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "a6-operational-registry",
+          "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+          "rect": {
+            "top": 274.9,
+            "bottom": 492.7,
+            "height": 217.8,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": "",
+          "summary": "Eventi registrati 0 aperti · 0 totali"
+        }
+      ],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna agli eventi",
+          "rect": {
+            "top": 63.7,
+            "bottom": 107.7,
+            "height": 44,
+            "width": 153.6,
+            "left": 139.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Registra evento",
+          "rect": {
+            "top": 126,
+            "bottom": 170,
+            "height": 44,
+            "width": 192,
+            "left": 1108.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 206.7,
+            "bottom": 250.7,
+            "height": 44,
+            "width": 588.4,
+            "left": 126.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 206.7,
+            "bottom": 250.7,
+            "height": 44,
+            "width": 588.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Eventi registrati 0 aperti · 0 totali",
+          "rect": {
+            "top": 278.3,
+            "bottom": 322.3,
+            "height": 44,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 349,
+            "bottom": 394.7,
+            "height": 45.7,
+            "width": 860.3,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Aperti In chiarimento Da approvare Inviati Chiusi Tutti",
+          "rect": {
+            "top": 350.7,
+            "bottom": 394.7,
+            "height": 44,
+            "width": 144,
+            "left": 993.1
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 350.7,
+            "bottom": 394.7,
+            "height": 44,
+            "width": 155.8,
+            "left": 1144.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1000,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "objects",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AO-01 Inventario di sistemi e oggetti Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli usati come base del lavoro di compliance. Aggiungi oggetto Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 rife",
+        "rect": {
+          "top": 71.2,
+          "bottom": 651.8,
+          "height": 580.6,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Attivi 0 Da validare 0 Da riesaminare 0 Aggiungi oggetto Tutti gli stati Da validare Attivi Da riesaminare 0 di 0 Vista Azioni correnti Tutti gli elementi Nessun oggetto registrato. Il primo oggetto sblocca mapping, rischi e assurance.",
+        "rect": {
+          "top": 271.7,
+          "bottom": 645.4,
+          "height": 373.6,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Attivi 0 Da validare 0 Da riesaminare 0",
+          "rect": {
+            "top": 271.7,
+            "bottom": 334.7,
+            "height": 63,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati Da validare Attivi Da riesaminare 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 348.3,
+            "bottom": 413.4,
+            "height": 65.1,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessun oggetto registrato. Il primo oggetto sblocca mapping, rischi e assurance.",
+          "rect": {
+            "top": 429.4,
+            "bottom": 551.4,
+            "height": 122,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 566.6,
+            "bottom": 638.2,
+            "height": 71.6,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 83.7,
+            "bottom": 127.7,
+            "height": 44,
+            "width": 245.9,
+            "left": 159.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 146,
+            "bottom": 190,
+            "height": 44,
+            "width": 192,
+            "left": 1088.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 226.7,
+            "bottom": 270.7,
+            "height": 44,
+            "width": 568.4,
+            "left": 146.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 226.7,
+            "bottom": 270.7,
+            "height": 44,
+            "width": 568.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 362.5,
+            "bottom": 413.4,
+            "height": 50.9,
+            "width": 646.5,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati Da validare Attivi Da riesaminare",
+          "rect": {
+            "top": 365.5,
+            "bottom": 413.4,
+            "height": 47.9,
+            "width": 173.8,
+            "left": 799.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 369.4,
+            "bottom": 413.4,
+            "height": 44,
+            "width": 155.8,
+            "left": 1131.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 580.4,
+            "bottom": 624.4,
+            "height": 44,
+            "width": 1121.2,
+            "left": 159.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1000,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "coverage",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "a6-ordered-flow",
+        "text": "Torna al processo precedente MC-01 Standard e Controlli Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasformare la copertura in un giudizio di conformità. Aggiungi requisito Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 rif",
+        "rect": {
+          "top": 68,
+          "bottom": 3740.3,
+          "height": 3672.3,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Decisioni registrate 0 0 elementi dichiarati Gap 0 decisioni esplicite Da decidere 0 nessuna inferenza automatica Fuori perimetro 0 decisioni di scope BIBLIOTECA Standard e framework Dichiara come l’organizzazione usa il riferimento. Applicabilità dei requisiti e mapping restano decisioni distinte. ",
+        "rect": {
+          "top": 299.8,
+          "bottom": 3733.9,
+          "height": 3434.1,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Decisioni registrate 0 0 elementi dichiarati Gap 0 decisioni esplicite Da decidere 0 nessuna inferenza automatica Fuori perimetro 0 decisioni di scope",
+          "rect": {
+            "top": 299.8,
+            "bottom": 381.8,
+            "height": 82,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "market-section",
+          "text": "BIBLIOTECA Standard e framework Dichiara come l’organizzazione usa il riferimento. Applicabilità dei requisiti e mapping restano decisioni distinte. I riferimenti proprietari non includono il testo normativo nel repository open source. GDPR 2016/679 Uso da dichiarare Regolamento (UE) 2016/679 Unione",
+          "rect": {
+            "top": 398.5,
+            "bottom": 2640.9,
+            "height": 2242.4,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "market-section",
+          "text": "VISTA INTEGRATA Obiettivi di controllo condivisi Una sovrapposizione tematica aiuta il lavoro integrato; non rende equivalenti standard diversi. Porta almeno due standard in perimetro o come riferimento per vedere le aree di sovrapposizione.",
+          "rect": {
+            "top": 2666.5,
+            "bottom": 2917.8,
+            "height": 251.3,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "market-mapping-panel",
+          "text": "Mappature operative · 0 requisiti dichiarati Standard Scegli standard Requisito Seleziona prima lo standard Obbligatorio: il perimetro si decide sul requisito identificato, non sulla sola descrizione. Oggetti o controlli che supportano il requisito Proponi motivazione/collegamenti con AI Registra pr",
+          "rect": {
+            "top": 2934.6,
+            "bottom": 3733.9,
+            "height": 799.4,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "market-mapping-panel",
+          "text": "Mappature operative · 0 requisiti dichiarati Standard Scegli standard Requisito Seleziona prima lo standard Obbligatorio: il perimetro si decide sul requisito identificato, non sulla sola descrizione. Oggetti o controlli che supportano il requisito Proponi motivazione/collegamenti con AI Registra pr",
+          "rect": {
+            "top": 2934.6,
+            "bottom": 3733.9,
+            "height": 799.4,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": "",
+          "summary": "Mappature operative · 0 requisiti dichiarati"
+        }
+      ],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 83.7,
+            "bottom": 127.7,
+            "height": 44,
+            "width": 245.9,
+            "left": 159.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi requisito",
+          "rect": {
+            "top": 156.5,
+            "bottom": 200.5,
+            "height": 44,
+            "width": 192,
+            "left": 1088.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 254.8,
+            "bottom": 298.8,
+            "height": 44,
+            "width": 568.4,
+            "left": 146.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 254.8,
+            "bottom": 298.8,
+            "height": 44,
+            "width": 568.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "marketStandardSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 500.9,
+            "bottom": 551.8,
+            "height": 50.9,
+            "width": 472.4,
+            "left": 810
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 728.5,
+            "bottom": 772.5,
+            "height": 44,
+            "width": 192,
+            "left": 171
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 728.5,
+            "bottom": 772.5,
+            "height": 44,
+            "width": 192,
+            "left": 548.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 728.5,
+            "bottom": 772.5,
+            "height": 44,
+            "width": 192,
+            "left": 926.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 790.1,
+            "bottom": 834.1,
+            "height": 44,
+            "width": 192,
+            "left": 171
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 790.1,
+            "bottom": 834.1,
+            "height": 44,
+            "width": 192,
+            "left": 548.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 790.1,
+            "bottom": 834.1,
+            "height": 44,
+            "width": 192,
+            "left": 926.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1018.1,
+            "bottom": 1062.1,
+            "height": 44,
+            "width": 192,
+            "left": 171
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1018.1,
+            "bottom": 1062.1,
+            "height": 44,
+            "width": 192,
+            "left": 548.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1018.1,
+            "bottom": 1062.1,
+            "height": 44,
+            "width": 192,
+            "left": 926.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1079.7,
+            "bottom": 1123.7,
+            "height": 44,
+            "width": 192,
+            "left": 171
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1079.7,
+            "bottom": 1123.7,
+            "height": 44,
+            "width": 192,
+            "left": 548.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1079.7,
+            "bottom": 1123.7,
+            "height": 44,
+            "width": 192,
+            "left": 926.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1307.8,
+            "bottom": 1351.8,
+            "height": 44,
+            "width": 192,
+            "left": 171
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1307.8,
+            "bottom": 1351.8,
+            "height": 44,
+            "width": 192,
+            "left": 548.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1307.8,
+            "bottom": 1351.8,
+            "height": 44,
+            "width": 192,
+            "left": 926.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 3836,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "actions",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AP-01 Azioni correttive Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completamento e verifica distinta di chiusura. Crea azione Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su",
+        "rect": {
+          "top": 71.2,
+          "bottom": 656.9,
+          "height": 585.7,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Aperte 0 Da adottare 0 Da verificare 0 Scadute 0 Crea azione Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi Nessuna azione. I gap possono diventare task persistenti.",
+        "rect": {
+          "top": 276.9,
+          "bottom": 650.5,
+          "height": 373.6,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Aperte 0 Da adottare 0 Da verificare 0 Scadute 0",
+          "rect": {
+            "top": 276.9,
+            "bottom": 339.8,
+            "height": 63,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 353.4,
+            "bottom": 418.5,
+            "height": 65.1,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuna azione. I gap possono diventare task persistenti.",
+          "rect": {
+            "top": 434.5,
+            "bottom": 556.5,
+            "height": 122,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Crea azione",
+          "rect": {
+            "top": 571.7,
+            "bottom": 643.3,
+            "height": 71.6,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 83.7,
+            "bottom": 127.7,
+            "height": 44,
+            "width": 245.9,
+            "left": 159.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Crea azione",
+          "rect": {
+            "top": 151.2,
+            "bottom": 195.2,
+            "height": 44,
+            "width": 192,
+            "left": 1088.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 146.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 367.6,
+            "bottom": 418.5,
+            "height": 50.9,
+            "width": 670.5,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 370.6,
+            "bottom": 418.5,
+            "height": 47.9,
+            "width": 149.8,
+            "left": 823.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 374.5,
+            "bottom": 418.5,
+            "height": 44,
+            "width": 155.8,
+            "left": 1131.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Crea azione",
+          "rect": {
+            "top": 585.5,
+            "bottom": 629.5,
+            "height": 44,
+            "width": 1121.2,
+            "left": 159.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1000,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "risks",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente RC-01 Rischi di compliance Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesame. Aggiungi scenario Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta Validati 0 Alti",
+        "rect": {
+          "top": 71.2,
+          "bottom": 1324.5,
+          "height": 1253.3,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Validati 0 Alti / critici 0 Da validare 0 Proposte AI 0 Matrice dei rischi valutati Solo valutazioni umane. Il residuo prevale quando disponibile; le proposte AI restano separate. 0 1×1 0 1×2 0 1×3 0 1×4 0 1×5 0 2×1 0 2×2 0 2×3 0 2×4 0 2×5 0 3×1 0 3×2 0 3×3 0 3×4 0 3×5 0 4×1 0 4×2 0 4×3 0 4×4 0 4×5 ",
+        "rect": {
+          "top": 276.9,
+          "bottom": 1318.1,
+          "height": 1041.3,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Validati 0 Alti / critici 0 Da validare 0 Proposte AI 0",
+          "rect": {
+            "top": 276.9,
+            "bottom": 339.8,
+            "height": 63,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "grc-heat",
+          "text": "Matrice dei rischi valutati Solo valutazioni umane. Il residuo prevale quando disponibile; le proposte AI restano separate. 0 1×1 0 1×2 0 1×3 0 1×4 0 1×5 0 2×1 0 2×2 0 2×3 0 2×4 0 2×5 0 3×1 0 3×2 0 3×3 0 3×4 0 3×5 0 4×1 0 4×2 0 4×3 0 4×4 0 4×5 0 5×1 0 5×2 0 5×3 0 5×4 0 5×5",
+          "rect": {
+            "top": 355,
+            "bottom": 1000.3,
+            "height": 645.3,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "ProgressiveDetail",
+          "secondary": "",
+          "metric": "analysis",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 1021,
+            "bottom": 1086.2,
+            "height": 65.1,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuno scenario registrato.",
+          "rect": {
+            "top": 1102.2,
+            "bottom": 1224.2,
+            "height": 122,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 1239.3,
+            "bottom": 1310.9,
+            "height": 71.6,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 83.7,
+            "bottom": 127.7,
+            "height": 44,
+            "width": 245.9,
+            "left": 159.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 151.2,
+            "bottom": 195.2,
+            "height": 44,
+            "width": 192,
+            "left": 1088.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 146.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 1035.2,
+            "bottom": 1086.2,
+            "height": 50.9,
+            "width": 670.5,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 1038.2,
+            "bottom": 1086.2,
+            "height": 47.9,
+            "width": 149.8,
+            "left": 823.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 1042.2,
+            "bottom": 1086.2,
+            "height": 44,
+            "width": 155.8,
+            "left": 1131.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 1253.1,
+            "bottom": 1297.1,
+            "height": 44,
+            "width": 1121.2,
+            "left": 159.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1421,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "assurance",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AR-01 Questionari e verifiche Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze usate per l’approvazione interna. Nuova verifica Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagl",
+        "rect": {
+          "top": 71.2,
+          "bottom": 656.9,
+          "height": 585.7,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "In ingresso 0 Da approvare 0 Versioni approvate internamente 0 Nuova verifica Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi Nessuna richiesta di assurance.",
+        "rect": {
+          "top": 276.9,
+          "bottom": 650.5,
+          "height": 373.6,
+          "width": 1148.8,
+          "left": 145.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "In ingresso 0 Da approvare 0 Versioni approvate internamente 0",
+          "rect": {
+            "top": 276.9,
+            "bottom": 339.8,
+            "height": 63,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 353.4,
+            "bottom": 418.5,
+            "height": 65.1,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuna richiesta di assurance.",
+          "rect": {
+            "top": 434.5,
+            "bottom": 556.5,
+            "height": 122,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 571.7,
+            "bottom": 643.3,
+            "height": 71.6,
+            "width": 1148.8,
+            "left": 145.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 83.7,
+            "bottom": 127.7,
+            "height": 44,
+            "width": 245.9,
+            "left": 159.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 151.2,
+            "bottom": 195.2,
+            "height": 44,
+            "width": 192,
+            "left": 1088.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 146.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 231.9,
+            "bottom": 275.9,
+            "height": 44,
+            "width": 568.4,
+            "left": 725
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 367.6,
+            "bottom": 418.5,
+            "height": 50.9,
+            "width": 670.5,
+            "left": 145.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 370.6,
+            "bottom": 418.5,
+            "height": 47.9,
+            "width": 149.8,
+            "left": 823.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 374.5,
+            "bottom": 418.5,
+            "height": 44,
+            "width": 155.8,
+            "left": 1131.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 585.5,
+            "bottom": 629.5,
+            "height": 44,
+            "width": 1121.2,
+            "left": 159.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1000,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "epistemic",
+      "root": {
+        "tag": "section",
+        "id": "epistemicView",
+        "className": "view epistemic-shell surface-canvas",
+        "text": "← Torna a Evidenze ICTC EP-01 · Vista trasversale Relazioni tra decisioni, fonti ed evidenze SCOPO DELLA VISTA Origine, versioni e dipendenze di un’informazione; ciò che richiede riesame resta distinguibile. La vista descrive storia e relazioni registrate da ICTC. Non determina applicabilita, confor",
+        "rect": {
+          "top": 48,
+          "bottom": 970.2,
+          "height": 922.2,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "context",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "surface-panel",
+        "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4 ← Revisioni piu recenti r1–r2 · stato r2 · digest 369af26bbd09 Revisioni precedenti → Regole e dettagli",
+        "rect": {
+          "top": 362.6,
+          "bottom": 970.2,
+          "height": 607.7,
+          "width": 1188.8,
+          "left": 125.6
+        },
+        "open": null,
+        "role": "",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "surface-toolbar epistemic-toolbar",
+          "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche",
+          "rect": {
+            "top": 367.4,
+            "bottom": 504.2,
+            "height": 136.9,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "epistemicModeHost",
+          "className": "",
+          "text": "Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4",
+          "rect": {
+            "top": 509,
+            "bottom": 809,
+            "height": 300,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "evidence",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "epistemic-pager",
+          "text": "← Revisioni piu recenti r1–r2 · stato r2 · digest 369af26bbd09 Revisioni precedenti →",
+          "rect": {
+            "top": 809,
+            "bottom": 853,
+            "height": 44,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "composition-detail epistemic-workspace-rules",
+          "text": "Regole e dettagli della vista",
+          "rect": {
+            "top": 864.2,
+            "bottom": 912.7,
+            "height": 48.5,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": false,
+          "role": "",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "composition-detail epistemic-a3-detail epistemic-p2-deep-tools",
+          "text": "Approfondimenti e strumenti tecnici",
+          "rect": {
+            "top": 920.7,
+            "bottom": 970.2,
+            "height": 49.5,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": false,
+          "role": "",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "← Torna a Evidenze ICTC",
+          "rect": {
+            "top": 73.6,
+            "bottom": 117.6,
+            "height": 44,
+            "width": 147.5,
+            "left": 141
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Quadro",
+          "rect": {
+            "top": 379.8,
+            "bottom": 423.8,
+            "height": 44,
+            "width": 91.7,
+            "left": 429.3
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "epistemicSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 392.5,
+            "bottom": 437.1,
+            "height": 44.7,
+            "width": 280.1,
+            "left": 133
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Filtri avanzati",
+          "rect": {
+            "top": 452.8,
+            "bottom": 496.8,
+            "height": 44,
+            "width": 280.1,
+            "left": 133
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Viste tecniche",
+          "rect": {
+            "top": 452.8,
+            "bottom": 496.8,
+            "height": 44,
+            "width": 882.7,
+            "left": 424.3
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Quadro",
+          "rect": {
+            "top": 509,
+            "bottom": 553,
+            "height": 44,
+            "width": 76.3,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Atomo",
+          "rect": {
+            "top": 509,
+            "bottom": 553,
+            "height": 44,
+            "width": 70.6,
+            "left": 211.8
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "epistemic-cluster",
+          "text": "cross-cutting 4 Apri gruppi",
+          "rect": {
+            "top": 615.6,
+            "bottom": 685.1,
+            "height": 69.5,
+            "width": 715.2,
+            "left": 137
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary",
+          "text": "← Revisioni piu recenti",
+          "rect": {
+            "top": 809,
+            "bottom": 853,
+            "height": 44,
+            "width": 230,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary",
+          "text": "Revisioni precedenti →",
+          "rect": {
+            "top": 809,
+            "bottom": 853,
+            "height": 44,
+            "width": 229.9,
+            "left": 1084.5
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Regole e dettagli della vista",
+          "rect": {
+            "top": 868.7,
+            "bottom": 912.7,
+            "height": 44,
+            "width": 1188.8,
+            "left": 125.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Approfondimenti e strumenti tecnici",
+          "rect": {
+            "top": 925.2,
+            "bottom": 969.2,
+            "height": 44,
+            "width": 1186.8,
+            "left": 126.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1046,
+      "viewport": "desktop"
+    },
+    {
+      "surface": "monitoring",
+      "root": {
+        "tag": "section",
+        "id": "monitoringView",
+        "className": "view surface-canvas a6-ordered-flow",
+        "text": "Torna al monitoraggio RN-01 Monitoraggio normativo e fonti Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana ciò che può generare nuovo lavoro. Aggiungi materiale Programma mining AI Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applica",
+        "rect": {
+          "top": 112.2,
+          "bottom": 1184.1,
+          "height": 1071.9,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "section-block split-block surface-panel",
+        "text": "Fonti Risultati dei monitoraggi e dei materiali acquisiti. Una fonte entra nel catalogo accettato soltanto dopo una decisione umana. 0 Tutti gli stati Da verificare Verificate Escluse Vista Azioni correnti Tutti gli elementi Nessuna fonte corrisponde ai filtri.",
+        "rect": {
+          "top": 380,
+          "bottom": 810.5,
+          "height": 430.5,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "",
+          "text": "Fonti Risultati dei monitoraggi e dei materiali acquisiti. Una fonte entra nel catalogo accettato soltanto dopo una decisione umana. 0 Tutti gli stati Da verificare Verificate Escluse Vista Azioni correnti Tutti gli elementi Nessuna fonte corrisponde ai filtri.",
+          "rect": {
+            "top": 390.4,
+            "bottom": 794.5,
+            "height": 404.1,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al monitoraggio",
+          "rect": {
+            "top": 127.9,
+            "bottom": 171.9,
+            "height": 44,
+            "width": 191.8,
+            "left": 23.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi materiale",
+          "rect": {
+            "top": 309.9,
+            "bottom": 353.9,
+            "height": 44,
+            "width": 165.1,
+            "left": 23.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary procedure-secondary",
+          "text": "Programma mining AI",
+          "rect": {
+            "top": 309.9,
+            "bottom": 353.9,
+            "height": 44,
+            "width": 171.9,
+            "left": 194.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "catalogSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 502.2,
+            "bottom": 553.1,
+            "height": 50.9,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "catalogState",
+          "className": "",
+          "text": "Tutti gli stati Da verificare Verificate Escluse",
+          "rect": {
+            "top": 564.3,
+            "bottom": 612.2,
+            "height": 47.9,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 644.5,
+            "bottom": 688.5,
+            "height": 44,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 828.3,
+            "bottom": 885.2,
+            "height": 56.8,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 903.2,
+            "bottom": 986.9,
+            "height": 83.7,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Nessun job configurato Attività periodiche Monitoraggi 0 0 correnti · 0 totali",
+          "rect": {
+            "top": 1004.1,
+            "bottom": 1158.3,
+            "height": 154.3,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1268,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "incidents",
+      "root": {
+        "tag": "section",
+        "id": "incidentsView",
+        "className": "view surface-canvas",
+        "text": "Torna agli eventi EC-01 Incidenti e quasi incidenti Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chiusura. Registra evento Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta Eventi registrati 0",
+        "rect": {
+          "top": 112.2,
+          "bottom": 967.1,
+          "height": 854.9,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "section-block surface-panel",
+        "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+        "rect": {
+          "top": 550.2,
+          "bottom": 960.7,
+          "height": 410.5,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "a6-operational-registry",
+          "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+          "rect": {
+            "top": 567,
+            "bottom": 938.3,
+            "height": 371.3,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "a6-operational-registry",
+          "text": "Eventi registrati 0 aperti · 0 totali Cerca Stato Aperti In chiarimento Da approvare Inviati Chiusi Tutti Vista Azioni correnti Tutti gli elementi Nessun evento registrato.",
+          "rect": {
+            "top": 567,
+            "bottom": 938.3,
+            "height": 371.3,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": "",
+          "summary": "Eventi registrati 0 aperti · 0 totali"
+        }
+      ],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna agli eventi",
+          "rect": {
+            "top": 127.9,
+            "bottom": 171.9,
+            "height": 44,
+            "width": 153.6,
+            "left": 23.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Registra evento",
+          "rect": {
+            "top": 309.9,
+            "bottom": 353.9,
+            "height": 44,
+            "width": 342.6,
+            "left": 23.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 384.2,
+            "bottom": 441.1,
+            "height": 56.8,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 459.1,
+            "bottom": 542.8,
+            "height": 83.7,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Eventi registrati 0 aperti · 0 totali",
+          "rect": {
+            "top": 570.4,
+            "bottom": 623.3,
+            "height": 53,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 650,
+            "bottom": 695.7,
+            "height": 45.7,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Aperti In chiarimento Da approvare Inviati Chiusi Tutti",
+          "rect": {
+            "top": 724,
+            "bottom": 768,
+            "height": 44,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 796.3,
+            "bottom": 840.3,
+            "height": 44,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1051,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "objects",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AO-01 Inventario di sistemi e oggetti Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli usati come base del lavoro di compliance. Aggiungi oggetto Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 rife",
+        "rect": {
+          "top": 127.4,
+          "bottom": 1188.8,
+          "height": 1061.5,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Attivi 0 Da validare 0 Da riesaminare 0 Aggiungi oggetto Tutti gli stati Da validare Attivi Da riesaminare 0 di 0 Vista Azioni correnti Tutti gli elementi Nessun oggetto registrato. Il primo oggetto sblocca mapping, rischi e assurance.",
+        "rect": {
+          "top": 555.8,
+          "bottom": 1182.5,
+          "height": 626.6,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Attivi 0 Da validare 0 Da riesaminare 0",
+          "rect": {
+            "top": 555.8,
+            "bottom": 674.2,
+            "height": 118.3,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati Da validare Attivi Da riesaminare 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 687.8,
+            "bottom": 902.5,
+            "height": 214.7,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessun oggetto registrato. Il primo oggetto sblocca mapping, rischi e assurance.",
+          "rect": {
+            "top": 918.5,
+            "bottom": 1088.5,
+            "height": 170,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 1103.7,
+            "bottom": 1175.3,
+            "height": 71.6,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 139.9,
+            "bottom": 183.9,
+            "height": 44,
+            "width": 245.9,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 321.9,
+            "bottom": 365.9,
+            "height": 44,
+            "width": 318.6,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 396.2,
+            "bottom": 453.1,
+            "height": 56.8,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 471.1,
+            "bottom": 554.8,
+            "height": 83.7,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 687.8,
+            "bottom": 738.7,
+            "height": 50.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati Da validare Attivi Da riesaminare",
+          "rect": {
+            "top": 745.9,
+            "bottom": 793.8,
+            "height": 47.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 855.3,
+            "bottom": 899.3,
+            "height": 44,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Aggiungi oggetto",
+          "rect": {
+            "top": 1117.5,
+            "bottom": 1161.5,
+            "height": 44,
+            "width": 319.2,
+            "left": 35.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1285,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "coverage",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "a6-ordered-flow",
+        "text": "Torna al processo precedente MC-01 Standard e Controlli Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasformare la copertura in un giudizio di conformità. Aggiungi requisito Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 rif",
+        "rect": {
+          "top": 124.2,
+          "bottom": 9204.7,
+          "height": 9080.5,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Decisioni registrate 0 0 elementi dichiarati Gap 0 decisioni esplicite Da decidere 0 nessuna inferenza automatica Fuori perimetro 0 decisioni di scope BIBLIOTECA Standard e framework Dichiara come l’organizzazione usa il riferimento. Applicabilità dei requisiti e mapping restano decisioni distinte. ",
+        "rect": {
+          "top": 566.3,
+          "bottom": 9198.3,
+          "height": 8632,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Decisioni registrate 0 0 elementi dichiarati Gap 0 decisioni esplicite Da decidere 0 nessuna inferenza automatica Fuori perimetro 0 decisioni di scope",
+          "rect": {
+            "top": 566.3,
+            "bottom": 738.4,
+            "height": 172.1,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "market-section",
+          "text": "BIBLIOTECA Standard e framework Dichiara come l’organizzazione usa il riferimento. Applicabilità dei requisiti e mapping restano decisioni distinte. I riferimenti proprietari non includono il testo normativo nel repository open source. GDPR 2016/679 Uso da dichiarare Regolamento (UE) 2016/679 Unione",
+          "rect": {
+            "top": 755.2,
+            "bottom": 7562.3,
+            "height": 6807.1,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "market-section",
+          "text": "VISTA INTEGRATA Obiettivi di controllo condivisi Una sovrapposizione tematica aiuta il lavoro integrato; non rende equivalenti standard diversi. Porta almeno due standard in perimetro o come riferimento per vedere le aree di sovrapposizione.",
+          "rect": {
+            "top": 7587.9,
+            "bottom": 7967.2,
+            "height": 379.3,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "market-mapping-panel",
+          "text": "Mappature operative · 0 requisiti dichiarati Standard Scegli standard Requisito Seleziona prima lo standard Obbligatorio: il perimetro si decide sul requisito identificato, non sulla sola descrizione. Oggetti o controlli che supportano il requisito Proponi motivazione/collegamenti con AI Registra pr",
+          "rect": {
+            "top": 7984,
+            "bottom": 9198.3,
+            "height": 1214.4,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [
+        {
+          "tag": "details",
+          "id": "",
+          "className": "market-mapping-panel",
+          "text": "Mappature operative · 0 requisiti dichiarati Standard Scegli standard Requisito Seleziona prima lo standard Obbligatorio: il perimetro si decide sul requisito identificato, non sulla sola descrizione. Oggetti o controlli che supportano il requisito Proponi motivazione/collegamenti con AI Registra pr",
+          "rect": {
+            "top": 7984,
+            "bottom": 9198.3,
+            "height": 1214.4,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": true,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": "",
+          "summary": "Mappature operative · 0 requisiti dichiarati"
+        }
+      ],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 139.9,
+            "bottom": 183.9,
+            "height": 44,
+            "width": 245.9,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi requisito",
+          "rect": {
+            "top": 325.2,
+            "bottom": 369.2,
+            "height": 44,
+            "width": 318.6,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 406.7,
+            "bottom": 463.6,
+            "height": 56.8,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 481.6,
+            "bottom": 565.3,
+            "height": 83.7,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "marketStandardSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 980.5,
+            "bottom": 1031.4,
+            "height": 50.9,
+            "width": 322.8,
+            "left": 33.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1208.1,
+            "bottom": 1252.1,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1269.7,
+            "bottom": 1313.7,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1497.7,
+            "bottom": 1541.7,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1559.3,
+            "bottom": 1603.3,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 1787.4,
+            "bottom": 1831.4,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 1849,
+            "bottom": 1893,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 2122.6,
+            "bottom": 2166.6,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 2184.2,
+            "bottom": 2228.2,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 2412.3,
+            "bottom": 2456.3,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 2473.8,
+            "bottom": 2517.8,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 2718.2,
+            "bottom": 2762.2,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 2779.8,
+            "bottom": 2823.8,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 3024.2,
+            "bottom": 3068.2,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary standard-browser-open",
+          "text": "Comprendi standard",
+          "rect": {
+            "top": 3085.8,
+            "bottom": 3129.8,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "secondary",
+          "text": "Dichiara utilizzo",
+          "rect": {
+            "top": 3330.1,
+            "bottom": 3374.1,
+            "height": 44,
+            "width": 298,
+            "left": 47
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 9301,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "actions",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AP-01 Azioni correttive Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completamento e verifica distinta di chiusura. Crea azione Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su",
+        "rect": {
+          "top": 127.4,
+          "bottom": 1172.5,
+          "height": 1045.1,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Aperte 0 Da adottare 0 Da verificare 0 Scadute 0 Crea azione Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi Nessuna azione. I gap possono diventare task persistenti.",
+        "rect": {
+          "top": 563.4,
+          "bottom": 1166.1,
+          "height": 602.6,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Aperte 0 Da adottare 0 Da verificare 0 Scadute 0",
+          "rect": {
+            "top": 563.4,
+            "bottom": 681.8,
+            "height": 118.3,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 695.4,
+            "bottom": 910.1,
+            "height": 214.7,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuna azione. I gap possono diventare task persistenti.",
+          "rect": {
+            "top": 926.1,
+            "bottom": 1072.1,
+            "height": 146,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Crea azione",
+          "rect": {
+            "top": 1087.3,
+            "bottom": 1158.9,
+            "height": 71.6,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 139.9,
+            "bottom": 183.9,
+            "height": 44,
+            "width": 245.9,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Crea azione",
+          "rect": {
+            "top": 329.5,
+            "bottom": 373.5,
+            "height": 44,
+            "width": 318.6,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 403.9,
+            "bottom": 460.7,
+            "height": 56.8,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 478.7,
+            "bottom": 562.4,
+            "height": 83.7,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 695.4,
+            "bottom": 746.3,
+            "height": 50.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 753.5,
+            "bottom": 801.4,
+            "height": 47.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 862.9,
+            "bottom": 906.9,
+            "height": 44,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Crea azione",
+          "rect": {
+            "top": 1101.1,
+            "bottom": 1145.1,
+            "height": 44,
+            "width": 319.2,
+            "left": 35.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1268,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "risks",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente RC-01 Rischi di compliance Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesame. Aggiungi scenario Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta Validati 0 Alti",
+        "rect": {
+          "top": 127.4,
+          "bottom": 1645.6,
+          "height": 1518.3,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "Validati 0 Alti / critici 0 Da validare 0 Proposte AI 0 Matrice dei rischi valutati Solo valutazioni umane. Il residuo prevale quando disponibile; le proposte AI restano separate. 0 1×1 0 1×2 0 1×3 0 1×4 0 1×5 0 2×1 0 2×2 0 2×3 0 2×4 0 2×5 0 3×1 0 3×2 0 3×3 0 3×4 0 3×5 0 4×1 0 4×2 0 4×3 0 4×4 0 4×5 ",
+        "rect": {
+          "top": 542.6,
+          "bottom": 1639.3,
+          "height": 1096.7,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "Validati 0 Alti / critici 0 Da validare 0 Proposte AI 0",
+          "rect": {
+            "top": 542.6,
+            "bottom": 660.9,
+            "height": 118.3,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "section",
+          "id": "",
+          "className": "grc-heat",
+          "text": "Matrice dei rischi valutati Solo valutazioni umane. Il residuo prevale quando disponibile; le proposte AI restano separate. 0 1×1 0 1×2 0 1×3 0 1×4 0 1×5 0 2×1 0 2×2 0 2×3 0 2×4 0 2×5 0 3×1 0 3×2 0 3×3 0 3×4 0 3×5 0 4×1 0 4×2 0 4×3 0 4×4 0 4×5 0 5×1 0 5×2 0 5×3 0 5×4 0 5×5",
+          "rect": {
+            "top": 676.1,
+            "bottom": 1171.8,
+            "height": 495.7,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "ProgressiveDetail",
+          "secondary": "",
+          "metric": "analysis",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 1192.5,
+            "bottom": 1407.3,
+            "height": 214.7,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuno scenario registrato.",
+          "rect": {
+            "top": 1423.3,
+            "bottom": 1545.3,
+            "height": 122,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 1560.5,
+            "bottom": 1632.1,
+            "height": 71.6,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 139.9,
+            "bottom": 183.9,
+            "height": 44,
+            "width": 245.9,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 308.7,
+            "bottom": 352.7,
+            "height": 44,
+            "width": 318.6,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 383,
+            "bottom": 439.8,
+            "height": 56.8,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 457.8,
+            "bottom": 541.6,
+            "height": 83.7,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 1192.5,
+            "bottom": 1243.5,
+            "height": 50.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 1250.7,
+            "bottom": 1298.6,
+            "height": 47.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 1360.1,
+            "bottom": 1404.1,
+            "height": 44,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Aggiungi scenario",
+          "rect": {
+            "top": 1574.3,
+            "bottom": 1618.3,
+            "height": 44,
+            "width": 319.2,
+            "left": 35.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1742,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "assurance",
+      "root": {
+        "tag": "div",
+        "id": "grcWorkspace",
+        "className": "",
+        "text": "Torna al processo precedente AR-01 Questionari e verifiche Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze usate per l’approvazione interna. Nuova verifica Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagl",
+        "rect": {
+          "top": 127.4,
+          "bottom": 1143.4,
+          "height": 1016,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "div",
+        "id": "",
+        "className": "grc-body",
+        "text": "In ingresso 0 Da approvare 0 Versioni approvate internamente 0 Nuova verifica Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi Nessuna richiesta di assurance.",
+        "rect": {
+          "top": 542.6,
+          "bottom": 1137,
+          "height": 594.4,
+          "width": 346.8,
+          "left": 21.6
+        },
+        "open": null,
+        "role": "action",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": "primary"
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-kpis",
+          "text": "In ingresso 0 Da approvare 0 Versioni approvate internamente 0",
+          "rect": {
+            "top": 542.6,
+            "bottom": 676.7,
+            "height": 134.1,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "context",
+          "primitive": "MetricStrip",
+          "secondary": "",
+          "metric": "distribution",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "procedure-queue-tools surface-toolbar",
+          "text": "Tutti gli stati 0 di 0 Vista Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 690.3,
+            "bottom": 905,
+            "height": 214.7,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "grc-list",
+          "text": "Nessuna richiesta di assurance.",
+          "rect": {
+            "top": 921,
+            "bottom": 1043,
+            "height": 122,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "attention",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "grcPrimaryForm",
+          "className": "grc-create",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 1058.2,
+            "bottom": 1129.8,
+            "height": 71.6,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": false,
+          "role": "action",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "Torna al processo precedente",
+          "rect": {
+            "top": 139.9,
+            "bottom": 183.9,
+            "height": 44,
+            "width": 245.9,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "primary procedure-primary",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 308.7,
+            "bottom": 352.7,
+            "height": 44,
+            "width": 318.6,
+            "left": 35.7
+          },
+          "open": null,
+          "role": "",
+          "primitive": "PrimaryAction",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Contesto e tracciabilità 0 decisioni · 0 versioni",
+          "rect": {
+            "top": 383,
+            "bottom": 439.8,
+            "height": 56.8,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "procedure-anatomy-standard-head",
+          "text": "Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+          "rect": {
+            "top": 457.8,
+            "bottom": 541.6,
+            "height": 83.7,
+            "width": 344.8,
+            "left": 22.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 690.3,
+            "bottom": 741.2,
+            "height": 50.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Tutti gli stati",
+          "rect": {
+            "top": 748.4,
+            "bottom": 796.4,
+            "height": 47.9,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "select",
+          "id": "",
+          "className": "",
+          "text": "Azioni correnti Tutti gli elementi",
+          "rect": {
+            "top": 857.8,
+            "bottom": 901.8,
+            "height": 44,
+            "width": 346.8,
+            "left": 21.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Nuova verifica",
+          "rect": {
+            "top": 1072,
+            "bottom": 1116,
+            "height": 44,
+            "width": 319.2,
+            "left": 35.4
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1239,
+      "viewport": "mobile"
+    },
+    {
+      "surface": "epistemic",
+      "root": {
+        "tag": "section",
+        "id": "epistemicView",
+        "className": "view epistemic-shell surface-canvas",
+        "text": "← Torna a Evidenze ICTC EP-01 · Vista trasversale Relazioni tra decisioni, fonti ed evidenze SCOPO DELLA VISTA Origine, versioni e dipendenze di un’informazione; ciò che richiede riesame resta distinguibile. La vista descrive storia e relazioni registrate da ICTC. Non determina applicabilita, confor",
+        "rect": {
+          "top": -368.8,
+          "bottom": 810.5,
+          "height": 1179.3,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "context",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "primary": {
+        "tag": "section",
+        "id": "",
+        "className": "surface-panel",
+        "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4 ← Revisioni piu recenti r1–r2 · stato r2 · digest 369af26bbd09 Revisioni precedenti → Regole e dettagli",
+        "rect": {
+          "top": -14.9,
+          "bottom": 810.5,
+          "height": 825.4,
+          "width": 370.8,
+          "left": 9.6
+        },
+        "open": null,
+        "role": "",
+        "primitive": "",
+        "secondary": "",
+        "metric": "",
+        "editorial": ""
+      },
+      "children": [
+        {
+          "tag": "div",
+          "id": "",
+          "className": "surface-toolbar epistemic-toolbar",
+          "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche",
+          "rect": {
+            "top": -10.1,
+            "bottom": 250,
+            "height": 260.2,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "ControlRail",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "epistemicModeHost",
+          "className": "",
+          "text": "Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4",
+          "rect": {
+            "top": 254.8,
+            "bottom": 593.7,
+            "height": 338.9,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "evidence",
+          "primitive": "RecordRow",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "div",
+          "id": "",
+          "className": "epistemic-pager",
+          "text": "← Revisioni piu recenti r1–r2 · stato r2 · digest 369af26bbd09 Revisioni precedenti →",
+          "rect": {
+            "top": 593.7,
+            "bottom": 693.3,
+            "height": 99.6,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "composition-detail epistemic-workspace-rules",
+          "text": "Regole e dettagli della vista",
+          "rect": {
+            "top": 704.5,
+            "bottom": 753,
+            "height": 48.5,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": false,
+          "role": "",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "details",
+          "id": "",
+          "className": "composition-detail epistemic-a3-detail epistemic-p2-deep-tools",
+          "text": "Approfondimenti e strumenti tecnici",
+          "rect": {
+            "top": 761,
+            "bottom": 810.5,
+            "height": 49.5,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": false,
+          "role": "",
+          "primitive": "ProgressiveDetail",
+          "secondary": "true",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "openDetails": [],
+      "firstTenActions": [
+        {
+          "tag": "button",
+          "id": "",
+          "className": "procedure-back",
+          "text": "← Torna a Evidenze ICTC",
+          "rect": {
+            "top": -345.9,
+            "bottom": -301.9,
+            "height": 44,
+            "width": 147.5,
+            "left": 25
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "input",
+          "id": "epistemicSearch",
+          "className": "",
+          "text": "",
+          "rect": {
+            "top": 14.2,
+            "bottom": 58.8,
+            "height": 44.7,
+            "width": 357.6,
+            "left": 16.2
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Quadro",
+          "rect": {
+            "top": 75,
+            "bottom": 119,
+            "height": 44,
+            "width": 110.5,
+            "left": 21.2
+          },
+          "open": null,
+          "role": "action",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Filtri avanzati",
+          "rect": {
+            "top": 139.7,
+            "bottom": 183.7,
+            "height": 44,
+            "width": 357.6,
+            "left": 16.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Viste tecniche",
+          "rect": {
+            "top": 199.4,
+            "bottom": 243.4,
+            "height": 44,
+            "width": 357.6,
+            "left": 16.2
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Quadro",
+          "rect": {
+            "top": 254.8,
+            "bottom": 298.8,
+            "height": 44,
+            "width": 76.3,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "",
+          "text": "Atomo",
+          "rect": {
+            "top": 254.8,
+            "bottom": 298.8,
+            "height": 44,
+            "width": 70.6,
+            "left": 95.8
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "epistemic-cluster",
+          "text": "cross-cutting 4 Apri gruppi",
+          "rect": {
+            "top": 403.4,
+            "bottom": 472.9,
+            "height": 69.5,
+            "width": 348,
+            "left": 21
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary",
+          "text": "← Revisioni piu recenti",
+          "rect": {
+            "top": 625.7,
+            "bottom": 693.3,
+            "height": 67.6,
+            "width": 181.4,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "button",
+          "id": "",
+          "className": "secondary",
+          "text": "Revisioni precedenti →",
+          "rect": {
+            "top": 625.7,
+            "bottom": 693.3,
+            "height": 67.6,
+            "width": 181.4,
+            "left": 199
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Regole e dettagli della vista",
+          "rect": {
+            "top": 709,
+            "bottom": 753,
+            "height": 44,
+            "width": 370.8,
+            "left": 9.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        },
+        {
+          "tag": "summary",
+          "id": "",
+          "className": "",
+          "text": "Approfondimenti e strumenti tecnici",
+          "rect": {
+            "top": 765.5,
+            "bottom": 809.5,
+            "height": 44,
+            "width": 368.8,
+            "left": 10.6
+          },
+          "open": null,
+          "role": "",
+          "primitive": "",
+          "secondary": "",
+          "metric": "",
+          "editorial": ""
+        }
+      ],
+      "scrollHeight": 1376,
+      "viewport": "mobile"
+    }
+  ]
+}
