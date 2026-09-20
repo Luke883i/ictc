@@ -38,12 +38,12 @@ function storedProcedure() {
   try { return normalizeProcedure(localStorage.getItem('ictc-grc-process')); }
   catch { return null; }
 }
-function currentProcedure() {
+export function currentGrcProcedureId() {
   return normalizeProcedure(state.activeProcessId) || storedProcedure() || 'objects';
 }
 function routeFor(surface = state.service, procedureId = null) {
   const route = { surface: normalizeSurface(surface) };
-  if (route.surface === 'grc') route.procedureId = normalizeProcedure(procedureId) || currentProcedure();
+  if (route.surface === 'grc') route.procedureId = normalizeProcedure(procedureId) || currentGrcProcedureId();
   const blocked=blockedProcedure(route);
   return blocked?{surface:'processes',blockedProcedureId:blocked,reason:'procedure-disabled'}:route;
 }
@@ -124,7 +124,7 @@ function focusAfterTransition(transition, surface, targetSelector) {
   }
   Promise.resolve(transition.ready).catch(() => {}).then(() => focusSurface(surface, targetSelector));
 }
-function guardCurrentRoute(){const requested={surface:normalizeSurface(state.service)};if(requested.surface==='grc')requested.procedureId=normalizeProcedure(state.activeProcessId)||currentProcedure();const next=routeFor(requested.surface,requested.procedureId);if(!sameRoute(requested,next)){const from=lastRoute||requested;applyRoute(next);commitHistory(next,'replace',from);return next;}return requested;}
+function guardCurrentRoute(){const requested={surface:normalizeSurface(state.service)};if(requested.surface==='grc')requested.procedureId=normalizeProcedure(state.activeProcessId)||currentGrcProcedureId();const next=routeFor(requested.surface,requested.procedureId);if(!sameRoute(requested,next)){const from=lastRoute||requested;applyRoute(next);commitHistory(next,'replace',from);return next;}return requested;}
 export function renderSurfaceNavigation() {
   const guarded=guardCurrentRoute(),active = normalizeSurface(guarded.surface);
   state.service = active;

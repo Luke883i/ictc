@@ -12,7 +12,7 @@ const workflow=read('../.github/workflows/ci.yml');
 
 assert.ok(chrome.includes('.topbar{height:var(--ui-header-h)!important;min-height:var(--ui-header-h)!important}'));
 assert.ok(chrome.includes('.topbar .stable-header-inner{height:100%!important}'));
-assert.ok(home.includes('#homeView{height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))'));
+assert.ok(home.includes('height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('max-height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('#homeView{box-sizing:border-box;'));
 assert.ok(footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important'));
 assert.ok(journey.includes('.evidence-export-menu>div{position:absolute;z-index:76;'));
 assert.ok(evidence.includes("ictc:evidence-download-complete")&&evidence.includes('menuClosed: true'));

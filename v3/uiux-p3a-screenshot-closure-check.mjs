@@ -23,7 +23,7 @@ has(semantic,"root.querySelector('.procedure-queue-tools,.a6-operational-filter"
 has(stateProjection,"stateEncoding='text+style'",'Motivazione · non registrata','semanticStateProjection','enduserPrimitive','StateChip');
 has(browser,'data-standard-content-origin','Fonte ufficiale pubblica','Formulazione operativa ICTC','Solo riferimento','Nessun testo locale sostitutivo viene inventato','data-standard-map','navigateSurface','mappingPrimarySubject','mappingJourney','requirement-first','handoffToMapping');
 has(commands,'KIND_LABELS','Comandi da tastiera','<kbd>Invio</kbd>','data-global-kind');
-has(frame,"host.innerHTML=enabledProcedures().map(cardMarkup).join('')","data-process-code","procedure-primary");
+has(frame,"const visible=enabledProcedures()","host.innerHTML=visible.map(cardMarkup).join('')","data-process-code","procedure-primary");
 assert.ok(!frame.includes('currentCards.length===registry.length'),'canonical Process Hub writer must not be bypassed by P3 self-healing');
 has(native,'installSemanticStateProjectionP3');
 assert.ok(!native.includes('/screenshot-semantic-closure-p3a.css'),'screenshot closure must not remain a runtime presentation owner');

@@ -1,4 +1,5 @@
 import { state } from './common.js';
+import { currentGrcProcedureId } from './surface-router.js';
 import { ENDUSER_COMPOSITION_VERSION, NATIVE_SEMANTIC_LATTICE_VERSION, PROCEDURE_WORKSPACE } from './native-semantic-lattice-3-2.js';
 import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from './procedure-editorial-slots.js';
 const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
@@ -13,7 +14,7 @@ export const GRC_EDITORIAL_ORDER=Object.freeze({
 const attentionSlotOwner='grc-workspace-3-2.js';
 const OWNER=attentionSlotOwner;
 let installed=false,pending=false,targetResolverBound=false;
-function selected(){let id=state.activeProcessId||'';try{id=id||localStorage.getItem('ictc-grc-process')||'';}catch{}return GRC_IDS.has(id)?id:'objects';}
+function selected(){return currentGrcProcedureId();}
 function canonicalRecords(procedure){const grc=state.data?.grc||{};if(procedure==='objects')return grc.objects?.objects||[];if(procedure==='coverage')return grc.coverage?.mappings||[];if(procedure==='actions')return grc.actions?.actions||[];if(procedure==='risks')return grc.risks?.risks||[];if(procedure==='assurance')return grc.assurance?.cases||[];return[];}
 function recordKind(procedure){return procedure==='objects'?'object':procedure==='coverage'?'mapping':procedure==='actions'?'action':procedure==='risks'?'risk':'assurance-case';}
 function annotateCanonicalRecords(root,procedure){const cards=[...root.querySelectorAll('.grc-body .grc-list > article')],records=canonicalRecords(procedure),kind=recordKind(procedure);cards.forEach((card,index)=>{const record=records[index];card.classList.add('p2-record-row');card.dataset.enduserPrimitive='RecordRow';card.dataset.recordGrammar='row-list';if(!record)return;card.dataset.grcRecordId=String(record.id);card.dataset.grcRecordKind=kind;card.dataset.grcRecordProcedure=procedure;if(procedure==='coverage'&&record.requirementRef)card.dataset.grcRequirementRef=String(record.requirementRef);});root.dataset.grcRecordTargetMap=cards.length===records.length?'exact':'partial';}
@@ -30,4 +31,4 @@ function bindTargetResolver(){if(targetResolverBound)return;targetResolverBound=
 export function applyGrcWorkspace32(){const root=document.querySelector('#grcWorkspace');if(!root)return false;const procedure=selected();ensureEditorialCompositionCss();root.dataset.localCompositionOwner=OWNER;root.dataset.nativeSemanticLattice=NATIVE_SEMANTIC_LATTICE_VERSION;root.dataset.compositionSurface=procedure;const head=root.querySelector(':scope > .grc-head');if(head){head.classList.add('grc-nav-head');head.dataset.grcNavigation='canonical';}const body=root.querySelector(':scope > .grc-body');if(body)body.dataset.informationRole='action';const form=body?.querySelector('#grcPrimaryForm'),copy=PROCEDURE_WORKSPACE[procedure];if(form&&copy){const summary=form.querySelector(':scope > summary');if(summary)summary.textContent=copy.primary;}const declared=declareProcedureEditorialOrder(root,{procedureId:procedure,owner:OWNER,order:GRC_EDITORIAL_ORDER[procedure],controlSelector:':scope > .grc-head',primarySelector:':scope > .grc-body'});annotatePresentation(root,procedure);annotateCanonicalRecords(root,procedure);return declared.ok;}
 function converge(){pending=false;applyGrcWorkspace32();}
 function schedule(){if(pending)return;pending=true;queueMicrotask(converge);}
-export function installGrcWorkspace32(){if(installed)return;installed=true;bindTargetResolver();for(const eventName of ['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed'])document.addEventListener(eventName,schedule);schedule();}
+export function installGrcWorkspace32(){if(installed)return;installed=true;bindTargetResolver();for(const eventName of ['ictc:rendered','ictc:surface-changed','ictc:context-changed','ictc:projection-committed','ictc:grc-frame-ready'])document.addEventListener(eventName,schedule);schedule();}

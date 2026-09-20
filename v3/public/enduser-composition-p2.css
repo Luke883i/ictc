@@ -307,3 +307,9 @@ html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{grid-co
 html[data-enduser-composition="p2"] #monitoringView .catalog-card-content{grid-column:2;min-width:0;text-align:left}
 html[data-enduser-composition="p2"] #monitoringView .catalog-card>span[aria-hidden="true"]{grid-column:3;align-self:center}
 @media(max-width:620px){html[data-enduser-composition="p2"] #monitoringView .catalog-card{grid-template-columns:minmax(0,1fr) auto}html[data-enduser-composition="p2"] #monitoringView .catalog-state-label{grid-column:1/-1}html[data-enduser-composition="p2"] #monitoringView .catalog-card-content{grid-column:1}}
+
+/* Screenshot-intent convergence: native procedure availability controls and mining-job legibility. */
+html[data-enduser-composition="p2"] #adminCenter .procedure-switch{display:grid;grid-template-columns:1.1rem minmax(7.5rem,auto);align-items:center;justify-items:start;gap:.45rem}
+html[data-enduser-composition="p2"] #adminCenter .procedure-switch>em{font-style:normal;font-size:var(--type-label);font-weight:var(--weight-label);color:var(--color-text)}
+html[data-enduser-composition="p2"] #monitoringView [data-rn-job-summary]{color:var(--color-muted);font-size:var(--type-caption);font-weight:var(--weight-description)}
+html[data-enduser-composition="p2"] #monitoringView [data-rn-monitoring-secondary][data-rn-job-state="materialized"]>summary{background:var(--color-surface)}
