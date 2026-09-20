@@ -2,6 +2,7 @@ import { state } from './common.js';
 import { currentGrcProcedureId } from './surface-router.js';
 import { ENDUSER_COMPOSITION_VERSION, NATIVE_SEMANTIC_LATTICE_VERSION, PROCEDURE_WORKSPACE } from './native-semantic-lattice-3-2.js';
 import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from './procedure-editorial-slots.js';
+const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
 const GRC_GRAMMAR=Object.freeze({objects:'inventory-registry',coverage:'requirements-mapping-ledger',actions:'execution-workbench',risks:'risk-review-desk',assurance:'assurance-request-desk'});
 export const GRC_EDITORIAL_ORDER=Object.freeze({
   objects:Object.freeze(['advanced-context','reference','attention','controls','primary']),
