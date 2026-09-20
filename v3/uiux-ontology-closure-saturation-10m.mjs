@@ -25,12 +25,13 @@ function sourceLaws(s){
   return {
     sevenOwners:(s.rn.split(orderToken).length-1)===2&&(s.grc.split(orderToken).length-1)===5,
     dynamicSupportRail:s.slots.includes('function positionSupportRail(')&&s.slots.includes('function validPhysicalOrder('),
+    contiguousDeclaredBlock:s.slots.includes('function reconcilePhysicalOrder(')&&s.slots.includes('index!==cursor+1')&&s.slots.includes('orderedTopLevelNodes'),
     firstRoleAdjacent:s.slots.includes('let previous=null')&&s.slots.includes('host.insertBefore(node,next)')&&s.slots.includes('if(frame?.parentElement===host){frame.after(node);return;}'),
     supportSecondary:s.frame.includes("rail.dataset.secondaryDisclosure='true'"),
     marketPrimaryFirst:s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')>=0&&s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')<s.market.indexOf('<details class="market-section market-library"'),
     marketLibraryProgressive:s.market.includes('details class="market-section market-library"')&&s.market.includes('data-market-library'),
     marketIntegratedProgressive:s.market.includes('details class="market-section market-integrated"')&&s.market.includes('data-market-integrated'),
-    coverageScopePrimary:s.semanticSurface.includes("root.querySelector('.market-mapping-panel[open] .grc-list')||root.querySelector('.market-framework-grid')"),
+    coverageScopePrimary:s.semanticSurface.includes("coverageAnchor=id==='coverage'?root.querySelector('.market-mapping-panel[open] .grc-list'):null")&&s.semanticSurface.indexOf('if(coverageAnchor)')<s.semanticSurface.indexOf('else if(nativeFilter)'),
     riskAnalysisProgressive:s.grcBase.includes('data-risk-analysis-disclosure')&&s.grcBase.includes('<details class="grc-heat"'),
     riskAnalysisAfterList:s.grcBase.indexOf('<div class="grc-list">${p.risks.map')<s.grcBase.indexOf('${analysis}'),
     epHumanProjection:s.ep.includes('const PROCEDURE_LABELS=Object.freeze')&&s.ep.includes('const STATUS_LABELS=Object.freeze')&&s.ep.includes('const FAMILY_LABELS=Object.freeze')&&s.ep.includes('const kindLabel='),
@@ -48,11 +49,13 @@ const SOURCE_MUTANTS=[
   ['old-order-grc',s=>({...s,grc:s.grc.replaceAll(CANON.map(x=>`'${x}'`).join(','),"'advanced-context','reference','attention','controls','primary'")})],
   ['drop-rail-positioner',s=>({...s,slots:s.slots.replaceAll('positionSupportRail','positionSupportRailBROKEN')})],
   ['first-role-after-frame',s=>({...s,slots:s.slots.replace('let previous=null','let previous=frame')})],
+  ['drop-contiguous-reconcile',s=>({...s,slots:s.slots.replaceAll('reconcilePhysicalOrder','reconcilePhysicalOrderBROKEN')})],
   ['support-not-secondary',s=>({...s,frame:s.frame.replace("rail.dataset.secondaryDisclosure='true'",'')})],
   ['market-primary-marker-lost',s=>({...s,market:s.market.replace('data-market-primary-work','data-market-secondary-work')})],
   ['market-library-section',s=>({...s,market:s.market.replace('details class="market-section market-library"','section class="market-section market-library"')})],
   ['market-integrated-section',s=>({...s,market:s.market.replace('details class="market-section market-integrated"','section class="market-section market-integrated"')})],
-  ['coverage-scope-in-library',s=>({...s,semanticSurface:s.semanticSurface.replace("root.querySelector('.market-mapping-panel[open] .grc-list')||root.querySelector('.market-framework-grid')","root.querySelector('.market-framework-grid')")})],
+  ['coverage-scope-in-library',s=>({...s,semanticSurface:s.semanticSurface.replace("coverageAnchor=id==='coverage'?root.querySelector('.market-mapping-panel[open] .grc-list'):null","coverageAnchor=null")})],
+  ['coverage-generic-filter-wins',s=>({...s,semanticSurface:s.semanticSurface.replace('if(coverageAnchor){','if(false&&coverageAnchor){')})],
   ['risk-analysis-section',s=>({...s,grcBase:s.grcBase.replace('<details class="grc-heat"','<section class="grc-heat"')})],
   ['risk-analysis-before-list',s=>({...s,grcBase:s.grcBase.replace('<div class="grc-list">${p.risks.map','${analysis}<div class="grc-list">${p.risks.map')})],
   ['ep-drop-human-labels',s=>({...s,ep:s.ep.replace('PROCEDURE_LABELS','PROCEDURE_LABELS_BROKEN')})],
@@ -65,7 +68,7 @@ const sourceMutationResults=[];
 for(const [name,mutate] of SOURCE_MUTANTS){const mutated=mutate(source);const laws=sourceLaws(mutated);const killed=Object.values(laws).some(v=>!v);sourceMutationResults.push({name,killed,failed:Object.entries(laws).filter(([,v])=>!v).map(([k])=>k)});assert.equal(killed,true,`source mutant survived: ${name}`);}
 
 function baseline(){return {
-  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,
+  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,
   market:['mapping','library','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopePrimary:true,
   risk:['metrics','create','records','analysis'],riskAnalysisProgressive:true,riskAnalysisOpen:false,
   ep:{firstPlaneTechnical:false,digestFirstPlane:false,humanLabels:true,rawPreserved:true},
@@ -75,7 +78,7 @@ function baseline(){return {
 function violations(x){const out=[];
   if(x.order.join('>')!==CANON.join('>')||new Set(x.order).size!==CANON.length)out.push('editorial-order');
   if(!x.supportAfterPrimary||!x.supportClosed)out.push('support-progressive');
-  if(!x.firstRoleAdjacent)out.push('placement-adjacency');
+  if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock)out.push('placement-adjacency');
   if(x.market.join('>')!=='mapping>library>integrated'||!x.libraryProgressive||!x.integratedProgressive)out.push('market-progressive');
   if(!x.coverageScopePrimary)out.push('coverage-scope-placement');
   if(x.risk.join('>')!=='metrics>create>records>analysis'||!x.riskAnalysisProgressive||x.riskAnalysisOpen)out.push('risk-progressive');
@@ -94,6 +97,7 @@ const FAMILIES=[
   ['support-before-primary',x=>{x.supportAfterPrimary=false;}],
   ['support-open-default',x=>{x.supportClosed=false;}],
   ['legacy-sibling-before-first-control',x=>{x.firstRoleAdjacent=false;}],
+  ['legacy-sibling-inside-declared-block',x=>{x.contiguousDeclaredBlock=false;}],
   ['market-library-before-mapping',x=>{x.market=['library','mapping','integrated'];}],
   ['market-library-flat',x=>{x.libraryProgressive=false;}],
   ['market-integrated-flat',x=>{x.integratedProgressive=false;}],
