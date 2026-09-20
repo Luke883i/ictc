@@ -92,7 +92,9 @@ def sheet(vp):
 def main():
  payload={"sha":os.environ.get("GITHUB_SHA",""),"roles":[],"snapshots":[],"images":{}}
  with sync_playwright() as pw:
-  b=pw.chromium.launch(headless=True,args=["--no-sandbox"])
+  launch={"headless":True,"args":["--no-sandbox"]}
+  if os.environ.get("ICTC_CHROMIUM"):launch["executable_path"]=os.environ["ICTC_CHROMIUM"]
+  b=pw.chromium.launch(**launch)
   ctx=b.new_context(viewport={"width":1440,"height":1000});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   payload["roles"]=[boot(ctx,r)for r in("admin","user","auditor")]
   page=ctx.new_page();page.set_default_timeout(18000)
