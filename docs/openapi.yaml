@@ -53,10 +53,10 @@ paths:
       responses: { '200': { description: Process landscape role-scoped e derivato } }
   /api/demo/evidence-lattice:
     get:
-      summary: Proietta il reticolo annuale DEMO derivato dalla Suite 2.2 canonica
+      summary: Proietta il reticolo annuale DEMO della Suite 3.0 canonica; Suite 2.2 resta solo lineage del generatore deprecato
       responses:
         '200': { description: Reticolo read-only di eventi, evidenze, decisioni, circostanze e correlazioni dichiaratamente non causali }
-        '404': { description: Reticolo non disponibile fuori dalla DEMO Suite 2.2 canonica }
+        '404': { description: Reticolo non disponibile fuori dalla DEMO Suite 3.0 canonica }
   /api/cross-procedure/create:
     get:
       summary: Elenca target di draft cross-procedure dichiarati

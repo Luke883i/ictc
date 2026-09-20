@@ -5,6 +5,7 @@ surfaces:
     classification: current-product-authority
   repository_self_description:
     authority: docs/REPOSITORY_ATLAS.md
+    debt_projection: v3/semantic-owner-contract.json#repositoryCoherenceDebt
     classification: canonical-repository-orientation
     scope: repository-morphology-reading-protocol-and-knowledge-boundaries-only
   target_operating_model:
@@ -83,10 +84,16 @@ surfaces:
     retired_dod: docs/UI_FINE_TUNING_3_4_DOD.md
   ui_wiring:
     authority: docs/ui-wiring-manifest.json
+    classification: legacy-lineage-debt
+    current_replacement: ui_composition_root
+    may_define_current_runtime: false
   api:
     authority: docs/openapi.yaml
   schemas:
     authority: schemas/
+    classification: legacy-lineage-debt
+    current_replacement: api+runtime_handlers
+    may_define_current_runtime: false
   runtime_entrypoint:
     authority: v3/server.mjs
   runtime_domain:
@@ -168,7 +175,7 @@ rules:
   - the native workspace bootstrap may aggregate installer calls and bounded stylesheets but may not become a business write authority or a C0.1 participant
   - shared UI primitives are structural and accessibility helpers; they may not inject manifesto, purpose, why, evidence or boundary narratives into every surface
   - each landing exposes at most one primary purpose sentence before operational work; technical and methodological context is progressive by default
-  - comparable repeated business records use row/list grammar before card-wall grammar; heterogeneous business capabilities may use the 3 -> 2 -> 1 capability matrix
+  - Processi catalogue and comparable repeated business records use row/list grammar by their current owner; heterogeneous capability groupings elsewhere may use responsive grids only when explicitly owned, never as a global 3 -> 2 -> 1 default
   - work scope, legal applicability, mapping, control effectiveness and conformity are distinct axes and may not be collapsed by presentation or annotation
   - semantic human-action metadata is applied through ui_control_annotation after decision presentation and may not mutate business state or rewrite the exclusive presentation authority
   - package.json scripts.start and ictc.sh must resolve to runtime_entrypoint

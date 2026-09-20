@@ -78,8 +78,8 @@ La regola corrente è **work first, explanation on demand**, con composizione lo
 - `active-experience.js` è l'unico composition root e installa gli owner locali 3.2 prima dell'annotazione globale.
 - `native-workspace-3-2.js` aggrega il bootstrap tecnico di Proof, EP-01, Admin, GRC e dialoghi; non possiede business write authority.
 - `semantic-composition-runtime.js` è **annotation-only**: classifica surface/authority metadata e non riscrive copy business, non riordina DOM locale e non installa gli owner locali.
-- Home mostra una proposition aziendale unica e una attention queue limitata a 5 elementi.
-- Processi di Compliance usa una capability matrix responsive **3 → 2 → 1** con sette card e copy distinto tra catalogo e workspace.
+- Home mostra una proposition aziendale unica e una attention queue limitata a **3 priorità**.
+- Processi di Compliance usa il catalogo corrente **one-row-per-procedure / row-list**: una riga per ciascuna delle sette procedure, con reflow semantico su viewport stretti e copy distinto tra catalogo e workspace.
 - Le procedure mantengono lavoro e decisione prima di KPI, metodo, boundary e trace.
 - Evidenze ICTC apre con il **Reticolo epistemico** e mantiene secondari decisioni/tracciabilità, metodo, integrità, verifiche esterne ed export.
 - EP-01 porta ricerca e relazioni prima di summary/compression e dettagli tecnici.

@@ -2,6 +2,8 @@
 
 Descrivi la slice semantica o tecnica e l'oggetto governato.
 
+Una PR ICTC è una **unità di esecuzione semantica**: una responsabilità falsificabile, anche se tocca più file o non modifica il runtime applicativo. La HEAD corrente è la candidate state; un nuovo commit crea un nuovo SHA e invalida il verde precedente.
+
 ## Affected authority
 
 Indica l'owner corrente da `docs/authority-matrix.yaml` e spiega perché la modifica appartiene a quell'owner. Dichiarare esplicitamente se non cambia alcuna authority.
@@ -25,6 +27,9 @@ Indica la rail corrente toccata e gli eventuali prerequisite/stacked PR. Evita d
 - Authority: `docs/convergence/convergence-authority.json`
 
 Una modifica user-directed fuori dal piano corrente usa `intentional-deviation`: preserva la storia e aggiorna authority + workbook. Una PR realmente neutra usa `Convergence slice: NONE` e non riscrive il workbook.
+
+- [ ] Se il body dichiara `planned` / `intentional-deviation` o afferma che convergence authority + workbook cambiano insieme, i file dichiarati sono realmente presenti nel diff; altrimenti la dichiarazione è stata corretta prima del merge.
+- [ ] Se la PR crea, mitiga o chiude un finding `D-RSC`, `v3/semantic-owner-contract.json#repositoryCoherenceDebt` e il relativo falsificatore restano coerenti.
 
 ## Tests and falsification
 
