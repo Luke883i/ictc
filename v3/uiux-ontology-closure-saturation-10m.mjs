@@ -14,7 +14,8 @@ const source={
   router:read('./public/ui/surface-router.js'),
   workbench:read('./runtime/workbench-projection.mjs'),
   admin:read('./public/ui/admin-center.js'),
-  semanticSurface:read('./public/ui/semantic-surface-a6-ux4.js')
+  semanticSurface:read('./public/ui/semantic-surface-a6-ux4.js'),
+  seqDom:read('./public/ui/procedure-sequential-dom.js')
 };
 
 const CANON=['attention','controls','primary','advanced-context','reference'];
@@ -32,7 +33,9 @@ function sourceLaws(s){
     marketPrimaryFirst:s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')>=0&&s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')<s.market.indexOf('<details class="market-section market-library"'),
     marketLibraryProgressive:s.market.includes('details class="market-section market-library"')&&s.market.includes('data-market-library'),
     marketIntegratedProgressive:s.market.includes('details class="market-section market-integrated"')&&s.market.includes('data-market-integrated'),
-    coverageScopePrimary:s.semanticSurface.includes("coverageAnchor=id==='coverage'?root.querySelector('.market-mapping-panel[open] .grc-list'):null")&&s.semanticSurface.indexOf('if(coverageAnchor)')<s.semanticSurface.indexOf('else if(nativeFilter)'),
+    coverageScopePrimary:s.semanticSurface.includes('function scopeAnchorForBindings(')&&s.semanticSurface.includes("node.closest('.grc-list,.market-framework-grid')")&&s.semanticSurface.includes('ensureScopeControl(root,id,scopeAnchor)')&&s.semanticSurface.includes('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}')&&s.semanticSurface.includes("control.dataset.a6Ux4ScopeOwner=id"),
+    coverageScopeRemountDefault:s.semanticSurface.includes("control.value='actionable'")&&s.semanticSurface.includes("control.dataset.a6Ux4Default='true'"),
+    journeyHelperOutsideOwnedBlock:s.seqDom.includes("host.append(guide)")&&s.seqDom.includes("rail.after(guide)")&&!s.seqDom.includes("(compass||host.firstElementChild)?.after(guide)"),
     riskAnalysisProgressive:s.grcBase.includes('data-risk-analysis-disclosure')&&s.grcBase.includes('<details class="grc-heat"'),
     riskAnalysisAfterList:s.grcBase.indexOf('<div class="grc-list">${p.risks.map')<s.grcBase.indexOf('${analysis}'),
     epHumanProjection:s.ep.includes('const PROCEDURE_LABELS=Object.freeze')&&s.ep.includes('const STATUS_LABELS=Object.freeze')&&s.ep.includes('const FAMILY_LABELS=Object.freeze')&&s.ep.includes('const kindLabel='),
@@ -56,8 +59,11 @@ const SOURCE_MUTANTS=[
   ['market-primary-marker-lost',s=>({...s,market:s.market.replace('data-market-primary-work','data-market-secondary-work')})],
   ['market-library-section',s=>({...s,market:s.market.replace('details class="market-section market-library"','section class="market-section market-library"')})],
   ['market-integrated-section',s=>({...s,market:s.market.replace('details class="market-section market-integrated"','section class="market-section market-integrated"')})],
-  ['coverage-scope-in-library',s=>({...s,semanticSurface:s.semanticSurface.replace("coverageAnchor=id==='coverage'?root.querySelector('.market-mapping-panel[open] .grc-list'):null","coverageAnchor=null")})],
-  ['coverage-generic-filter-wins',s=>({...s,semanticSurface:s.semanticSurface.replace('if(coverageAnchor){','if(false&&coverageAnchor){')})],
+  ['coverage-scope-wrong-collection',s=>({...s,semanticSurface:s.semanticSurface.replace("node.closest('.grc-list,.market-framework-grid')","root.querySelector('.market-framework-grid')")})],
+  ['coverage-scope-anchor-ignored',s=>({...s,semanticSurface:s.semanticSurface.replace('ensureScopeControl(root,id,scopeAnchor)','ensureScopeControl(root,id,null)')})],
+  ['coverage-scope-not-reparented',s=>({...s,semanticSurface:s.semanticSurface.replace('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}','scopeAnchor.before(bar);return control;}')})],
+  ['coverage-default-persists',s=>({...s,semanticSurface:s.semanticSurface.replace("control.value='actionable'","control.value=control.value||'actionable'")})],
+  ['journey-guide-inside-owner-block',s=>({...s,seqDom:s.seqDom.replace("host.append(guide)","host.firstElementChild?.after(guide)").replace("rail.after(guide)","host.firstElementChild?.after(guide)")})],
   ['risk-analysis-section',s=>({...s,grcBase:s.grcBase.replace('<details class="grc-heat"','<section class="grc-heat"')})],
   ['risk-analysis-before-list',s=>({...s,grcBase:s.grcBase.replace('<div class="grc-list">${p.risks.map','${analysis}<div class="grc-list">${p.risks.map')})],
   ['ep-drop-human-labels',s=>({...s,ep:s.ep.replace('PROCEDURE_LABELS','PROCEDURE_LABELS_BROKEN')})],
@@ -70,8 +76,8 @@ const sourceMutationResults=[];
 for(const [name,mutate] of SOURCE_MUTANTS){const mutated=mutate(source);const laws=sourceLaws(mutated);const killed=Object.values(laws).some(v=>!v);sourceMutationResults.push({name,killed,failed:Object.entries(laws).filter(([,v])=>!v).map(([k])=>k)});assert.equal(killed,true,`source mutant survived: ${name}`);}
 
 function baseline(){return {
-  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,
-  market:['mapping','library','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopePrimary:true,
+  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,journeyHelperOutsideOwnedBlock:true,
+  market:['mapping','library','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopePrimary:true,coverageScopeRemountDefault:true,
   risk:['metrics','create','records','analysis'],riskAnalysisProgressive:true,riskAnalysisOpen:false,
   ep:{firstPlaneTechnical:false,digestFirstPlane:false,humanLabels:true,rawPreserved:true},
   backSelf:false,aiOptionalPrimary:false,ownerCount:1,primaryCount:1,
@@ -80,9 +86,10 @@ function baseline(){return {
 function violations(x){const out=[];
   if(x.order.join('>')!==CANON.join('>')||new Set(x.order).size!==CANON.length)out.push('editorial-order');
   if(!x.supportAfterPrimary||!x.supportClosed)out.push('support-progressive');
-  if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock)out.push('placement-adjacency');
+  if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock||!x.journeyHelperOutsideOwnedBlock)out.push('placement-adjacency');
   if(x.market.join('>')!=='mapping>library>integrated'||!x.libraryProgressive||!x.integratedProgressive)out.push('market-progressive');
   if(!x.coverageScopePrimary)out.push('coverage-scope-placement');
+  if(!x.coverageScopeRemountDefault)out.push('scope-remount-default');
   if(x.risk.join('>')!=='metrics>create>records>analysis'||!x.riskAnalysisProgressive||x.riskAnalysisOpen)out.push('risk-progressive');
   if(x.ep.firstPlaneTechnical||x.ep.digestFirstPlane||!x.ep.humanLabels||!x.ep.rawPreserved)out.push('epistemic-projection');
   if(x.backSelf)out.push('navigation');
@@ -100,10 +107,12 @@ const FAMILIES=[
   ['support-open-default',x=>{x.supportClosed=false;}],
   ['legacy-sibling-before-first-control',x=>{x.firstRoleAdjacent=false;}],
   ['legacy-sibling-inside-declared-block',x=>{x.contiguousDeclaredBlock=false;}],
+  ['journey-helper-inside-owned-block',x=>{x.journeyHelperOutsideOwnedBlock=false;}],
   ['market-library-before-mapping',x=>{x.market=['library','mapping','integrated'];}],
   ['market-library-flat',x=>{x.libraryProgressive=false;}],
   ['market-integrated-flat',x=>{x.integratedProgressive=false;}],
   ['coverage-scope-hidden-in-library',x=>{x.coverageScopePrimary=false;}],
+  ['coverage-scope-remount-persists-all',x=>{x.coverageScopeRemountDefault=false;}],
   ['risk-analysis-before-records',x=>{x.risk=['metrics','analysis','create','records'];}],
   ['risk-analysis-flat',x=>{x.riskAnalysisProgressive=false;}],
   ['risk-analysis-open-default',x=>{x.riskAnalysisOpen=true;}],
@@ -130,10 +139,10 @@ for(let i=0;i<TOTAL;i++){
 assert.equal(killed,TOTAL);assert.ok(hits.every(n=>n>0));
 
 const essential={};
-const LAW_NAMES=['editorial-order','support-progressive','placement-adjacency','market-progressive','coverage-scope-placement','risk-progressive','epistemic-projection','navigation','ai-optional','single-owner-primary','authority-boundary'];
+const LAW_NAMES=['editorial-order','support-progressive','placement-adjacency','market-progressive','coverage-scope-placement','scope-remount-default','risk-progressive','epistemic-projection','navigation','ai-optional','single-owner-primary','authority-boundary'];
 for(const law of LAW_NAMES){essential[law]=FAMILIES.some(([,mutate])=>{const x=baseline();mutate(x);const found=violations(x);return found.length===1&&found[0]===law;});assert.equal(essential[law],true,`no isolated falsifier for ${law}`);}
 
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,total:TOTAL,killed, survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['work-before-support','declared-owner-adjacency-over-legacy-siblings','scope-controls-live-with-primary-collection','one-owner-one-primary','progressive-secondary-analysis','human-first-epistemic-projection-with-raw-preserved','optional-ai-never-primary','non-self-back-navigation','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 model-composition mutations plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
+const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,total:TOTAL,killed, survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['work-before-support','single-structural-commit-after-local-enhancement','journey-helpers-outside-owned-block','declared-owner-adjacency-over-legacy-siblings','scope-controls-follow-visible-actionable-collection','scope-controls-reparent-on-remount','one-owner-one-primary','progressive-secondary-analysis','human-first-epistemic-projection-with-raw-preserved','optional-ai-never-primary','non-self-back-navigation','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 model-composition mutations plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
 writeFileSync(new URL('../artifacts/uiux-ontology-closure-saturation-10m.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));
