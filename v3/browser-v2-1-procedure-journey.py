@@ -119,8 +119,9 @@ def submit_grc(page, code, pid, fill, needle):
     expect(form).to_be_visible()
     before = current_revision(page)
     fill(form)
-    PHASE = f'{code}-submit'
+    PHASE = f'{code}-submit-click'
     form.locator('button[type="submit"]').click()
+    PHASE = f'{code}-submit-revision'
     after = wait_advance(page, before)
     PHASE = f'{code}-local-projection'
     expect(page.locator('#grcWorkspace .grc-list')).to_contain_text(needle)
