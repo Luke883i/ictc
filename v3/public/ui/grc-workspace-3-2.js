@@ -1,7 +1,7 @@
 import { state } from './common.js';
+import { currentGrcProcedureId } from './surface-router.js';
 import { ENDUSER_COMPOSITION_VERSION, NATIVE_SEMANTIC_LATTICE_VERSION, PROCEDURE_WORKSPACE } from './native-semantic-lattice-3-2.js';
 import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from './procedure-editorial-slots.js';
-const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
 const GRC_GRAMMAR=Object.freeze({objects:'inventory-registry',coverage:'requirements-mapping-ledger',actions:'execution-workbench',risks:'risk-review-desk',assurance:'assurance-request-desk'});
 export const GRC_EDITORIAL_ORDER=Object.freeze({
   objects:Object.freeze(['advanced-context','reference','attention','controls','primary']),
@@ -13,7 +13,7 @@ export const GRC_EDITORIAL_ORDER=Object.freeze({
 const attentionSlotOwner='grc-workspace-3-2.js';
 const OWNER=attentionSlotOwner;
 let installed=false,pending=false,targetResolverBound=false;
-function selected(){let id=state.activeProcessId||'';try{id=id||localStorage.getItem('ictc-grc-process')||'';}catch{}return GRC_IDS.has(id)?id:'objects';}
+function selected(){return currentGrcProcedureId();}
 function canonicalRecords(procedure){const grc=state.data?.grc||{};if(procedure==='objects')return grc.objects?.objects||[];if(procedure==='coverage')return grc.coverage?.mappings||[];if(procedure==='actions')return grc.actions?.actions||[];if(procedure==='risks')return grc.risks?.risks||[];if(procedure==='assurance')return grc.assurance?.cases||[];return[];}
 function recordKind(procedure){return procedure==='objects'?'object':procedure==='coverage'?'mapping':procedure==='actions'?'action':procedure==='risks'?'risk':'assurance-case';}
 function annotateCanonicalRecords(root,procedure){const cards=[...root.querySelectorAll('.grc-body .grc-list > article')],records=canonicalRecords(procedure),kind=recordKind(procedure);cards.forEach((card,index)=>{const record=records[index];card.classList.add('p2-record-row');card.dataset.enduserPrimitive='RecordRow';card.dataset.recordGrammar='row-list';if(!record)return;card.dataset.grcRecordId=String(record.id);card.dataset.grcRecordKind=kind;card.dataset.grcRecordProcedure=procedure;if(procedure==='coverage'&&record.requirementRef)card.dataset.grcRequirementRef=String(record.requirementRef);});root.dataset.grcRecordTargetMap=cards.length===records.length?'exact':'partial';}
