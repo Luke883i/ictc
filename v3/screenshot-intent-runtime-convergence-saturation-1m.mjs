@@ -53,7 +53,7 @@ function failures(s){const o=[];
  if(s.bodyOverflow==='hidden')o.push('home-scroll-truth');
  if(!['ready','key-missing','unconfigured'].includes(s.aiState))o.push('ai-state');
  if(({ready:'positive','key-missing':'attention',unconfigured:'neutral'})[s.aiState]!==s.aiTone)o.push('ai-tone');
- if(s.aiState==='unconfigured'&&!/non configurata.*Amministrazione/i.test(s.aiCopy))o.push('ai-copy');
+ if(!/non configurata.*Amministrazione/i.test(s.aiCopy))o.push('ai-copy');
  if(!Array.isArray(s.policyEnabled)||s.policyEnabled.length<1)o.push('policy-projection');
  if(s.policyEnabled.join('|')!==s.landingEnabled.join('|'))o.push('policy-readback');
  if(s.adminAiParent!=='admin')o.push('admin-ai-parent');
