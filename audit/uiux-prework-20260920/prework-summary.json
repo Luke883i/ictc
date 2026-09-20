@@ -1,0 +1,724 @@
+[
+  {
+    "viewport": "desktop",
+    "surface": "monitoring",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 223.4,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1000,
+      "rootScrollHeight": 664,
+      "preworkHeight": 13.587500000000006,
+      "preworkViewportRatio": 0.014,
+      "directBeforeUseful": 0,
+      "directBeforePrimary": 0,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 3,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "incidents",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 258.1,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1000,
+      "rootScrollHeight": 473,
+      "preworkHeight": 69.16250000000002,
+      "preworkViewportRatio": 0.069,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 1
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 197.7,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "objects",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 271.7,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1000,
+      "rootScrollHeight": 581,
+      "preworkHeight": 62.76249999999999,
+      "preworkViewportRatio": 0.063,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 217.7,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "coverage",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 299.8,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 3836,
+      "rootScrollHeight": 3672,
+      "preworkHeight": 69.98750000000001,
+      "preworkViewportRatio": 0.07,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 1
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 245.8,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "actions",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 276.9,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1000,
+      "rootScrollHeight": 586,
+      "preworkHeight": 62.83749999999998,
+      "preworkViewportRatio": 0.063,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 222.9,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "risks",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 276.9,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1421,
+      "rootScrollHeight": 1253,
+      "preworkHeight": 62.83749999999998,
+      "preworkViewportRatio": 0.063,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 222.9,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "assurance",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 276.9,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1000,
+      "rootScrollHeight": 586,
+      "preworkHeight": 62.83749999999998,
+      "preworkViewportRatio": 0.063,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 222.9,
+        "height": 54,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "desktop",
+    "surface": "epistemic",
+    "editorialOrder": "",
+    "actual": "",
+    "primaryTop": 509,
+    "metrics": {
+      "viewportH": 1000,
+      "documentScrollHeight": 1046,
+      "rootScrollHeight": 922,
+      "preworkHeight": 269.6875,
+      "preworkViewportRatio": 0.27,
+      "directBeforeUseful": 3,
+      "directBeforePrimary": 3,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 5,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "span",
+        "id": "epistemicLive",
+        "className": "surface-live",
+        "text": "Reticolo allineato alla revisione 2",
+        "top": 47,
+        "height": 1,
+        "slot": "",
+        "role": ""
+      },
+      {
+        "tag": "p",
+        "id": "",
+        "className": "epistemic-claim-boundary",
+        "text": "La vista descrive storia e relazioni registrate da ICTC. Non determina applicabilita, conformita, sufficienza, efficacia dei controlli, qualificazione legale o certificazione.",
+        "top": 273.1,
+        "height": 66.6,
+        "slot": "",
+        "role": "boundary"
+      },
+      {
+        "tag": "section",
+        "id": "",
+        "className": "surface-panel",
+        "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4 ← Revisioni piu recenti r1–r2 · stato r2 · digest 693dbe0e6226 ",
+        "top": 362.6,
+        "height": 607.7,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": {
+        "visible": false,
+        "parent": "deep-tools",
+        "rect": {
+          "top": 978.8,
+          "bottom": 1498.7,
+          "left": 136.2,
+          "width": 1167.6,
+          "height": 519.9
+        }
+      },
+      "compression": {
+        "visible": false,
+        "parent": "rules-body",
+        "rect": {
+          "top": 953.9,
+          "bottom": 1406.5,
+          "left": 125.6,
+          "width": 1188.8,
+          "height": 452.6
+        }
+      },
+      "deepTools": {
+        "open": false,
+        "visible": false,
+        "rect": {
+          "top": 920.7,
+          "bottom": 970.2,
+          "left": 125.6,
+          "width": 1188.8,
+          "height": 49.5
+        }
+      },
+      "rules": {
+        "open": false,
+        "visible": false,
+        "rect": {
+          "top": 864.2,
+          "bottom": 912.7,
+          "left": 125.6,
+          "width": 1188.8,
+          "height": 48.5
+        }
+      }
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "monitoring",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 380,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1268,
+      "rootScrollHeight": 1072,
+      "preworkHeight": 13.5625,
+      "preworkViewportRatio": 0.016,
+      "directBeforeUseful": 0,
+      "directBeforePrimary": 0,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 3,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "incidents",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 550.2,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1051,
+      "rootScrollHeight": 855,
+      "preworkHeight": 183.76250000000005,
+      "preworkViewportRatio": 0.218,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 1
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 375.2,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "objects",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 555.8,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1285,
+      "rootScrollHeight": 1061,
+      "preworkHeight": 177.36249999999995,
+      "preworkViewportRatio": 0.21,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 387.2,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "coverage",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 566.3,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 9301,
+      "rootScrollHeight": 9081,
+      "preworkHeight": 184.54999999999995,
+      "preworkViewportRatio": 0.219,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 1
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 397.7,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "actions",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 563.4,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1268,
+      "rootScrollHeight": 1045,
+      "preworkHeight": 177.33749999999998,
+      "preworkViewportRatio": 0.21,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 394.9,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "risks",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 542.6,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1742,
+      "rootScrollHeight": 1518,
+      "preworkHeight": 177.41250000000002,
+      "preworkViewportRatio": 0.21,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 374,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "assurance",
+    "editorialOrder": "advanced-context>reference>attention>controls>primary",
+    "actual": "advanced-context>reference>attention>controls>primary",
+    "primaryTop": 542.6,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1239,
+      "rootScrollHeight": 1016,
+      "preworkHeight": 177.41250000000002,
+      "preworkViewportRatio": 0.21,
+      "directBeforeUseful": 1,
+      "directBeforePrimary": 1,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 4,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "div",
+        "id": "",
+        "className": "procedure-support-rail",
+        "text": "Contesto e tracciabilità 0 decisioni · 0 versioni Standard e pratiche applicate 2 riferimenti · dettagli su richiesta",
+        "top": 374,
+        "height": 168.6,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": null,
+      "compression": null,
+      "deepTools": null,
+      "rules": null
+    }
+  },
+  {
+    "viewport": "mobile",
+    "surface": "epistemic",
+    "editorialOrder": "",
+    "actual": "",
+    "primaryTop": 254.8,
+    "metrics": {
+      "viewportH": 844,
+      "documentScrollHeight": 1376,
+      "rootScrollHeight": 1179,
+      "preworkHeight": 378.58125,
+      "preworkViewportRatio": 0.449,
+      "directBeforeUseful": 3,
+      "directBeforePrimary": 3,
+      "detailSummariesBeforePrimary": 0,
+      "openDetailsBeforePrimary": 0,
+      "visibleControlsBeforePrimary": 5,
+      "totalOpenDetails": 0
+    },
+    "beforePrimary": [
+      {
+        "tag": "span",
+        "id": "epistemicLive",
+        "className": "surface-live",
+        "text": "Reticolo allineato alla revisione 2",
+        "top": -369.8,
+        "height": 1,
+        "slot": "",
+        "role": ""
+      },
+      {
+        "tag": "p",
+        "id": "",
+        "className": "epistemic-claim-boundary",
+        "text": "La vista descrive storia e relazioni registrate da ICTC. Non determina applicabilita, conformita, sufficienza, efficacia dei controlli, qualificazione legale o certificazione.",
+        "top": -97.2,
+        "height": 66.6,
+        "slot": "",
+        "role": "boundary"
+      },
+      {
+        "tag": "section",
+        "id": "",
+        "className": "surface-panel",
+        "text": "Cerca atomi Quadro Filtri avanzati Viste tecniche Quadro Atomo Dove si concentra la traccia caricata Traccia disponibile cross-cutting 4 Apri gruppi Recorded e proposed restano separati recorded 4 ← Revisioni piu recenti r1–r2 · stato r2 · digest 693dbe0e6226 ",
+        "top": -14.9,
+        "height": 825.4,
+        "slot": "",
+        "role": ""
+      }
+    ],
+    "detailSummariesBeforePrimary": [],
+    "epistemic": {
+      "professional": {
+        "visible": false,
+        "parent": "deep-tools",
+        "rect": {
+          "top": 819.1,
+          "bottom": 1798.2,
+          "left": 20.2,
+          "width": 349.6,
+          "height": 979.1
+        }
+      },
+      "compression": {
+        "visible": false,
+        "parent": "rules-body",
+        "rect": {
+          "top": 794.2,
+          "bottom": 1521.3,
+          "left": 9.6,
+          "width": 370.8,
+          "height": 727.1
+        }
+      },
+      "deepTools": {
+        "open": false,
+        "visible": false,
+        "rect": {
+          "top": 761,
+          "bottom": 810.5,
+          "left": 9.6,
+          "width": 370.8,
+          "height": 49.5
+        }
+      },
+      "rules": {
+        "open": false,
+        "visible": false,
+        "rect": {
+          "top": 704.5,
+          "bottom": 753,
+          "left": 9.6,
+          "width": 370.8,
+          "height": 48.5
+        }
+      }
+    }
+  }
+]
