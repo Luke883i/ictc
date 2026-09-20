@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "phase": "RN-01-order",
+  "type": "AssertionError",
+  "message": "",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/ictc/ictc/v3/browser-s4-a2-editorial-composition.py\", line 48, in <module>\n    for code,pid,host in PROCEDURES: audit(page,code,pid,host)\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/ictc/ictc/v3/browser-s4-a2-editorial-composition.py\", line 33, in audit\n    slot=root.locator(f':scope > [data-procedure-attention-slot=\"{pid}\"]'); expect(slot).to_have_count(1); rail=root.locator(':scope > .procedure-support-rail'); adv=rail.locator(':scope > [data-editorial-slot=\"advanced-context\"]'); ref=rail.locator(':scope > [data-editorial-slot=\"reference\"]'); expect(rail).to_have_count(1); expect(adv).to_have_count(1); expect(ref).to_have_count(1); assert adv.evaluate('(a,r)=>a.nextElementSibling===r',ref.element_handle()),f'{pid}: reference not immediately after context in support rail'; assert slot.evaluate('(s,c)=>s.nextElementSibling===c',root.locator(':scope > [data-editorial-slot=\"controls\"]').first.element_handle()) if root.locator(':scope > [data-editorial-slot=\"controls\"]').count() else True; assert root.locator(':scope > [data-editorial-slot=\"primary\"]').first.evaluate('(p,r)=>p.nextElementSibling===r',rail.element_handle()),f'{pid}: support rail not immediately after primary'; assert slot.get_attribute('data-attention-slot-owner')==OWNER[pid],(pid,'attention owner',slot.get_attribute('data-attention-slot-owner'),OWNER[pid])\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "expectedBuildSha": "10c8ce5e94d1ed1e9bceac53727a46f849f3f4f0",
+  "results": [],
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4822/api/bootstrap"
+    }
+  ],
+  "networkFailures": [],
+  "pageErrors": []
+}
