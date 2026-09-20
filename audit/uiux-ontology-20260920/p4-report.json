@@ -1,0 +1,4894 @@
+{
+  "ok": true,
+  "suite": "uiux-beauty-p4-rendered-browser",
+  "surfaceCount": 13,
+  "viewportCount": 4,
+  "observations": 61,
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "id": "tablet",
+      "width": 820,
+      "height": 980
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "id": "narrow",
+      "width": 320,
+      "height": 780
+    }
+  ],
+  "results": [
+    {
+      "surface": "home",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#homeView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "home-summary-readable",
+          "pass": true,
+          "detail": {
+            "font": 15.2
+          }
+        },
+        {
+          "id": "home-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 35.2,
+            "summary": 15.2
+          }
+        },
+        {
+          "id": "home-summary-measure",
+          "pass": true,
+          "detail": {
+            "summaryWidth": 842.9375
+          }
+        },
+        {
+          "id": "home-summary-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 842.9375,
+            "text": "ICTC collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, risch"
+          }
+        },
+        {
+          "id": "header-ai-icon-only",
+          "pass": true,
+          "detail": {
+            "text": "",
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-tooltip",
+          "pass": true,
+          "detail": {
+            "aria": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "tooltip": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "title": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili"
+          }
+        },
+        {
+          "id": "header-ai-state",
+          "pass": true,
+          "detail": {
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-compact",
+          "pass": true,
+          "detail": {
+            "width": 36,
+            "height": 36,
+            "display": "flex"
+          }
+        },
+        {
+          "id": "header-role-owned-elsewhere",
+          "pass": true,
+          "detail": {
+            "profile": "AmministratoreRuolo attivo⌄"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "processes",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#processesView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "processes-seven-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "processes-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Lavoro di compliance"
+          }
+        },
+        {
+          "id": "process-0-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Monitoraggio normativo e fonti"
+          }
+        },
+        {
+          "id": "process-0-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-0-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-0-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-0-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-1-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Incidenti e quasi incidenti"
+          }
+        },
+        {
+          "id": "process-1-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-1-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-1-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-1-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-2-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Inventario di sistemi e oggetti"
+          }
+        },
+        {
+          "id": "process-2-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-2-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-2-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-2-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-3-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Standard e Controlli"
+          }
+        },
+        {
+          "id": "process-3-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-3-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-3-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-3-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-4-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Azioni correttive"
+          }
+        },
+        {
+          "id": "process-4-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-4-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-4-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-4-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-5-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Rischi di compliance"
+          }
+        },
+        {
+          "id": "process-5-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-5-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-5-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-5-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-6-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Questionari e verifiche"
+          }
+        },
+        {
+          "id": "process-6-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-6-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-6-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-6-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 1187,
+            "clientWidth": 1187
+          }
+        },
+        {
+          "id": "process-actions-seven",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "process-actions-equal-width",
+          "pass": true,
+          "detail": {
+            "widths": [
+              192,
+              192,
+              192,
+              192,
+              192,
+              192,
+              192
+            ]
+          }
+        },
+        {
+          "id": "process-actions-equal-height",
+          "pass": true,
+          "detail": {
+            "heights": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ]
+          }
+        },
+        {
+          "id": "process-actions-centered",
+          "pass": true,
+          "detail": {
+            "styles": [
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              }
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "monitoring",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#monitoringView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 759,
+            "text": "Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana "
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "incidents",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#incidentsView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 956.59375,
+            "text": "Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chius"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "objects",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 916.59375,
+            "text": "Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli us"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "coverage",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 916.59375,
+            "text": "Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasf"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "oracle": "scope-overlay-opaque-explicit-save-cancel",
+      "viewport": "desktop",
+      "metrics": {
+        "background": "rgb(255, 255, 255)",
+        "opacity": "1",
+        "position": "fixed",
+        "saveBackground": "rgb(70, 87, 217)",
+        "saveTextAlign": "center",
+        "saveWidth": 574,
+        "summaryBefore": "\"←\"",
+        "summaryText": "Indietro senza salvare",
+        "summaryAria": "Dichiara utilizzo. Tornare indietro non salva la scelta.",
+        "summaryWidth": 192
+      }
+    },
+    {
+      "oracle": "scope-cancel-no-write-save-readback",
+      "viewport": "desktop",
+      "framework": "eu-gdpr-2016-679",
+      "cancelRevisionStable": true,
+      "savedDecision": "reference",
+      "readback": true
+    },
+    {
+      "oracle": "standard-browser-index-detail-legibility",
+      "viewport": "desktop",
+      "metrics": {
+        "dialogWidth": 1120,
+        "navWidth": 271.015625,
+        "detailWidth": 846.984375,
+        "navBackground": "rgb(241, 244, 248)",
+        "detailBackground": "rgb(255, 255, 255)",
+        "selectedBackground": "color(srgb 0.949216 0.953882 0.989569)",
+        "nodeCount": 99
+      }
+    },
+    {
+      "surface": "actions",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 917.40625,
+            "text": "Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "risks",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 917.40625,
+            "text": "Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "assurance",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 917.40625,
+            "text": "Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze u"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 24.48,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "proof",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#proofView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "proof-lead-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "proof-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 998.953125,
+            "text": "Distingui fatti osservati, evidenze disponibili e aspetti che richiedono prova esterna."
+          }
+        },
+        {
+          "id": "proof-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "epistemic",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#epistemicView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "epistemic-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "admin",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#adminCenter"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "admin-seven-procedure-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "admin-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.48
+          }
+        },
+        {
+          "id": "admin-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 12.8,
+            "support": 12.48
+          }
+        },
+        {
+          "id": "admin-policy-canonical-title",
+          "pass": true,
+          "detail": {
+            "text": "Disponibilità operativa dei processi"
+          }
+        },
+        {
+          "id": "admin-policy-canonical-cta",
+          "pass": true,
+          "detail": {
+            "text": "Salva disponibilità operativa"
+          }
+        },
+        {
+          "id": "admin-policy-compact-rows",
+          "pass": true,
+          "detail": {
+            "heights": [
+              52,
+              52,
+              52,
+              52,
+              52,
+              52,
+              52
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "ai-settings",
+      "width": 1440,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 1440,
+            "body": 1440,
+            "innerWidth": 1440
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#settingsDialog"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "settings-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        },
+        {
+          "id": "settings-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 15.04,
+            "support": 12.8
+          }
+        },
+        {
+          "id": "settings-header-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Amministrazione"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "desktop",
+      "failures": []
+    },
+    {
+      "surface": "home",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#homeView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "home-summary-readable",
+          "pass": true,
+          "detail": {
+            "font": 15.2
+          }
+        },
+        {
+          "id": "home-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 27.2,
+            "summary": 15.2
+          }
+        },
+        {
+          "id": "home-summary-measure",
+          "pass": true,
+          "detail": {
+            "summaryWidth": 721.96875
+          }
+        },
+        {
+          "id": "home-summary-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 721.96875,
+            "text": "ICTC collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, risch"
+          }
+        },
+        {
+          "id": "header-ai-icon-only",
+          "pass": true,
+          "detail": {
+            "text": "",
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-tooltip",
+          "pass": true,
+          "detail": {
+            "aria": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "tooltip": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "title": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili"
+          }
+        },
+        {
+          "id": "header-ai-state",
+          "pass": true,
+          "detail": {
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-compact",
+          "pass": true,
+          "detail": {
+            "width": 36,
+            "height": 36,
+            "display": "flex"
+          }
+        },
+        {
+          "id": "header-role-owned-elsewhere",
+          "pass": true,
+          "detail": {
+            "profile": "AmministratoreRuolo attivo⌄"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "processes",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#processesView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "processes-seven-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "processes-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Lavoro di compliance"
+          }
+        },
+        {
+          "id": "process-0-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Monitoraggio normativo e fonti"
+          }
+        },
+        {
+          "id": "process-0-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-0-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-0-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-0-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-1-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Incidenti e quasi incidenti"
+          }
+        },
+        {
+          "id": "process-1-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-1-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-1-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-1-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-2-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Inventario di sistemi e oggetti"
+          }
+        },
+        {
+          "id": "process-2-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-2-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-2-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-2-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-3-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Standard e Controlli"
+          }
+        },
+        {
+          "id": "process-3-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-3-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-3-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-3-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-4-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Azioni correttive"
+          }
+        },
+        {
+          "id": "process-4-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-4-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-4-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-4-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-5-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Rischi di compliance"
+          }
+        },
+        {
+          "id": "process-5-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-5-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-5-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-5-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-6-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Questionari e verifiche"
+          }
+        },
+        {
+          "id": "process-6-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-6-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-6-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-6-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 782,
+            "clientWidth": 782
+          }
+        },
+        {
+          "id": "process-actions-seven",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "process-actions-equal-width",
+          "pass": true,
+          "detail": {
+            "widths": [
+              192,
+              192,
+              192,
+              192,
+              192,
+              192,
+              192
+            ]
+          }
+        },
+        {
+          "id": "process-actions-equal-height",
+          "pass": true,
+          "detail": {
+            "heights": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ]
+          }
+        },
+        {
+          "id": "process-actions-centered",
+          "pass": true,
+          "detail": {
+            "styles": [
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              }
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "monitoring",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#monitoringView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 755.71875,
+            "text": "Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana "
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "incidents",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#incidentsView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 755.71875,
+            "text": "Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chius"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "objects",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 715.71875,
+            "text": "Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli us"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "coverage",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 715.71875,
+            "text": "Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasf"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "oracle": "scope-overlay-opaque-explicit-save-cancel",
+      "viewport": "tablet",
+      "metrics": {
+        "background": "rgb(255, 255, 255)",
+        "opacity": "1",
+        "position": "fixed",
+        "saveBackground": "rgb(70, 87, 217)",
+        "saveTextAlign": "center",
+        "saveWidth": 574,
+        "summaryBefore": "\"←\"",
+        "summaryText": "Indietro senza salvare",
+        "summaryAria": "Dichiara utilizzo. Tornare indietro non salva la scelta.",
+        "summaryWidth": 192
+      }
+    },
+    {
+      "oracle": "standard-browser-index-detail-legibility",
+      "viewport": "tablet",
+      "metrics": {
+        "dialogWidth": 788,
+        "navWidth": 240,
+        "detailWidth": 546,
+        "navBackground": "rgb(241, 244, 248)",
+        "detailBackground": "rgb(255, 255, 255)",
+        "selectedBackground": "color(srgb 0.949216 0.953882 0.989569)",
+        "nodeCount": 46
+      }
+    },
+    {
+      "surface": "actions",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 715.71875,
+            "text": "Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "risks",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 715.71875,
+            "text": "Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "assurance",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 715.71875,
+            "text": "Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze u"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "proof",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#proofView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "proof-lead-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "proof-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 603.484375,
+            "text": "Distingui fatti osservati, evidenze disponibili e aspetti che richiedono prova esterna."
+          }
+        },
+        {
+          "id": "proof-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "epistemic",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#epistemicView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "epistemic-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "admin",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#adminCenter"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "admin-seven-procedure-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "admin-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.48
+          }
+        },
+        {
+          "id": "admin-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 12.8,
+            "support": 12.48
+          }
+        },
+        {
+          "id": "admin-policy-canonical-title",
+          "pass": true,
+          "detail": {
+            "text": "Disponibilità operativa dei processi"
+          }
+        },
+        {
+          "id": "admin-policy-canonical-cta",
+          "pass": true,
+          "detail": {
+            "text": "Salva disponibilità operativa"
+          }
+        },
+        {
+          "id": "admin-policy-compact-rows",
+          "pass": true,
+          "detail": {
+            "heights": [
+              62.78125,
+              62.78125,
+              62.78125,
+              62.78125,
+              62.78125,
+              62.78125,
+              62.78125
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "ai-settings",
+      "width": 820,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 820,
+            "body": 820,
+            "innerWidth": 820
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#settingsDialog"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "settings-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        },
+        {
+          "id": "settings-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 15.04,
+            "support": 12.8
+          }
+        },
+        {
+          "id": "settings-header-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Amministrazione"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "tablet",
+      "failures": []
+    },
+    {
+      "surface": "home",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#homeView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "home-summary-readable",
+          "pass": true,
+          "detail": {
+            "font": 15.2
+          }
+        },
+        {
+          "id": "home-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 25.6,
+            "summary": 15.2
+          }
+        },
+        {
+          "id": "home-summary-measure",
+          "pass": true,
+          "detail": {
+            "summaryWidth": 306.4375
+          }
+        },
+        {
+          "id": "home-summary-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 306.4375,
+            "text": "ICTC collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, risch"
+          }
+        },
+        {
+          "id": "header-ai-icon-only",
+          "pass": true,
+          "detail": {
+            "text": "",
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-tooltip",
+          "pass": true,
+          "detail": {
+            "aria": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "tooltip": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "title": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili"
+          }
+        },
+        {
+          "id": "header-ai-state",
+          "pass": true,
+          "detail": {
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-compact",
+          "pass": true,
+          "detail": {
+            "width": 36,
+            "height": 36,
+            "display": "flex"
+          }
+        },
+        {
+          "id": "header-role-owned-elsewhere",
+          "pass": true,
+          "detail": {
+            "profile": "AmministratoreRuolo attivo⌄"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "processes",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#processesView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "processes-seven-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "processes-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Lavoro di compliance"
+          }
+        },
+        {
+          "id": "process-0-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Monitoraggio normativo e fonti"
+          }
+        },
+        {
+          "id": "process-0-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-0-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-0-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-0-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-1-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Incidenti e quasi incidenti"
+          }
+        },
+        {
+          "id": "process-1-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-1-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-1-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-1-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-2-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Inventario di sistemi e oggetti"
+          }
+        },
+        {
+          "id": "process-2-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-2-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-2-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-2-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-3-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Standard e Controlli"
+          }
+        },
+        {
+          "id": "process-3-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-3-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-3-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-3-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-4-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Azioni correttive"
+          }
+        },
+        {
+          "id": "process-4-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-4-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-4-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-4-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-5-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Rischi di compliance"
+          }
+        },
+        {
+          "id": "process-5-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-5-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-5-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-5-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-6-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Questionari e verifiche"
+          }
+        },
+        {
+          "id": "process-6-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-6-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-6-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-6-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 369,
+            "clientWidth": 369
+          }
+        },
+        {
+          "id": "process-actions-seven",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "process-actions-equal-width",
+          "pass": true,
+          "detail": {
+            "widths": [
+              347.0625,
+              347.0625,
+              347.0625,
+              347.0625,
+              347.0625,
+              347.0625,
+              347.0625
+            ]
+          }
+        },
+        {
+          "id": "process-actions-equal-height",
+          "pass": true,
+          "detail": {
+            "heights": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ]
+          }
+        },
+        {
+          "id": "process-actions-centered",
+          "pass": true,
+          "detail": {
+            "styles": [
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              }
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "monitoring",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#monitoringView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 342.59375,
+            "text": "Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana "
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "incidents",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#incidentsView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 342.59375,
+            "text": "Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chius"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "objects",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 318.59375,
+            "text": "Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli us"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "coverage",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 318.59375,
+            "text": "Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasf"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "oracle": "scope-overlay-opaque-explicit-save-cancel",
+      "viewport": "mobile",
+      "metrics": {
+        "background": "rgb(255, 255, 255)",
+        "opacity": "1",
+        "position": "fixed",
+        "saveBackground": "rgb(70, 87, 217)",
+        "saveTextAlign": "center",
+        "saveWidth": 324.796875,
+        "summaryBefore": "\"←\"",
+        "summaryText": "Indietro senza salvare",
+        "summaryAria": "Dichiara utilizzo. Tornare indietro non salva la scelta.",
+        "summaryWidth": 324.796875
+      }
+    },
+    {
+      "oracle": "standard-browser-index-detail-legibility",
+      "viewport": "mobile",
+      "metrics": {
+        "dialogWidth": 374,
+        "navWidth": 372,
+        "detailWidth": 372,
+        "navBackground": "rgb(241, 244, 248)",
+        "detailBackground": "rgb(255, 255, 255)",
+        "selectedBackground": "color(srgb 0.949216 0.953882 0.989569)",
+        "nodeCount": 46
+      }
+    },
+    {
+      "surface": "actions",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 318.59375,
+            "text": "Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "risks",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 318.59375,
+            "text": "Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "assurance",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 318.59375,
+            "text": "Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze u"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "proof",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#proofView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "proof-lead-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "proof-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 338.4375,
+            "text": "Distingui fatti osservati, evidenze disponibili e aspetti che richiedono prova esterna."
+          }
+        },
+        {
+          "id": "proof-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "epistemic",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#epistemicView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "epistemic-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "admin",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#adminCenter"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "admin-seven-procedure-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "admin-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.48
+          }
+        },
+        {
+          "id": "admin-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 12.8,
+            "support": 12.48
+          }
+        },
+        {
+          "id": "admin-policy-canonical-title",
+          "pass": true,
+          "detail": {
+            "text": "Disponibilità operativa dei processi"
+          }
+        },
+        {
+          "id": "admin-policy-canonical-cta",
+          "pass": true,
+          "detail": {
+            "text": "Salva disponibilità operativa"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "ai-settings",
+      "width": 390,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 390,
+            "body": 390,
+            "innerWidth": 390
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#settingsDialog"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "settings-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        },
+        {
+          "id": "settings-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 15.04,
+            "support": 12.8
+          }
+        },
+        {
+          "id": "settings-header-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Amministrazione"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "mobile",
+      "failures": []
+    },
+    {
+      "surface": "home",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#homeView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "home-summary-readable",
+          "pass": true,
+          "detail": {
+            "font": 15.2
+          }
+        },
+        {
+          "id": "home-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 25.6,
+            "summary": 15.2
+          }
+        },
+        {
+          "id": "home-summary-measure",
+          "pass": true,
+          "detail": {
+            "summaryWidth": 236.4375
+          }
+        },
+        {
+          "id": "home-summary-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 236.4375,
+            "text": "ICTC collega fonti e requisiti — inclusi GDPR e NIS2 quando applicabili — a oggetti, risch"
+          }
+        },
+        {
+          "id": "header-ai-icon-only",
+          "pass": true,
+          "detail": {
+            "text": "",
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-tooltip",
+          "pass": true,
+          "detail": {
+            "aria": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "tooltip": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili",
+            "title": "AI non configurata · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili"
+          }
+        },
+        {
+          "id": "header-ai-state",
+          "pass": true,
+          "detail": {
+            "state": "unconfigured"
+          }
+        },
+        {
+          "id": "header-ai-compact",
+          "pass": true,
+          "detail": {
+            "width": 36,
+            "height": 36,
+            "display": "flex"
+          }
+        },
+        {
+          "id": "header-role-owned-elsewhere",
+          "pass": true,
+          "detail": {
+            "profile": "AmministratoreRuolo attivo⌄"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "processes",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#processesView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "processes-seven-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "processes-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Lavoro di compliance"
+          }
+        },
+        {
+          "id": "process-0-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Monitoraggio normativo e fonti"
+          }
+        },
+        {
+          "id": "process-0-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-0-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-0-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-0-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-1-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Incidenti e quasi incidenti"
+          }
+        },
+        {
+          "id": "process-1-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-1-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-1-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-1-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-2-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Inventario di sistemi e oggetti"
+          }
+        },
+        {
+          "id": "process-2-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-2-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-2-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-2-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-3-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Standard e Controlli"
+          }
+        },
+        {
+          "id": "process-3-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-3-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-3-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-3-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-4-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Azioni correttive"
+          }
+        },
+        {
+          "id": "process-4-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-4-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-4-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-4-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-5-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Rischi di compliance"
+          }
+        },
+        {
+          "id": "process-5-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-5-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-5-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-5-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-6-title-readable",
+          "pass": true,
+          "detail": {
+            "font": 16.8,
+            "text": "Questionari e verifiche"
+          }
+        },
+        {
+          "id": "process-6-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "process-6-purpose-natural-wrap",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "process-6-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 16.8,
+            "purpose": 14.4
+          }
+        },
+        {
+          "id": "process-6-contained",
+          "pass": true,
+          "detail": {
+            "scrollWidth": 299,
+            "clientWidth": 299
+          }
+        },
+        {
+          "id": "process-actions-seven",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "process-actions-equal-width",
+          "pass": true,
+          "detail": {
+            "widths": [
+              277.0625,
+              277.0625,
+              277.0625,
+              277.0625,
+              277.0625,
+              277.0625,
+              277.0625
+            ]
+          }
+        },
+        {
+          "id": "process-actions-equal-height",
+          "pass": true,
+          "detail": {
+            "heights": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ]
+          }
+        },
+        {
+          "id": "process-actions-centered",
+          "pass": true,
+          "detail": {
+            "styles": [
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              },
+              {
+                "textAlign": "center",
+                "justifyContent": "center"
+              }
+            ]
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "monitoring",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#monitoringView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 272.59375,
+            "text": "Raccoglie fonti e cambiamenti, conserva la versione osservata e porta alla verifica umana "
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "incidents",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#incidentsView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 272.59375,
+            "text": "Registra fatti, chiarimenti e versioni di un evento prima delle decisioni di invio o chius"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "objects",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 248.59375,
+            "text": "Mantiene il registro di sistemi, servizi, dati, fornitori, processi, policy e controlli us"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "coverage",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 248.59375,
+            "text": "Registra requisiti, decisioni di perimetro e mapping verso controlli o oggetti senza trasf"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "oracle": "scope-overlay-opaque-explicit-save-cancel",
+      "viewport": "narrow",
+      "metrics": {
+        "background": "rgb(255, 255, 255)",
+        "opacity": "1",
+        "position": "fixed",
+        "saveBackground": "rgb(70, 87, 217)",
+        "saveTextAlign": "center",
+        "saveWidth": 260.390625,
+        "summaryBefore": "\"←\"",
+        "summaryText": "Indietro senza salvare",
+        "summaryAria": "Dichiara utilizzo. Tornare indietro non salva la scelta.",
+        "summaryWidth": 260.390625
+      }
+    },
+    {
+      "oracle": "standard-browser-index-detail-legibility",
+      "viewport": "narrow",
+      "metrics": {
+        "dialogWidth": 304,
+        "navWidth": 302,
+        "detailWidth": 302,
+        "navBackground": "rgb(241, 244, 248)",
+        "detailBackground": "rgb(255, 255, 255)",
+        "selectedBackground": "color(srgb 0.949216 0.953882 0.989569)",
+        "nodeCount": 46
+      }
+    },
+    {
+      "surface": "actions",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 248.59375,
+            "text": "Trasforma gap, rischi e decisioni in azioni assegnate, con scadenza, evidenze di completam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "risks",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 248.59375,
+            "text": "Registra scenari di rischio di compliance, valutazioni umane, trattamenti e date di riesam"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "assurance",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#grcWorkspace"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "procedure-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "procedure-purpose-not-clipped",
+          "pass": true,
+          "detail": {
+            "whiteSpace": "normal",
+            "textOverflow": "clip",
+            "overflow": "visible"
+          }
+        },
+        {
+          "id": "procedure-purpose-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 248.59375,
+            "text": "Gestisce richieste di verifica e questionari, versiona le risposte e collega le evidenze u"
+          }
+        },
+        {
+          "id": "procedure-heading-hierarchy",
+          "pass": true,
+          "detail": {
+            "heading": 21.6,
+            "purpose": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "proof",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#proofView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "proof-lead-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        },
+        {
+          "id": "proof-lead-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 268.4375,
+            "text": "Distingui fatti osservati, evidenze disponibili e aspetti che richiedono prova esterna."
+          }
+        },
+        {
+          "id": "proof-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "epistemic",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#epistemicView"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "epistemic-purpose-readable",
+          "pass": true,
+          "detail": {
+            "font": 14.4
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "admin",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#adminCenter"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "admin-seven-procedure-rows",
+          "pass": true,
+          "detail": {
+            "count": 7
+          }
+        },
+        {
+          "id": "admin-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.48
+          }
+        },
+        {
+          "id": "admin-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 12.8,
+            "support": 12.48
+          }
+        },
+        {
+          "id": "admin-policy-canonical-title",
+          "pass": true,
+          "detail": {
+            "text": "Disponibilità operativa dei processi"
+          }
+        },
+        {
+          "id": "admin-policy-canonical-cta",
+          "pass": true,
+          "detail": {
+            "text": "Salva disponibilità operativa"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    },
+    {
+      "surface": "ai-settings",
+      "width": 320,
+      "checks": [
+        {
+          "id": "global-no-horizontal-overflow",
+          "pass": true,
+          "detail": {
+            "html": 320,
+            "body": 320,
+            "innerWidth": 320
+          }
+        },
+        {
+          "id": "root-visible",
+          "pass": true,
+          "detail": {
+            "selector": "#settingsDialog"
+          }
+        },
+        {
+          "id": "no-unexpected-text-ellipsis",
+          "pass": true,
+          "detail": {
+            "examples": []
+          }
+        },
+        {
+          "id": "settings-secondary-readable",
+          "pass": true,
+          "detail": {
+            "font": 12.8
+          }
+        },
+        {
+          "id": "settings-hierarchy",
+          "pass": true,
+          "detail": {
+            "title": 15.04,
+            "support": 12.8
+          }
+        },
+        {
+          "id": "settings-header-no-artificial-cap",
+          "pass": true,
+          "detail": {
+            "maxWidth": "none",
+            "width": 0,
+            "text": "Amministrazione"
+          }
+        }
+      ],
+      "metrics": {},
+      "viewport": "narrow",
+      "failures": []
+    }
+  ],
+  "limitations": "Rendered Chromium geometry/typography evidence over repository surfaces; not representative human pleasantness or assistive-technology effectiveness."
+}
