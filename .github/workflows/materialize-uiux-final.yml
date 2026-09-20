@@ -1,0 +1,46 @@
+name: materialize-uiux-final-certified-candidate
+on:
+  push:
+    branches:
+      - agent/uiux-ontology-work-first-closure-10m
+permissions:
+  contents: write
+concurrency:
+  group: materialize-uiux-final-certified-candidate
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: contains(github.event.head_commit.message, 'bootstrap final certified UIUX materialization')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Reconstruct exact patch
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cat .github/uiux-final-chunks/* | base64 -d | gzip -dc > /tmp/ictc-final.patch
+          echo "44c9da57aa2b87dc0de68d3e03b9a204af58b84f3ef1156ad611edcfc2b93730  /tmp/ictc-final.patch" | sha256sum -c -
+      - name: Apply exact certified candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git apply --index --check /tmp/ictc-final.patch
+          git apply --index /tmp/ictc-final.patch
+          git rm -r .github/uiux-final-chunks .github/workflows/materialize-uiux-final.yml
+          tree="$(git write-tree)"
+          echo "candidate tree=$tree"
+          test "$tree" = "a4c1ffbd8040a293afe46b89b81a4914c0deaedb"
+      - name: Commit exact candidate tree
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name "ictc-uiux-candidate-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "UIUX-ONTOLOGY-CLOSURE-10M: work-first semantic composition"
+          test "$(git rev-parse HEAD^{tree})" = "a4c1ffbd8040a293afe46b89b81a4914c0deaedb"
+          git push origin HEAD:agent/uiux-ontology-work-first-closure-10m
