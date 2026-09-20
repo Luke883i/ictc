@@ -62,6 +62,7 @@ try:
         expect(analysis).to_have_count(1)
         expect(analysis).to_be_visible()
         assert analysis.get_attribute('data-information-role')=='context'
+        if analysis.get_attribute('open') is None: analysis.locator(':scope > summary').click()
 
         PHASE='ui-grid'
         cells=analysis.locator('.risk-map .risk-cell')

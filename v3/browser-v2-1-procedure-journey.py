@@ -313,10 +313,10 @@ try:
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
 
         PHASE = 'same-digest-expert-modes'
-        digest_before = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
+        digest_before = page.locator('#epistemicPageLabel').get_attribute('data-projection-digest')
         open_technical_modes(page)
         page.locator('[data-epistemic-mode="flat"]').click(); expect(page.locator('.epistemic-table')).to_be_visible()
-        digest_flat = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
+        digest_flat = page.locator('#epistemicPageLabel').get_attribute('data-projection-digest')
         open_technical_modes(page)
         page.locator('[data-epistemic-mode="graph"]').click(); expect(page.locator('.epistemic-graph-canvas')).to_be_visible()
         graph = page.locator('.epistemic-graph')
@@ -325,7 +325,7 @@ try:
         edges = int(graph.get_attribute('data-epistemic-graph-edge-count') or '0')
         assert focus and 1 <= nodes <= 24 and 0 <= edges <= 48, (focus,nodes,edges)
         assert page.locator(f'.epistemic-node-list [data-epistemic-node="{focus}"]').count() == 1
-        digest_graph = page.locator('#epistemicPageLabel').inner_text().split('digest ')[-1]
+        digest_graph = page.locator('#epistemicPageLabel').get_attribute('data-projection-digest')
         assert digest_before == digest_flat == digest_graph
         no_overflow(page)
         page.screenshot(path=str(ART/'ux-v21-epistemic-explore-desktop.png'), full_page=True)
