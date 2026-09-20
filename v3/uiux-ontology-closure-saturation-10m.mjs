@@ -24,6 +24,7 @@ function sourceLaws(s){
   const orderToken="['attention','controls','primary','advanced-context','reference']";
   return {
     sevenOwners:(s.rn.split(orderToken).length-1)===2&&(s.grc.split(orderToken).length-1)===5,
+    rnUniquePrimary:s.rn.includes('PRIMARY_SELECTOR')&&s.rn.includes('[data-rn-primary-work="sources"]')&&s.rn.includes("incidents:':scope > .section-block'"),
     dynamicSupportRail:s.slots.includes('function positionSupportRail(')&&s.slots.includes('function validPhysicalOrder('),
     contiguousDeclaredBlock:s.slots.includes('function reconcilePhysicalOrder(')&&s.slots.includes('index!==cursor+1')&&s.slots.includes('orderedTopLevelNodes'),
     firstRoleAdjacent:s.slots.includes('let previous=null')&&s.slots.includes('host.insertBefore(node,next)')&&s.slots.includes('if(frame?.parentElement===host){frame.after(node);return;}'),
@@ -46,6 +47,7 @@ assert.ok(Object.values(baselineSource).every(Boolean),JSON.stringify(baselineSo
 
 const SOURCE_MUTANTS=[
   ['old-order-rn',s=>({...s,rn:s.rn.replaceAll(CANON.map(x=>`'${x}'`).join(','),"'advanced-context','reference','attention','controls','primary'")})],
+  ['rn-broad-primary',s=>({...s,rn:s.rn.replace('[data-rn-primary-work="sources"]','.section-block')})],
   ['old-order-grc',s=>({...s,grc:s.grc.replaceAll(CANON.map(x=>`'${x}'`).join(','),"'advanced-context','reference','attention','controls','primary'")})],
   ['drop-rail-positioner',s=>({...s,slots:s.slots.replaceAll('positionSupportRail','positionSupportRailBROKEN')})],
   ['first-role-after-frame',s=>({...s,slots:s.slots.replace('let previous=null','let previous=frame')})],
