@@ -103,8 +103,8 @@ export function canonicalHomeNextAction(state, actor, { llmReady = false } = {})
     });
     const incident = openIncidents[0];
     if (incident) return nextAction({ kind: 'review-incident', title: 'Gestisci il prossimo evento aperto', label: 'Apri evento', reason: 'Esiste un fascicolo aperto che richiede prosecuzione o decisione.', action: 'incidents', service: 'incidents', targetType: 'incident', targetId: incident.id });
-    if (!llmReady) return nextAction({ kind: 'configure-ai', title: 'Completa la configurazione AI', label: 'Configura AI', reason: 'Serve per creare piani e analisi. Le decisioni restano comunque umane.', action: 'settings', service: 'administration' });
-    if (!(state.missions || []).length) return nextAction({ kind: 'create-monitoring', title: 'Definisci il primo obiettivo', label: 'Crea un monitoraggio', reason: 'Descrivi cosa sorvegliare; ICTC proporrà un piano da approvare.', action: 'monitoring', service: 'monitoring' });
+    if (!(state.missions || []).length) return nextAction({ kind: 'create-monitoring', title: 'Definisci il primo obiettivo', label: 'Crea un monitoraggio', reason: llmReady?'Descrivi cosa sorvegliare; ICTC proporrà un piano da approvare.':'Descrivi cosa sorvegliare. Il lavoro può iniziare senza AI; la configurazione AI resta disponibile in Amministrazione.', action: 'monitoring', service: 'monitoring' });
+    if (!llmReady) return nextAction({ kind: 'monitor-activity', title: 'Controlla l’attività corrente', label: 'Apri il monitoraggio', reason: 'Il lavoro manuale resta disponibile; configura l’AI solo se vuoi usare pianificazione e analisi assistite.', action: 'monitoring', service: 'monitoring' });
     return nextAction({ kind: 'monitor-activity', title: 'Controlla l’attività corrente', label: 'Apri il monitoraggio', reason: 'Verifica stato dei piani, prossime esecuzioni ed evidenze.', action: 'monitoring', service: 'monitoring' });
   }
   if (actor.role === 'user') {

@@ -13,7 +13,7 @@ const S={
 };
 const sourceChecks=[
  [S.frame.includes('syncSupportRail')&&S.frame.includes('frame.after(rail)')&&!S.frame.includes('<div class="procedure-support-rail"'),'support-rail-sibling-owner'],
- [S.slots.includes(':scope > .procedure-support-rail')&&S.slots.includes('rail.parentElement!==host')&&S.slots.includes('frame.nextElementSibling!==rail'),'support-rail-physical-order'],
+ [S.slots.includes(':scope > .procedure-support-rail')&&S.slots.includes('rail.parentElement!==host')&&S.slots.includes('positionSupportRail')&&S.slots.includes('validPhysicalOrder')&&!S.slots.includes('frame.nextElementSibling!==rail'),'support-rail-physical-order'],
  [S.frame.includes('Array.isArray(policy.enabled)')&&!S.frame.includes('!enabled.size||enabled.has'),'procedure-policy-fail-closed-projection'],
  [S.padmin.includes('ictc:procedure-policy-updated')&&!S.padmin.includes('<i aria-hidden="true"></i>'),'procedure-policy-readback-and-native-switch'],
  [S.ux.includes("const tone=llm.ready?'positive':llm.configured?'attention':'neutral'")&&S.ds.includes("node.id==='runtimeStatus'&&node.dataset.aiState"),'ai-truth-explicit'],
