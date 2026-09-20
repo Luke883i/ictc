@@ -120,7 +120,15 @@ def submit_grc(page, code, pid, fill, needle):
     before = current_revision(page)
     fill(form)
     PHASE = f'{code}-submit-click'
-    form.locator('button[type="submit"]').click()
+    if pid == 'risks':
+        with page.expect_response(lambda response: response.request.method == 'POST' and response.url.rstrip('/').endswith('/api/grc/risks')) as response_info:
+            form.locator('button[type="submit"]').click()
+        response = response_info.value
+        if response.status >= 400:
+            PHASE = f'{code}-submit-http-{response.status}'
+            raise AssertionError({'status':response.status,'body':response.text()[:1200]})
+    else:
+        form.locator('button[type="submit"]').click()
     PHASE = f'{code}-submit-revision'
     after = wait_advance(page, before)
     PHASE = f'{code}-local-projection'
