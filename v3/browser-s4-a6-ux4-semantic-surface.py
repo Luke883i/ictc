@@ -138,16 +138,21 @@ def desktop(browser):
 
 def auditor_incident(browser):
     global PHASE
+    PHASE='EC-01-auditor-fixture'
+    fixture=browser.new_context()
+    response=fixture.request.post(BASE+'/api/incidents/intake',headers={'content-type':'application/json','x-ictc-role':'admin','x-ictc-actor-id':'a6-ux4-fixture-admin'},data={'caseTitle':'A6 UX4 auditor read-only fixture','originalNarrative':'Evento di prova per verificare la superficie Auditor in sola lettura.','awarenessAt':'2026-09-21T12:00:00.000Z','eventKind':'incident','operationalSeverity':'not-assessed','attachments':[]})
+    assert response.status in (200,201),('auditor fixture intake',response.status,response.text()[:500])
+    fixture.close()
     ctx=browser.new_context(viewport={'width':1280,'height':900}); ctx.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')")
     page=ctx.new_page(); page.set_default_timeout(30000); local_writes=[]
     page.on('request',lambda r: local_writes.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
-    page.goto(BASE+'/?view=processes',wait_until='networkidle'); r=open_process(page,'EC-01','incidents','#incidentsView')
-    opener=r.locator('[data-open-incident]').first; assert opener.count()>0,'auditor fixture must expose an incident'
+    PHASE='EC-01-auditor-processes'; page.goto(BASE+'/?view=processes',wait_until='networkidle'); r=open_process(page,'EC-01','incidents','#incidentsView')
+    PHASE='EC-01-auditor-fixture-visible'; opener=r.locator('[data-open-incident]').first; assert opener.count()>0,'seeded auditor fixture must be visible'
     PHASE='EC-01-auditor-open'; opener.click(); dialog=page.locator('#incidentWorkspace'); expect(dialog).to_be_visible(); assert dialog.evaluate("d=>d.contains(document.activeElement)")
     PHASE='EC-01-auditor-readonly'; assert dialog.locator('[data-answer-question],[data-answer-unknown],[data-generate-draft],[data-save-manual],[data-save-formulation],[data-submit-incident],[data-close-incident]').count()==0
     assert dialog.locator('#questionValue:not([disabled])').count()==0; assert dialog.locator('[data-download-evidence]').count()>=1
     page.keyboard.press('Escape'); expect(dialog).not_to_be_visible(); assert not local_writes,local_writes
-    RESULTS.append({'oracle':'auditor-incident-readonly','writes':len(local_writes),'modalFocus':True,'escapeClose':True}); ctx.close()
+    RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True}); ctx.close()
 
 def mobile(browser,width,height):
     global PHASE
