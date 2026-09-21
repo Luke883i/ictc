@@ -1,0 +1,34 @@
+name: audit-transfer-split-ca6017b
+on:
+  push:
+    branches:
+      - agent/audit-evidence2-ca6017b
+permissions:
+  contents: write
+jobs:
+  split:
+    if: ${{ contains(github.event.head_commit.message, '[split-transfer]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Split text transfer by bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _audit_transfer_parts
+          mkdir -p _audit_transfer_parts
+          split -b 500000 -d -a 3 _audit_transfer_lite/part-000.txt _audit_transfer_parts/part-
+          for f in _audit_transfer_parts/part-*; do mv "$f" "$f.txt"; done
+          cp _audit_transfer_lite/SHA256.txt _audit_transfer_parts/
+          cp _audit_transfer_lite/SIZE.txt _audit_transfer_parts/
+          ls -lh _audit_transfer_parts
+      - name: Commit split transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ictc-audit-evidence
+          git config user.email ictc-audit-evidence@users.noreply.github.com
+          git add _audit_transfer_parts
+          git commit -m "split audit transfer [skip audit-evidence] [skip followup] [skip litebundle] [skip split-transfer]"
+          git push origin HEAD:agent/audit-evidence2-ca6017b
