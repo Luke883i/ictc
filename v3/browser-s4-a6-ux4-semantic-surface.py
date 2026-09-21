@@ -6,12 +6,16 @@ ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4874').rstrip('/')
 EXPECTED=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').lower()
 PHASE='init'; RESULTS=[]; WRITES=[]; ERRORS=[]
+def phase_token(value): return ''.join(ch if ch.isalnum() else '-' for ch in str(value)).strip('-')[:72] or 'none'
 PROCEDURES=[('RN-01','monitoring','#monitoringView'),('EC-01','incidents','#incidentsView'),('AO-01','objects','#grcWorkspace'),('MC-01','coverage','#grcWorkspace'),('AP-01','actions','#grcWorkspace'),('RC-01','risks','#grcWorkspace'),('AR-01','assurance','#grcWorkspace')]
 
 def fail(exc):
-    payload={'ok':False,'slice':'S4-A6','executionUnit':'A6-UX4','phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS}
+    phase=PHASE
+    if ERRORS and phase.startswith('EC-01-mount'):
+        phase=f"{phase}-pageerror-{phase_token(ERRORS[-1])}"
+    payload={'ok':False,'slice':'S4-A6','executionUnit':'A6-UX4','phase':phase,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS}
     (ART/'browser-s4-a6-ux4-semantic-surface-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8')
-    print(f'::error title=A6-UX4::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
+    print(f'::error title=A6-UX4::{phase}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_page_overflow(page,label):
     m=page.evaluate("()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})")
@@ -50,13 +54,18 @@ def open_process(page,code,pid,root):
     try:
         page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'&&w?.dataset.a6Ux4Mount)}",arg={'root':root,'pid':pid})
     except BaseException:
-        diag=page.evaluate("""x=>{const r=document.querySelector(x.root),slot=r?.querySelector(':scope > [data-procedure-attention-slot="'+x.pid+'"]'),w=slot?.querySelector('[data-procedure-worklist]');return{root:!!r,rootVisible:!!(r&&r.offsetParent!==null),slot:!!slot,section:!!w,semantic:document.documentElement.dataset.a6Ux4Semantic||'',mount:w?.dataset.a6Ux4Mount||'',single:r?.dataset.a6Ux4SingleCollection||'',missing:r?.dataset.a6Ux4BindingMissing||'',hidden:r?.dataset.a6Ux4BindingHidden||''}}""",{'root':root,'pid':pid})
-        if not diag.get('slot'): PHASE=f'{code}-mount-slot-missing'
-        elif not diag.get('section'): PHASE=f'{code}-mount-worklist-missing'
-        elif diag.get('semantic')!='a6-ux4': PHASE=f'{code}-mount-semantic-stamp-missing'
-        elif not diag.get('mount'): PHASE=f'{code}-mount-stamp-missing'
-        else: PHASE=f'{code}-mount-unresolved'
-        RESULTS.append({'oracle':'mount-diagnostic','code':code,'procedureId':pid,'diagnostic':diag})
+        PHASE=f'{code}-mount-timeout'
+        try:
+            diag=page.evaluate("""x=>{const r=document.querySelector(x.root),slot=r?.querySelector(':scope > [data-procedure-attention-slot="'+x.pid+'"]'),w=slot?.querySelector('[data-procedure-worklist]');return{root:!!r,rootVisible:!!(r&&r.offsetParent!==null),slot:!!slot,section:!!w,semantic:document.documentElement.dataset.a6Ux4Semantic||'',mount:w?.dataset.a6Ux4Mount||'',single:r?.dataset.a6Ux4SingleCollection||'',missing:r?.dataset.a6Ux4BindingMissing||'',hidden:r?.dataset.a6Ux4BindingHidden||''}}""",{'root':root,'pid':pid})
+            if not diag.get('slot'): PHASE=f'{code}-mount-slot-missing'
+            elif not diag.get('section'): PHASE=f'{code}-mount-worklist-missing'
+            elif diag.get('semantic')!='a6-ux4': PHASE=f'{code}-mount-semantic-stamp-missing'
+            elif not diag.get('mount'): PHASE=f'{code}-mount-stamp-missing'
+            else: PHASE=f'{code}-mount-unresolved'
+            RESULTS.append({'oracle':'mount-diagnostic','code':code,'procedureId':pid,'diagnostic':diag})
+        except BaseException as diag_error:
+            PHASE=f'{code}-mount-diagnostic-unavailable'
+            RESULTS.append({'oracle':'mount-diagnostic-unavailable','code':code,'procedureId':pid,'error':str(diag_error)})
         raise
     return page.locator(root)
 
