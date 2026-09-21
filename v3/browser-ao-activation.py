@@ -60,7 +60,8 @@ try:
         assert complete.get_attribute('data-journey-authority')=='human'
         validate=row.locator('[data-object-review="active"]')
         expect(validate).to_be_hidden()
-        assert row.locator('footer .primary').count()==1
+        assert row.locator('footer .primary').count()==0
+        assert complete.get_attribute('data-uiux-action-hierarchy')=='record-local'
 
         PHASE='complete-basis'
         complete.click()
@@ -100,7 +101,7 @@ try:
         assert obj['sourceAuthority']=='CMDB approvata'
 
         PHASE='result'
-        result={'ok':True,'control':'AO-ACTIVATION-JOURNEY-2.4','candidateIncompleteAllowed':True,'singleRepairPrimaryAction':True,'sharedAuthorityFactSurface':True,'fullRegistrySearch':True,'legacyFactSurfaceAbsent':True,'activationFailClosedBasis':['owner','sourceAuthority'],'repairPersisted':True,'finalStatus':'active'}
+        result={'ok':True,'control':'AO-ACTIVATION-JOURNEY-2.4','candidateIncompleteAllowed':True,'singleRepairFocalAction':True,'recordLocalPrimarySuppressed':True,'sharedAuthorityFactSurface':True,'fullRegistrySearch':True,'legacyFactSurfaceAbsent':True,'activationFailClosedBasis':['owner','sourceAuthority'],'repairPersisted':True,'finalStatus':'active'}
         (ART/'browser-ao-activation.json').write_text(json.dumps(result,indent=2),encoding='utf8')
         print('browser-ao-activation-2.4: complete',flush=True)
         browser.close()
