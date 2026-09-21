@@ -1,0 +1,68 @@
+name: audit-followup-ca6017b
+on:
+  push:
+    branches:
+      - agent/audit-evidence2-ca6017b
+permissions:
+  contents: write
+jobs:
+  followup:
+    if: ${{ contains(github.event.head_commit.message, '[followup]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - name: Prepare exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp _audit_followup.py /tmp/audit_followup.py
+          git worktree add --detach /tmp/ictc-main ca6017b76f33d951ac5e3e5ee3db5f155e6a1fff
+          cd /tmp/ictc-main
+          npm ci --ignore-scripts
+          python -m pip install --disable-pip-version-check playwright==1.57.0
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          test -x "$browser"
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+      - name: Start DEMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/ictc-main
+          export PORT=4832 ICTC_PORT=4832 ICTC_NO_OPEN=1
+          export ICTC_STATE_DIR="$RUNNER_TEMP/followup-state"
+          export ICTC_RUNTIME_DIR="$RUNNER_TEMP/followup-runtime"
+          export ICTC_SCHEDULER_TICK_MS=100000
+          nohup npm run demo >"$RUNNER_TEMP/followup-server.log" 2>&1 &
+          for i in $(seq 1 120); do
+            curl -fsS http://127.0.0.1:4832/api/health >/dev/null && break
+            sleep 1
+          done
+      - name: Capture visible-trigger dialogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/ictc-main
+          ICTC_BASE_URL=http://127.0.0.1:4832 ICTC_CHROMIUM="$ICTC_CHROMIUM" python -u /tmp/audit_followup.py
+      - name: Merge evidence and bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a /tmp/ictc-main/artifacts/audit-followup/. _audit_evidence/
+          tar -czf _audit_evidence_bundle.tar.gz _audit_evidence
+          git config user.name ictc-audit-evidence
+          git config user.email ictc-audit-evidence@users.noreply.github.com
+          git add _audit_evidence _audit_evidence_bundle.tar.gz
+          git commit -m "audit followup and bundle ca6017b [skip audit-evidence] [skip followup]"
+          git push origin HEAD:agent/audit-evidence2-ca6017b
