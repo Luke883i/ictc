@@ -37,10 +37,16 @@ jobs:
           node --check v3/s4-a6-ux3-operational-surface-model.mjs
           node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
           node --check v3/current-gate-registry.mjs
+          node --check v3/uiux-ontoepistemic-convergence-3-check.mjs
+          node --check v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
           python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
       - name: A6-UX4 semantic source contract
         run: node v3/s4-a6-ux4-semantic-surface-check.mjs
+      - name: UIUX onto-epistemic convergence 3 source contract
+        run: node v3/uiux-ontoepistemic-convergence-3-check.mjs
+      - name: UIUX onto-epistemic convergence 3 falsification 10,000,000
+        run: node v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
       - name: A6-UX4 deterministic falsification 10,000 cases
         run: node v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
       - name: A6-UX4 screenshot-derived UIUX mount falsification 100,000 cases
@@ -92,7 +98,32 @@ jobs:
           fi
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           exit "$rc"
-      - name: A6-UX4 browser diagnostic · ${{ steps.ux4_browser.outputs.phase }}
+      - name: Parse A6-UX4 browser failure
+        id: ux4_diag
+        if: steps.ux4_browser.outcome == 'failure'
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json,pathlib
+          p=pathlib.Path('artifacts/browser-s4-a6-ux4-semantic-surface-error.json')
+          def safe(value):
+              raw=str(value or 'none')
+              return ''.join(ch if ch.isalnum() or ch in '._-' else '-' for ch in raw).strip('-')[:96] or 'none'
+          if not p.exists():
+              print('phase=no-error-artifact');print('type=none');print('page_errors=0');print('leaf=none');print('result_tail=none')
+          else:
+              data=json.loads(p.read_text())
+              trace=str(data.get('traceback') or '')
+              leaf=next((line.strip() for line in reversed(trace.splitlines()) if line.strip()),'none')
+              results=data.get('results') or []
+              tail=results[-1].get('oracle') if results and isinstance(results[-1],dict) else 'none'
+              print('phase='+safe(data.get('phase')))
+              print('type='+safe(data.get('type')))
+              print('page_errors='+str(len(data.get('pageErrors') or [])))
+              print('leaf='+safe(leaf))
+              print('result_tail='+safe(tail))
+          PY
+      - name: A6-UX4 browser diagnostic · ${{ steps.ux4_diag.outputs.phase }} · ${{ steps.ux4_diag.outputs.type }} · pe=${{ steps.ux4_diag.outputs.page_errors }} · ${{ steps.ux4_diag.outputs.leaf }} · ${{ steps.ux4_diag.outputs.result_tail }}
         if: steps.ux4_browser.outcome == 'failure'
         shell: bash
         run: |

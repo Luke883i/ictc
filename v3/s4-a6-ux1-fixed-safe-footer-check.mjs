@@ -9,4 +9,4 @@ const result=validateA6Ux1({
   browser:read('./browser-s4-a6-ux1-fixed-safe-footer.py')
 });
 if(!result.ok){console.error(JSON.stringify({ok:false,...A6_UX1_CONTRACT,failures:result.failures},null,2));process.exit(1)}
-console.log(JSON.stringify({ok:true,...A6_UX1_CONTRACT,checks:'fixed footer + exact reserve + root scroll-padding + safe-area + exact-head Chromium + no root trap',governanceBoundary:'Forward regression gate validates UX1 runtime geometry only; convergence-authority validates current PR lineage separately.'}));
+console.log(JSON.stringify({ok:true,...A6_UX1_CONTRACT,checks:'normal-flow footer + zero overlay reserve + safe-area + exact-head Chromium non-overlap + no root trap',governanceBoundary:'Forward regression gate validates UX1 runtime geometry only; convergence-authority validates current PR lineage separately.'}));

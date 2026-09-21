@@ -6,6 +6,7 @@ const styles=read('./public/styles.css');
 const experience=read('./public/styles-experience.css');
 const scheduler=read('./public/ui/rn-scheduler-dialog-1-4.js');
 const source=read('./public/ui/rn-source-review-1-4.js');
+const workspace=read('./public/ui/workspaces.js');
 const ao=read('./public/ui/ao-auditor-facts-1-4.js');
 const current=read('./public/ui/procedure-ui-ux-1-6.js');
 const harmonization=read('./public/procedure-executive-harmonization-1-5.css');
@@ -15,7 +16,7 @@ assert.equal(/\binstallProcedureFinetuning\b(?!23)/.test(active),false,'compatib
 assert.equal(styles.includes('procedure-finetuning-1-4.css'),false,'compatibility CSS still mounted');
 for(const token of ['data-rn-open-scheduler','rn-source-policy','Programma mining AI','rn-scheduler-dialog'])assert.ok(scheduler.includes(token),`RN scheduler migration missing ${token}`);
 assert.equal(scheduler.includes('stopImmediatePropagation'),false,'RN scheduler must not compete by interception');
-for(const token of ['data-rn-privacy-review','Classe proposta','Candidato osservato non significa fonte verificata','data-source-decision'])assert.ok(source.includes(token),`RN source migration missing ${token}`);
+for(const token of ['data-rn-privacy-review','Classe proposta','data-source-decision'])assert.ok(source.includes(token),`RN source review behavior missing ${token}`);for(const token of ['Classe proposta','Candidato osservato non significa fonte verificata','sourceClassLabel'])assert.ok(workspace.includes(token),`RN canonical source presentation missing ${token}`);assert.equal(workspace.includes('<span>Confidenza AI</span>'),false,'RN canonical source presentation resurrected confidence-as-truth');
 assert.equal(source.includes('stopImmediatePropagation'),false,'RN source owner must not intercept current action owner');
 assert.ok(ao.includes('data-ao-complete-object')&&ao.includes('complete-activation-basis'),'AO incomplete-candidate path missing');
 assert.equal(ao.includes('.finetune-object-facts'),false,'AO owner still depends on legacy facts panel');

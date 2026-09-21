@@ -5,7 +5,7 @@ let killed=0;for(let i=0;i<1_000_000;i++){const o=base(),depth=1+ri(6);for(let d
 
 // Residual 100: home vertical-budget + sequential evidence-download lifecycle.
 for(let i=0;i<100;i++){
-  const header=46+(i%5),footer=44+(i%3),viewport=900+(i%7),reserveHeader=48,home=viewport-reserveHeader-footer;
+  const header=46+(i%5),footer=0,viewport=900+(i%7),reserveHeader=48,home=viewport-reserveHeader-footer;
   assert.ok(header+home+footer<=viewport+2,'home vertical budget mutation survived');
   const sequence=['pdf','xml','md','zip'],opened=[];
   for(const fmt of sequence){opened.push(fmt);assert.equal(opened.at(-1),fmt);}

@@ -168,10 +168,10 @@ try:
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
     no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');
     if width>=761 and height>=720:
-     m=page.evaluate("""()=>{const home=document.querySelector('#homeView')?.getBoundingClientRect(),footer=document.querySelector('#stableLegalFooter,.stable-legal-footer')?.getBoundingClientRect();return{inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow,homeTop:home?.top,homeBottom:home?.bottom,footerTop:footer?.top}}""")
-     if max(m['html'],m['body'])>m['inner']+1:anomaly('home-page-scroll',role,vp,'home',m,'page <= viewport+1 without clipping')
+     m=page.evaluate("""()=>{const home=document.querySelector('#homeView')?.getBoundingClientRect(),footerEl=document.querySelector('#stableLegalFooter,.stable-legal-footer'),footer=footerEl?.getBoundingClientRect();return{inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow,homeTop:home?.top,homeBottom:home?.bottom,footerTop:footer?.top,footerPosition:footerEl?getComputedStyle(footerEl).position:null}}""")
      if m['overflow']=='hidden':anomaly('home-scroll-clipped',role,vp,'home',m,'body overflow must remain scroll-capable')
-     if m.get('footerTop') is not None and m.get('homeBottom') is not None and m['homeBottom']>m['footerTop']+1:anomaly('home-footer-budget',role,vp,'home',m,'home bottom <= fixed footer top')
+     if m.get('footerPosition')!='static':anomaly('home-footer-position',role,vp,'home',m,'footer in normal flow')
+     if m.get('footerTop') is not None and m.get('homeBottom') is not None and m['footerTop']<m['homeBottom']-1:anomaly('home-footer-flow',role,vp,'home',m,'footer follows home without overlap')
     shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
     if h['count']!=7:anomaly('process-hub-count',role,vp,'processes',h['count'],7)
     if h['columns']!=expected_cols:anomaly('process-hub-columns',role,vp,'processes',h['columns'],expected_cols)
