@@ -105,6 +105,40 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic phase / v2.1 rn-ec
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith(('RN-01','EC-01')) else 0)
+          PY
+      - name: Diagnostic phase / v2.1 ao-mc-ap
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith(('AO-01','MC-01','AP-01')) else 0)
+          PY
+      - name: Diagnostic phase / v2.1 rc-pre-submit
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          exact={'RC-01-open-card','RC-01-open-route','RC-01-open-frame','RC-01-open-code','RC-01-open-context','RC-01-open','RC-01-primary-disclosure','RC-01-form-ready','RC-01-title','RC-01-description','RC-01-likelihood','RC-01-impact','RC-01-submit-click'}
+          sys.exit(1 if phase in exact else 0)
+          PY
       - name: Diagnostic phase / v2.1 rc-submit-http
         if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
         shell: bash
