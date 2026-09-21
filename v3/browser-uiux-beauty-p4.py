@@ -174,6 +174,12 @@ def audit_coverage_overlays(page, viewport, width):
         if not condition:
             raise AssertionError(json.dumps([{'id':check_id,'detail':detail}],ensure_ascii=False,default=str))
     PHASE=f'{viewport}:coverage:scope-overlay'
+    PHASE=f'{viewport}:coverage:scope-overlay:library'
+    library=page.locator('#grcWorkspace [data-market-library]')
+    expect(library).to_have_count(1)
+    if library.get_attribute('open') is None:
+        library.locator(':scope > summary').click()
+    expect(library).to_have_attribute('open','')
     PHASE=f'{viewport}:coverage:scope-overlay:locate'
     scope=page.locator('#grcWorkspace .market-scope-editor[data-a6-scope-popup="native-details-overlay"]:visible').first
     expect(scope).to_be_visible()
