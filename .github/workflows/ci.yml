@@ -306,6 +306,21 @@ jobs:
           d=json.loads(p.read_text()); phase=d.get('phase','')
           sys.exit(1 if phase.endswith('-proof') or 'EP-01' in phase or phase=='aggregate-verdict' else 0)
           PY
+      - name: Diagnostic exact / onto proc-anomalies
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); kinds=sorted({x.get('kind') for x in d.get('anomalies',[])})
+          proc=['editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-after-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis']
+          hit=[x for x in proc if x in kinds]
+          print('ONTO_PROC_ANOMALIES='+','.join(hit))
+          if hit:
+            raise SystemExit('onto proc anomalies: '+','.join(hit))
+          PY
       - name: Diagnostic exact / pr60 open-scheduler
         if: ${{ always() && matrix.id == 'pr60-polish' }}
         shell: bash
