@@ -1,0 +1,40 @@
+name: audit-export-main-zstd
+
+on:
+  push:
+    branches:
+      - agent/audit-main-snapshot-ca6017b
+
+permissions:
+  contents: write
+
+jobs:
+  export-zstd:
+    if: ${{ !contains(github.event.head_commit.message, '[skip audit-export-zstd]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Export exact main as compact text chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="ca6017b76f33d951ac5e3e5ee3db5f155e6a1fff"
+          rm -rf _audit_transfer_zst
+          mkdir -p _audit_transfer_zst
+          git archive --format=tar "$target" | zstd -19 -T0 -o /tmp/ictc-main.tar.zst
+          base64 -w0 /tmp/ictc-main.tar.zst | fold -w 30000 | split -d -a 3 - _audit_transfer_zst/b64-
+          sha256sum /tmp/ictc-main.tar.zst | awk '{print $1}' > _audit_transfer_zst/SHA256.txt
+          printf '%s\n' "$target" > _audit_transfer_zst/REF.txt
+          wc -c /tmp/ictc-main.tar.zst > _audit_transfer_zst/SIZE.txt
+      - name: Commit compact transfer chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ictc-audit-export"
+          git config user.email "ictc-audit-export@users.noreply.github.com"
+          git add _audit_transfer_zst
+          git commit -m "audit compact snapshot chunks [skip audit-export] [skip audit-export-zstd]"
+          git push origin HEAD:agent/audit-main-snapshot-ca6017b
