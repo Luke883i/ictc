@@ -19,7 +19,7 @@ for(const token of ['data-rn-privacy-review','Classe proposta','Candidato osserv
 assert.equal(source.includes('stopImmediatePropagation'),false,'RN source owner must not intercept current action owner');
 assert.ok(ao.includes('data-ao-complete-object')&&ao.includes('complete-activation-basis'),'AO incomplete-candidate path missing');
 assert.equal(ao.includes('.finetune-object-facts'),false,'AO owner still depends on legacy facts panel');
-assert.ok(current.includes('procedure-record-facts')&&current.includes('tuneObjects')&&current.includes('tuneActions'),'current procedure record owner missing');
+assert.ok(current.includes('procedure-record-facts')&&current.includes('tuneObjects')&&current.includes('tuneActions'),'current procedure record owner missing');assert.ok(current.includes("label:'Fonte autorevole'")&&current.includes('sourceAuthority'),'AO source authority must remain visible in current owner');assert.equal(/finetune-(?:object-facts|action-next)/.test(current),false,'current owner still consumes retired finetuning selectors');
 assert.equal(/\.finetune-card-(?:nature|decision)/.test(harmonization),false,'current harmonization still consumes retired legacy selectors');
 assert.equal(browser.includes('to_be_hidden()')&&browser.includes('data-finetune-compass'),false,'browser still requires hidden compatibility DOM');
 assert.ok((browser.match(/data-finetune-compass/g)||[]).length===5&&browser.includes('to_have_count(0)'),'browser must assert zero compatibility compass nodes');
