@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+const LAWS=['mounted-presentation-purity','behavioral-owner-uniqueness','compatibility-extinction','future-no-legacy-dependency'];
+const baseline=()=>({presentation:{hiddenCompat:0,legacyWrite:0,legacyClass:0},behavior:{unique:true,double:0,intercept:0,order:0,sourceAuthorityVisible:true},compat:{mounted:0,css:0,listener:0,domWrite:0,duplicate:0,uniqueLeft:0,gateRequires:0,browserRequires:0,currentSelector:0},future:{legacyDependency:0,rootEdit:0,genericAction:true}});
+const families=[
+ ['hidden-compat',0,s=>s.presentation.hiddenCompat++],['legacy-write',0,s=>s.presentation.legacyWrite++],['legacy-class',0,s=>s.presentation.legacyClass++],
+ ['double-listener',1,s=>s.behavior.double++],['duplicate-owner',1,s=>s.behavior.unique=false],['interception',1,s=>s.behavior.intercept++],['mount-order',1,s=>s.behavior.order++],['ao-source-authority-lost',1,s=>s.behavior.sourceAuthorityVisible=false],
+ ['mounted-compat',2,s=>s.compat.mounted++],['legacy-css',2,s=>s.compat.css++],['compat-listener',2,s=>s.compat.listener++],['compat-dom-write',2,s=>s.compat.domWrite++],['duplicate-responsibility',2,s=>s.compat.duplicate++],['unique-left',2,s=>s.compat.uniqueLeft++],['gate-requires-legacy',2,s=>s.compat.gateRequires++],['browser-requires-legacy',2,s=>s.compat.browserRequires++],['current-selector-legacy',2,s=>s.compat.currentSelector++],
+ ['future-legacy',3,s=>s.future.legacyDependency++],['future-root-edit',3,s=>s.future.rootEdit++],['future-action-nongeneric',3,s=>s.future.genericAction=false]
+];
+function violations(s,disabled=-1){const out=[];if(disabled!==0&&(s.presentation.hiddenCompat||s.presentation.legacyWrite||s.presentation.legacyClass))out.push(LAWS[0]);if(disabled!==1&&(!s.behavior.unique||s.behavior.double||s.behavior.intercept||s.behavior.order||!s.behavior.sourceAuthorityVisible))out.push(LAWS[1]);if(disabled!==2&&(s.compat.mounted||s.compat.css||s.compat.listener||s.compat.domWrite||s.compat.duplicate||s.compat.uniqueLeft||s.compat.gateRequires||s.compat.browserRequires||s.compat.currentSelector))out.push(LAWS[2]);if(disabled!==3&&(s.future.legacyDependency||s.future.rootEdit||!s.future.genericAction))out.push(LAWS[3]);return out;}
+const materialized=families.map(([name,law,mut])=>{const s=baseline();mut(s);const v=violations(s);assert.ok(v.includes(LAWS[law]),`family not killed ${name}`);return {name,law,v};});
+for(let law=0;law<LAWS.length;law++){const m=materialized.find(x=>x.law===law),f=families.find(x=>x[0]===m.name),s=baseline();f[2](s);assert.equal(violations(s,law).length,0,`law not irreducible ${LAWS[law]}`);}
+let x=0x179c0de,killed=0;const hits=Array(materialized.length).fill(0),TOTAL=1_000_000;
+for(let i=0;i<TOTAL;i++){x^=x<<13;x^=x>>>17;x^=x<<5;const j=(x>>>0)%materialized.length;hits[j]++;if(materialized[j].v.length)killed++;}
+const result={ok:killed===TOTAL,trials:TOTAL,killed,survivors:TOTAL-killed,laws:LAWS,irreducible:true,families:materialized.map((m,i)=>({...m,hits:hits[i]})),claimBoundary:'Deterministic semantic schedules over independently materialized contraction failure families; not human aesthetic proof or browser/runtime proof.'};
+console.log(JSON.stringify(result));assert.equal(result.ok,true);

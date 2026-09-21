@@ -44,12 +44,12 @@ try:
         page.wait_for_timeout(80)
         row=workspace.locator('.grc-list > article').filter(has_text='AO candidate incomplete browser')
         expect(row).to_be_visible()
-        legacy=row.locator(':scope > [data-ao-legacy-summary="suppressed"]')
-        expect(legacy).to_have_count(1)
-        expect(legacy).to_be_hidden()
-        expect(row.locator('.finetune-object-facts')).to_be_hidden()
+        expect(row.locator(':scope > [data-ao-legacy-summary="suppressed"]')).to_have_count(0)
+        expect(row.locator('.finetune-object-facts')).to_have_count(0)
         facts=row.locator('.procedure-record-facts')
         expect(facts).to_be_visible()
+        expect(facts).to_contain_text('Fonte autorevole')
+        expect(facts).to_contain_text('Da dichiarare')
         expect(facts).to_contain_text('Responsabile')
         expect(facts).to_contain_text('Da assegnare')
 
@@ -79,8 +79,10 @@ try:
         row=page.locator('#grcWorkspace .grc-list > article').filter(has_text='AO candidate incomplete browser')
         expect(row.locator('[data-ao-complete-object]')).to_have_count(0)
         expect(row.locator('[data-object-review="active"]')).to_be_visible()
-        expect(row.locator(':scope > [data-ao-legacy-summary="suppressed"]')).to_be_hidden()
+        expect(row.locator(':scope > [data-ao-legacy-summary="suppressed"]')).to_have_count(0)
+        expect(row.locator('.finetune-object-facts')).to_have_count(0)
         expect(row.locator('.procedure-record-facts')).to_contain_text('local-admin')
+        expect(row.locator('.procedure-record-facts')).to_contain_text('CMDB approvata')
 
         PHASE='activate'
         row.locator('[data-object-review="active"]').click()
@@ -98,7 +100,7 @@ try:
         assert obj['sourceAuthority']=='CMDB approvata'
 
         PHASE='result'
-        result={'ok':True,'control':'AO-ACTIVATION-JOURNEY-2.4','candidateIncompleteAllowed':True,'singleRepairPrimaryAction':True,'sharedAuthorityFactSurface':True,'fullRegistrySearch':True,'legacyFactSurfaceHidden':True,'activationFailClosedBasis':['owner','sourceAuthority'],'repairPersisted':True,'finalStatus':'active'}
+        result={'ok':True,'control':'AO-ACTIVATION-JOURNEY-2.4','candidateIncompleteAllowed':True,'singleRepairPrimaryAction':True,'sharedAuthorityFactSurface':True,'fullRegistrySearch':True,'legacyFactSurfaceAbsent':True,'activationFailClosedBasis':['owner','sourceAuthority'],'repairPersisted':True,'finalStatus':'active'}
         (ART/'browser-ao-activation.json').write_text(json.dumps(result,indent=2),encoding='utf8')
         print('browser-ao-activation-2.4: complete',flush=True)
         browser.close()
