@@ -11,7 +11,7 @@ const src={
 assert.ok(src.work.includes('Classe proposta')&&!src.work.includes('<span>Confidenza AI</span>'),'R1 canonical source truth');
 assert.ok(!/normalizeDecisionContext[\s\S]{0,1200}textContent='Classe proposta'/.test(src.rn),'R1 late semantic rewrite returned');
 assert.ok(src.rn.includes('data-rn-privacy-review'),'R1 privacy review must remain');
-assert.ok(src.ux4.includes('revealNativeTarget')&&src.ux4.includes('exact=missing.length===0')&&!src.ux4.includes('exact=missing.length===0&&hidden.length===0'),'R2 single work plane');
+assert.ok(src.ux4.includes('revealNativeTarget')&&src.ux4.includes('exact=missing.length===0')&&!src.ux4.includes('exact=missing.length===0&&hidden.length===0')&&src.ux4.includes('ictc:procedure-worklist-ready'),'R2 single work plane');
 for(const x of [src.grc,src.ec])assert.ok(x.includes('function revealTarget')&&x.includes("details:not([open])"),'R2 typed target reveal');
 assert.ok(src.frame.includes('data-procedure-orientation="compact"')&&src.frame.includes('Fondamento')&&src.frame.includes('Limite')&&src.frame.includes('Riferimenti'),'R3 orientation');
 assert.ok(src.anatomy.includes('.procedure-frame .procedure-boundary{display:grid}')&&src.anatomy.includes('[data-procedure-orientation="compact"]'),'R3 orientation geometry');
