@@ -1,24 +1,24 @@
-/* S4-A6 / A6-UX1: final footer geometry resolver. A5 static closure remains the fallback owner below this import. */
+/* S4-A6 / A6-UX1 lineage retained: current footer geometry is flow-safe and non-occlusive. */
 html[data-ictc-experience="market-1"]{
-  --a6-ux1-footer-base:44px;
+  --a6-ux1-footer-min:44px;
   --a6-ux1-footer-safe-bottom:env(safe-area-inset-bottom,0px);
-  --a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-base) + var(--a6-ux1-footer-safe-bottom));
-  scroll-padding-bottom:var(--a6-ux1-footer-reserve);
+  --a6-ux1-footer-reserve:0px;
+  scroll-padding-bottom:0px;
 }
 html[data-ictc-experience="market-1"] body{
-  padding-bottom:var(--a6-ux1-footer-reserve)!important;
+  padding-bottom:0!important;
 }
 html[data-ictc-experience="market-1"] #stableLegalFooter,
 html[data-ictc-experience="market-1"] .stable-legal-footer{
-  position:fixed!important;
-  inset:auto 0 0 0!important;
+  position:static!important;
+  inset:auto!important;
   width:100%;
-  height:var(--a6-ux1-footer-reserve)!important;
-  min-height:var(--a6-ux1-footer-reserve)!important;
+  height:auto!important;
+  min-height:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))!important;
   box-sizing:border-box;
   padding-bottom:var(--a6-ux1-footer-safe-bottom)!important;
-  z-index:75;
+  z-index:auto;
 }
 @media(max-width:760px){
-  html[data-ictc-experience="market-1"]{--a6-ux1-footer-base:52px}
+  html[data-ictc-experience="market-1"]{--a6-ux1-footer-min:52px}
 }
