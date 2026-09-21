@@ -52,12 +52,15 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:3]!=['attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['attention','controls','primary'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
- attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]').first;primary=root.locator(':scope > [data-editorial-slot="primary"]').first
+ attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]');primary=root.locator(':scope > [data-editorial-slot="primary"]').first
  if rail.count()!=1 or embedded.count()!=0:anomaly('support-rail-parentage',role,vp,proc['code'],{'sibling':rail.count(),'insideHeader':embedded.count()},{'sibling':1,'insideHeader':0})
- elif not (attention.count() and controls.count() and primary.count()):anomaly('editorial-owned-block-missing',role,vp,proc['code'],{'attention':attention.count(),'controls':controls.count(),'primary':primary.count()},{'attention':1,'controls':1,'primary':1})
+ elif not (attention.count() and controls.count() and primary.count()):anomaly('editorial-owned-block-missing',role,vp,proc['code'],{'attention':attention.count(),'controls':controls.count(),'primary':primary.count()},{'attention':1,'controls':'>=1','primary':1})
  else:
-  physical_ok=frame.evaluate('(f,a)=>f.nextElementSibling===a',attention.element_handle()) and attention.evaluate('(a,c)=>a.nextElementSibling===c',controls.element_handle()) and controls.evaluate('(c,p)=>c.nextElementSibling===p',primary.element_handle()) and primary.evaluate('(p,r)=>p.nextElementSibling===r',rail.element_handle())
-  if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>attention>controls>primary>support')
+  control_handles=[controls.nth(i).element_handle() for i in range(controls.count())]
+  physical_ok=frame.evaluate('(f,a)=>f.nextElementSibling===a',attention.element_handle()) and attention.evaluate('(a,c)=>a.nextElementSibling===c',control_handles[0])
+  for i in range(len(control_handles)-1):physical_ok=physical_ok and controls.nth(i).evaluate('(c,n)=>c.nextElementSibling===n',control_handles[i+1])
+  physical_ok=physical_ok and controls.nth(controls.count()-1).evaluate('(c,p)=>c.nextElementSibling===p',primary.element_handle()) and primary.evaluate('(p,r)=>p.nextElementSibling===r',rail.element_handle())
+  if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>attention>controls[1..n]>primary>support')
  context=page.locator(proc['context']);anatomy=page.locator(proc['anatomy']);work=page.locator(proc['work']).first
  try:context.wait_for(state='visible',timeout=5000);anatomy.wait_for(state='visible',timeout=5000);work.wait_for(state='visible',timeout=5000)
  except Exception:anomaly('technical-trace-not-visible',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'owner-declared context slot with visible anatomy after native work');return
