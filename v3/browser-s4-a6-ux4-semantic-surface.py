@@ -33,14 +33,31 @@ def no_local_x_overflow(page,selector,label):
 def scroll_owners(page,selector):
     return page.locator(selector).evaluate("""r=>[r,...r.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e);return e.getClientRects().length&&/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+2}).map(e=>({tag:e.tagName,id:e.id||'',cls:String(e.className||''),client:e.clientHeight,scroll:e.scrollHeight,overflowX:getComputedStyle(e).overflowX,overflowY:getComputedStyle(e).overflowY}))""")
 
+def close_dialogs(page):
+    page.evaluate("()=>{for(const d of document.querySelectorAll('dialog[open]'))try{d.close()}catch{}}")
+
 def open_process(page,code,pid,root):
     global PHASE
+    close_dialogs(page)
     PHASE=f'{code}-catalog'
     page.locator('.service-nav [data-service="processes"]').click()
+    page.wait_for_function("()=>!document.querySelector('#processesView')?.hidden")
     card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible()
     card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
+    PHASE=f'{code}-surface-commit'
+    page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
     PHASE=f'{code}-mount'
-    page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(r&&r.offsetParent!==null&&document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'&&w?.dataset.a6Ux4Mount)}",arg={'root':root,'pid':pid})
+    try:
+        page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'&&w?.dataset.a6Ux4Mount)}",arg={'root':root,'pid':pid})
+    except BaseException:
+        diag=page.evaluate("""x=>{const r=document.querySelector(x.root),slot=r?.querySelector(':scope > [data-procedure-attention-slot="'+x.pid+'"]'),w=slot?.querySelector('[data-procedure-worklist]');return{root:!!r,rootVisible:!!(r&&r.offsetParent!==null),slot:!!slot,section:!!w,semantic:document.documentElement.dataset.a6Ux4Semantic||'',mount:w?.dataset.a6Ux4Mount||'',single:r?.dataset.a6Ux4SingleCollection||'',missing:r?.dataset.a6Ux4BindingMissing||'',hidden:r?.dataset.a6Ux4BindingHidden||''}}""",{'root':root,'pid':pid})
+        if not diag.get('slot'): PHASE=f'{code}-mount-slot-missing'
+        elif not diag.get('section'): PHASE=f'{code}-mount-worklist-missing'
+        elif diag.get('semantic')!='a6-ux4': PHASE=f'{code}-mount-semantic-stamp-missing'
+        elif not diag.get('mount'): PHASE=f'{code}-mount-stamp-missing'
+        else: PHASE=f'{code}-mount-unresolved'
+        RESULTS.append({'oracle':'mount-diagnostic','code':code,'procedureId':pid,'diagnostic':diag})
+        raise
     return page.locator(root)
 
 def audit_procedure(page,code,pid,root):
