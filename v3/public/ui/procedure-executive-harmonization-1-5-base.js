@@ -24,7 +24,6 @@ function ensureFrame(id){const root=rootFor(id),p=EXEC[id];if(!root||!p)return;c
   let frame=root.querySelector(`:scope > .procedure-decision-frame[data-executive-procedure="${CSS.escape(id)}"]`);
   const rail=root.querySelector(':scope > .procedure-support-rail');
   if(!frame){frame=document.createElement('section');frame.className='procedure-decision-frame';frame.dataset.executiveProcedure=id;if(rail)rail.after(frame);else root.append(frame);}
-  else if(rail&&frame.previousElementSibling!==rail)rail.after(frame);
   frame.classList.add('procedure-decision-frame');frame.dataset.executiveProcedure=id;frame.dataset.structuralPlacementAuthority='procedure-editorial-slots';frame.setAttribute('aria-label',`${p.code} · orientamento del processo`);frame.innerHTML=frameMarkup(id);anchor(frame.querySelector('summary'),id,'boundary','inspect-claim-boundary','navigation','none');
 }
 function normalizeHub(){const host=$('#procedureHub');if(!host)return;const intro=$('#processesView .processes-head h1 ~ p');if(intro)intro.textContent='Sette procedure distinte. Ogni scheda mostra ciò che governa, l’attenzione aperta e la decisione successiva.';
