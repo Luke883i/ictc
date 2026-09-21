@@ -28,7 +28,30 @@ jobs:
         run: node v3/contributor-runtime-check.mjs
       - name: Contributor runtime adversarial saturation 100k
         run: node v3/contributor-runtime-saturation-100k.mjs
-      - run: npm run release:check
+      - name: Release contract
+        id: release_contract
+        continue-on-error: true
+        run: npm run release:check
+      - name: Diagnose release stable
+        id: release_stable
+        if: steps.release_contract.outcome == 'failure'
+        continue-on-error: true
+        run: npm run test:stable
+      - name: Diagnose release current semantic
+        id: release_semantic
+        if: steps.release_contract.outcome == 'failure'
+        continue-on-error: true
+        run: npm run test:current:semantic
+      - name: Diagnose release current runtime
+        id: release_runtime
+        if: steps.release_contract.outcome == 'failure'
+        continue-on-error: true
+        run: npm run test:current:runtime
+      - name: Propagate release contract failure
+        if: steps.release_contract.outcome == 'failure'
+        run: |
+          echo "release=${{ steps.release_contract.outcome }} stable=${{ steps.release_stable.outcome }} semantic=${{ steps.release_semantic.outcome }} runtime=${{ steps.release_runtime.outcome }}"
+          exit 1
       - run: node v3/runtime-enterprise-boundaries-ci.mjs
       - run: node v3/browser-local-write-boundary-check.mjs
       - run: node v3/command-identity-boundary-check.mjs
