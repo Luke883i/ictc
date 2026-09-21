@@ -105,6 +105,128 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic phase / v2.1 rn-ec
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith(('RN-01','EC-01')) else 0)
+          PY
+      - name: Diagnostic phase / v2.1 ao-mc-ap
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith(('AO-01','MC-01','AP-01')) else 0)
+          PY
+      - name: Diagnostic phase / v2.1 rc-pre-submit
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          exact={'RC-01-open-card','RC-01-open-route','RC-01-open-frame','RC-01-open-code','RC-01-open-context','RC-01-open','RC-01-primary-disclosure','RC-01-form-ready','RC-01-title','RC-01-description','RC-01-likelihood','RC-01-impact','RC-01-submit-click'}
+          sys.exit(1 if phase in exact else 0)
+          PY
+      - name: Diagnostic exact / v2.1 rc-open
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith('RC-01-open') else 0)
+          PY
+      - name: Diagnostic exact / v2.1 rc-form
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'RC-01-primary-disclosure','RC-01-form-ready'} else 0)
+          PY
+      - name: Diagnostic exact / v2.1 rc-fields
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase in {'RC-01-title','RC-01-description','RC-01-likelihood','RC-01-impact'} else 0)
+          PY
+      - name: Diagnostic exact / v2.1 rc-submit-click
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if json.loads(p.read_text()).get('phase')=='RC-01-submit-click' else 0)
+          PY
+      - name: Diagnostic phase / v2.1 rc-submit-http
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase.startswith('RC-01-submit-http-') else 0)
+          PY
+      - name: Diagnostic phase / v2.1 rc-submit-revision
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase=='RC-01-submit-revision' else 0)
+          PY
+      - name: Diagnostic phase / v2.1 rc-local-projection
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          sys.exit(1 if phase=='RC-01-local-projection' else 0)
+          PY
+      - name: Diagnostic phase / v2.1 post-risk
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=json.loads(p.read_text()).get('phase','')
+          post=('AR-01','home-projection','epistemic-','same-digest','history-transition','mobile','reduced-motion')
+          sys.exit(1 if phase.startswith(post) else 0)
+          PY
       - name: Diagnostic phase / pr60 proof-init
         if: ${{ always() && matrix.id == 'pr60-polish' }}
         shell: bash
@@ -170,7 +292,7 @@ jobs:
           if not p.exists(): sys.exit(0)
           d=json.loads(p.read_text()); phase=d.get('phase',''); kinds={x.get('kind') for x in d.get('anomalies',[])}
           proc=any(code in phase for code in ['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'])
-          proc_kinds={'editorial-order-prefix','technical-trace-not-visible','context-not-before-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis'}
+          proc_kinds={'editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-after-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis'}
           sys.exit(1 if proc or proc_kinds & kinds else 0)
           PY
       - name: Diagnostic phase / onto proof-ep
@@ -183,6 +305,21 @@ jobs:
           if not p.exists(): sys.exit(0)
           d=json.loads(p.read_text()); phase=d.get('phase','')
           sys.exit(1 if phase.endswith('-proof') or 'EP-01' in phase or phase=='aggregate-verdict' else 0)
+          PY
+      - name: Diagnostic exact / onto proc-anomalies
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); kinds=sorted({x.get('kind') for x in d.get('anomalies',[])})
+          proc=['editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-after-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis']
+          hit=[x for x in proc if x in kinds]
+          print('ONTO_PROC_ANOMALIES='+','.join(hit))
+          if hit:
+            raise SystemExit('onto proc anomalies: '+','.join(hit))
           PY
       - name: Diagnostic exact / pr60 open-scheduler
         if: ${{ always() && matrix.id == 'pr60-polish' }}

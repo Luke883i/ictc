@@ -6,7 +6,7 @@ check(stable.includes('.slice(0,3)'),'Home attention queue must be bounded to th
 check(stable.includes('severityRank(attentionMetric'),'Home ordering must prefer semantic severity before volume');
 check(frame.includes('data-uiux-layout="row"')&&frame.includes("host.dataset.uiuxLayout='rows'"),'process catalogue must expose row/list convergence contract');
 check(frame.includes('readTarget(id)')&&frame.includes('.grc-list'),'auditor/read action must land on work rather than header explanation');
-check(harmonization.includes('workAnchor(host)')&&harmonization.includes('anchor.after(decisionFrame)'),'decision context must move after native work');
+check(harmonization.includes("structuralPlacementAuthority='procedure-editorial-slots'")&&!harmonization.includes('anchor.after(decisionFrame)')&&!harmonization.includes('workAnchor(host)'),'decision context must defer structural placement to editorial owner');
 check(harmonization.includes('composition-process-context')&&harmonization.includes('inspect-decision-context'),'process context must be progressive and keep journey metadata');
 for(const token of ["mark(root,'home','attention')","mark(root,'processes','action')","mark(root,'proof','evidence')","mark(root,'epistemic','context')","mark(root,'admin','attention')"])check(runtime.includes(token),`information-role mapping missing ${token}`);
 check(runtime.includes("ensureDisclosure(body,'process-status'")&&runtime.includes("ensureDisclosure(body,'risk-analysis'"),'GRC analytics must be progressive');

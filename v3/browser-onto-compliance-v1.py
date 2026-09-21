@@ -50,16 +50,23 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  if frame.locator('.procedure-primary').count() and frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height')<43.5:anomaly('process-primary-target-too-small',role,vp,proc['code'],frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height'),'>=44px')
  if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I):anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
- if order[:3]!=['advanced-context','reference','attention']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['advanced-context','reference','attention'])
+ if order[:3]!=['attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['attention','controls','primary'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
+ attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]');primary=root.locator(':scope > [data-editorial-slot="primary"]').first
  if rail.count()!=1 or embedded.count()!=0:anomaly('support-rail-parentage',role,vp,proc['code'],{'sibling':rail.count(),'insideHeader':embedded.count()},{'sibling':1,'insideHeader':0})
- elif not frame.evaluate('(f,r)=>f.nextElementSibling===r',rail.element_handle()):anomaly('support-rail-order',role,vp,proc['code'],False,'header immediately followed by support rail')
+ elif not (attention.count() and controls.count() and primary.count()):anomaly('editorial-owned-block-missing',role,vp,proc['code'],{'attention':attention.count(),'controls':controls.count(),'primary':primary.count()},{'attention':1,'controls':'>=1','primary':1})
+ else:
+  control_handles=[controls.nth(i).element_handle() for i in range(controls.count())]
+  physical_ok=frame.evaluate('(f,a)=>f.nextElementSibling===a',attention.element_handle()) and attention.evaluate('(a,c)=>a.nextElementSibling===c',control_handles[0])
+  for i in range(len(control_handles)-1):physical_ok=physical_ok and controls.nth(i).evaluate('(c,n)=>c.nextElementSibling===n',control_handles[i+1])
+  physical_ok=physical_ok and controls.nth(controls.count()-1).evaluate('(c,p)=>c.nextElementSibling===p',primary.element_handle()) and primary.evaluate('(p,r)=>p.nextElementSibling===r',rail.element_handle())
+  if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>attention>controls[1..n]>primary>support')
  context=page.locator(proc['context']);anatomy=page.locator(proc['anatomy']);work=page.locator(proc['work']).first
  try:context.wait_for(state='visible',timeout=5000);anatomy.wait_for(state='visible',timeout=5000);work.wait_for(state='visible',timeout=5000)
  except Exception:anomaly('technical-trace-not-visible',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'owner-declared context slot with visible anatomy after native work');return
  if context.get_attribute('data-editorial-slot-owner')!=OWNER[proc['id']]:anomaly('technical-context-owner',role,vp,proc['code'],context.get_attribute('data-editorial-slot-owner'),OWNER[proc['id']])
- context_before_work=page.evaluate("x=>{const w=document.querySelector(x.w),c=document.querySelector(x.c);return !!(w&&c&&(c.compareDocumentPosition(w)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'w':proc['work'],'c':proc['context']})
- if not context_before_work:anomaly('context-not-before-native-work',role,vp,proc['code'],False,True)
+ work_before_context=page.evaluate("x=>{const w=document.querySelector(x.w),c=document.querySelector(x.c);return !!(w&&c&&(w.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'w':proc['work'],'c':proc['context']})
+ if not work_before_context:anomaly('context-not-after-native-work',role,vp,proc['code'],False,True)
  was_open=anatomy.get_attribute('open') is not None
  if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).to_have_attribute('open','')
  body=anatomy.locator('.procedure-anatomy-grid')
@@ -172,7 +179,7 @@ try:
     no_overflow(page,role,vp,'processes');one_h1(page,role,vp,'processes');shot(page,role,vp,'processes',width)
     for proc in PROCEDURES:audit_process(page,role,vp,width,proc,registry.get(proc['id']),families,revision)
     audit_proof(page,role,vp,width);audit_ep(page,role,vp,width,list(registry.keys())+['epistemic-lattice'],revision);ctx.close()
-  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a3-specialized-local-closure-runtime-audit+p2-secondary-closed','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'row-list-1-column','proofHierarchy':PROOF_READING_ORDER,'editorialHierarchy':'advanced-context>reference>attention>controls>primary','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
+  PHASE='aggregate-verdict';unique={x['signature']:x for x in anomalies};report={'ok':not anomalies,'profile':'onto-compliance-horizon-v1+native-semantic-lattice-3.2+s4-a3-specialized-local-closure-runtime-audit+p2-secondary-closed','sceneCount':len(scenes),'screenshotCount':len(screenshots),'anomalyCount':len(anomalies),'uniqueAnomalyCount':len(unique),'anomalies':anomalies,'scenes':scenes,'screenshots':screenshots,'networkCoverageRoles':sorted(network_coverage_checked),'dimensions':{'roles':ROLES,'viewports':[x[0] for x in VIEWPORTS],'processes':[x['code'] for x in PROCEDURES]},'processHubLayout':'row-list-1-column','proofHierarchy':PROOF_READING_ORDER,'editorialHierarchy':'attention>controls>primary>advanced-context>reference','boundary':'Server-backed automated visual, geometry, lexical, editorial and epistemic evidence; not independent human usability, aesthetic preference, legal compliance or assistive-technology assessment.'};(ART/'browser-onto-compliance-v1.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
   if anomalies:
    for x in list(unique.values())[:40]:print(f"::error title=onto-visual::{x['kind']}::{x['surface']} {x['role']} {x['viewport']}: {x['measured']}",flush=True)
    first=list(unique.values())[0];raise AssertionError(f"onto-compliance visual audit found {len(anomalies)} observations / {len(unique)} unique signatures; first={first['kind']}:{first['surface']}:{first['role']}:{first['viewport']}")

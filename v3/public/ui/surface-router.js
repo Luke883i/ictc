@@ -178,7 +178,9 @@ export function navigateSurface(value, {
 }
 export function getBackLabel() {
   const from = history.state?.ictc ? history.state.from : null;
-  return BACK_LABELS[from?.surface] || `Torna a ${SURFACE_LABELS.processes}`;
+  const current = routeFor(state.service, state.activeProcessId);
+  if (!from || sameRoute(from, current)) return `Torna a ${SURFACE_LABELS.processes}`;
+  return BACK_LABELS[from.surface] || `Torna a ${SURFACE_LABELS.processes}`;
 }
 export function navigateBack() {
   const from = history.state?.ictc ? history.state.from : null;

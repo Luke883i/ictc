@@ -8,10 +8,11 @@ const admin = { id: 'admin-test', role: 'admin', permissions: ['read','configure
 const user = { id: 'alice', role: 'user', permissions: ['read','report-incident','contribute-source','contribute-grc'] };
 const auditor = { id: 'audit-test', role: 'auditor', permissions: ['read'] };
 
-// Preserve the V1/V2 procedure-local semantics: the canonical legacy projector remains valid and testable.
+// AI is optional: an unconfigured provider must not outrank the first business action.
 const setup = canonicalHomeNextAction(base, admin, { llmReady: false });
-assert.equal(setup.kind, 'configure-ai');
+assert.equal(setup.kind, 'create-monitoring');
 assert.equal(setup.targetId, null);
+assert.match(setup.reason,/senza AI/i);
 
 const sourceState = {
   ...base,
@@ -46,7 +47,8 @@ assert.equal(userClosed.kind, 'record-incident');
 // V3 composes all process-local work into one deterministic cross-process queue.
 const emptyQueue = canonicalWorkQueue(base, admin, { llmReady: false });
 assert.equal(emptyQueue.authority, 'runtime-work-queue');
-assert.equal(emptyQueue.nextAction.kind, 'configure-ai');
+assert.equal(emptyQueue.nextAction.kind, 'create-object');
+assert.equal(emptyQueue.items.some(item=>item.kind==='configure-ai'),false);
 const queueWithSource = canonicalWorkQueue(sourceState, admin, { llmReady: false });
 assert.equal(queueWithSource.nextAction.kind, 'verify-internal-source');
 assert.equal(queueWithSource.nextAction.processId, 'monitoring');

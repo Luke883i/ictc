@@ -5,11 +5,11 @@ import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from '.
 const GRC_IDS=new Set(['objects','coverage','actions','risks','assurance']);
 const GRC_GRAMMAR=Object.freeze({objects:'inventory-registry',coverage:'requirements-mapping-ledger',actions:'execution-workbench',risks:'risk-review-desk',assurance:'assurance-request-desk'});
 export const GRC_EDITORIAL_ORDER=Object.freeze({
-  objects:Object.freeze(['advanced-context','reference','attention','controls','primary']),
-  coverage:Object.freeze(['advanced-context','reference','attention','controls','primary']),
-  actions:Object.freeze(['advanced-context','reference','attention','controls','primary']),
-  risks:Object.freeze(['advanced-context','reference','attention','controls','primary']),
-  assurance:Object.freeze(['advanced-context','reference','attention','controls','primary'])
+  objects:Object.freeze(['attention','controls','primary','advanced-context','reference']),
+  coverage:Object.freeze(['attention','controls','primary','advanced-context','reference']),
+  actions:Object.freeze(['attention','controls','primary','advanced-context','reference']),
+  risks:Object.freeze(['attention','controls','primary','advanced-context','reference']),
+  assurance:Object.freeze(['attention','controls','primary','advanced-context','reference'])
 });
 const attentionSlotOwner='grc-workspace-3-2.js';
 const OWNER=attentionSlotOwner;
