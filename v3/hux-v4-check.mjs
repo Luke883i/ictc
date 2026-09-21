@@ -19,7 +19,7 @@ const ownerMap=new Map((owners.surfaceOwners||[]).map(x=>[x.id,x]));
 for(const p of business){
   assert.ok(processes.includes(`code:'${p.code}'`)||processes.includes(`code:"${p.code}"`),`language missing ${p.code}`);
   assert.ok(ownerMap.has(p.id),`owner missing ${p.id}`); assert.equal(ownerMap.get(p.id).class,'OWNER',`owner not current ${p.id}`);
-  assert.ok(actions.includes(`procedure:'${p.id}'`)||actions.includes(`procedure:"${p.id}"`),`human action missing ${p.id}`);
+  assert.ok(actions.includes(`A('${p.id}'`)||actions.includes(`A("${p.id}"`),`human action missing ${p.id}`);
   assert.ok(protocol.includes(`### ${p.code}`),`human protocol missing ${p.code}`);
   assert.equal(p.decision?.humanRequired,true,`human checkpoint missing ${p.id}`);
   assert.ok(String(p.decision?.checkpoint||''),`checkpoint empty ${p.id}`);
