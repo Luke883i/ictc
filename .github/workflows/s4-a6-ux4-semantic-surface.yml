@@ -37,10 +37,16 @@ jobs:
           node --check v3/s4-a6-ux3-operational-surface-model.mjs
           node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
           node --check v3/current-gate-registry.mjs
+          node --check v3/uiux-ontoepistemic-convergence-3-check.mjs
+          node --check v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
           python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
       - name: A6-UX4 semantic source contract
         run: node v3/s4-a6-ux4-semantic-surface-check.mjs
+      - name: UIUX onto-epistemic convergence 3 source contract
+        run: node v3/uiux-ontoepistemic-convergence-3-check.mjs
+      - name: UIUX onto-epistemic convergence 3 falsification 10,000,000
+        run: node v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
       - name: A6-UX4 deterministic falsification 10,000 cases
         run: node v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
       - name: A6-UX4 screenshot-derived UIUX mount falsification 100,000 cases

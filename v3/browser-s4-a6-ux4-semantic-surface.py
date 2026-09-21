@@ -50,15 +50,14 @@ def audit_procedure(page,code,pid,root):
     section=r.locator(f':scope > [data-procedure-attention-slot="{pid}"] [data-procedure-worklist]')
     mount=section.get_attribute('data-a6-ux4-mount'); expected=int(r.get_attribute('data-a6-ux4-actionable-count') or '0'); missing=int(r.get_attribute('data-a6-ux4-binding-missing') or '0'); hidden=int(r.get_attribute('data-a6-ux4-binding-hidden') or '0')
     assert missing==0,(code,'typed binding missing',missing)
-    if pid=='monitoring' and mount=='fallback-visible':
-        PHASE=f'{code}-secondary-target-fallback'; expect(section).to_be_visible(); expect(r).to_have_attribute('data-a6-ux4-single-collection','fallback'); assert hidden>0,(code,'fallback requires hidden progressive target',hidden)
-    else:
-        expect(section).to_have_attribute('data-a6-ux4-mount','semantic-bridge'); expect(section).to_be_hidden(); expect(r).to_have_attribute('data-a6-ux4-single-collection','native'); assert hidden==0,(code,'semantic bridge cannot hide bound targets',hidden)
-        PHASE=f'{code}-single-collection-scope'
-        scope=r.locator(f'[data-a6-ux4-scope="{pid}"]'); expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
-        PHASE=f'{code}-single-collection-equivalence'
-        visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
-        PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
+    expect(section).to_have_attribute('data-a6-ux4-mount','semantic-bridge'); expect(section).to_be_hidden(); expect(r).to_have_attribute('data-a6-ux4-single-collection','native'); assert hidden==0,(code,'resolved actionable targets must be revealed in native plane',hidden)
+    PHASE=f'{code}-single-collection-scope'
+    scope=r.locator(f'[data-a6-ux4-scope="{pid}"]'); expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
+    PHASE=f'{code}-single-collection-equivalence'
+    visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
+    PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
+    PHASE=f'{code}-orientation'
+    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Fondamento'); expect(orientation).to_contain_text('Limite'); expect(orientation).to_contain_text('Riferimenti')
     PHASE=f'{code}-context'
     anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]'); expect(anatomy).to_have_count(1); expect(anatomy).to_be_visible()
     assert r.locator('.procedure-decision-frame details.composition-process-context:visible').count()==0
@@ -69,8 +68,13 @@ def audit_procedure(page,code,pid,root):
     assert all(visible.nth(i).get_attribute('data-a6-ux4-effect') for i in range(sample)),(code,'unclassified control')
     if pid=='monitoring':
         PHASE='RN-01-material-merge'; assert r.locator('.contribute-card:visible').count()==0; assert r.locator('[data-a6-ux4-single-column="true"]').count()>=1
+        source_open=r.locator('[data-open-source]').first
+        if source_open.count():
+            PHASE='RN-01-source-truth'; source_open.click(); source_dialog=page.locator('#sourceDialog'); expect(source_dialog).to_be_visible(); expect(source_dialog).to_contain_text('Classe proposta'); expect(source_dialog).not_to_contain_text('Confidenza AI'); assert source_dialog.evaluate("d=>d.contains(document.activeElement)"); source_dialog.locator('button[aria-label="Chiudi"]').click()
     if pid=='incidents':
         PHASE='EC-01-heading-dedup'; assert r.locator('[data-a6-registry="incidents"] .section-head:visible').count()==0
+    if pid in ['objects','coverage','actions','risks','assurance']:
+        PHASE=f'{code}-record-action-hierarchy'; assert r.locator('.procedure-record-card .primary:visible').count()==0,(code,'record-local filled primary survived')
     if pid=='coverage':
         PHASE='MC-01-use-copy'; expect(r.locator('[data-framework-card="eu-gdpr-2016-679"] .market-scope')).to_have_text('Uso da dichiarare')
         PHASE='MC-01-standard-browser-open'; r.locator('[data-open-standard-browser]').first.click(); dialog=page.locator('#standardBrowserDialog'); expect(dialog).to_be_visible()
@@ -106,6 +110,19 @@ def desktop(browser):
     PHASE='proof-page-errors'; assert not ERRORS,ERRORS
     ctx.close()
 
+def auditor_incident(browser):
+    global PHASE
+    ctx=browser.new_context(viewport={'width':1280,'height':900}); ctx.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')")
+    page=ctx.new_page(); page.set_default_timeout(30000); local_writes=[]
+    page.on('request',lambda r: local_writes.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
+    page.goto(BASE+'/?view=processes',wait_until='networkidle'); r=open_process(page,'EC-01','incidents','#incidentsView')
+    opener=r.locator('[data-open-incident]').first; assert opener.count()>0,'auditor fixture must expose an incident'
+    PHASE='EC-01-auditor-open'; opener.click(); dialog=page.locator('#incidentWorkspace'); expect(dialog).to_be_visible(); assert dialog.evaluate("d=>d.contains(document.activeElement)")
+    PHASE='EC-01-auditor-readonly'; assert dialog.locator('[data-answer-question],[data-answer-unknown],[data-generate-draft],[data-save-manual],[data-save-formulation],[data-submit-incident],[data-close-incident]').count()==0
+    assert dialog.locator('#questionValue:not([disabled])').count()==0; assert dialog.locator('[data-download-evidence]').count()>=1
+    page.keyboard.press('Escape'); expect(dialog).not_to_be_visible(); assert not local_writes,local_writes
+    RESULTS.append({'oracle':'auditor-incident-readonly','writes':len(local_writes),'modalFocus':True,'escapeClose':True}); ctx.close()
+
 def mobile(browser,width,height):
     global PHASE
     ctx=browser.new_context(viewport={'width':width,'height':height}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
@@ -124,9 +141,9 @@ try:
         launch={'headless':True,'args':['--no-sandbox']}
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
-        desktop(browser); mobile(browser,390,844); mobile(browser,320,800)
+        desktop(browser); auditor_incident(browser); mobile(browser,390,844); mobile(browser,320,800)
         PHASE='write-boundary'; assert not WRITES,WRITES
-        report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX4','expectedBuildSha':EXPECTED or None,'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS,'landingPages':['Home','Processi di Compliance','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','Evidenze ICTC'],'oracles':['single-visible-operational-collection','typed-native-actionability','zero-work-vacuous-binding','integrated-scope-control','context-dedup','reference-band','action-effect-grammar','RN-material-merge','EC-heading-dedup','standard-browser-dedup','single-modal-scroll-authority','local-x-overflow','page-reflow','mobile-390','mobile-320','read-only-navigation-no-write'],'claimBoundary':'Exact-head Chromium repository UI semantics and geometry only; not representative human usability, accessibility certification, legal/compliance conclusion, deployment effectiveness, enterprise-candidate promotion or enterprise-ready proof.'}
+        report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX4','expectedBuildSha':EXPECTED or None,'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS,'landingPages':['Home','Processi di Compliance','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','Evidenze ICTC'],'oracles':['single-visible-operational-collection','typed-native-actionability','resolved-target-reveal','zero-work-vacuous-binding','integrated-scope-control','compact-orientation','canonical-source-truth','auditor-incident-readonly','record-action-hierarchy','context-dedup','reference-band','action-effect-grammar','RN-material-merge','EC-heading-dedup','standard-browser-dedup','single-modal-scroll-authority','local-x-overflow','page-reflow','mobile-390','mobile-320','read-only-navigation-no-write'],'claimBoundary':'Exact-head Chromium repository UI semantics and geometry only; not representative human usability, accessibility certification, legal/compliance conclusion, deployment effectiveness, enterprise-candidate promotion or enterprise-ready proof.'}
         (ART/'browser-s4-a6-ux4-semantic-surface.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
         print(json.dumps({'ok':True,'executionUnit':'A6-UX4','procedures':7,'mobile':[390,320],'writes':0}),flush=True); browser.close()
 except BaseException as exc:
