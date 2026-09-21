@@ -43,7 +43,7 @@ export function renderPlanDialog() {
   $('#planActions').innerHTML = actions.join('');
 }
 
-const RN_SOURCE_CLASS_LABELS=Object.freeze({'binding-eu-law':'Normativa UE vincolante','binding-italian-law':'Normativa italiana vincolante','official-guidance':'Guidance ufficiale','jurisprudence-public-case':'Giurisprudenza / caso pubblico'});
+const RN_SOURCE_CLASS_LABELS=Object.freeze({'binding-eu-law':'Norma cogente UE','binding-italian-law':'Norma cogente italiana','competent-authority-decisions':'Provvedimento / deliberazione di autorità','public-jurisprudence-and-case-information-without-personal-data':'Giurisprudenza / caso pubblico · dati personali esclusi'});
 function sourceClassLabel(value){return RN_SOURCE_CLASS_LABELS[value]||'Classe da verificare';}
 
 export function renderSourceDialog() {
