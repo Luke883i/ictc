@@ -12,5 +12,5 @@ const materialized=families.map(([name,law,mut])=>{const s=baseline();mut(s);con
 for(let law=0;law<LAWS.length;law++){const m=materialized.find(x=>x.law===law),f=families.find(x=>x[0]===m.name),s=baseline();f[2](s);assert.equal(violations(s,law).length,0,`law not irreducible ${LAWS[law]}`);}
 let x=0x179c0de,killed=0;const hits=Array(materialized.length).fill(0),TOTAL=1_000_000;
 for(let i=0;i<TOTAL;i++){x^=x<<13;x^=x>>>17;x^=x<<5;const j=(x>>>0)%materialized.length;hits[j]++;if(materialized[j].v.length)killed++;}
-const result={ok:killed===TOTAL,trials:TOTAL,killed,survivors:TOTAL-killed,laws:LAWS,irreducible:true,families:materialized.map((m,i)=>({...m,hits:hits[i]}),claimBoundary:'Deterministic semantic schedules over independently materialized contraction failure families; not human aesthetic proof or browser/runtime proof.'};
+const result={ok:killed===TOTAL,trials:TOTAL,killed,survivors:TOTAL-killed,laws:LAWS,irreducible:true,families:materialized.map((m,i)=>({...m,hits:hits[i]})),claimBoundary:'Deterministic semantic schedules over independently materialized contraction failure families; not human aesthetic proof or browser/runtime proof.'};
 console.log(JSON.stringify(result));assert.equal(result.ok,true);
