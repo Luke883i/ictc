@@ -1,0 +1,40 @@
+name: audit-export-main-xz
+
+on:
+  push:
+    branches:
+      - agent/audit-main-snapshot-ca6017b
+
+permissions:
+  contents: write
+
+jobs:
+  export-xz:
+    if: ${{ !contains(github.event.head_commit.message, '[skip audit-export-xz]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Export exact main as xz text stream
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="ca6017b76f33d951ac5e3e5ee3db5f155e6a1fff"
+          rm -rf _audit_transfer_xz
+          mkdir -p _audit_transfer_xz
+          git archive --format=tar "$target" | xz -9e -T0 > /tmp/ictc-main.tar.xz
+          base64 -w0 /tmp/ictc-main.tar.xz | fold -w 36000 > _audit_transfer_xz/archive.b64
+          sha256sum /tmp/ictc-main.tar.xz | awk '{print $1}' > _audit_transfer_xz/SHA256.txt
+          printf '%s\n' "$target" > _audit_transfer_xz/REF.txt
+          wc -c /tmp/ictc-main.tar.xz > _audit_transfer_xz/SIZE.txt
+      - name: Commit xz transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ictc-audit-export"
+          git config user.email "ictc-audit-export@users.noreply.github.com"
+          git add _audit_transfer_xz
+          git commit -m "audit xz snapshot [skip audit-export] [skip audit-export-zstd] [skip audit-export-xz]"
+          git push origin HEAD:agent/audit-main-snapshot-ca6017b
