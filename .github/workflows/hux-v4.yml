@@ -1,0 +1,33 @@
+name: HUX V4 evolutionary usability
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hux-v4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hux-v4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+      - name: Verify exact head
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: HUX V4 lightweight contract
+        run: node v3/hux-v4-check.mjs
+      - name: HUX V4 human experience 10M
+        run: node v3/hux-v4-human-saturation-10x1m.mjs
+      - name: HUX V4 future procedures 1M
+        run: node v3/hux-v4-future-procedure-saturation-1m.mjs
