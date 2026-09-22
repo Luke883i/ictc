@@ -1,0 +1,24 @@
+{
+  "schemaVersion":"1.0.0",
+  "contractId":"AI-INFORMATION-EGRESS-1",
+  "classification":"runtime-security-privacy-information-egress-boundary",
+  "authorityEffect":"NONE",
+  "trajectoryImpact":"neutral",
+  "createsNewSerialSlice":false,
+  "sourceOfTruth":false,
+  "writer":false,
+  "networkAccess":false,
+  "persistsRawPayload":false,
+  "intent":"Separate information exportability from network reachability before every AI provider transport.",
+  "informationClasses":["PUBLIC","DERIVED_EXPORTABLE","LOCAL_CONFIDENTIAL","SECRET"],
+  "unknownBehavior":"LOCAL_CONFIDENTIAL",
+  "computePlanes":["LOCAL","EXTERNAL","NONE"],
+  "purposeDefaults":{"provider-healthcheck":"PUBLIC","monitoring-plan":"DERIVED_EXPORTABLE","compliance-discovery":"DERIVED_EXPORTABLE","contribution-enrichment":"LOCAL_CONFIDENTIAL","incident-analysis":"LOCAL_CONFIDENTIAL","incident-draft":"LOCAL_CONFIDENTIAL"},
+  "mechanisms":[
+    {"id":"EG1_CANONICAL_CAPSULE_BINDING"},{"id":"EG2_CLASSIFICATION_FAIL_CLOSED"},{"id":"EG3_MONOTONE_TAINT_DECLASSIFICATION"},{"id":"EG4_COMPUTE_ELIGIBILITY"},{"id":"EG5_PURPOSE_ORG_POLICY"},{"id":"EG6_EXTERNAL_PREREQUISITE_CONJUNCTION"},{"id":"EG7_ZERO_PROVIDER_AUTHORITY"},{"id":"EG8_NON_INTERFERENCE_PURITY"},{"id":"EG9_SINGLE_EGRESS_OWNER"}
+  ],
+  "failureFamilies":["noncanonical_capsule","input_digest_mismatch","unknown_exportable","classification_owner_collision","sensitivity_downgrade","unregistered_declassifier","nondeterministic_declassifier","declassification_receipt_unbound","secret_compute_leak","private_external_leak","purpose_policy_bypass","organization_policy_bypass","personal_data_policy_bypass","provider_not_ready_bypass","export_policy_bypass","network_policy_bypass","secret_resolution_bypass","destination_policy_bypass","provider_result_authority","model_result_authority","status_projection_content_leak","two_world_interference","evaluator_side_effect","parallel_egress_owner","direct_provider_bypass"],
+  "runtimeBinding":{"orchestrator":"v3/ai.mjs","informationOwner":"v3/runtime/ai-information-egress.mjs","networkOwner":"v3/network-policy.mjs","governanceOwner":"v3/enterprise.mjs","rule":"information eligibility runs before provider request construction; network policy remains a separate downstream authority"},
+  "claimBoundary":{"networkReachabilityIsNotInformationEligibility":true,"providerResultIsAuthority":false,"modelResultIsAuthority":false,"addsBusinessWriter":false,"universalRegulatedSuitability":false,"semanticMutationIsPhysicalProof":false,"deploymentSecurityProven":false},
+  "mutationQualification":{"semanticMutationsRequired":1000000,"noNoveltyTailRequired":100000,"failureFamiliesRequired":25,"mechanismsRequired":9,"survivorsRequired":0,"deletionOracleRequired":true,"semanticMutationIsPhysicalProof":false}
+}
