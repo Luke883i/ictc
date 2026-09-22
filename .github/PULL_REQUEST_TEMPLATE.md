@@ -72,3 +72,14 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 - [ ] post-merge `main` e `requiredPostMergeChecks` saranno osservati
 
 > GOV-01F resta compensating governance: non rende `main` server-side protected.
+
+## GOV-TRAMA-COMPASS-1 closure
+
+- Documentation Delta: `<owner docs changed + why; generated Compass always regenerated>`
+- Bussola ACT: `<single next slice|STOP|BLOCKED + local/intermediate/global deltas>`
+- Rollback contract: `<semantic rollback or irreversible migration boundary>`
+- Failure owner / nearest falsifier: `<owner + local reproducer>`
+- [ ] Global DoD compiled from current target/owners.
+- [ ] Intermediate DoD compiled from current semantic neighborhood.
+- [ ] Local DoD compiled and satisfied on exact PR HEAD.
+- [ ] ACT recomputed after the latest tool/CI fact; prior roadmap was challenged rather than assumed.

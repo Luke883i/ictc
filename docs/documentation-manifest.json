@@ -4,47 +4,302 @@
   "entrypoint": "docs/START_HERE.md",
   "principle": "The manifest registers documentation authority and lifecycle; it never replaces substantive canonical documents.",
   "versionAxes": {
-    "product": {"owner": "package.json", "value": "1.8.0"},
-    "uiComposition": {"owner": "docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md", "value": "3.2"},
-    "workspaceChrome": {"owner": "docs/21_DESIGN_SYSTEM.md", "value": "3.3"},
-    "uiPresentation": {"owners": ["docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md", "docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md", "docs/21_DESIGN_SYSTEM.md"], "value": "local-owners", "classification": "canonical-distributed-presentation"},
-    "journey": {"owner": "v3/release-identity.json", "value": "2.2-sequential-onto-epistemic"},
-    "constitution": {"owner": "v3/release-identity.json", "value": "C0.1"},
-    "documentation": {"owner": "docs/documentation-manifest.json", "value": "1.0"},
-    "convergenceGovernance": {"owner": "docs/convergence/convergence-authority.json", "value": "GOV-WB5"}
+    "product": {
+      "owner": "package.json",
+      "value": "1.8.0"
+    },
+    "uiComposition": {
+      "owner": "docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md",
+      "value": "3.2"
+    },
+    "workspaceChrome": {
+      "owner": "docs/21_DESIGN_SYSTEM.md",
+      "value": "3.3"
+    },
+    "uiPresentation": {
+      "owners": [
+        "docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md",
+        "docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md",
+        "docs/21_DESIGN_SYSTEM.md"
+      ],
+      "value": "local-owners",
+      "classification": "canonical-distributed-presentation"
+    },
+    "journey": {
+      "owner": "v3/release-identity.json",
+      "value": "2.2-sequential-onto-epistemic"
+    },
+    "constitution": {
+      "owner": "v3/release-identity.json",
+      "value": "C0.1"
+    },
+    "documentation": {
+      "owner": "docs/documentation-manifest.json",
+      "value": "1.0"
+    },
+    "convergenceGovernance": {
+      "owner": "docs/convergence/convergence-authority.json",
+      "value": "GOV-WB5"
+    }
   },
   "documents": [
-    {"id":"readme","path":"README.md","lifecycle":"current","mode":"explanation","authorityTopic":"repository_front_door","authoritative":true},
-    {"id":"repo-atlas","path":"docs/REPOSITORY_ATLAS.md","lifecycle":"operating","mode":"explanation","authorityTopic":"repository_self_description","authoritative":true},
-    {"id":"v3-readme","path":"v3/README.md","lifecycle":"operating","mode":"reference","authorityTopic":null,"authoritative":false},
-    {"id":"start","path":"docs/START_HERE.md","lifecycle":"current","mode":"reference","authorityTopic":"documentation_navigation","authoritative":true},
-    {"id":"product","path":"docs/PRODUCT.md","lifecycle":"current","mode":"reference","authorityTopic":"product_intent","authoritative":true},
-    {"id":"epistemic","path":"docs/02_EPISTEMIC_CONTRACT.md","lifecycle":"current","mode":"reference","authorityTopic":"epistemic_contract","authoritative":true},
-    {"id":"language","path":"docs/03_ENDUSER_LANGUAGE.md","lifecycle":"current","mode":"reference","authorityTopic":"enduser_language","authoritative":true},
-    {"id":"journeys","path":"docs/04_USER_JOURNEYS.md","lifecycle":"current","mode":"reference","authorityTopic":"user_journeys","authoritative":true},
-    {"id":"architecture","path":"docs/11_ARCHITECTURE.md","lifecycle":"current","mode":"reference","authorityTopic":"architecture","authoritative":true},
-    {"id":"workspace-chrome-33","path":"docs/21_DESIGN_SYSTEM.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_workspace_chrome","authoritative":true},
-    {"id":"semantic-workspace-321","path":"docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_process_evidence_presentation","authoritative":true},
-    {"id":"ui-presentation-34","path":"docs/UI_FINE_TUNING_3_4_DOD.md","lifecycle":"lineage","mode":"reference","authorityTopic":null,"authoritative":false},
-    {"id":"doc-standard","path":"docs/DOCUMENTATION_STANDARD.md","lifecycle":"policy","mode":"reference","authorityTopic":"documentation_standard","authoritative":true},
-    {"id":"doc-manifest","path":"docs/documentation-manifest.json","lifecycle":"policy","mode":"reference","authorityTopic":"documentation_registry","authoritative":true},
-    {"id":"testing","path":"docs/TESTING.md","lifecycle":"operating","mode":"reference","authorityTopic":"testing_evidence","authoritative":true},
-    {"id":"development","path":"docs/DEVELOPMENT.md","lifecycle":"operating","mode":"how-to","authorityTopic":"development_workflow","authoritative":true},
-    {"id":"engineering-governance","path":"docs/ENGINEERING_GOVERNANCE.md","lifecycle":"policy","mode":"reference","authorityTopic":"engineering_governance","authoritative":true},
-    {"id":"governance","path":"GOVERNANCE.md","lifecycle":"policy","mode":"policy","authorityTopic":"repository_governance","authoritative":true},
-    {"id":"contributing","path":"CONTRIBUTING.md","lifecycle":"operating","mode":"how-to","authorityTopic":"contributor_workflow","authoritative":true},
-    {"id":"security","path":"SECURITY.md","lifecycle":"policy","mode":"how-to","authorityTopic":"security_reporting","authoritative":true},
-    {"id":"support","path":"SUPPORT.md","lifecycle":"policy","mode":"how-to","authorityTopic":"support","authoritative":true},
-    {"id":"conduct","path":"CODE_OF_CONDUCT.md","lifecycle":"policy","mode":"policy","authorityTopic":"community_conduct","authoritative":true},
-    {"id":"slice-32","path":"docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md","lifecycle":"current","mode":"reference","authorityTopic":"ui_information_composition","authoritative":true},
-    {"id":"doc-runtime-10","path":"docs/DOCUMENTATION_RUNTIME_1_0_DOD.md","lifecycle":"current","mode":"reference","authorityTopic":"documentation_runtime","authoritative":true},
-    {"id":"convergence-authority","path":"docs/convergence/convergence-authority.json","lifecycle":"policy","mode":"reference","authorityTopic":"convergence_authority","authoritative":true},
-    {"id":"convergence-workbook-active","path":"docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx","lifecycle":"generated","mode":"reference","authorityTopic":null,"authoritative":false},
-    {"id":"source-prompt","path":"docs/00_PROMPT_CLARIFICATION.md","lifecycle":"source-input","mode":"explanation","authorityTopic":null,"authoritative":false,"supersededBy":"docs/PRODUCT.md"},
-    {"id":"future-idea","path":"docs/01_TO_BE_IDEA.md","lifecycle":"roadmap","mode":"explanation","authorityTopic":null,"authoritative":false},
-    {"id":"roadmap","path":"docs/ROADMAP.md","lifecycle":"roadmap","mode":"reference","authorityTopic":null,"authoritative":false},
-    {"id":"trajectory","path":"docs/PROJECT_TRAJECTORY.md","lifecycle":"lineage","mode":"explanation","authorityTopic":null,"authoritative":false},
-    {"id":"changelog","path":"CHANGELOG.md","lifecycle":"lineage","mode":"reference","authorityTopic":null,"authoritative":false}
+    {
+      "id": "readme",
+      "path": "README.md",
+      "lifecycle": "current",
+      "mode": "explanation",
+      "authorityTopic": "repository_front_door",
+      "authoritative": true
+    },
+    {
+      "id": "repo-atlas",
+      "path": "docs/REPOSITORY_ATLAS.md",
+      "lifecycle": "operating",
+      "mode": "explanation",
+      "authorityTopic": "repository_self_description",
+      "authoritative": true
+    },
+    {
+      "id": "v3-readme",
+      "path": "v3/README.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "start",
+      "path": "docs/START_HERE.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "documentation_navigation",
+      "authoritative": true
+    },
+    {
+      "id": "product",
+      "path": "docs/PRODUCT.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "product_intent",
+      "authoritative": true
+    },
+    {
+      "id": "epistemic",
+      "path": "docs/02_EPISTEMIC_CONTRACT.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "epistemic_contract",
+      "authoritative": true
+    },
+    {
+      "id": "language",
+      "path": "docs/03_ENDUSER_LANGUAGE.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "enduser_language",
+      "authoritative": true
+    },
+    {
+      "id": "journeys",
+      "path": "docs/04_USER_JOURNEYS.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "user_journeys",
+      "authoritative": true
+    },
+    {
+      "id": "architecture",
+      "path": "docs/11_ARCHITECTURE.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "architecture",
+      "authoritative": true
+    },
+    {
+      "id": "workspace-chrome-33",
+      "path": "docs/21_DESIGN_SYSTEM.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "ui_workspace_chrome",
+      "authoritative": true
+    },
+    {
+      "id": "semantic-workspace-321",
+      "path": "docs/SEMANTIC_WORKSPACE_CLOSURE_3_2_1_DOD.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "ui_process_evidence_presentation",
+      "authoritative": true
+    },
+    {
+      "id": "ui-presentation-34",
+      "path": "docs/UI_FINE_TUNING_3_4_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "doc-standard",
+      "path": "docs/DOCUMENTATION_STANDARD.md",
+      "lifecycle": "policy",
+      "mode": "reference",
+      "authorityTopic": "documentation_standard",
+      "authoritative": true
+    },
+    {
+      "id": "doc-manifest",
+      "path": "docs/documentation-manifest.json",
+      "lifecycle": "policy",
+      "mode": "reference",
+      "authorityTopic": "documentation_registry",
+      "authoritative": true
+    },
+    {
+      "id": "testing",
+      "path": "docs/TESTING.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": "testing_evidence",
+      "authoritative": true
+    },
+    {
+      "id": "development",
+      "path": "docs/DEVELOPMENT.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": "development_workflow",
+      "authoritative": true
+    },
+    {
+      "id": "engineering-governance",
+      "path": "docs/ENGINEERING_GOVERNANCE.md",
+      "lifecycle": "policy",
+      "mode": "reference",
+      "authorityTopic": "engineering_governance",
+      "authoritative": true
+    },
+    {
+      "id": "governance",
+      "path": "GOVERNANCE.md",
+      "lifecycle": "policy",
+      "mode": "policy",
+      "authorityTopic": "repository_governance",
+      "authoritative": true
+    },
+    {
+      "id": "contributing",
+      "path": "CONTRIBUTING.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": "contributor_workflow",
+      "authoritative": true
+    },
+    {
+      "id": "security",
+      "path": "SECURITY.md",
+      "lifecycle": "policy",
+      "mode": "how-to",
+      "authorityTopic": "security_reporting",
+      "authoritative": true
+    },
+    {
+      "id": "support",
+      "path": "SUPPORT.md",
+      "lifecycle": "policy",
+      "mode": "how-to",
+      "authorityTopic": "support",
+      "authoritative": true
+    },
+    {
+      "id": "conduct",
+      "path": "CODE_OF_CONDUCT.md",
+      "lifecycle": "policy",
+      "mode": "policy",
+      "authorityTopic": "community_conduct",
+      "authoritative": true
+    },
+    {
+      "id": "slice-32",
+      "path": "docs/NATIVE_SEMANTIC_LATTICE_3_2_DOD.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "ui_information_composition",
+      "authoritative": true
+    },
+    {
+      "id": "doc-runtime-10",
+      "path": "docs/DOCUMENTATION_RUNTIME_1_0_DOD.md",
+      "lifecycle": "current",
+      "mode": "reference",
+      "authorityTopic": "documentation_runtime",
+      "authoritative": true
+    },
+    {
+      "id": "convergence-authority",
+      "path": "docs/convergence/convergence-authority.json",
+      "lifecycle": "policy",
+      "mode": "reference",
+      "authorityTopic": "convergence_authority",
+      "authoritative": true
+    },
+    {
+      "id": "convergence-workbook-active",
+      "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
+      "lifecycle": "generated",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "source-prompt",
+      "path": "docs/00_PROMPT_CLARIFICATION.md",
+      "lifecycle": "source-input",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "supersededBy": "docs/PRODUCT.md"
+    },
+    {
+      "id": "future-idea",
+      "path": "docs/01_TO_BE_IDEA.md",
+      "lifecycle": "roadmap",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "roadmap",
+      "path": "docs/ROADMAP.md",
+      "lifecycle": "roadmap",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "trajectory",
+      "path": "docs/PROJECT_TRAJECTORY.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "changelog",
+      "path": "CHANGELOG.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
+      "id": "engineering-compass",
+      "path": "docs/ENGINEERING_COMPASS.md",
+      "lifecycle": "generated",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false
+    }
   ],
   "communitySurfaces": {
     "pullRequestTemplate": ".github/PULL_REQUEST_TEMPLATE.md",

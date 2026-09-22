@@ -143,3 +143,9 @@ node v3/c5-needs-audit-saturation.mjs
 ```
 
 I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il **ritiro** della 3.4 e la relocation degli invarianti negli owner correnti. `npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
+
+## Bussola ingegneristica per utente non tecnico
+
+Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs/ENGINEERING_COMPASS.md`: è una projection generated di **TRAMA**, non un'autorità. Il target completo è `v3/trama-enterprise-dod.json`: 16 assi e requisiti atomici di Enterprise Candidate, senza stato corrente auto-certificato.
+
+La Bussola separa sempre locale, intermedio e globale e propone una sola prossima slice o STOP/BLOCKED. Gli owner canonici indicati in questa guida restano la fonte sostanziale.

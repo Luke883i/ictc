@@ -136,3 +136,9 @@ I journey automatizzati sono E2 repository evidence e non sostituiscono review u
 ## Evidence / security
 
 I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP shape e limitation. Non attestano autenticità esterna, applicabilità legale, effectiveness, security del deployment, configurazione server-side di GitHub o assurance indipendente.
+
+## GOV-TRAMA-COMPASS-1 — governance falsification
+
+`node v3/trama-engineering-check.mjs` verifica target enterprise 16 assi / 64 requisiti, profilo a 8 meccanismi / 56 controlli, Bussola generated e separazione delle authority. `node v3/trama-engineering-saturation.mjs` esegue **1.000.000** mutazioni deterministiche, pair coverage, deletion oracle e un tail no-novelty di almeno **100.000** casi.
+
+La qualificazione non trasforma mutation in prova fisica, umana, deployment o GitHub server-side. `docs/ENGINEERING_COMPASS.md` deve essere byte-identica alla projection rigenerata dagli owner correnti; qualunque nuovo SHA riapre l'accettazione.

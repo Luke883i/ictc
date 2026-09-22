@@ -61,3 +61,12 @@ Historical/candidate documents are useful for design lineage but do not override
 26. Ricalcola ad ogni interazione il vicinato semantico: hard dependency closure, un hop inbound/outbound, owner/writer, oracle/evidence, human impact, deployment impact, derived artifact ed evidence invalidation. La roadmap precedente e una slice già iniziata restano ipotesi falsificabili.
 27. Enterprise Candidate è un asintoto non auto-attestabile: TRAMA può esporre distanza e blocker, ma E3-HUMAN, E3-GOV ed E4-DEPLOY non si chiudono con CI o semantic mutation e `s5Seal` resta dell'authority canonica.
 28. Dopo ogni esito PR e dopo il merge, esegui l'ACT: ricalcola traiettoria locale + globale, invalida evidence stale, assorbi/ritira candidati orfani e scegli la prossima slice semantica minima oppure fermati. Human business authority e human merge authority restano invariati.
+
+## GOV-TRAMA-COMPASS-1 — AI development operating contract
+
+29. Prima di ogni interazione materiale di sviluppo, TRAMA ricalcola confini **locale, intermedio e globale**, osserva gli owner correnti e compila Global/Intermediate/Local DoD prima del codice.
+30. La regola di delega è: **AI owns engineering entropy**; l'umano possiede intento di prodotto e accettazione materiale. Non chiedere all'utente di scegliere nodo tecnico, framework o mutation budget quando il repository può derivarli.
+31. Ogni slice deve convergere su una sola prossima azione o STOP/BLOCKED, riusando/estendendo owner esistenti prima di crearne altri, con nearest falsifier, rollback e stop condition.
+32. Ogni mutazione semantica richiede una **documentation delta** selettiva e rigenera la **Bussola** `docs/ENGINEERING_COMPASS.md`; la Bussola è generated e non autoritativa.
+33. Dopo tool fact, failure/verde PR e merge esegui ACT: invalida evidence stale, ricalcola traiettoria e non equiparare merge, release, Enterprise Candidate o E3/E4.
+34. Orientamento operativo: `node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN`; l'ACT usa lo stesso intento e gli owner correnti.
