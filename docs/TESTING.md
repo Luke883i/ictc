@@ -151,3 +151,5 @@ La qualificazione non trasforma mutation in prova fisica, umana, deployment o Gi
 `node v3/trama-reconcile-saturation.mjs` esercita **3.000.000** casi deterministici su 8 campagne, dal ferro all'esperienza/Enterprise Candidate, con 64 failure family, pair coverage completa, deletion oracle e tail no-novelty 100k. È model evidence: non sostituisce current runtime/browser CI, E3-HUMAN, E3-GOV o E4-DEPLOY.
 
 La DoD della slice richiede inoltre che il census legacy non abbia candidati `blocking-unclassified` e che i content-site legacy dichiarati siano ancora presenti/classificati; un drift riapre la tassonomia invece di essere ignorato.
+
+Il legacy census usa esclusivamente `git ls-files`: fixture/runtime non tracciati creati dai gate precedenti non possono mutare l'ontologia del repository o rendere il verdetto dipendente dall'ordine dei test.

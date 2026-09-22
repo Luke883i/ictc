@@ -1,6 +1,7 @@
 import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_ROOT=path.resolve(HERE,'..');
@@ -27,6 +28,7 @@ export function validateReconcileContract(c){
  const gp=c?.genericContinuationProtocol||{};ck(gp.mode==='GLOBAL_ACT'&&gp.horizons?.join('|')==='LOCAL|INTERMEDIATE|GLOBAL','GENERIC_PROTOCOL');
  ck((gp.output||[]).includes('exactly-one-next-action-or-stop'),'GENERIC_OUTPUT');
  const legacy=c?.legacy||{},classes=legacy.classes||[],rules=legacy.rules||[];
+ ck(legacy.censusSource==='git-ls-files','LEGACY_CENSUS_SOURCE');
  ck(classes.length===6&&new Set(classes).size===6&&classes.includes('blocking-unclassified'),'LEGACY_CLASSES');
  ck(rules.length>=20&&rules.every(x=>x.pattern&&classes.includes(x.classification)&&typeof x.blocking==='boolean'),'LEGACY_RULES');
  ck((legacy.contentSites||[]).length>=6&&legacy.contentSites.every(x=>x.path&&x.token&&classes.includes(x.classification)),'LEGACY_CONTENT');
@@ -38,19 +40,16 @@ export function validateReconcileContract(c){
  return f;
 }
 
-function walk(root,dir='',out=[]){
- const absolute=path.join(root,dir);
- for(const entry of readdirSync(absolute,{withFileTypes:true})){
-  if(['.git','node_modules','.cache','coverage'].includes(entry.name))continue;
-  const rel=dir?dir+'/'+entry.name:entry.name;
-  if(entry.isDirectory())walk(root,rel,out);else if(entry.isFile())out.push(rel.replaceAll('\\','/'));
- }
- return out;
+function trackedRepositoryFiles(root){
+ const git=spawnSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8',maxBuffer:64*1024*1024});
+ if(git.status!==0||git.error)throw Object.assign(new Error('TRAMA reconciliation requires a Git worktree to census repository legacy'),{code:'TRAMA_GIT_CENSUS_UNAVAILABLE',detail:git.error?.message||git.stderr||''});
+ return git.stdout.split('\0').filter(Boolean).map(x=>x.replaceAll('\\','/'));
 }
+
 
 export function legacyCensus(root=DEFAULT_ROOT,contract=loadReconcileContract(root)){
  const legacy=contract.legacy,candidate=new RegExp(legacy.candidatePathRegex,'i'),rules=legacy.rules.map(row=>({...row,re:new RegExp(row.pattern,'i')}));
- const files=walk(root);
+ const files=trackedRepositoryFiles(root);
  const candidates=files.filter(file=>candidate.test(file)||rules.some(rule=>rule.re.test(file)));
  const pathRows=candidates.map(file=>{
   const rule=rules.find(item=>item.re.test(file));
@@ -67,6 +66,7 @@ export function legacyCensus(root=DEFAULT_ROOT,contract=loadReconcileContract(ro
   unknown:pathRows.filter(x=>x.classification===legacy.unknownClass),
   blocking:[...pathRows.filter(x=>x.blocking),...contentRows.filter(x=>x.blocking&&x.contains)],
   counts:Object.freeze(Object.fromEntries(legacy.classes.map(k=>[k,pathRows.filter(x=>x.classification===k).length]))),
+  censusSource:'git-ls-files',
   contentMissing:contentRows.filter(x=>!x.present||!x.contains)
  });
 }

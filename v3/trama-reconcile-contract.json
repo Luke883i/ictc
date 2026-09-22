@@ -275,7 +275,9 @@
         "classification": "compatibility-required",
         "blocking": false
       }
-    ]
+    ],
+    "censusSource": "git-ls-files",
+    "censusRule": "Repository legacy census is restricted to Git-tracked paths; untracked runner fixtures/runtime artifacts are execution state, not repository ontology."
   },
   "reconciliationRules": [
     {

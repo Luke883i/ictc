@@ -22,6 +22,7 @@ assert.equal(expected.evidence.uiuxReady,true);
 assert.equal(expected.evidence.c3Evidence,true);
 
 const legacy=legacyCensus();
+assert.equal(legacy.censusSource,'git-ls-files');
 assert.equal(legacy.unknown.length,0,'all detected legacy/versioned candidates must be classified');
 assert.equal(legacy.contentMissing.length,0,'explicit content-level legacy sites drifted');
 assert.ok(legacy.blocking.length>0,'C1 must remain evidence-backed open while blocking legacy residue exists');
