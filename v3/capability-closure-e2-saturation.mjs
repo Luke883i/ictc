@@ -14,7 +14,7 @@ const baselineCtx={
  handlerPlan:[...new Set(BASE.surfaceUnits.flatMap(x=>x.handlerKeys||[]))],
  handlerMap:Object.fromEntries(BASE.surfaceUnits.filter(x=>x.kind==='procedure').map(x=>[x.id,structuredClone(x.handlerKeys)])),
  sourceEvidence:Object.fromEntries(['productBoundary','adapterRegistry','handlerRegistry','bootstrapProjection','compositionRoot','receiptSubject','persistBeforeVisible','projectionReadback','sevenProcedureBrowser','browserInCi','externalRails','c5Gate'].map(x=>[x,true])),
- authority:{planningState:{nextSerialSlice:'UIUX-CONVERGE-0',noNewSerialBridge:true},conditionalSlices:[{id:'C5-SEMANTIC-OWNER-COMPRESSION',mustResolveBefore:'UIUX-CONVERGE-0+S4-A6-CLOSE'}],experienceProgram:{capabilityClosureEntry:{id:'CAPABILITY-CLOSURE-E2',state:'satisfied',rerunBeforeDone:true}}},
+ authority:{planningState:{completedThrough:'UIUX-CONVERGE-0',nextSerialSlice:'S4-A6-CLOSE',nextSerialState:'blocked',noNewSerialBridge:true},conditionalSlices:[{id:'C5-SEMANTIC-OWNER-COMPRESSION',state:'done',mustResolveBefore:'UIUX-CONVERGE-0+S4-A6-CLOSE'}],experienceProgram:{capabilityClosureEntry:{id:'CAPABILITY-CLOSURE-E2',state:'satisfied',rerunBeforeDone:true}}},
  prototype:{createsNewSerialSlice:false,nextSerialSlice:'UIUX-CONVERGE-0',capabilityClosure:{status:'E2-CLOSED-CANONICAL-13',surfaceCount:13}}
 };
 const mutate=(name,fn=null,ctxFn=null)=>({name,fn,ctxFn});

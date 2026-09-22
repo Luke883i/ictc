@@ -1292,6 +1292,10 @@
       {
         "id": "G08",
         "rule": "Human business and repository merge authority remain human/authorized"
+      },
+      {
+        "id": "G09",
+        "rule": "Generic continuation is interpreted as GLOBAL_ACT and must recompute reconciled local/intermediate/global state before selecting work"
       }
     ],
     "intermediate": [
@@ -1326,6 +1330,10 @@
       {
         "id": "I08",
         "rule": "Compression/deletion oracle proves every retained kernel mechanism necessary under the declared corpus"
+      },
+      {
+        "id": "I09",
+        "rule": "Observed evidence and durable convergence planning are reconciled through GOV-TRAMA-RECONCILE-1 before a downstream slice is selected"
       }
     ],
     "local": [
@@ -1356,6 +1364,10 @@
       {
         "id": "L07",
         "rule": "exact PR HEAD must pass canonical current semantic/runtime and required GOV-01F checks"
+      },
+      {
+        "id": "L08",
+        "rule": "v3/trama-reconcile-contract.json plus check/saturation mediate what-next/prosegui interactions and current planning reconciliation"
       }
     ]
   },
@@ -1370,12 +1382,14 @@
     "v3/gaps.json",
     "v3/release-identity.json",
     "v3/current-gate-registry.mjs",
-    ".github/PULL_REQUEST_TEMPLATE.md"
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    "v3/trama-reconcile-contract.json"
   ],
   "adaptiveDevelopmentGovernance": {
     "profile": "v3/trama-compass-governance.json",
     "enterpriseTarget": "v3/trama-enterprise-dod.json",
     "compass": "docs/ENGINEERING_COMPASS.md",
-    "authorityEffect": "NONE"
+    "authorityEffect": "NONE",
+    "reconciliation": "v3/trama-reconcile-contract.json"
   }
 }

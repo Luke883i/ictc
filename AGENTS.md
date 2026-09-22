@@ -70,3 +70,12 @@ Historical/candidate documents are useful for design lineage but do not override
 32. Ogni mutazione semantica richiede una **documentation delta** selettiva e rigenera la **Bussola** `docs/ENGINEERING_COMPASS.md`; la Bussola è generated e non autoritativa.
 33. Dopo tool fact, failure/verde PR e merge esegui ACT: invalida evidence stale, ricalcola traiettoria e non equiparare merge, release, Enterprise Candidate o E3/E4.
 34. Orientamento operativo: `node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN`; l'ACT usa lo stesso intento e gli owner correnti.
+
+
+## GOV-TRAMA-RECONCILE-1 — what-next / GLOBAL_ACT
+
+35. Le richieste generiche `ora?`, `ora che si fa?`, `prosegui`, `continua`, `what next` e equivalenti significano **GLOBAL_ACT**: prima di scegliere lavoro, ricalcola stato osservato, coerenza locale/intermedia/globale, distanza dalle DoD Enterprise Candidate e critical path.
+36. Il reconciler `v3/trama-reconcile.mjs` è authority-zero: confronta owner/evidence correnti con `docs/convergence/convergence-authority.json`, classifica il legacy e può bloccare su drift, ma non crea una seconda SOT.
+37. Ogni stato conditional distingue `todo`, `in-progress`, `done`, `not-required`; non comprimere evidenza parziale in un falso binario todo/done. E3-HUMAN, E3-GOV ed E4-DEPLOY restano rail separati.
+38. Prima di proporre la prossima slice, esegui `node v3/trama-reconcile-check.mjs`; per cambi cross-layer esegui anche `node v3/trama-reconcile-saturation.mjs`. Se emerge legacy non classificato, STOP e amplia la tassonomia prima di continuare.
+39. La Bussola deve riportare una sola prossima azione o STOP. Dopo GOV-WB6 il critical path corrente è C2 → C1 → C3 → C4; il primo nodo è `C2-DELIVERY-PROVENANCE` finché i suoi blocker non cambiano.

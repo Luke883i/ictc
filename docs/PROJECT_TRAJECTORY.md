@@ -42,7 +42,7 @@ Il repository separa runtime standard e substrate enterprise C3/PostgreSQL, disc
 ## Anti-pattern osservati
 
 1. **Late presentation ownership.** Enhancer/finalizer/resolver tardivi accumulano autorità implicita.
-2. **Post-merge truth reconciliation.** Un file committato che tenta di essere live mirror di Git crea lag e PR di riconciliazione.
+2. **Live-mirror reconciliation.** Un file committato che tenta di essere un mirror live di Git crea lag. La riconciliazione bounded di GOV-WB6 è invece event-driven: conserva osservazioni immutabili e ricalcola il piano senza fingere un puntatore live.
 3. **Stacked topology churn.** Ref/branch/tooling churn può produrre molte modifiche senza equivalente incremento di prodotto.
 4. **Mutation-count inflation.** Molti trial non compensano un oracle correlato o una failure family assente.
 5. **Same-circuit assurance.** Modello, implementazione, oracle e closure nello stesso circuito non creano indipendenza.
@@ -67,3 +67,10 @@ Il repository matura quando una nuova generazione **riduce l'ambiguità di respo
 ## Confine temporale
 
 Questo documento viene aggiornato per epoche e pattern, non a ogni merge. Per HEAD corrente, PR merged/open e check correnti, interrogare Git/GitHub. Questa storia non sostituisce `v3/release-identity.json`, `docs/PRODUCT.md`, `docs/11_ARCHITECTURE.md` o `docs/convergence/convergence-authority.json`.
+
+
+### E9 · Adaptive reconciliation / GOV-WB6
+
+Dopo GOV-TRAMA-COMPASS-1, GOV-TRAMA-RECONCILE-1 rende il “what next” un'operazione governata: osservazione exact-state → legacy/evidence census → riconciliazione locale/intermedia/globale → DoD → un solo prossimo nodo. La baseline PR #141 resta storia; PR #183 è un'osservazione immutabile di riconciliazione, non un live pointer.
+
+Lo snapshot GOV-WB6 riconcilia UIUX-CONVERGE-0 e C5 come terminali repository-side; mantiene C1 aperto e C2/C3/C4 in-progress; S4/S5 restano bloccati. Il critical path è derivato dai blocker e non dall'ordine cronologico: C2 → C1 → C3 → C4.

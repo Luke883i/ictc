@@ -149,3 +149,15 @@ I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il 
 Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs/ENGINEERING_COMPASS.md`: è una projection generated di **TRAMA**, non un'autorità. Il target completo è `v3/trama-enterprise-dod.json`: 16 assi e requisiti atomici di Enterprise Candidate, senza stato corrente auto-certificato.
 
 La Bussola separa sempre locale, intermedio e globale e propone una sola prossima slice o STOP/BLOCKED. Gli owner canonici indicati in questa guida restano la fonte sostanziale.
+
+
+## Se la domanda è “ora che si fa?”
+
+Non scegliere un file o una feature. Esegui:
+
+```bash
+node v3/trama-engineering.mjs --intent "ora che si fa?" --phase ACT
+node v3/trama-reconcile-check.mjs
+```
+
+Questa richiesta è **GLOBAL_ACT**: la Bussola ricostruisce Locale → Intermedio → Globale, verifica GOV-WB6, DoD e legacy census, poi mostra una sola prossima slice. Al momento della riconciliazione post-PR #183: UIUX e C5 sono terminali repository-side; C1 è `todo`; C2/C3/C4 sono `in-progress`; S4 e S5 restano bloccati; la prima prossima slice è **C2-DELIVERY-PROVENANCE**. E3-HUMAN, E3-GOV ed E4-DEPLOY restano esterni.

@@ -142,3 +142,12 @@ I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP
 `node v3/trama-engineering-check.mjs` verifica target enterprise 16 assi / 64 requisiti, profilo a 8 meccanismi / 56 controlli, Bussola generated e separazione delle authority. `node v3/trama-engineering-saturation.mjs` esegue **1.000.000** mutazioni deterministiche, pair coverage, deletion oracle e un tail no-novelty di almeno **100.000** casi.
 
 La qualificazione non trasforma mutation in prova fisica, umana, deployment o GitHub server-side. `docs/ENGINEERING_COMPASS.md` deve essere byte-identica alla projection rigenerata dagli owner correnti; qualunque nuovo SHA riapre l'accettazione.
+
+
+## GOV-TRAMA-RECONCILE-1 — falsificazione multi-astrazione
+
+`node v3/trama-reconcile-check.mjs` verifica la riconciliazione source-backed: C5/UIUX terminali repository-side, C1 aperto sul legacy blocking, C2/C3/C4 `in-progress`, GOV-WB6, critical path e protocollo GLOBAL_ACT.
+
+`node v3/trama-reconcile-saturation.mjs` esercita **3.000.000** casi deterministici su 8 campagne, dal ferro all'esperienza/Enterprise Candidate, con 64 failure family, pair coverage completa, deletion oracle e tail no-novelty 100k. È model evidence: non sostituisce current runtime/browser CI, E3-HUMAN, E3-GOV o E4-DEPLOY.
+
+La DoD della slice richiede inoltre che il census legacy non abbia candidati `blocking-unclassified` e che i content-site legacy dichiarati siano ancora presenti/classificati; un drift riapre la tassonomia invece di essere ignorato.

@@ -83,3 +83,18 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 - [ ] Intermediate DoD compiled from current semantic neighborhood.
 - [ ] Local DoD compiled and satisfied on exact PR HEAD.
 - [ ] ACT recomputed after the latest tool/CI fact; prior roadmap was challenged rather than assumed.
+
+
+## GOV-TRAMA-RECONCILE-1
+
+- Interaction mode: `<GLOBAL_ACT|INTENT_SCOPED>`
+- Reconciliation observation / exact head: `<sha>`
+- Coherence debt: `<0 | findings>`
+- Legacy census: `<classified / blocking / unclassified>`
+- Reconciled states: `<serial + C1..C5>`
+- Critical path: `<ordered unresolved slices>`
+- One next action: `<slice|STOP>`
+- [ ] `node v3/trama-reconcile-check.mjs` passa.
+- [ ] Per cambi cross-layer, `node v3/trama-reconcile-saturation.mjs` passa.
+- [ ] `blocking-unclassified = 0`.
+- [ ] Workbook, convergence authority e Bussola sono semanticamente co-transizionali.
