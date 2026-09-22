@@ -77,7 +77,7 @@ export function validateAuthority(a,ctx){
  ck(a?.s5Seal?.enterpriseCandidate===false&&a?.s5Seal?.enterpriseReady===false,'NO_PROMOTION');
 
  const rec=a?.reconciliations||[];
- const history=rec.filter(x=>x.historyPreserved===true).map(x=>[x.id,x.mergedPr,x.reconciledSubSlice]);
+ const history=rec.filter(x=>x.historyPreserved===true&&x.finalForPlanState!==true).map(x=>[x.id,x.mergedPr,x.reconciledSubSlice]);
  ck(eq(history,HISTORY_RECONCILIATIONS),'REC_HISTORY');
  const decideObs=rec.find(x=>x.id==='REC-DECIDE-0-MAIN');
  ck(decideObs?.mergedPr===141&&decideObs?.mergeSha===BASELINE_MAIN&&decideObs?.finalForPlanState===false,'REC_DECIDE_HISTORY');
