@@ -128,6 +128,10 @@ surfaces:
     authority: v3/enterprise.mjs
   runtime_ai:
     authority: v3/ai.mjs
+    information_egress_contract: v3/ai-information-egress-contract.json
+    information_egress_runtime: v3/runtime/ai-information-egress.mjs
+    information_egress_checker: v3/ai-information-egress-check.mjs
+    information_egress_saturation: v3/ai-information-egress-saturation-1m.mjs
   public_ui:
     authority: v3/public/
   ui_composition_root:
@@ -222,3 +226,5 @@ rules:
   - generic continuation intents (for example "ora che si fa", "prosegui", "what next") invoke TRAMA GLOBAL_ACT: recompute local/intermediate/global state and choose one governed next slice or STOP
   - reconciliation classifies legacy by current role, never by filename/version age alone; blocking-unclassified legacy is fail-closed
   - repository-terminal conditional state is distinct from E3-HUMAN, E3-GOV and E4-DEPLOY evidence; neither may silently substitute for the other
+
+  - AI network reachability and AI information eligibility are separate boundaries; runtime_ai must evaluate the canonical purpose-bound capsule before provider transport, while v3/network-policy.mjs remains the destination/network authority
