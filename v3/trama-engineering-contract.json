@@ -1371,5 +1371,11 @@
     "v3/release-identity.json",
     "v3/current-gate-registry.mjs",
     ".github/PULL_REQUEST_TEMPLATE.md"
-  ]
+  ],
+  "adaptiveDevelopmentGovernance": {
+    "profile": "v3/trama-compass-governance.json",
+    "enterpriseTarget": "v3/trama-enterprise-dod.json",
+    "compass": "docs/ENGINEERING_COMPASS.md",
+    "authorityEffect": "NONE"
+  }
 }

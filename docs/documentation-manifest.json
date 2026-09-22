@@ -44,6 +44,7 @@
     {"id":"future-idea","path":"docs/01_TO_BE_IDEA.md","lifecycle":"roadmap","mode":"explanation","authorityTopic":null,"authoritative":false},
     {"id":"roadmap","path":"docs/ROADMAP.md","lifecycle":"roadmap","mode":"reference","authorityTopic":null,"authoritative":false},
     {"id":"trajectory","path":"docs/PROJECT_TRAJECTORY.md","lifecycle":"lineage","mode":"explanation","authorityTopic":null,"authoritative":false},
+    {"id":"engineering-compass","path":"docs/ENGINEERING_COMPASS.md","lifecycle":"generated","mode":"explanation","authorityTopic":null,"authoritative":false},
     {"id":"changelog","path":"CHANGELOG.md","lifecycle":"lineage","mode":"reference","authorityTopic":null,"authoritative":false}
   ],
   "communitySurfaces": {

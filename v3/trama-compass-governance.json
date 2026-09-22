@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "GOV-TRAMA-COMPASS-1",
+  "name": "Adaptive AI Development Governance",
+  "classification": "trama-owned-zero-authority-governance-extension",
+  "authorityEffect": "NONE",
+  "createsNewSot": false,
+  "createsNewRoadmapCursor": false,
+  "mergeIsCompletion": false,
+  "releaseIsMerge": false,
+  "human": {
+    "ownsProductIntent": true,
+    "ownsMaterialAcceptance": true,
+    "mustChooseTechnicalNode": false,
+    "mustChooseFramework": false,
+    "mustChooseMutationBudget": false
+  },
+  "assistant": {
+    "ownsEngineeringEntropy": true,
+    "mustObserveBeforePlan": true,
+    "mustRecomputeLocalIntermediateGlobal": true,
+    "mustCompileDodBeforeCode": true,
+    "mustSelectExactlyOneNextSliceOrStop": true,
+    "mustUpdateDocumentationWithSemanticChange": true,
+    "mustRecomputeAfterToolFact": true,
+    "mustRecomputeAfterPrResult": true,
+    "mustRecomputeAfterMerge": true,
+    "cannotSelfPromoteEnterpriseCandidate": true
+  },
+  "mechanisms": [
+    {"id":"OBSERVED_STATE_REDUCER","role":"derive current state only from source-precedence inputs","controls":["exact_head","source_precedence","typed_epistemic_state","stale_detection"]},
+    {"id":"ENTERPRISE_DOD_TARGET","role":"define stable enterprise target without current status","controls":["sixteen_enterprise_axes","claim_matched_evidence","external_rails_separate","no_self_attestation"]},
+    {"id":"ONTOLOGY_BOUNDARY_RESOLVER","role":"derive local/intermediate/global semantic boundaries","controls":["local_boundary","intermediate_boundary","global_boundary","owner_writer","dependency_closure","oracle_scan","human_scan","deployment_scan","docs_impact_scan","unknown_fail_closed"]},
+    {"id":"SLICE_COMPRESSOR","role":"derive one minimum causally closed semantic slice","controls":["causal_closure","reuse_owner_first","single_next_slice","non_goals","stop_condition","deletion_oracle"]},
+    {"id":"PDCA_SESSION_PROTOCOL","role":"enforce PLAN-DO-CHECK-ACT across interaction PR and merge","controls":["rederive_every_dev_interaction","rederive_after_tool_fact","rederive_after_pr","rederive_after_merge","challenge_prior_plan","invalidate_evidence"]},
+    {"id":"DOC_COTRANSITION","role":"derive selective documentation delta with every semantic state transition","controls":["impact_driven_docs","current_owner_update","manifest_lifecycle","docs_delta_required","no_mass_rewrite","docs_exact_head_gate"]},
+    {"id":"DEVOPS_GUARDRAILS","role":"bind delivery practices to exact-state evidence","controls":["short_lived_branch","semantic_commits","nearest_falsifier","same_sha_ci","immutable_dependencies","sbom_provenance_signing","rollback_contract","release_not_merge","failure_owner_routing","post_merge_verification"]},
+    {"id":"COMPASS_PROJECTION","role":"project engineering state for a non-technical human","controls":["four_block_surface","plain_language","local_intermediate_global","one_next_action","visible_blockers","visible_uncertainty","technical_detail_secondary","human_no_node_choice","human_no_budget_choice","projection_zero_authority"]}
+  ],
+  "pdca": {
+    "PLAN":["observe exact current state","compile intent","derive ontology boundaries","compile enterprise gap and three-level DoD","select one minimum slice or STOP"],
+    "DO":["reuse existing owner","change minimum causally closed reticulum","pair semantic code change with selective docs delta","preserve rollback"],
+    "CHECK":["nearest falsifier first","semantic mutations and deletion oracle","canonical rails","exact-head evidence","claim-matched external oracle when required"],
+    "ACT":["recompute local intermediate global state","invalidate stale evidence","challenge previous trajectory","regenerate Compass","select next slice or STOP"]
+  },
+  "documentationCoTransition": {
+    "semanticChangeRequiresCompanionDelta": true,
+    "generatedCompassPath": "docs/ENGINEERING_COMPASS.md",
+    "manifestPath": "docs/documentation-manifest.json",
+    "massRewriteForbidden": true,
+    "currentOwnerMustChangeWhenPublicMeaningChanges": true,
+    "lineageNeverPromotedByDate": true
+  },
+  "devops": {
+    "branchIsTransportNotTruth": true,
+    "shaIsCandidateState": true,
+    "sameShaAcceptance": true,
+    "nearestFalsifierFirst": true,
+    "testAndProductMayNotBeWeakenedTogether": true,
+    "dependencyImmutabilityRequired": true,
+    "sbomProvenanceSigningTargeted": true,
+    "rollbackRequired": true,
+    "releaseNotMerge": true,
+    "failureOwnerRoutingRequired": true,
+    "postMergeVerificationRequired": true
+  },
+  "compass": {
+    "blocks":["INTENT","NOW","NEXT","TO_BE"],
+    "nowHorizons":["LOCAL","INTERMEDIATE","GLOBAL"],
+    "exactlyOneNextAction": true,
+    "showBlockers": true,
+    "showUncertainty": true,
+    "technicalDetailSecondary": true,
+    "projectionIsSot": false,
+    "projectionIsAuthority": false
+  },
+  "mutationPolicy": {
+    "primaryTrials": 1000000,
+    "noNoveltyTail": 100000,
+    "requiredUnsafeSurvivors": 0,
+    "deletionOracleRequired": true,
+    "newFailureAtCeiling": "BLOCKED_REMODEL_FAULT_TAXONOMY",
+    "semanticMutationIsPhysicalProof": false
+  },
+  "claimBoundary": "Governance/model evidence only. This extension cannot prove product correctness, representative-human usability, deployment effectiveness, GitHub server-side enforcement, legal compliance, production security, enterprise readiness or formal global minimality."
+}

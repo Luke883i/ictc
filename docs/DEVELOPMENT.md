@@ -111,3 +111,13 @@ Usa runtime directory isolate nei test. `state.sqlite` è la SOT locale; `state.
 ## Definizione di done
 
 Una slice è done quando: causa chiusa nel proprietario corretto, falsificatore presente, documentazione AS-IS coerente, nessuna authority widening, compatibilità/residui dichiarati e exact PR HEAD verde. “Done slice” non significa production ready.
+
+## GOV-TRAMA-COMPASS-1 — sviluppo AI-guidato
+
+TRAMA applica **PLAN → DO → CHECK → ACT** come operating contract. PLAN osserva lo stato corrente, calcola confini locale/intermedio/globale, confronta il target atomico in `v3/trama-enterprise-dod.json` e compila le tre DoD. DO modifica il minimo reticolo causalmente chiuso. CHECK parte dal falsificatore più vicino, poi mutation/current rail/exact-head. ACT ricalcola l'intera traiettoria dopo nuovi fatti, PR e merge.
+
+La **Bussola** `docs/ENGINEERING_COMPASS.md` è una projection generated per l'utente non tecnico: mostra COSA VUOI, DOVE SIAMO, una sola prossima slice e DOVE STIAMO ANDANDO. Non è SOT e non promuove status.
+
+### Documentation Delta
+
+Ogni semantic change dichiara il delta documentale: aggiorna solo gli owner current/policy/operating realmente impattati e rigenera la Bussola. Mass rewrite, lineage recente o un generated artifact non diventano authority. Merge non equivale a completion o release; rollback, exact-head e post-merge verification restano distinti.
