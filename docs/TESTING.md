@@ -143,13 +143,15 @@ I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP
 
 La qualificazione non trasforma mutation in prova fisica, umana, deployment o GitHub server-side. `docs/ENGINEERING_COMPASS.md` deve essere byte-identica alla projection rigenerata dagli owner correnti; qualunque nuovo SHA riapre l'accettazione.
 
+## GOV-TRAMA-RECONCILE-1
 
-## GOV-TRAMA-RECONCILE-1 — falsificazione multi-astrazione
+La rail current esegue:
 
-`node v3/trama-reconcile-check.mjs` verifica la riconciliazione source-backed: C5/UIUX terminali repository-side, C1 aperto sul legacy blocking, C2/C3/C4 `in-progress`, GOV-WB6, critical path e protocollo GLOBAL_ACT.
+```bash
+node v3/trama-reconcile-check.mjs
+node v3/trama-reconcile-saturation.mjs
+```
 
-`node v3/trama-reconcile-saturation.mjs` esercita **3.000.000** casi deterministici su 8 campagne, dal ferro all'esperienza/Enterprise Candidate, con 64 failure family, pair coverage completa, deletion oracle e tail no-novelty 100k. È model evidence: non sostituisce current runtime/browser CI, E3-HUMAN, E3-GOV o E4-DEPLOY.
+Il check confronta authority, owner correnti, remediation registry, legacy census, Compass e critical path. La saturation attraversa 8 campagne L0→L7 (ferro, persistence, runtime, semantic, governance, product, experience, enterprise), **3.000.000** casi, 64 failure family, tutte le 2.016 coppie e una coda no-novelty da **100.000** casi. Questi numeri qualificano il modello semantico: non sono browser session, human study, deployment evidence o prova formale di minimalità globale.
 
-La DoD della slice richiede inoltre che il census legacy non abbia candidati `blocking-unclassified` e che i content-site legacy dichiarati siano ancora presenti/classificati; un drift riapre la tassonomia invece di essere ignorato.
-
-Il legacy census usa esclusivamente `git ls-files`: fixture/runtime non tracciati creati dai gate precedenti non possono mutare l'ontologia del repository o rendere il verdetto dipendente dall'ordine dei test.
+Un candidate path legacy non è un failure per nome. Il failure è una classificazione assente o una responsabilità blocking ancora corrente.

@@ -71,11 +71,10 @@ Historical/candidate documents are useful for design lineage but do not override
 33. Dopo tool fact, failure/verde PR e merge esegui ACT: invalida evidence stale, ricalcola traiettoria e non equiparare merge, release, Enterprise Candidate o E3/E4.
 34. Orientamento operativo: `node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN`; l'ACT usa lo stesso intento e gli owner correnti.
 
+## GOV-TRAMA-RECONCILE-1 — stato osservato e GLOBAL_ACT
 
-## GOV-TRAMA-RECONCILE-1 — what-next / GLOBAL_ACT
-
-35. Le richieste generiche `ora?`, `ora che si fa?`, `prosegui`, `continua`, `what next` e equivalenti significano **GLOBAL_ACT**: prima di scegliere lavoro, ricalcola stato osservato, coerenza locale/intermedia/globale, distanza dalle DoD Enterprise Candidate e critical path.
-36. Il reconciler `v3/trama-reconcile.mjs` è authority-zero: confronta owner/evidence correnti con `docs/convergence/convergence-authority.json`, classifica il legacy e può bloccare su drift, ma non crea una seconda SOT.
-37. Ogni stato conditional distingue `todo`, `in-progress`, `done`, `not-required`; non comprimere evidenza parziale in un falso binario todo/done. E3-HUMAN, E3-GOV ed E4-DEPLOY restano rail separati.
-38. Prima di proporre la prossima slice, esegui `node v3/trama-reconcile-check.mjs`; per cambi cross-layer esegui anche `node v3/trama-reconcile-saturation.mjs`. Se emerge legacy non classificato, STOP e amplia la tassonomia prima di continuare.
-39. La Bussola deve riportare una sola prossima azione o STOP. Dopo GOV-WB6 il critical path corrente è C2 → C1 → C3 → C4; il primo nodo è `C2-DELIVERY-PROVENANCE` finché i suoi blocker non cambiano.
+29. Una richiesta generica di prosecuzione (`ora`, `ora che si fa`, `prosegui`, `continua`, `what next`, equivalenti) significa **GLOBAL_ACT**: osserva nuovamente gli owner correnti, riconcilia locale/intermedio/globale, misura la distanza dalle DoD Enterprise Candidate e scegli esattamente una prossima slice oppure STOP.
+30. Non continuare una roadmap solo perché era la roadmap precedente. Se executable evidence, finding, legacy census o authority corrente la falsificano, prima riconcilia lo stato.
+31. Classifica ogni candidato legacy per ruolo attuale: `compatibility-required`, `migration-only`, `lineage-only`, `deprecated-test`, `retirement-candidate` oppure `blocking-unclassified`. L'ultima classe è fail-closed. Nome/versione/età non bastano per dichiarare un oggetto legacy.
+32. Distingui sempre **repository-terminal** da evidenza esterna: E3-HUMAN, E3-GOV ed E4-DEPLOY non diventano chiusi perché una conditional slice è `done`.
+33. La Bussola espone sempre tre orizzonti (locale, intermedio, globale), DoD granulari, blocker, incertezza e una sola next action. La Bussola è projection a authority zero.

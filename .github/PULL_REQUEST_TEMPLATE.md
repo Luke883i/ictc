@@ -84,17 +84,15 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 - [ ] Local DoD compiled and satisfied on exact PR HEAD.
 - [ ] ACT recomputed after the latest tool/CI fact; prior roadmap was challenged rather than assumed.
 
-
 ## GOV-TRAMA-RECONCILE-1
 
-- Interaction mode: `<GLOBAL_ACT|INTENT_SCOPED>`
-- Reconciliation observation / exact head: `<sha>`
-- Coherence debt: `<0 | findings>`
+- GLOBAL_ACT mode: `<yes|no>`
+- Reconciliation observation: `<exact main/PR preimage>`
+- Local coherence: `<pass|blocked + evidence>`
+- Intermediate coherence: `<pass|blocked + evidence>`
+- Global convergence: `<pass|blocked + Enterprise DoD delta>`
 - Legacy census: `<classified / blocking / unclassified>`
-- Reconciled states: `<serial + C1..C5>`
-- Critical path: `<ordered unresolved slices>`
-- One next action: `<slice|STOP>`
-- [ ] `node v3/trama-reconcile-check.mjs` passa.
-- [ ] Per cambi cross-layer, `node v3/trama-reconcile-saturation.mjs` passa.
-- [ ] `blocking-unclassified = 0`.
-- [ ] Workbook, convergence authority e Bussola sono semanticamente co-transizionali.
+- Critical path: `<ordered conditionals>`
+- One next action after ACT: `<slice|STOP>`
+- [ ] Repository-terminal claims remain separated from E3-HUMAN / E3-GOV / E4-DEPLOY.
+- [ ] Any trajectory semantic change co-mutates convergence authority, workbook projection and generated Compass.

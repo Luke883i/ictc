@@ -13,7 +13,7 @@ export function validateUiuxConvergeContract(model){
   const errors=[];
   if(model?.modelId!=='UIUX-CONVERGE-0')fail(errors,'MODEL','wrong model id');
   if(model?.serialSlice!=='UIUX-CONVERGE-0')fail(errors,'SLICE','wrong serial slice');
-  if(model?.sliceTerminal!==false)fail(errors,'BOUNDARY','candidate must not claim terminal slice');
+  if(model?.sliceTerminal!==true)fail(errors,'BOUNDARY','reconciled top-level slice must be repository-terminal');
   const levels=(model?.abstractionMatrix||[]).map(row=>row.level);
   if(!sameSet(levels,['L0','L1','L2','L3','L4','L5','L6']))fail(errors,'LEVELS','style abstraction matrix must cover L0-L6 exactly');
   const surfaces=model?.surfaceProgram||[];
@@ -43,6 +43,7 @@ export function validateUiuxConvergeContract(model){
   if(min.materialBoundaryMustRemainVisible!==true)fail(errors,'BOUNDARY','material boundary may hide');
   if(min.icons!=='inline-lucide-compatible-svg')fail(errors,'ICON','icon system not canonical');
   if(min.asciiDirectionalGlyphsInCanonicalTouchedActions!==false)fail(errors,'ICON','ASCII directional glyphs allowed');
+  if(!model?.reconciliation||model.reconciliation.id!=='GOV-TRAMA-RECONCILE-1'||!Array.isArray(model.reconciliation.externalBoundary)||!model.reconciliation.externalBoundary.includes('E3-HUMAN'))fail(errors,'RECONCILIATION','terminal reconciliation/external boundary missing');
   const global=model?.globalDoD||[];
   for(const needle of ['no second business write authority','CAPABILITY-CLOSURE-E2','C5','44px'])if(!global.some(line=>String(line).includes(needle)))fail(errors,'GLOBAL_DOD',`missing ${needle}`);
   const falsification=model?.falsification||{};

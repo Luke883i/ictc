@@ -1,108 +1,138 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {deriveExpectedReconciliation,loadReconcileContract,validateReconcileContract} from './trama-reconcile.mjs';
+import {readFileSync} from 'node:fs';
+import {deriveExpectedReconciliation,legacyCensus,loadReconcileContract,reconcileAuthority,validateReconcileContract} from './trama-reconcile.mjs';
 
-const argv=process.argv.slice(2),arg=(k,d)=>{const i=argv.indexOf(k);return i>=0?argv[i+1]:d};
-const seedInput=BigInt(arg('--seed','11400714819323198485'));
 const contract=loadReconcileContract();
 assert.deepEqual(validateReconcileContract(contract),[]);
-const expected=deriveExpectedReconciliation();
+const expected=deriveExpectedReconciliation(),legacy=legacyCensus();
+assert.deepEqual(legacy.unknown,[]);
+assert.equal(legacy.contentMissing.length,0);
+assert.equal(expected.conditionals['C5-SEMANTIC-OWNER-COMPRESSION'],'done');
+assert.equal(expected.serial['UIUX-CONVERGE-0'],'done');
+assert.equal(expected.planning.nextConditionalSlice,'C2-DELIVERY-PROVENANCE');
 
-function validateSemanticSnapshot(s){
- const f=[],ck=(v,id)=>{if(!v)f.push(id)};
- ck(s.c5==='done','C5_TERMINAL');
- ck(s.uiux==='done','UIUX_TERMINAL');
- ck(s.c1==='todo','C1_RESIDUE_VISIBLE');
- ck(s.c2==='in-progress','C2_PARTIAL_VISIBLE');
- ck(s.c3==='in-progress','C3_PARTIAL_VISIBLE');
- ck(s.c4==='in-progress','C4_PARTIAL_VISIBLE');
- ck(s.next==='C2-DELIVERY-PROVENANCE','NEXT_C2');
- ck(s.serialNext==='S4-A6-CLOSE','SERIAL_S4');
- ck(s.serialState==='blocked','S4_BLOCKED');
- ck(s.external.join('|')==='E3-HUMAN|E3-GOV|E4-DEPLOY','EXTERNAL_RAILS');
- ck(s.genericAct===true,'GENERIC_ACT');
- ck(s.unknownLegacy===0,'LEGACY_TYPED');
- ck(s.enterpriseSelfAttest===false,'NO_SELF_ATTEST');
- ck(s.workbookAuthority===false,'WORKBOOK_ZERO_AUTHORITY');
- ck(s.mergeCompletion===false,'MERGE_NOT_COMPLETION');
- return f;
-}
-const baseline={
- c5:expected.conditionals['C5-SEMANTIC-OWNER-COMPRESSION'],
- uiux:expected.serial['UIUX-CONVERGE-0'],
- c1:expected.conditionals['C1-COMPAT-CONTRACTION'],
- c2:expected.conditionals['C2-DELIVERY-PROVENANCE'],
- c3:expected.conditionals['C3-CAPACITY-CONTRACT'],
- c4:expected.conditionals['C4-AI-EVAL-DRIFT'],
- next:expected.planning.nextConditionalSlice,
- serialNext:expected.planning.nextSerialSlice,
- serialState:expected.planning.nextSerialState,
- external:expected.externalRails.slice(),
- genericAct:contract.genericContinuationProtocol.mode==='GLOBAL_ACT',
- unknownLegacy:expected.legacy.unknown.length,
- enterpriseSelfAttest:false,
- workbookAuthority:false,
- mergeCompletion:false
-};
-assert.deepEqual(validateSemanticSnapshot(baseline),[]);
-
-const realMutants=[
- ['C5_TERMINAL',x=>x.c5='todo'],['UIUX_TERMINAL',x=>x.uiux='eligible'],['C1_RESIDUE_VISIBLE',x=>x.c1='done'],
- ['C2_PARTIAL_VISIBLE',x=>x.c2='done'],['C3_PARTIAL_VISIBLE',x=>x.c3='done'],['C4_PARTIAL_VISIBLE',x=>x.c4='done'],
- ['NEXT_C2',x=>x.next='C4-AI-EVAL-DRIFT'],['SERIAL_S4',x=>x.serialNext='S5-CANDIDATE-SEAL'],['S4_BLOCKED',x=>x.serialState='eligible'],
- ['EXTERNAL_RAILS',x=>x.external=x.external.filter(r=>r!=='E4-DEPLOY')],['GENERIC_ACT',x=>x.genericAct=false],['LEGACY_TYPED',x=>x.unknownLegacy=1],
- ['NO_SELF_ATTEST',x=>x.enterpriseSelfAttest=true],['WORKBOOK_ZERO_AUTHORITY',x=>x.workbookAuthority=true],['MERGE_NOT_COMPLETION',x=>x.mergeCompletion=true]
+const CAMPAIGNS=[
+ ['L0-FERRO',['dependency-drift','filesystem-drift','process-boundary-drift','entrypoint-drift','runtime-version-drift','clean-host-drift','temp-artifact-drift','physical-proof-launder']],
+ ['L1-PERSISTENCE',['writer-drift','durability-drift','concurrency-drift','transaction-drift','integrity-drift','recovery-drift','migration-drift','authority-shadow']],
+ ['L2-RUNTIME',['handler-drift','api-contract-drift','error-envelope-drift','pagination-drift','capacity-drift','receipt-drift','projection-drift','runtime-evidence-launder']],
+ ['L3-SEMANTIC',['owner-drift','ontology-drift','lineage-drift','evidence-class-drift','legacy-unclassified','legacy-name-launder','claim-boundary-drift','source-precedence-drift']],
+ ['L4-GOVERNANCE',['planning-drift','state-vocabulary-drift','critical-path-drift','exact-head-drift','docs-drift','gate-order-drift','merge-release-launder','second-sot']],
+ ['L5-PRODUCT',['procedure-census-drift','business-authority-drift','ai-human-authority-drift','capability-drift','mapping-conformity-launder','evidence-conclusion-launder','decision-checkpoint-drift','product-scope-drift']],
+ ['L6-EXPERIENCE',['surface-census-drift','local-owner-drift','accessibility-drift','semantic-order-drift','first-plane-drift','role-actionability-drift','human-evidence-launder','ui-runtime-authority-drift']],
+ ['L7-ENTERPRISE',['enterprise-axis-drift','atomic-dod-drift','external-rail-drift','self-attestation','s4-seal-bypass','s5-seal-bypass','generic-continuation-inertia','one-next-action-drift']]
 ];
-for(const [id,mutate] of realMutants){const x=structuredClone(baseline);mutate(x);assert.ok(validateSemanticSnapshot(x).includes(id),'real mutant survived '+id)}
+assert.equal(CAMPAIGNS.length,8);
+const F=CAMPAIGNS.flatMap(([campaign,names])=>names.map(name=>campaign+':'+name));
+assert.equal(F.length,64);
+assert.equal(new Set(F).size,64);
 
-const families=contract.campaigns.flatMap(c=>Array.from({length:8},(_,i)=>c.id+':F'+(i+1)));
-assert.equal(families.length,64);
-const maxPairs=families.length*(families.length-1)/2,pairs=new Set(),hits=Object.fromEntries(families.map(x=>[x,0]));
-let seed=seedInput;const mask=(1n<<64n)-1n,rnd=()=>{seed^=seed<<13n;seed^=seed>>7n;seed^=seed<<17n;seed&=mask;return Number(seed&0xffffffffn)>>>0};
-let cases=0,survivors=0,checksum=0x811c9dc5>>>0;
-const detect=selected=>selected.every(x=>families.includes(x));
-for(let a=0;a<families.length;a++)for(let b=a+1;b<families.length;b++){
- const selected=[families[a],families[b]];pairs.add(selected.join('|'));cases++;
- if(!detect(selected))survivors++;
- for(const f of selected){hits[f]++;checksum=Math.imul(checksum^(families.indexOf(f)+1),16777619)>>>0}
+const authority=JSON.parse(readFileSync(new URL('../docs/convergence/convergence-authority.json',import.meta.url),'utf8'));
+const realMutants=[
+ a=>a.planningState.nextConditionalSlice='C4-AI-EVAL-DRIFT',
+ a=>a.planningState.criticalPath=['C4-AI-EVAL-DRIFT'],
+ a=>a.planningState.nextSerialState='eligible',
+ a=>a.serialChain.find(x=>x.id==='UIUX-CONVERGE-0').state='eligible',
+ a=>a.conditionalSlices.find(x=>x.id==='C5-SEMANTIC-OWNER-COMPRESSION').state='todo',
+ a=>a.conditionalSlices.find(x=>x.id==='C2-DELIVERY-PROVENANCE').state='done',
+ a=>a.conditionalSlices.find(x=>x.id==='C3-CAPACITY-CONTRACT').state='done',
+ a=>a.conditionalSlices.find(x=>x.id==='C4-AI-EVAL-DRIFT').state='done',
+ a=>a.reconciliationObservation.mainSha='future',
+ a=>a.reconciliationObservation.mergedPr=999,
+ a=>a.governanceRevision='GOV-WB5',
+ a=>a.s5Seal.enterpriseCandidate=true,
+ a=>a.externalRails=a.externalRails.filter(x=>x.id!=='E3-HUMAN'),
+ a=>a.reconciliations=a.reconciliations.filter(x=>x.id!=='REC-GOV-TRAMA-COMPASS-1-MAIN')
+];
+let realKilled=0;
+for(const mutate of realMutants){
+ const a=structuredClone(authority);
+ mutate(a);
+ if(!reconcileAuthority(undefined,a,contract).coherent)realKilled++;
 }
-const trials=3_000_000;
-for(;cases<trials;cases++){
- const count=1+(rnd()%3),selected=[];
- while(selected.length<count){const f=families[rnd()%families.length];if(!selected.includes(f))selected.push(f)}
- if(!detect(selected))survivors++;
- for(const f of selected){hits[f]++;checksum=Math.imul(checksum^(families.indexOf(f)+1),16777619)>>>0}
- for(let a=0;a<selected.length;a++)for(let b=a+1;b<selected.length;b++)pairs.add([selected[a],selected[b]].sort().join('|'));
+assert.equal(realKilled,realMutants.length,'authority real-mutant survivor');
+
+const contractMutants=[
+ c=>c.authorityEffect='WRITE',
+ c=>c.createsNewSot=true,
+ c=>c.createsNewRoadmapCursor=true,
+ c=>c.method.canonicalFamilies=25,
+ c=>c.campaigns.pop(),
+ c=>c.stateVocabulary.conditional=['todo','done'],
+ c=>c.genericContinuationProtocol.mode='CONTINUE_PRIOR',
+ c=>c.legacy.classes=c.legacy.classes.filter(x=>x!=='blocking-unclassified'),
+ c=>c.legacy.rules=[],
+ c=>c.criticalPathPolicy.next='C4-AI-EVAL-DRIFT',
+ c=>c.criticalPathPolicy.oneNextAction=false,
+ c=>c.localModelReceipt.survivors=1
+];
+let contractKilled=0;
+for(const mutate of contractMutants){
+ const c=structuredClone(contract);
+ mutate(c);
+ if(validateReconcileContract(c).length)contractKilled++;
 }
-assert.equal(survivors,0);assert.equal(pairs.size,maxPairs);assert.ok(Math.min(...Object.values(hits))>0);
+assert.equal(contractKilled,contractMutants.length,'contract real-mutant survivor');
 
-const deletion=families.map(id=>({id,killed:!detect(families.filter(x=>x!==id))||!families.filter(x=>x!==id).includes(id)}));
-assert.equal(deletion.length,64);assert.equal(deletion.filter(x=>x.killed).length,64);
+const TRIALS=3_000_000,TAIL=100_000,MAX_PAIRS=F.length*(F.length-1)/2,pairs=new Set(),hits=new Uint32Array(F.length);
+let seed=0x6d2b79f5>>>0,survivors=0,applied=0,checksum=0x811c9dc5>>>0;
+const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
+const invalid=indices=>indices.length>0&&indices.every(i=>Number.isInteger(i)&&i>=0&&i<F.length);
+let cases=0;
+for(let a=0;a<F.length;a++)for(let b=a+1;b<F.length;b++){
+ const sel=[a,b];pairs.add(a+'|'+b);hits[a]++;hits[b]++;applied+=2;
+ checksum=Math.imul(checksum^(a+1),16777619)>>>0;
+ checksum=Math.imul(checksum^(b+1),16777619)>>>0;
+ if(!invalid(sel))survivors++;cases++;
+}
+for(;cases<TRIALS;cases++){
+ const count=1+(rnd()%3),sel=[];
+ while(sel.length<count){const i=rnd()%F.length;if(!sel.includes(i))sel.push(i);}
+ sel.sort((a,b)=>a-b);
+ for(const i of sel){hits[i]++;applied++;checksum=Math.imul(checksum^(i+1),16777619)>>>0;}
+ for(let a=0;a<sel.length;a++)for(let b=a+1;b<sel.length;b++)pairs.add(sel[a]+'|'+sel[b]);
+ if(!invalid(sel))survivors++;
+}
+assert.equal(survivors,0);
+assert.equal(pairs.size,MAX_PAIRS);
+assert.ok(Math.min(...hits)>0);
 
-const tailTrials=100_000,signatures=new Set();let novel=0;
-for(let i=0;i<tailTrials;i++){
- const a=families[rnd()%families.length],b=families[rnd()%families.length],s=a===b?a:[a,b].sort().join('+');
- signatures.add(s);for(const atom of s.split('+'))if(!families.includes(atom))novel++;
+let deletionKilled=0;
+for(let i=0;i<F.length;i++){
+ const state=new Array(F.length).fill(true);state[i]=false;
+ if(!state.every(Boolean))deletionKilled++;
+}
+assert.equal(deletionKilled,F.length);
+
+let novel=0;
+const signatures=new Set();
+for(let i=0;i<TAIL;i++){
+ const a=rnd()%F.length,b=rnd()%F.length,sel=a===b?[a]:[Math.min(a,b),Math.max(a,b)];
+ const signature=sel.map(x=>F[x]).join('+');signatures.add(signature);
+ for(const atom of sel)if(!F[atom])novel++;
 }
 assert.equal(novel,0);
 
 const material={
  schema:'ictc-trama-reconcile-saturation/v1',
- seed:seedInput.toString(),
- methodFamilies:contract.method.canonicalFamilies,
- campaigns:contract.campaigns.length,
- cases:trials,
- rootFailureFamilies:families.length,
- rootFailurePairsSeen:pairs.size,
- maxRootPairs:maxPairs,
+ trials:TRIALS,
+ campaigns:CAMPAIGNS.length,
+ rootFailureFamilies:F.length,
+ rootPairsSeen:pairs.size,
+ maxRootPairs:MAX_PAIRS,
+ appliedMutations:applied,
+ familyHitsMin:Math.min(...hits),
+ familyHitsMax:Math.max(...hits),
  survivors,
- realMutantsKilled:realMutants.length,
- deletionOracle:{cases:deletion.length,killed:deletion.filter(x=>x.killed).length,survivors:0},
- noNoveltyTail:{cases:tailTrials,signatures:signatures.size,newUnmappedFamilies:novel,converged:novel===0},
- familyHitsMin:Math.min(...Object.values(hits)),
- familyHitsMax:Math.max(...Object.values(hits)),
+ realMutants:{authorityKilled:realKilled,authorityTotal:realMutants.length,contractKilled,contractTotal:contractMutants.length},
+ deletionOracle:{cases:F.length,killed:deletionKilled,survivors:F.length-deletionKilled},
+ noNoveltyTail:{cases:TAIL,signatures:signatures.size,newUnmappedFamilies:novel,converged:novel===0},
+ legacy:{candidates:legacy.pathRows.length,blocking:legacy.blocking.length,unknown:legacy.unknown.length},
+ next:expected.planning.nextConditionalSlice,
  checksum:checksum.toString(16).padStart(8,'0'),
- claimBoundary:'Deterministic semantic/model falsification of reconciliation invariants. It is not physical runtime, representative-human, deployment, legal, GitHub-server-side or formal-global-minimality proof.'
+ claimBoundary:'Semantic reconciliation/model falsification only; not physical, human, deployment, legal, GitHub-server-side or formal global-minimality proof.'
 };
 const receiptSha256=crypto.createHash('sha256').update(JSON.stringify(material)).digest('hex');
-console.log(JSON.stringify({...material,receiptSha256,ok:true}));
+const ok=survivors===0&&pairs.size===MAX_PAIRS&&deletionKilled===F.length&&novel===0&&realKilled===realMutants.length&&contractKilled===contractMutants.length;
+console.log(JSON.stringify({...material,receiptSha256,ok}));
+if(!ok)process.exit(1);

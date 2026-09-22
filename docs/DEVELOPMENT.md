@@ -122,21 +122,16 @@ La **Bussola** `docs/ENGINEERING_COMPASS.md` è una projection generated per l'u
 
 Ogni semantic change dichiara il delta documentale: aggiorna solo gli owner current/policy/operating realmente impattati e rigenera la Bussola. Mass rewrite, lineage recente o un generated artifact non diventano authority. Merge non equivale a completion o release; rollback, exact-head e post-merge verification restano distinti.
 
+## GOV-TRAMA-RECONCILE-1 — GLOBAL_ACT e riconciliazione
 
-## GOV-TRAMA-RECONCILE-1 — riconciliazione prima della prossima slice
+Quando l'intento è una prosecuzione generica (`ora che si fa`, `prosegui`, `what next`), non si riprende meccanicamente la slice precedente. Si esegue un **GLOBAL_ACT**:
 
-Quando l'utente chiede “ora che si fa?” o equivalente, non continuare il piano precedente per inerzia. Esegui un **GLOBAL_ACT**:
+1. osservare exact-head, owner, finding e gate correnti;
+2. calcolare confini ontologici locali, intermedi e globali;
+3. classificare ogni residuo legacy per ruolo corrente;
+4. confrontare lo stato osservato con le 16 dimensioni / 64 DoD atomiche di Enterprise Candidate;
+5. riconciliare il planning canonico quando diverge dall'evidenza;
+6. scegliere una sola conditional slice minima oppure STOP;
+7. aggiornare insieme authority, workbook e Bussola quando cambia la semantica di traiettoria.
 
-1. osserva exact HEAD e owner correnti;
-2. esegui `node v3/trama-reconcile-check.mjs`;
-3. confronta stato derivato e convergence authority;
-4. misura DoD globale/intermedia/locale e blocker esterni;
-5. seleziona una sola prossima slice dal critical path oppure STOP.
-
-La revisione corrente è **GOV-WB6**. La riconciliazione separa closure repository e claim esterni: UIUX/C5 possono essere terminali repository-side mentre E3-HUMAN resta esterno; C3 può avere un substrate benchmark-ready senza provare capacità production. Gli stati `in-progress` preservano questa informazione intermedia.
-
-### Legacy census
-
-`v3/trama-reconcile-contract.json` classifica ogni candidato legacy/versionato come `compatibility-required`, `migration-only`, `lineage-only`, `deprecated-test`, `retirement-candidate` o `blocking-unclassified`. Il conteggio `blocking-unclassified` deve essere zero. Un nome vecchio non basta per ritirare un file: conta il ruolo corrente e l'eventuale dipendenza runtime/gate.
-
-La projection workbook e `docs/ENGINEERING_COMPASS.md` cambiano insieme all'authority quando cambia la semantica del piano. Nessuno dei due diventa SOT.
+Lo stato `in-progress` è intenzionale: evita di collassare “capacità sostanzialmente implementata con blocker residuo” in `todo` o `done`. Una closure repository-side non chiude E3-HUMAN, E3-GOV o E4-DEPLOY.

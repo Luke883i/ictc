@@ -150,14 +150,14 @@ Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs
 
 La Bussola separa sempre locale, intermedio e globale e propone una sola prossima slice o STOP/BLOCKED. Gli owner canonici indicati in questa guida restano la fonte sostanziale.
 
+## Se chiedi “ora che si fa?”
 
-## Se la domanda è “ora che si fa?”
+Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `v3/trama-reconcile-contract.json` e restituire una sola prossima slice con:
 
-Non scegliere un file o una feature. Esegui:
+- stato **locale**, **intermedio** e **globale**;
+- DoD ancora mancanti;
+- blocker e incertezza;
+- evidenza che rende la convergenza dimostrabile;
+- stop condition.
 
-```bash
-node v3/trama-engineering.mjs --intent "ora che si fa?" --phase ACT
-node v3/trama-reconcile-check.mjs
-```
-
-Questa richiesta è **GLOBAL_ACT**: la Bussola ricostruisce Locale → Intermedio → Globale, verifica GOV-WB6, DoD e legacy census, poi mostra una sola prossima slice. Al momento della riconciliazione post-PR #183: UIUX e C5 sono terminali repository-side; C1 è `todo`; C2/C3/C4 sono `in-progress`; S4 e S5 restano bloccati; la prima prossima slice è **C2-DELIVERY-PROVENANCE**. E3-HUMAN, E3-GOV ed E4-DEPLOY restano esterni.
+La direzione leggibile è nella Bussola; l'autorità resta negli owner canonici.

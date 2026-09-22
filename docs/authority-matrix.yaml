@@ -44,19 +44,17 @@ surfaces:
   adaptive_engineering_governance:
     authority: v3/trama-engineering-contract.json
     profile: v3/trama-compass-governance.json
-    reconciliation: v3/trama-reconcile-contract.json
     enterprise_target: v3/trama-enterprise-dod.json
     compass: docs/ENGINEERING_COMPASS.md
     runtime: v3/trama-engineering.mjs
     checker: v3/trama-engineering-check.mjs
     saturation: v3/trama-engineering-saturation.mjs
+    reconciliation_profile: v3/trama-reconcile-contract.json
     reconciliation_runtime: v3/trama-reconcile.mjs
     reconciliation_checker: v3/trama-reconcile-check.mjs
     reconciliation_saturation: v3/trama-reconcile-saturation.mjs
-    planning_authority: docs/convergence/convergence-authority.json
-    planning_revision: GOV-WB6
     classification: zero-authority-adaptive-engineering-control-plane
-    scope: derived-intent-observed-state-ontology-dod-slice-pdca-docs-devops-enterprise-gap-compass-reconciliation
+    scope: derived-intent-observed-state-ontology-dod-slice-pdca-docs-devops-enterprise-gap-compass
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:
@@ -217,3 +215,6 @@ rules:
   - TRAMA profile, enterprise target and ENGINEERING_COMPASS are zero-authority; none may write product/runtime/convergence status or become a second roadmap/SOT
   - semantic development change requires a selective Documentation Delta plus deterministic Compass regeneration; mass documentation rewrite is not evidence
   - merge is not completion or release; exact-head and post-merge evidence remain separate transitions
+  - generic continuation intents (for example "ora che si fa", "prosegui", "what next") invoke TRAMA GLOBAL_ACT: recompute local/intermediate/global state and choose one governed next slice or STOP
+  - reconciliation classifies legacy by current role, never by filename/version age alone; blocking-unclassified legacy is fail-closed
+  - repository-terminal conditional state is distinct from E3-HUMAN, E3-GOV and E4-DEPLOY evidence; neither may silently substitute for the other

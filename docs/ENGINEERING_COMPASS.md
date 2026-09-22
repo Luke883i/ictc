@@ -1,18 +1,17 @@
 # ENGINEERING COMPASS — generated, non-authoritative
 
-> GOV-WB6 / TRAMA projection. Non modificare a mano. Gli owner canonici restano autoritativi.
+> Proiezione TRAMA generata. Non modificare a mano. Spiega la direzione; gli owner canonici restano autoritativi.
 
 ## COSA VUOI
-ora che si fa?
+Portare ICTC dallo stato osservato a Enterprise Candidate ricalcolando product truth authority runtime AI security evidence human deployment risk DevOps documentazione traiettoria e slice minima.
 
 ## DOVE SIAMO
-- **Locale:** TRAMA.ROOT, TRAMA.PURPOSE, TRAMA.TRUTH, TRAMA.AUTHORITY, TRAMA.SYSTEM, TRAMA.SECURITY, TRAMA.EVIDENCE, TRAMA.HUMAN, TRAMA.OPERATIONS, TRAMA.RISK, TRAMA.TRAJECTORY, TRAMA.SLICE
+- **Locale:** TRAMA.PURPOSE, TRAMA.TRUTH, TRAMA.AUTHORITY, TRAMA.SYSTEM, TRAMA.SECURITY, TRAMA.EVIDENCE, TRAMA.HUMAN, TRAMA.OPERATIONS, TRAMA.RISK, TRAMA.TRAJECTORY, TRAMA.SLICE
 - **Intermedio:** E01_PRODUCT, E02_AUTHORITY, E03_ARCHITECTURE, E04_DATA, E05_SECURITY_PRIVACY, E06_IDENTITY, E07_RELIABILITY, E08_CAPACITY, E09_OBSERVABILITY, E10_API_INTEGRATION, E11_AI, E12_HUMAN, E13_ASSURANCE, E14_DELIVERY, E15_SUPPLY_CHAIN, E16_GOVERNANCE
-- **Globale:** ENTERPRISE_CANDIDATE; 9 gap non-terminali; 0 debiti di riconciliazione; external E3-HUMAN, E3-GOV, E4-DEPLOY
-- **Critical path:** C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT
+- **Globale:** ENTERPRISE_CANDIDATE; 9 gap non-terminali; 0 debiti di riconciliazione; critical path C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT; external E3-HUMAN, E3-GOV, E4-DEPLOY
 
 ## COSA FACCIAMO ADESSO
-**C2-DELIVERY-PROVENANCE** — Generic continuation triggered a full local/intermediate/global ACT recomputation; select the first evidence-backed critical-path slice only after coherence is established.
+**C2-DELIVERY-PROVENANCE** — Intersect the reconciled conditional critical path with the intent neighborhood and blockers; previous plans remain falsifiable.
 
 Stop quando la causa è chiusa nell'owner corretto, il falsificatore discrimina, la documentazione impattata è coerente e l'exact-head evidence richiesta converge.
 
@@ -21,4 +20,4 @@ Stop quando la causa è chiusa nell'owner corretto, il falsificatore discrimina,
 
 **Blocker esterni:** E3-HUMAN, E3-GOV, E4-DEPLOY.
 
-**Incertezza:** E3-HUMAN, E3-GOV ed E4-DEPLOY richiedono evidenza osservata sul relativo rail; questa proiezione diventa stale quando mutano gli owner sorgente.
+**Incertezza:** GitHub server-side, persone rappresentative e deployment richiedono evidenza osservata sul relativo rail; questa proiezione diventa stale quando mutano gli owner sorgente.

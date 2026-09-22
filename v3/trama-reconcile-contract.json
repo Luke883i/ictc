@@ -270,14 +270,12 @@
         "blocking": false
       },
       {
-        "path": "v3/public/ui/visual-epistemic-runtime.js",
-        "token": "compat-3.1",
-        "classification": "compatibility-required",
+        "path": "v3/sqlite-state-persistence.mjs",
+        "token": "importLegacyIfPresent",
+        "classification": "migration-only",
         "blocking": false
       }
-    ],
-    "censusSource": "git-ls-files",
-    "censusRule": "Repository legacy census is restricted to Git-tracked paths; untracked runner fixtures/runtime artifacts are execution state, not repository ontology."
+    ]
   },
   "reconciliationRules": [
     {

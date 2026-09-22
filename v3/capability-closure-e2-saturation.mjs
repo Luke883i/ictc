@@ -79,7 +79,7 @@ const families=[
  mutate('source-browser-e2-lost',null,c=>c.sourceEvidence.sevenProcedureBrowser=false),
  mutate('source-browser-ci-lost',null,c=>c.sourceEvidence.browserInCi=false),
  mutate('source-external-boundary-lost',null,c=>c.sourceEvidence.externalRails=false),
- mutate('authority-next-slice-drift',null,c=>c.authority.planningState.nextSerialSlice='S4-A6-CLOSE'),
+ mutate('authority-next-slice-drift',null,c=>c.authority.planningState.nextSerialSlice='UIUX-CONVERGE-0'),
  mutate('authority-bridge-regression',null,c=>c.authority.planningState.noNewSerialBridge=false),
  mutate('authority-c5-gate-lost',null,c=>c.authority.conditionalSlices=[]),
  mutate('prototype-serial-regression',null,c=>c.prototype.createsNewSerialSlice=true)

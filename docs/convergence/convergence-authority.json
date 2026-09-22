@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "3.1.0",
+  "schemaVersion": "3.0.0",
   "governanceRevision": "GOV-WB6",
   "authority": "convergence-authority",
   "classification": "repository-convergence-planning-authority",
   "stateSemantics": {
-    "rule": "Committed governance is durable planning state plus immutable observations; it is not a live GitHub mirror.",
+    "rule": "Committed governance is durable planning state reconciled from immutable observations and claim-specific evidence; it is not a live GitHub mirror.",
     "gitOwnsLiveFacts": true,
     "committedRefsAreObservations": true,
     "planningIsDependencyDerived": true,
@@ -27,7 +27,6 @@
     "nextSerialSlice": "S4-A6-CLOSE",
     "nextSerialState": "blocked",
     "nextConditionalSlice": "C2-DELIVERY-PROVENANCE",
-    "nextConditionalState": "in-progress",
     "criticalPath": [
       "C2-DELIVERY-PROVENANCE",
       "C1-COMPAT-CONTRACTION",
@@ -35,8 +34,7 @@
       "C4-AI-EVAL-DRIFT"
     ],
     "parentS4A6RemainsOpen": true,
-    "noNewSerialBridge": true,
-    "selectionBasis": "reconciled observed evidence; highest-severity unresolved repository conditional first, then dependency/evidence/blast-radius/reuse/nearest-falsifier"
+    "noNewSerialBridge": true
   },
   "serialChain": [
     {
@@ -96,9 +94,7 @@
       "mustResolveBefore": "S4-A6-CLOSE",
       "debtRefs": [
         "GAP-020"
-      ],
-      "stateBasis": "D-RSC/F7 plus blocking compatibility/retirement census",
-      "claimBoundary": "legacy presence is not automatically a defect; only current/blocking/unclassified residue prevents terminality"
+      ]
     },
     {
       "id": "C2-DELIVERY-PROVENANCE",
@@ -107,9 +103,7 @@
       "mustResolveBefore": "S4-A6-CLOSE",
       "debtRefs": [
         "F-06"
-      ],
-      "stateBasis": "audit F-06 remains in-remediation",
-      "claimBoundary": "immutable pins/SBOM are partial evidence, not completed provenance/signing"
+      ]
     },
     {
       "id": "C3-CAPACITY-CONTRACT",
@@ -118,9 +112,7 @@
       "mustResolveBefore": "S4-A6-CLOSE",
       "debtRefs": [
         "F-13"
-      ],
-      "stateBasis": "enterprise benchmark substrate exists; audit F-13 remains open; E4 remains separate external evidence",
-      "claimBoundary": "repository benchmark readiness is not production scale proof; E4-DEPLOY remains external"
+      ]
     },
     {
       "id": "C4-AI-EVAL-DRIFT",
@@ -129,9 +121,7 @@
       "mustResolveBefore": "S4-A6-CLOSE",
       "debtRefs": [
         "F-15"
-      ],
-      "stateBasis": "audit F-15 remains in-remediation",
-      "claimBoundary": "budget enforcement is not versioned evaluation/drift rollback closure"
+      ]
     },
     {
       "id": "C5-SEMANTIC-OWNER-COMPRESSION",
@@ -140,9 +130,7 @@
       "mustResolveBefore": "UIUX-CONVERGE-0+S4-A6-CLOSE",
       "debtRefs": [
         "GAP-020"
-      ],
-      "stateBasis": "merged C5 owner/freshness contract plus current exact-head gates",
-      "claimBoundary": "repository semantic-owner/freshness closure only; no E3/E4 promotion"
+      ]
     }
   ],
   "conditionalResolutionPolicy": {
@@ -255,7 +243,7 @@
     },
     {
       "id": "UIUX-STRUCTURAL-COMPRESSION",
-      "status": "resolved",
+      "status": "resolved-in-reconciliation",
       "target": "UIUX-CONVERGE-0"
     },
     {
@@ -304,14 +292,16 @@
       "kind": "reconciliation",
       "mergedPr": 132,
       "reconciledSubSlice": "A6-UX2",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-A6-UX3-MAIN",
       "kind": "reconciliation",
       "mergedPr": 134,
       "reconciledSubSlice": "A6-UX3",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-A6-UX4-MAIN",
@@ -319,7 +309,8 @@
       "mergedPr": 135,
       "mergeSha": "f766fc064b0f8552f4821776755d72b56b757205",
       "reconciledSubSlice": "A6-UX4",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-GOV-WB4-MAIN",
@@ -327,7 +318,8 @@
       "mergedPr": 136,
       "mergeSha": "5d129a49d0d7907847ff59a3c5fa7d85edb8b66a",
       "reconciledSubSlice": "GOV-WB4",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-TRUTH-0-MAIN",
@@ -335,7 +327,8 @@
       "mergedPr": 137,
       "mergeSha": "255cb9363efd10b46c8ccb3c323427b8e222199a",
       "reconciledSubSlice": "TRUTH-0",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-UIUX-SCOPE-0-MAIN",
@@ -343,7 +336,8 @@
       "mergedPr": 138,
       "mergeSha": "3307a3b02e331f15d2b00f66b6fb41e709b090c6",
       "reconciledSubSlice": "UIUX-SCOPE-0",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-SCOPE-0-MAIN",
@@ -351,7 +345,8 @@
       "mergedPr": 139,
       "mergeSha": "508ac901ea9d9ab60dba8438340b7ef9db9c08c7",
       "reconciledSubSlice": "SCOPE-0",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-REALITY-0-MAIN",
@@ -359,54 +354,25 @@
       "mergedPr": 140,
       "mergeSha": "13766809f7cc06abac5c36410a1efc7a3be95679",
       "reconciledSubSlice": "REALITY-0",
-      "historyPreserved": true
+      "historyPreserved": true,
+      "finalForPlanState": false
     },
     {
       "id": "REC-DECIDE-0-MAIN",
       "kind": "immutable-observation",
       "mergedPr": 141,
       "mergeSha": "122b18e8bb672774a0380492eb27580c255f9458",
-      "reconciledSubSlice": "DECIDE-0"
+      "reconciledSubSlice": "DECIDE-0",
+      "finalForPlanState": false
     },
     {
-      "id": "REC-C5-MAIN",
-      "kind": "reconciliation",
-      "mergedPr": 151,
-      "mergeSha": "3453651240609364a69709bef0ac7c4c17847648",
-      "reconciledSubSlice": "C5-SEMANTIC-OWNER-COMPRESSION",
-      "historyPreserved": true
-    },
-    {
-      "id": "REC-UIUX-RUNTIME-CONTRACTION-MAIN",
-      "kind": "reconciliation",
-      "mergedPr": 180,
-      "mergeSha": "ca6017b76f33d951ac5e3e5ee3db5f155e6a1fff",
-      "reconciledSubSlice": "UIUX-RUNTIME-CONTRACTION-100K",
-      "historyPreserved": true
-    },
-    {
-      "id": "REC-UIUX-ONTO-EPISTEMIC-MAIN",
-      "kind": "reconciliation",
-      "mergedPr": 181,
-      "mergeSha": "be378ae102030c499f7533f943af0e7e71d766a1",
-      "reconciledSubSlice": "UIUX-CONVERGE-0",
-      "historyPreserved": true
-    },
-    {
-      "id": "REC-GOV-TRAMA-COMPASS-MAIN",
+      "id": "REC-GOV-TRAMA-COMPASS-1-MAIN",
       "kind": "immutable-observation",
       "mergedPr": 183,
       "mergeSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
       "reconciledSubSlice": "GOV-TRAMA-COMPASS-1",
+      "finalForPlanState": true,
       "historyPreserved": true
-    },
-    {
-      "id": "REC-GOV-TRAMA-RECONCILE-PREIMAGE",
-      "kind": "planning-reconciliation-observation",
-      "mergedPr": 183,
-      "mergeSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
-      "reconciledSubSlice": "GOV-TRAMA-RECONCILE-1",
-      "finalForPlanState": true
     }
   ],
   "s5Seal": {
@@ -429,17 +395,18 @@
   },
   "projection": {
     "path": "docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx",
-    "version": "GOV-WB6-RECONCILED-183",
+    "version": "GOV-WB6-TRAJECTORY-183",
     "classification": "derived-readable-projection",
     "bindingSheet": "BINDING",
-    "integrityRule": "checker validates semantic binding tokens and workbook structure against GOV-WB6; workbook remains a derived readable projection and never owns status"
+    "integrityRule": "checker hashes exact artifact and validates semantic binding tokens; authority never self-references a mutable workbook hash"
   },
-  "claimBoundary": "GOV-WB6 reconciles durable planning against observed main@PR183. UIUX-CONVERGE-0 and C5 are repository-bounded terminal; C1 remains todo; C2/C3/C4 are in-progress; S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked. E3-HUMAN, E3-GOV and E4-DEPLOY remain external. C3 benchmark/runtime evidence is not production scale proof. No enterprise-ready, legal/compliance, certification, market-fit, HA, approved RTO/RPO or production-effectiveness conclusion.",
+  "claimBoundary": "UIUX-CONVERGE-0 and C5 are reconciled repository-terminal from current executable evidence. C1 remains open on blocking compatibility/retirement debt; C2/C3/C4 are in-progress with F-06/F-13/F-15 residuals. S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked; GAP-020/GAP-021 remain open; E3-HUMAN, E3-GOV and E4-DEPLOY remain external. No enterprise-ready, representative-human-usability, legal/compliance, certification, market-fit, HA, approved RTO/RPO or production-effectiveness conclusion.",
   "reconciliationObservation": {
-    "mainSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
+    "id": "REC-GOV-TRAMA-COMPASS-1-MAIN",
+    "kind": "immutable-observation",
     "mergedPr": 183,
-    "title": "GOV-TRAMA-COMPASS-1: Adaptive AI Development Governance",
+    "mainSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
     "observedOn": "2026-09-22",
-    "meaning": "immutable post-merge observation used by GOV-TRAMA-RECONCILE-1; not a live pointer"
+    "meaning": "post-GOV-TRAMA-COMPASS-1 main preimage used by GOV-TRAMA-RECONCILE-1; not a live pointer"
   }
 }
