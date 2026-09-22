@@ -78,3 +78,10 @@ Historical/candidate documents are useful for design lineage but do not override
 31. Classifica ogni candidato legacy per ruolo attuale: `compatibility-required`, `migration-only`, `lineage-only`, `deprecated-test`, `retirement-candidate` oppure `blocking-unclassified`. L'ultima classe è fail-closed. Nome/versione/età non bastano per dichiarare un oggetto legacy.
 32. Distingui sempre **repository-terminal** da evidenza esterna: E3-HUMAN, E3-GOV ed E4-DEPLOY non diventano chiusi perché una conditional slice è `done`.
 33. La Bussola espone sempre tre orizzonti (locale, intermedio, globale), DoD granulari, blocker, incertezza e una sola next action. La Bussola è projection a authority zero.
+
+
+## GOV-TRAMA-CAUSAL-QUALIFICATION-1 — causal evidence before patch
+
+35. Un check rosso, una projection, un receipt o un fallimento eseguito non autorizzano da soli una patch semantica. Classifica la catena `INTENT -> CONTRACT -> OWNER -> STATE -> WRITER -> TRANSITION -> PROJECTION -> AUTHORITY -> ORACLE -> EVIDENCE -> CLAIM` prima di mutare il repository.
+36. Distingui `EXTERNAL_ORACLE_BLOCKED`, `EXECUTED_FAILURE`, `INSUFFICIENT_EVIDENCE` e `CONTROL_PLANE_BLOCKED`. `EXTERNAL_ORACLE_BLOCKED` non e regressione semantica; `EXECUTED_FAILURE` non prova da sola la root cause.
+37. La causal qualification e authority-zero: puo dichiarare patch/qualification eligibility e invalidare evidence stale, ma non promuove capability, non scrive convergence state, non sostituisce Git facts e non chiude E3/E4.

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "GOV-TRAMA-CAUSAL-QUALIFICATION-1",
+  "classification": "subordinate-zero-authority-causal-qualification-evaluator",
+  "authorityEffect": "NONE",
+  "trajectoryImpact": "neutral",
+  "createsNewSerialSlice": false,
+  "persistsDynamicCursor": false,
+  "networkAccess": false,
+  "writer": false,
+  "sourceOfTruth": false,
+  "intent": "Prevent observation, CI failure, projection or receipt from being laundered into semantic root cause, repository patch authority or capability promotion without claim-matched exact-state evidence.",
+  "pipeline": ["INTENT","CONTRACT","OWNER","STATE","WRITER","TRANSITION","PROJECTION","AUTHORITY","ORACLE","EVIDENCE","CLAIM","PATCH","QUALIFICATION","INVALIDATION"],
+  "verdicts": ["PASS","EXTERNAL_ORACLE_BLOCKED","EXECUTED_FAILURE","INSUFFICIENT_EVIDENCE","CONTROL_PLANE_BLOCKED"],
+  "patchDispositions": ["SUPPORTED","INVESTIGATE","RETRY_ORACLE","RECONCILE_CONTROL_PLANE","NOT_REQUIRED","BLOCKED"],
+  "qualificationDispositions": ["ELIGIBLE","NOT_ELIGIBLE","STALE","INVALIDATED"],
+  "mechanisms": [
+    {"id":"CQ1_INTENT_CONTRACT_BINDING","owns":["intent binding","claim contract binding"]},
+    {"id":"CQ2_OWNER_STATE_WRITER_TRANSITION","owns":["single owner","known state","single writer","typed transition"]},
+    {"id":"CQ3_AUTHORITY_MONOTONICITY","owns":["projection authority zero","evaluator side-effect zero"]},
+    {"id":"CQ4_ORACLE_CLASSIFICATION","owns":["execution admission","oracle class","external-vs-executed failure distinction"]},
+    {"id":"CQ5_EXACT_EVIDENCE_BINDING","owns":["live fact provenance","evidence class","exact candidate binding"]},
+    {"id":"CQ6_CLAIM_PATCH_CAUSALITY","owns":["claim <= evidence","root cause support","patch support"]},
+    {"id":"CQ7_QUALIFICATION_PROMOTION_BOUNDARY","owns":["implementation != qualification","qualification != owner promotion","no self-promotion"]},
+    {"id":"CQ8_EVIDENCE_INVALIDATION","owns":["qualification invalidation","stale evidence rejection"]}
+  ],
+  "failureFamilies": [
+    "intent_unbound","contract_missing","owner_missing","owner_collision","state_unknown_promoted","writer_missing","writer_collision","transition_untyped","transition_owner_bypass","projection_authority_widening","evaluator_side_effect","oracle_missing","oracle_wrong_class","oracle_not_executed","external_admission_laundered","live_fact_without_provenance","evidence_wrong_class","evidence_cross_candidate","claim_exceeds_evidence","executed_failure_root_cause_assumed","patch_without_causal_support","qualification_self_promotion","stale_qualification_reused"
+  ],
+  "claimBoundary": {
+    "repositoryPatchIsNotImpliedByRedCi": true,
+    "executedFailureIsNotRootCauseProof": true,
+    "externalOracleBlockedIsNotSemanticRegression": true,
+    "qualificationDoesNotPromoteCapability": true,
+    "mergeIsNotQualification": true,
+    "qualificationIsNotDeploymentProof": true,
+    "enterpriseCandidateSelfAttestation": false,
+    "semanticMutationIsPhysicalProof": false
+  },
+  "qualification": {
+    "requiredBindings": ["implementationRef","qualifiedCandidateSha","evidenceClass","oracleRefs","qualifiedClaim","invalidationKeys"],
+    "ownerPromotionRequired": true,
+    "invalidatesOn": ["contract digest change","owner change","writer change","candidate change","oracle class change","evidence-producing code change"]
+  },
+  "mutationQualification": {
+    "semanticMutationsRequired": 1000000,
+    "noNoveltyTailRequired": 100000,
+    "failureFamiliesRequired": 23,
+    "mechanismsRequired": 8,
+    "survivorsRequired": 0,
+    "deletionOracleRequired": true,
+    "semanticMutationIsPhysicalProof": false
+  }
+}
