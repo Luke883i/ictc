@@ -23,7 +23,7 @@ Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di conver
 | evidence/provenance | `node v3/evidence-check.mjs` | `npm run test:current:runtime` |
 | security boundary | `node v3/security-boundary-check.mjs` | `npm run release:check` |
 | docs/routing/authority projection | `npm run docs:check` | `npm run docs:saturation` |
-| convergence/workbook planning | `node v3/convergence-authority-check.mjs` | `node v3/decide-0-saturation.mjs && node v3/trajectory-governance-saturation.mjs`, poi `npm test` |
+| convergence/workbook planning | `node v3/convergence-authority-check.mjs` | `node v3/decide-0-saturation.mjs`, `node v3/trajectory-governance-saturation.mjs`, poi `npm test` |
 | adaptive engineering / trajectory intake | `node v3/trama-engineering-check.mjs` | `node v3/trama-engineering-saturation.mjs`, poi `npm test` |
 | C5 owner/freshness | `node v3/c5-semantic-owner-check.mjs` | `node v3/c5-semantic-owner-saturation.mjs`, `node v3/c5-needs-audit-saturation.mjs`, poi `npm test` |
 | enterprise runtime/PostgreSQL orizzontale | `node v3/c3-enterprise-bench-dod-check.mjs` | `npm test` + exact-head `c3-enterprise-runtime-closure` |
