@@ -31,6 +31,17 @@ Una modifica user-directed fuori dal piano corrente usa `intentional-deviation`:
 - [ ] Se il body dichiara `planned` / `intentional-deviation` o afferma che convergence authority + workbook cambiano insieme, i file dichiarati sono realmente presenti nel diff; altrimenti la dichiarazione è stata corretta prima del merge.
 - [ ] Se la PR crea, mitiga o chiude un finding `D-RSC`, `v3/semantic-owner-contract.json#repositoryCoherenceDebt` e il relativo falsificatore restano coerenti.
 
+## TRAMA adaptive intake / exit
+
+- Intent / IntentCard digest: `<value>`
+- Global DoD: `<pass|blocked + residual>`
+- Intermediate DoD: `<pass|blocked + residual>`
+- Local DoD: `<pass|blocked + residual>`
+- Mutation tier: `<1k|100k|1M>` e failure family coperte: `<value>`
+- Previous roadmap assumption challenged: `<value|none>`
+- Enterprise Candidate distance: `<repository blockers + E3/E4 blockers>`
+- [ ] ACT recomputed sulla exact PR HEAD; la prossima slice è stata ricalcolata senza promuovere la proiezione TRAMA ad authority.
+
 ## Tests and falsification
 
 ```text

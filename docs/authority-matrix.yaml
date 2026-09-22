@@ -41,6 +41,13 @@ surfaces:
     receipt: artifacts/convergence-authority-receipt.json
     classification: repository-convergence-planning-reconciliation-authority
     scope: development-trajectory-pr-reconciliation-and-workbook-binding
+  adaptive_engineering_governance:
+    authority: v3/trama-engineering-contract.json
+    runtime: v3/trama-engineering.mjs
+    checker: v3/trama-engineering-check.mjs
+    saturation: v3/trama-engineering-saturation.mjs
+    classification: zero-authority-adaptive-engineering-control-plane
+    scope: derived-intent-neighborhood-mutation-pdca-enterprise-gap-projection-only
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:
@@ -194,3 +201,6 @@ rules:
   - browser test processes are observational and do not hold commit-status write authority; aggregate CI/census publishers own exact-head status verdicts
   - release_identity distinguishes current contracts and maturity from informational lineage; lineage must not be promoted to current identity by concatenation
   - model-vocabulary and source-string mutation trial counts must not be represented as browser sessions, contributor studies, independent assurance, or code mutants unless those code mutants were actually compiled/executed
+  - adaptive_engineering_governance is derived and authority-zero; it may read convergence/product/runtime owners but may not become a second roadmap, product truth, runtime writer or live Git mirror
+  - each engineering interaction rederives the TRAMA intent neighborhood and global Enterprise Candidate gap; previous roadmaps and started slices remain falsifiable hypotheses
+  - semantic mutation, CI green, releaseStage=candidate or a derived projection may not self-close Enterprise Candidate, E3-HUMAN, E3-GOV or E4-DEPLOY

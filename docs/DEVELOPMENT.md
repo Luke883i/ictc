@@ -25,6 +25,24 @@ Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 9. Per UI condivisa, C0.1 deve restare l'ultimo converger semantico.
 10. Se cambia documentazione current/policy/operating aggiorna manifest e `docs:check`; se cambia il significato pubblico aggiorna l'authority sostanziale, non soltanto README.
 
+## TRAMA adaptive intake
+
+Prima di fissare una nuova slice, compila l'intento con:
+
+```bash
+node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN
+```
+
+TRAMA applica **PLAN → DO → CHECK → ACT** sopra gli owner già canonici. PLAN ricalcola vicinato, dipendenze, owner/writer, evidence/oracle, impatto umano/deployment e distanza dall'Enterprise Candidate; DO modifica il minimo reticolo coerente; CHECK usa invarianti, mutation tier adattivo (1k/100k/1M), deletion oracle ed exact-head evidence; ACT ricalcola la traiettoria dopo ogni risultato PR e merge. La roadmap precedente è un'ipotesi, non un vincolo: se i fatti correnti la falsificano, si rifattorizza la slice invece di forzare il piano.
+
+La proiezione è a authority zero e non persiste un cursor. Enterprise Candidate resta proprietà dell'authority di convergenza e richiede gli oracoli esterni pertinenti; semantic mutation non sostituisce evidenza umana, deployment o governance server-side.
+
+### DoD a tre livelli
+
+- **Globale:** nessuna nuova authority/SOT, reticolo gerarchico completo, target Enterprise Candidate non auto-attestabile, gate TRAMA nella rail current.
+- **Intermedia:** IntentCard senza burden tecnico umano, neighborhood completo, tier adattivo, PDCA con ACT globale/locale, one-writer e consolidation-first fail-closed.
+- **Locale:** contratto/runtime/check/saturation coerenti, 1M zero-survivor + deletion oracle, exact PR HEAD e GOV-01F prima del merge.
+
 ## Metodo ingegneristico canonico
 
 Il ciclo di sviluppo è una sequenza epistemica, non una sequenza di file:
