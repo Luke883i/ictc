@@ -134,4 +134,6 @@ Quando l'intento è una prosecuzione generica (`ora che si fa`, `prosegui`, `wha
 6. scegliere una sola conditional slice minima oppure STOP;
 7. aggiornare insieme authority, workbook e Bussola quando cambia la semantica di traiettoria.
 
+Nella riconciliazione `GOV-WB6` corrente il critical path derivato parte da `C2-DELIVERY-PROVENANCE`. È uno stato osservato e falsificabile, non una roadmap immutabile: ogni GLOBAL_ACT deve ricalcolarlo dagli owner e dai blocker correnti prima di proseguire.
+
 Lo stato `in-progress` è intenzionale: evita di collassare “capacità sostanzialmente implementata con blocker residuo” in `todo` o `done`. Una closure repository-side non chiude E3-HUMAN, E3-GOV o E4-DEPLOY.
