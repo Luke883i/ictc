@@ -53,6 +53,10 @@ surfaces:
     reconciliation_runtime: v3/trama-reconcile.mjs
     reconciliation_checker: v3/trama-reconcile-check.mjs
     reconciliation_saturation: v3/trama-reconcile-saturation.mjs
+    causal_qualification_contract: v3/trama-causal-qualification-contract.json
+    causal_qualification_runtime: v3/trama-causal-qualification.mjs
+    causal_qualification_checker: v3/trama-causal-qualification-check.mjs
+    causal_qualification_saturation: v3/trama-causal-qualification-saturation-1m.mjs
     classification: zero-authority-adaptive-engineering-control-plane
     scope: derived-intent-observed-state-ontology-dod-slice-pdca-docs-devops-enterprise-gap-compass
   enduser_language:

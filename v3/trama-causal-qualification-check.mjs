@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {FAILURE_FAMILIES,qualifyCausalCase,qualificationValidity,validateCausalCase} from './trama-causal-qualification.mjs';
+const contract=JSON.parse(fs.readFileSync(new URL('./trama-causal-qualification-contract.json',import.meta.url),'utf8'));
+const base=()=>({intent:{id:'I1'},contract:{id:'C1'},owner:{id:'owner'},state:{value:'candidate'},writer:{id:'writer'},transition:{type:'QUALIFY',from:'candidate',to:'qualified',ownerId:'owner'},projection:{authorityEffect:'NONE'},evaluator:{authorityEffect:'NONE',writer:false,networkAccess:false,persistsState:false},oracle:{class:'REPOSITORY',executed:true,stepsExecuted:4,conclusion:'success'},liveFacts:[{source:'git',observedAt:'2026-09-23T00:00:00Z'}],evidence:{class:'E2',candidateSha:'a'.repeat(40)},claim:{id:'claim-1',requiredEvidenceClass:'E2',candidateSha:'a'.repeat(40)},patch:{requested:false,causalSupport:false},qualification:{selfPromotesCapability:false,status:'CURRENT',usedAsCurrent:true}});
+assert.deepEqual(validateCausalCase(base()),[]);
+const pass=qualifyCausalCase(base());assert.equal(pass.verdict,'PASS');assert.equal(pass.qualificationDisposition,'ELIGIBLE');assert.equal(pass.authorityEffect,'NONE');
+const ext=base();ext.oracle={class:'EXTERNAL',executed:false,stepsExecuted:0,admissionBlocked:true,conclusion:'failure'};const ex=qualifyCausalCase(ext);assert.equal(ex.verdict,'EXTERNAL_ORACLE_BLOCKED');assert.equal(ex.patchDisposition,'RETRY_ORACLE');
+const fail=base();fail.oracle={class:'REPOSITORY',executed:true,stepsExecuted:3,conclusion:'failure'};fail.patch={requested:true,causalSupport:false};const fx=qualifyCausalCase(fail);assert.equal(fx.verdict,'EXECUTED_FAILURE');assert.equal(fx.patchDisposition,'INVESTIGATE');
+assert.equal(qualificationValidity({status:'VALID',candidateSha:'a'},{candidateSha:'b'}).status,'INVALIDATED');
+assert.equal(contract.failureFamilies.length,23);assert.deepEqual(new Set(contract.failureFamilies),new Set(FAILURE_FAMILIES));assert.equal(contract.mechanisms.length,8);assert.equal(contract.authorityEffect,'NONE');assert.equal(contract.mutationQualification.semanticMutationsRequired,1000000);assert.equal(contract.mutationQualification.noNoveltyTailRequired,100000);
+console.log(JSON.stringify({ok:true,slice:contract.contractId,failureFamilies:contract.failureFamilies.length,mechanisms:contract.mechanisms.length,claimBoundary:contract.claimBoundary}));

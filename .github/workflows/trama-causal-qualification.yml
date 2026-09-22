@@ -1,0 +1,52 @@
+name: TRAMA causal qualification
+
+on:
+  pull_request:
+    paths:
+      - 'v3/trama-causal-qualification*'
+      - 'v3/trama-engineering*'
+      - 'docs/authority-matrix.yaml'
+      - 'AGENTS.md'
+      - 'docs/TESTING.md'
+      - '.github/workflows/trama-causal-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  causal-10-campaigns:
+    name: causal-10-campaigns
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - name: Contract check
+        run: node v3/trama-causal-qualification-check.mjs
+      - name: Campaign 01 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000104730
+      - name: Campaign 02 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000209459
+      - name: Campaign 03 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000314188
+      - name: Campaign 04 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000418917
+      - name: Campaign 05 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000523646
+      - name: Campaign 06 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000628375
+      - name: Campaign 07 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000733104
+      - name: Campaign 08 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000837833
+      - name: Campaign 09 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000942562
+      - name: Campaign 10 · 100k + 10k no-novelty
+        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000001047291
+      - name: TRAMA parent regression
+        run: node v3/trama-engineering-check.mjs
