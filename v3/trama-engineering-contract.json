@@ -1,0 +1,1375 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "TRAMA-ENGINEERING-1",
+  "method": {
+    "name": "TRAMA",
+    "expansion": "Typed Reticular Adaptive Method for Assurance",
+    "italian": "Traiettoria Reticolare Adattiva di Maturazione e Assurance",
+    "intent": "Compress dominant IT/product/repository due-diligence methods into one typed, falsifiable and adaptive engineering control plane."
+  },
+  "classification": "zero-authority-adaptive-engineering-control-plane",
+  "authorityEffect": "NONE",
+  "trajectoryImpact": "neutral",
+  "createsNewSerialSlice": false,
+  "persistsDynamicCursor": false,
+  "claimBoundary": "TRAMA is repository/control-plane engineering evidence. It cannot redefine product/runtime/legal truth, self-award Enterprise Candidate, close E3/E4 rails, prove representative-human usability, production effectiveness, security of a deployment, legal compliance or formal global minimality.",
+  "sourcePolicy": {
+    "precedence": [
+      "live Git/GitHub facts where the claim is live",
+      "claim-specific executable/runtime/external evidence",
+      "docs/PRODUCT.md and declared substantive owners",
+      "docs/convergence/convergence-authority.json for durable sequencing",
+      "derived TRAMA projection"
+    ],
+    "derivedProjectionIsSot": false,
+    "historicalPlanIsCommitment": false,
+    "unknownOwner": "BLOCKED",
+    "parallelWriter": "BLOCKED"
+  },
+  "methodSaturation": {
+    "unit": "dominant semantic method family",
+    "discoveredFamilies": 24,
+    "noNoveltyTailCount": 100,
+    "tailAddsNovelFamilies": 0,
+    "criterion": "Stop at N only after N+100 additional named methods/techniques map losslessly to existing families at the declared abstraction; lower-level novelty does not create a new top-level family.",
+    "limitation": "Bounded engineering taxonomy, not proof that no method exists outside the sampled corpus.",
+    "families": [
+      {
+        "id": "F01_PRODUCT_SCOPE_VALUE",
+        "name": "Product scope, value and requirements diligence",
+        "anchors": [
+          "Jobs-to-be-Done",
+          "Kano",
+          "MoSCoW",
+          "Business Model Canvas"
+        ]
+      },
+      {
+        "id": "F02_REPOSITORY_ARCHAEOLOGY",
+        "name": "Repository archaeology, provenance and hotspot analysis",
+        "anchors": [
+          "Git history archaeology",
+          "hotspot analysis",
+          "dependency graph",
+          "ADR review"
+        ]
+      },
+      {
+        "id": "F03_ARCHITECTURE_TRADEOFFS",
+        "name": "Architecture trade-off evaluation",
+        "anchors": [
+          "ATAM",
+          "QAW",
+          "SAAM",
+          "CBAM"
+        ]
+      },
+      {
+        "id": "F04_PRODUCT_QUALITY",
+        "name": "Software/product quality attributes",
+        "anchors": [
+          "ISO/IEC 25010:2023",
+          "quality attribute scenarios",
+          "fitness functions"
+        ]
+      },
+      {
+        "id": "F05_CODE_STATIC_QUALITY",
+        "name": "Static code quality and review",
+        "anchors": [
+          "peer code review",
+          "static analysis",
+          "complexity analysis",
+          "linting"
+        ]
+      },
+      {
+        "id": "F06_RUNTIME_DYNAMIC",
+        "name": "Runtime and dynamic-behavior verification",
+        "anchors": [
+          "integration testing",
+          "runtime tracing",
+          "fault injection",
+          "state transition testing"
+        ]
+      },
+      {
+        "id": "F07_TESTING_FALSIFICATION",
+        "name": "Testing, property, fuzz and mutation falsification",
+        "anchors": [
+          "property-based testing",
+          "mutation testing",
+          "fuzzing",
+          "model-based testing"
+        ]
+      },
+      {
+        "id": "F08_THREAT_MODELING",
+        "name": "Threat modeling and abuse analysis",
+        "anchors": [
+          "STRIDE",
+          "PASTA",
+          "attack trees",
+          "LINDDUN"
+        ]
+      },
+      {
+        "id": "F09_SECURE_SDLC_APPSEC",
+        "name": "Secure SDLC and application-security verification",
+        "anchors": [
+          "NIST SSDF SP 800-218",
+          "OWASP ASVS",
+          "OWASP SAMM",
+          "penetration testing"
+        ]
+      },
+      {
+        "id": "F10_SUPPLY_CHAIN",
+        "name": "Software supply-chain, dependency and provenance assurance",
+        "anchors": [
+          "SLSA",
+          "SBOM",
+          "OpenSSF Scorecard",
+          "dependency review"
+        ]
+      },
+      {
+        "id": "F11_DATA_GOVERNANCE",
+        "name": "Data integrity, lineage and governance",
+        "anchors": [
+          "data lineage",
+          "data quality controls",
+          "schema governance",
+          "retention policy"
+        ]
+      },
+      {
+        "id": "F12_AI_GOVERNANCE",
+        "name": "AI/ML evaluation and governance",
+        "anchors": [
+          "model evaluation",
+          "prompt/eval regression",
+          "human oversight",
+          "egress policy"
+        ]
+      },
+      {
+        "id": "F13_IDENTITY_TRUST",
+        "name": "Identity, access and trust boundaries",
+        "anchors": [
+          "RBAC/ABAC review",
+          "least privilege",
+          "zero-trust boundary analysis",
+          "deprovisioning review"
+        ]
+      },
+      {
+        "id": "F14_PRIVACY_COMPLIANCE",
+        "name": "Privacy, compliance and control mapping",
+        "anchors": [
+          "privacy impact assessment",
+          "control mapping",
+          "records-of-processing review",
+          "policy-to-control traceability"
+        ]
+      },
+      {
+        "id": "F15_RELIABILITY_RESILIENCE",
+        "name": "Reliability, SRE and resilience",
+        "anchors": [
+          "SLI/SLO",
+          "error budgets",
+          "chaos engineering",
+          "game days"
+        ]
+      },
+      {
+        "id": "F16_PERFORMANCE_CAPACITY",
+        "name": "Performance, capacity and scalability",
+        "anchors": [
+          "load testing",
+          "stress testing",
+          "soak testing",
+          "capacity planning"
+        ]
+      },
+      {
+        "id": "F17_OBSERVABILITY_INCIDENT",
+        "name": "Observability, incident response and recovery",
+        "anchors": [
+          "telemetry review",
+          "incident drills",
+          "postmortems",
+          "recovery testing"
+        ]
+      },
+      {
+        "id": "F18_DEPLOYMENT_RELEASE",
+        "name": "Deployment, release, rollback and environment assurance",
+        "anchors": [
+          "canary release",
+          "blue-green deployment",
+          "rollback drill",
+          "release readiness review"
+        ]
+      },
+      {
+        "id": "F19_UX_HUMAN_FACTORS",
+        "name": "Usability and human-factors evaluation",
+        "anchors": [
+          "heuristic evaluation",
+          "cognitive walkthrough",
+          "task analysis",
+          "representative usability testing"
+        ]
+      },
+      {
+        "id": "F20_ACCESSIBILITY",
+        "name": "Accessibility evaluation",
+        "anchors": [
+          "WCAG 2.2",
+          "keyboard testing",
+          "screen-reader testing",
+          "reflow/contrast testing"
+        ]
+      },
+      {
+        "id": "F21_DOCS_OPERABILITY",
+        "name": "Documentation, operability and contributor experience",
+        "anchors": [
+          "runbook review",
+          "documentation-as-code",
+          "onboarding test",
+          "supportability review"
+        ]
+      },
+      {
+        "id": "F22_GOVERNANCE_OWNERSHIP",
+        "name": "Governance, ownership and change control",
+        "anchors": [
+          "RACI",
+          "CODEOWNERS",
+          "segregation of duties",
+          "change advisory controls"
+        ]
+      },
+      {
+        "id": "F23_RISK_AUDIT_ASSURANCE",
+        "name": "Risk, audit and evidence assurance",
+        "anchors": [
+          "ISO 31000:2018",
+          "FMEA",
+          "fault-tree analysis",
+          "control self-assessment"
+        ]
+      },
+      {
+        "id": "F24_FLOW_CONTINUOUS_IMPROVEMENT",
+        "name": "Delivery flow and continuous improvement",
+        "anchors": [
+          "DORA metrics",
+          "PDCA",
+          "value-stream mapping",
+          "retrospective/postmortem learning"
+        ]
+      }
+    ],
+    "noNoveltyTail": [
+      {
+        "method": "Opportunity Solution Tree",
+        "mapsTo": "F01_PRODUCT_SCOPE_VALUE"
+      },
+      {
+        "method": "RICE prioritization",
+        "mapsTo": "F01_PRODUCT_SCOPE_VALUE"
+      },
+      {
+        "method": "Lean Canvas",
+        "mapsTo": "F01_PRODUCT_SCOPE_VALUE"
+      },
+      {
+        "method": "Story mapping",
+        "mapsTo": "F01_PRODUCT_SCOPE_VALUE"
+      },
+      {
+        "method": "Impact mapping",
+        "mapsTo": "F01_PRODUCT_SCOPE_VALUE"
+      },
+      {
+        "method": "Git blame lineage review",
+        "mapsTo": "F02_REPOSITORY_ARCHAEOLOGY"
+      },
+      {
+        "method": "Bus-factor analysis",
+        "mapsTo": "F02_REPOSITORY_ARCHAEOLOGY"
+      },
+      {
+        "method": "Code ownership hotspot review",
+        "mapsTo": "F02_REPOSITORY_ARCHAEOLOGY"
+      },
+      {
+        "method": "Change-coupling analysis",
+        "mapsTo": "F02_REPOSITORY_ARCHAEOLOGY"
+      },
+      {
+        "method": "Architecture Decision Records review",
+        "mapsTo": "F03_ARCHITECTURE_TRADEOFFS"
+      },
+      {
+        "method": "C4 architecture review",
+        "mapsTo": "F03_ARCHITECTURE_TRADEOFFS"
+      },
+      {
+        "method": "arc42 review",
+        "mapsTo": "F03_ARCHITECTURE_TRADEOFFS"
+      },
+      {
+        "method": "Architecture fitness functions",
+        "mapsTo": "F03_ARCHITECTURE_TRADEOFFS"
+      },
+      {
+        "method": "Quality-attribute scenarios",
+        "mapsTo": "F04_PRODUCT_QUALITY"
+      },
+      {
+        "method": "Maintainability index review",
+        "mapsTo": "F04_PRODUCT_QUALITY"
+      },
+      {
+        "method": "Portability review",
+        "mapsTo": "F04_PRODUCT_QUALITY"
+      },
+      {
+        "method": "Compatibility review",
+        "mapsTo": "F04_PRODUCT_QUALITY"
+      },
+      {
+        "method": "Cyclomatic complexity",
+        "mapsTo": "F05_CODE_STATIC_QUALITY"
+      },
+      {
+        "method": "Cognitive complexity",
+        "mapsTo": "F05_CODE_STATIC_QUALITY"
+      },
+      {
+        "method": "Dead-code analysis",
+        "mapsTo": "F05_CODE_STATIC_QUALITY"
+      },
+      {
+        "method": "Duplicate-code analysis",
+        "mapsTo": "F05_CODE_STATIC_QUALITY"
+      },
+      {
+        "method": "Integration testing",
+        "mapsTo": "F06_RUNTIME_DYNAMIC"
+      },
+      {
+        "method": "Contract testing",
+        "mapsTo": "F06_RUNTIME_DYNAMIC"
+      },
+      {
+        "method": "State-machine testing",
+        "mapsTo": "F06_RUNTIME_DYNAMIC"
+      },
+      {
+        "method": "Runtime invariant assertions",
+        "mapsTo": "F06_RUNTIME_DYNAMIC"
+      },
+      {
+        "method": "Property-based testing",
+        "mapsTo": "F07_TESTING_FALSIFICATION"
+      },
+      {
+        "method": "Mutation testing",
+        "mapsTo": "F07_TESTING_FALSIFICATION"
+      },
+      {
+        "method": "Coverage-guided fuzzing",
+        "mapsTo": "F07_TESTING_FALSIFICATION"
+      },
+      {
+        "method": "Differential testing",
+        "mapsTo": "F07_TESTING_FALSIFICATION"
+      },
+      {
+        "method": "Metamorphic testing",
+        "mapsTo": "F07_TESTING_FALSIFICATION"
+      },
+      {
+        "method": "Attack trees",
+        "mapsTo": "F08_THREAT_MODELING"
+      },
+      {
+        "method": "Abuse-case modeling",
+        "mapsTo": "F08_THREAT_MODELING"
+      },
+      {
+        "method": "Kill-chain analysis",
+        "mapsTo": "F08_THREAT_MODELING"
+      },
+      {
+        "method": "Misuse cases",
+        "mapsTo": "F08_THREAT_MODELING"
+      },
+      {
+        "method": "SAST",
+        "mapsTo": "F09_SECURE_SDLC_APPSEC"
+      },
+      {
+        "method": "DAST",
+        "mapsTo": "F09_SECURE_SDLC_APPSEC"
+      },
+      {
+        "method": "IAST",
+        "mapsTo": "F09_SECURE_SDLC_APPSEC"
+      },
+      {
+        "method": "Secrets scanning",
+        "mapsTo": "F09_SECURE_SDLC_APPSEC"
+      },
+      {
+        "method": "Secure code review",
+        "mapsTo": "F09_SECURE_SDLC_APPSEC"
+      },
+      {
+        "method": "CycloneDX SBOM",
+        "mapsTo": "F10_SUPPLY_CHAIN"
+      },
+      {
+        "method": "SPDX SBOM",
+        "mapsTo": "F10_SUPPLY_CHAIN"
+      },
+      {
+        "method": "Dependency pinning audit",
+        "mapsTo": "F10_SUPPLY_CHAIN"
+      },
+      {
+        "method": "Provenance attestation review",
+        "mapsTo": "F10_SUPPLY_CHAIN"
+      },
+      {
+        "method": "Schema evolution review",
+        "mapsTo": "F11_DATA_GOVERNANCE"
+      },
+      {
+        "method": "Referential-integrity audit",
+        "mapsTo": "F11_DATA_GOVERNANCE"
+      },
+      {
+        "method": "Data-quality profiling",
+        "mapsTo": "F11_DATA_GOVERNANCE"
+      },
+      {
+        "method": "Retention/deletion audit",
+        "mapsTo": "F11_DATA_GOVERNANCE"
+      },
+      {
+        "method": "Golden-set model evals",
+        "mapsTo": "F12_AI_GOVERNANCE"
+      },
+      {
+        "method": "Red-team model evals",
+        "mapsTo": "F12_AI_GOVERNANCE"
+      },
+      {
+        "method": "Prompt regression suite",
+        "mapsTo": "F12_AI_GOVERNANCE"
+      },
+      {
+        "method": "Human-in-the-loop review",
+        "mapsTo": "F12_AI_GOVERNANCE"
+      },
+      {
+        "method": "Least-privilege review",
+        "mapsTo": "F13_IDENTITY_TRUST"
+      },
+      {
+        "method": "Privilege-escalation review",
+        "mapsTo": "F13_IDENTITY_TRUST"
+      },
+      {
+        "method": "Session-boundary review",
+        "mapsTo": "F13_IDENTITY_TRUST"
+      },
+      {
+        "method": "Joiner-mover-leaver review",
+        "mapsTo": "F13_IDENTITY_TRUST"
+      },
+      {
+        "method": "DPIA",
+        "mapsTo": "F14_PRIVACY_COMPLIANCE"
+      },
+      {
+        "method": "Records of processing audit",
+        "mapsTo": "F14_PRIVACY_COMPLIANCE"
+      },
+      {
+        "method": "Control crosswalk",
+        "mapsTo": "F14_PRIVACY_COMPLIANCE"
+      },
+      {
+        "method": "Evidence-to-control traceability",
+        "mapsTo": "F14_PRIVACY_COMPLIANCE"
+      },
+      {
+        "method": "Error-budget policy",
+        "mapsTo": "F15_RELIABILITY_RESILIENCE"
+      },
+      {
+        "method": "Chaos experiment",
+        "mapsTo": "F15_RELIABILITY_RESILIENCE"
+      },
+      {
+        "method": "Resilience game day",
+        "mapsTo": "F15_RELIABILITY_RESILIENCE"
+      },
+      {
+        "method": "Failure-mode injection",
+        "mapsTo": "F15_RELIABILITY_RESILIENCE"
+      },
+      {
+        "method": "Load test",
+        "mapsTo": "F16_PERFORMANCE_CAPACITY"
+      },
+      {
+        "method": "Stress test",
+        "mapsTo": "F16_PERFORMANCE_CAPACITY"
+      },
+      {
+        "method": "Soak test",
+        "mapsTo": "F16_PERFORMANCE_CAPACITY"
+      },
+      {
+        "method": "Spike test",
+        "mapsTo": "F16_PERFORMANCE_CAPACITY"
+      },
+      {
+        "method": "Queueing/capacity model",
+        "mapsTo": "F16_PERFORMANCE_CAPACITY"
+      },
+      {
+        "method": "Distributed tracing review",
+        "mapsTo": "F17_OBSERVABILITY_INCIDENT"
+      },
+      {
+        "method": "Alert-routing drill",
+        "mapsTo": "F17_OBSERVABILITY_INCIDENT"
+      },
+      {
+        "method": "Incident tabletop exercise",
+        "mapsTo": "F17_OBSERVABILITY_INCIDENT"
+      },
+      {
+        "method": "Backup restore drill",
+        "mapsTo": "F17_OBSERVABILITY_INCIDENT"
+      },
+      {
+        "method": "Canary deployment",
+        "mapsTo": "F18_DEPLOYMENT_RELEASE"
+      },
+      {
+        "method": "Blue-green deployment",
+        "mapsTo": "F18_DEPLOYMENT_RELEASE"
+      },
+      {
+        "method": "Feature-flag rollback",
+        "mapsTo": "F18_DEPLOYMENT_RELEASE"
+      },
+      {
+        "method": "Progressive delivery",
+        "mapsTo": "F18_DEPLOYMENT_RELEASE"
+      },
+      {
+        "method": "Clean-host install test",
+        "mapsTo": "F18_DEPLOYMENT_RELEASE"
+      },
+      {
+        "method": "Nielsen heuristic evaluation",
+        "mapsTo": "F19_UX_HUMAN_FACTORS"
+      },
+      {
+        "method": "Cognitive walkthrough",
+        "mapsTo": "F19_UX_HUMAN_FACTORS"
+      },
+      {
+        "method": "Task-completion study",
+        "mapsTo": "F19_UX_HUMAN_FACTORS"
+      },
+      {
+        "method": "System Usability Scale",
+        "mapsTo": "F19_UX_HUMAN_FACTORS"
+      },
+      {
+        "method": "Keyboard-only audit",
+        "mapsTo": "F20_ACCESSIBILITY"
+      },
+      {
+        "method": "Screen-reader audit",
+        "mapsTo": "F20_ACCESSIBILITY"
+      },
+      {
+        "method": "Zoom/reflow audit",
+        "mapsTo": "F20_ACCESSIBILITY"
+      },
+      {
+        "method": "Forced-colors audit",
+        "mapsTo": "F20_ACCESSIBILITY"
+      },
+      {
+        "method": "Runbook fire drill",
+        "mapsTo": "F21_DOCS_OPERABILITY"
+      },
+      {
+        "method": "Fresh-contributor onboarding test",
+        "mapsTo": "F21_DOCS_OPERABILITY"
+      },
+      {
+        "method": "Documentation link/authority check",
+        "mapsTo": "F21_DOCS_OPERABILITY"
+      },
+      {
+        "method": "Support-bundle review",
+        "mapsTo": "F21_DOCS_OPERABILITY"
+      },
+      {
+        "method": "RACI matrix",
+        "mapsTo": "F22_GOVERNANCE_OWNERSHIP"
+      },
+      {
+        "method": "CODEOWNERS review",
+        "mapsTo": "F22_GOVERNANCE_OWNERSHIP"
+      },
+      {
+        "method": "Four-eyes review",
+        "mapsTo": "F22_GOVERNANCE_OWNERSHIP"
+      },
+      {
+        "method": "Change-control audit",
+        "mapsTo": "F22_GOVERNANCE_OWNERSHIP"
+      },
+      {
+        "method": "FMEA",
+        "mapsTo": "F23_RISK_AUDIT_ASSURANCE"
+      },
+      {
+        "method": "Fault-tree analysis",
+        "mapsTo": "F23_RISK_AUDIT_ASSURANCE"
+      },
+      {
+        "method": "Bow-tie analysis",
+        "mapsTo": "F23_RISK_AUDIT_ASSURANCE"
+      },
+      {
+        "method": "Control self-assessment",
+        "mapsTo": "F23_RISK_AUDIT_ASSURANCE"
+      },
+      {
+        "method": "Lead-time analysis",
+        "mapsTo": "F24_FLOW_CONTINUOUS_IMPROVEMENT"
+      },
+      {
+        "method": "Deployment-frequency analysis",
+        "mapsTo": "F24_FLOW_CONTINUOUS_IMPROVEMENT"
+      },
+      {
+        "method": "Change-failure analysis",
+        "mapsTo": "F24_FLOW_CONTINUOUS_IMPROVEMENT"
+      }
+    ]
+  },
+  "semanticLattice": {
+    "nodes": [
+      {
+        "id": "TRAMA.ROOT",
+        "parent": null,
+        "abstractionLevel": "GLOBAL",
+        "compositionRole": "ORCHESTRATOR",
+        "owns": "method composition and zero-authority adaptive engineering projection"
+      },
+      {
+        "id": "TRAMA.PURPOSE",
+        "parent": "TRAMA.ROOT",
+        "abstractionLevel": "GLOBAL",
+        "compositionRole": "SCOPE_BOUNDARY",
+        "owns": "product intent, human/job scope, non-goals and desired effect"
+      },
+      {
+        "id": "TRAMA.TRUTH",
+        "parent": "TRAMA.ROOT",
+        "abstractionLevel": "GLOBAL",
+        "compositionRole": "CLAIM_BOUNDARY",
+        "owns": "claim classes, epistemic status, source precedence and non-claims"
+      },
+      {
+        "id": "TRAMA.AUTHORITY",
+        "parent": "TRAMA.ROOT",
+        "abstractionLevel": "GLOBAL",
+        "compositionRole": "OWNER_ROUTER",
+        "owns": "single-owner routing, writer boundaries and lifecycle classification"
+      },
+      {
+        "id": "TRAMA.SYSTEM",
+        "parent": "TRAMA.AUTHORITY",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "ARCHITECTURE_GRAPH",
+        "owns": "architecture, dependency closure, state and runtime causality"
+      },
+      {
+        "id": "TRAMA.SECURITY",
+        "parent": "TRAMA.SYSTEM",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "CONSTRAINT_PLANE",
+        "owns": "security, privacy, identity, egress and supply-chain constraints"
+      },
+      {
+        "id": "TRAMA.EVIDENCE",
+        "parent": "TRAMA.TRUTH",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "ORACLE_PLANE",
+        "owns": "falsifiers, evidence classes, exact-head binding and external-oracle separation"
+      },
+      {
+        "id": "TRAMA.HUMAN",
+        "parent": "TRAMA.PURPOSE",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "EXPERIENCE_PLANE",
+        "owns": "human task, usability, accessibility, comprehension and human authority boundaries"
+      },
+      {
+        "id": "TRAMA.OPERATIONS",
+        "parent": "TRAMA.SYSTEM",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "DELIVERY_PLANE",
+        "owns": "reliability, capacity, observability, deployment, rollback and recovery"
+      },
+      {
+        "id": "TRAMA.RISK",
+        "parent": "TRAMA.TRUTH",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "RISK_PLANE",
+        "owns": "risk, debt, blockers, invalidation and residual limitations"
+      },
+      {
+        "id": "TRAMA.TRAJECTORY",
+        "parent": "TRAMA.ROOT",
+        "abstractionLevel": "INTERMEDIATE",
+        "compositionRole": "PDCA_REDUCER",
+        "owns": "derived trajectory, critical path, challenge of prior assumptions and ACT recomputation"
+      },
+      {
+        "id": "TRAMA.SLICE",
+        "parent": "TRAMA.TRAJECTORY",
+        "abstractionLevel": "LOCAL",
+        "compositionRole": "EXECUTION_UNIT",
+        "owns": "minimum coherent falsifiable semantic change plus local DoD and rollback"
+      }
+    ],
+    "edges": [
+      {
+        "source": "TRAMA.PURPOSE",
+        "target": "TRAMA.TRUTH",
+        "semantics": [
+          {
+            "kind": "CONSTRAINS",
+            "weight": 5
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 3
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.TRUTH",
+        "target": "TRAMA.AUTHORITY",
+        "semantics": [
+          {
+            "kind": "CONSTRAINS",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.AUTHORITY",
+        "target": "TRAMA.SYSTEM",
+        "semantics": [
+          {
+            "kind": "OWNS",
+            "weight": 5
+          },
+          {
+            "kind": "DEPENDS_ON",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SYSTEM",
+        "target": "TRAMA.SECURITY",
+        "semantics": [
+          {
+            "kind": "EXPOSES_ATTACK_SURFACE_TO",
+            "weight": 5
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SYSTEM",
+        "target": "TRAMA.OPERATIONS",
+        "semantics": [
+          {
+            "kind": "DEPENDS_ON",
+            "weight": 5
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.TRUTH",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "REQUIRES_PROOF_FROM",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.EVIDENCE",
+        "target": "TRAMA.TRUTH",
+        "semantics": [
+          {
+            "kind": "PROVES_OR_BOUNDS",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.PURPOSE",
+        "target": "TRAMA.HUMAN",
+        "semantics": [
+          {
+            "kind": "PROJECTS_TO",
+            "weight": 5
+          },
+          {
+            "kind": "HUMAN_IMPACT",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.HUMAN",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "REQUIRES_EXTERNAL_ORACLE",
+            "weight": 5
+          },
+          {
+            "kind": "HUMAN_IMPACT",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SECURITY",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "REQUIRES_PROOF_FROM",
+            "weight": 5
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.OPERATIONS",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "PRODUCES_RUNTIME_EVIDENCE",
+            "weight": 4
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 3
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.RISK",
+        "target": "TRAMA.TRAJECTORY",
+        "semantics": [
+          {
+            "kind": "PRIORITIZES",
+            "weight": 5
+          },
+          {
+            "kind": "BLOCKS",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.EVIDENCE",
+        "target": "TRAMA.TRAJECTORY",
+        "semantics": [
+          {
+            "kind": "CONSTRAINS",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.AUTHORITY",
+        "target": "TRAMA.TRAJECTORY",
+        "semantics": [
+          {
+            "kind": "CONSTRAINS",
+            "weight": 5
+          },
+          {
+            "kind": "BLOCKS",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.TRAJECTORY",
+        "target": "TRAMA.SLICE",
+        "semantics": [
+          {
+            "kind": "DERIVES",
+            "weight": 5
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SLICE",
+        "target": "TRAMA.SYSTEM",
+        "semantics": [
+          {
+            "kind": "MUTATES",
+            "weight": 4
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SLICE",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "MUST_CLOSE_WITH",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SLICE",
+        "target": "TRAMA.RISK",
+        "semantics": [
+          {
+            "kind": "REDUCES_OR_RECLASSIFIES",
+            "weight": 4
+          },
+          {
+            "kind": "CHANGE_COUPLING",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SLICE",
+        "target": "TRAMA.HUMAN",
+        "semantics": [
+          {
+            "kind": "MAY_AFFECT",
+            "weight": 4
+          },
+          {
+            "kind": "HUMAN_IMPACT",
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.SECURITY",
+        "target": "TRAMA.HUMAN",
+        "semantics": [
+          {
+            "kind": "CONSTRAINS",
+            "weight": 4
+          },
+          {
+            "kind": "HUMAN_IMPACT",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.OPERATIONS",
+        "target": "TRAMA.RISK",
+        "semantics": [
+          {
+            "kind": "EXPOSES",
+            "weight": 4
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 3
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.RISK",
+        "target": "TRAMA.EVIDENCE",
+        "semantics": [
+          {
+            "kind": "DEMANDS",
+            "weight": 4
+          },
+          {
+            "kind": "DEPENDS_ON",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.TRAJECTORY",
+        "target": "TRAMA.PURPOSE",
+        "semantics": [
+          {
+            "kind": "REFINES",
+            "weight": 3
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "source": "TRAMA.TRAJECTORY",
+        "target": "TRAMA.AUTHORITY",
+        "semantics": [
+          {
+            "kind": "CHECKS_COLLISION_WITH",
+            "weight": 5
+          },
+          {
+            "kind": "INVALIDATES",
+            "weight": 5
+          }
+        ]
+      }
+    ],
+    "edgeWeightScale": {
+      "min": 1,
+      "max": 5,
+      "meaning": "5 hard/high semantic coupling; 1 weak contextual coupling"
+    },
+    "requiredEdgeKinds": [
+      "DEPENDS_ON",
+      "CONSTRAINS",
+      "PROVES_OR_BOUNDS",
+      "INVALIDATES",
+      "PROJECTS_TO",
+      "BLOCKS",
+      "DERIVES"
+    ]
+  },
+  "interaction": {
+    "rederiveEveryInteraction": true,
+    "compileHumanIntentToDerivedCard": true,
+    "humanMustNameTechnicalNode": false,
+    "humanMustChooseFramework": false,
+    "humanMustChooseMutationCount": false,
+    "challengePriorTrajectory": true,
+    "localAndGlobalReassessment": true,
+    "workbookOrProjectionAuthority": "NONE",
+    "sameInputPlanActContinuity": true
+  },
+  "neighborhood": {
+    "hardDependencyClosure": true,
+    "oneHopInboundOutbound": true,
+    "ownerCollisionScan": true,
+    "writerScan": true,
+    "oracleScan": true,
+    "evidenceClassScan": true,
+    "humanImpactScan": true,
+    "deploymentImpactScan": true,
+    "derivedArtifactScan": true,
+    "evidenceInvalidationScan": true,
+    "unknownNodeOrOwner": "BLOCKED",
+    "preferConsolidationOverNewOwner": true
+  },
+  "mutationPolicy": {
+    "tiers": [
+      1000,
+      100000,
+      1000000
+    ],
+    "ceiling": 1000000,
+    "selection": "Minimum sufficient tier derived from semantic breadth plus authority/security/privacy/writer/oracle/human/deployment/global-critical-path risk.",
+    "escalateOn": [
+      "survivor",
+      "new root failure family",
+      "new root-pair signature",
+      "non-converged compression tail"
+    ],
+    "atCeilingWithNovelty": "BLOCKED_REMODEL_TAXONOMY",
+    "semanticMutationIsPhysicalProof": false,
+    "noNoveltyTailRequired": 100,
+    "deletionOracleRequired": true,
+    "requiredSurvivors": 0
+  },
+  "pdca": {
+    "PLAN": [
+      "observe current owners and live facts",
+      "compile zero-authority IntentCard",
+      "derive local semantic neighborhood and global target gap",
+      "select minimum sufficient mutation tier",
+      "state global/intermediate/local DoD"
+    ],
+    "DO": [
+      "change the smallest coherent owner set",
+      "preserve one writer and existing authority",
+      "materialize nearest falsifier before widening implementation"
+    ],
+    "CHECK": [
+      "run deterministic invariants",
+      "run adversarial semantic mutation at selected tier",
+      "run compression/deletion oracle",
+      "bind exact-head evidence and required physical/external oracles by claim"
+    ],
+    "ACT": [
+      "rederive neighborhood and global gap after every interaction, PR result and merge",
+      "invalidate stale evidence and previous roadmap assumptions",
+      "retire, absorb or reclassify orphan candidates",
+      "select the next minimum semantic slice or stop"
+    ]
+  },
+  "enterpriseCandidateAsymptote": {
+    "name": "ENTERPRISE_CANDIDATE",
+    "authoritativeOwner": "docs/convergence/convergence-authority.json#s5Seal",
+    "tramaMayWriteStatus": false,
+    "tramaMayRecommendDistance": true,
+    "selfAttestationForbidden": true,
+    "repositoryInternalPrerequisites": [
+      "all applicable repository-internal conditionals terminal with evidence",
+      "S4-A6-CLOSE terminal before S5-CANDIDATE-SEAL",
+      "current exact-head required rails successful",
+      "no unresolved high/critical repository-internal blocker relevant to the claim"
+    ],
+    "externalPrerequisites": [
+      "E3-HUMAN independently observed where human usability/accessibility is claimed",
+      "E3-GOV independently observed for preventive repository governance",
+      "E4-DEPLOY independently observed for deployment effectiveness/security/identity/observability claims"
+    ],
+    "promotionRule": "Repository evidence may establish eligibility for external assessment; the target is never inferred from mutation count, CI green, releaseStage=candidate, workbook or this projection."
+  },
+  "mountedObjectContract": {
+    "requiredForEveryNonRootNode": [
+      "id",
+      "parent",
+      "abstractionLevel",
+      "compositionRole",
+      "owns"
+    ],
+    "rootParentException": "TRAMA.ROOT",
+    "allowedAbstractionLevels": [
+      "GLOBAL",
+      "INTERMEDIATE",
+      "LOCAL"
+    ],
+    "lifecycleRule": "Any maintained adaptive engineering object is canonical-derived, ABSORBED, EXPERIMENTAL or RETIRED; orphan active candidates are defects."
+  },
+  "controlledImport": {
+    "ikant": {
+      "import": [
+        "derived natural-language IntentCard",
+        "full semantic-neighborhood rederivation",
+        "previous roadmap as falsifiable hypothesis",
+        "risk-adaptive mutation tier selection",
+        "post-PR and post-merge ACT reassessment",
+        "derived workbook/projection authority zero",
+        "distinct blocker and evidence effects"
+      ],
+      "doNotImport": [
+        "iKant product slice identities",
+        "iKant provider/runtime authorities",
+        "10M default mutation requirement",
+        "iKant-specific enterprise topology"
+      ]
+    },
+    "ikant_LE": {
+      "import": [
+        "smallest semantic neighborhood",
+        "one writer and no parallel SOT",
+        "prefer delete/merge/reuse over new framework",
+        "deletion oracle for irreducibility",
+        "no-novelty tail",
+        "exact-head source binding"
+      ],
+      "doNotImport": [
+        "admission/Terms protocol",
+        "activate-first bootstrap",
+        "Surface B DOCX delivery",
+        "psyche/self-world/life-consciousness runtime",
+        "GitHub-API-only product admission rules"
+      ]
+    }
+  },
+  "dod": {
+    "global": [
+      {
+        "id": "G01",
+        "rule": "TRAMA is zero-authority and cannot persist or replace the canonical convergence cursor"
+      },
+      {
+        "id": "G02",
+        "rule": "24-family method census plus 100-method no-novelty tail is represented and bounded"
+      },
+      {
+        "id": "G03",
+        "rule": "Every mounted lattice object has hierarchy, abstraction and composition representation"
+      },
+      {
+        "id": "G04",
+        "rule": "Enterprise Candidate is externally anchored and cannot be self-attested by TRAMA or CI"
+      },
+      {
+        "id": "G05",
+        "rule": "TRAMA check and 1M saturation are reachable from the canonical current semantic gate"
+      },
+      {
+        "id": "G06",
+        "rule": "Controlled imports are explicit and forbidden iKant/iKant_LE ownership is not ported"
+      },
+      {
+        "id": "G07",
+        "rule": "Exact-head evidence remains required and mutation never becomes physical/human/deployment proof"
+      },
+      {
+        "id": "G08",
+        "rule": "Human business and repository merge authority remain human/authorized"
+      }
+    ],
+    "intermediate": [
+      {
+        "id": "I01",
+        "rule": "Human intent compiles to a zero-authority IntentCard without requiring technical choices"
+      },
+      {
+        "id": "I02",
+        "rule": "Semantic neighborhood includes dependency, owner/writer, oracle/evidence, human, deployment and invalidation scans"
+      },
+      {
+        "id": "I03",
+        "rule": "Mutation tier is selected from 1k/100k/1M by risk and escalates on survivors/novelty"
+      },
+      {
+        "id": "I04",
+        "rule": "PLAN/DO/CHECK/ACT are explicit and ACT rederives local and global trajectory every interaction/PR/merge"
+      },
+      {
+        "id": "I05",
+        "rule": "Previous roadmap and already-started slice are challengeable hypotheses"
+      },
+      {
+        "id": "I06",
+        "rule": "One-writer/no-parallel-SOT and consolidation-first rules fail closed"
+      },
+      {
+        "id": "I07",
+        "rule": "Derived Enterprise Candidate distance exposes repository vs E3/E4 blockers without promoting status"
+      },
+      {
+        "id": "I08",
+        "rule": "Compression/deletion oracle proves every retained kernel mechanism necessary under the declared corpus"
+      }
+    ],
+    "local": [
+      {
+        "id": "L01",
+        "rule": "v3/trama-engineering-contract.json is machine-readable and validator-complete"
+      },
+      {
+        "id": "L02",
+        "rule": "v3/trama-engineering.mjs emits PLAN/ACT orientation from current canonical sources"
+      },
+      {
+        "id": "L03",
+        "rule": "v3/trama-engineering-check.mjs rejects authority, hierarchy, saturation, import and gate-wiring drift"
+      },
+      {
+        "id": "L04",
+        "rule": "v3/trama-engineering-saturation.mjs executes exactly 1,000,000 deterministic adversarial cases with zero survivors plus deletion oracle"
+      },
+      {
+        "id": "L05",
+        "rule": "AGENTS, authority matrix, DEVELOPMENT, TESTING and PR template make intake/exit obligations explicit"
+      },
+      {
+        "id": "L06",
+        "rule": "current-gate-registry mounts TRAMA after convergence authority and before downstream adaptive product convergence"
+      },
+      {
+        "id": "L07",
+        "rule": "exact PR HEAD must pass canonical current semantic/runtime and required GOV-01F checks"
+      }
+    ]
+  },
+  "sourceBindings": [
+    "AGENTS.md",
+    "docs/PRODUCT.md",
+    "docs/authority-matrix.yaml",
+    "docs/convergence/convergence-authority.json",
+    "docs/DEVELOPMENT.md",
+    "docs/TESTING.md",
+    "v3/semantic-owner-contract.json",
+    "v3/gaps.json",
+    "v3/release-identity.json",
+    "v3/current-gate-registry.mjs",
+    ".github/PULL_REQUEST_TEMPLATE.md"
+  ]
+}

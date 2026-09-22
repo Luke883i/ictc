@@ -53,3 +53,11 @@ Historical/candidate documents are useful for design lineage but do not override
 21. Seven business procedures remain seven. EP-01 is cross-cutting supervision, not an eighth business process.
 22. Cross-procedure creation must authorize the source, target permission and target procedure policy, and must normalize the new object through the target's native initial-state contract.
 23. Evidence formats are same-as-read and derive from the canonical evidence graph/dossier owner; no format may widen visibility or silently drop claim boundaries.
+
+## TRAMA — adaptive engineering intake
+
+24. Per ogni interazione che può cambiare prodotto, runtime, governance o traiettoria, esegui `node v3/trama-engineering.mjs --intent "<human intent>" --phase PLAN`. TRAMA è una proiezione derivata a authority zero: non sostituisce product truth, runtime truth, Git facts o convergence authority.
+25. Compila l'intento umano in un IntentCard derivato; non chiedere alla persona di scegliere nodo tecnico, framework o cardinalità di mutation. Seleziona il minimo tier sufficiente tra 1k / 100k / 1M e scala solo su survivor o novelty.
+26. Ricalcola ad ogni interazione il vicinato semantico: hard dependency closure, un hop inbound/outbound, owner/writer, oracle/evidence, human impact, deployment impact, derived artifact ed evidence invalidation. La roadmap precedente e una slice già iniziata restano ipotesi falsificabili.
+27. Enterprise Candidate è un asintoto non auto-attestabile: TRAMA può esporre distanza e blocker, ma E3-HUMAN, E3-GOV ed E4-DEPLOY non si chiudono con CI o semantic mutation e `s5Seal` resta dell'authority canonica.
+28. Dopo ogni esito PR e dopo il merge, esegui l'ACT: ricalcola traiettoria locale + globale, invalida evidence stale, assorbi/ritira candidati orfani e scegli la prossima slice semantica minima oppure fermati. Human business authority e human merge authority restano invariati.
