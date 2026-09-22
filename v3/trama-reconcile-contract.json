@@ -275,7 +275,9 @@
         "classification": "migration-only",
         "blocking": false
       }
-    ]
+    ],
+    "censusSource": "git-ls-tree-head",
+    "censusAuthority": "committed exact-head tree only; mutable index and untracked test/runtime artifacts are excluded from governance state"
   },
   "reconciliationRules": [
     {

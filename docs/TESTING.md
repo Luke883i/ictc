@@ -158,3 +158,5 @@ node v3/trama-reconcile-saturation.mjs
 Il check confronta authority, owner correnti, remediation registry, legacy census, Compass e critical path. La saturation attraversa 8 campagne L0→L7 (ferro, persistence, runtime, semantic, governance, product, experience, enterprise), **3.000.000** casi, 64 failure family, tutte le 2.016 coppie e una coda no-novelty da **100.000** casi. Questi numeri qualificano il modello semantico: non sono browser session, human study, deployment evidence o prova formale di minimalità globale.
 
 Un candidate path legacy non è un failure per nome. Il failure è una classificazione assente o una responsabilità blocking ancora corrente.
+
+Il legacy census è vincolato al tree committed dell'exact HEAD con `git ls-tree -r --name-only HEAD`: mutable index, file untracked e artefatti transitori creati da test precedenti non possono cambiare la governance truth dello stesso commit.
