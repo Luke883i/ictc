@@ -123,6 +123,17 @@ export function reconcileAuthority(root=DEFAULT_ROOT,authority=json(root,'docs/c
  const serialMap=Object.fromEntries((authority.serialChain||[]).map(x=>[x.id,x.state]));
  for(const [id,state] of Object.entries(expected.serial))if(serialMap[id]!==state)debt.push({id:'SERIAL:'+id,expected:state,observed:serialMap[id]??null});
  for(const key of ['completedThrough','nextSerialSlice','nextSerialState','nextConditionalSlice'])if((authority.planningState||{})[key]!==expected.planning[key])debt.push({id:'PLAN:'+key,expected:expected.planning[key],observed:(authority.planningState||{})[key]??null});
+ if(JSON.stringify(authority.planningState?.criticalPath||[])!==JSON.stringify(expected.planning.criticalPath||[]))debt.push({id:'PLAN:criticalPath',expected:expected.planning.criticalPath,observed:authority.planningState?.criticalPath||[]});
+ if(authority.governanceRevision!=='GOV-WB6')debt.push({id:'GOVERNANCE:REVISION',expected:'GOV-WB6',observed:authority.governanceRevision??null});
+ const observation=authority.reconciliationObservation||{},preimage=contract.observedPreimage||{};
+ if(observation.mainSha!==preimage.mainSha)debt.push({id:'OBSERVATION:mainSha',expected:preimage.mainSha,observed:observation.mainSha??null});
+ if(observation.mergedPr!==preimage.mergedPr)debt.push({id:'OBSERVATION:mergedPr',expected:preimage.mergedPr,observed:observation.mergedPr??null});
+ const railIds=(authority.externalRails||[]).filter(x=>x?.state==='external').map(x=>x.id);
+ if(JSON.stringify(railIds)!==JSON.stringify(expected.externalRails))debt.push({id:'EXTERNAL_RAILS',expected:expected.externalRails,observed:railIds});
+ if(authority.s5Seal?.enterpriseCandidate!==false||authority.s5Seal?.enterpriseReady!==false)debt.push({id:'S5:NON_PROMOTION',expected:{enterpriseCandidate:false,enterpriseReady:false},observed:{enterpriseCandidate:authority.s5Seal?.enterpriseCandidate??null,enterpriseReady:authority.s5Seal?.enterpriseReady??null}});
+ const finals=(authority.reconciliations||[]).filter(x=>x?.finalForPlanState===true);
+ const final=finals[0]||null;
+ if(finals.length!==1||final?.id!=='REC-GOV-TRAMA-COMPASS-1-MAIN'||final?.mergedPr!==preimage.mergedPr||final?.mergeSha!==preimage.mainSha||final?.reconciledSubSlice!=='GOV-TRAMA-COMPASS-1')debt.push({id:'RECONCILIATION:FINAL_PLAN_OBSERVATION',expected:{count:1,id:'REC-GOV-TRAMA-COMPASS-1-MAIN',mergedPr:preimage.mergedPr,mergeSha:preimage.mainSha,reconciledSubSlice:'GOV-TRAMA-COMPASS-1'},observed:finals});
  if(expected.legacy.unknown.length)debt.push({id:'LEGACY:UNCLASSIFIED',expected:0,observed:expected.legacy.unknown.length});
  if(expected.legacy.contentMissing.length)debt.push({id:'LEGACY:CONTENT_SITE_DRIFT',expected:0,observed:expected.legacy.contentMissing.length});
  return Object.freeze({schema:'ictc-trama-reconciliation-audit/v1',coherent:debt.length===0,debt,expected,authorityRevision:authority.governanceRevision||null,projectionIsSot:false});
