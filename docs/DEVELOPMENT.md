@@ -121,3 +121,19 @@ La **Bussola** `docs/ENGINEERING_COMPASS.md` è una projection generated per l'u
 ### Documentation Delta
 
 Ogni semantic change dichiara il delta documentale: aggiorna solo gli owner current/policy/operating realmente impattati e rigenera la Bussola. Mass rewrite, lineage recente o un generated artifact non diventano authority. Merge non equivale a completion o release; rollback, exact-head e post-merge verification restano distinti.
+
+## GOV-TRAMA-RECONCILE-1 — GLOBAL_ACT e riconciliazione
+
+Quando l'intento è una prosecuzione generica (`ora che si fa`, `prosegui`, `what next`), non si riprende meccanicamente la slice precedente. Si esegue un **GLOBAL_ACT**:
+
+1. osservare exact-head, owner, finding e gate correnti;
+2. calcolare confini ontologici locali, intermedi e globali;
+3. classificare ogni residuo legacy per ruolo corrente;
+4. confrontare lo stato osservato con le 16 dimensioni / 64 DoD atomiche di Enterprise Candidate;
+5. riconciliare il planning canonico quando diverge dall'evidenza;
+6. scegliere una sola conditional slice minima oppure STOP;
+7. aggiornare insieme authority, workbook e Bussola quando cambia la semantica di traiettoria.
+
+Nella riconciliazione `GOV-WB6` corrente il critical path derivato parte da `C2-DELIVERY-PROVENANCE`. È uno stato osservato e falsificabile, non una roadmap immutabile: ogni GLOBAL_ACT deve ricalcolarlo dagli owner e dai blocker correnti prima di proseguire.
+
+Lo stato `in-progress` è intenzionale: evita di collassare “capacità sostanzialmente implementata con blocker residuo” in `todo` o `done`. Una closure repository-side non chiude E3-HUMAN, E3-GOV o E4-DEPLOY.

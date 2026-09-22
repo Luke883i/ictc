@@ -149,3 +149,15 @@ I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il 
 Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs/ENGINEERING_COMPASS.md`: è una projection generated di **TRAMA**, non un'autorità. Il target completo è `v3/trama-enterprise-dod.json`: 16 assi e requisiti atomici di Enterprise Candidate, senza stato corrente auto-certificato.
 
 La Bussola separa sempre locale, intermedio e globale e propone una sola prossima slice o STOP/BLOCKED. Gli owner canonici indicati in questa guida restano la fonte sostanziale.
+
+## Se chiedi “ora che si fa?”
+
+Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `v3/trama-reconcile-contract.json` e restituire una sola prossima slice con:
+
+- stato **locale**, **intermedio** e **globale**;
+- DoD ancora mancanti;
+- blocker e incertezza;
+- evidenza che rende la convergenza dimostrabile;
+- stop condition.
+
+La direzione leggibile è nella Bussola; l'autorità resta negli owner canonici.

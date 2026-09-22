@@ -8,10 +8,11 @@ Portare ICTC dallo stato osservato a Enterprise Candidate ricalcolando product t
 ## DOVE SIAMO
 - **Locale:** TRAMA.PURPOSE, TRAMA.TRUTH, TRAMA.AUTHORITY, TRAMA.SYSTEM, TRAMA.SECURITY, TRAMA.EVIDENCE, TRAMA.HUMAN, TRAMA.OPERATIONS, TRAMA.RISK, TRAMA.TRAJECTORY, TRAMA.SLICE
 - **Intermedio:** E01_PRODUCT, E02_AUTHORITY, E03_ARCHITECTURE, E04_DATA, E05_SECURITY_PRIVACY, E06_IDENTITY, E07_RELIABILITY, E08_CAPACITY, E09_OBSERVABILITY, E10_API_INTEGRATION, E11_AI, E12_HUMAN, E13_ASSURANCE, E14_DELIVERY, E15_SUPPLY_CHAIN, E16_GOVERNANCE
-- **Globale:** ENTERPRISE_CANDIDATE; 9 gap non-terminali; 2 debiti di riconciliazione; external E3-HUMAN, E3-GOV, E4-DEPLOY
+- **Globale:** ENTERPRISE_CANDIDATE; 9 gap non-terminali; 0 debiti di riconciliazione; critical path C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT; external E3-HUMAN, E3-GOV, E4-DEPLOY
+- **Governance:** GOV-WB6
 
 ## COSA FACCIAMO ADESSO
-**TRAMA.RECONCILE** — Observed executable evidence and canonical convergence planning disagree; reconcile trajectory before adding product capability.
+**C2-DELIVERY-PROVENANCE** — Intersect the reconciled conditional critical path with the intent neighborhood and blockers; previous plans remain falsifiable.
 
 Stop quando la causa è chiusa nell'owner corretto, il falsificatore discrimina, la documentazione impattata è coerente e l'exact-head evidence richiesta converge.
 

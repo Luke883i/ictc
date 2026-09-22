@@ -1,0 +1,420 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "GOV-TRAMA-RECONCILE-1",
+  "name": "Observed State <-> Convergence Authority Reconciliation",
+  "classification": "trama-owned-zero-authority-reconciliation-profile",
+  "authorityEffect": "NONE",
+  "createsNewSot": false,
+  "createsNewRoadmapCursor": false,
+  "observedPreimage": {
+    "mainSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
+    "mergedPr": 183,
+    "observedOn": "2026-09-22",
+    "meaning": "immutable post-GOV-TRAMA-COMPASS-1 observation used to reconcile durable planning; not a live pointer"
+  },
+  "method": {
+    "parent": "TRAMA",
+    "profile": "TRAMA-RECONCILE",
+    "canonicalFamilies": 24,
+    "noNoveltyRule": "reuse the canonical TRAMA 24-family census; a new failure family at the ceiling blocks and requires taxonomy remodeling rather than silent widening",
+    "synthesis": "multi-method evidence/causality/authority/legacy/critical-path reconciliation from physical substrate to end-user experience"
+  },
+  "campaigns": [
+    {
+      "id": "L0-FERRO",
+      "scope": "runtime process dependency filesystem and execution substrate",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L1-PERSISTENCE",
+      "scope": "durability concurrency state ownership and recovery",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L2-RUNTIME",
+      "scope": "API handlers errors pagination capacity and receipts",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L3-SEMANTIC",
+      "scope": "ontology owners lineage evidence classes and legacy",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L4-GOVERNANCE",
+      "scope": "authority planning CI documentation DevOps and exact-state evidence",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L5-PRODUCT",
+      "scope": "seven procedures capability semantics AI and human checkpoints",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L6-EXPERIENCE",
+      "scope": "13 canonical surfaces accessibility progressive disclosure and role actionability",
+      "failureFamilies": 8
+    },
+    {
+      "id": "L7-ENTERPRISE",
+      "scope": "16 Enterprise Candidate axes 64 atomic DoD external rails and critical path",
+      "failureFamilies": 8
+    }
+  ],
+  "sourcePrecedence": [
+    "live-git-exact-head",
+    "claim-specific-executable-evidence",
+    "substantive-owner-contract",
+    "convergence-sequencing-authority",
+    "derived-projection"
+  ],
+  "stateVocabulary": {
+    "conditional": [
+      "todo",
+      "in-progress",
+      "done",
+      "not-required"
+    ],
+    "serial": [
+      "eligible",
+      "done",
+      "blocked"
+    ],
+    "rule": "done/not-required are terminal; in-progress means repository evidence materially exists but at least one declared repository blocker remains; external evidence is never hidden inside a repository terminal state"
+  },
+  "genericContinuationProtocol": {
+    "phrases": [
+      "ora",
+      "ora?",
+      "ora che si fa",
+      "adesso",
+      "e adesso",
+      "prosegui",
+      "continua",
+      "what next",
+      "now what",
+      "continue"
+    ],
+    "mode": "GLOBAL_ACT",
+    "rule": "generic continuation means recompute the whole governed state before choosing work; it is never a request to continue the previously imagined plan blindly",
+    "horizons": [
+      "LOCAL",
+      "INTERMEDIATE",
+      "GLOBAL"
+    ],
+    "output": [
+      "observed-state",
+      "coherence-verdict",
+      "convergence-distance",
+      "granular-DoD",
+      "blockers",
+      "uncertainty",
+      "exactly-one-next-action-or-stop"
+    ]
+  },
+  "legacy": {
+    "candidatePathRegex": "(?:legacy|deprecated|retired|compat|finetuning|(?:^|[-_/])v2(?:[-_.?/]|$)|2[-_]2|trajectory-1-141|v4-stable)",
+    "classes": [
+      "compatibility-required",
+      "migration-only",
+      "lineage-only",
+      "deprecated-test",
+      "retirement-candidate",
+      "blocking-unclassified"
+    ],
+    "unknownClass": "blocking-unclassified",
+    "rules": [
+      {
+        "pattern": "^docs/(?:17_SATURATION_V2|23_VALIDATION_REPORT_V2|24_BLUEPRINT_V2_ITALIANO|V2_|UIUX_ONTO_EPISTEMIC_FINETUNING|UI_FINE_TUNING_3_4)",
+        "classification": "lineage-only",
+        "blocking": false
+      },
+      {
+        "pattern": "^\\.github/workflows/(?:v2-dod|demo-suite-2-2-runtime)",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/demo/demo-suite-2-2-fixture-",
+        "classification": "migration-only",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/runtime/demo-suite-2-2",
+        "classification": "compatibility-required",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION"
+      },
+      {
+        "pattern": "^v3/demo-suite-2-2-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/browser-v2-1-procedure-journey\\.py$",
+        "classification": "compatibility-required",
+        "blocking": false,
+        "reason": "still current E2 journey oracle despite versioned name"
+      },
+      {
+        "pattern": "^v3/browser-v2-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/runtime/grc-runtime-legacy\\.mjs$",
+        "classification": "compatibility-required",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION"
+      },
+      {
+        "pattern": "^v3/public/ui/procedure-sequential-ux-2-2\\.(?:js|css)$",
+        "classification": "compatibility-required",
+        "blocking": false,
+        "reason": "current journey overlay; versioned name is not by itself retirement evidence"
+      },
+      {
+        "pattern": "^v3/(?:browser-)?procedure-finetuning-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/public/(?:ui/)?procedure-finetuning-",
+        "classification": "retirement-candidate",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION"
+      },
+      {
+        "pattern": "^v3/public/grc-v2\\.css$",
+        "classification": "retirement-candidate",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION"
+      },
+      {
+        "pattern": "^v3/trajectory-1-141-",
+        "classification": "lineage-only",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/v2-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/v4-stable-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/surface-commit-3-2-v2-saturation\\.mjs$",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^\\.github/workflows/v4-stable-dod\\.yml$",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^docs/DEMO_SUITE_2_2_RUNTIME_SEMANTIC\\.md$",
+        "classification": "lineage-only",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/browser-v4-stable-check\\.py$",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/procedure-ui-ux-finetuning-",
+        "classification": "deprecated-test",
+        "blocking": false
+      },
+      {
+        "pattern": "^v3/ui-finetuning-3-4-",
+        "classification": "deprecated-test",
+        "blocking": false,
+        "reason": "retirement oracle; current presentation owner is distributed local owners"
+      }
+    ],
+    "contentSites": [
+      {
+        "path": "v3/store.mjs",
+        "token": "importLegacyIfPresent",
+        "classification": "migration-only",
+        "blocking": false
+      },
+      {
+        "path": "v3/store.mjs",
+        "token": "legacy-unbound",
+        "classification": "migration-only",
+        "blocking": false
+      },
+      {
+        "path": "v3/stable-governance.mjs",
+        "token": "legacySignals",
+        "classification": "migration-only",
+        "blocking": false
+      },
+      {
+        "path": "v3/runtime/grc-actions.mjs",
+        "token": "legacyRequestedState",
+        "classification": "compatibility-required",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION"
+      },
+      {
+        "path": "v3/integrity-binding.mjs",
+        "token": "LEGACY_INTEGRITY_BINDING_SCOPE",
+        "classification": "migration-only",
+        "blocking": false
+      },
+      {
+        "path": "v3/sqlite-state-persistence.mjs",
+        "token": "importLegacyIfPresent",
+        "classification": "migration-only",
+        "blocking": false
+      }
+    ],
+    "censusSource": "git-ls-tree-head",
+    "censusAuthority": "committed exact-head tree only; mutable index and untracked test/runtime artifacts are excluded from governance state"
+  },
+  "reconciliationRules": [
+    {
+      "id": "R1-C5",
+      "predicate": "C5 owner contract validates 13 surfaces/7 procedures and current gate registry retains C5 gates",
+      "expected": "C5-SEMANTIC-OWNER-COMPRESSION=done",
+      "boundary": "repository-bounded; no E3/E4 promotion"
+    },
+    {
+      "id": "R2-UIUX",
+      "predicate": "UIUX convergence, capability closure, runtime contraction and onto-epistemic convergence gates are current",
+      "expected": "UIUX-CONVERGE-0=done",
+      "boundary": "repository/UI/runtime closure only; E3-HUMAN remains external"
+    },
+    {
+      "id": "R3-C1",
+      "predicate": "D-RSC/F7 or blocking compatibility/retirement legacy remains",
+      "expected": "C1-COMPAT-CONTRACTION=todo",
+      "boundary": "legacy presence alone is not failure; only current/unclassified/blocking residue counts"
+    },
+    {
+      "id": "R4-C2",
+      "predicate": "audit F-06 remains in-remediation",
+      "expected": "C2-DELIVERY-PROVENANCE=in-progress",
+      "boundary": "SBOM/pins do not equal completed provenance/signing"
+    },
+    {
+      "id": "R5-C3",
+      "predicate": "enterprise runtime/bench evidence exists while F-13 remains unresolved",
+      "expected": "C3-CAPACITY-CONTRACT=in-progress",
+      "boundary": "benchmark-ready repository substrate is not production scale evidence; E4-DEPLOY remains a separate external rail and does not prevent repository-bounded terminality once repository blockers close"
+    },
+    {
+      "id": "R6-C4",
+      "predicate": "audit F-15 remains in-remediation",
+      "expected": "C4-AI-EVAL-DRIFT=in-progress",
+      "boundary": "budget controls do not equal versioned eval/drift rollback closure"
+    },
+    {
+      "id": "R7-S4",
+      "predicate": "all applicable C1..C5 are terminal",
+      "expected": "S4-A6-CLOSE eligible only after predicate",
+      "boundary": "merged sub-slices do not self-close the parent"
+    },
+    {
+      "id": "R8-S5",
+      "predicate": "S4-A6-CLOSE terminal and atomic candidate evidence seal passes",
+      "expected": "S5-CANDIDATE-SEAL eligible only after predicate",
+      "boundary": "Enterprise Candidate != Enterprise Ready"
+    }
+  ],
+  "criticalPathPolicy": {
+    "ordering": [
+      "blocking-severity",
+      "parent-dependency",
+      "evidence-gap",
+      "blast-radius",
+      "reuse-owner",
+      "nearest-falsifier"
+    ],
+    "severityOrder": [
+      "critical",
+      "high",
+      "medium-high",
+      "medium",
+      "low"
+    ],
+    "reconciledPath": [
+      "C2-DELIVERY-PROVENANCE",
+      "C1-COMPAT-CONTRACTION",
+      "C3-CAPACITY-CONTRACT",
+      "C4-AI-EVAL-DRIFT"
+    ],
+    "next": "C2-DELIVERY-PROVENANCE",
+    "nextWhy": "F-06 is the highest-severity unresolved repository conditional and closes supply-chain/release provenance obligations needed before S4-A6-CLOSE",
+    "oneNextAction": true
+  },
+  "dod": {
+    "global": [
+      "G01 no second authority/SOT/cursor is created",
+      "G02 Enterprise Candidate remains a 16-axis/64-requirement target and cannot self-attest",
+      "G03 E3-HUMAN E3-GOV E4-DEPLOY remain explicit external rails",
+      "G04 observed state and durable planning are reconciled through evidence-backed predicates",
+      "G05 repository-terminal and real-world/external claims are represented separately",
+      "G06 every generic continuation interaction executes GLOBAL_ACT before planning",
+      "G07 critical path is derived from current blockers rather than historical order",
+      "G08 all detected legacy is typed; blocking-unclassified count must be zero",
+      "G09 documentation/workbook/Compass co-transition with planning semantics",
+      "G10 merge remains human-authorized and is not release/completion",
+      "G11 exact-head evidence binds acceptance; semantic mutations remain model evidence",
+      "G12 no Enterprise Ready legal compliance market-fit or production-effectiveness claim is created"
+    ],
+    "intermediate": [
+      "I01 C5 reconciles terminal repository-side only when source predicates validate",
+      "I02 UIUX reconciles terminal repository-side while E3-HUMAN remains visible",
+      "I03 C1 remains open while blocking compatibility/retirement debt exists",
+      "I04 C2 represents partial provenance state without laundering SBOM into signing/provenance completion",
+      "I05 C3 represents implemented benchmark substrate plus residual F-13 separately while E4 remains an external rail",
+      "I06 C4 represents budget controls separately from eval/drift rollback",
+      "I07 S4 remains blocked until every applicable conditional is terminal",
+      "I08 S5 remains blocked until S4 and atomic candidate seal are terminal",
+      "I09 state vocabulary is granular enough to avoid todo/done information loss",
+      "I10 stale planning encoded in current gates is replaced by reconciled semantics without rewriting lineage models",
+      "I11 legacy file-name/version markers are classified by current role, not age/name alone",
+      "I12 Compass emits local/intermediate/global distance, DoD metrics and one next action"
+    ],
+    "local": [
+      "L01 reconciliation contract is machine-readable and validator-complete",
+      "L02 reconciliation runtime derives source-backed expected state from current owners",
+      "L03 convergence authority revision is GOV-WB6 and preserves PR141 baseline history",
+      "L04 immutable PR183 preimage is recorded as reconciliation observation",
+      "L05 C5=done; UIUX serial=done; C1=todo; C2/C3/C4=in-progress",
+      "L06 next conditional is C2-DELIVERY-PROVENANCE; S4/S5 remain blocked",
+      "L07 legacy path census has zero blocking-unclassified candidates",
+      "L08 explicit content-level legacy sites are classified",
+      "L09 generic phrases such as ora/prosegui/what next map to GLOBAL_ACT",
+      "L10 current gate registry mounts reconcile check+saturation after TRAMA governance",
+      "L11 capability closure consumes reconciled plan rather than PR141-era next-slice state",
+      "L12 workbook projection has ROADMAP/TRAJECTORY/DECIDE/AUTHORITY/BINDING and GOV-WB6 tokens",
+      "L13 generated Compass is byte-consistent with governed orientation",
+      "L14 3M multi-abstraction mutation campaign has zero unsafe survivors and full 64-family pair coverage",
+      "L15 100k no-novelty tail yields zero unmapped reconciliation failure families",
+      "L16 exact PR head must pass canonical repository CI without weakening product/test together"
+    ]
+  },
+  "localModelReceipt": {
+    "execution": "standalone reconciliation model in assistant container",
+    "cases": 3000000,
+    "campaigns": 8,
+    "rootFailureFamilies": 64,
+    "rootPairs": 2016,
+    "survivors": 0,
+    "deletionKilled": 64,
+    "noNoveltyTail": 100000,
+    "novelFamilies": 0,
+    "digest": "abeac003d6f3f518f44c74b4f1963e8391b868396078a5b047fd93cfd7f225ca",
+    "claimBoundary": "model qualification only; repository integration is established only by exact-head repository checks/CI"
+  },
+  "claimBoundary": "Zero-authority reconciliation/governance evidence. It may update durable planning only through the canonical convergence authority co-transition; it cannot manufacture external human/GitHub/deployment evidence or prove Enterprise Ready, legal compliance, production security, market fit or formal global minimality."
+}

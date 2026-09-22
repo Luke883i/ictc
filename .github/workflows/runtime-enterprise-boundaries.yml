@@ -41,6 +41,9 @@ jobs:
         run: node v3/runtime-enterprise-boundaries-ci.mjs
   hostile-saturation:
     runs-on: ubuntu-24.04
+    outputs:
+      semantic_failed_gate: ${{ steps.current_semantic.outputs.failed_check }}
+      semantic_outcome: ${{ steps.current_semantic.outcome }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,8 +63,23 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Existing current semantic suite
+        id: current_semantic
+        continue-on-error: true
         run: npm run test:current:semantic
       - name: Evidence runtime diagnostic
+        if: steps.current_semantic.outcome == 'success'
         run: node v3/evidence-runtime-diagnostic.mjs
       - name: Existing current runtime suite
+        if: steps.current_semantic.outcome == 'success'
         run: npm run test:current:runtime
+      - name: Propagate semantic failure
+        if: steps.current_semantic.outcome == 'failure'
+        run: exit 1
+
+  hostile-semantic-failure-report:
+    needs: hostile-saturation
+    if: always() && needs.hostile-saturation.outputs.semantic_failed_gate != ''
+    name: hostile-semantic-failure / ${{ needs.hostile-saturation.outputs.semantic_failed_gate }}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: exit 1

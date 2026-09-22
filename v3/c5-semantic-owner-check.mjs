@@ -35,10 +35,10 @@ assert.ok(settings.includes('installSettings18Structure')&&settings.includes('da
 
 const c5=convergenceModel.conditionalSlices.find(item=>item.id==='C5-SEMANTIC-OWNER-COMPRESSION');
 assert.ok(c5,'C5 missing from convergence authority');
-assert.equal(c5.mustResolveBefore,'UIUX-CONVERGE-0+S4-A6-CLOSE');
+assert.equal(c5.mustResolveBefore,'UIUX-CONVERGE-0+S4-A6-CLOSE');assert.equal(c5.state,'done','C5 must be repository-terminal after GOV-TRAMA-RECONCILE-1');
 assert.deepEqual(convergenceModel.externalRails.map(item=>item.id),['E3-HUMAN','E3-GOV','E4-DEPLOY']);
-assert.equal(manifest.versionAxes?.convergenceGovernance?.value,'GOV-WB5','documentation governance axis must match convergence authority');
-assert.equal(convergenceModel.governanceRevision,'GOV-WB5');
+assert.equal(manifest.versionAxes?.convergenceGovernance?.value,'GOV-WB6','documentation governance axis must match convergence authority');
+assert.equal(convergenceModel.governanceRevision,'GOV-WB6');
 assert.ok((manifest.documents||[]).some(item=>item.path==='v3/README.md'&&item.authoritative===false),'v3 README must be registered as non-authoritative local operating projection');
 
 assert.equal(allocation.findings.length,28,'P3 finding denominator drift');

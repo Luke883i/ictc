@@ -83,3 +83,16 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 - [ ] Intermediate DoD compiled from current semantic neighborhood.
 - [ ] Local DoD compiled and satisfied on exact PR HEAD.
 - [ ] ACT recomputed after the latest tool/CI fact; prior roadmap was challenged rather than assumed.
+
+## GOV-TRAMA-RECONCILE-1
+
+- GLOBAL_ACT mode: `<yes|no>`
+- Reconciliation observation: `<exact main/PR preimage>`
+- Local coherence: `<pass|blocked + evidence>`
+- Intermediate coherence: `<pass|blocked + evidence>`
+- Global convergence: `<pass|blocked + Enterprise DoD delta>`
+- Legacy census: `<classified / blocking / unclassified>`
+- Critical path: `<ordered conditionals>`
+- One next action after ACT: `<slice|STOP>`
+- [ ] Repository-terminal claims remain separated from E3-HUMAN / E3-GOV / E4-DEPLOY.
+- [ ] Any trajectory semantic change co-mutates convergence authority, workbook projection and generated Compass.
