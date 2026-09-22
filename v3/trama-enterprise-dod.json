@@ -1,0 +1,754 @@
+{
+  "schemaVersion": "1.0.0",
+  "targetId": "ICTC-ENTERPRISE-CANDIDATE-DOD-1",
+  "target": "ENTERPRISE_CANDIDATE",
+  "classification": "zero-authority-enterprise-target-contract",
+  "authorityEffect": "NONE",
+  "statusAuthority": "docs/convergence/convergence-authority.json#s5Seal",
+  "storesCurrentStatus": false,
+  "selfAttestationForbidden": true,
+  "externalRails": [
+    "E3-HUMAN",
+    "E3-GOV",
+    "E4-DEPLOY"
+  ],
+  "axes": [
+    {
+      "id": "E01_PRODUCT",
+      "name": "Product identity, scope and claim honesty",
+      "requirements": [
+        {
+          "id": "E01.1",
+          "title": "Canonical product identity and non-goals are explicit",
+          "ownerRef": "docs/PRODUCT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Canonical product identity and non-goals are explicit\" at its declared owner without exceeding the E01_PRODUCT boundary.",
+          "falsifierClass": "e01_product-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E01_PRODUCT; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E01.2",
+          "title": "Public claims never exceed claim-matched evidence",
+          "ownerRef": "docs/PRODUCT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Public claims never exceed claim-matched evidence\" at its declared owner without exceeding the E01_PRODUCT boundary.",
+          "falsifierClass": "e01_product-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E01_PRODUCT; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E01.3",
+          "title": "Seven procedures plus cross-cutting EP-01 remain constitutional",
+          "ownerRef": "docs/PRODUCT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Seven procedures plus cross-cutting EP-01 remain constitutional\" at its declared owner without exceeding the E01_PRODUCT boundary.",
+          "falsifierClass": "e01_product-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E01_PRODUCT; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E01.4",
+          "title": "Release identity is immutable and attributable",
+          "ownerRef": "docs/PRODUCT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Release identity is immutable and attributable\" at its declared owner without exceeding the E01_PRODUCT boundary.",
+          "falsifierClass": "e01_product-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E01_PRODUCT; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E02_AUTHORITY",
+      "name": "Ontology, authority, ownership and writer boundaries",
+      "requirements": [
+        {
+          "id": "E02.1",
+          "title": "Every current semantic object resolves to one owner",
+          "ownerRef": "v3/semantic-owner-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Every current semantic object resolves to one owner\" at its declared owner without exceeding the E02_AUTHORITY boundary.",
+          "falsifierClass": "e02_authority-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E02_AUTHORITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E02.2",
+          "title": "One business write authority exists per governed fact",
+          "ownerRef": "v3/semantic-owner-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"One business write authority exists per governed fact\" at its declared owner without exceeding the E02_AUTHORITY boundary.",
+          "falsifierClass": "e02_authority-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E02_AUTHORITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E02.3",
+          "title": "Current lineage generated and external lifecycles remain typed",
+          "ownerRef": "v3/semantic-owner-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Current lineage generated and external lifecycles remain typed\" at its declared owner without exceeding the E02_AUTHORITY boundary.",
+          "falsifierClass": "e02_authority-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E02_AUTHORITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E02.4",
+          "title": "Unknown authority fails closed before code",
+          "ownerRef": "v3/semantic-owner-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Unknown authority fails closed before code\" at its declared owner without exceeding the E02_AUTHORITY boundary.",
+          "falsifierClass": "e02_authority-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E02_AUTHORITY; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E03_ARCHITECTURE",
+      "name": "Architecture, modularity and dependency integrity",
+      "requirements": [
+        {
+          "id": "E03.1",
+          "title": "Composition roots and extension points remain bounded",
+          "ownerRef": "docs/11_ARCHITECTURE.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Composition roots and extension points remain bounded\" at its declared owner without exceeding the E03_ARCHITECTURE boundary.",
+          "falsifierClass": "e03_architecture-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E03_ARCHITECTURE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E03.2",
+          "title": "Semantic slice dependency closure is explicit",
+          "ownerRef": "docs/11_ARCHITECTURE.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Semantic slice dependency closure is explicit\" at its declared owner without exceeding the E03_ARCHITECTURE boundary.",
+          "falsifierClass": "e03_architecture-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E03_ARCHITECTURE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E03.3",
+          "title": "Compatibility layers are classified or retired",
+          "ownerRef": "docs/11_ARCHITECTURE.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Compatibility layers are classified or retired\" at its declared owner without exceeding the E03_ARCHITECTURE boundary.",
+          "falsifierClass": "e03_architecture-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E03_ARCHITECTURE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E03.4",
+          "title": "Architecture changes declare rollback or migration boundary",
+          "ownerRef": "docs/11_ARCHITECTURE.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Architecture changes declare rollback or migration boundary\" at its declared owner without exceeding the E03_ARCHITECTURE boundary.",
+          "falsifierClass": "e03_architecture-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E03_ARCHITECTURE; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E04_DATA",
+      "name": "Data authority, integrity, lineage and lifecycle",
+      "requirements": [
+        {
+          "id": "E04.1",
+          "title": "Canonical persistence authority is explicit",
+          "ownerRef": "v3/store.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Canonical persistence authority is explicit\" at its declared owner without exceeding the E04_DATA boundary.",
+          "falsifierClass": "e04_data-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E04_DATA; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E04.2",
+          "title": "Critical writes are receipt/readback bound",
+          "ownerRef": "v3/store.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Critical writes are receipt/readback bound\" at its declared owner without exceeding the E04_DATA boundary.",
+          "falsifierClass": "e04_data-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E04_DATA; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E04.3",
+          "title": "Version and lineage preserve historical basis",
+          "ownerRef": "v3/store.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Version and lineage preserve historical basis\" at its declared owner without exceeding the E04_DATA boundary.",
+          "falsifierClass": "e04_data-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E04_DATA; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E04.4",
+          "title": "Retention erasure recovery do not resurrect forbidden state",
+          "ownerRef": "v3/store.mjs",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Retention erasure recovery do not resurrect forbidden state\" at its declared owner without exceeding the E04_DATA boundary.",
+          "falsifierClass": "e04_data-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E05_SECURITY_PRIVACY",
+      "name": "Security, privacy, secrets and egress",
+      "requirements": [
+        {
+          "id": "E05.1",
+          "title": "Trust boundaries fail closed",
+          "ownerRef": "SECURITY.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Trust boundaries fail closed\" at its declared owner without exceeding the E05_SECURITY_PRIVACY boundary.",
+          "falsifierClass": "e05_security_privacy-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E05_SECURITY_PRIVACY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E05.2",
+          "title": "Secrets never become content or client authority",
+          "ownerRef": "SECURITY.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Secrets never become content or client authority\" at its declared owner without exceeding the E05_SECURITY_PRIVACY boundary.",
+          "falsifierClass": "e05_security_privacy-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E05_SECURITY_PRIVACY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E05.3",
+          "title": "External egress is allowlisted and purpose-bound",
+          "ownerRef": "SECURITY.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"External egress is allowlisted and purpose-bound\" at its declared owner without exceeding the E05_SECURITY_PRIVACY boundary.",
+          "falsifierClass": "e05_security_privacy-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E05_SECURITY_PRIVACY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E05.4",
+          "title": "Security/privacy claims are evidence-class bounded",
+          "ownerRef": "SECURITY.md",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Security/privacy claims are evidence-class bounded\" at its declared owner without exceeding the E05_SECURITY_PRIVACY boundary.",
+          "falsifierClass": "e05_security_privacy-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E06_IDENTITY",
+      "name": "Identity, authorization, tenancy and deprovisioning",
+      "requirements": [
+        {
+          "id": "E06.1",
+          "title": "Identity source and trust boundary are explicit",
+          "ownerRef": "v3/runtime/identity.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Identity source and trust boundary are explicit\" at its declared owner without exceeding the E06_IDENTITY boundary.",
+          "falsifierClass": "e06_identity-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E06_IDENTITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E06.2",
+          "title": "Authorization remains server-side for material actions",
+          "ownerRef": "v3/runtime/identity.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Authorization remains server-side for material actions\" at its declared owner without exceeding the E06_IDENTITY boundary.",
+          "falsifierClass": "e06_identity-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E06_IDENTITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E06.3",
+          "title": "Tenant boundaries fail closed",
+          "ownerRef": "v3/runtime/identity.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Tenant boundaries fail closed\" at its declared owner without exceeding the E06_IDENTITY boundary.",
+          "falsifierClass": "e06_identity-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E06_IDENTITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E06.4",
+          "title": "Deprovisioning/revocation effectiveness is externally evidenced when deployed",
+          "ownerRef": "v3/runtime/identity.mjs",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Deprovisioning/revocation effectiveness is externally evidenced when deployed\" at its declared owner without exceeding the E06_IDENTITY boundary.",
+          "falsifierClass": "e06_identity-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E07_RELIABILITY",
+      "name": "Reliability, resilience, recovery and rollback",
+      "requirements": [
+        {
+          "id": "E07.1",
+          "title": "Durable state transitions have recovery semantics",
+          "ownerRef": "v3/c3-enterprise-runtime-closure.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Durable state transitions have recovery semantics\" at its declared owner without exceeding the E07_RELIABILITY boundary.",
+          "falsifierClass": "e07_reliability-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E07_RELIABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E07.2",
+          "title": "Scheduler concurrency uses lease/fencing invariants",
+          "ownerRef": "v3/c3-enterprise-runtime-closure.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Scheduler concurrency uses lease/fencing invariants\" at its declared owner without exceeding the E07_RELIABILITY boundary.",
+          "falsifierClass": "e07_reliability-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E07_RELIABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E07.3",
+          "title": "Rollback semantics are declared before merge",
+          "ownerRef": "v3/c3-enterprise-runtime-closure.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Rollback semantics are declared before merge\" at its declared owner without exceeding the E07_RELIABILITY boundary.",
+          "falsifierClass": "e07_reliability-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E07_RELIABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E07.4",
+          "title": "Production recovery effectiveness remains E4 where applicable",
+          "ownerRef": "v3/c3-enterprise-runtime-closure.json",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Production recovery effectiveness remains E4 where applicable\" at its declared owner without exceeding the E07_RELIABILITY boundary.",
+          "falsifierClass": "e07_reliability-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E08_CAPACITY",
+      "name": "Capacity, performance and horizontal scalability",
+      "requirements": [
+        {
+          "id": "E08.1",
+          "title": "Capacity envelope is measured rather than inferred",
+          "ownerRef": "v3/c3-capacity-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Capacity envelope is measured rather than inferred\" at its declared owner without exceeding the E08_CAPACITY boundary.",
+          "falsifierClass": "e08_capacity-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E08_CAPACITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E08.2",
+          "title": "Resource bounds and pagination are explicit",
+          "ownerRef": "v3/c3-capacity-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Resource bounds and pagination are explicit\" at its declared owner without exceeding the E08_CAPACITY boundary.",
+          "falsifierClass": "e08_capacity-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E08_CAPACITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E08.3",
+          "title": "Scale topology matches persistence/coordination authority",
+          "ownerRef": "v3/c3-capacity-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Scale topology matches persistence/coordination authority\" at its declared owner without exceeding the E08_CAPACITY boundary.",
+          "falsifierClass": "e08_capacity-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E08_CAPACITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E08.4",
+          "title": "Deployment load claims require deployment-load evidence",
+          "ownerRef": "v3/c3-capacity-contract.json",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Deployment load claims require deployment-load evidence\" at its declared owner without exceeding the E08_CAPACITY boundary.",
+          "falsifierClass": "e08_capacity-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E09_OBSERVABILITY",
+      "name": "Observability, incident response and supportability",
+      "requirements": [
+        {
+          "id": "E09.1",
+          "title": "Requests and failures are attributable",
+          "ownerRef": "v3/runtime/operational-observability.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Requests and failures are attributable\" at its declared owner without exceeding the E09_OBSERVABILITY boundary.",
+          "falsifierClass": "e09_observability-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E09_OBSERVABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E09.2",
+          "title": "Support evidence is sanitized and bounded",
+          "ownerRef": "v3/runtime/operational-observability.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Support evidence is sanitized and bounded\" at its declared owner without exceeding the E09_OBSERVABILITY boundary.",
+          "falsifierClass": "e09_observability-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E09_OBSERVABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E09.3",
+          "title": "Failure owner and local reproducer are routable",
+          "ownerRef": "v3/runtime/operational-observability.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Failure owner and local reproducer are routable\" at its declared owner without exceeding the E09_OBSERVABILITY boundary.",
+          "falsifierClass": "e09_observability-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E09_OBSERVABILITY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E09.4",
+          "title": "Collector/alert/drill effectiveness remains E4 where applicable",
+          "ownerRef": "v3/runtime/operational-observability.mjs",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"Collector/alert/drill effectiveness remains E4 where applicable\" at its declared owner without exceeding the E09_OBSERVABILITY boundary.",
+          "falsifierClass": "e09_observability-release-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        }
+      ]
+    },
+    {
+      "id": "E10_API_INTEGRATION",
+      "name": "API, integration and interoperability",
+      "requirements": [
+        {
+          "id": "E10.1",
+          "title": "Current API contract matches mounted handlers",
+          "ownerRef": "docs/openapi.yaml",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Current API contract matches mounted handlers\" at its declared owner without exceeding the E10_API_INTEGRATION boundary.",
+          "falsifierClass": "e10_api_integration-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E10_API_INTEGRATION; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E10.2",
+          "title": "External masters remain external authorities",
+          "ownerRef": "docs/openapi.yaml",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"External masters remain external authorities\" at its declared owner without exceeding the E10_API_INTEGRATION boundary.",
+          "falsifierClass": "e10_api_integration-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E10_API_INTEGRATION; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E10.3",
+          "title": "Protocol errors are structured and bounded",
+          "ownerRef": "docs/openapi.yaml",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Protocol errors are structured and bounded\" at its declared owner without exceeding the E10_API_INTEGRATION boundary.",
+          "falsifierClass": "e10_api_integration-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E10_API_INTEGRATION; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E10.4",
+          "title": "Compatibility is tested without reviving retired authority",
+          "ownerRef": "docs/openapi.yaml",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Compatibility is tested without reviving retired authority\" at its declared owner without exceeding the E10_API_INTEGRATION boundary.",
+          "falsifierClass": "e10_api_integration-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E10_API_INTEGRATION; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E11_AI",
+      "name": "AI governance, evaluation, drift, budget and human authority",
+      "requirements": [
+        {
+          "id": "E11.1",
+          "title": "AI remains proposal-only and cannot create business decisions",
+          "ownerRef": "v3/ai.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"AI remains proposal-only and cannot create business decisions\" at its declared owner without exceeding the E11_AI boundary.",
+          "falsifierClass": "e11_ai-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E11_AI; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E11.2",
+          "title": "Provider/model/prompt/schema lineage is attributable",
+          "ownerRef": "v3/ai.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Provider/model/prompt/schema lineage is attributable\" at its declared owner without exceeding the E11_AI boundary.",
+          "falsifierClass": "e11_ai-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E11_AI; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E11.3",
+          "title": "AI budget reservation settle release is fail-closed",
+          "ownerRef": "v3/ai.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"AI budget reservation settle release is fail-closed\" at its declared owner without exceeding the E11_AI boundary.",
+          "falsifierClass": "e11_ai-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E11_AI; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E11.4",
+          "title": "Versioned eval/drift evidence gates activation and rollback",
+          "ownerRef": "v3/ai.mjs",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Versioned eval/drift evidence gates activation and rollback\" at its declared owner without exceeding the E11_AI boundary.",
+          "falsifierClass": "e11_ai-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E11_AI; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E12_HUMAN",
+      "name": "UX, accessibility and human factors",
+      "requirements": [
+        {
+          "id": "E12.1",
+          "title": "Current journeys preserve human checkpoints",
+          "ownerRef": "docs/04_USER_JOURNEYS.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Current journeys preserve human checkpoints\" at its declared owner without exceeding the E12_HUMAN boundary.",
+          "falsifierClass": "e12_human-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E12_HUMAN; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E12.2",
+          "title": "Accessibility-critical interactions have executable repository checks",
+          "ownerRef": "docs/04_USER_JOURNEYS.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Accessibility-critical interactions have executable repository checks\" at its declared owner without exceeding the E12_HUMAN boundary.",
+          "falsifierClass": "e12_human-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E12_HUMAN; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E12.3",
+          "title": "Representative-human claims require E3-HUMAN",
+          "ownerRef": "docs/04_USER_JOURNEYS.md",
+          "requiredEvidenceClass": "E3-HUMAN",
+          "completionPredicate": "Claim-matched evidence satisfies \"Representative-human claims require E3-HUMAN\" at its declared owner without exceeding the E12_HUMAN boundary.",
+          "falsifierClass": "e12_human-constitution-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E3-HUMAN; it must be independently observed where claimed."
+        },
+        {
+          "id": "E12.4",
+          "title": "Human checkpoints retain information time and veto",
+          "ownerRef": "docs/04_USER_JOURNEYS.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Human checkpoints retain information time and veto\" at its declared owner without exceeding the E12_HUMAN boundary.",
+          "falsifierClass": "e12_human-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E12_HUMAN; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E13_ASSURANCE",
+      "name": "Testing, falsification and evidence integrity",
+      "requirements": [
+        {
+          "id": "E13.1",
+          "title": "Nearest falsifier precedes broad CI",
+          "ownerRef": "docs/TESTING.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Nearest falsifier precedes broad CI\" at its declared owner without exceeding the E13_ASSURANCE boundary.",
+          "falsifierClass": "e13_assurance-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E13_ASSURANCE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E13.2",
+          "title": "Semantic mutation remains bounded model evidence",
+          "ownerRef": "docs/TESTING.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Semantic mutation remains bounded model evidence\" at its declared owner without exceeding the E13_ASSURANCE boundary.",
+          "falsifierClass": "e13_assurance-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E13_ASSURANCE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E13.3",
+          "title": "Exact-head evidence binds candidate state",
+          "ownerRef": "docs/TESTING.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Exact-head evidence binds candidate state\" at its declared owner without exceeding the E13_ASSURANCE boundary.",
+          "falsifierClass": "e13_assurance-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E13_ASSURANCE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E13.4",
+          "title": "Evidence invalidation propagates across semantic dependencies",
+          "ownerRef": "docs/TESTING.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Evidence invalidation propagates across semantic dependencies\" at its declared owner without exceeding the E13_ASSURANCE boundary.",
+          "falsifierClass": "e13_assurance-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E13_ASSURANCE; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E14_DELIVERY",
+      "name": "CI/CD, release engineering and environment parity",
+      "requirements": [
+        {
+          "id": "E14.1",
+          "title": "Branch is transport and SHA is candidate state",
+          "ownerRef": "docs/DEVELOPMENT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Branch is transport and SHA is candidate state\" at its declared owner without exceeding the E14_DELIVERY boundary.",
+          "falsifierClass": "e14_delivery-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E14_DELIVERY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E14.2",
+          "title": "Merge and release are distinct transitions",
+          "ownerRef": "docs/DEVELOPMENT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Merge and release are distinct transitions\" at its declared owner without exceeding the E14_DELIVERY boundary.",
+          "falsifierClass": "e14_delivery-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E14_DELIVERY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E14.3",
+          "title": "Rollback and environment assumptions are explicit",
+          "ownerRef": "docs/DEVELOPMENT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Rollback and environment assumptions are explicit\" at its declared owner without exceeding the E14_DELIVERY boundary.",
+          "falsifierClass": "e14_delivery-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E14_DELIVERY; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E14.4",
+          "title": "Post-merge main is independently verified",
+          "ownerRef": "docs/DEVELOPMENT.md",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Post-merge main is independently verified\" at its declared owner without exceeding the E14_DELIVERY boundary.",
+          "falsifierClass": "e14_delivery-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E14_DELIVERY; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E15_SUPPLY_CHAIN",
+      "name": "Supply chain, dependencies, SBOM, provenance and signing",
+      "requirements": [
+        {
+          "id": "E15.1",
+          "title": "Security-critical actions and dependencies are immutable or pinned",
+          "ownerRef": "audit/remediation-registry.json#F-06",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Security-critical actions and dependencies are immutable or pinned\" at its declared owner without exceeding the E15_SUPPLY_CHAIN boundary.",
+          "falsifierClass": "e15_supply_chain-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E15_SUPPLY_CHAIN; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E15.2",
+          "title": "SBOM is generated from exact candidate",
+          "ownerRef": "audit/remediation-registry.json#F-06",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"SBOM is generated from exact candidate\" at its declared owner without exceeding the E15_SUPPLY_CHAIN boundary.",
+          "falsifierClass": "e15_supply_chain-claim-laundering",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E15_SUPPLY_CHAIN; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E15.3",
+          "title": "Build provenance binds source inputs and outputs",
+          "ownerRef": "audit/remediation-registry.json#F-06",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Build provenance binds source inputs and outputs\" at its declared owner without exceeding the E15_SUPPLY_CHAIN boundary.",
+          "falsifierClass": "e15_supply_chain-constitution-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E15_SUPPLY_CHAIN; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E15.4",
+          "title": "Release signing policy is explicit and verifiable",
+          "ownerRef": "audit/remediation-registry.json#F-06",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Release signing policy is explicit and verifiable\" at its declared owner without exceeding the E15_SUPPLY_CHAIN boundary.",
+          "falsifierClass": "e15_supply_chain-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E15_SUPPLY_CHAIN; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "E16_GOVERNANCE",
+      "name": "Repository governance and external assurance",
+      "requirements": [
+        {
+          "id": "E16.1",
+          "title": "Development governance is machine-readable and assistant-binding",
+          "ownerRef": "v3/trama-engineering-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Development governance is machine-readable and assistant-binding\" at its declared owner without exceeding the E16_GOVERNANCE boundary.",
+          "falsifierClass": "e16_governance-identity-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E16_GOVERNANCE; it does not imply Enterprise Ready or external effectiveness."
+        },
+        {
+          "id": "E16.2",
+          "title": "Server-side branch/review enforcement is independently observed",
+          "ownerRef": "v3/trama-engineering-contract.json",
+          "requiredEvidenceClass": "E3-GOV",
+          "completionPredicate": "Claim-matched evidence satisfies \"Server-side branch/review enforcement is independently observed\" at its declared owner without exceeding the E16_GOVERNANCE boundary.",
+          "falsifierClass": "e16_governance-claim-laundering",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E3-GOV; it must be independently observed where claimed."
+        },
+        {
+          "id": "E16.3",
+          "title": "E3-HUMAN E3-GOV and E4-DEPLOY remain visible until observed",
+          "ownerRef": "v3/trama-engineering-contract.json",
+          "requiredEvidenceClass": "E4",
+          "completionPredicate": "Claim-matched evidence satisfies \"E3-HUMAN E3-GOV and E4-DEPLOY remain visible until observed\" at its declared owner without exceeding the E16_GOVERNANCE boundary.",
+          "falsifierClass": "e16_governance-constitution-drift",
+          "external": true,
+          "claimBoundary": "Repository evidence cannot manufacture E4; it must be independently observed where claimed."
+        },
+        {
+          "id": "E16.4",
+          "title": "Enterprise Candidate promotion is atomic and non-self-referential",
+          "ownerRef": "v3/trama-engineering-contract.json",
+          "requiredEvidenceClass": "E2",
+          "completionPredicate": "Claim-matched evidence satisfies \"Enterprise Candidate promotion is atomic and non-self-referential\" at its declared owner without exceeding the E16_GOVERNANCE boundary.",
+          "falsifierClass": "e16_governance-release-drift",
+          "external": false,
+          "claimBoundary": "Repository-bounded evidence satisfies only E16_GOVERNANCE; it does not imply Enterprise Ready or external effectiveness."
+        }
+      ]
+    }
+  ],
+  "claimBoundary": "Target/evidence requirements only. No current pass/fail state. This contract cannot promote ICTC to Enterprise Candidate or Enterprise Ready."
+}
