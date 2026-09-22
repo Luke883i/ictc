@@ -107,12 +107,6 @@ function run(root=ROOT){
  if(capability?.s4Progress?.sequencingAuthority!=='docs/convergence/convergence-authority.json'||capability?.s4Progress?.nextConvergenceSliceSemantics!=='historical-TRUTH-0-baseline-only-not-live-planning'||String(capability?.releaseClaim?.claimBoundary||'').includes('SCOPE-0 is next'))failures.push({code:'CAPABILITY_SEQUENCE_SHADOW',detail:'capability truth must not own live development sequencing'});
  const df=validateDecide0(decide,scope,reality,uiux);
  if(df.length)failures.push({code:'DECIDE_MODEL',detail:JSON.stringify(df)});
- const ds=spawnSync(process.execPath,[path.join(root,'v3/decide-0-saturation.mjs'),path.join(root,'v3/decide-0-model.json'),root],{encoding:'utf8',maxBuffer:32e6,timeout:180000});
- let dso={};try{dso=JSON.parse(ds.stdout)}catch{}
- if(ds.status||!dso.ok||dso.digest!==DECIDE_DIGEST)failures.push({code:'DECIDE_SATURATION',detail:(ds.stderr||ds.stdout||'').slice(-2000)});
- const sat=spawnSync(process.execPath,[path.join(root,'v3/trajectory-governance-saturation.mjs'),root],{encoding:'utf8',maxBuffer:32e6,timeout:180000});
- let so={};try{so=JSON.parse(sat.stdout)}catch{}
- if(sat.status||!so.ok||so.trials!==1000000||so.survivors!==0||so.harnessErrors!==0||so.realModelMutantsKilled!==25)failures.push({code:'TRAJECTORY_SATURATION',detail:(sat.stderr||sat.stdout||'').slice(-2000)});
 
  const mutants=[
   x=>x.planningState.nextConditionalSlice='C4-AI-EVAL-DRIFT',
@@ -132,6 +126,6 @@ function run(root=ROOT){
  if(killed!==mutants.length)failures.push({code:'SELF_MUTANTS',detail:`${killed}/${mutants.length} survived=${survived.join(',')}`});
 
  if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}
- console.log(JSON.stringify({ok:true,suite:'convergence-authority',schemaVersion:a.schemaVersion,governanceRevision:a.governanceRevision,baselineMainSha:a.baselineObservation.mainSha,reconciliationPreimage:a.reconciliationObservation.mainSha,completedThrough:a.planningState.completedThrough,nextSerialSlice:a.planningState.nextSerialSlice,nextConditionalSlice:a.planningState.nextConditionalSlice,workbookSha256:ctx.workbookSha,bindingSha256:ctx.binding,trajectory:so,selfMutants:{killed,total:mutants.length},claimBoundary:a.claimBoundary}));
+ console.log(JSON.stringify({ok:true,suite:'convergence-authority',schemaVersion:a.schemaVersion,governanceRevision:a.governanceRevision,baselineMainSha:a.baselineObservation.mainSha,reconciliationPreimage:a.reconciliationObservation.mainSha,completedThrough:a.planningState.completedThrough,nextSerialSlice:a.planningState.nextSerialSlice,nextConditionalSlice:a.planningState.nextConditionalSlice,workbookSha256:ctx.workbookSha,bindingSha256:ctx.binding,saturationLeaves:['v3/decide-0-saturation.mjs','v3/trajectory-governance-saturation.mjs'],selfMutants:{killed,total:mutants.length},claimBoundary:a.claimBoundary}));
 }
 if(import.meta.url===`file://${process.argv[1]}`)run(process.argv[2]?path.resolve(process.argv[2]):ROOT);
