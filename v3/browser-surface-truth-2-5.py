@@ -5,7 +5,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'; INVENTORY=[]; VIOLATIONS=[]
-PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 SEMANTIC='h1,h2,h3,h4,p,small,label,button,a[href],input,select,textarea,summary,dt,dd,th,td,legend,li,span,b,strong,em,[role="status"],[role="alert"],.surface-chip,.counter,.empty'
 
 def fail(exc):
@@ -76,7 +76,7 @@ try:
   for disclosure in [investigation,trace,decision,standards]: expect(disclosure).to_be_visible()
   for disclosure in [decision,standards,trace,investigation]: expect(disclosure).not_to_have_attribute('open','')
   expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico'); expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro'); expect(decision.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità'); expect(standards.locator(':scope > summary')).to_contain_text('Riferimenti e basi')
-  order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['decisions','evidence-basis','trace-reconstruction','epistemic-investigation','external','integrity','interpretation','export']; assert [x for x in order if x in expected_details]==expected_details,order
+  order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','interpretation','export']; assert [x for x in order if x in expected_details]==expected_details,order
   reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]'); expect(reading).to_be_visible(); assert reading.get_attribute('open') is None
 
   PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); snapshot(page,'epistemic','#epistemicView')
@@ -92,7 +92,7 @@ try:
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
   assert aggregate_cov>=.95,aggregate_cov; assert aggregate_critical==1,aggregate_critical; assert not VIOLATIONS,VIOLATIONS
-  out={'ok':True,'profile':'surface-truth-2.5+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1+p2','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'proofHierarchy':'facts+secondary-closed>decisions>evidence-basis>trace>epistemic>external>integrity>method>export','technicalProgressive':True,'epistemicBoundaryFrontstage':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
+  out={'ok':True,'profile':'surface-truth-2.5+native-semantic-lattice-3.2+semantic-workspace-closure-3.2.1+p2','snapshots':len(INVENTORY),'visibleSemanticObjects':visible,'highConfidenceCoverage':aggregate_cov,'criticalCoverage':aggregate_critical,'procedures':['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],'homeManifest':False,'proofHierarchy':'facts+secondary-closed>decisions>trace>evidence-basis>epistemic>external>integrity>method>export','technicalProgressive':True,'epistemicBoundaryFrontstage':True,'mobileOverflow':False,'inventory':INVENTORY,'claimBoundary':'Rendered census and cognitive-ergonomics proxies; not human usability evidence, legal opinion, certification or deployment security assessment.'}
   (ART/'browser-procedure-finetuning-1-4-surface-truth-2-5.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf8'); print('browser-surface-truth-2-5+p2: complete',flush=True); ctx.close(); browser.close()
 except BaseException as exc:
  fail(exc); traceback.print_exc(); raise

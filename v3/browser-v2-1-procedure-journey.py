@@ -8,7 +8,7 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'assurance'}
-PROOF_READING_ORDER = 'facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER = 'facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 
 def fail(e):
     payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}

@@ -5,16 +5,17 @@ const src={
  work:r('./public/ui/workspaces.js'),rn:r('./public/ui/rn-source-review-1-4.js'),ux4:r('./public/ui/semantic-surface-a6-ux4.js'),
  grc:r('./public/ui/grc-workspace-3-2.js'),ec:r('./public/ui/procedure-sequential-rn-ec.js'),frame:r('./public/ui/procedure-frame.js'),
  anatomy:r('./public/procedure-anatomy.css'),presentation:r('./public/ui/procedure-ui-ux-1-6.js'),footer:r('./public/a6-ux1-fixed-safe-footer.css'),
- ep:r('./public/ui/epistemic-workspace-3-2.js'),admin:r('./public/ui/admin-center.js'),seqdom:r('./public/ui/procedure-sequential-dom.js'),registry:r('./current-gate-registry.mjs'),
+ ep:r('./public/ui/epistemic-workspace-3-2.js'),admin:r('./public/ui/admin-center.js'),seqdom:r('./public/ui/procedure-sequential-dom.js'),slots:r('./public/ui/procedure-editorial-slots.js'),registry:r('./current-gate-registry.mjs'),
  workflow:r('../.github/workflows/s4-a6-ux4-semantic-surface.yml'),browser:r('./browser-s4-a6-ux4-semantic-surface.py')
 };
 assert.ok(src.work.includes('Classe proposta')&&!src.work.includes('<span>Confidenza AI</span>'),'R1 canonical source truth');
 assert.ok(!/normalizeDecisionContext[\s\S]{0,1200}textContent='Classe proposta'/.test(src.rn),'R1 late semantic rewrite returned');
 assert.ok(src.rn.includes('data-rn-privacy-review'),'R1 privacy review must remain');
 assert.ok(src.ux4.includes('revealNativeTarget')&&src.ux4.includes('exact=missing.length===0')&&!src.ux4.includes('exact=missing.length===0&&hidden.length===0')&&src.ux4.includes('ictc:procedure-worklist-ready')&&src.ux4.includes("import { renderProcedureWorklist, renderProcedureWorklists } from './procedure-worklist.js'")&&src.ux4.includes('renderProcedureWorklist(id);section=attentionSection(root,id)')&&src.ux4.includes('renderProcedureWorklists();schedule();'),'R2 single work plane');
+assert.ok(src.slots.includes("SUPPORT_NAMES=new Set(['advanced-context'])")&&src.slots.includes("SYNTHETIC=new Set(['attention','advanced-context','reference'"),'R3 references must be an independent editorial slot before work, not header copy or advanced context');
 assert.ok(src.seqdom.includes('const sameNodes=')&&src.seqdom.includes('if(!sameNodes(currentOverflow,desiredOverflow))')&&!src.seqdom.includes("const previous=host.querySelector(':scope > details.seq-overflow');if(previous)"),'R2 progressive overflow must be lifecycle-idempotent');
 for(const x of [src.grc,src.ec])assert.ok(x.includes('function revealTarget')&&x.includes("details:not([open])"),'R2 typed target reveal');
-assert.ok(src.frame.includes('data-procedure-orientation="compact"')&&src.frame.includes('Fondamento')&&src.frame.includes('Limite')&&src.frame.includes('Riferimenti'),'R3 orientation');
+assert.ok(src.frame.includes('data-procedure-orientation="compact"')&&src.frame.includes('Fondamento')&&src.frame.includes('Limite')&&!src.frame.includes('Riferimenti'),'R3 orientation must keep landing header value-only');
 assert.ok(src.anatomy.includes('.procedure-frame .procedure-boundary{display:grid}')&&src.anatomy.includes('[data-procedure-orientation="compact"]'),'R3 orientation geometry');
 assert.ok(src.work.includes("readOnly = (state.data?.actor?.role || state.role) === 'auditor'")&&src.work.includes('data-incident-readonly-question')&&src.work.includes('sola consultazione'),'R4 auditor EC');
 assert.ok(src.presentation.includes("container.closest('.procedure-record-card')")&&src.presentation.includes("uiuxActionHierarchy='record-local'"),'R5 record hierarchy');

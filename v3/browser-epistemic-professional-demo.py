@@ -13,7 +13,7 @@ LOG = ART / 'browser-epistemic-professional-demo-server.log'
 PROC = None
 LENSES = ['compliance-lead','internal-auditor','dpo-privacy','security-manager','risk-manager','control-owner','assurance-reviewer','legal-231-reviewer','it-operations','supplier-procurement','quality-manager','executive-sme']
 EXPECTED_MODES = {'compliance-lead':'explore','internal-auditor':'flat','dpo-privacy':'explore','security-manager':'graph','risk-manager':'explore','control-owner':'graph','assurance-reviewer':'explore','legal-231-reviewer':'flat','it-operations':'graph','supplier-procurement':'explore','quality-manager':'explore','executive-sme':'explore'}
-PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 SHOTS = []
 
 def shot(page, name, full=False):

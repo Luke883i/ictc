@@ -2,7 +2,7 @@ import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
-PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 def fail(exc):
  payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/'browser-ui-epistemic-convergence-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-ui-epistemic-convergence::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 def processes(page): return page.locator('.service-nav [data-service="processes"]')

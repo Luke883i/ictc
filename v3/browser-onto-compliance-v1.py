@@ -16,7 +16,7 @@ PROCEDURES=[
  {'code':'AR-01','id':'assurance','root':'#grcWorkspace','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','context':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"]','anatomy':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy'}]
 OWNER={'monitoring':'procedure-sequential-rn-ec.js','incidents':'procedure-sequential-rn-ec.js','objects':'grc-workspace-3-2.js','coverage':'grc-workspace-3-2.js','actions':'grc-workspace-3-2.js','risks':'grc-workspace-3-2.js','assurance':'grc-workspace-3-2.js'}
 SCREENSHOT_WIDTHS={390,1280}
-PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=set()
 
 def anomaly(kind,role,vp,surface,measured,expected): anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})
@@ -109,7 +109,7 @@ def audit_proof(page,role,vp,width):
   elif disclosure.get_attribute('open') is not None:anomaly('evidence-technical-open-by-default',role,vp,'proof',name,'collapsed')
  if decisions.count()!=1:anomaly('evidence-workspace-owner-count',role,vp,'proof',{'workspace':'decisions','count':decisions.count()},{'workspace':'decisions','count':1})
  elif decisions.get_attribute('open') is not None:anomaly('evidence-secondary-open-by-default',role,vp,'proof','decisions','collapsed')
- expected_order=['facts','decisions','evidence-basis','trace-reconstruction','epistemic-investigation','external','integrity','interpretation','export']
+ expected_order=['facts','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','interpretation','export']
  order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null)).filter(Boolean)""")
  projected=[x for x in order if x in expected_order]
  if projected!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',projected,expected_order)
