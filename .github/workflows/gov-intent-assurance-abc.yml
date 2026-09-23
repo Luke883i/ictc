@@ -1,0 +1,64 @@
+name: GOV intent assurance ABC
+
+on:
+  pull_request:
+    paths:
+      - 'v3/gov-intent-assurance-*'
+      - '.github/workflows/gov-intent-assurance-abc.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  campaign-a:
+    name: A intent-completion-under-epistemic-governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - run: node v3/gov-intent-assurance-a-check.mjs
+      - run: node v3/gov-intent-assurance-a-saturation-1m.mjs --trials 1000000 --tail 100000
+
+  campaign-b:
+    name: B single-governance-chain
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - run: node v3/gov-intent-assurance-b-check.mjs
+      - run: node v3/gov-intent-assurance-b-saturation-1m.mjs --trials 1000000 --tail 100000
+
+  campaign-c:
+    name: C human-ai-convergence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - run: node v3/gov-intent-assurance-c-check.mjs
+      - run: node v3/gov-intent-assurance-c-saturation-1m.mjs --trials 1000000 --tail 100000
+
+  aggregate:
+    name: ABC global qualification
+    needs: [campaign-a, campaign-b, campaign-c]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - run: node v3/gov-intent-assurance-aggregate-check.mjs
