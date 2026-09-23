@@ -49,7 +49,7 @@ export function documentationDrift(root=DEFAULT_ROOT){
   if(/C5-SEMANTIC-OWNER-COMPRESSION[^\n.]{0,180}deve essere terminal/i.test(product))out.push({code:'PRODUCT_STALE_C5_POINTER',path:'docs/PRODUCT.md'});
   if(/"scope"\s*:\s*"[^"]*main@[0-9a-f]{7,40}/i.test(gaps))out.push({code:'GAPS_SCOPE_FIXED_GIT_POINTER',path:'v3/gaps.json'});
   const nums=[...agents.matchAll(/^(\d+)\.\s/gm)].map(x=>Number(x[1])),seen=new Set(),dups=new Set();for(const n of nums){if(seen.has(n))dups.add(n);seen.add(n);}if(dups.size)out.push({code:'AGENTS_RULE_NUMBER_COLLISION',path:'AGENTS.md',detail:[...dups]});
-  for(const entry of currentAuthoritativeDocs(root)){const body=text(root,entry.path);if(/enterpriseCandidate\s*[:=]\s*true/i.test(body))out.push({code:'DOC_SELF_PROMOTION',path:entry.path});}
+  for(const entry of currentAuthoritativeDocs(root)){const body=text(root,entry.path);if(/enterpriseCandidate\s*[:=]\s*true/i.test(body))out.push({code:'DOC_SELF_PROMOTION',path:entry.path});if(entry.path!=='docs/convergence/convergence-authority.json'&&/main@[0-9a-f]{7,40}/i.test(body))out.push({code:'DOC_FIXED_GIT_POINTER',path:entry.path});if(entry.path!=='docs/convergence/convergence-authority.json'&&/(?:critical path|prossima[^\n]{0,30}slice|next[^\n]{0,30}slice)[^\n]{0,180}C[1-5]-[A-Z0-9-]+/i.test(body))out.push({code:'DOC_LIVE_TRAJECTORY_SHADOW',path:entry.path});}
   return Object.freeze(out);
 }
 export function uiEntropy(root=DEFAULT_ROOT){

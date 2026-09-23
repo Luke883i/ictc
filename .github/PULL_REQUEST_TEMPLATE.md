@@ -84,6 +84,16 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 - [ ] Local DoD compiled and satisfied on exact PR HEAD.
 - [ ] ACT recomputed after the latest tool/CI fact; prior roadmap was challenged rather than assumed.
 
+## GOV-ASIS-CONVERGENCE-1
+
+- AS-IS entropy signature / active debt: `<signature + count>`
+- Closed-debt regression: `<none|BLOCKED_REOPEN_WITH_EVIDENCE + source>`
+- Documentation/UI entropy: `<none|typed findings>`
+- Strategic campaign tier: `<100k|1M|10M + why>`
+- Saturation: `<M+10k no-novelty; N+10k no-lossless-compression>`
+- [ ] Original debt owners/evidence classes remain intact; this PR does not create a second SOT.
+- [ ] Enterprise Candidate remains distinct from Enterprise Ready and E3-HUMAN/E3-GOV/E4-DEPLOY remain external where required.
+
 ## GOV-TRAMA-RECONCILE-1
 
 - GLOBAL_ACT mode: `<yes|no>`
