@@ -6,7 +6,7 @@ const c=loadAsIsConvergenceContract();
 assert.equal(c.contractId,'GOV-ASIS-CONVERGENCE-1');assert.equal(c.authorityEffect,'NONE');assert.equal(c.sourceOfTruth,false);assert.equal(c.writer,false);assert.equal(c.createsNewRoadmapCursor,false);
 assert.deepEqual(c.strategicCampaignPolicy.tiers,[100000,1000000,10000000]);assert.equal(c.strategicCampaignPolicy.semanticSaturation.tail,10000);assert.equal(c.strategicCampaignPolicy.compressionSaturation.tail,10000);assert.equal(c.strategicCampaignPolicy.doesNotReplaceGenericTramaTiers,true);
 assert.equal(c.mechanisms.length,12);assert.equal(new Set(c.mechanisms).size,12);assert.deepEqual(c.cognitiveOrder.global,['identity','primary-work-or-decision','bounded-attention-or-catalog','context-or-evidence','technical-detail']);
-const p=deriveAsIsConvergence(undefined,{exactHead:'4cfb6868317ad843beb5c098ad0ddc378a4b4c9e'});
+const p=deriveAsIsConvergence(undefined,{exactHead:process.env.GITHUB_SHA||null});
 assert.equal(p.authorityEffect,'NONE');assert.equal(p.projectionIsSot,false);assert.equal(p.writer,false);assert.deepEqual(p.documentationDrift,[]);assert.deepEqual(p.uiEntropy,[]);assert.deepEqual(p.closedDebtRegressions,[]);
 const all=normalizeKnownDebt();for(const [source,count] of [['v3/gaps.json',22],['audit/remediation-registry.json',16],['docs/convergence/convergence-authority.json',16]])assert.ok(all.filter(x=>x.sourcePath===source).length>=count,source);
 for(const item of all)for(const key of c.normalizedDebtRequiredFields)assert.ok(Object.prototype.hasOwnProperty.call(item,key),item.key+':'+key);

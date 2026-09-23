@@ -21,6 +21,7 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 | `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
 | `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
 | `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node v3/convergence-authority-check.mjs` | `npm test` |
+| `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node v3/as-is-convergence-check.mjs` | `npm test` |
 | `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node v3/security-boundary-check.mjs` | `npm run release:check` |
 | `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node v3/evidence-check.mjs` | `npm run test:current:runtime` |
 | `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
