@@ -29,6 +29,7 @@ function loadingMarkup(label){return `<div class="readiness-row" data-admin-slic
 function errorMarkup(key,label,error){const meta=[error?.status?`HTTP ${error.status}`:'',error?.code||''].filter(Boolean).join(' · '),message=error?.message||'Dati non disponibili';return `<div class="readiness-row admin-slice-error" data-admin-slice-error="${esc(key)}" role="status"><span><b>${esc(label)} non disponibile</b><small>${esc(meta?`${meta} · ${message}`:message)}</small></span><button type="button" data-admin-retry="${esc(key)}">Riprova</button></div>`;}
 function setIdentityFormEnabled(enabled){const form=$('#identityForm');if(!form)return;for(const field of form.elements)field.disabled=!enabled;}
 function setSliceStatus(key,status){const root=$('#adminCenter');if(root)root.setAttribute(`data-admin-slice-${key}`,status);}
+function revealSliceError(key){let detail=$(`[data-admin-slice-error="${CSS.escape(String(key))}"]`)?.closest('details');while(detail){detail.open=true;detail=detail.parentElement?.closest('details')||null;}}
 function renderAdminSlice(event){const {key,status,value,error}=event;setSliceStatus(key,status);if(status==='loading'){
   if(key==='readiness'){if($('#adminAttention'))$('#adminAttention').innerHTML=loadingMarkup('Azioni richieste');if($('#adminReadiness'))$('#adminReadiness').innerHTML=loadingMarkup('Stato dei controlli');}
   if(key==='usage'){if($('#adminUsage'))$('#adminUsage').innerHTML='';if($('#adminUsagePurpose'))$('#adminUsagePurpose').innerHTML=loadingMarkup('Utilizzo AI');}
@@ -41,7 +42,7 @@ function renderAdminSlice(event){const {key,status,value,error}=event;setSliceSt
   if(key==='usage'){if($('#adminUsage'))$('#adminUsage').innerHTML='';if($('#adminUsagePurpose'))$('#adminUsagePurpose').innerHTML=errorMarkup(key,'Telemetria AI',error);}
   if(key==='users'){adminData.users=null;renderMetrics();if($('#adminUsers'))$('#adminUsers').innerHTML=errorMarkup(key,'Directory utenti',error);}
   if(key==='identity'){if($('#identityRuntime'))$('#identityRuntime').innerHTML=errorMarkup(key,'Policy identità',error);setIdentityFormEnabled(false);}
-  return;
+  revealSliceError(key);return;
  }
  if(status!=='ready')return;
  if(key==='readiness'){adminData.readiness=value;renderMetrics();if($('#adminReadiness'))$('#adminReadiness').innerHTML=(value.controls||[]).map(controlRow).join('');if($('#adminAttention'))$('#adminAttention').innerHTML=(value.attention||[]).map(item=>`<div class="readiness-row"><span><b>${esc(item.label)}</b><small>${esc(item.reason)}</small></span><span class="score warn">${esc(severityLabel(item.severity))}</span></div>`).join('')||'<p class="admin-empty">Nessuna azione richiesta nella proiezione corrente.</p>';}
