@@ -96,3 +96,10 @@ html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsDialog[data-adm
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsDialog[data-admin-embedded="ai"] #settingsForm{width:100%;max-width:none;min-height:0;max-height:none;margin:0;border:0;box-shadow:none}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsDialog[data-admin-embedded="ai"] #settingsForm>header{display:none}
 html[data-native-semantic-lattice="3.2.0"] #adminCenter #settingsDialog[data-admin-embedded="ai"] #settingsForm>footer{position:static}
+
+/* GOV-ASIS-CONVERGENCE-1: canonical Home cognitive order; local 3.2 owner only. */
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-hero{grid-template-areas:"identity decision" "priorities priorities"!important;row-gap:.38rem!important}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-intro{grid-area:identity}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-next{grid-area:decision}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{grid-area:priorities;margin-top:.15rem!important;padding-top:.35rem;border-top:1px solid var(--color-border)}
+@media(max-width:820px){html[data-native-semantic-lattice="3.2.0"] #homeView .home-hero{grid-template-areas:"identity" "decision" "priorities"!important}}

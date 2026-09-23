@@ -1,19 +1,19 @@
 {
-  "schemaVersion":"1.0.0",
-  "slice":"S4-A6",
-  "executionUnit":"A6-UX3",
-  "title":"Operational surface convergence",
-  "trajectoryImpact":"planned",
-  "parentRemainsOpen":true,
-  "owners":{
-    "home":"stable-shell + operational-surface-a6-ux3",
-    "monitoring":"procedure-sequential-rn-ec + operational-surface-a6-ux3",
-    "incidents":"procedure-sequential-rn-ec + operational-surface-a6-ux3",
-    "objects":"grc-workspace-3-2 + operational-surface-a6-ux3",
-    "coverage":"procedure-market-ux + standard-browser + operational-surface-a6-ux3"
+  "schemaVersion": "1.0.0",
+  "slice": "S4-A6",
+  "executionUnit": "A6-UX3",
+  "title": "Operational surface convergence",
+  "trajectoryImpact": "planned",
+  "parentRemainsOpen": true,
+  "owners": {
+    "home": "stable-shell + operational-surface-a6-ux3",
+    "monitoring": "procedure-sequential-rn-ec + operational-surface-a6-ux3",
+    "incidents": "procedure-sequential-rn-ec + operational-surface-a6-ux3",
+    "objects": "grc-workspace-3-2 + operational-surface-a6-ux3",
+    "coverage": "procedure-market-ux + standard-browser + operational-surface-a6-ux3"
   },
-  "invariants":[
-    "Home remains priority-first and does not restore a numeric dashboard.",
+  "invariants": [
+    "Home remains decision-first, keeps a bounded priority worklist after the primary decision and does not restore a numeric dashboard.",
     "RN-01 exposes source/material intake before monitoring registry controls.",
     "RN-01 monitoring records are collapsible and filterable without changing business providers.",
     "EC-01 exposes a filterable event registry and terminal records do not request formulation verification.",
@@ -26,6 +26,10 @@
     "The new presentation layer owns no independent palette tokens or business-state mutation API.",
     "A6-UX1 fixed-safe footer and A6-UX2 chrome owners remain untouched."
   ],
-  "evidence":{"source":"E2","browser":"E3 current Chromium","mutationTrials":100000},
-  "claimBoundary":"Repository-owned operational composition only. Parent S4-A6 remains open. No enterprise-candidate, enterprise-ready, human usability, accessibility certification, deployment effectiveness, independent assurance or legal/compliance claim is created."
+  "evidence": {
+    "source": "E2",
+    "browser": "E3 current Chromium",
+    "mutationTrials": 100000
+  },
+  "claimBoundary": "Repository-owned operational composition only. Parent S4-A6 remains open. No enterprise-candidate, enterprise-ready, human usability, accessibility certification, deployment effectiveness, independent assurance or legal/compliance claim is created."
 }
