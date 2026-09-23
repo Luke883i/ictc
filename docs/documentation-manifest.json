@@ -285,6 +285,14 @@
       "authoritative": false
     },
     {
+      "id": "as-is-convergence",
+      "path": "docs/AS_IS_CONVERGENCE.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
       "id": "engineering-compass",
       "path": "docs/ENGINEERING_COMPASS.md",
       "lifecycle": "generated",

@@ -73,22 +73,32 @@ Historical/candidate documents are useful for design lineage but do not override
 
 ## GOV-TRAMA-RECONCILE-1 — stato osservato e GLOBAL_ACT
 
-29. Una richiesta generica di prosecuzione (`ora`, `ora che si fa`, `prosegui`, `continua`, `what next`, equivalenti) significa **GLOBAL_ACT**: osserva nuovamente gli owner correnti, riconcilia locale/intermedio/globale, misura la distanza dalle DoD Enterprise Candidate e scegli esattamente una prossima slice oppure STOP.
-30. Non continuare una roadmap solo perché era la roadmap precedente. Se executable evidence, finding, legacy census o authority corrente la falsificano, prima riconcilia lo stato.
-31. Classifica ogni candidato legacy per ruolo attuale: `compatibility-required`, `migration-only`, `lineage-only`, `deprecated-test`, `retirement-candidate` oppure `blocking-unclassified`. L'ultima classe è fail-closed. Nome/versione/età non bastano per dichiarare un oggetto legacy.
-32. Distingui sempre **repository-terminal** da evidenza esterna: E3-HUMAN, E3-GOV ed E4-DEPLOY non diventano chiusi perché una conditional slice è `done`.
-33. La Bussola espone sempre tre orizzonti (locale, intermedio, globale), DoD granulari, blocker, incertezza e una sola next action. La Bussola è projection a authority zero.
+35. Una richiesta generica di prosecuzione (`ora`, `ora che si fa`, `prosegui`, `continua`, `what next`, equivalenti) significa **GLOBAL_ACT**: osserva nuovamente gli owner correnti, riconcilia locale/intermedio/globale, misura la distanza dalle DoD Enterprise Candidate e scegli esattamente una prossima slice oppure STOP.
+36. Non continuare una roadmap solo perché era la roadmap precedente. Se executable evidence, finding, legacy census o authority corrente la falsificano, prima riconcilia lo stato.
+37. Classifica ogni candidato legacy per ruolo attuale: `compatibility-required`, `migration-only`, `lineage-only`, `deprecated-test`, `retirement-candidate` oppure `blocking-unclassified`. L'ultima classe è fail-closed. Nome/versione/età non bastano per dichiarare un oggetto legacy.
+38. Distingui sempre **repository-terminal** da evidenza esterna: E3-HUMAN, E3-GOV ed E4-DEPLOY non diventano chiusi perché una conditional slice è `done`.
+39. La Bussola espone sempre tre orizzonti (locale, intermedio, globale), DoD granulari, blocker, incertezza e una sola next action. La Bussola è projection a authority zero.
 
 
 ## GOV-TRAMA-CAUSAL-QUALIFICATION-1 — causal evidence before patch
 
-35. Un check rosso, una projection, un receipt o un fallimento eseguito non autorizzano da soli una patch semantica. Classifica la catena `INTENT -> CONTRACT -> OWNER -> STATE -> WRITER -> TRANSITION -> PROJECTION -> AUTHORITY -> ORACLE -> EVIDENCE -> CLAIM` prima di mutare il repository.
-36. Distingui `EXTERNAL_ORACLE_BLOCKED`, `EXECUTED_FAILURE`, `INSUFFICIENT_EVIDENCE` e `CONTROL_PLANE_BLOCKED`. `EXTERNAL_ORACLE_BLOCKED` non e regressione semantica; `EXECUTED_FAILURE` non prova da sola la root cause.
-37. La causal qualification e authority-zero: puo dichiarare patch/qualification eligibility e invalidare evidence stale, ma non promuove capability, non scrive convergence state, non sostituisce Git facts e non chiude E3/E4.
+40. Un check rosso, una projection, un receipt o un fallimento eseguito non autorizzano da soli una patch semantica. Classifica la catena `INTENT -> CONTRACT -> OWNER -> STATE -> WRITER -> TRANSITION -> PROJECTION -> AUTHORITY -> ORACLE -> EVIDENCE -> CLAIM` prima di mutare il repository.
+41. Distingui `EXTERNAL_ORACLE_BLOCKED`, `EXECUTED_FAILURE`, `INSUFFICIENT_EVIDENCE` e `CONTROL_PLANE_BLOCKED`. `EXTERNAL_ORACLE_BLOCKED` non e regressione semantica; `EXECUTED_FAILURE` non prova da sola la root cause.
+42. La causal qualification e authority-zero: puo dichiarare patch/qualification eligibility e invalidare evidence stale, ma non promuove capability, non scrive convergence state, non sostituisce Git facts e non chiude E3/E4.
 
 
 ## AI-INFORMATION-EGRESS-1 — information eligibility before transport
 
-38. Prima di ogni provider transport, la capsula AI canonica deve attraversare l'owner `v3/runtime/ai-information-egress.mjs`; network reachability non equivale a information eligibility.
-39. Unknown/default converge almeno a `LOCAL_CONFIDENTIAL`. Egress esterno richiede `PUBLIC|DERIVED_EXPORTABLE` e `governance.aiExternalEgressAllowed=true`; `SECRET` non e idoneo al model compute corrente.
-40. Il membrane e authority-zero e side-effect-free: non sceglie provider, non apre rete, non risolve secret, non persiste business state e non altera l'autorita proposal-only dell'AI.
+43. Prima di ogni provider transport, la capsula AI canonica deve attraversare l'owner `v3/runtime/ai-information-egress.mjs`; network reachability non equivale a information eligibility.
+44. Unknown/default converge almeno a `LOCAL_CONFIDENTIAL`. Egress esterno richiede `PUBLIC|DERIVED_EXPORTABLE` e `governance.aiExternalEgressAllowed=true`; `SECRET` non e idoneo al model compute corrente.
+45. Il membrane e authority-zero e side-effect-free: non sceglie provider, non apre rete, non risolve secret, non persiste business state e non altera l'autorita proposal-only dell'AI.
+
+
+## GOV-ASIS-CONVERGENCE-1 — AS-IS lock, debt compiler and strategic entropy
+
+46. Prima di una slice cross-cutting, deriva `GOV-ASIS-CONVERGENCE-1`: consolida gap, remediation finding, conditional/serial slice, rail esterni, documentation drift e UI entropy preservando gli owner originali. La projection è authority-zero e non è una seconda SOT.
+47. Una chiusura AS-IS già stabilita è un regression baseline. Se riappare, fallisci chiuso con `BLOCKED_REOPEN_WITH_EVIDENCE`; non degradare o riaprire silenziosamente un debt storico per far avanzare la roadmap.
+48. Le campagne strategiche cross-abstraction usano il minimo tier sufficiente tra 100k / 1M / 10M senza sostituire i tier generici TRAMA. A saturazione, `M+10k` deve aggiungere zero nuove failure family e `N+10k` deve trovare zero compressioni lossless ulteriori; survivor/novelty impongono remodelling, non più seed.
+49. Monitora l'entropia come firma del reticolo di debt/stato, non come maturity score. Ogni debt attivo deve conservare source ID/path, owner, evidence class, target, dipendenze, related debt, falsifier e claim boundary.
+50. Enterprise Candidate va letto dal ferro all'esperienza umana tramite `v3/trama-enterprise-dod.json#experienceLattice`; nessuna astrazione superiore può sintetizzare E3-HUMAN, E3-GOV o E4-DEPLOY mancanti.
+51. Le landing canoniche rispettano l'ordine `identity -> primary work/decision -> bounded list -> context/evidence -> technical detail`. Home mostra la decisione prima della worklist max-3; Processi resta row-list 7/7; Evidenze è decision/evidence-first con dettaglio progressivo. Vietati card-wall, first-plane list non bounded e visual order che contraddice il DOM semantico.

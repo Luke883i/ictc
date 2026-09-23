@@ -28,7 +28,7 @@ EP-01 è una vista trasversale sul reticolo epistemico registrato. Non è un ott
 
 ICTC possiede già una baseline **operabile come prototipo repository-bounded**: runtime/launcher e bootstrap canonici, sette procedure, worklist/next-action projection, persistenza e reload, DEMO isolata, superfici epistemiche/evidenza, failure isolation Admin e acceptance browser su focus/responsive/overflow. Questa classificazione significa soltanto che il prodotto può essere esercitato e falsificato end-to-end nel perimetro automatizzato del repository.
 
-Non significa che la UX sia convergente o validata da utenti rappresentativi. `UIUX-CONVERGE-0` resta la prossima barriera di implementazione per comprimere owner e grammatica sulle superfici canoniche; `C5-SEMANTIC-OWNER-COMPRESSION` deve essere terminale prima che quella barriera sia `done`. La baseline di ingresso è formalizzata in `v3/uiux-prototype-entry-contract.json` e non crea una nuova release stage, una nuova business authority o una nuova serial slice.
+La baseline repository-bounded non incorpora un puntatore vivo alla roadmap. Lo stato corrente di sviluppo, le conditional slice e la prossima azione sono posseduti esclusivamente da `docs/convergence/convergence-authority.json`; questo documento conserva identità, scopo e confini di prodotto e non replica stati di traiettoria destinati a cambiare. La chiusura repository di una slice UI o di ownership non implica validazione con utenti rappresentativi, deployment effectiveness o Enterprise Candidate.
 
 Perceived pleasantness, comprensione, efficienza del task e uso con tecnologie assistive restano evidenza esterna `E3-HUMAN` e non possono essere inferiti dai browser test.
 
