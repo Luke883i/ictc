@@ -120,6 +120,7 @@ def navigate(page,surface,spec):
   page.goto(BASE+f'/?view=grc&procedure={spec["procedure"]}',wait_until='networkidle'); expect(page.locator('#grcView')).to_be_visible(); page.wait_for_function("x=>document.querySelector('#grcWorkspace')?.dataset.compositionSurface===x",arg=spec['procedure'])
  else:
   page.goto(BASE+f'/?view={spec["view"]}',wait_until='networkidle'); expect(page.locator(spec['root'])).to_be_visible()
+  if surface=='processes': page.wait_for_function("()=>document.querySelectorAll('#procedureHub .procedure-card').length===7")
  page.wait_for_function("()=>document.documentElement.dataset.enduserComposition==='p2'")
 
 def fail(error):
