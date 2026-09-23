@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {deriveAsIsConvergence,loadAsIsConvergenceContract,normalizeKnownDebt,selectStrategicCampaign} from './as-is-convergence.mjs';
+
+const c=loadAsIsConvergenceContract();
+assert.equal(c.contractId,'GOV-ASIS-CONVERGENCE-1');assert.equal(c.authorityEffect,'NONE');assert.equal(c.sourceOfTruth,false);assert.equal(c.writer,false);assert.equal(c.createsNewRoadmapCursor,false);
+assert.deepEqual(c.strategicCampaignPolicy.tiers,[100000,1000000,10000000]);assert.equal(c.strategicCampaignPolicy.semanticSaturation.tail,10000);assert.equal(c.strategicCampaignPolicy.compressionSaturation.tail,10000);assert.equal(c.strategicCampaignPolicy.doesNotReplaceGenericTramaTiers,true);
+assert.equal(c.mechanisms.length,12);assert.equal(new Set(c.mechanisms).size,12);assert.deepEqual(c.cognitiveOrder.global,['identity','primary-work-or-decision','bounded-attention-or-catalog','context-or-evidence','technical-detail']);
+const p=deriveAsIsConvergence(undefined,{exactHead:'4cfb6868317ad843beb5c098ad0ddc378a4b4c9e'});
+assert.equal(p.authorityEffect,'NONE');assert.equal(p.projectionIsSot,false);assert.equal(p.writer,false);assert.deepEqual(p.documentationDrift,[]);assert.deepEqual(p.uiEntropy,[]);assert.deepEqual(p.closedDebtRegressions,[]);
+const all=normalizeKnownDebt();for(const [source,count] of [['v3/gaps.json',22],['audit/remediation-registry.json',16],['docs/convergence/convergence-authority.json',16]])assert.ok(all.filter(x=>x.sourcePath===source).length>=count,source);
+for(const item of all)for(const key of c.normalizedDebtRequiredFields)assert.ok(Object.prototype.hasOwnProperty.call(item,key),item.key+':'+key);
+for(const id of [...c.asIsLock.lockedClosedGapIds,...c.asIsLock.lockedResolvedFindingIds,...c.asIsLock.lockedTerminalConditionalIds,...c.asIsLock.lockedTerminalSerialIds])assert.ok(all.some(x=>x.sourceId===id&&x.terminal),id);
+assert.equal(p.next.slice,'C2-DELIVERY-PROVENANCE');assert.equal(p.next.state,'READY');assert.equal(p.campaign.trials,10000000);assert.equal(selectStrategicCampaign({crossCutting:false,debtCount:1}).trials,100000);assert.equal(selectStrategicCampaign({docs:true,debtCount:8}).trials,1000000);
+assert.ok(p.entropy.activeDebt>0);assert.match(p.entropy.signature,/^[0-9a-f]{64}$/);
+assert.equal(p.enterpriseExperience.levelCount,12);for(const role of ['Platform engineer','Software engineer','SRE / operator','Administrator','Auditor','Compliance practitioner','End user'])assert.ok(p.enterpriseExperience.humans.includes(role),role);
+const product=readFileSync(new URL('../docs/PRODUCT.md',import.meta.url),'utf8'),gaps=readFileSync(new URL('./gaps.json',import.meta.url),'utf8'),agents=readFileSync(new URL('../AGENTS.md',import.meta.url),'utf8');
+assert.equal(/UIUX-CONVERGE-0[^\n.]{0,180}resta la prossim/i.test(product),false);assert.equal(/"scope"\s*:\s*"[^"]*main@[0-9a-f]{7,40}/i.test(gaps),false);
+const nums=[...agents.matchAll(/^(\d+)\.\s/gm)].map(x=>Number(x[1]));assert.equal(nums.length,new Set(nums).size,'AGENTS numbered governance rules must be unique');
+console.log(JSON.stringify({ok:true,suite:c.contractId,knownDebt:all.length,activeDebt:p.activeDebt.length,entropy:p.entropy,campaign:p.campaign,next:p.next,experienceLevels:p.enterpriseExperience.levelCount,claimBoundary:p.claimBoundary}));
