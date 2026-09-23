@@ -64,7 +64,7 @@ export function validateCapabilityTruth({truth,releaseIdentity,documentationMani
  for(const id of EXPECTED_A6) check(caps.some(c=>c.id===id),`${id}: A6 capability missing`);
  const requiredClosed={'GAP-010':'runtime-reliability-contract-s3','GAP-015':'procedure-worklist-and-risk-reference-closure','GAP-016':'procedure-worklist-and-risk-reference-closure','GAP-017':'ar-temporal-review-and-explicit-epistemic-effects','GAP-018':'ar-temporal-review-and-explicit-epistemic-effects','GAP-019':'runtime-reliability-contract-s3'};
  check(gaps?.schemaVersion==='1.3.0','gap schema must be 1.3.0');
- check(String(gaps?.scope||'').includes(TRUTH0_MAIN)&&String(gaps?.scope||'').includes('A6-UX4'),'gap scope is not reconciled to TRUTH-0');
+ check(!/main@[0-9a-f]{7,40}/i.test(String(gaps?.scope||''))&&String(gaps?.scope||'').includes('live Git facts come from Git/GitHub'),'gap scope must describe authority boundaries without freezing a historical Git pointer');
  check(same(gaps?.closureClasses,['repository-internal','external-evidence','independent-evidence']),'closure class registry drift');
  const canonical=gaps?.gaps||[]; const ids=canonical.map(g=>g.id); const open=canonical.filter(g=>g.status==='open');
  check(canonical.length===22&&new Set(ids).size===22,'canonical gap census/uniqueness drift');
