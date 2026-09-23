@@ -58,7 +58,8 @@ for(const gate of ['v3/trama-reconcile-check.mjs','v3/trama-reconcile-saturation
 assert.ok(registry.indexOf("'v3/trama-engineering-saturation.mjs'")<registry.indexOf("'v3/trama-reconcile-check.mjs'"));
 assert.ok(registry.indexOf("'v3/trama-reconcile-check.mjs'")<registry.indexOf("'v3/c3-capacity-contract-check.mjs'"));
 for(const token of ['GOV-WB6','C2-DELIVERY-PROVENANCE','Locale','Intermedio','Globale','E3-HUMAN','E3-GOV','E4-DEPLOY'])assert.ok(compass.includes(token),'Compass '+token);
-for(const token of ['GOV-TRAMA-RECONCILE-1','GLOBAL_ACT','ora che si fa','C2-DELIVERY-PROVENANCE'])assert.ok(agents.includes(token)||development.includes(token)||testing.includes(token),'docs '+token);
+for(const token of ['GOV-TRAMA-RECONCILE-1','GLOBAL_ACT','ora che si fa'])assert.ok(agents.includes(token)||development.includes(token)||testing.includes(token),'docs '+token);
+assert.equal([agents,development,testing].some(body=>body.includes('C2-DELIVERY-PROVENANCE')),false,'operating governance docs must not shadow the live next conditional slice');
 
 console.log(JSON.stringify({
  ok:true,
