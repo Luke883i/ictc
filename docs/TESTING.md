@@ -162,3 +162,10 @@ Il check confronta authority, owner correnti, remediation registry, legacy censu
 Un candidate path legacy non è un failure per nome. Il failure è una classificazione assente o una responsabilità blocking ancora corrente.
 
 Il legacy census è vincolato al tree committed dell'exact HEAD con `git ls-tree -r --name-only HEAD`: mutable index, file untracked e artefatti transitori creati da test precedenti non possono cambiare la governance truth dello stesso commit.
+
+
+## Strategic AS-IS convergence campaigns
+
+`GOV-ASIS-CONVERGENCE-1` aggiunge tier **scoped** 100k / 1M / 10M per AS-IS ratchet, Enterprise Candidate target, authority topology, document/governance coherence e cognitive order cross-surface. Non cambia i tier generici TRAMA 1k / 100k / 1M.
+
+Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure family richiedono remodelling. La saturazione semantica chiude solo quando `M+10k` non aggiunge nuove root family; la compressione chiude solo quando `N+10k` non trova un set di meccanismi più piccolo senza perdita. Mutation count resta model evidence, mai prova fisica, umana, deployment o legale.

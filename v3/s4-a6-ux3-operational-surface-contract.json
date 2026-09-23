@@ -13,7 +13,7 @@
     "coverage":"procedure-market-ux + standard-browser + operational-surface-a6-ux3"
   },
   "invariants":[
-    "Home remains priority-first and does not restore a numeric dashboard.",
+    "Home remains decision-first, keeps a bounded priority worklist after the primary decision and does not restore a numeric dashboard.",
     "RN-01 exposes source/material intake before monitoring registry controls.",
     "RN-01 monitoring records are collapsible and filterable without changing business providers.",
     "EC-01 exposes a filterable event registry and terminal records do not request formulation verification.",

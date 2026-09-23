@@ -750,5 +750,184 @@
       ]
     }
   ],
-  "claimBoundary": "Target/evidence requirements only. No current pass/fail state. This contract cannot promote ICTC to Enterprise Candidate or Enterprise Ready."
+  "claimBoundary": "Target/evidence requirements only. No current pass/fail state. This contract cannot promote ICTC to Enterprise Candidate or Enterprise Ready.",
+  "experienceLattice": [
+    {
+      "id": "HX00_IRON",
+      "abstraction": "physical-host-and-custody",
+      "primaryHuman": "Platform engineer",
+      "sees": "host, network, runtime identity, keys, databases, object stores and deployment boundaries",
+      "mustBeTrue": "The mounted environment cannot silently impersonate stronger custody, provenance, isolation or recovery than externally observed.",
+      "axes": [
+        "E05_SECURITY_PRIVACY",
+        "E06_IDENTITY",
+        "E07_RELIABILITY",
+        "E15_SUPPLY_CHAIN",
+        "E16_GOVERNANCE"
+      ],
+      "failureIfBroken": "deployment substrate can falsify every higher-layer assurance claim",
+      "evidenceBoundary": "repository contracts are E2; effective host/key/network controls remain E4 where declared"
+    },
+    {
+      "id": "HX01_DURABLE_DATA",
+      "abstraction": "data-concurrency-and-recovery",
+      "primaryHuman": "Software engineer",
+      "sees": "transaction, subject version, command replay, persistence, blob and recovery semantics",
+      "mustBeTrue": "Accepted writes, versions, tenant boundaries and recovery semantics remain deterministic under the declared topology.",
+      "axes": [
+        "E03_ARCHITECTURE",
+        "E04_DATA",
+        "E07_RELIABILITY",
+        "E08_CAPACITY"
+      ],
+      "failureIfBroken": "higher-level work can be lost, duplicated, cross-tenant or historically ambiguous",
+      "evidenceBoundary": "repository implementation can be E2; production recovery/load effectiveness is E4"
+    },
+    {
+      "id": "HX02_IDENTITY",
+      "abstraction": "identity-tenancy-and-security",
+      "primaryHuman": "Platform engineer",
+      "sees": "upstream identity, proxy trust, role mapping, tenancy, secrets and revocation boundary",
+      "mustBeTrue": "No client-visible token/header or local convenience path can silently grant enterprise identity, tenancy or secret authority.",
+      "axes": [
+        "E05_SECURITY_PRIVACY",
+        "E06_IDENTITY"
+      ],
+      "failureIfBroken": "human attribution and authorization become non-reliable",
+      "evidenceBoundary": "mapping/deny semantics may be E2; IdP/MFA/revocation effectiveness is E4"
+    },
+    {
+      "id": "HX03_RUNTIME",
+      "abstraction": "application-runtime-api",
+      "primaryHuman": "Software engineer",
+      "sees": "HTTP contract, handler registry, semantic runtime, projections, writes, receipts and error envelopes",
+      "mustBeTrue": "One business/epistemic contract governs local and enterprise adapters and every material write is authorized, bounded and read back.",
+      "axes": [
+        "E02_AUTHORITY",
+        "E03_ARCHITECTURE",
+        "E04_DATA",
+        "E10_API_INTEGRATION"
+      ],
+      "failureIfBroken": "parallel business truth or optimistic UI can emerge",
+      "evidenceBoundary": "exact-head runtime/API evidence is E2"
+    },
+    {
+      "id": "HX04_AI",
+      "abstraction": "ai-information-and-integration",
+      "primaryHuman": "Software engineer",
+      "sees": "provider choice, purpose, information class, network boundary, budget, schema, trace and rollback gate",
+      "mustBeTrue": "AI remains proposal-only, export eligibility precedes transport and activation is version/eval/drift bounded.",
+      "axes": [
+        "E05_SECURITY_PRIVACY",
+        "E10_API_INTEGRATION",
+        "E11_AI"
+      ],
+      "failureIfBroken": "information leakage, model-result authority or unbounded drift can occur",
+      "evidenceBoundary": "repository controls are E2; provider/deployment effectiveness is separately evidenced"
+    },
+    {
+      "id": "HX05_DELIVERY",
+      "abstraction": "delivery-supply-chain-and-change",
+      "primaryHuman": "Software engineer",
+      "sees": "candidate SHA, CI gates, dependencies, SBOM, provenance, signature, review and rollback",
+      "mustBeTrue": "A candidate is attributable to exact source/input/output and merge is not release or Enterprise Candidate.",
+      "axes": [
+        "E13_ASSURANCE",
+        "E14_DELIVERY",
+        "E15_SUPPLY_CHAIN",
+        "E16_GOVERNANCE"
+      ],
+      "failureIfBroken": "green CI can be laundered into provenance or governed release",
+      "evidenceBoundary": "repository provenance/signing predicates are E2; server-side review enforcement is E3-GOV"
+    },
+    {
+      "id": "HX06_OPERATIONS",
+      "abstraction": "operations-observability-capacity-recovery",
+      "primaryHuman": "SRE / operator",
+      "sees": "health, request correlation, telemetry ports, capacity envelope, alerts, backup and recovery drills",
+      "mustBeTrue": "Failures are attributable and operational limits remain explicit under real deployment load/failure conditions.",
+      "axes": [
+        "E07_RELIABILITY",
+        "E08_CAPACITY",
+        "E09_OBSERVABILITY"
+      ],
+      "failureIfBroken": "repository health can be confused with service effectiveness",
+      "evidenceBoundary": "local instrumentation is E2; production collector/SLO/soak/restore effectiveness is E4"
+    },
+    {
+      "id": "HX07_ADMIN",
+      "abstraction": "administration-and-control-plane",
+      "primaryHuman": "Administrator",
+      "sees": "users/roles, procedure policy, environment, AI provider/budget/egress and readiness blockers",
+      "mustBeTrue": "Administration exposes material policy truth and effects without granting hidden business, identity or deployment authority.",
+      "axes": [
+        "E05_SECURITY_PRIVACY",
+        "E06_IDENTITY",
+        "E11_AI",
+        "E16_GOVERNANCE"
+      ],
+      "failureIfBroken": "configuration can become an invisible authority escalation or misleading readiness signal",
+      "evidenceBoundary": "runtime/admin behavior is E2; enterprise identity/governance effectiveness remains external"
+    },
+    {
+      "id": "HX08_DOMAIN",
+      "abstraction": "compliance-business-work",
+      "primaryHuman": "Compliance practitioner",
+      "sees": "seven native procedures, next work, source/event/object/standard/action/risk/assurance state and human checkpoints",
+      "mustBeTrue": "Observed, proposed, decided, mapped, completed and verified states never collapse and cross-process handoffs restart native checkpoints.",
+      "axes": [
+        "E01_PRODUCT",
+        "E02_AUTHORITY",
+        "E04_DATA",
+        "E10_API_INTEGRATION",
+        "E11_AI"
+      ],
+      "failureIfBroken": "workflow completion can masquerade as legal/compliance conclusion",
+      "evidenceBoundary": "business/runtime semantics are E2; substantive legal truth remains outside ICTC"
+    },
+    {
+      "id": "HX09_AUDIT",
+      "abstraction": "evidence-assurance-and-reconstruction",
+      "primaryHuman": "Auditor",
+      "sees": "decision basis, versions, actor, receipts, evidence graph, integrity and explicit limitations",
+      "mustBeTrue": "The auditor can reconstruct what ICTC recorded and why without treating software integrity, internal approval or mapping as independent assurance.",
+      "axes": [
+        "E04_DATA",
+        "E09_OBSERVABILITY",
+        "E13_ASSURANCE",
+        "E16_GOVERNANCE"
+      ],
+      "failureIfBroken": "traceability becomes confidence theatre rather than bounded evidence",
+      "evidenceBoundary": "repository evidence is E2; independent review is E3 where required"
+    },
+    {
+      "id": "HX10_ENDUSER",
+      "abstraction": "cognition-interaction-and-visible-order",
+      "primaryHuman": "End user",
+      "sees": "identity, one primary decision/work item, bounded priorities/registers, context/evidence and technical detail in that order",
+      "mustBeTrue": "The first plane minimizes competing salience, card walls and unbounded lists while preserving semantic state, actor, limitation and human veto.",
+      "axes": [
+        "E01_PRODUCT",
+        "E12_HUMAN",
+        "E13_ASSURANCE"
+      ],
+      "failureIfBroken": "the interface can be formally correct but cognitively mislead or overload the person",
+      "evidenceBoundary": "DOM/browser/order checks are E2; comprehension, efficiency, trust calibration and assistive-technology effectiveness require E3-HUMAN"
+    },
+    {
+      "id": "HX11_EXTERNAL",
+      "abstraction": "independent-human-governance-deployment-assurance",
+      "primaryHuman": "Auditor",
+      "sees": "representative-user evidence, GitHub/server governance and real deployment evidence kept separate from repository claims",
+      "mustBeTrue": "Missing E3-HUMAN, E3-GOV or E4-DEPLOY stays visibly missing and can never be synthesized from CI, mutation count or documentation.",
+      "axes": [
+        "E12_HUMAN",
+        "E16_GOVERNANCE"
+      ],
+      "failureIfBroken": "Enterprise Candidate becomes self-attested",
+      "evidenceBoundary": "E3-HUMAN, E3-GOV and E4-DEPLOY are external rails by definition"
+    }
+  ],
+  "experienceLatticeOrder": "iron -> durable data -> identity -> runtime/API -> AI -> delivery -> operations -> administration -> domain work -> audit/evidence -> end-user cognition -> external assurance",
+  "experienceLatticeClaimBoundary": "The lattice defines what Enterprise Candidate must remain coherent for each human perspective. It stores no current pass/fail state and cannot close E3-HUMAN, E3-GOV or E4-DEPLOY."
 }

@@ -53,12 +53,16 @@ surfaces:
     reconciliation_runtime: v3/trama-reconcile.mjs
     reconciliation_checker: v3/trama-reconcile-check.mjs
     reconciliation_saturation: v3/trama-reconcile-saturation.mjs
+    as_is_convergence_contract: v3/as-is-convergence-contract.json
+    as_is_convergence_runtime: v3/as-is-convergence.mjs
+    as_is_convergence_checker: v3/as-is-convergence-check.mjs
+    as_is_convergence_saturation: v3/as-is-convergence-saturation.mjs
     causal_qualification_contract: v3/trama-causal-qualification-contract.json
     causal_qualification_runtime: v3/trama-causal-qualification.mjs
     causal_qualification_checker: v3/trama-causal-qualification-check.mjs
     causal_qualification_saturation: v3/trama-causal-qualification-saturation-1m.mjs
     classification: zero-authority-adaptive-engineering-control-plane
-    scope: derived-intent-observed-state-ontology-dod-slice-pdca-docs-devops-enterprise-gap-compass
+    scope: derived-intent-observed-state-ontology-dod-slice-pdca-docs-devops-enterprise-gap-compass-as-is-debt-entropy
   enduser_language:
     authority: docs/03_ENDUSER_LANGUAGE.md
   semantic_foundation_vocabulary:

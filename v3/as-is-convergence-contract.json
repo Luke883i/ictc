@@ -1,0 +1,252 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "GOV-ASIS-CONVERGENCE-1",
+  "classification": "zero-authority-derived-as-is-closure-and-convergence-contract",
+  "authorityEffect": "NONE",
+  "sourceOfTruth": false,
+  "writer": false,
+  "createsNewRoadmapCursor": false,
+  "trajectoryImpact": "reconciliation",
+  "purpose": "Close and ratchet the observed AS-IS, compile known debt into one deterministic derived lattice, expose one machine-actionable next step, and guard end-user cognitive order without creating a second product, runtime or convergence authority.",
+  "sourcePrecedence": [
+    "live-git-when-observed",
+    "claim-specific-executable-evidence",
+    "substantive-owner",
+    "convergence-sequencing-authority",
+    "derived-projection"
+  ],
+  "sourceBindings": [
+    "v3/gaps.json",
+    "audit/remediation-registry.json",
+    "docs/convergence/convergence-authority.json",
+    "v3/trama-enterprise-dod.json",
+    "docs/documentation-manifest.json",
+    "v3/product-contract.json",
+    "docs/PRODUCT.md",
+    "AGENTS.md",
+    "v3/public/index.html",
+    "v3/public/ui/stable-shell.js",
+    "v3/public/enterprise-workspace-3-2.css",
+    "v3/public/semantic-workspace-closure-3-2-1.css",
+    "v3/public/ui/proof-surface.js",
+    "v3/public/ui/operational-surface-a6-ux3.js"
+  ],
+  "debtKinds": [
+    "gap",
+    "remediation-finding",
+    "conditional-slice",
+    "serial-slice",
+    "external-rail",
+    "documentation-drift",
+    "ui-entropy"
+  ],
+  "normalizedDebtRequiredFields": [
+    "key",
+    "sourceId",
+    "sourcePath",
+    "kind",
+    "state",
+    "terminal",
+    "severity",
+    "closureClass",
+    "evidenceClass",
+    "ownerRef",
+    "target",
+    "dependencies",
+    "related",
+    "falsifier",
+    "claimBoundary"
+  ],
+  "asIsLock": {
+    "rule": "A closure already established by an authoritative source is a regression baseline. Reopening is allowed only as an explicit source-state transition with attributable evidence; silent recurrence, stale current documentation and derived-state promotion fail closed.",
+    "lockedClosedGapIds": [
+      "GAP-001",
+      "GAP-002",
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-010",
+      "GAP-011",
+      "GAP-013",
+      "GAP-015",
+      "GAP-016",
+      "GAP-017",
+      "GAP-018",
+      "GAP-019"
+    ],
+    "lockedResolvedFindingIds": [
+      "F-03",
+      "F-08",
+      "F-09",
+      "F-11"
+    ],
+    "lockedTerminalConditionalIds": [
+      "C5-SEMANTIC-OWNER-COMPRESSION"
+    ],
+    "lockedTerminalSerialIds": [
+      "GOV-WB4",
+      "TRUTH-0",
+      "SCOPE-0",
+      "REALITY-0",
+      "DECIDE-0",
+      "UIUX-CONVERGE-0"
+    ],
+    "closedDebtRegression": "BLOCKED_REOPEN_WITH_EVIDENCE",
+    "staleCurrentDocumentation": "BLOCKED_RECONCILE_OWNER",
+    "unknownDebtOwner": "BLOCKED_DISCOVER_OWNER"
+  },
+  "relatedDebt": {
+    "F-01": [
+      "GAP-022",
+      "E3-GOV"
+    ],
+    "F-05": [
+      "GAP-009",
+      "E4-DEPLOY"
+    ],
+    "F-06": [
+      "C2-DELIVERY-PROVENANCE"
+    ],
+    "F-07": [
+      "GAP-014",
+      "E4-DEPLOY"
+    ],
+    "F-10": [
+      "GAP-007",
+      "E4-DEPLOY"
+    ],
+    "F-13": [
+      "C3-CAPACITY-CONTRACT"
+    ],
+    "F-15": [
+      "C4-AI-EVAL-DRIFT"
+    ],
+    "F-16": [
+      "GAP-012",
+      "E3-HUMAN"
+    ],
+    "GAP-020": [
+      "C1-COMPAT-CONTRACTION",
+      "S4-A6-CLOSE"
+    ],
+    "GAP-021": [
+      "S5-CANDIDATE-SEAL"
+    ]
+  },
+  "nextStepPolicy": {
+    "order": [
+      "CONTROL_PLANE_DRIFT",
+      "CLOSED_DEBT_REGRESSION",
+      "DOCUMENTATION_DRIFT",
+      "UI_COGNITIVE_ENTROPY",
+      "CONVERGENCE_CRITICAL_PATH",
+      "SERIAL_FRONTIER",
+      "STOP"
+    ],
+    "exactlyOneNextAction": true,
+    "noMajorityVote": true,
+    "canonicalConvergenceOwner": "docs/convergence/convergence-authority.json",
+    "derivedEngineCannotWriteState": true
+  },
+  "strategicCampaignPolicy": {
+    "scopedOnly": true,
+    "doesNotReplaceGenericTramaTiers": true,
+    "tiers": [
+      100000,
+      1000000,
+      10000000
+    ],
+    "select": {
+      "100000": "bounded multi-owner AS-IS repair with no authority/security/external-rail implications",
+      "1000000": "cross-owner governance, documentation, UI or evidence-boundary change",
+      "10000000": "AS-IS ratchet, enterprise target, authority topology, strategic convergence or cross-surface cognitive-order change"
+    },
+    "semanticSaturation": {
+      "mode": "1..M",
+      "tail": 10000,
+      "criterion": "M+10k introduces zero new root failure family"
+    },
+    "compressionSaturation": {
+      "mode": "1..N",
+      "tail": 10000,
+      "criterion": "N+10k finds zero smaller lossless mechanism set"
+    },
+    "survivorsRequired": 0,
+    "deletionOracleRequired": true,
+    "semanticMutationIsPhysicalProof": false
+  },
+  "mechanisms": [
+    "SOURCE_PRECEDENCE",
+    "DEBT_NORMALIZER",
+    "CLOSED_DEBT_RATCHET",
+    "ENTROPY_MONITOR",
+    "NEXT_STEP_ENGINE",
+    "ENTERPRISE_EXPERIENCE_LATTICE",
+    "EVIDENCE_BOUNDARY",
+    "ZERO_AUTHORITY",
+    "COGNITIVE_ORDER",
+    "BOUNDED_LIST_GRAMMAR",
+    "MUTATION_ESCALATOR",
+    "SATURATION_STOP"
+  ],
+  "cognitiveOrder": {
+    "global": [
+      "identity",
+      "primary-work-or-decision",
+      "bounded-attention-or-catalog",
+      "context-or-evidence",
+      "technical-detail"
+    ],
+    "home": {
+      "order": [
+        "product-identity",
+        "next-decision",
+        "priority-worklist"
+      ],
+      "priorityCap": 3,
+      "forbidNumericDashboard": true
+    },
+    "processes": {
+      "order": [
+        "surface-identity",
+        "seven-procedure-row-list"
+      ],
+      "businessProcesses": 7,
+      "layout": "row-list"
+    },
+    "proof": {
+      "order": [
+        "surface-identity",
+        "human-decision-and-evidence",
+        "progressive-supporting-detail",
+        "technical-detail"
+      ],
+      "technicalFirst": false
+    },
+    "procedures": {
+      "order": [
+        "procedure-identity",
+        "attention-or-primary-work",
+        "controls",
+        "primary-register",
+        "advanced-context",
+        "reference"
+      ],
+      "secondaryDefaultClosed": true
+    },
+    "forbidden": [
+      "unbounded-first-plane-list",
+      "equal-salience-card-wall",
+      "technical-detail-before-work",
+      "visual-reordering-that-contradicts-semantic-dom",
+      "second-presentation-owner"
+    ]
+  },
+  "enterpriseExperience": {
+    "targetOwner": "v3/trama-enterprise-dod.json",
+    "statusOwner": "docs/convergence/convergence-authority.json#s5Seal",
+    "rule": "Enterprise Candidate is a multi-abstraction evidence posture experienced consistently from infrastructure engineers through operators, administrators, auditors and end users; no layer may synthesize missing E3/E4 evidence.",
+    "selfAttestationForbidden": true
+  },
+  "claimBoundary": "Repository/control-plane and source-level UI ordering evidence only. This contract cannot prove representative-human usability, assistive-technology effectiveness, deployment effectiveness, legal compliance, production security, protected-branch enforcement, Enterprise Candidate, Enterprise Ready or formal global minimality."
+}

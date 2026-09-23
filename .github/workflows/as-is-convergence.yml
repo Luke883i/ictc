@@ -1,0 +1,38 @@
+name: AS-IS convergence
+
+on:
+  pull_request:
+    paths:
+      - 'v3/as-is-convergence-*'
+      - 'v3/trama-engineering*'
+      - 'v3/trama-compass-governance.json'
+      - 'v3/trama-enterprise-dod.json'
+      - 'v3/gaps.json'
+      - 'audit/remediation-registry.json'
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'v3/public/**'
+      - '.github/workflows/as-is-convergence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  as-is-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - run: node v3/as-is-convergence-check.mjs
+      - name: Strategic 100k
+        run: node v3/as-is-convergence-saturation.mjs --trials 100000 --tail 10000
+      - name: Strategic 1M
+        run: node v3/as-is-convergence-saturation.mjs --trials 1000000 --tail 10000
+      - name: Strategic 10M
+        run: node v3/as-is-convergence-saturation.mjs --trials 10000000 --tail 10000

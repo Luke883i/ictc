@@ -134,6 +134,15 @@ Quando l'intento è una prosecuzione generica (`ora che si fa`, `prosegui`, `wha
 6. scegliere una sola conditional slice minima oppure STOP;
 7. aggiornare insieme authority, workbook e Bussola quando cambia la semantica di traiettoria.
 
-Nella riconciliazione `GOV-WB6` corrente il critical path derivato parte da `C2-DELIVERY-PROVENANCE`. È uno stato osservato e falsificabile, non una roadmap immutabile: ogni GLOBAL_ACT deve ricalcolarlo dagli owner e dai blocker correnti prima di proseguire.
+Il valore corrente del critical path non viene replicato in questo documento: appartiene a `docs/convergence/convergence-authority.json` e viene ricalcolato a ogni GLOBAL_ACT dagli owner e dai blocker osservati. Una guida operativa descrive il metodo, non congela il cursore vivo.
 
 Lo stato `in-progress` è intenzionale: evita di collassare “capacità sostanzialmente implementata con blocker residuo” in `todo` o `done`. Una closure repository-side non chiude E3-HUMAN, E3-GOV o E4-DEPLOY.
+
+
+## GOV-ASIS-CONVERGENCE-1 — chiusura AS-IS e strategic entropy
+
+Prima di una modifica cross-cutting, `node v3/as-is-convergence.mjs` compila una projection authority-zero di gap, remediation finding, conditional/serial slice, rail esterni, drift documentale e disordine cognitivo UI. Gli owner originali restano autoritativi; la projection serve a non perdere debito, non a chiuderlo.
+
+Le closure già registrate sono un **ratchet**: una ricomparsa silenziosa produce `BLOCKED_REOPEN_WITH_EVIDENCE`. Per campagne strategiche cross-abstraction il tier è 100k / 1M / 10M; i tier TRAMA generici 1k / 100k / 1M restano invariati. Al ceiling, nuova failure family o survivor richiedono remodelling. Saturazione semantica = `M+10k` senza novità; saturazione di compressione = `N+10k` senza ulteriore compressione lossless.
+
+L'ordine cognitivo di prima superficie è `identity -> primary work/decision -> bounded list -> context/evidence -> technical detail`. Il browser può provare DOM, geometry e disclosure E2; comprensione, efficienza, trust calibration e tecnologie assistive restano E3-HUMAN.

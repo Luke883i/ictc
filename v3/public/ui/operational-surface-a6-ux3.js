@@ -64,7 +64,7 @@ function homeOwner(){
   const root=document.querySelector('#homeView'),queue=document.querySelector('#homePriorities');
   if(!root||!queue)return;
   owner(root,'home');
-  queue.dataset.a6OperationalQueue='priority-first';
+  queue.dataset.a6OperationalQueue='decision-then-priority';
   queue.dataset.a6OperationalOwner='home-worklist';
   for(const button of queue.querySelectorAll('.home-business-priority')){
     const label=button.querySelector('b'),reason=button.querySelector('small'),open=button.querySelector('.home-priority-open');

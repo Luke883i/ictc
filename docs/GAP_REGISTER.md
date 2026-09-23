@@ -2,15 +2,15 @@
 
 La fonte canonica è `v3/gaps.json`; `v3/public/gap-registry.json` è la sua proiezione esatta dei soli gap `open`. `v3/capability-truth.json` separa capability repository, debito interno e rail E3/E4 esterni.
 
-## Baseline corrente — TRUTH-0
+## Baseline e stato corrente
 
-TRUTH-0 osserva `main@5d129a49d0d7907847ff59a3c5fa7d85edb8b66a`, merge della PR #136 GOV-WB4. La più recente esecuzione runtime/presentation è PR #135 A6-UX4 su `main@f766fc064b0f8552f4821776755d72b56b757205`. L'`auditedAnchor` S0-S3 resta intenzionalmente PR #121 come fondazione storica lossless.
+`TRUTH-0` e A6-UX4 restano **lineage storica** dentro `v3/capability-truth.json`; non sono un live pointer del registro gap. Lo stato dei gap è posseduto da `v3/gaps.json`, la projection pubblica contiene esattamente i soli gap `open`, mentre il sequencing corrente appartiene esclusivamente a `docs/convergence/convergence-authority.json`.
 
-Le capability repository sono riconciliate da S1-S3, S4-A0..A5 e dalle execution unit **A6-UX1, A6-UX2, A6-UX3, A6-UX4**. Queste ultime sono merged, ma **non chiudono** il parent GAP-020. La release resta `candidate`; `enterpriseCandidate=false` e `enterpriseReady=false`.
+`GOV-ASIS-CONVERGENCE-1` riconcilia gap, remediation finding, conditional/serial slice e rail E3/E4 in una projection authority-zero. Non chiude né riapre debito e non sostituisce gli owner canonici. Una closure storica che ricompare senza transizione esplicita fallisce chiusa come `BLOCKED_REOPEN_WITH_EVIDENCE`.
 
-## Prossima traiettoria e slice condizionali
+## Traiettoria
 
-La prossima barrier seriale dopo merge di TRUTH-0 è **SCOPE-0**. C1-C5 sono ora slice semantiche condizionali: C2 delivery provenance e C5 semantic-owner compression diventano eleggibili dopo TRUTH-0; C1 compatibility contraction, C3 capacity contract e C4 AI eval/drift/rollback dopo DECIDE-0. Tutte devono risultare `done` oppure `not-required` con authority+rationale+evidenceRef **prima** che S4-A6-CLOSE possa avanzare. S5-CANDIDATE-SEAL viene dopo, non prima.
+Questo documento non replica più la “prossima slice” corrente. Il critical path e la next action sono letti dalla convergence authority a ogni ACT; congelarli qui ricreerebbe lo stesso drift che il debt compiler deve rilevare.
 
 ## Gap interni aperti
 
@@ -21,7 +21,7 @@ La prossima barrier seriale dopo merge di TRUTH-0 è **SCOPE-0**. C1-C5 sono ora
 ## Rail esterni che il repository non può auto-chiudere
 
 - **E3-HUMAN:** GAP-012 / representative human + assistive-technology evidence.
-- **E3-GOV:** GAP-022 branch protection/ruleset/review enforcement e independent governance evidence. GitHub osservato su `main@5d129a49d0d7907847ff59a3c5fa7d85edb8b66a`: `protected=false`.
+- **E3-GOV:** GAP-022 branch protection/ruleset/review enforcement richiede osservazione live di GitHub; un file versionato non può auto-certificarne lo stato.
 - **E4-DEPLOY:** GAP-007 scanner efficacy, GAP-009 identity effectiveness, GAP-014 production observability; ulteriori F-* E4 restano nel remediation registry.
 
 Repository simulation, green CI e mutation counts non sostituiscono E3/E4.
