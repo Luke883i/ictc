@@ -108,7 +108,9 @@ def navigate(page,surface,spec):
   page.goto(BASE+'/?view=home',wait_until='networkidle')
   menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
   if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
-  page.locator('#openSettings').click(); expect(page.locator('#settingsDialog')).to_be_visible()
+  page.locator('#openSettings').click(); expect(page.locator('#adminCenter')).to_be_visible(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible()
+  provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); assert provider.get_attribute('open') is None
+  provider.locator(':scope > summary').click(); expect(page.locator('#settingsDialog[data-admin-embedded="ai"]')).to_be_visible()
  elif spec['view']=='epistemic':
   page.goto(BASE+'/?view=proof',wait_until='networkidle'); expect(page.locator('#proofView')).to_be_visible()
   inv=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]'); expect(inv).to_have_count(1); assert inv.get_attribute('open') is None
