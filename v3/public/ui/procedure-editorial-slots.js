@@ -1,5 +1,5 @@
 const SLOT_NAMES=Object.freeze(['attention','controls','primary','advanced-context','reference','evidence','technical','boundary']);
-const SUPPORT_NAMES=new Set(['advanced-context','reference']);
+const SUPPORT_NAMES=new Set(['advanced-context']);
 const SYNTHETIC=new Set(['attention','advanced-context','reference','evidence','technical','boundary']);
 const token=value=>String(value||'').trim();
 const direct=(host,selector)=>selector?[...host.querySelectorAll(selector)].filter(node=>node.parentElement===host):[];

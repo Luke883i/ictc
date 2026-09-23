@@ -10,7 +10,7 @@ export const GLOBAL_UX_DOD = Object.freeze({
   primaryActionsPerDecisionContext: 1,
   materialQuestionsPerContext: 1,
   primaryFactsPerCard: 4,
-  listItemsBeforeProgressiveDisclosure: 12,
+  listItemsBeforeProgressiveDisclosure: 6,
   technicalDetailsDefault: 'collapsed',
   crossProcedureDecisionInheritance: false,
   aiAuthority: 'proposal-only',
