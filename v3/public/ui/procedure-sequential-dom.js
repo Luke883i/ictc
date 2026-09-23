@@ -21,7 +21,7 @@ function queueTools(host,id,label){
   if(id==='objects'){search=tools.querySelector('[data-seq-ao-search]')||search;stateSelect=tools.querySelector('[data-seq-ao-filter]')||stateSelect;}
   if(!search){search=document.createElement('input');search.type='search';search.dataset.seqQueueSearch=id;search.placeholder=`Cerca ${label}`;tools.prepend(search);}
   if(!stateSelect){stateSelect=document.createElement('select');stateSelect.dataset.seqQueueState=id;stateSelect.innerHTML='<option value="">Tutti gli stati</option>';tools.append(stateSelect);}
-  if(id==='objects'){search.dataset.seqAoSearch='';stateSelect.dataset.seqAoFilter='';}
+  search.dataset.seqQueueSearch=id;stateSelect.dataset.seqQueueState=id;if(id==='objects'){search.dataset.seqAoSearch='';stateSelect.dataset.seqAoFilter='';}
   search.setAttribute('aria-label',`Cerca ${label}`);stateSelect.setAttribute('aria-label',`Filtra ${label} per stato`);
   let count=tools.querySelector('[data-seq-queue-count]');if(!count){count=document.createElement('span');count.className='surface-chip';count.dataset.seqQueueCount='';count.setAttribute('aria-live','polite');tools.append(count);}
   let more=tools.querySelector('[data-seq-queue-more]');if(!more){more=document.createElement('button');more.type='button';more.className='secondary';more.dataset.seqQueueMore=id;more.textContent='Mostra altri';tools.append(more);}
