@@ -326,7 +326,7 @@ try:
         atom = page.locator('[data-explore-atom]').first
         expect(atom).to_be_visible(); atom.click()
         expect(page.locator('.epistemic-atom-readable')).to_be_visible()
-        expect(page.locator('.epistemic-level-nav')).to_contain_text('Atomo')
+        expect(page.locator('.epistemic-level-nav')).to_contain_text('Elemento')
         expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
         page.locator('[data-epistemic-level="overview"]').click()
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
@@ -386,7 +386,7 @@ try:
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
             'epistemicEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
-            'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'exploreLevels':['Quadro','Gruppi','Relazioni','Elemento'],'sameProjectionDigestAcrossModes':True,
             'focusedGraphBounded':True,'focusedGraphLimits':{'nodes':24,'edges':48},
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,
