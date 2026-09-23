@@ -109,7 +109,7 @@ def audit_proof(page,role,vp,width):
   elif disclosure.get_attribute('open') is not None:anomaly('evidence-technical-open-by-default',role,vp,'proof',name,'collapsed')
  if decisions.count()!=1:anomaly('evidence-workspace-owner-count',role,vp,'proof',{'workspace':'decisions','count':decisions.count()},{'workspace':'decisions','count':1})
  elif decisions.get_attribute('open') is not None:anomaly('evidence-secondary-open-by-default',role,vp,'proof','decisions','collapsed')
- expected_order=['facts','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','interpretation','export']
+ expected_order=['facts','interpretation','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','export']
  order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null)).filter(Boolean)""")
  projected=[x for x in order if x in expected_order]
  if projected!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',projected,expected_order)

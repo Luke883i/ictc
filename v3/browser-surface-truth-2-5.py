@@ -76,7 +76,7 @@ try:
   for disclosure in [investigation,trace,decision,standards]: expect(disclosure).to_be_visible()
   for disclosure in [decision,standards,trace,investigation]: expect(disclosure).not_to_have_attribute('open','')
   expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico'); expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro'); expect(decision.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità'); expect(standards.locator(':scope > summary')).to_contain_text('Riferimenti e basi')
-  order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','interpretation','export']; assert [x for x in order if x in expected_details]==expected_details,order
+  order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['interpretation','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','export']; assert [x for x in order if x in expected_details]==expected_details,order
   reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]'); expect(reading).to_be_visible(); assert reading.get_attribute('open') is None
 
   PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); snapshot(page,'epistemic','#epistemicView')
