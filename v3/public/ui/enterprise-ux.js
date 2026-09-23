@@ -4,26 +4,12 @@ import { uiIcon } from './ui-icons.js';
 const roleLabels = { admin: 'Amministratore', user: 'Utente', auditor: 'Auditor' };
 function capability(name) { return Array.isArray(state.data?.capabilities) && state.data.capabilities.includes(name); }
 function trustedIdentity(){return state.data?.actor?.identityMode==='trusted-header';}
-function aiStatusView(llm={}){
-  const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';
-  const detail=llm.ready?'AI disponibile':llm.configured?'Chiave AI non disponibile':'AI non configurata';
-  const tooltip=llm.ready?detail:llm.configured?`${detail} · Verifica la chiave in Amministrazione > AI. I percorsi manuali restano disponibili`:`${detail} · Configura il provider in Amministrazione > AI. I percorsi manuali restano disponibili`;
-  const icon=llm.ready?'sparkles':llm.configured?'triangle-alert':'info';
-  const tone=llm.ready?'positive':llm.configured?'attention':'neutral';
-  return {stateId,detail,tooltip,icon,tone};
-}
+function aiStatusView(llm={}){const stateId=llm.ready?'ready':llm.configured?'key-missing':'unconfigured';const detail=llm.ready?'Configurazione AI operativa':llm.configured?'Configurazione AI da verificare':'Configurazione AI non completata';return{stateId,detail};}
 function syncRuntimeStatus(){
   const status=$('#runtimeStatus');if(!status||!state.data)return;
-  const role=state.data.actor?.role||state.role||'user',llm=state.data.settings?.llm||{};
-  const view=aiStatusView(llm);
-  status.innerHTML=uiIcon(view.icon,'ui-icon runtime-status-icon');
-  status.dataset.aiState=view.stateId;
-  status.dataset.tone=view.tone;
-  status.dataset.actorRole=role;
-  status.dataset.tooltip=view.tooltip;
-  status.title=view.tooltip;
-  status.setAttribute('aria-label',view.tooltip);
-  status.setAttribute('tabindex','0');
+  const role=state.data.actor?.role||state.role||'user',view=aiStatusView(state.data.settings?.llm||{});
+  status.replaceChildren();status.hidden=true;status.dataset.aiState=view.stateId;status.dataset.actorRole=role;status.dataset.informationRole='configuration';status.dataset.legacyControl='shell-ai-status';
+  delete status.dataset.tone;delete status.dataset.tooltip;status.removeAttribute('title');status.removeAttribute('tabindex');status.removeAttribute('aria-label');status.setAttribute('aria-hidden','true');
 }
 function applyCapabilities() {
   if (!state.data) return;
