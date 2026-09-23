@@ -4,7 +4,7 @@ const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
 const S={
  frame:read('./public/ui/procedure-frame.js'),slots:read('./public/ui/procedure-editorial-slots.js'),
  padmin:read('./public/ui/procedure-admin.js'),ux:read('./public/ui/enterprise-ux.js'),
- ds:read('./public/ui/enterprise-2-design-system.js'),admin:read('./public/ui/admin-center.js'),
+ ds:read('./public/ui/enterprise-2-design-system.js'),admin:read('./public/ui/admin-center.js'),adminWorkspace:read('./public/ui/admin-workspace-3-2.js'),
  actions:read('./public/ui/actions.js'),operational:read('./public/ui/operational-surface-a6-ux3.js'),
  render:read('./public/ui/render.js'),browser:read('./public/ui/standard-browser.js'),
  standard:read('./runtime/standard-library-current.mjs'),publicPack:read('./runtime/standard-public-source-pack.mjs'),
@@ -16,7 +16,7 @@ const sourceChecks=[
  [S.slots.includes(':scope > .procedure-support-rail')&&S.slots.includes('rail.parentElement!==host')&&S.slots.includes('positionSupportRail')&&S.slots.includes('validPhysicalOrder')&&!S.slots.includes('frame.nextElementSibling!==rail'),'support-rail-physical-order'],
  [S.frame.includes('Array.isArray(policy.enabled)')&&!S.frame.includes('!enabled.size||enabled.has'),'procedure-policy-fail-closed-projection'],
  [S.padmin.includes('ictc:procedure-policy-updated')&&!S.padmin.includes('<i aria-hidden="true"></i>'),'procedure-policy-readback-and-native-switch'],
- [S.ux.includes("const tone=llm.ready?'positive':llm.configured?'attention':'neutral'")&&S.ds.includes("node.id==='runtimeStatus'&&node.dataset.aiState"),'ai-truth-explicit'],
+ [S.ux.includes('status.hidden=true')&&S.ux.includes("status.dataset.legacyControl='shell-ai-status'")&&!S.ux.includes('status.dataset.tooltip=view.tooltip')&&S.adminWorkspace.includes('admin-configuration-state'),'ai-truth-explicit'],
  [S.admin.includes('adminAiProviderHost')&&S.admin.includes("settings.dataset.adminEmbedded='ai'")&&S.actions.includes("openAdminCenter('ai')"),'admin-ai-single-surface'],
  [S.render.includes('data.rnJobState')===false&&S.render.includes("registry.dataset.rnJobState=missions.length?'materialized':'empty'")&&S.operational.includes('previousTotal===0'),'rn-job-materialization'],
  [S.browser.includes('neutralKeywords')&&S.browser.includes('standard-neutral-keywords')&&!/nodes\.map\(node=>\{[^}]*neutral=String\(node\.neutralDescription/.test(S.browser),'standard-index-compressed'],
@@ -31,15 +31,15 @@ for(const[ok,label]of sourceChecks)assert.ok(ok,label);
 
 const F=Object.freeze([
  'support-parent','support-order','header-boundary','home-budget','home-scroll-truth',
- 'ai-state','ai-tone','ai-copy','policy-projection','policy-readback',
+ 'ai-state','ai-shell-visible','ai-color-verdict','ai-tooltip','ai-copy','policy-projection','policy-readback',
  'admin-ai-parent','admin-ai-single-form','admin-switch-native','standard-master-width',
  'standard-detail-visible','licensed-node-specific','public-text-provenance',
  'rn-job-count','rn-job-materialization','single-owner'
 ]);
 const valid=()=>({
- supportParent:'sibling',supportOrder:'context>reference',headerContainsSupport:false,
+ supportParent:'sibling',supportOrder:'reference>metrics>work>context',headerContainsSupport:false,
  viewport:900,header:56,footer:44,mainTop:0,mainBottom:0,homeHeight:800,bodyOverflow:'auto',
- aiState:'unconfigured',aiTone:'neutral',aiCopy:'AI non configurata · Amministrazione > AI',
+ aiState:'unconfigured',aiShellVisible:false,aiColorVerdict:false,aiTooltip:false,aiCopy:'Configurazione AI non completata',
  policyEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],landingEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],
  adminAiParent:'admin',settingsForms:1,nativeSwitch:true,
  masterPx:240,detailPx:680,licensedSpecific:true,publicExactRequiresConfirmedPack:true,
@@ -47,13 +47,15 @@ const valid=()=>({
 });
 function failures(s){const o=[];
  if(s.supportParent!=='sibling')o.push('support-parent');
- if(s.supportOrder!=='context>reference')o.push('support-order');
+ if(s.supportOrder!=='reference>metrics>work>context')o.push('support-order');
  if(s.headerContainsSupport)o.push('header-boundary');
  if(s.header+s.footer+s.homeHeight+s.mainTop+s.mainBottom>s.viewport+1)o.push('home-budget');
  if(s.bodyOverflow==='hidden')o.push('home-scroll-truth');
  if(!['ready','key-missing','unconfigured'].includes(s.aiState))o.push('ai-state');
- if(({ready:'positive','key-missing':'attention',unconfigured:'neutral'})[s.aiState]!==s.aiTone)o.push('ai-tone');
- if(!/non configurata.*Amministrazione/i.test(s.aiCopy))o.push('ai-copy');
+ if(s.aiShellVisible)o.push('ai-shell-visible');
+ if(s.aiColorVerdict)o.push('ai-color-verdict');
+ if(s.aiTooltip)o.push('ai-tooltip');
+ if(!/^Configurazione AI (operativa|da verificare|non completata)$/.test(s.aiCopy))o.push('ai-copy');
  if(!Array.isArray(s.policyEnabled)||s.policyEnabled.length<1)o.push('policy-projection');
  if(s.policyEnabled.join('|')!==s.landingEnabled.join('|'))o.push('policy-readback');
  if(s.adminAiParent!=='admin')o.push('admin-ai-parent');
@@ -69,10 +71,10 @@ function failures(s){const o=[];
  return o;
 }
 function mutate(s,f){switch(f){
- case'support-parent':s.supportParent='header';break;case'support-order':s.supportOrder='reference>context';break;
+ case'support-parent':s.supportParent='header';break;case'support-order':s.supportOrder='context>reference';break;
  case'header-boundary':s.headerContainsSupport=true;break;case'home-budget':s.homeHeight+=24;break;
  case'home-scroll-truth':s.bodyOverflow='hidden';break;case'ai-state':s.aiState='unknown';break;
- case'ai-tone':s.aiTone='positive';break;case'ai-copy':s.aiCopy='Sistema disponibile';break;
+ case'ai-shell-visible':s.aiShellVisible=true;break;case'ai-color-verdict':s.aiColorVerdict=true;break;case'ai-tooltip':s.aiTooltip=true;break;case'ai-copy':s.aiCopy='Sistema disponibile';break;
  case'policy-projection':s.policyEnabled=[];break;case'policy-readback':s.landingEnabled=s.landingEnabled.filter(x=>x!=='coverage');break;
  case'admin-ai-parent':s.adminAiParent='standalone-dialog';break;case'admin-ai-single-form':s.settingsForms=2;break;
  case'admin-switch-native':s.nativeSwitch=false;break;case'standard-master-width':s.masterPx=520;break;
@@ -92,6 +94,6 @@ for(let i=0;i<1_000_000;i++){
 }
 assert.ok(Math.min(...Object.values(coverage))>100000,coverage);
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'SCREENSHOT-INTENT-RUNTIME-SEMANTIC-CONVERGENCE',trials:1_000_000,positives,mutatedTrials,multiMutations:multi,appliedMutations,families:F.length,coverage,survivors:0,seed:'0x51c0ffee',dod:{global:['single-authority','truthful-state','runtime-readback','no-false-green'],intermediate:['landing-composition','admin-control-plane','standard-content-boundary','rn-job-legibility'],local:['support-rail-sibling','home-viewport-fit','procedure-hide-readback','ai-tone-state','admin-ai-parent','standard-master-detail','job-materialization']},claimBoundary:'Deterministic semantic/source mutation evidence only. Chromium/runtime readback remain independent. Exact public-source text is supported only when a complete confirmed official pack is materialized; no official text is fabricated by this rail.'};
+const report={ok:true,slice:'SCREENSHOT-INTENT-RUNTIME-SEMANTIC-CONVERGENCE',trials:1_000_000,positives,mutatedTrials,multiMutations:multi,appliedMutations,families:F.length,coverage,survivors:0,seed:'0x51c0ffee',dod:{global:['single-authority','truthful-state','runtime-readback','no-false-green'],intermediate:['landing-composition','admin-control-plane','standard-content-boundary','rn-job-legibility'],local:['support-rail-sibling','home-viewport-fit','procedure-hide-readback','ai-neutral-admin-state','admin-ai-parent','standard-master-detail','job-materialization']},claimBoundary:'Deterministic semantic/source mutation evidence only. Chromium/runtime readback remain independent. Exact public-source text is supported only when a complete confirmed official pack is materialized; no official text is fabricated by this rail.'};
 writeFileSync(new URL('../artifacts/screenshot-intent-runtime-convergence-1m.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));

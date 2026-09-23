@@ -26,20 +26,21 @@ function projectPendingRole(role) {
   if(trustedIdentity())return;
   const status = $('#runtimeStatus');
   if (status) {
-    const pendingLabel=roleLabels[role]||'Ruolo';
-    const detail=`Aggiornamento ruolo: ${pendingLabel}`;
     status.dataset.actorRole='transitioning';
     status.dataset.requestedRole=role;
-    status.dataset.tooltip=detail;
-    status.title=detail;
-    status.setAttribute('aria-label',detail);
+    delete status.dataset.tooltip;
+    status.removeAttribute('title');
+    status.removeAttribute('aria-label');
   }
   const privileged = role === 'admin';
-  $$('.admin-only').forEach(node => { node.hidden = !privileged; });
-  if (!privileged) {
-    if ($('#openAdminCenter')) $('#openAdminCenter').hidden = true;
-    if ($('#openSettings')) $('#openSettings').hidden = true;
+  $('.admin-only').forEach(node => { node.hidden = node.id==='openSettings' ? true : !privileged; });
+  if ($('#openSettings')) {
+    $('#openSettings').hidden = true;
+    $('#openSettings').dataset.legacyControl='admin-ai-entry';
+    $('#openSettings').setAttribute('aria-hidden','true');
+    $('#openSettings').tabIndex=-1;
   }
+  if (!privileged && $('#openAdminCenter')) $('#openAdminCenter').hidden = true;
 }
 
 export function installEnterpriseExperience() {
