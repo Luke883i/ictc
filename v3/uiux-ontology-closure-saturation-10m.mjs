@@ -109,7 +109,7 @@ const SOURCE_MUTANTS=[
   ['orientation-token-lost',s=>({...s,frame:s.frame.replace('procedure-orientation-popover','procedure-orientation-retired')})],
   ['procedure-metrics-lost',s=>({...s,anatomy:s.anatomy.replace("editorialSlot(host,'metrics')","editorialSlot(host,'attention')")})],
   ['state-rail-drifts',s=>({...s,p2:s.p2.replace('--p2-state-rail:7.5rem','--p2-state-rail:auto')})],
-  ['control-rail-drifts',s=>({...s,p2:s.p2.replace('.procedure-queue-tools,.procedure-worklist-filters','.procedure-queue-tools')})],
+  ['control-rail-drifts',s=>({...s,p2:s.p2.replaceAll('.procedure-queue-tools,.procedure-worklist-filters','.procedure-queue-tools')})],
   ['proof-method-demoted',s=>({...s,proof:s.proof.replace('ordered(content,[factStrip,interpretation,decisions,trace,standards,investigation','ordered(content,[factStrip,decisions,trace,standards,investigation,interpretation')})],
   ['proof-peer-style-diverges',s=>({...s,proof:s.proof.replace("peer.dataset.proofVisualGrammar='peer-section'","peer.dataset.proofVisualGrammar='legacy-section'")})],
   ['admin-second-entry',s=>({...s,active:s.active.replace('for(const button of[admin])','for(const button of[admin,settings])')})],
