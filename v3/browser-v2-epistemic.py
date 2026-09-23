@@ -2,7 +2,7 @@ import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
-PROOF_READING_ORDER='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 def fail(e):
  payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v2-epistemic-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-v2-epistemic::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def no_overflow(page):

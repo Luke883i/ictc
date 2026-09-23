@@ -8,7 +8,7 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'assurance'}
-PROOF_READING_ORDER = 'facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER = 'facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
 
 def fail(e):
     payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
@@ -132,7 +132,17 @@ def submit_grc(page, code, pid, fill, needle):
     PHASE = f'{code}-submit-revision'
     after = wait_advance(page, before)
     PHASE = f'{code}-local-projection'
-    expect(page.locator('#grcWorkspace .grc-list')).to_contain_text(needle)
+    records = page.locator('#grcWorkspace .grc-list')
+    expect(records).to_contain_text(needle)
+    PHASE = f'{code}-bounded-universe-filter'
+    search = page.locator(f'#grcWorkspace [data-seq-queue-search="{pid}"]')
+    expect(search).to_have_count(1)
+    expect(search).to_be_visible()
+    search.fill(needle)
+    visible_match = page.locator('#grcWorkspace .grc-list > article:visible').filter(has_text=needle)
+    expect(visible_match.first).to_be_visible()
+    assert visible_match.count() >= 1, (code, pid, needle)
+    search.fill('')
     verify_process_projection(page, code, pid, after)
     return after
 
@@ -316,7 +326,7 @@ try:
         atom = page.locator('[data-explore-atom]').first
         expect(atom).to_be_visible(); atom.click()
         expect(page.locator('.epistemic-atom-readable')).to_be_visible()
-        expect(page.locator('.epistemic-level-nav')).to_contain_text('Atomo')
+        expect(page.locator('.epistemic-level-nav')).to_contain_text('Elemento')
         expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
         page.locator('[data-epistemic-level="overview"]').click()
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
@@ -376,7 +386,7 @@ try:
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
             'epistemicEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
-            'exploreLevels':['Quadro','Gruppi','Relazioni','Atomo'],'sameProjectionDigestAcrossModes':True,
+            'exploreLevels':['Quadro','Gruppi','Relazioni','Elemento'],'sameProjectionDigestAcrossModes':True,
             'focusedGraphBounded':True,'focusedGraphLimits':{'nodes':24,'edges':48},
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,
             'history':True,'mobileOverflow':False,'reducedMotionRoute':True,

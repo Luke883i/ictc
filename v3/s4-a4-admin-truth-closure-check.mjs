@@ -8,6 +8,7 @@ assert.ok(coordinator.includes('Promise.allSettled')&&!coordinator.includes('Pro
 assert.ok(coordinator.includes('epochs')&&coordinator.includes('stale:true'),'A4 retry must be latest-wins and reject stale render authority');
 assert.ok(admin.includes("adminFailureIsolation='slice-local'")&&admin.includes("adminRouteability='modal-local'"),'Admin must publish local failure isolation and explicit modal routeability');
 assert.ok(admin.includes('data-admin-retry')&&admin.includes('admin-slice-error'),'A4 must expose local retry/error affordance');
+assert.ok(admin.includes('revealSliceError')&&admin.includes('detail.open=true'),'A4 active slice errors must reveal their enclosing progressive disclosure without adding a DOM observer');
 assert.ok(admin.includes("refreshAdminSlices(['readiness','usage'])")&&admin.includes("refreshAdminSlices(['identity','readiness'])")&&admin.includes("refreshAdminSlices(['users','readiness'])"),'Admin writes must refresh only dependent slices');
 assert.ok(!admin.includes('Promise.all('),'Admin owner must not retain fail-total read fan-in');
 const open=admin.indexOf("export function openAdminCenter(view='overview')");

@@ -19,7 +19,7 @@ assert.ok(ep.includes('GRAPH_MAX_NODES=24')&&ep.includes('GRAPH_MAX_EDGES=48'),'
 assert.ok(ep.includes('focusId')&&ep.includes("edge.from===focusId||edge.to===focusId"),'EP graph must be selected-focus one-hop');
 assert.ok(ep.includes('data-epistemic-graph-focus'),'EP graph must expose focus identity for browser evidence');
 assert.ok(proof.includes("classList.add('proof-fact-strip')")&&proof.includes("proofFacts='non-evaluative'"),'Proof non-score facts must use FactStrip semantics');
-assert.ok(proof.includes("proofReadingOrder='facts>decisions>evidence-basis>trace>epistemic>external>integrity>method>export'"),'Proof must preserve evidence reading order');
+assert.ok(proof.includes("proofReadingOrder='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'"),'Proof must preserve evidence reading order');
 assert.ok(proof.includes('initializeDisclosure(detail,false)')&&!proof.includes('initializeDisclosure(detail,detail===decisions)'),'P2 Proof secondary disclosures must initialize closed');
 assert.ok(proof.includes("initialSecondaryDisclosures='closed'"),'Proof must publish the P2 initial-closed marker');
 assert.ok(proof.includes('function byDomain')&&proof.includes('data-proof-domain="${id}"'),'Proof owner must remain idempotent after it rewrites legacy section labels');

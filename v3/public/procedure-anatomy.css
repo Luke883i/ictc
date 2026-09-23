@@ -260,7 +260,7 @@
 .procedure-standard-name{font-weight:400}
 
 /* Screenshot-intent convergence: one support rail is a direct sibling immediately below the canonical procedure header. */
-.procedure-support-rail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem;margin-top:.55rem}
+.procedure-support-rail{display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;margin-top:.55rem}
 .procedure-support-rail>[data-editorial-slot]{min-width:0}
 .procedure-support-rail .procedure-anatomy,.procedure-support-rail .procedure-anatomy-standards{margin:0}
 .procedure-anatomy-value{grid-column:1/-1}

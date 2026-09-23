@@ -8,7 +8,7 @@
 #settingsForm[data-settings-structure18="true"] .settings-job-boundary{margin:4px 0 0;}
 .ai-provider-selector{order:-10}
 .ai-provider-advanced{margin:.25rem 0;border:1px solid var(--color-border);border-radius:10px;padding:.35rem .5rem}
-.ai-provider-advanced>summary{cursor:pointer;font-weight:650}
+.ai-provider-advanced-toggle{width:100%;justify-content:flex-start;text-align:left;font-weight:650}
 [data-ai-provider-advanced-body]{display:grid;gap:.45rem;margin-top:.45rem}
 .ai-provider-status{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.55rem .65rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
 .ai-provider-status[data-ai-provider-status="ok"]{border-color:color-mix(in srgb,#198754 45%,var(--color-border))}

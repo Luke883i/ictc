@@ -47,7 +47,6 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>s
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary span{display:grid;gap:.1rem}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary b{font-size:.92rem;line-height:1.25}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary small{font-size:var(--type-control);font-weight:var(--weight-description);line-height:1.38;color:var(--color-muted)}
-html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-workspace="epistemic-investigation"]{border-color:#cfd5ff;background:linear-gradient(135deg,#fff,#f8f9ff)}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-workspace="trace-reconstruction"] #traceExplorer{padding:0!important;margin:0!important;border:0!important;background:transparent!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details[data-proof-workspace="trace-reconstruction"] #traceExplorer>.trace-head{margin-top:0!important}
 html[data-native-semantic-lattice="3.2.0"] #proofContent .proof-section-body{padding:.68rem .8rem!important}
@@ -64,7 +63,7 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-heade
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail[open]{grid-column:1/-1;width:100%}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] :is(.procedure-frame-copy,.procedure-frame-copy>*,.procedure-value){min-width:0;max-width:100%;overflow-wrap:anywhere}
 html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
-html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary>span{display:flex;align-items:center;gap:.4rem;min-width:0;flex:1}
+html[data-native-semantic-lattice="3.2.0"] #proofContent details.proof-section>summary>span{display:grid;align-items:start;gap:.1rem;min-width:0;flex:1}
 @media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-context{grid-template-columns:1fr;align-items:start}html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-context-detail{justify-self:start}}
 
 /* PR164 — cross-surface cosmetic intent absorbed by the canonical procedure/proof owner. */

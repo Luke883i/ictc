@@ -21,11 +21,14 @@ const source={
   finetuning14:read('./public/ui/procedure-finetuning-1-4.js')
 };
 
-const CANON=['attention','controls','primary','advanced-context','reference'];
+const CANON=['reference','attention','controls','primary','advanced-context'];
 const PROCEDURES=['monitoring','incidents','objects','coverage','actions','risks','assurance'];
 
 function sourceLaws(s){
-  const orderToken="['attention','controls','primary','advanced-context','reference']";
+  const scopeStart=s.semanticSurface.indexOf('function scopeUniverse(root,id)');
+  const scopeEnd=s.semanticSurface.indexOf('function ',scopeStart+9);
+  const scopeUniverse=scopeStart>=0?s.semanticSurface.slice(scopeStart,scopeEnd>scopeStart?scopeEnd:undefined):'';
+  const orderToken="['reference','attention','controls','primary','advanced-context']";
   return {
     sevenOwners:(s.rn.split(orderToken).length-1)===2&&(s.grc.split(orderToken).length-1)===5,
     rnUniquePrimary:s.rn.includes('PRIMARY_SELECTOR')&&s.rn.includes('[data-rn-primary-work="sources"]')&&s.rn.includes("incidents:':scope > .section-block'"),
@@ -38,8 +41,8 @@ function sourceLaws(s){
     marketIntegratedProgressive:s.market.includes('details class="market-section market-integrated"')&&s.market.includes('data-market-integrated'),
     coverageScopePrimary:s.semanticSurface.includes("return root.querySelector('[data-market-primary-work]')||null")&&s.semanticSurface.includes("if(id==='coverage'){const scopeAnchor=scopeAnchorForBindings(root,id),coverageControl=ensureScopeControl(root,id,scopeAnchor)")&&s.semanticSurface.indexOf("if(id==='coverage'){const scopeAnchor")<s.semanticSurface.indexOf("if(!exact){section.hidden=false")&&s.semanticSurface.includes('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}')&&s.semanticSurface.includes("control.dataset.a6Ux4ScopeOwner=id"),
     coverageScopeRemountDefault:s.semanticSurface.includes('function syncScopePreference(control,id)')&&(s.semanticSurface.split("control.dataset.a6Ux4UserSelected!=='true'").length-1)===1&&s.semanticSurface.includes("control.dataset.a6Ux4UserSelected='true'")&&s.semanticSurface.includes('function resetScopePreferences()')&&s.semanticSurface.includes("delete control.dataset.a6Ux4UserSelected")&&s.semanticSurface.includes("control.value='actionable'"),
-    coverageScopePrimaryCollectionOnly:s.semanticSurface.includes("function scopeUniverse(root,id){if(id==='coverage')return[...root.querySelectorAll('[data-market-primary-work] [data-grc-record-procedure=\"coverage\"]')]")&&!s.semanticSurface.includes("function scopeUniverse(root,id){if(id==='coverage')return[...root.querySelectorAll('[data-framework-card]"),
-    journeyHelperOutsideOwnedBlock:s.seqDom.includes("host.append(guide)")&&s.seqDom.includes("rail.after(guide)")&&!s.seqDom.includes("(compass||host.firstElementChild)?.after(guide)"),
+    coverageScopePrimaryCollectionOnly:scopeUniverse.includes("if(id==='coverage')return[...root.querySelectorAll('[data-market-primary-work] [data-grc-record-procedure=\"coverage\"]')]")&&!scopeUniverse.includes('[data-framework-card]'),
+    journeyHelperInsideAdvancedContext:s.seqDom.includes("context.append(guide)")&&s.seqDom.includes("const context=host.querySelector(':scope > .procedure-support-rail > [data-editorial-slot=\"advanced-context\"],:scope > [data-editorial-slot=\"advanced-context\"]')"),
     harmonizationNoReparent:s.harmonization.includes("structuralPlacementAuthority='procedure-editorial-slots'")&&!s.harmonization.includes('anchor.after(decisionFrame)')&&!s.harmonization.includes('workAnchor(host)'),
     decisionContextOutsideOwnedBlock:s.harmonizationBase.includes("for(const stale of root.querySelectorAll(':scope > .procedure-decision-frame'))if(stale.dataset.executiveProcedure!==id)stale.remove()")&&s.harmonizationBase.includes("if(rail)rail.after(frame);else root.append(frame)")&&!s.harmonizationBase.includes("else if(rail&&frame.previousElementSibling!==rail)rail.after(frame)")&&!s.harmonizationBase.includes('const reference=procedureFrame?.nextElementSibling')&&!s.harmonizationBase.includes('procedureFrame.after(frame)'),
     legacyCompassNoPlacement:s.finetuning14.includes("box.dataset.compatibilityOnly='true'")&&s.finetuning14.includes("box.dataset.structuralPlacementAuthority='none'")&&s.finetuning14.includes('box.hidden=true')&&!s.finetuning14.includes('anchor.after(box)')&&!s.finetuning14.includes('host.prepend(box)'),
@@ -73,7 +76,7 @@ const SOURCE_MUTANTS=[
   ['coverage-default-persists',s=>({...s,semanticSurface:s.semanticSurface.replace("delete control.dataset.a6Ux4UserSelected;control.value='actionable'","control.value=control.value||'actionable'")})],
   ['scope-user-choice-overwritten',s=>({...s,semanticSurface:s.semanticSurface.replace("if(control.dataset.a6Ux4UserSelected!=='true')","if(true)")})],
   ['coverage-scope-spans-secondary-library',s=>({...s,semanticSurface:s.semanticSurface.replace("return[...root.querySelectorAll('[data-market-primary-work] [data-grc-record-procedure=\"coverage\"]')]","return[...root.querySelectorAll('[data-framework-card],[data-grc-record-procedure=\"coverage\"]')]")})],
-  ['journey-guide-inside-owner-block',s=>({...s,seqDom:s.seqDom.replace("host.append(guide)","host.firstElementChild?.after(guide)").replace("rail.after(guide)","host.firstElementChild?.after(guide)")})],
+  ['journey-guide-outside-advanced-context',s=>({...s,seqDom:s.seqDom.replace("context.append(guide)","host.firstElementChild?.after(guide)")})],
   ['harmonization-reclaims-placement',s=>({...s,harmonization:s.harmonization.replace("decisionFrame.dataset.structuralPlacementAuthority='procedure-editorial-slots';","const anchor=host.querySelector(':scope > .section-block,:scope > .grc-body');if(anchor)anchor.after(decisionFrame);")})],
   ['decision-frame-inside-owned-block',s=>({...s,harmonizationBase:s.harmonizationBase.replace("if(rail)rail.after(frame);else root.append(frame)","if(procedureFrame)procedureFrame.after(frame);else root.prepend(frame)")})],
   ['stale-decision-frame-retained',s=>({...s,harmonizationBase:s.harmonizationBase.replace("for(const stale of root.querySelectorAll(':scope > .procedure-decision-frame'))if(stale.dataset.executiveProcedure!==id)stale.remove();",'')})],
@@ -91,7 +94,7 @@ const sourceMutationResults=[];
 for(const [name,mutate] of SOURCE_MUTANTS){const mutated=mutate(source);const laws=sourceLaws(mutated);const killed=Object.values(laws).some(v=>!v);sourceMutationResults.push({name,killed,failed:Object.entries(laws).filter(([,v])=>!v).map(([k])=>k)});assert.equal(killed,true,`source mutant survived: ${name}`);}
 
 function baseline(){return {
-  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,journeyHelperOutsideOwnedBlock:true,harmonizationReparents:false,decisionContextInsideOwnedBlock:false,staleDecisionFrames:false,decisionContextReparents:false,legacyCompassReparents:false,
+  order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,journeyHelperInsideAdvancedContext:true,harmonizationReparents:false,decisionContextInsideOwnedBlock:false,staleDecisionFrames:false,decisionContextReparents:false,legacyCompassReparents:false,
   market:['mapping','library','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopePrimary:true,coverageScopeRemountDefault:true,
   risk:['metrics','create','records','analysis'],riskAnalysisProgressive:true,riskAnalysisOpen:false,
   ep:{firstPlaneTechnical:false,digestFirstPlane:false,humanLabels:true,rawPreserved:true},
@@ -101,7 +104,7 @@ function baseline(){return {
 function violations(x){const out=[];
   if(x.order.join('>')!==CANON.join('>')||new Set(x.order).size!==CANON.length)out.push('editorial-order');
   if(!x.supportAfterPrimary||!x.supportClosed)out.push('support-progressive');
-  if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock||!x.journeyHelperOutsideOwnedBlock||x.harmonizationReparents||x.decisionContextInsideOwnedBlock||x.staleDecisionFrames||x.decisionContextReparents||x.legacyCompassReparents)out.push('placement-adjacency');
+  if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock||!x.journeyHelperInsideAdvancedContext||x.harmonizationReparents||x.decisionContextInsideOwnedBlock||x.staleDecisionFrames||x.decisionContextReparents||x.legacyCompassReparents)out.push('placement-adjacency');
   if(x.market.join('>')!=='mapping>library>integrated'||!x.libraryProgressive||!x.integratedProgressive)out.push('market-progressive');
   if(!x.coverageScopePrimary)out.push('coverage-scope-placement');
   if(!x.coverageScopeRemountDefault)out.push('scope-remount-default');
@@ -117,12 +120,12 @@ const FAMILIES=[
   ['context-before-work',x=>{x.order=['advanced-context','reference','attention','controls','primary'];}],
   ['primary-missing',x=>{x.order=x.order.filter(v=>v!=='primary');}],
   ['attention-after-primary',x=>{x.order=['controls','primary','attention','advanced-context','reference'];}],
-  ['duplicate-primary-slot',x=>{x.order.splice(3,0,'primary');}],
+  ['duplicate-primary-slot',x=>{x.order.push('primary');}],
   ['support-before-primary',x=>{x.supportAfterPrimary=false;}],
   ['support-open-default',x=>{x.supportClosed=false;}],
   ['legacy-sibling-before-first-control',x=>{x.firstRoleAdjacent=false;}],
   ['legacy-sibling-inside-declared-block',x=>{x.contiguousDeclaredBlock=false;}],
-  ['journey-helper-inside-owned-block',x=>{x.journeyHelperOutsideOwnedBlock=false;}],
+  ['journey-helper-outside-advanced-context',x=>{x.journeyHelperInsideAdvancedContext=false;}],
   ['harmonization-late-reparent',x=>{x.harmonizationReparents=true;}],
   ['decision-context-inside-owned-block',x=>{x.decisionContextInsideOwnedBlock=true;}],
   ['stale-decision-frame',x=>{x.staleDecisionFrames=true;}],
@@ -164,6 +167,6 @@ const LAW_NAMES=['editorial-order','support-progressive','placement-adjacency','
 for(const law of LAW_NAMES){essential[law]=FAMILIES.some(([,mutate])=>{const x=baseline();mutate(x);const found=violations(x);return found.length===1&&found[0]===law;});assert.equal(essential[law],true,`no isolated falsifier for ${law}`);}
 
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,total:TOTAL,killed, survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['work-before-support','single-structural-commit-after-local-enhancement','journey-helpers-outside-owned-block','harmonization-never-reparents-after-commit','one-active-decision-context-outside-owned-block','post-owner-helpers-never-reparent-on-replay','legacy-hidden-compatibility-never-reparents','declared-owner-adjacency-over-legacy-siblings','scope-controls-follow-visible-actionable-collection','scope-controls-reparent-on-remount','one-owner-one-primary','progressive-secondary-analysis','human-first-epistemic-projection-with-raw-preserved','optional-ai-never-primary','non-self-back-navigation','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 model-composition mutations plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
+const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,total:TOTAL,killed, survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['work-before-support','single-structural-commit-after-local-enhancement','journey-helper-inside-progressive-advanced-context','harmonization-never-reparents-after-commit','one-active-decision-context-outside-owned-block','post-owner-helpers-never-reparent-on-replay','legacy-hidden-compatibility-never-reparents','declared-owner-adjacency-over-legacy-siblings','scope-controls-follow-visible-actionable-collection','scope-controls-reparent-on-remount','one-owner-one-primary','progressive-secondary-analysis','human-first-epistemic-projection-with-raw-preserved','optional-ai-never-primary','non-self-back-navigation','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 model-composition mutations plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
 writeFileSync(new URL('../artifacts/uiux-ontology-closure-saturation-10m.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));
