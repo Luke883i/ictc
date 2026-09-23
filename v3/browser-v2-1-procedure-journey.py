@@ -132,7 +132,17 @@ def submit_grc(page, code, pid, fill, needle):
     PHASE = f'{code}-submit-revision'
     after = wait_advance(page, before)
     PHASE = f'{code}-local-projection'
-    expect(page.locator('#grcWorkspace .grc-list')).to_contain_text(needle)
+    records = page.locator('#grcWorkspace .grc-list')
+    expect(records).to_contain_text(needle)
+    PHASE = f'{code}-bounded-universe-filter'
+    search = page.locator(f'#grcWorkspace [data-seq-queue-search="{pid}"]')
+    expect(search).to_have_count(1)
+    expect(search).to_be_visible()
+    search.fill(needle)
+    visible_match = page.locator('#grcWorkspace .grc-list > article:visible').filter(has_text=needle)
+    expect(visible_match.first).to_be_visible()
+    assert visible_match.count() >= 1, (code, pid, needle)
+    search.fill('')
     verify_process_projection(page, code, pid, after)
     return after
 
