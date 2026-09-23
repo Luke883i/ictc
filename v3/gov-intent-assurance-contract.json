@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "GOV-INTENT-ASSURANCE-ABC-1",
+  "classification": "subordinate-zero-authority-governance-qualification-suite",
+  "authorityEffect": "NONE",
+  "trajectoryImpact": "neutral",
+  "createsNewSot": false,
+  "createsNewRoadmapCursor": false,
+  "persistsDynamicCursor": false,
+  "baselineMainSha": "908b6d7f56316779c5c65dbb286d64291736a6e4",
+  "baselineMainTree": "83845fbd40ba175203fef4d5dc75239dd590402d",
+  "baselineObservation": {
+    "checksSuccess": 55,
+    "checksSkipped": 3,
+    "checksFailure": 0,
+    "checksPending": 0,
+    "branchProtectionObserved": false,
+    "observedAt": "2026-09-23T05:24:00Z",
+    "rule": "This is an immutable observation bound to baselineMainSha, not a live GitHub mirror."
+  },
+  "baselineBindings": {
+    "AGENTS.md": "dc28dd479bed4c6f521eedb2334a4198b4d1469f",
+    "docs/authority-matrix.yaml": "b5f6134c1908d7493fb98370cd580a083763bb13",
+    "docs/convergence/convergence-authority.json": "718d01923c299a472d22fb99634d58c5e286f45f",
+    "v3/trama-engineering-contract.json": "7fd1964ca98d8216a7ed9575daf565134a3ca69d",
+    "v3/trama-compass-governance.json": "1c01278ace51d73dac8d50e04187e48d9fb5a98d",
+    "v3/trama-reconcile-contract.json": "581516313eac2d2e0c3fa5e713869d9993d7346b",
+    "v3/trama-causal-qualification-contract.json": "5bba45f8722faaea45d08bec4fae03c1d8cd8d6c",
+    "v3/trama-causal-qualification.mjs": "35db2b54f58f56a31b8d32ed54091be288d4f190",
+    "v3/trama-engineering.mjs": "12ad017367e21a9d55d7c73bdeab0a08a29572f6",
+    "v3/trama-reconcile.mjs": "4d1cbd711df3c155a815668a6d028bdac4e926b2",
+    "v3/gaps.json": "eb8f1132f39edae9e9a1bcfe89c177b029ca6fd6",
+    "audit/remediation-registry.json": "7b5755694dded362b9d34ab510f868902032ceab",
+    "v3/ai-information-egress-contract.json": "77a478679bbbf2e5924c25e9215ad7ec5ecbc3aa"
+  },
+  "campaigns": {
+    "A": {
+      "id": "A-INTENT-COMPLETION-UNDER-EPISTEMIC-GOVERNANCE",
+      "question": "Does ICTC governance preserve the promise of intent completion under epistemic governance?",
+      "trials": 1000000,
+      "noNoveltyTail": 100000,
+      "failureFamilies": 24,
+      "mechanisms": 8
+    },
+    "B": {
+      "id": "B-SINGLE-GOVERNANCE-CHAIN",
+      "question": "Does ICTC remain one governance chain without competing owners?",
+      "trials": 1000000,
+      "noNoveltyTail": 100000,
+      "failureFamilies": 24,
+      "mechanisms": 8
+    },
+    "C": {
+      "id": "C-HUMAN-AI-CONVERGENCE",
+      "question": "Do canonical, typical, edge and stress human-AI interactions converge without intent laundering, false autonomy or hidden epistemic debt?",
+      "trials": 1000000,
+      "noNoveltyTail": 100000,
+      "failureFamilies": 27,
+      "mechanisms": 9
+    }
+  },
+  "linkage": {
+    "rule": "A, B and C are independently falsified. Global qualification requires all three green on the same baseline bindings; no majority vote or partial green is sufficient.",
+    "sharedInvariants": [
+      "human intent is preserved as input, not rewritten into technical authority",
+      "derived engineering governance remains authority-zero",
+      "exactly one governed next action or an explicit STOP/BLOCKED state is exposed",
+      "Git/GitHub live facts are not replaced by repository projections",
+      "external E3-HUMAN, E3-GOV and E4-DEPLOY rails are never closed by CI or semantic mutation",
+      "merge is not release, qualification, Enterprise Candidate or completion",
+      "epistemic debt and uncertainty remain visible when they block stronger claims"
+    ]
+  },
+  "claimBoundary": "E2 repository/control-plane qualification bound to baselineMainSha. The suite does not prove representative-human usability, production effectiveness, legal compliance, protected-branch enforcement, deployment security, Enterprise Candidate, Enterprise Ready or formal global minimality. Semantic mutation is not physical proof."
+}
