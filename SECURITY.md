@@ -14,7 +14,7 @@ ICTC defaults to loopback binding. Network exposure and trusted-header identity 
 
 API abuse control is layered: a coarse tenant + remote edge budget protects the pre-authentication path, while authenticated trusted-header traffic is additionally isolated by tenant + subject. These in-process budgets are not a distributed multi-host rate-limit authority; horizontally scaled deployments require deployment-specific abuse-control evidence.
 
-AI egress is governed by explicit network policy and SSRF/rebinding defenses. `ICTC_ALLOW_PRIVATE_AI` and `ICTC_ALLOW_INSECURE_AI` are independent opt-ins: authorizing private destinations does not authorize cleartext HTTP. AI remains proposal-only and does not gain write authority from network availability.
+AI egress has two independent gates: information eligibility before provider request construction, then explicit network policy and SSRF/rebinding defenses. `ICTC_ALLOW_PRIVATE_AI` and `ICTC_ALLOW_INSECURE_AI` are independent opt-ins: authorizing private destinations does not authorize cleartext HTTP. AI remains proposal-only and does not gain write authority from network availability.
 
 Attachments are stored with restrictive local permissions and carry a trust posture. Attachment identifiers are canonicalized as single path segments before filesystem resolution. Registration, checksum or download does not mean malware-clean; production operators remain responsible for scanning/quarantine controls appropriate to the deployment.
 
@@ -39,3 +39,6 @@ First-party SAST is deliberately bounded to repository security-sensitive sinks 
 ICTC is application software, not a complete security perimeter. Production operators remain responsible for at least: TLS, trusted identity, secret/KMS management, host/network hardening, distributed abuse controls where multiple instances exist, backups and restore tests, malware scanning, dependency response, centralized logging/monitoring, incident response, availability/HA and applicable privacy/security controls.
 
 Never expose an untrusted installation directly to the public Internet solely because repository tests are green. Deployment assurance requires deployment-specific evidence.
+
+
+Information egress is fail-closed: unknown AI capsules are at least local-confidential; external provider compute requires an exportable class plus explicit organization policy. Network reachability never implies information exportability, and the information evaluator performs no network access or business write.

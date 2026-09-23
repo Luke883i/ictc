@@ -1,0 +1,57 @@
+name: AI information egress
+
+on:
+  pull_request:
+    paths:
+      - 'v3/ai.mjs'
+      - 'v3/enterprise.mjs'
+      - 'v3/runtime/ai-information-egress.mjs'
+      - 'v3/ai-information-egress*'
+      - 'v3/network-policy.mjs'
+      - 'docs/10_LOCAL_AI_CONTRACT.md'
+      - 'SECURITY.md'
+      - 'docs/authority-matrix.yaml'
+      - '.github/workflows/ai-information-egress.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  egress-10-campaigns:
+    name: egress-10-campaigns
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.16.0'
+      - name: Contract check
+        run: node v3/ai-information-egress-check.mjs
+      - name: Campaign 01 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000130364
+      - name: Campaign 02 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000260727
+      - name: Campaign 03 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000391090
+      - name: Campaign 04 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000521453
+      - name: Campaign 05 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000651816
+      - name: Campaign 06 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000782179
+      - name: Campaign 07 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000000912542
+      - name: Campaign 08 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000001042905
+      - name: Campaign 09 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000001173268
+      - name: Campaign 10 · 100k + 10k no-novelty
+        run: node v3/ai-information-egress-saturation-1m.mjs --trials 100000 --tail 10000 --seed 8000000000001303631
+      - name: Existing AI network boundary
+        run: node v3/ai-network-policy-base-check.mjs
+      - name: Existing provider adapter
+        run: node v3/ai-provider-p3b-contract-check.mjs

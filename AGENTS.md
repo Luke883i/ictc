@@ -85,3 +85,10 @@ Historical/candidate documents are useful for design lineage but do not override
 35. Un check rosso, una projection, un receipt o un fallimento eseguito non autorizzano da soli una patch semantica. Classifica la catena `INTENT -> CONTRACT -> OWNER -> STATE -> WRITER -> TRANSITION -> PROJECTION -> AUTHORITY -> ORACLE -> EVIDENCE -> CLAIM` prima di mutare il repository.
 36. Distingui `EXTERNAL_ORACLE_BLOCKED`, `EXECUTED_FAILURE`, `INSUFFICIENT_EVIDENCE` e `CONTROL_PLANE_BLOCKED`. `EXTERNAL_ORACLE_BLOCKED` non e regressione semantica; `EXECUTED_FAILURE` non prova da sola la root cause.
 37. La causal qualification e authority-zero: puo dichiarare patch/qualification eligibility e invalidare evidence stale, ma non promuove capability, non scrive convergence state, non sostituisce Git facts e non chiude E3/E4.
+
+
+## AI-INFORMATION-EGRESS-1 — information eligibility before transport
+
+38. Prima di ogni provider transport, la capsula AI canonica deve attraversare l'owner `v3/runtime/ai-information-egress.mjs`; network reachability non equivale a information eligibility.
+39. Unknown/default converge almeno a `LOCAL_CONFIDENTIAL`. Egress esterno richiede `PUBLIC|DERIVED_EXPORTABLE` e `governance.aiExternalEgressAllowed=true`; `SECRET` non e idoneo al model compute corrente.
+40. Il membrane e authority-zero e side-effect-free: non sceglie provider, non apre rete, non risolve secret, non persiste business state e non altera l'autorita proposal-only dell'AI.
