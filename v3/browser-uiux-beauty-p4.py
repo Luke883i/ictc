@@ -156,8 +156,8 @@ def mount(page, surface, view, procedure, root):
         page.goto(f'{BASE}/?view=home', wait_until='networkidle')
         menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
         if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
-        page.locator('#openSettings').click(); expect(page.locator('#adminCenter')).to_be_visible()
-        expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible()
+        expect(page.locator('#openSettings')).to_be_hidden(); page.locator('#openAdminCenter').click(); expect(page.locator('#adminCenter')).to_be_visible()
+        page.locator('#adminCenter [data-admin-nav="ai"]').click(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible()
         provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); assert provider.get_attribute('open') is None
         provider.locator(':scope > summary').click(); expect(page.locator('#settingsDialog[data-admin-embedded="ai"]')).to_be_visible()
         page.wait_for_function('()=>document.querySelector("#settingsForm")?.dataset.settingsStructure18==="true"')

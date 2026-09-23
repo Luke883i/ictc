@@ -13,7 +13,7 @@ LOG = ART / 'browser-epistemic-professional-demo-server.log'
 PROC = None
 LENSES = ['compliance-lead','internal-auditor','dpo-privacy','security-manager','risk-manager','control-owner','assurance-reviewer','legal-231-reviewer','it-operations','supplier-procurement','quality-manager','executive-sme']
 EXPECTED_MODES = {'compliance-lead':'explore','internal-auditor':'flat','dpo-privacy':'explore','security-manager':'graph','risk-manager':'explore','control-owner':'graph','assurance-reviewer':'explore','legal-231-reviewer':'flat','it-operations':'graph','supplier-procurement':'explore','quality-manager':'explore','executive-sme':'explore'}
-PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
 SHOTS = []
 
 def shot(page, name, full=False):
@@ -74,7 +74,7 @@ def open_epistemic(page, phase_prefix='open-epistemic'):
     PHASE=f'{phase_prefix}-processes';page.goto(BASE+'/?view=processes',wait_until='networkidle');expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);assert page.locator('#epistemicMetaCard').count()==0
     PHASE=f'{phase_prefix}-evidence';page.goto(BASE+'/?view=proof',wait_until='networkidle');expect(page.locator('#proofView')).to_be_visible();investigation=wait_canonical_evidence_entry(page);assert investigation.get_attribute('open') is None
     PHASE=f'{phase_prefix}-entry';investigation.locator(':scope > summary').click();action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click()
-    PHASE=f'{phase_prefix}-surface';expect(page.locator('#epistemicView')).to_be_visible();expect(page.locator('#epistemicView')).to_have_attribute('data-enduser-trajectory','find>narrow>explore>select>reconstruct>deepen');expect(page.locator('.epistemic-claim-boundary')).to_be_visible();deep=page.locator('#epistemicView details[data-epistemic-a3="deep-tools"]');expect(deep).to_be_visible();assert deep.get_attribute('open') is None;deep.locator(':scope > summary').click();expect(deep).to_have_attribute('open','');expect(page.locator('#epistemicProfessionalTools')).to_be_visible();expect(page.locator('#epistemicLens')).to_be_visible()
+    PHASE=f'{phase_prefix}-surface';expect(page.locator('#epistemicView')).to_be_visible();expect(page.locator('#epistemicView')).to_have_attribute('data-enduser-trajectory','find>narrow>result>select>reconstruct>deepen');expect(page.locator('.epistemic-claim-boundary')).to_be_visible();deep=page.locator('#epistemicView details[data-epistemic-a3="deep-tools"]');expect(deep).to_be_visible();assert deep.get_attribute('open') is None;deep.locator(':scope > summary').click();expect(deep).to_have_attribute('open','');expect(page.locator('#epistemicProfessionalTools')).to_be_visible();expect(page.locator('#epistemicLens')).to_be_visible()
     PHASE=f'{phase_prefix}-lens-projection';expect(page.locator('#epistemicLens option')).to_have_count(12,timeout=20000);expect(page.locator('#epistemicLens')).to_be_enabled(timeout=20000);no_overflow(page)
 
 def open_technical_modes(page):

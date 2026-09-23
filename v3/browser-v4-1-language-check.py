@@ -20,7 +20,7 @@ try:
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':1440,'height':1100}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home');localStorage.setItem('ictc-ai-assist','on')")
   page=ctx.new_page(); page.set_default_timeout(20000); errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
   PHASE='shell-home'; page.goto(BASE+'/',wait_until='networkidle')
-  expect(page.locator('.brand small')).to_have_text('Compliance operativa e tracciabile'); expect(page.locator('.role-control span')).to_have_text('Profilo'); expect(page.locator('#openSettings')).to_have_text('Impostazioni AI')
+  expect(page.locator('.brand small')).to_have_text('Compliance operativa e tracciabile'); expect(page.locator('.role-control span')).to_have_text('Profilo'); expect(page.locator('#openSettings')).to_be_hidden(); expect(page.locator('#openAdminCenter')).to_be_visible()
   expect(page.locator('.service-nav [data-service]')).to_have_count(3); expect(page.locator('.service-nav')).to_contain_text('Oggi'); expect(page.locator('.service-nav')).to_contain_text('Processi'); expect(page.locator('.service-nav')).to_contain_text('Prove')
   nexus=page.locator('#complianceNexus'); nexus.wait_for(state='visible'); expect(nexus.locator('[data-nexus-process]')).to_have_count(7)
   for pid,(_,title,_) in PROCESS.items(): expect(nexus.locator(f'[data-nexus-process="{pid}"] h3')).to_have_text(title)

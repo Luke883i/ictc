@@ -121,7 +121,7 @@ for(const token of ['data-scope-back-label','Salva scelta','Tornare indietro non
 for(const token of ['market-scope-editor[open] [data-scope-back-label]','#standardBrowserDialog','standard-node-select[aria-current="true"]'])assert.ok(ux4.includes(token),'UX4 owner missing '+token);
 for(const token of ['#procedurePolicyList','dialog .dialog-shell>footer'])assert.ok(enterprise.includes(token),'enterprise owner missing '+token);
 for(const token of ['#runtimeStatus::after','content:attr(data-tooltip)'])assert.ok(chrome.includes(token),'chrome owner missing '+token);
-assert.ok(ai.includes("llm.ready?'sparkles':llm.configured?'triangle-alert':'info'")&&!ai.includes('runtime-role-label'),'AI owner not icon-only');
+assert.ok(ai.includes("llm.ready?'ready':llm.configured?'key-missing':'unconfigured'")&&ai.includes('status.hidden=true')&&ai.includes("status.dataset.legacyControl='shell-ai-status'")&&!ai.includes('runtime-role-label'),'AI owner must not expose a misleading shell status badge');
 for(const token of ["('narrow', 320, 780)",'scope-cancel-no-write-save-readback','header-ai-icon-only'])assert.ok(browser.includes(token),'browser oracle missing '+token);
 
 const payload={ok:true,suite:'PR164-cosmetic-semantic-mutation-lattice',materialFamilies:families.length,materialMutantsBuiltAndKilled:families.length,totalSchedules:reports.reduce((n,x)=>n+x.trials,0),campaigns:reports,survivors:0,claimBoundary:'Deterministic repository/model mutation evidence plus source anchors; not representative human aesthetic/usability evidence or independent assurance.'};

@@ -7,7 +7,7 @@ SURFACE={'monitoring':'monitoring','incidents':'incidents','objects':'grc','cove
 ROOT_OWNER={'monitoring':('#monitoringView','procedure-sequential-rn-ec.js'),'incidents':('#incidentsView','procedure-sequential-rn-ec.js'),'objects':('#grcWorkspace','grc-workspace-3-2.js'),'coverage':('#grcWorkspace','grc-workspace-3-2.js'),'actions':('#grcWorkspace','grc-workspace-3-2.js'),'risks':('#grcWorkspace','grc-workspace-3-2.js'),'assurance':('#grcWorkspace','grc-workspace-3-2.js')}
 EXPECTED_STANDARD={'monitoring':'ISO 37301:2021','incidents':'NIST CSF 2.0','objects':'ISO 37301:2021','coverage':'NIST CSF 2.0','actions':'Site Reliability Engineering practices','risks':'NIST CSF 2.0','assurance':'GOV.UK Design System and USWDS'}
 EXPECTED_STANDARD_COUNT={key:2 for key in PROCESS_IDS.values()}
-PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
 def fail(e):
  p={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()};(ART/'browser-convergent-kernel-error.json').write_text(json.dumps(p,indent=2),encoding='utf8');print(f'::error title=browser-convergent-kernel::{PHASE}: {e}',flush=True)
 def api(page,role,path,method='GET',body=None):

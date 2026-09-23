@@ -67,7 +67,7 @@ assert.equal(contract.maxYieldMinCost.rejectedLowYieldLever, 'global decorative 
 for(const token of ['data-scope-back-label','Salva scelta','Tornare indietro non salva la scelta'])assert.ok(market.includes(token),`scope decision affordance missing ${token}`);
 for(const token of ['#standardBrowserDialog','standard-node-select[aria-current="true"]','market-scope-editor[open] [data-scope-back-label]'])assert.ok(ux4.includes(token),`UX4 PR164 absorption missing ${token}`);
 for(const token of ['#runtimeStatus::after','content:attr(data-tooltip)'])assert.ok(chrome.includes(token),`AI tooltip chrome missing ${token}`);
-assert.ok(enterpriseUx.includes("llm.ready?'sparkles':llm.configured?'triangle-alert':'info'")&&!enterpriseUx.includes('runtime-role-label'),'AI header must be icon-only and keep role outside the AI chip');
+assert.ok(enterpriseUx.includes("llm.ready?'ready':llm.configured?'key-missing':'unconfigured'")&&enterpriseUx.includes('status.hidden=true')&&enterpriseUx.includes("status.dataset.legacyControl='shell-ai-status'")&&!enterpriseUx.includes('runtime-role-label'),'AI configuration state must not use a misleading colored shell badge');
 
 console.log(JSON.stringify({
   ok: true,

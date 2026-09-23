@@ -5,7 +5,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'; INVENTORY=[]; VIOLATIONS=[]
-PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
 SEMANTIC='h1,h2,h3,h4,p,small,label,button,a[href],input,select,textarea,summary,dt,dd,th,td,legend,li,span,b,strong,em,[role="status"],[role="alert"],.surface-chip,.counter,.empty'
 
 def fail(exc):
@@ -85,7 +85,7 @@ try:
   expect(rules.locator('.epistemic-claim-boundary')).to_have_count(0); expect(page.locator('#epistemicView > .epistemic-claim-boundary,#epistemicView .surface-panel > .epistemic-claim-boundary')).to_have_count(1); expect(page.locator('.epistemic-claim-boundary')).to_be_visible()
 
   PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
-  PHASE='settings'; open_profile(page); page.locator('#stableProfileMenu #openSettings').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible(); provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); expect(provider).not_to_have_attribute('open',''); provider.locator(':scope > summary').click(); settings=page.locator('#settingsDialog[data-admin-embedded="ai"]'); expect(settings).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); policy=settings.locator('details[data-settings-section="policy"]'); expect(policy).to_have_count(1); expect(policy).not_to_have_attribute('open',''); page.keyboard.press('Escape')
+  PHASE='settings'; open_profile(page); expect(page.locator('#stableProfileMenu #openSettings')).to_be_hidden(); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); page.locator('#adminCenter [data-admin-nav="ai"]').click(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible(); provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); expect(provider).not_to_have_attribute('open',''); provider.locator(':scope > summary').click(); settings=page.locator('#settingsDialog[data-admin-embedded="ai"]'); expect(settings).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); policy=settings.locator('details[data-settings-section="policy"]'); expect(policy).to_have_count(1); expect(policy).not_to_have_attribute('open',''); page.keyboard.press('Escape')
 
   PHASE='mobile'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); open_process(m,'AO-01'); snapshot(m,'mobile:AO-01','#grcView'); no_overflow(m); mc.close()
 

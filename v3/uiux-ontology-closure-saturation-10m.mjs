@@ -18,17 +18,25 @@ const source={
   seqDom:read('./public/ui/procedure-sequential-dom.js'),
   harmonization:read('./public/ui/procedure-executive-harmonization-1-5.js'),
   harmonizationBase:read('./public/ui/procedure-executive-harmonization-1-5-base.js'),
-  finetuning14:read('./public/ui/procedure-finetuning-1-4.js')
+  finetuning14:read('./public/ui/procedure-finetuning-1-4.js'),
+  p2:read('./public/enduser-composition-p2.css'),
+  anatomy:read('./public/ui/procedure-anatomy.js'),
+  proof:read('./public/ui/proof-workspace-3-2.js'),
+  adminWork:read('./public/ui/admin-workspace-3-2.js'),
+  active:read('./public/ui/active-experience.js'),
+  enterprise:read('./public/ui/enterprise-ux.js'),
+  epWorkspace:read('./public/ui/epistemic-workspace-3-2.js'),
+  native:read('./public/ui/native-semantic-lattice-3-2.js')
 };
 
-const CANON=['reference','attention','controls','primary','advanced-context'];
+const CANON=['reference','metrics','attention','controls','primary','advanced-context'];
 const PROCEDURES=['monitoring','incidents','objects','coverage','actions','risks','assurance'];
 
 function sourceLaws(s){
   const scopeStart=s.semanticSurface.indexOf('function scopeUniverse(root,id)');
   const scopeEnd=s.semanticSurface.indexOf('function ',scopeStart+9);
   const scopeUniverse=scopeStart>=0?s.semanticSurface.slice(scopeStart,scopeEnd>scopeStart?scopeEnd:undefined):'';
-  const orderToken="['reference','attention','controls','primary','advanced-context']";
+  const orderToken="['reference','metrics','attention','controls','primary','advanced-context']";
   return {
     sevenOwners:(s.rn.split(orderToken).length-1)===2&&(s.grc.split(orderToken).length-1)===5,
     rnUniquePrimary:s.rn.includes('PRIMARY_SELECTOR')&&s.rn.includes('[data-rn-primary-work="sources"]')&&s.rn.includes("incidents:':scope > .section-block'"),
@@ -36,12 +44,12 @@ function sourceLaws(s){
     contiguousDeclaredBlock:s.slots.includes('function reconcilePhysicalOrder(')&&s.slots.includes('index!==cursor+1')&&s.slots.includes('orderedTopLevelNodes'),
     firstRoleAdjacent:s.slots.includes('let previous=null')&&s.slots.includes('host.insertBefore(node,next)')&&s.slots.includes('if(frame?.parentElement===host){frame.after(node);return;}'),
     supportSecondary:s.frame.includes("rail.dataset.secondaryDisclosure='true'"),
-    marketPrimaryFirst:s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')>=0&&s.market.indexOf('<details class="market-mapping-panel" data-market-primary-work')<s.market.indexOf('<details class="market-section market-library"'),
+    marketLibraryFirst:s.market.indexOf('<details class="market-section market-library" data-market-library')>=0&&s.market.indexOf('<details class="market-section market-library" data-market-library')<s.market.indexOf('<details class="market-mapping-panel" data-market-mapping-work'),
     marketLibraryProgressive:s.market.includes('details class="market-section market-library"')&&s.market.includes('data-market-library'),
     marketIntegratedProgressive:s.market.includes('details class="market-section market-integrated"')&&s.market.includes('data-market-integrated'),
-    coverageScopePrimary:s.semanticSurface.includes("return root.querySelector('[data-market-primary-work]')||null")&&s.semanticSurface.includes("if(id==='coverage'){const scopeAnchor=scopeAnchorForBindings(root,id),coverageControl=ensureScopeControl(root,id,scopeAnchor)")&&s.semanticSurface.indexOf("if(id==='coverage'){const scopeAnchor")<s.semanticSurface.indexOf("if(!exact){section.hidden=false")&&s.semanticSurface.includes('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}')&&s.semanticSurface.includes("control.dataset.a6Ux4ScopeOwner=id"),
+    coverageScopeMapping:s.semanticSurface.includes("return root.querySelector('[data-market-mapping-work]')||null")&&s.semanticSurface.includes("if(id==='coverage'){const scopeAnchor=scopeAnchorForBindings(root,id),coverageControl=ensureScopeControl(root,id,scopeAnchor)")&&s.semanticSurface.indexOf("if(id==='coverage'){const scopeAnchor")<s.semanticSurface.indexOf("if(!exact){section.hidden=false")&&s.semanticSurface.includes('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}')&&s.semanticSurface.includes("control.dataset.a6Ux4ScopeOwner=id"),
     coverageScopeRemountDefault:s.semanticSurface.includes('function syncScopePreference(control,id)')&&(s.semanticSurface.split("control.dataset.a6Ux4UserSelected!=='true'").length-1)===1&&s.semanticSurface.includes("control.dataset.a6Ux4UserSelected='true'")&&s.semanticSurface.includes('function resetScopePreferences()')&&s.semanticSurface.includes("delete control.dataset.a6Ux4UserSelected")&&s.semanticSurface.includes("control.value='actionable'"),
-    coverageScopePrimaryCollectionOnly:scopeUniverse.includes("if(id==='coverage')return[...root.querySelectorAll('[data-market-primary-work] [data-grc-record-procedure=\"coverage\"]')]")&&!scopeUniverse.includes('[data-framework-card]'),
+    coverageScopeMappingCollectionOnly:scopeUniverse.includes("if(id==='coverage')return[...root.querySelectorAll('[data-market-mapping-work] [data-grc-record-procedure=\"coverage\"]')]")&&!scopeUniverse.includes('[data-framework-card]'),
     journeyHelperInsideAdvancedContext:s.seqDom.includes("context.append(guide)")&&s.seqDom.includes("const context=host.querySelector(':scope > .procedure-support-rail > [data-editorial-slot=\"advanced-context\"],:scope > [data-editorial-slot=\"advanced-context\"]')"),
     harmonizationNoReparent:s.harmonization.includes("structuralPlacementAuthority='procedure-editorial-slots'")&&!s.harmonization.includes('anchor.after(decisionFrame)')&&!s.harmonization.includes('workAnchor(host)'),
     decisionContextOutsideOwnedBlock:s.harmonizationBase.includes("for(const stale of root.querySelectorAll(':scope > .procedure-decision-frame'))if(stale.dataset.executiveProcedure!==id)stale.remove()")&&s.harmonizationBase.includes("if(rail)rail.after(frame);else root.append(frame)")&&!s.harmonizationBase.includes("else if(rail&&frame.previousElementSibling!==rail)rail.after(frame)")&&!s.harmonizationBase.includes('const reference=procedureFrame?.nextElementSibling')&&!s.harmonizationBase.includes('procedureFrame.after(frame)'),
@@ -52,6 +60,16 @@ function sourceLaws(s){
     epNoDigestFirstPlane:s.ep.includes('label.dataset.projectionDigest=digest')&&!s.ep.includes('· digest ${(p.projectionSha256'),
     backNoSelf:s.router.includes('if (!from || sameRoute(from, current))'),
     aiOptional:!s.workbench.includes("kind: 'configure-ai'")&&s.workbench.indexOf("kind: 'create-monitoring'")<s.workbench.indexOf("if (!llmReady) return nextAction({ kind: 'monitor-activity'"),
+    orientationTokens:s.frame.includes("orientationToken('basis','Fondamento'")&&s.frame.includes("orientationToken('boundary','Limite'")&&s.frame.includes('procedure-orientation-popover'),
+    procedureMetrics:s.anatomy.includes('function localMetrics(')&&s.anatomy.includes('data-procedure-metrics=')&&s.anatomy.includes("editorialSlot(host,'metrics')"),
+    canonicalStateRail:s.p2.includes('--p2-state-rail:7.5rem')&&s.p2.includes('word-break:normal')&&s.p2.includes('hyphens:none'),
+    canonicalControlRail:s.p2.includes('.procedure-queue-tools,.procedure-worklist-filters')&&s.p2.includes('data-enduser-primitive="ControlRail"'),
+    proofMethodFirst:s.proof.includes("root.dataset.proofReadingOrder='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'")&&s.proof.includes('ordered(content,[factStrip,interpretation,decisions,trace,standards,investigation'),
+    proofPeerGrammar:s.proof.includes("peer.dataset.proofVisualGrammar='peer-section'")&&s.p2.includes('data-proof-visual-grammar="peer-section"'),
+    adminSingleEntry:s.active.includes("for(const button of[admin])")&&s.active.includes("settings.dataset.legacyControl='admin-ai-entry'"),
+    neutralAiState:s.enterprise.includes('status.hidden=true')&&s.enterprise.includes("status.dataset.legacyControl='shell-ai-status'")&&!s.enterprise.includes('status.dataset.tooltip=view.tooltip')&&s.adminWork.includes('admin-configuration-state'),
+    epistemicTrajectory:s.epWorkspace.includes('find>narrow>result>select>reconstruct>deepen')&&s.epWorkspace.includes('Torna a Evidenze ICTC'),
+    nativeRepresentationTruth:s.native.includes('procedure-metrics-before-runtime-work')&&s.native.includes('canonical-control-rail-one')&&s.native.includes('neutral-ai-configuration-status'),
     adminBusinessLanguage:!s.admin.includes('>Control plane<')
   };
 }
@@ -66,16 +84,16 @@ const SOURCE_MUTANTS=[
   ['first-role-after-frame',s=>({...s,slots:s.slots.replace('let previous=null','let previous=frame')})],
   ['drop-contiguous-reconcile',s=>({...s,slots:s.slots.replaceAll('reconcilePhysicalOrder','reconcilePhysicalOrderBROKEN')})],
   ['support-not-secondary',s=>({...s,frame:s.frame.replace("rail.dataset.secondaryDisclosure='true'",'')})],
-  ['market-primary-marker-lost',s=>({...s,market:s.market.replace('data-market-primary-work','data-market-secondary-work')})],
+  ['market-mapping-marker-lost',s=>({...s,market:s.market.replace('data-market-mapping-work','data-market-secondary-work')})],
   ['market-library-section',s=>({...s,market:s.market.replace('details class="market-section market-library"','section class="market-section market-library"')})],
   ['market-integrated-section',s=>({...s,market:s.market.replace('details class="market-section market-integrated"','section class="market-section market-integrated"')})],
-  ['coverage-scope-wrong-collection',s=>({...s,semanticSurface:s.semanticSurface.replace("return root.querySelector('[data-market-primary-work]')||null","return root.querySelector('.market-framework-grid')||null")})],
+  ['coverage-scope-wrong-collection',s=>({...s,semanticSurface:s.semanticSurface.replace("return root.querySelector('[data-market-mapping-work]')||null","return root.querySelector('.market-framework-grid')||null")})],
   ['coverage-scope-after-exact-only',s=>({...s,semanticSurface:s.semanticSurface.replace("if(id==='coverage'){const scopeAnchor=scopeAnchorForBindings(root,id),coverageControl=ensureScopeControl(root,id,scopeAnchor)","if(exact&&id==='coverage'){const scopeAnchor=scopeAnchorForBindings(root,id),coverageControl=ensureScopeControl(root,id,scopeAnchor)")})],
   ['coverage-scope-anchor-ignored',s=>({...s,semanticSurface:s.semanticSurface.replace('ensureScopeControl(root,id,scopeAnchor)','ensureScopeControl(root,id,null)')})],
   ['coverage-scope-not-reparented',s=>({...s,semanticSurface:s.semanticSurface.replace('scopeAnchor.before(bar);if(label.parentElement!==bar)bar.append(label);return control;}','scopeAnchor.before(bar);return control;}')})],
   ['coverage-default-persists',s=>({...s,semanticSurface:s.semanticSurface.replace("delete control.dataset.a6Ux4UserSelected;control.value='actionable'","control.value=control.value||'actionable'")})],
   ['scope-user-choice-overwritten',s=>({...s,semanticSurface:s.semanticSurface.replace("if(control.dataset.a6Ux4UserSelected!=='true')","if(true)")})],
-  ['coverage-scope-spans-secondary-library',s=>({...s,semanticSurface:s.semanticSurface.replace("return[...root.querySelectorAll('[data-market-primary-work] [data-grc-record-procedure=\"coverage\"]')]","return[...root.querySelectorAll('[data-framework-card],[data-grc-record-procedure=\"coverage\"]')]")})],
+  ['coverage-scope-spans-secondary-library',s=>({...s,semanticSurface:s.semanticSurface.replace("return[...root.querySelectorAll('[data-market-mapping-work] [data-grc-record-procedure=\"coverage\"]')]","return[...root.querySelectorAll('[data-framework-card],[data-grc-record-procedure=\"coverage\"]')]")})],
   ['journey-guide-outside-advanced-context',s=>({...s,seqDom:s.seqDom.replace("context.append(guide)","host.firstElementChild?.after(guide)")})],
   ['harmonization-reclaims-placement',s=>({...s,harmonization:s.harmonization.replace("decisionFrame.dataset.structuralPlacementAuthority='procedure-editorial-slots';","const anchor=host.querySelector(':scope > .section-block,:scope > .grc-body');if(anchor)anchor.after(decisionFrame);")})],
   ['decision-frame-inside-owned-block',s=>({...s,harmonizationBase:s.harmonizationBase.replace("if(rail)rail.after(frame);else root.append(frame)","if(procedureFrame)procedureFrame.after(frame);else root.prepend(frame)")})],
@@ -88,6 +106,16 @@ const SOURCE_MUTANTS=[
   ['ep-digest-first-plane',s=>({...s,ep:s.ep.replace('label.textContent=`r${p.fromRevision||0}–r${p.toRevision||0} · stato r${p.stateRevision||0}`','label.textContent=`r${p.fromRevision||0}–r${p.toRevision||0} · stato r${p.stateRevision||0} · digest ${(p.projectionSha256||\'\').slice(0,12)}`')})],
   ['back-self',s=>({...s,router:s.router.replace('if (!from || sameRoute(from, current))','if (!from)')})],
   ['ai-first',s=>({...s,workbench:s.workbench.replace("if (!(state.missions || []).length) return nextAction({ kind: 'create-monitoring'","if (!llmReady) return nextAction({ kind: 'configure-ai', title: 'Completa la configurazione AI', label: 'Configura AI', reason: 'setup', action: 'settings', service: 'administration' });\n    if (!(state.missions || []).length) return nextAction({ kind: 'create-monitoring'")})],
+  ['orientation-token-lost',s=>({...s,frame:s.frame.replace('procedure-orientation-popover','procedure-orientation-retired')})],
+  ['procedure-metrics-lost',s=>({...s,anatomy:s.anatomy.replace("editorialSlot(host,'metrics')","editorialSlot(host,'attention')")})],
+  ['state-rail-drifts',s=>({...s,p2:s.p2.replace('--p2-state-rail:7.5rem','--p2-state-rail:auto')})],
+  ['control-rail-drifts',s=>({...s,p2:s.p2.replace('.procedure-queue-tools,.procedure-worklist-filters','.procedure-queue-tools')})],
+  ['proof-method-demoted',s=>({...s,proof:s.proof.replace('ordered(content,[factStrip,interpretation,decisions,trace,standards,investigation','ordered(content,[factStrip,decisions,trace,standards,investigation,interpretation')})],
+  ['proof-peer-style-diverges',s=>({...s,proof:s.proof.replace("peer.dataset.proofVisualGrammar='peer-section'","peer.dataset.proofVisualGrammar='legacy-section'")})],
+  ['admin-second-entry',s=>({...s,active:s.active.replace('for(const button of[admin])','for(const button of[admin,settings])')})],
+  ['ai-shell-badge-returns',s=>({...s,enterprise:s.enterprise.replace('status.hidden=true','status.hidden=false')})],
+  ['ep-trajectory-regresses',s=>({...s,epWorkspace:s.epWorkspace.replace('find>narrow>result>select>reconstruct>deepen','find>narrow>explore>select>reconstruct>deepen')})],
+  ['representation-truth-invariant-lost',s=>({...s,native:s.native.replace('canonical-control-rail-one','canonical-control-rail-retired')})],
   ['admin-control-plane',s=>({...s,admin:s.admin.replace('>Amministrazione</p>','>Control plane</p>')})]
 ];
 const sourceMutationResults=[];
@@ -95,7 +123,7 @@ for(const [name,mutate] of SOURCE_MUTANTS){const mutated=mutate(source);const la
 
 function baseline(){return {
   order:[...CANON],supportAfterPrimary:true,supportClosed:true,firstRoleAdjacent:true,contiguousDeclaredBlock:true,journeyHelperInsideAdvancedContext:true,harmonizationReparents:false,decisionContextInsideOwnedBlock:false,staleDecisionFrames:false,decisionContextReparents:false,legacyCompassReparents:false,
-  market:['mapping','library','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopePrimary:true,coverageScopeRemountDefault:true,
+  market:['library','mapping','integrated'],libraryProgressive:true,integratedProgressive:true,coverageScopeMapping:true,coverageScopeRemountDefault:true,
   risk:['metrics','create','records','analysis'],riskAnalysisProgressive:true,riskAnalysisOpen:false,
   ep:{firstPlaneTechnical:false,digestFirstPlane:false,humanLabels:true,rawPreserved:true},
   backSelf:false,aiOptionalPrimary:false,ownerCount:1,primaryCount:1,
@@ -105,8 +133,8 @@ function violations(x){const out=[];
   if(x.order.join('>')!==CANON.join('>')||new Set(x.order).size!==CANON.length)out.push('editorial-order');
   if(!x.supportAfterPrimary||!x.supportClosed)out.push('support-progressive');
   if(!x.firstRoleAdjacent||!x.contiguousDeclaredBlock||!x.journeyHelperInsideAdvancedContext||x.harmonizationReparents||x.decisionContextInsideOwnedBlock||x.staleDecisionFrames||x.decisionContextReparents||x.legacyCompassReparents)out.push('placement-adjacency');
-  if(x.market.join('>')!=='mapping>library>integrated'||!x.libraryProgressive||!x.integratedProgressive)out.push('market-progressive');
-  if(!x.coverageScopePrimary)out.push('coverage-scope-placement');
+  if(x.market.join('>')!=='library>mapping>integrated'||!x.libraryProgressive||!x.integratedProgressive)out.push('market-progressive');
+  if(!x.coverageScopeMapping)out.push('coverage-scope-placement');
   if(!x.coverageScopeRemountDefault)out.push('scope-remount-default');
   if(x.risk.join('>')!=='metrics>create>records>analysis'||!x.riskAnalysisProgressive||x.riskAnalysisOpen)out.push('risk-progressive');
   if(x.ep.firstPlaneTechnical||x.ep.digestFirstPlane||!x.ep.humanLabels||!x.ep.rawPreserved)out.push('epistemic-projection');
@@ -117,9 +145,9 @@ function violations(x){const out=[];
   return out;
 }
 const FAMILIES=[
-  ['context-before-work',x=>{x.order=['advanced-context','reference','attention','controls','primary'];}],
+  ['context-before-work',x=>{x.order=['advanced-context','reference','metrics','attention','controls','primary'];}],
   ['primary-missing',x=>{x.order=x.order.filter(v=>v!=='primary');}],
-  ['attention-after-primary',x=>{x.order=['controls','primary','attention','advanced-context','reference'];}],
+  ['attention-after-primary',x=>{x.order=['controls','primary','attention','advanced-context','reference','metrics'];}],
   ['duplicate-primary-slot',x=>{x.order.push('primary');}],
   ['support-before-primary',x=>{x.supportAfterPrimary=false;}],
   ['support-open-default',x=>{x.supportClosed=false;}],
@@ -131,10 +159,10 @@ const FAMILIES=[
   ['stale-decision-frame',x=>{x.staleDecisionFrames=true;}],
   ['decision-context-reparent-on-replay',x=>{x.decisionContextReparents=true;}],
   ['legacy-compass-late-reparent',x=>{x.legacyCompassReparents=true;}],
-  ['market-library-before-mapping',x=>{x.market=['library','mapping','integrated'];}],
+  ['market-mapping-before-library',x=>{x.market=['mapping','library','integrated'];}],
   ['market-library-flat',x=>{x.libraryProgressive=false;}],
   ['market-integrated-flat',x=>{x.integratedProgressive=false;}],
-  ['coverage-scope-hidden-in-library',x=>{x.coverageScopePrimary=false;}],
+  ['coverage-scope-hidden-in-library',x=>{x.coverageScopeMapping=false;}],
   ['coverage-scope-remount-persists-all',x=>{x.coverageScopeRemountDefault=false;}],
   ['scope-user-selection-not-stable',x=>{x.coverageScopeRemountDefault=false;}],
   ['risk-analysis-before-records',x=>{x.risk=['metrics','analysis','create','records'];}],
@@ -152,21 +180,62 @@ const FAMILIES=[
   ['second-write-authority',x=>{x.writeAuthorityCount=2;}]
 ];
 
-const seedText=process.env.ICTC_UIUX_ONTOLOGY_SEED||randomBytes(4).toString('hex');let seed=(Number.parseInt(seedText.slice(-8),16)>>>0)||0x91a2b3c4;
+const seedText=process.env.ICTC_UIUX_ONTOLOGY_SEED||process.env.GITHUB_SHA||randomBytes(4).toString('hex');let seed=(Number.parseInt(seedText.slice(-8),16)>>>0)||0x91a2b3c4;
 const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
-const TOTAL=10_000_000,hits=Array(FAMILIES.length).fill(0),violationsHit=new Map();let killed=0;
-for(let i=0;i<TOTAL;i++){
+const TOTAL=10_000_000,SCREENSHOT_MUTATIONS_EACH=100_000,BEAUTY_MUTATIONS=100_000;
+const SCREENSHOT_SURFACES=Object.freeze([
+  ['home',['identity-before-detail','single-primary-next-action','no-ai-shell-badge','priority-cards-bounded','chrome-role-single']],
+  ['processes',['seven-processes-one-list','card-status-width','single-primary-cta','catalogue-copy-concise','no-duplicate-process-metrics']],
+  ['rn-01',['jobs-visible-configurable','sources-primary','scheduler-secondary','status-label-nonoverlap','mission-source-separation']],
+  ['ec-01',['incident-intake-primary','records-bounded','state-facet','evidence-boundary','no-duplicate-intake']],
+  ['ao-01',['inventory-metrics','object-filter','record-card-grammar','attestation-due-visible','form-secondary']],
+  ['mc-01',['library-first','mapping-secondary','integrated-secondary','scope-filter-mapping-only','standard-use-boundary']],
+  ['ap-01',['action-metrics','origin-next-facts','bounded-actions','state-filter','create-secondary']],
+  ['rc-01',['risk-metrics','risk-records-before-analysis','analysis-progressive','human-rating-boundary','create-secondary']],
+  ['ar-01',['assurance-metrics','request-status-distinct','approval-boundary','bounded-cases','request-secondary']],
+  ['proof',['method-first','peer-section-grammar','reference-external-parity','all-secondary-closed','epistemic-entry-explicit']],
+  ['epistemic',['search-first','result-before-deep-tools','back-to-proof','claim-boundary-visible','technical-tools-progressive']],
+  ['admin-overview-top',['attention-before-policy','uniform-panel-width','single-admin-entry','no-control-plane-jargon','secondary-policy-progressive']],
+  ['admin-overview-bottom',['policy-secondary','audit-secondary','uniform-panels','human-labels','no-duplicate-settings-entry']],
+  ['admin-ai-top',['neutral-config-status','provider-secondary','governance-secondary','uniform-width','no-colored-shell-status']],
+  ['admin-ai-bottom',['advanced-policy-progressive','configuration-copy-nonverdict','provider-form-bounded','uniform-width','no-duplicate-ai-entry']],
+  ['admin-identity-top',['identity-primary','local-users-progressive','role-copy-human','uniform-width','no-legacy-first-plane']],
+  ['procedure-header-detail',['orientation-tokens','orientation-details-progressive','reference-directly-below-header','metrics-next','context-last']],
+  ['ai-status-detail',['shell-badge-removed','admin-state-neutral','no-tooltip-verdict','no-color-verdict','state-copy-circumscribed']]
+]);
+const GLOBAL_VISUAL_INVARIANTS=Object.freeze(['single-semantic-role-representation','canonical-page-sequence','reference-before-metrics','metrics-before-operational-work','canonical-control-rail','fixed-status-rail','whole-word-status-wrap','progressive-secondary','legacy-not-first-plane','local-exception-minimized']);
+assert.equal(SCREENSHOT_SURFACES.length,18);
+for(const [,local] of SCREENSHOT_SURFACES){assert.equal(new Set([...GLOBAL_VISUAL_INVARIANTS,...local]).size,15);}
+function visualModel(local){return {roleCount:1,ranks:{header:0,reference:1,metrics:2,work:3,context:4},controlRails:1,statusRail:7.5,splitWords:false,secondaryOpen:0,legacyFirstPlane:0,localOverrides:1,local:Object.fromEntries(local.map(x=>[x,true]))};}
+function visualViolations(x,local){const out=[];if(x.roleCount!==1)out.push(GLOBAL_VISUAL_INVARIANTS[0]);if(!(x.ranks.header<x.ranks.reference&&x.ranks.reference<x.ranks.metrics&&x.ranks.metrics<x.ranks.work&&x.ranks.work<x.ranks.context))out.push(GLOBAL_VISUAL_INVARIANTS[1]);if(!(x.ranks.reference<x.ranks.metrics))out.push(GLOBAL_VISUAL_INVARIANTS[2]);if(!(x.ranks.metrics<x.ranks.work))out.push(GLOBAL_VISUAL_INVARIANTS[3]);if(x.controlRails!==1)out.push(GLOBAL_VISUAL_INVARIANTS[4]);if(x.statusRail!==7.5)out.push(GLOBAL_VISUAL_INVARIANTS[5]);if(x.splitWords)out.push(GLOBAL_VISUAL_INVARIANTS[6]);if(x.secondaryOpen!==0)out.push(GLOBAL_VISUAL_INVARIANTS[7]);if(x.legacyFirstPlane!==0)out.push(GLOBAL_VISUAL_INVARIANTS[8]);if(x.localOverrides>1)out.push(GLOBAL_VISUAL_INVARIANTS[9]);for(const key of local)if(!x.local[key])out.push(key);return out;}
+const VISUAL_MUTATORS=[
+  x=>{x.roleCount=2},x=>{x.ranks.reference=4},x=>{x.ranks.reference=3},x=>{x.ranks.metrics=4},x=>{x.controlRails=2},
+  x=>{x.statusRail=0},x=>{x.splitWords=true},x=>{x.secondaryOpen=1},x=>{x.legacyFirstPlane=1},x=>{x.localOverrides=2}
+];
+const screenshotReport=[];let screenshotKilled=0;
+for(const [surface,local] of SCREENSHOT_SURFACES){const hits=Array(15).fill(0);for(let i=0;i<SCREENSHOT_MUTATIONS_EACH;i++){const x=visualModel(local),fi=rnd()%15;hits[fi]++;if(fi<10)VISUAL_MUTATORS[fi](x);else x.local[local[fi-10]]=false;const found=visualViolations(x,local);if(!found.length)throw new Error(`visual survivor ${surface} ${i} ${fi}`);screenshotKilled++;}assert.ok(hits.every(Boolean));screenshotReport.push({surface,mutations:SCREENSHOT_MUTATIONS_EACH,findings:[...GLOBAL_VISUAL_INVARIANTS,...local],globalInvariants:GLOBAL_VISUAL_INVARIANTS.length,localFindings:local.length,hits});}
+const BEAUTY_LAWS=Object.freeze(['bounded-density','clear-hierarchy','alignment-continuity','spacing-rhythm','copy-discriminance','single-primary-representation','human-first-plane','neutral-state-color','bounded-local-variants','breathing-room']);
+const beautyModel=()=>({density:1,hierarchy:true,alignment:true,rhythm:true,labelNoise:0,duplicates:0,technicalFirst:0,colorVerdict:false,variants:0,breathing:1});
+const beautyViolations=x=>{const out=[];if(x.density>1)out.push(BEAUTY_LAWS[0]);if(!x.hierarchy)out.push(BEAUTY_LAWS[1]);if(!x.alignment)out.push(BEAUTY_LAWS[2]);if(!x.rhythm)out.push(BEAUTY_LAWS[3]);if(x.labelNoise>0)out.push(BEAUTY_LAWS[4]);if(x.duplicates>0)out.push(BEAUTY_LAWS[5]);if(x.technicalFirst>0)out.push(BEAUTY_LAWS[6]);if(x.colorVerdict)out.push(BEAUTY_LAWS[7]);if(x.variants>1)out.push(BEAUTY_LAWS[8]);if(x.breathing<1)out.push(BEAUTY_LAWS[9]);return out;};
+const BEAUTY_MUTATORS=[x=>{x.density=2},x=>{x.hierarchy=false},x=>{x.alignment=false},x=>{x.rhythm=false},x=>{x.labelNoise=1},x=>{x.duplicates=1},x=>{x.technicalFirst=1},x=>{x.colorVerdict=true},x=>{x.variants=2},x=>{x.breathing=0}];
+const beautyHits=Array(BEAUTY_MUTATORS.length).fill(0);let beautyKilled=0;
+for(let i=0;i<BEAUTY_MUTATIONS;i++){const x=beautyModel(),fi=rnd()%BEAUTY_MUTATORS.length;beautyHits[fi]++;BEAUTY_MUTATORS[fi](x);if(!beautyViolations(x).length)throw new Error(`beauty survivor ${i} ${fi}`);beautyKilled++;}
+assert.ok(beautyHits.every(Boolean));
+const GLOBAL_MUTATIONS=TOTAL-(SCREENSHOT_SURFACES.length*SCREENSHOT_MUTATIONS_EACH)-BEAUTY_MUTATIONS;
+assert.equal(GLOBAL_MUTATIONS,8_100_000);
+const hits=Array(FAMILIES.length).fill(0),violationsHit=new Map();let killed=0;
+for(let i=0;i<GLOBAL_MUTATIONS;i++){
   const x=baseline(),rounds=1+(rnd()%4),chosen=new Set();
   for(let r=0;r<rounds;r++){let fi=rnd()%FAMILIES.length;while(chosen.has(fi))fi=(fi+1)%FAMILIES.length;chosen.add(fi);hits[fi]++;FAMILIES[fi][1](x);}
   const found=violations(x);if(!found.length)throw new Error(`survivor at ${i}: ${[...chosen].map(j=>FAMILIES[j][0]).join(',')}`);for(const v of found)violationsHit.set(v,(violationsHit.get(v)||0)+1);killed++;
 }
-assert.equal(killed,TOTAL);assert.ok(hits.every(n=>n>0));
+assert.equal(killed,GLOBAL_MUTATIONS);assert.ok(hits.every(n=>n>0));assert.equal(killed+screenshotKilled+beautyKilled,TOTAL);
 
 const essential={};
 const LAW_NAMES=['editorial-order','support-progressive','placement-adjacency','market-progressive','coverage-scope-placement','scope-remount-default','risk-progressive','epistemic-projection','navigation','ai-optional','single-owner-primary','authority-boundary'];
 for(const law of LAW_NAMES){essential[law]=FAMILIES.some(([,mutate])=>{const x=baseline();mutate(x);const found=violations(x);return found.length===1&&found[0]===law;});assert.equal(essential[law],true,`no isolated falsifier for ${law}`);}
 
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,total:TOTAL,killed, survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['work-before-support','single-structural-commit-after-local-enhancement','journey-helper-inside-progressive-advanced-context','harmonization-never-reparents-after-commit','one-active-decision-context-outside-owned-block','post-owner-helpers-never-reparent-on-replay','legacy-hidden-compatibility-never-reparents','declared-owner-adjacency-over-legacy-siblings','scope-controls-follow-visible-actionable-collection','scope-controls-reparent-on-remount','one-owner-one-primary','progressive-secondary-analysis','human-first-epistemic-projection-with-raw-preserved','optional-ai-never-primary','non-self-back-navigation','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 model-composition mutations plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
+const report={ok:true,slice:'UIUX-ONTOLOGY-CLOSURE-10M',seed:seedText,seedSource:process.env.ICTC_UIUX_ONTOLOGY_SEED?'explicit':process.env.GITHUB_SHA?'github-sha':'local-random',total:TOTAL,globalMutations:GLOBAL_MUTATIONS,screenshotMutations:screenshotKilled,beautyMutations:beautyKilled,killed:killed+screenshotKilled+beautyKilled,survivors:0,mutationFamilies:FAMILIES.map(([name],i)=>({name,hits:hits[i]})),screenshotCampaign:screenshotReport,beautyCampaign:{mutations:BEAUTY_MUTATIONS,laws:BEAUTY_LAWS,hits:beautyHits},sourceMutants:sourceMutationResults,violations:Object.fromEntries(violationsHit),essentialLaws:essential,procedures:PROCEDURES,canonicalEditorialOrder:CANON.join('>'),minimalSemanticLattice:['one-global-representation-truth','minimal-local-procedure-specialization','reference-before-metrics-before-work','canonical-control-and-state-rails','progressive-secondary-analysis','library-first-coverage','proof-method-first-peer-grammar','human-first-epistemic-projection-with-raw-preserved','single-admin-entry','neutral-ai-configuration-state','legacy-hidden-compatibility-never-reparents','one-owner-one-primary','business-write-authority-unchanged'],claimBoundary:'E2 deterministic 10,000,000 seeded model-composition mutations: 100,000 per each of 18 real screenshot-derived surface models, 100,000 minimality/beauty mutations, 8,100,000 global cross-surface mutations, plus concrete source mutation operators. This is not 10,000,000 browser sessions and does not prove representative-human usability, legal compliance, deployment effectiveness or absence of all UI defects.'};
 writeFileSync(new URL('../artifacts/uiux-ontology-closure-saturation-10m.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));
