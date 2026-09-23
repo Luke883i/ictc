@@ -1391,5 +1391,28 @@
     "compass": "docs/ENGINEERING_COMPASS.md",
     "authorityEffect": "NONE",
     "reconciliation": "v3/trama-reconcile-contract.json"
+  },
+  "asIsClosureGovernance": {
+    "contract": "v3/as-is-convergence-contract.json",
+    "runtime": "v3/as-is-convergence.mjs",
+    "derivedProjectionIsSot": false,
+    "createsNewSerialSlice": false,
+    "preservesCanonicalDebtOwners": true,
+    "genericMutationPolicyUnchanged": true,
+    "strategicTiers": [
+      100000,
+      1000000,
+      10000000
+    ],
+    "semanticNoNoveltyTail": 10000,
+    "compressionNoFurtherLossTail": 10000,
+    "closedDebtRegression": "BLOCKED_REOPEN_WITH_EVIDENCE",
+    "landingCognitiveOrder": [
+      "identity",
+      "primary-work-or-decision",
+      "bounded-attention-or-catalog",
+      "context-or-evidence",
+      "technical-detail"
+    ]
   }
 }
