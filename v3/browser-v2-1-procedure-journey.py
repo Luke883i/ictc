@@ -328,7 +328,9 @@ try:
         expect(page.locator('.epistemic-atom-readable')).to_be_visible()
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Elemento')
         expect(page.locator('[data-surface-context-strip]:visible')).to_have_count(0)
-        page.locator('[data-epistemic-level="overview"]').click()
+        for parent_level in ['relations','groups','overview']:
+            parent=page.locator(f'[data-epistemic-level="{parent_level}"]')
+            expect(parent).to_have_count(1); parent.click()
         expect(page.locator('.epistemic-level-nav')).to_contain_text('Quadro')
 
         PHASE = 'same-digest-expert-modes'

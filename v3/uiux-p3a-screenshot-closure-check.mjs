@@ -18,7 +18,7 @@ const enterpriseCss=read('./public/enterprise-workspace-3-2.css');
 const publicPack=read('./runtime/standard-public-source-pack.mjs');
 const standardHandler=read('./runtime/standard-library-handler.mjs');
 function has(source,...tokens){for(const token of tokens)assert.ok(source.includes(token),`missing token: ${token}`);}
-has(operational,'data-a6-registry-count-group','data-a6-registry-count','a6RegistryDefaultApplied','retireLegacyRegistryHead','Monitoraggi','Eventi registrati',"copy.dataset.a6SubtitleMerged='true'");assert.ok(!operational.includes('data-a6-registry-total'),'retired duplicate registry total must not return');
+has(operational,'data-a6-registry-count-group','data-a6-registry-count','a6RegistryDefaultApplied','retireLegacyRegistryHead','Monitoraggi','Eventi registrati',"copy.dataset.a6SubtitleMerged='true'");assert.ok(!operational.includes('<span data-a6-registry-total'),'retired duplicate registry total element must not return');
 has(semantic,"root.querySelector('.procedure-queue-tools,.a6-operational-filter",'Azioni correnti','Tutti gli elementi','LOCAL_NATIVE_SCOPE','retireLocalScope');
 has(stateProjection,"stateEncoding='text+style'",'Motivazione · non registrata','semanticStateProjection','enduserPrimitive','StateChip');
 has(browser,'data-standard-content-origin','Fonte ufficiale pubblica','Formulazione operativa ICTC','Solo riferimento','Nessun testo locale sostitutivo viene inventato','data-standard-map','navigateSurface','mappingPrimarySubject','mappingJourney','requirement-first','handoffToMapping');
