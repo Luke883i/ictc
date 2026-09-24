@@ -1,3 +1,5 @@
+import { ENDUSER_PRIMITIVES, PROJECTED_OBJECT_TYPES, LEGACY_PRESENTATION_DEPRECATION, SURFACE_OBJECT_TYPE_PROFILE } from './public/ui/native-semantic-lattice-3-2.js';
+
 export const DENSITY_INTENTIONS=Object.freeze([
   ['D01','one-primary-concept','A concept has one primary front-stage label per final view.'],
   ['D02','horizontal-first','Controls, tabs, badges and compact metadata stay on one row when width permits and wrap only under real constraint.'],
@@ -70,4 +72,19 @@ export function compactScenario(input){
     roleSpecificOntology:false,
     presentationAuthorities:1
   };
+}
+
+export const PROJECTED_OBJECT_COMPRESSION=Object.freeze({
+  primitiveCount:ENDUSER_PRIMITIVES.length,
+  roles:Object.freeze(Object.keys(PROJECTED_OBJECT_TYPES)),
+  legacyFamilies:Object.freeze(Object.keys(LEGACY_PRESENTATION_DEPRECATION)),
+  surfaceProfiles:SURFACE_OBJECT_TYPE_PROFILE
+});
+export function evaluateProjectedObjectCompression({roles=[],legacyFamilies=[],presentationAuthorities=1}={}){
+  const failures=[];
+  for(const role of roles)if(!PROJECTED_OBJECT_TYPES[role])failures.push(`unknown-role:${role}`);
+  for(const family of legacyFamilies)if(!LEGACY_PRESENTATION_DEPRECATION[family])failures.push(`unmapped-legacy:${family}`);
+  if(new Set(roles).size!==roles.length)failures.push('duplicate-role');
+  if(Number(presentationAuthorities)!==1)failures.push('presentation-authority');
+  return Object.freeze({ok:failures.length===0,failures:Object.freeze(failures)});
 }
