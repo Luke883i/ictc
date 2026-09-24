@@ -363,7 +363,7 @@ html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embe
 
 /* UIUX-CANONICAL-WORKSPACE-1: one local control grammar and peer hierarchy. */
 html[data-enduser-composition="p2"] .procedure-queue-tools[data-enduser-primitive="ControlRail"] [data-seq-queue-more]{justify-self:end;min-height:36px;padding:.32rem .58rem;font-size:var(--type-control);white-space:nowrap}
-html[data-enduser-composition="p2"] .market-ai-link-toggle{display:inline-flex!important;align-items:center;gap:.42rem;white-space:nowrap;max-width:100%}
+html[data-enduser-composition="p2"] .market-ai-link-toggle{display:inline-flex;align-items:center;gap:.42rem;white-space:nowrap;max-width:100%}
 html[data-enduser-composition="p2"] .market-ai-link-toggle>input{flex:0 0 auto;margin:0}
 html[data-enduser-composition="p2"] .epistemic-toolbar{display:grid;grid-template-columns:minmax(16rem,1fr) auto auto;align-items:end;gap:.5rem;min-height:0}
 html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-filter-group{display:block;min-width:0}
