@@ -9,7 +9,7 @@ const proof=read('./public/ui/proof-workspace-3-2.js');
 const css=read('./public/semantic-workspace-closure-3-2-1.css');
 assert.ok(standard.includes("scopeButton.classList.add('primary')"),'MC scope decision must own the contextual primary intent');
 assert.ok(standard.includes("button.primary:not([data-standard-scope])"),'MC card must retire competing primary intents');
-assert.ok(browser.includes('secondary standard-browser-open'),'open-reference action must remain secondary');
+assert.ok(browser.includes('secondary standard-browser-open'),'open-reference action must remain secondary');assert.ok(browser.includes('data-standard-document-model="word-like"')&&browser.includes('documentSections()')&&browser.includes('data-standard-wordlike-page'),'Standard Browser must render the canonical knowledge-pack document model');
 assert.ok(epOwner.includes("epistemicTechnicalModes='progressive'")&&epOwner.includes('Filtri avanzati')&&epOwner.includes('Viste tecniche'),'EP technical/filter controls must be progressive');
 assert.ok(epOwner.includes('toolbar.prepend(group)'),'EP search/filter group must be frontstage before mode controls');
 assert.ok(epOwner.includes('data-epistemic-a3="deep-tools"')&&epOwner.includes('find>narrow>result>select>reconstruct>deepen'),'EP professional/inference tools must be subordinate to the P2 progressive trajectory');
