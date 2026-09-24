@@ -49,6 +49,17 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  if frame.locator('.procedure-purpose').count() and frame.locator('.procedure-purpose').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')<12:anomaly('process-purpose-too-small',role,vp,proc['code'],frame.locator('.procedure-purpose').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)'),'>=12px')
  if frame.locator('.procedure-primary').count() and frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height')<43.5:anomaly('process-primary-target-too-small',role,vp,proc['code'],frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height'),'>=44px')
  if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I):anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
+ orientation=frame.locator('[data-procedure-orientation-token="basis"]')
+ if orientation.count()!=1:anomaly('orientation-token-count',role,vp,proc['code'],orientation.count(),1)
+ else:
+  summary=orientation.locator(':scope > summary')
+  if orientation.get_attribute('open') is not None:anomaly('orientation-open-by-default',role,vp,proc['code'],True,False)
+  if width>=768:
+   summary.hover();expect(orientation).to_have_attribute('open','')
+   size=page.viewport_size or {'width':width,'height':900};page.mouse.move(size['width']-2,size['height']-2);page.wait_for_timeout(130);expect(orientation).not_to_have_attribute('open','')
+   summary.focus();expect(orientation).to_have_attribute('open','');page.keyboard.press('Escape');expect(orientation).not_to_have_attribute('open','')
+  elif width<=390:
+   summary.click();expect(orientation).to_have_attribute('open','');summary.click();expect(orientation).not_to_have_attribute('open','')
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:6]!=['reference','metrics','attention','controls','primary','advanced-context']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','metrics','attention','controls','primary','advanced-context'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
@@ -118,6 +129,11 @@ def audit_proof(page,role,vp,width):
  else:
   if reading.get_attribute('open') is not None:anomaly('evidence-technical-reading-open-by-default',role,vp,'proof',True,False)
   reading.locator(':scope > summary').click();expect(reading).to_have_attribute('open','')
+  guide=reading.locator('[data-proof-reading-guide]');expected_guide=['Cosa osserva','Cosa non prova','Come leggere gli stati','Fonti e provenienza','Quando serve verifica esterna']
+  if guide.count()!=1:anomaly('evidence-reading-guide-count',role,vp,'proof',guide.count(),1)
+  else:
+   titles=[x.strip() for x in guide.locator('[data-proof-reading-guide-item] b').all_inner_texts()]
+   if titles!=expected_guide:anomaly('evidence-reading-guide-order',role,vp,'proof',titles,expected_guide)
   methods=page.locator('#proofEvidenceKinds li').count();expected_methods=len(data.get('proof',{}).get('evidenceKinds',[]))
   if methods!=expected_methods:anomaly('evidence-proof-method-count',role,vp,'proof',methods,expected_methods)
   mappings=page.locator('#proofBenchmarkMappings .proof-mapping');expected_maps=len(data.get('benchmarkFamilies',[]))
