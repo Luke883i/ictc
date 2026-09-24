@@ -138,8 +138,9 @@ def audit_proof(page,role,vp,width):
   else:
    titles=[x.strip() for x in guide.locator('[data-proof-reading-guide-item] b').all_inner_texts()]
    if titles!=expected_guide:anomaly('evidence-reading-guide-order',role,vp,'proof',titles,expected_guide)
-  title_size=reading.locator(':scope > summary b').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')
-  if title_size<16:anomaly('evidence-reading-guide-title-size',role,vp,'proof',title_size,'>=16px')
+  title_size=reading.evaluate("""e=>{const title=e.querySelector(':scope > summary b');if(!title)return null;const size=parseFloat(getComputedStyle(title).fontSize);return Number.isFinite(size)?size:null}""")
+  if title_size is None:anomaly('evidence-reading-guide-title-missing',role,vp,'proof',None,'measurable summary title')
+  elif title_size<16:anomaly('evidence-reading-guide-title-size',role,vp,'proof',title_size,'>=16px')
   methods=page.locator('#proofEvidenceKinds li').count();expected_methods=len(data.get('proof',{}).get('evidenceKinds',[]))
   if methods!=expected_methods:anomaly('evidence-proof-method-count',role,vp,'proof',methods,expected_methods)
   mappings=page.locator('#proofBenchmarkMappings .proof-mapping');expected_maps=len(data.get('benchmarkFamilies',[]))
