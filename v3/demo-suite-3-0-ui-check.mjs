@@ -32,6 +32,9 @@ const setDemo=(overrides={})=>{
     stateDigest:'0123456789abcdef',
     positiveRecords:188,
     stressFixtures:512,
+    metadataAuthority:'mechanically-derived',
+    metadataDigest:'f'.repeat(64),
+    learningScenarios:[{id:'bad-fragmented-compliance',level:'bad'},{id:'worst-untraceable-decisions',level:'worst'}],
     legacySourceStatus:'generator-only',
     ...overrides
   }}};
