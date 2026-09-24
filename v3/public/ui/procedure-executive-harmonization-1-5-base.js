@@ -22,8 +22,9 @@ function rootFor(id){if(id==='monitoring')return $('#monitoringView');if(id==='i
 function ensureFrame(id){const root=rootFor(id),p=EXEC[id];if(!root||!p)return;const procedureFrame=root.querySelector(':scope > .procedure-frame');if(procedureFrame){procedureFrame.dataset.executiveSummary=id;const purpose=procedureFrame.querySelector('.procedure-purpose');if(purpose){const full=canonical(id)?.purpose||purpose.textContent||'';purpose.textContent=`Governa ${p.governs.charAt(0).toLowerCase()}${p.governs.slice(1)}.`;purpose.title=full;purpose.classList.add('executive-procedure-purpose');}}
   for(const stale of root.querySelectorAll(':scope > .procedure-decision-frame'))if(stale.dataset.executiveProcedure!==id)stale.remove();
   let frame=root.querySelector(`:scope > .procedure-decision-frame[data-executive-procedure="${CSS.escape(id)}"]`);
-  const rail=root.querySelector(':scope > .procedure-support-rail');
-  if(!frame){frame=document.createElement('section');frame.className='procedure-decision-frame';frame.dataset.executiveProcedure=id;if(rail)rail.after(frame);else root.append(frame);}
+  const primary=root.querySelector(':scope > [data-editorial-slot="primary"]');
+  if(!frame){frame=document.createElement('section');frame.className='procedure-decision-frame';frame.dataset.executiveProcedure=id;root.append(frame);}
+  if(primary&&frame.previousElementSibling!==primary)primary.after(frame);else if(!primary&&frame.parentElement!==root)root.append(frame);
   frame.classList.add('procedure-decision-frame');frame.dataset.executiveProcedure=id;frame.dataset.structuralPlacementAuthority='procedure-editorial-slots';frame.setAttribute('aria-label',`${p.code} · orientamento del processo`);frame.innerHTML=frameMarkup(id);anchor(frame.querySelector('summary'),id,'boundary','inspect-claim-boundary','navigation','none');
 }
 function normalizeHub(){const host=$('#procedureHub');if(!host)return;const intro=$('#processesView .processes-head h1 ~ p');if(intro)intro.textContent='Sette procedure distinte. Ogni scheda mostra ciò che governa, l’attenzione aperta e la decisione successiva.';

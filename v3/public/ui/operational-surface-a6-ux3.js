@@ -112,6 +112,13 @@ function registryWrap(host,{id,label,process,count,open=false}){
     host.parentElement?.insertBefore(details,host);
     details.append(summary,host);
   }
+  const queueId=id==='monitoring'?'monitoring-jobs':id;
+  let queue=details.querySelector(`:scope > [data-seq-queue-tools="${CSS.escape(queueId)}"]`);
+  if(!queue){
+    const sibling=host.previousElementSibling;
+    if(sibling?.matches?.(`[data-seq-queue-tools="${CSS.escape(queueId)}"]`))queue=sibling;
+  }
+  if(queue&&queue.parentElement!==details)details.insertBefore(queue,host);
   const summary=details.querySelector(':scope > summary');
   if(summary){
     journey(summary,{process,intent:`inspect-${id}-registry`});
