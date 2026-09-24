@@ -18,7 +18,7 @@ const sourceChecks=[
  [S.padmin.includes('ictc:procedure-policy-updated')&&!S.padmin.includes('<i aria-hidden="true"></i>'),'procedure-policy-readback-and-native-switch'],
  [S.ux.includes('status.hidden=true')&&S.ux.includes("status.dataset.legacyControl='shell-ai-status'")&&!S.ux.includes('status.dataset.tooltip=view.tooltip')&&S.adminWorkspace.includes('admin-configuration-state'),'ai-truth-explicit'],
  [S.admin.includes('adminAiProviderHost')&&S.admin.includes("settings.dataset.adminEmbedded='ai'")&&S.actions.includes("openAdminCenter('ai')"),'admin-ai-single-surface'],
- [S.render.includes('data.rnJobState')===false&&S.render.includes("registry.dataset.rnJobState=missions.length?'materialized':'empty'")&&S.operational.includes('previousTotal===0'),'rn-job-materialization'],
+ [S.render.includes('data.rnJobState')===false&&S.render.includes("registry.dataset.rnJobState=missions.length?'materialized':'empty'")&&S.operational.includes("id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:false")&&S.operational.includes("else if(nextTotal>0){details.open=true;details.dataset.a6RegistryDefaultApplied='true';}"),'rn-job-materialization'],
  [S.browser.includes('neutralKeywords')&&S.browser.includes('standard-neutral-keywords')&&!/nodes\.map\(node=>\{[^}]*neutral=String\(node\.neutralDescription/.test(S.browser),'standard-index-compressed'],
  [S.standard.includes('structuralProfile')&&S.standard.includes('neutralKeywords')&&S.standard.includes('neutralOutline'),'closed-source-specific-paraphrase'],
  [S.publicPack.includes('officialSourceConfirmed')&&S.publicPack.includes('standard-public-source-incomplete')&&S.publicPack.includes("contentMode:'official-public-text'"),'public-exact-text-proof-boundary'],
@@ -34,20 +34,20 @@ const F=Object.freeze([
  'ai-state','ai-shell-visible','ai-color-verdict','ai-tooltip','ai-copy','policy-projection','policy-readback',
  'admin-ai-parent','admin-ai-single-form','admin-switch-native','standard-master-width',
  'standard-detail-visible','licensed-node-specific','public-text-provenance',
- 'rn-job-count','rn-job-materialization','single-owner'
+ 'rn-job-count','rn-job-materialization','rn-job-secondary-open','single-owner'
 ]);
 const valid=()=>({
- supportParent:'sibling',supportOrder:'reference>metrics>work>context',headerContainsSupport:false,
+ supportParent:'sibling',supportOrder:'reference>context>metrics>work',headerContainsSupport:false,
  viewport:900,header:56,footer:44,mainTop:0,mainBottom:0,homeHeight:800,bodyOverflow:'auto',
  aiState:'unconfigured',aiShellVisible:false,aiColorVerdict:false,aiTooltip:false,aiCopy:'Configurazione AI non completata',
  policyEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],landingEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],
  adminAiParent:'admin',settingsForms:1,nativeSwitch:true,
  masterPx:240,detailPx:680,licensedSpecific:true,publicExactRequiresConfirmedPack:true,
- jobCount:2,jobCards:2,jobRegistryOpen:true,owners:1
+ jobCount:2,jobCards:2,jobMaterialized:true,jobRegistryOpen:false,owners:1
 });
 function failures(s){const o=[];
  if(s.supportParent!=='sibling')o.push('support-parent');
- if(s.supportOrder!=='reference>metrics>work>context')o.push('support-order');
+ if(s.supportOrder!=='reference>context>metrics>work')o.push('support-order');
  if(s.headerContainsSupport)o.push('header-boundary');
  if(s.header+s.footer+s.homeHeight+s.mainTop+s.mainBottom>s.viewport+1)o.push('home-budget');
  if(s.bodyOverflow==='hidden')o.push('home-scroll-truth');
@@ -66,7 +66,8 @@ function failures(s){const o=[];
  if(!s.licensedSpecific)o.push('licensed-node-specific');
  if(!s.publicExactRequiresConfirmedPack)o.push('public-text-provenance');
  if(s.jobCount!==s.jobCards)o.push('rn-job-count');
- if(s.jobCount>0&&!s.jobRegistryOpen)o.push('rn-job-materialization');
+ if(s.jobCount>0&&!s.jobMaterialized)o.push('rn-job-materialization');
+ if(s.jobRegistryOpen)o.push('rn-job-secondary-open');
  if(s.owners!==1)o.push('single-owner');
  return o;
 }
@@ -80,7 +81,7 @@ function mutate(s,f){switch(f){
  case'admin-switch-native':s.nativeSwitch=false;break;case'standard-master-width':s.masterPx=520;break;
  case'standard-detail-visible':s.detailPx=180;s.masterPx=240;break;case'licensed-node-specific':s.licensedSpecific=false;break;
  case'public-text-provenance':s.publicExactRequiresConfirmedPack=false;break;case'rn-job-count':s.jobCards=1;break;
- case'rn-job-materialization':s.jobRegistryOpen=false;break;case'single-owner':s.owners=2;break;
+ case'rn-job-materialization':s.jobMaterialized=false;break;case'rn-job-secondary-open':s.jobRegistryOpen=true;break;case'single-owner':s.owners=2;break;
 }}
 let seed=0x51c0ffee;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0},ri=n=>rnd()%n;
 const coverage=Object.fromEntries(F.map(x=>[x,0]));let positives=0,mutatedTrials=0,appliedMutations=0,multi=0;

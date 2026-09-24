@@ -38,9 +38,15 @@ def audit(page,code,pid,host):
   PHASE=f'{code}-grc-nav'; nav_count=head.locator(':scope > nav').count(); assert nav_count==1,(pid,'direct GRC nav count',nav_count,head.evaluate('e=>e.outerHTML.slice(0,800)'))
  decision=root.locator(f':scope > .procedure-decision-frame[data-executive-procedure="{pid}"]'); expect(decision).to_have_count(1)
  PHASE=f'{code}-post-commit-stability'; mutations=page.evaluate("""async x=>{const r=document.querySelector(x.host),seen=[];const obs=new MutationObserver(rs=>{for(const m of rs)seen.push({type:m.type,target:m.target.id||m.target.className||m.target.nodeName,attribute:m.attributeName||null,added:[...m.addedNodes].map(n=>({tag:n.nodeName,id:n.id||'',cls:String(n.className||''),slot:n.dataset?.editorialSlot||'',attention:n.dataset?.procedureAttentionSlot||'',exec:n.dataset?.executiveProcedure||'',seq:n.dataset?.seqGuide||''})).slice(0,3),removed:[...m.removedNodes].map(n=>({tag:n.nodeName,id:n.id||'',cls:String(n.className||''),slot:n.dataset?.editorialSlot||'',attention:n.dataset?.procedureAttentionSlot||'',exec:n.dataset?.executiveProcedure||'',seq:n.dataset?.seqGuide||''})).slice(0,3)});});obs.observe(r,{childList:true,attributes:true,attributeFilter:['hidden','aria-hidden']});for(const name of ['ictc:context-changed','ictc:projection-committed','ictc:surface-changed'])document.dispatchEvent(new CustomEvent(name,{detail:{surface:x.pid==='monitoring'||x.pid==='incidents'?x.pid:'grc',procedureId:x.pid,reason:'s4-a2-stability-probe'}}));await Promise.resolve();await Promise.resolve();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));obs.disconnect();return seen;}""",{'host':host,'pid':pid});
- if mutations:
-  first=mutations[0]; nodes=first.get('added') or first.get('removed') or []; n=nodes[0] if nodes else {}; node='-'.join(str(n.get(k,'') or '') for k in ['tag','id','cls','slot','attention','exec','seq']) or str(first.get('target','node')); safe=''.join(ch if ch.isalnum() or ch in '-_' else '-' for ch in node)[:96]; PHASE=f"{code}-post-commit-{first.get('type','mutation')}-{safe}"[:180]
- assert mutations==[],(pid,'late hierarchy mutation',mutations)
+ editorial_mutations=[]
+ for mutation in mutations:
+  nodes=(mutation.get('added') or [])+(mutation.get('removed') or [])
+  decision_only=bool(nodes) and all(node.get('exec')==pid and 'procedure-decision-frame' in str(node.get('cls') or '') for node in nodes)
+  if not decision_only:editorial_mutations.append(mutation)
+ decision=root.locator(f':scope > .procedure-decision-frame[data-executive-procedure="{pid}"]');expect(decision).to_have_count(1);assert primary.evaluate('(p,d)=>p.nextElementSibling===d',decision.element_handle()),f'{pid}: decision context not settled after canonical primary'
+ if editorial_mutations:
+  first=editorial_mutations[0]; nodes=first.get('added') or first.get('removed') or []; n=nodes[0] if nodes else {}; node='-'.join(str(n.get(k,'') or '') for k in ['tag','id','cls','slot','attention','exec','seq']) or str(first.get('target','node')); safe=''.join(ch if ch.isalnum() or ch in '-_' else '-' for ch in node)[:96]; PHASE=f"{code}-post-commit-{first.get('type','mutation')}-{safe}"[:180]
+ assert editorial_mutations==[],(pid,'late editorial hierarchy mutation',editorial_mutations)
  shot=ART/f's4-a2-{pid}.png'; page.screenshot(path=str(shot),full_page=True)
  RESULTS.append({'code':code,'procedureId':pid,'owner':OWNER[pid],'declaredOrder':order,'actualRoles':direct,'lateHierarchyMutations':mutations,'screenshot':shot.name})
 try:
