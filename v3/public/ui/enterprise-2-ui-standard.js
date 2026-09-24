@@ -150,8 +150,11 @@ function reconcileServerIssuedAdminVisibility() {
   if (!role) return;
   const settings = $('#openSettings');
   if (!settings) return;
-  settings.hidden = role !== 'admin';
-  settings.dataset.uiAuthoritySource = 'server-actor-role';
+  settings.hidden = true;
+  settings.dataset.uiAuthoritySource = 'admin-center-only';
+  settings.dataset.legacyControl = 'admin-ai-entry';
+  settings.setAttribute('aria-hidden','true');
+  settings.tabIndex = -1;
 }
 
 let scheduled = false;

@@ -12,14 +12,14 @@ assert.ok(standard.includes("button.primary:not([data-standard-scope])"),'MC car
 assert.ok(browser.includes('secondary standard-browser-open'),'open-reference action must remain secondary');
 assert.ok(epOwner.includes("epistemicTechnicalModes='progressive'")&&epOwner.includes('Filtri avanzati')&&epOwner.includes('Viste tecniche'),'EP technical/filter controls must be progressive');
 assert.ok(epOwner.includes('toolbar.prepend(group)'),'EP search/filter group must be frontstage before mode controls');
-assert.ok(epOwner.includes('data-epistemic-a3="deep-tools"')&&epOwner.includes('find>narrow>explore>select>reconstruct>deepen'),'EP professional/inference tools must be subordinate to the P2 progressive trajectory');
+assert.ok(epOwner.includes('data-epistemic-a3="deep-tools"')&&epOwner.includes('find>narrow>result>select>reconstruct>deepen'),'EP professional/inference tools must be subordinate to the P2 progressive trajectory');
 assert.ok(!epOwner.includes("moveInto(detail,root.querySelector('.epistemic-claim-boundary'))"),'EP material claim boundary must remain visible');
 assert.ok(!epOwner.includes("removeAttribute('open')"),'EP owner must preserve disclosure state after initialization');
 assert.ok(ep.includes('GRAPH_MAX_NODES=24')&&ep.includes('GRAPH_MAX_EDGES=48'),'EP graph must publish bounded focus limits');
 assert.ok(ep.includes('focusId')&&ep.includes("edge.from===focusId||edge.to===focusId"),'EP graph must be selected-focus one-hop');
 assert.ok(ep.includes('data-epistemic-graph-focus'),'EP graph must expose focus identity for browser evidence');
 assert.ok(proof.includes("classList.add('proof-fact-strip')")&&proof.includes("proofFacts='non-evaluative'"),'Proof non-score facts must use FactStrip semantics');
-assert.ok(proof.includes("proofReadingOrder='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'"),'Proof must preserve evidence reading order');
+assert.ok(proof.includes("proofReadingOrder='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'"),'Proof must preserve evidence reading order');
 assert.ok(proof.includes('initializeDisclosure(detail,false)')&&!proof.includes('initializeDisclosure(detail,detail===decisions)'),'P2 Proof secondary disclosures must initialize closed');
 assert.ok(proof.includes("initialSecondaryDisclosures='closed'"),'Proof must publish the P2 initial-closed marker');
 assert.ok(proof.includes('function byDomain')&&proof.includes('data-proof-domain="${id}"'),'Proof owner must remain idempotent after it rewrites legacy section labels');

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "profile": "UIUX-EXPERIENCE-P6",
-  "observedMain": "ebba9c7e0bb57077c507a12c8be6e8dd04aae5ae",
+  "observedMain": "b7b29170cb99196e62106222be70f86fdb833d57",
   "classification": "repository-bounded-E2-design-convergence",
   "createsNewAuthority": false,
   "principle": "Converge copy, geometry and palette through existing local owners; do not add a global final resolver.",
@@ -58,16 +58,15 @@
     "rule": "Kind, code and state are each expressed once; no Procedura/Procedura or Azione/Azioni duplication."
   },
   "aiStatus": {
-    "visualMode": "icon-only",
-    "fixedLabel": false,
-    "readyTooltip": "AI disponibile",
-    "unconfiguredTooltip": "AI non configurata · I percorsi manuali restano disponibili",
-    "keyMissingTooltip": "Chiave AI non disponibile · I percorsi manuali restano disponibili",
-    "readyIcon": "sparkles",
-    "unconfiguredIcon": "info",
-    "keyMissingIcon": "triangle-alert",
+    "visualMode": "admin-inline",
+    "shellVisible": false,
+    "readyText": "Configurazione AI operativa",
+    "unconfiguredText": "Configurazione AI non completata",
+    "keyMissingText": "Configurazione AI da verificare",
+    "tooltip": false,
+    "colorVerdict": false,
     "roleVisibleElsewhere": true,
-    "detailRule": "The header projects AI capability as an icon only. Precise state is exposed through tooltip/title and aria-label; active role remains visible in the separate profile control."
+    "detailRule": "The shell does not project AI configuration as a status verdict. Neutral configuration text is owned by Administration > AI; role remains visible in the separate profile control."
   },
   "productProposition": {
     "requiredTerms": [
@@ -234,7 +233,7 @@
         "Keep guided provider setup bounded and simple",
         "Use concise provider/model/credential labels",
         "Put advanced instructions behind disclosure",
-        "Use immediate readiness icon with precise accessible detail",
+        "Expose configuration state as neutral text inside Administration > AI",
         "Never imply provider configuration grants decision authority"
       ]
     }

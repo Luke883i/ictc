@@ -4,7 +4,7 @@ from playwright.sync_api import expect, sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
-PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'
+PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
 PHASE='init'
 
 def fail(error):
@@ -84,7 +84,7 @@ def assert_meaning_first(page):
     for node in [decisions,standards,trace,investigation,reading]:
         expect(node).not_to_have_attribute('open','')
     expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico');expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro');expect(decisions.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità');expect(standards.locator(':scope > summary')).to_contain_text('Riferimenti e basi');expect(reading.locator(':scope > summary b')).to_have_text('Criteri di lettura e sintesi tecnica')
-    expected=['facts','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','interpretation','export'];order=direct_order(page);assert [x for x in order if x in expected]==expected,order
+    expected=['facts','interpretation','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','export'];order=direct_order(page);assert [x for x in order if x in expected]==expected,order
     expect(page.locator('#proofMethodTitle')).to_be_hidden();expect(page.locator('#traceExplorer')).to_be_hidden();expect(investigation.locator('[data-service="epistemic"]')).to_be_hidden()
     min_height(page,'#proofContent > details[data-proof-workspace="epistemic-investigation"] > summary');min_height(page,'#proofContent > details[data-proof-workspace="trace-reconstruction"] > summary');min_height(page,'#proofContent > details[data-proof-domain="decisions"] > summary');min_height(page,'#proofContent > details[data-proof-domain="evidence-basis"] > summary');min_height(page,'#proofContent > details[data-composition-detail="proof-reading"] > summary');no_overflow(page);return reading
 

@@ -51,10 +51,10 @@ for(const token of ['configuration-console','p2-configuration-row','Configuratio
 check(admin.includes("detail.dataset.disclosureInitialized='true'")&&admin.includes('detail.open=false'),'P2_ADMIN_DISCLOSURE');
 check(proof.includes('initializeDisclosure(detail,false)'),'P2_PROOF_CLOSED');
 check(!proof.includes('initializeDisclosure(detail,detail===decisions)'),'P2_PROOF_OLD_DEFAULT_RETIRED');
-for(const cluster of ['decision','reference','evidence','relationship','external','technical'])check(proof.includes(`'${cluster}'`),'P2_PROOF_CLUSTER',cluster);
+for(const cluster of ['decision','reference','evidence','relationship','external','technical','method'])check(proof.includes(`'${cluster}'`),'P2_PROOF_CLUSTER',cluster);
 check(proof.includes("root.dataset.initialSecondaryDisclosures='closed'"),'P2_PROOF_MARKER');
-check(proof.includes("'Riferimenti e basi','Standard, pratiche e basi dichiarate; non sono conclusioni.'"),'P2_REFERENCE_COPY');
-for(const token of ['progressive-knowledge-explorer','find>narrow>explore>select>reconstruct>deepen','data-epistemic-a3="deep-tools"','lens-preset','bounded-inference'])check(epistemic.includes(token),'P2_EP_TRAJECTORY',token);
+check(proof.includes("'Riferimenti e basi','Standard, pratiche e basi dichiarate; orientano la lettura e non costituiscono conclusioni.'"),'P2_REFERENCE_COPY');
+for(const token of ['progressive-knowledge-explorer','find>narrow>result>select>reconstruct>deepen','data-epistemic-a3="deep-tools"','lens-preset','bounded-inference'])check(epistemic.includes(token),'P2_EP_TRAJECTORY',token);
 check(!epistemic.includes("moveInto(detail,root.querySelector('.epistemic-claim-boundary'))"),'P2_EP_BOUNDARY_VISIBLE');
 check(epistemic.includes("boundary.dataset.enduserPrimitive='BoundaryNote'"),'P2_EP_BOUNDARY_PRIMITIVE');
 for(const token of ['--p2-reference-bg','--p2-evidence-bg','--p2-boundary-bg','.p2-attention-strip','.p2-record-row','p2-configuration-row','data-enduser-cluster="reference"','data-enduser-cluster="evidence"','data-epistemic-a3="deep-tools"','@media(prefers-reduced-motion:reduce)','@media(forced-colors:active)'])check(css.includes(token),'P2_CSS',token);
@@ -63,4 +63,4 @@ check(!/::(?:before|after)\s*\{[^}]*content\s*:\s*["'][^"']+["']/s.test(css),'P2
 check(!css.includes('position:fixed'),'P2_NO_FIXED_SURFACE_LAYER');
 check(!css.includes('!important'),'P2_SHARED_PRIMITIVE_NO_IMPORTANT');check(!refined.includes('Postura ICTC')&&!/data-service=\"proof\"[^}]*::after/.test(refined),'P2_RETIRED_PROOF_PSEUDO_COPY');
 if(failures.length){console.error(JSON.stringify({ok:false,suite:'uiux-enduser-composition-p2-check',failures},null,2));process.exit(1);}
-console.log(JSON.stringify({ok:true,suite:'uiux-enduser-composition-p2-check',serialSlice:contract.serialSlice,candidatePass:contract.candidatePass,surfaces:SURFACES.length,procedures:PROCEDURES.length,primitives:PRIMITIVES.length,metricRoles:contract.metricRoles,proofDefault:'all-secondary-closed',epistemicTrajectory:'find>narrow>explore>select>reconstruct>deepen',businessAuthorityChanged:false,sliceTerminal:false,claimBoundary:contract.claimBoundary}));
+console.log(JSON.stringify({ok:true,suite:'uiux-enduser-composition-p2-check',serialSlice:contract.serialSlice,candidatePass:contract.candidatePass,surfaces:SURFACES.length,procedures:PROCEDURES.length,primitives:PRIMITIVES.length,metricRoles:contract.metricRoles,proofDefault:'all-secondary-closed',epistemicTrajectory:'find>narrow>result>select>reconstruct>deepen',businessAuthorityChanged:false,sliceTerminal:false,claimBoundary:contract.claimBoundary}));

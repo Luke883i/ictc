@@ -50,7 +50,7 @@ for (const token of ["demo['suiteVersion']", "'3.0'", "demo['projectionAuthority
 
 assert.ok(browser.includes('wait_canonical_evidence_entry'), 'professional browser must synchronize on the canonical Evidence entry');
 assert.ok(browser.includes('details[data-proof-workspace=\\"epistemic-investigation\\"]') || browser.includes('details[data-proof-workspace="epistemic-investigation"]'), 'professional browser must bind EP-01 to the canonical progressive Evidence disclosure');
-assert.ok(browser.includes("root.dataset.proofReadingOrder===expected") && browser.includes("PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>external>integrity>method>export'"), 'professional browser must require A3 evidence-meaning-first Proof order before entering EP-01');
+assert.ok(browser.includes("root.dataset.proofReadingOrder===expected") && browser.includes("PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'"), 'professional browser must require A3 evidence-meaning-first Proof order before entering EP-01');
 assert.ok(!browser.includes('firstElementChild===entry'), 'professional browser must not restore the retired first-row EP-01 authority');
 assert.match(browser, /#proofView #epistemicMetaCard['"]?\)\.count\(\)\s*==\s*0/, 'professional browser must reject duplicate Proof-local meta entry');
 assert.ok(!browser.includes('#epistemicMetaCard [data-service="epistemic"]'), 'professional browser must not navigate through retired duplicate meta entry');

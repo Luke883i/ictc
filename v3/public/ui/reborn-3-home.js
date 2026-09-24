@@ -220,7 +220,7 @@ function renderRebornHome() {
   ];
   $('#homeMetrics').innerHTML = metrics.map(([value, label, detail]) => `<div class="home-metric"><b>${esc(value)}</b><span>${esc(label)}</span><small>${esc(detail)}</small></div>`).join('');
   const settings = $('#openSettings');
-  if (settings) settings.hidden = role !== 'admin' || (state.service === 'home' && !llm.ready);
+  if (settings) { settings.hidden = true; settings.dataset.legacyControl='admin-ai-entry'; settings.setAttribute('aria-hidden','true'); settings.tabIndex=-1; }
 }
 
 export function installReborn3Experience() {

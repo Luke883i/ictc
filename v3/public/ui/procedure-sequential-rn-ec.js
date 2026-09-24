@@ -2,8 +2,8 @@ import { $, compactList, ensureQueueWindow, ensureSequence } from './procedure-s
 import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from './procedure-editorial-slots.js';
 
 export const RN_EC_EDITORIAL_ORDER=Object.freeze({
-  monitoring:Object.freeze(['reference','attention','controls','primary','advanced-context']),
-  incidents:Object.freeze(['reference','attention','controls','primary','advanced-context'])
+  monitoring:Object.freeze(['reference','metrics','attention','controls','primary','advanced-context']),
+  incidents:Object.freeze(['reference','metrics','attention','controls','primary','advanced-context'])
 });
 const attentionSlotOwner='procedure-sequential-rn-ec.js';
 const OWNER=attentionSlotOwner;
