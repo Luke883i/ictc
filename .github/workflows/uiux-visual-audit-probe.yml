@@ -1,0 +1,54 @@
+name: uiux-visual-audit-probe
+on:
+  push:
+    branches: [agent/uiux-visual-audit-probe-1]
+permissions:
+  contents: read
+concurrency:
+  group: uiux-visual-audit-probe-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  screenshot:
+    name: screenshot-${{ matrix.surface }}
+    strategy:
+      fail-fast: false
+      matrix:
+        surface: [home, processes, monitoring, incidents, objects, coverage, actions, risks, assurance, proof, epistemic, admin-overview, admin-ai, admin-identity]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.12'}
+      - run: npm ci --ignore-scripts
+      - run: python -m pip install --disable-pip-version-check playwright==1.57.0 pillow==11.3.0
+      - name: Resolve system Chromium
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          browser=''
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$(command -v "$candidate")"; break; fi
+          done
+          test -n "$browser" && test -x "$browser"
+          echo "ICTC_CHROMIUM=$browser" >> "$GITHUB_ENV"
+      - name: Capture exact-head full-page screenshot as bounded annotation chunks
+        shell: bash
+        env:
+          ICTC_NO_OPEN: '1'
+          ICTC_PORT: '4841'
+          PORT: '4841'
+          ICTC_BASE_URL: http://127.0.0.1:4841
+          ICTC_STATE_DIR: ${{ runner.temp }}/ictc-visual-state
+          ICTC_RUNTIME_DIR: ${{ runner.temp }}/ictc-visual-runtime
+          ICTC_SCHEDULER_TICK_MS: '100000'
+        run: |
+          set -Eeuo pipefail
+          ./ictc.sh start --profile current --no-open
+          trap './ictc.sh stop --profile current || true' EXIT
+          python -u v3/browser-uiux-visual-audit-probe.py "${{ matrix.surface }}"
