@@ -127,12 +127,9 @@ function registryWrap(host,{id,label,process,count,open=false}){
     let countGroup=summary.querySelector('[data-a6-registry-count-group]');
     if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0 di 0</b>';summary.append(countGroup);}
   }
-  const nextTotal=Number(count||0);
-  if(details.dataset.a6RegistryDefaultApplied!=='true'){
-    if(!open){details.open=false;details.dataset.a6RegistryDefaultApplied='true';}
-    else if(nextTotal>0){details.open=true;details.dataset.a6RegistryDefaultApplied='true';}
-    else details.open=false;
-  }
+  const previousTotal=Number(details.dataset.a6RegistryTotal||0),nextTotal=Number(count||0);
+  if(details.dataset.a6RegistryDefaultApplied!=='true'&&!open){details.open=false;details.dataset.a6RegistryDefaultApplied='true';}
+  if(open&&nextTotal>0&&previousTotal===0){details.open=true;details.dataset.a6RegistryDefaultApplied='true';}
   details.dataset.a6RegistryTotal=String(nextTotal);
   const countNode=details.querySelector('[data-a6-registry-count]');if(countNode)countNode.textContent=`${nextTotal} di ${nextTotal}`;
   return details;
