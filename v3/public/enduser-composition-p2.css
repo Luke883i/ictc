@@ -350,3 +350,9 @@ html[data-enduser-composition="p2"] #runtimeStatus[data-information-role="config
 html[data-enduser-composition="p2"] #grcWorkspace[data-enduser-composition="P2"] .grc-body>.grc-kpis,
 html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] .market-standard-kpis{display:none}
 html[data-enduser-composition="p2"] #adminCenter .admin-configuration-state{margin:.45rem 0 0;max-width:var(--ui-reading-wide);color:var(--color-muted);font-size:var(--type-caption);line-height:1.45}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"]{display:block;position:static;inset:auto;width:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;box-shadow:none;color:inherit}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"]::backdrop{display:none}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] .dialog-shell{width:100%;max-width:none;max-height:none;margin:0;border:0;box-shadow:none;background:var(--color-surface)}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] #settingsForm{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] #settingsForm>.settings-18{display:grid!important;visibility:visible!important;opacity:1!important;min-height:0;overflow:visible!important;gap:8px!important}
+html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] [data-settings-section]{display:block!important;visibility:visible!important;opacity:1!important}
