@@ -12,6 +12,23 @@ export const ICTC_MANIFEST=Object.freeze({
 
 export const COMMON_COMPLIANCE_METHOD=Object.freeze(['Obblighi applicabili','Rischio e impatto','Controlli e azioni','Responsabilità','Evidenze','Limiti e riesame']);
 
+export const HOMEBOARDING=Object.freeze({
+  title:'Capire ICTC in pochi minuti',
+  lead:'La compliance diventa gestibile quando norme diverse, complessità aziendale, decisioni, responsabilità ed evidenze restano distinte ma collegate.',
+  chain:Object.freeze([
+    Object.freeze({id:'orthogonal-rules',step:'1',title:'Le norme non si sostituiscono tra loro',text:'La stessa attività può essere toccata da privacy, cybersecurity, settore, contratti o regole interne per ragioni diverse. Una fonte non annulla le altre.'}),
+    Object.freeze({id:'enterprise-complexity',step:'2',title:'L’applicabilità dipende anche dal contesto reale',text:'Sistemi, dati, fornitori, processi, ruoli, paesi e servizi creano intersezioni diverse. Per questo una checklist unica non descrive da sola il perimetro.'}),
+    Object.freeze({id:'standard-method',step:'3',title:'Leggi, standard e framework fanno lavori diversi',text:'Una legge può creare obblighi; uno standard struttura pratiche e controlli; un framework aiuta a organizzare il metodo. Riferimento, mapping e conformità restano concetti distinti.'}),
+    Object.freeze({id:'canonical-objects',step:'4',title:'Serve un insieme stabile di oggetti e decisioni',text:'La stessa organizzazione non dovrebbe ricreare sistemi, rischi, azioni e controlli per ogni norma. ICTC riusa oggetti governati e conserva chi decide, perché e su quale base.'}),
+    Object.freeze({id:'evidence-chain',step:'5',title:'Ogni decisione utile deve poter essere ricostruita',text:'Obbligo o requisito → oggetto e contesto → rischio o impatto → controllo o azione → responsabile → evidenza → limite e riesame.'})
+  ]),
+  failureModes:Object.freeze([
+    Object.freeze({id:'bad-fragmented-compliance',level:'bad',title:'Scenario BAD · checklist separate',chain:Object.freeze(['stesso oggetto duplicato per più norme','responsabilità divergenti','controlli ripetuti','evidenze incoerenti','lavoro ridondante']),claimBoundary:'Scenario didattico: descrive un failure mode possibile, non un fatto osservato.'}),
+    Object.freeze({id:'worst-untraceable-decisions',level:'worst',title:'Scenario WORST · decisioni non ricostruibili',chain:Object.freeze(['fonte senza contesto','decisione senza proprietario','azione senza verifica','evidenza senza provenienza','stato finale non falsificabile']),claimBoundary:'Scenario didattico: non è una previsione, una conclusione legale o una prova di non conformità.'})
+  ]),
+  boundary:'Il percorso spiega un metodo operativo. Non determina automaticamente applicabilità normativa, conformità, certificazione, efficacia dei controlli o responsabilità legale.'
+});
+
 export const SURFACE_INFORMATION=Object.freeze({
   home:Object.freeze({purpose:'Individua il lavoro aperto e la prossima decisione.',why:'Il lavoro è governabile quando responsabilità, decisioni ed evidenze restano collegate.',evidence:'Code operative, ruoli, decisioni e stato corrente.',boundary:'Le metriche orientano il lavoro; non misurano conformità o applicabilità.'}),
   processes:Object.freeze({purpose:'Scegli il processo coerente con l’oggetto del lavoro.',why:'Ogni processo collega una decisione umana a stato ed evidenza.',evidence:'Processo, stato, decisioni e tracce collegate.',boundary:'La scelta del processo organizza il lavoro; non decide la conformità.'}),
