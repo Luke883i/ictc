@@ -374,3 +374,17 @@ html[data-enduser-composition="p2"] .epistemic-level-nav{display:flex;align-item
 html[data-enduser-composition="p2"] .epistemic-level-nav>[aria-current="step"]{font-weight:var(--weight-label);color:var(--color-text)}
 html[data-enduser-composition="p2"] .epistemic-lens-diagnostics{margin:.1rem 0;color:var(--color-muted);font-size:var(--type-caption);line-height:1.45}
 @media(max-width:719px){html[data-enduser-composition="p2"] .epistemic-toolbar{grid-template-columns:1fr;align-items:stretch}html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-a3-detail{width:100%}html[data-enduser-composition="p2"] .market-ai-link-toggle{white-space:normal}}
+
+/* EP-ADMIN-LANDING-1: mature first-plane orientation without authority merging. */
+html[data-enduser-composition="p2"] :is(.epistemic-first-plane,.admin-first-plane){
+  margin:.35rem 0 .7rem;padding:.7rem .8rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface);
+}
+html[data-enduser-composition="p2"] :is(.epistemic-first-plane,.admin-first-plane)>header{display:grid;gap:.15rem;margin-bottom:.55rem}
+html[data-enduser-composition="p2"] :is(.epistemic-first-plane,.admin-first-plane)>header :is(h2,p){margin:0;max-width:var(--ui-reading-wide)}
+html[data-enduser-composition="p2"] .epistemic-first-plane>ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin:0;padding:0;list-style:none}
+html[data-enduser-composition="p2"] .epistemic-first-plane>ol>li,
+html[data-enduser-composition="p2"] .admin-first-plane-rows>[data-enduser-primitive="ConfigurationRow"]{display:grid;gap:.12rem;min-width:0;padding:.48rem .55rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+html[data-enduser-composition="p2"] .epistemic-first-plane>ol span,
+html[data-enduser-composition="p2"] .admin-first-plane-rows span{font-size:var(--type-caption);line-height:1.4;color:var(--color-muted)}
+html[data-enduser-composition="p2"] .admin-first-plane-rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+@media(max-width:719px){html[data-enduser-composition="p2"] .epistemic-first-plane>ol,html[data-enduser-composition="p2"] .admin-first-plane-rows{grid-template-columns:1fr}}

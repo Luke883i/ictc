@@ -11,7 +11,7 @@ assert.ok(standard.includes("scopeButton.classList.add('primary')"),'MC scope de
 assert.ok(standard.includes("button.primary:not([data-standard-scope])"),'MC card must retire competing primary intents');
 assert.ok(browser.includes('secondary standard-browser-open'),'open-reference action must remain secondary');assert.ok(browser.includes('data-standard-document-model="word-like"')&&browser.includes('documentSections()')&&browser.includes('data-standard-wordlike-page'),'Standard Browser must render the canonical knowledge-pack document model');
 assert.ok(epOwner.includes("epistemicTechnicalModes='progressive'")&&epOwner.includes('Filtri avanzati')&&epOwner.includes('Viste tecniche'),'EP technical/filter controls must be progressive');
-assert.ok(epOwner.includes('toolbar.prepend(group)'),'EP search/filter group must be frontstage before mode controls');
+assert.ok(epOwner.includes('toolbar.prepend(group)'),'EP search/filter group must be frontstage before mode controls');assert.ok(epOwner.includes('data-epistemic-first-plane="knowledge-explorer"')&&epOwner.includes("epistemicAuthority='read-explore-only'")&&epOwner.includes("epistemicWriteAuthority='none'"),'EP landing must expose one typed knowledge-explorer first plane without write authority');
 assert.ok(epOwner.includes('data-epistemic-a3="deep-tools"')&&epOwner.includes('find>narrow>result>select>reconstruct>deepen'),'EP professional/inference tools must be subordinate to the P2 progressive trajectory');
 assert.ok(!epOwner.includes("moveInto(detail,root.querySelector('.epistemic-claim-boundary'))"),'EP material claim boundary must remain visible');
 assert.ok(!epOwner.includes("removeAttribute('open')"),'EP owner must preserve disclosure state after initialization');

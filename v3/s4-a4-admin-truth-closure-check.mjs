@@ -18,3 +18,7 @@ assert.ok(admin.includes("$('#openAdminCenter')?.addEventListener('click',()=>op
 assert.ok(!admin.includes('history.pushState')&&!admin.includes('history.replaceState')&&!admin.includes('popstate'),'A4 must not mint a router for modal-local Admin');
 assert.ok(!admin.includes('MutationObserver'),'A4 must not add late DOM authority');
 console.log(JSON.stringify({ok:true,slice:'S4-A4',authority:'source-contract',checks:['4 independent Admin read slices','dialog opens before reads settle','single endpoint failure cannot deny whole Admin','localized retry/error boundary','latest-wins retry race','targeted dependent refresh after writes','modal-local routeability explicit','no new router or MutationObserver'],claimBoundary:'Source-contract evidence only; actual browser failure injection remains separate.'}));
+
+const admin32=read('./public/ui/admin-workspace-3-2.js');
+assert.ok(admin32.includes('data-admin-first-plane="configuration-console"')&&admin32.includes("adminAuthority='configuration-only'"),'Admin landing must expose one typed configuration first plane');
+assert.ok(admin32.includes("adminEpistemicAuthority='none'")&&admin32.includes("adminWriteAuthority='server-routes-only'"),'Admin must not inherit epistemic authority or mint a browser write authority');
