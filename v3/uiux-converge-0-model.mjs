@@ -1,3 +1,5 @@
+import { PROJECTED_OBJECT_TYPES, SURFACE_OBJECT_TYPE_PROFILE } from './public/ui/native-semantic-lattice-3-2.js';
+
 export const CANONICAL_SURFACES=Object.freeze(['home','processes','monitoring','incidents','objects','coverage','actions','risks','assurance','admin','epistemic','proof','ai-settings']);
 export const CANONICAL_PROCEDURES=Object.freeze(['monitoring','incidents','objects','coverage','actions','risks','assurance']);
 export const EXPECTED_OWNERS=Object.freeze({
@@ -6,6 +8,7 @@ export const EXPECTED_OWNERS=Object.freeze({
   admin:'admin-workspace-3-2.js',epistemic:'epistemic-workspace-3-2.js',proof:'proof-workspace-3-2.js','ai-settings':'actions.js/admin'
 });
 const PROCEDURE_SET=new Set(CANONICAL_PROCEDURES);
+export const CANONICAL_OBJECT_TYPE_PROFILE=SURFACE_OBJECT_TYPE_PROFILE;
 const sameSet=(a,b)=>Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&new Set(a).size===a.length&&a.every(value=>b.includes(value));
 const fail=(errors,id,detail)=>errors.push(`${id}:${detail}`);
 
@@ -26,6 +29,7 @@ export function validateUiuxConvergeContract(model){
     if(PROCEDURE_SET.has(row.id)&&row.kind!=='procedure')fail(errors,'PROCEDURE_KIND',row.id);
     if(PROCEDURE_SET.has(row.id)&&!String(row.workUnit||'').startsWith('UXW-0')&&!String(row.workUnit||'').startsWith('UXW-10'))fail(errors,'WORK_UNIT',row.id);
   }
+  for(const id of CANONICAL_SURFACES){const profile=CANONICAL_OBJECT_TYPE_PROFILE[id];if(!Array.isArray(profile)||!profile.length)fail(errors,'OBJECT_PROFILE',`${id} missing profile`);for(const role of profile||[])if(!PROJECTED_OBJECT_TYPES[role])fail(errors,'OBJECT_ROLE',`${id}:${role}`);}
   const metrics=model?.styleMetrics||{};
   if(Number(metrics.desktopCompactRowTargetPx)>Number(metrics.desktopCompactRowMaxPx))fail(errors,'DENSITY','row target exceeds max');
   if(Number(metrics.desktopCompactRowMaxPx)>64)fail(errors,'DENSITY','row max exceeds 64px');
@@ -84,7 +88,10 @@ export function makeBaselineState(model){
     mappingNotConformity:true,
     completedNotVerified:true,
     ratingNotProbability:true,
-    internalApprovalNotIndependentAssurance:true
+    internalApprovalNotIndependentAssurance:true,
+    projectedObjectProfiles:Object.fromEntries(CANONICAL_SURFACES.map(id=>[id,[...CANONICAL_OBJECT_TYPE_PROFILE[id]]])),
+    projectedObjectRoles:Object.keys(PROJECTED_OBJECT_TYPES),
+    legacyPresentationRetired:true
   };
 }
 
@@ -115,5 +122,8 @@ export function validateSemanticState(state){
   if(Number(state.descriptionWeightMax)>500)fail(errors,'TYPE','description too bold');
   if(Number(state.motionMax)>240)fail(errors,'MOTION','motion too slow');
   for(const invariant of ['humanAuthority','evidenceNotConclusion','mappingNotConformity','completedNotVerified','ratingNotProbability','internalApprovalNotIndependentAssurance'])if(state[invariant]!==true)fail(errors,'EPISTEMIC',invariant);
+  if(state.legacyPresentationRetired!==true)fail(errors,'OBJECT_TYPE','legacy presentation not retired');
+  if(!Array.isArray(state.projectedObjectRoles)||state.projectedObjectRoles.length!==Object.keys(PROJECTED_OBJECT_TYPES).length)fail(errors,'OBJECT_TYPE','role lattice drift');
+  for(const id of CANONICAL_SURFACES){const profile=state.projectedObjectProfiles?.[id]||[];if(profile.join('|')!==(CANONICAL_OBJECT_TYPE_PROFILE[id]||[]).join('|'))fail(errors,'OBJECT_PROFILE',id);}
   return {ok:errors.length===0,errors};
 }
