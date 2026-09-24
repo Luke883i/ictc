@@ -160,7 +160,7 @@ const FAMILIES=[
   ['context-before-reference',x=>{x.order=['advanced-context','reference','metrics','attention','controls','primary'];}],
   ['primary-missing',x=>{x.order=x.order.filter(v=>v!=='primary');}],
   ['attention-after-primary',x=>{x.order=['controls','primary','attention','advanced-context','reference','metrics'];}],
-  ['duplicate-primary-slot',x=>{x.order.push('primary');}],
+  ['duplicate-primary-slot',x=>{x.order=['reference','advanced-context','metrics','attention','controls','primary','primary'];}],
   ['support-not-adjacent-to-reference',x=>{x.supportAfterReference=false;}],
   ['support-open-default',x=>{x.supportClosed=false;}],
   ['legacy-sibling-before-first-control',x=>{x.firstRoleAdjacent=false;}],
