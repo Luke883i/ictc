@@ -3,13 +3,21 @@ import path from 'node:path';
 
 export const SEED_PREPR_REQUIRED_FIELDS=Object.freeze(['id','intent','property','owners','requires','falsifier','done']);
 const SEED_IDS=Object.freeze(['UI-OBJECT-TYPE-COMPRESSION-1','DEMO-TRUTH-METADATA-1','STANDARD-KNOWLEDGE-PACK-UX-1','EP-ADMIN-LANDING-1','HOMEBOARDING-1']);
-const SPECIFIC=Object.freeze({
+const PROPERTY_TOKENS=Object.freeze({
   'UI-OBJECT-TYPE-COMPRESSION-1':['primitive','deprecazione','ontologie parallele'],
-  'DEMO-TRUTH-METADATA-1':['meccanicamente','l0-l5','hand-authored'],
-  'STANDARD-KNOWLEDGE-PACK-UX-1':['word-like','provenance','ricostruzione inventata'],
+  'DEMO-TRUTH-METADATA-1':['l0-l5','derivata meccanicamente','hand-authored'],
+  'STANDARD-KNOWLEDGE-PACK-UX-1':['word-like','provenance/version/digest','ricostruzione inventata'],
   'EP-ADMIN-LANDING-1':['knowledge explorer','configuration console','writer'],
   'HOMEBOARDING-1':['norme ortogonali','bad e worst scenario','comprensione operativa']
 });
+const REQUIRED_OWNERS=Object.freeze({
+  'UI-OBJECT-TYPE-COMPRESSION-1':['v3/information-density-model.mjs','v3/uiux-converge-0-model.mjs','v3/public/ui/native-semantic-lattice-3-2.js'],
+  'DEMO-TRUTH-METADATA-1':['v3/runtime/demo-suite-3-0.mjs'],
+  'STANDARD-KNOWLEDGE-PACK-UX-1':['v3/runtime/standard-library-handler.mjs','v3/runtime/standard-public-source-pack.mjs','v3/public/ui/standard-browser.js','v3/standards/standard-catalog-1-2.json','v3/public/ui/procedure-market-ux.js'],
+  'EP-ADMIN-LANDING-1':['v3/public/ui/epistemic-workspace-3-2.js','v3/public/ui/admin-workspace-3-2.js','v3/public/enduser-composition-p2.css'],
+  'HOMEBOARDING-1':['v3/public/ui/stable-shell.js','v3/public/ui/product-copy.js']
+});
+const OWNER_ALLOWLIST=new Set(Object.values(REQUIRED_OWNERS).flat());
 const uniq=a=>new Set(a).size===a.length;
 function cycle(seeds){
   const byId=new Map(seeds.map(s=>[s.id,s])),visiting=new Set(),done=new Set();
@@ -39,8 +47,11 @@ export function validateSeedPrePrContract(contract,{root=process.cwd(),checkFile
     if(!Array.isArray(seed.falsifier?.nearest)||seed.falsifier.nearest.length<2||seed.falsifier.semanticTrials!==contract.semanticMutationBudget)fail('falsifier',seed.id);
     const done=seed.done||{};
     if(done.runtimeReadback!==true||done.exactHead!==true||done.postMergeMain!==true||typeof done.claimBoundary!=='string'||done.claimBoundary.length<50)fail('done',seed.id);
-    const semantic=(seed.intent+' '+seed.property+' '+done.claimBoundary).toLocaleLowerCase('it-IT');
-    for(const token of SPECIFIC[seed.id]||[])if(!semantic.includes(token.toLocaleLowerCase('it-IT')))fail('semantic-obligation',seed.id+':'+token);
+    const property=String(seed.property||'').toLocaleLowerCase('it-IT');
+    for(const token of PROPERTY_TOKENS[seed.id]||[])if(!property.includes(token.toLocaleLowerCase('it-IT')))fail('property-obligation',seed.id+':'+token);
+    const requiredOwners=REQUIRED_OWNERS[seed.id]||[];
+    if(JSON.stringify(seed.owners)!==JSON.stringify(requiredOwners))fail('owner-set',seed.id);
+    for(const owner of seed.owners||[])if(!OWNER_ALLOWLIST.has(owner))fail('owner-not-canonical',seed.id+':'+owner);
     if(checkFiles){
       for(const owner of seed.owners){if(owner.startsWith('docs/'))fail('runtime-owner-doc',seed.id+':'+owner);if(!existsSync(path.join(root,owner)))fail('owner-missing',seed.id+':'+owner);}
       for(const gate of seed.falsifier.nearest)if(!existsSync(path.join(root,gate)))fail('falsifier-missing',seed.id+':'+gate);
