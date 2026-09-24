@@ -36,7 +36,7 @@ function sourceLaws(s){
     nativeQueueOwner:s.rn.includes("ensureQueueWindow($('#missionsList')")&&s.rn.includes("ensureQueueWindow($('#incidentList')")&&!s.rn.includes('compactList('),
     queueCountOwner:s.seq.includes("registryCount.textContent=\`\${shown} di \${matching.length}\`")&&s.seq.includes("tools.dataset.enduserPrimitive='ControlRail'"),
     noLegacyLocalFilter:!s.operational.includes("ensureFilter(details,{id:'monitoring'")&&!s.operational.includes("ensureFilter(details,{id:'incidents'"),
-    singleRegistryCount:s.operational.includes('data-a6-registry-count>0 di 0')&&!s.operational.includes('data-a6-registry-total'),
+    singleRegistryCount:s.operational.includes('data-a6-registry-count>0 di 0')&&!s.operational.includes('<span data-a6-registry-total'),
     monitoringSecondary:s.operational.includes("id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:false"),
     incidentRowGrammar:s.operational.includes("card.classList.add('p2-record-row')")&&s.operational.includes("card.dataset.recordGrammar='row-list'"),
     localScopeRetired:s.semantic.includes("const LOCAL_NATIVE_SCOPE=new Set(['monitoring','incidents'])")&&s.semantic.includes('retireLocalScope(root,id)')&&s.semantic.includes("!LOCAL_NATIVE_SCOPE.has(id)"),
@@ -45,7 +45,7 @@ function sourceLaws(s){
     contextBusinessLabel:s.anatomy.includes('Contesto e pratiche applicate')&&!s.anatomy.includes('Contesto e tracciabilità'),
     processStartsAtTop:s.grcBase.includes('function resetProcessStart()')&&s.grcBase.includes('queueMicrotask(resetProcessStart)'),
     proofPeerTypography:s.p2.includes('#proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary b{font-size:1rem')&&!s.p2.includes('details[data-proof-workspace="interpretation"][data-proof-visual-grammar="peer-section"]>summary b'),
-    epistemicOneSummary:s.ep.includes('Vista r\${from}–r\${to}')&&!s.ep.includes('<b>\${Number(p.totalSteps||0)}</b> step'),
+    epistemicOneSummary:s.ep.includes('Vista r\${from}–r\${to}')&&!s.ep.slice(s.ep.indexOf('function summaryMarkup(){'),s.ep.indexOf('function selectedAtom(){')).includes('totalSteps'),
     epistemicBreadcrumb:s.ep.includes('aria-label="Percorso di esplorazione"')&&s.ep.includes('← \${labels[parent]}'),
     epistemicBusinessLabels:s.epLens.includes('function procedureName(id)')&&s.epLens.includes('procedureName(atom.procedureId'),
     cognitiveOrder:s.product.includes('"procedures":{"order":["procedure-identity","reference-and-context","primary-work","bounded-attention","primary-register"]')
