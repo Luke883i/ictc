@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "SEED-PREPR-1",
+  "classification": "repository-bounded-intent-seed-input-not-authority",
+  "serialSlice": false,
+  "semanticMutationBudget": 1000000,
+  "rules": {
+    "authority": "input-only",
+    "onePropertyPerSeed": true,
+    "existingOwnersOnly": true,
+    "dependencyGraph": "acyclic",
+    "newOwnerRequiresSeedSplit": true,
+    "acceptance": "runtime-readback + exact-head-green + post-merge-main-green",
+    "externalEvidenceCannotBeSynthesized": true
+  },
+  "seeds": [
+    {
+      "id": "UI-OBJECT-TYPE-COMPRESSION-1",
+      "intent": "Tipizzare gli oggetti proiettati nella UI/UX e ridurre varianti, duplicazioni e legacy senza perdere informazione, evidenza o autorita.",
+      "property": "oggetti proiettati eterogenei → classificazione nelle primitive/archetipi canonici esistenti + matrice riuso/deprecazione → una grammatica minima riusabile senza ontologie parallele",
+      "owners": [
+        "v3/information-density-model.mjs",
+        "v3/uiux-converge-0-model.mjs",
+        "v3/public/ui/native-semantic-lattice-3-2.js"
+      ],
+      "requires": [],
+      "falsifier": {
+        "nearest": [
+          "v3/surface-primitives-check.mjs",
+          "v3/uiux-converge-0-style-saturation.mjs",
+          "v3/uiux-ontology-closure-saturation-10m.mjs"
+        ],
+        "semanticTrials": 1000000
+      },
+      "done": {
+        "runtimeReadback": true,
+        "exactHead": true,
+        "postMergeMain": true,
+        "claimBoundary": "Compressione della rappresentazione UI/UX; non modifica business authority, decision authority, evidence truth o access authority."
+      }
+    },
+    {
+      "id": "DEMO-TRUTH-METADATA-1",
+      "intent": "Rendere i dati DEMO una sola verita end-to-end e generare meccanicamente metadati digeribili per shell, liste, dettagli, provenienza e vista tecnica.",
+      "property": "record DEMO canonico + provenance → metadata projection L0-L5 derivata meccanicamente → ogni superficie legge gli stessi fatti senza copy o metadati paralleli hand-authored",
+      "owners": [
+        "v3/runtime/demo-suite-3-0.mjs"
+      ],
+      "requires": [
+        "UI-OBJECT-TYPE-COMPRESSION-1"
+      ],
+      "falsifier": {
+        "nearest": [
+          "v3/demo-suite-3-0-ui-check.mjs",
+          "v3/demo-suite-3-0-lattice-check.mjs",
+          "v3/demo-suite-3-0-cutover-mutation-1m.mjs"
+        ],
+        "semanticTrials": 1000000
+      },
+      "done": {
+        "runtimeReadback": true,
+        "exactHead": true,
+        "postMergeMain": true,
+        "claimBoundary": "Dataset sintetico coerente e metadata-derived non equivalgono a fatti reali, conformita, applicabilita, efficacia di controllo o assurance indipendente."
+      }
+    },
+    {
+      "id": "STANDARD-KNOWLEDGE-PACK-UX-1",
+      "intent": "Creare e usare un knowledge pack versionato per leggi e standard e renderlo nel browser Standard con una UX documentale word-like, preservando origine, diritti e confini del contenuto.",
+      "property": "catalogo + pack pubblico/licenziato con provenance/version/digest → modello documentale gerarchico unico → lettura word-like di sezioni/requisiti con origine esplicita e nessuna ricostruzione inventata del testo normativo",
+      "owners": [
+        "v3/runtime/standard-library-handler.mjs",
+        "v3/runtime/standard-public-source-pack.mjs",
+        "v3/public/ui/standard-browser.js",
+        "v3/standards/standard-catalog-1-2.json",
+        "v3/public/ui/procedure-market-ux.js"
+      ],
+      "requires": [
+        "UI-OBJECT-TYPE-COMPRESSION-1"
+      ],
+      "falsifier": {
+        "nearest": [
+          "v3/standard-library-check.mjs",
+          "v3/standard-public-source-pack-check.mjs",
+          "v3/s4-a3-specialized-local-closure-check.mjs"
+        ],
+        "semanticTrials": 1000000
+      },
+      "done": {
+        "runtimeReadback": true,
+        "exactHead": true,
+        "postMergeMain": true,
+        "claimBoundary": "Metadata, indici neutrali e contenuti autorizzati restano distinti; mapping e lettura non implicano applicabilita, equivalenza, certificazione o conformita."
+      }
+    },
+    {
+      "id": "EP-ADMIN-LANDING-1",
+      "intent": "Rendere Reticolo epistemico e Amministrazione due landing mature, facilmente intellegibili e coerenti con la grammatica UI/UX, mantenendo separati knowledge exploration e configuration authority.",
+      "property": "EP/Admin tecnici e multi-piano → first-plane end-user tipizzato + progressive technical detail → EP resta knowledge explorer e Admin resta configuration console senza owner, writer o tassonomie condivise artificialmente",
+      "owners": [
+        "v3/public/ui/epistemic-workspace-3-2.js",
+        "v3/public/ui/admin-workspace-3-2.js",
+        "v3/public/enduser-composition-p2.css"
+      ],
+      "requires": [
+        "UI-OBJECT-TYPE-COMPRESSION-1"
+      ],
+      "falsifier": {
+        "nearest": [
+          "v3/s4-a3-specialized-local-closure-check.mjs",
+          "v3/s4-a4-admin-truth-closure-check.mjs",
+          "v3/uiux-experience-p6-saturation-10m.mjs"
+        ],
+        "semanticTrials": 1000000
+      },
+      "done": {
+        "runtimeReadback": true,
+        "exactHead": true,
+        "postMergeMain": true,
+        "claimBoundary": "Migliora information architecture e progressive disclosure; non fonde epistemic authority, admin authority, AI authority o business write authority."
+      }
+    },
+    {
+      "id": "HOMEBOARDING-1",
+      "intent": "Creare nella Home un percorso formativo progressivo che renda comprensibile perche la compliance non e una checklist e perche norme, complessita aziendale, metodi, decisioni ed evidenze devono restare distinti ma collegati.",
+      "property": "utente nuovo → percorso breve norme ortogonali → complessita organizzativa → metodo standard → decisione/evidenza/limite → bad e worst scenario riusati dal DEMO → comprensione operativa prima dell ingresso nei processi",
+      "owners": [
+        "v3/public/ui/stable-shell.js",
+        "v3/public/ui/product-copy.js"
+      ],
+      "requires": [
+        "UI-OBJECT-TYPE-COMPRESSION-1",
+        "DEMO-TRUTH-METADATA-1",
+        "STANDARD-KNOWLEDGE-PACK-UX-1"
+      ],
+      "falsifier": {
+        "nearest": [
+          "v3/v1-stable-ui-contract-check.mjs",
+          "v3/surface-primitives-check.mjs",
+          "v3/uiux-experience-p6-saturation-10m.mjs"
+        ],
+        "semanticTrials": 1000000
+      },
+      "done": {
+        "runtimeReadback": true,
+        "exactHead": true,
+        "postMergeMain": true,
+        "claimBoundary": "Contenuti formativi e scenari sintetici spiegano il metodo e i failure mode; non sono consulenza legale, determinazione di applicabilita o prova di conformita."
+      }
+    }
+  ]
+}
