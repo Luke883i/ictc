@@ -48,6 +48,15 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  if not purpose:anomaly('process-purpose-missing',role,vp,proc['code'],purpose,'non-empty canonical process purpose')
  if frame.locator('.procedure-purpose').count() and frame.locator('.procedure-purpose').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')<12:anomaly('process-purpose-too-small',role,vp,proc['code'],frame.locator('.procedure-purpose').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)'),'>=12px')
  if frame.locator('.procedure-primary').count() and frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height')<43.5:anomaly('process-primary-target-too-small',role,vp,proc['code'],frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height'),'>=44px')
+ orientation=frame.locator('.procedure-orientation-token')
+ if orientation.count()!=2:anomaly('orientation-token-count',role,vp,proc['code'],orientation.count(),2)
+ elif width>=768:
+  token=orientation.first;trigger=token.locator(':scope > .procedure-orientation-trigger')
+  try:
+   expect(token).not_to_have_attribute('open','')
+   trigger.hover();expect(token).to_have_attribute('open','');page.mouse.move(width-2,2);page.wait_for_timeout(120);expect(token).not_to_have_attribute('open','')
+   trigger.focus();expect(token).to_have_attribute('open','');page.keyboard.press('Escape');expect(token).not_to_have_attribute('open','')
+  except Exception as e:anomaly('orientation-transient-disclosure',role,vp,proc['code'],str(e),'hover/focus opens; leave/Escape closes without click')
  if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I):anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:6]!=['reference','metrics','attention','controls','primary','advanced-context']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','metrics','attention','controls','primary','advanced-context'])
@@ -122,6 +131,11 @@ def audit_proof(page,role,vp,width):
   if methods!=expected_methods:anomaly('evidence-proof-method-count',role,vp,'proof',methods,expected_methods)
   mappings=page.locator('#proofBenchmarkMappings .proof-mapping');expected_maps=len(data.get('benchmarkFamilies',[]))
   if mappings.count()!=expected_maps:anomaly('evidence-benchmark-count',role,vp,'proof',mappings.count(),expected_maps)
+  guide=reading.locator('.proof-reading-grid[data-proof-reading-guide="five-aspects"]');aspects=guide.locator(':scope > [data-proof-reading-aspect]')
+  expected_aspects=['observed','limits','states','provenance','external'];actual_aspects=aspects.evaluate_all("ns=>ns.map(n=>n.dataset.proofReadingAspect)") if guide.count()==1 else []
+  if actual_aspects!=expected_aspects:anomaly('evidence-reading-guide-aspects',role,vp,'proof',actual_aspects,expected_aspects)
+  title_size=reading.locator(':scope > summary b').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')
+  if title_size<16:anomaly('evidence-reading-guide-title-size',role,vp,'proof',title_size,'>=16px')
   reading.locator(':scope > summary').click()
  text=page.locator('#proofView').inner_text()
  if re.search(r'\b\d+(?:[.,]\d+)?\s*%',text):anomaly('evidence-percentage-verdict',role,vp,'proof',re.findall(r'\b\d+(?:[.,]\d+)?\s*%',text),'no compliance/certainty percentage')
