@@ -27,7 +27,7 @@ Every operational surface MUST let a typical user answer, without consulting a s
 - Exactly **one visible operational collection** when every S1/A1 actionable typed target binds to a native record.
 - Any partial/unresolved binding **fails closed** to the canonical visible worklist; compression may never hide work.
 - One local search/filter grammar; no second `Da fare` toolbar and no `Mostra altri elementi` disclosure as a competing work surface.
-- Native collection defaults to **Azioni correnti** and offers **Tutti gli elementi** in the same toolbar.
+- A local collection has exactly one search/state/window owner. RN-01 and EC-01 use their native local toolbar; GRC collections may expose actionable/all scope where that distinction is native to the workspace.
 - Terminal/quiescent records are not the default work queue but remain discoverable.
 - Navigation/inspection is visually and semantically weaker than write/decision actions.
 - Status presentation never collapses lifecycle, epistemic state, organizational use, applicability, and mapping into one badge.
@@ -65,7 +65,7 @@ Every operational surface MUST let a typical user answer, without consulting a s
 
 **Canonical purpose.** Observe sources/materials, verify source truth, plan monitoring and distinguish source observation from impact assessment.
 
-**Minimum UI.** The native source/monitoring collection is the work surface. `Materiali in ingresso` is not a width-stealing parallel aside when the contribution entry already owns intake; source work receives the full available width. The single toolbar combines native search/state filters with `Vista: Azioni correnti | Tutti gli elementi`.
+**Minimum UI.** Sources and scheduled monitoring are distinct native collections. Source work receives the full available width and keeps one canonical title/authority/state search row. `Monitoraggi` is secondary and closed by default; its own row owns search, state, `x di y` and bounded `Mostra altri N`. No additional `Vista: Azioni correnti | Tutti gli elementi` control is mounted over RN-01.
 
 **Epistemic boundaries.** Source existence, source verification and downstream impact are separate axes. A source being present does not mean it has been verified or that an organizational impact has been decided.
 
@@ -77,7 +77,7 @@ Every operational surface MUST let a typical user answer, without consulting a s
 
 **Canonical purpose.** Register and work events while keeping registration, qualification, investigation and any external-notification decision distinct.
 
-**Minimum UI.** One `Eventi registrati` heading/count, one local filter toolbar, one native event collection, actionable by default with all events revealable through the same scope control.
+**Minimum UI.** One `Eventi registrati` heading/count, one local search/state/window toolbar and one native event collection. Bounded expansion is owned by that same toolbar; no competing `Altri fascicoli evento` disclosure or parallel scope selector remains.
 
 **Epistemic boundaries.** Registration is a fact about ICTC records; it does not imply legal qualification, external notification, root-cause conclusion or closure validity.
 
@@ -101,7 +101,7 @@ Every operational surface MUST let a typical user answer, without consulting a s
 
 **Canonical purpose.** Understand standards/frameworks, organizational-use status, applicability/scope and mappings without collapsing those axes or reproducing proprietary source text.
 
-**Minimum UI.** Framework cards remain the native collection. `undeclared` persists as runtime truth and is presented as **Uso da dichiarare**, not as non-use. `Applicazione con evidenza` is presented as **Uso metodologico con evidenza**, explicitly below certification strength. `Standard e pratiche applicate` is a visually strong reference band distinct from its rows. One `Comprendi standard` entry opens the read-only Standard Browser.
+**Minimum UI.** Framework cards remain the native collection. `undeclared` persists as runtime truth and is presented as **Uso da dichiarare**, not as non-use. `Applicazione con evidenza` is presented as **Uso metodologico con evidenza**, explicitly below certification strength. `Standard e pratiche applicate` is a visually strong reference band distinct from its rows. Inside MC-01 the first-plane order is **Biblioteca → Vista integrata → Mappature operative**; only Mappature is progressive and closed by default. One `Comprendi standard` entry opens the read-only Standard Browser.
 
 **Standard Browser geometry.** Equal ref/label identities are deduplicated. Objectives wrap. Desktop has one bounded vertical scroll owner: `.standard-browser-master-detail`; non-scroll descendants use `overflow-x: clip; overflow-y: visible`. At 390px/320px master-detail becomes single-column flow. No local horizontal scrollbar is permitted and close target remains >=44px.
 

@@ -78,10 +78,15 @@ def audit_procedure(page,code,pid,root):
     assert missing==0,(code,'typed binding missing',missing)
     expect(section).to_have_attribute('data-a6-ux4-mount','semantic-bridge'); expect(section).to_be_hidden(); expect(r).to_have_attribute('data-a6-ux4-single-collection','native'); assert hidden==0,(code,'resolved actionable targets must be revealed in native plane',hidden)
     PHASE=f'{code}-single-collection-scope'
-    scope=r.locator(f'[data-a6-ux4-scope="{pid}"]'); expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
+    scope=r.locator(f'[data-a6-ux4-scope="{pid}"]')
+    if pid in ['monitoring','incidents']:
+        expect(scope).to_have_count(0); expect(r).to_have_attribute('data-a6-ux4-local-scope','native-toolbar')
+    else:
+        expect(scope).to_be_visible(); expect(scope).to_have_value('actionable')
     PHASE=f'{code}-single-collection-equivalence'
     visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
-    PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
+    if pid not in ['monitoring','incidents']:
+        PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
     PHASE=f'{code}-orientation'
     orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Fondamento'); expect(orientation).to_contain_text('Limite'); expect(orientation).not_to_contain_text('Riferimenti')
     PHASE=f'{code}-context'
@@ -93,12 +98,12 @@ def audit_procedure(page,code,pid,root):
     visible=r.locator('button:visible,a[href]:visible,summary:visible'); sample=min(visible.count(),30); assert sample>0
     assert all(visible.nth(i).get_attribute('data-a6-ux4-effect') for i in range(sample)),(code,'unclassified control')
     if pid=='monitoring':
-        PHASE='RN-01-material-merge'; assert r.locator('.contribute-card:visible').count()==0; assert r.locator('[data-a6-ux4-single-column="true"]').count()>=1
+        PHASE='RN-01-material-merge'; assert r.locator('.contribute-card:visible').count()==0; assert r.locator('[data-a6-ux4-single-column="true"]').count()>=1; assert r.locator('[data-rn-primary-work="sources"] [data-a6-ux4-scope]').count()==0
         source_open=r.locator('[data-open-source]').first
         if source_open.count():
             PHASE='RN-01-source-truth'; source_open.click(); source_dialog=page.locator('#sourceDialog'); expect(source_dialog).to_be_visible(); expect(source_dialog).to_contain_text('Classe proposta'); expect(source_dialog).not_to_contain_text('Confidenza AI'); assert source_dialog.evaluate("d=>d.contains(document.activeElement)"); source_dialog.locator('button[aria-label="Chiudi"]').click()
     if pid=='incidents':
-        PHASE='EC-01-heading-dedup'; assert r.locator('[data-a6-registry="incidents"] .section-head:visible').count()==0
+        PHASE='EC-01-heading-dedup'; assert r.locator('[data-a6-registry="incidents"] .section-head:visible').count()==0; assert r.locator('[data-a6-registry="incidents"] details.seq-overflow').count()==0
     if pid in ['objects','coverage','actions','risks','assurance']:
         PHASE=f'{code}-record-action-hierarchy'; assert r.locator('.procedure-record-card .primary:visible').count()==0,(code,'record-local filled primary survived')
     if pid=='coverage':

@@ -34,8 +34,8 @@ assert.doesNotMatch(helper,/setTimeout|setInterval|requestAnimationFrame/,'helpe
 assert.doesNotMatch(helper,/querySelectorAll\('\.view|querySelectorAll\("\.view/,'helper must not scan all surfaces');
 const declared=(src,name)=>{const m=src.match(new RegExp(`${name}=Object\\.freeze\\(\\{([\\s\\S]*?)\\}\\);`));assert.ok(m,`${name} missing`);return m[1];};
 const rnDecl=declared(rn,'RN_EC_EDITORIAL_ORDER'),grcDecl=declared(grc,'GRC_EDITORIAL_ORDER');
-for(const id of ['monitoring','incidents'])assert.match(rnDecl,new RegExp(`${id}:Object\\.freeze\\(\\['reference','metrics','attention','controls','primary','advanced-context'`));
-for(const id of ['objects','coverage','actions','risks','assurance'])assert.match(grcDecl,new RegExp(`${id}:Object\\.freeze\\(\\['reference','metrics','attention','controls','primary','advanced-context'`));
+for(const id of ['monitoring','incidents'])assert.match(rnDecl,new RegExp(`${id}:Object\\.freeze\\(\\['reference','advanced-context','metrics','attention','controls','primary'`));
+for(const id of ['objects','coverage','actions','risks','assurance'])assert.match(grcDecl,new RegExp(`${id}:Object\\.freeze\\(\\['reference','advanced-context','metrics','attention','controls','primary'`));
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
 const report={ok:true,slice:'S4-A2',baseMainSha:'cfe544fe730aeecf43228e19bd58dbb5e254f8a7',localOwners:owners,metrics:{localOwnerCoverage:'7/7',directRoleSelectorBinding:'direct-only',lateReparentAuthority:0,mutationObserverHierarchyAuthority:0,globalFinalizer:0,visibleDuplicateOrientationCssRetired:true},claimBoundary:'E2 source-contract evidence only; not browser/deployment/human evidence.'};
 writeFileSync(new URL('../artifacts/s4-a2-editorial-composition-contract.json',import.meta.url),JSON.stringify(report,null,2));

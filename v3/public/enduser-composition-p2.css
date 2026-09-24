@@ -339,9 +339,8 @@ html[data-enduser-composition="p2"] #monitoringView .catalog-card{grid-template-
 html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]{margin:0;border:1px solid var(--color-border);border-left:1px solid var(--color-border);border-radius:var(--p2-peer-radius);background:var(--color-surface);box-shadow:none}
 html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary{display:flex;align-items:flex-start;min-height:52px;padding:.62rem .72rem}
 html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary span{display:grid;gap:.16rem}
-html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary b{font-size:.92rem;line-height:1.25}
+html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary b{font-size:1rem;line-height:1.3}
 html[data-enduser-composition="p2"] #proofContent>details.proof-section[data-proof-visual-grammar="peer-section"]>summary small{display:block;margin:0;max-width:var(--ui-reading-wide);font-size:var(--type-control);line-height:1.4;color:var(--color-muted)}
-html[data-enduser-composition="p2"] #proofContent>details[data-proof-workspace="interpretation"][data-proof-visual-grammar="peer-section"]>summary b{font-size:1rem;line-height:1.3}
 html[data-enduser-composition="p2"] #proofContent [data-proof-reading-guide]{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.45rem;margin:0 0 .72rem}
 html[data-enduser-composition="p2"] #proofContent [data-proof-reading-guide-item]{min-width:0;padding:.52rem .58rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
 html[data-enduser-composition="p2"] #proofContent [data-proof-reading-guide-item] b{display:block;margin:0 0 .18rem;font-size:var(--type-control);line-height:1.3}
@@ -361,3 +360,17 @@ html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embe
 html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] #settingsForm{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
 html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] #settingsForm>.settings-18{display:grid;visibility:visible;opacity:1;min-height:0;overflow:visible;gap:8px}
 html[data-enduser-composition="p2"] #adminCenter #settingsDialog[data-admin-embedded="ai"][data-presentation-mode="inline"] [data-settings-section]{display:block;visibility:visible;opacity:1}
+
+/* UIUX-CANONICAL-WORKSPACE-1: one local control grammar and peer hierarchy. */
+html[data-enduser-composition="p2"] .procedure-queue-tools[data-enduser-primitive="ControlRail"] [data-seq-queue-more]{justify-self:end;min-height:36px;padding:.32rem .58rem;font-size:var(--type-control);white-space:nowrap}
+html[data-enduser-composition="p2"] .market-ai-link-toggle{display:inline-flex!important;align-items:center;gap:.42rem;white-space:nowrap;max-width:100%}
+html[data-enduser-composition="p2"] .market-ai-link-toggle>input{flex:0 0 auto;margin:0}
+html[data-enduser-composition="p2"] .epistemic-toolbar{display:grid;grid-template-columns:minmax(16rem,1fr) auto auto;align-items:end;gap:.5rem;min-height:0}
+html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-filter-group{display:block;min-width:0}
+html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-filter-group>label{display:block;width:100%}
+html[data-enduser-composition="p2"] .epistemic-toolbar #epistemicSearch{box-sizing:border-box;width:100%;min-width:0}
+html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-a3-detail>summary{min-height:40px;padding:.42rem .58rem;white-space:nowrap}
+html[data-enduser-composition="p2"] .epistemic-level-nav{display:flex;align-items:center;gap:.5rem;margin:.2rem 0 .65rem}
+html[data-enduser-composition="p2"] .epistemic-level-nav>[aria-current="step"]{font-weight:var(--weight-label);color:var(--color-text)}
+html[data-enduser-composition="p2"] .epistemic-lens-diagnostics{margin:.1rem 0;color:var(--color-muted);font-size:var(--type-caption);line-height:1.45}
+@media(max-width:719px){html[data-enduser-composition="p2"] .epistemic-toolbar{grid-template-columns:1fr;align-items:stretch}html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-a3-detail{width:100%}html[data-enduser-composition="p2"] .market-ai-link-toggle{white-space:normal}}
