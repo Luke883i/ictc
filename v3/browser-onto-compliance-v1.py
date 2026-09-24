@@ -50,7 +50,7 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  if frame.locator('.procedure-primary').count() and frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height')<43.5:anomaly('process-primary-target-too-small',role,vp,proc['code'],frame.locator('.procedure-primary').evaluate('e=>e.getBoundingClientRect().height'),'>=44px')
  if re.search(r'\bIn ordine\b|processi in ordine',rendered,re.I):anomaly('attention-rendered-as-favorable-verdict',role,vp,proc['code'],rendered[:240],'observational attention language')
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
- if order[:5]!=['reference','metrics','attention','controls','primary','advanced-context']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','metrics','attention','controls','primary','advanced-context'])
+ if order[:6]!=['reference','metrics','attention','controls','primary','advanced-context']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','metrics','attention','controls','primary','advanced-context'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
  reference=root.locator(':scope > [data-editorial-slot="reference"]').first;metrics=root.locator(':scope > [data-editorial-slot="metrics"]').first;attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]');primary=root.locator(':scope > [data-editorial-slot="primary"]').first
  if rail.count()!=1 or embedded.count()!=0:anomaly('support-rail-parentage',role,vp,proc['code'],{'sibling':rail.count(),'insideHeader':embedded.count()},{'sibling':1,'insideHeader':0})
@@ -160,9 +160,10 @@ try:
    for vp,width,height in VIEWPORTS:
     PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
     if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
-    expected_tone={'ready':'positive','key-missing':'attention','unconfigured':'neutral'}[expected_ai];actual_tone=page.locator('#runtimeStatus').get_attribute('data-tone');tooltip=page.locator('#runtimeStatus').get_attribute('data-tooltip') or ''
-    if actual_tone!=expected_tone:anomaly('ai-status-false-green',role,vp,'shell',{'state':actual_ai,'tone':actual_tone},{'state':expected_ai,'tone':expected_tone})
-    if expected_ai=='unconfigured' and ('AI non configurata' not in tooltip or 'Amministrazione > AI' not in tooltip):anomaly('ai-status-copy-incoherent',role,vp,'shell',tooltip,'AI non configurata + Admin route')
+    ai_shell=page.locator('#runtimeStatus');actual_tone=ai_shell.get_attribute('data-tone');tooltip=ai_shell.get_attribute('data-tooltip');aria_hidden=ai_shell.get_attribute('aria-hidden')
+    if ai_shell.is_visible():anomaly('ai-status-shell-visible',role,vp,'shell',True,False)
+    if actual_tone is not None or tooltip is not None:anomaly('ai-status-shell-verdict-resurrected',role,vp,'shell',{'tone':actual_tone,'tooltip':tooltip},{'tone':None,'tooltip':None})
+    if aria_hidden!='true':anomaly('ai-status-shell-accessibility',role,vp,'shell',aria_hidden,'true')
     page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&document.documentElement.dataset.ictcSurface==='home'&&document.querySelector('#homePriorities')?.dataset.homeWorkQueue==='3.2'")
     labels=page.locator('.service-nav [data-service]').all_text_contents();expected=['Home','Processi di Compliance','Evidenze ICTC']
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
