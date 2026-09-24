@@ -60,7 +60,7 @@ def check_frame(page,code):
             const legacy=frame?.querySelector(':scope > details.composition-process-context');
             const w=r.querySelector(`:scope > [data-procedure-attention-slot="${x.pid}"] [data-procedure-worklist]`);
             const predecessorReady=!!(frame&&frame.dataset.procedureGuidanceAuthority==='procedure-guidance-projection');
-            const anatomyReady=!!(a&&a.getClientRects().length&&s?.getAttribute('aria-label')==='Contesto e tracciabilità'&&(s.textContent||'').includes('Contesto e tracciabilità'));
+            const anatomyReady=!!(a&&a.getClientRects().length&&s?.getAttribute('aria-label')==='Contesto e pratiche applicate'&&(s.textContent||'').includes('Contesto e pratiche applicate'));
             const legacyReady=!legacy||(legacy.hidden&&legacy.dataset.a6Ux4Context==='superseded');
             const collectionReady=!!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r.dataset.a6Ux4SingleCollection));
             return predecessorReady&&anatomyReady&&legacyReady&&collectionReady;
@@ -70,8 +70,8 @@ def check_frame(page,code):
         expect(anatomy).to_have_count(1)
         expect(anatomy).to_be_visible()
         summary=anatomy.locator(':scope > summary')
-        expect(summary).to_have_attribute('aria-label','Contesto e tracciabilità')
-        expect(summary).to_contain_text('Contesto e tracciabilità')
+        expect(summary).to_have_attribute('aria-label','Contesto e pratiche applicate')
+        expect(summary).to_contain_text('Contesto e pratiche applicate')
         if legacy.count():
             expect(legacy).to_be_hidden()
             expect(legacy).to_have_attribute('data-a6-ux4-context','superseded')

@@ -1,9 +1,9 @@
-import { $, compactList, ensureQueueWindow, ensureSequence } from './procedure-sequential-dom.js';
+import { $, ensureQueueWindow, ensureSequence } from './procedure-sequential-dom.js';
 import { declareProcedureEditorialOrder, ensureEditorialCompositionCss } from './procedure-editorial-slots.js';
 
 export const RN_EC_EDITORIAL_ORDER=Object.freeze({
-  monitoring:Object.freeze(['reference','metrics','attention','controls','primary','advanced-context']),
-  incidents:Object.freeze(['reference','metrics','attention','controls','primary','advanced-context'])
+  monitoring:Object.freeze(['reference','advanced-context','metrics','attention','controls','primary']),
+  incidents:Object.freeze(['reference','advanced-context','metrics','attention','controls','primary'])
 });
 const attentionSlotOwner='procedure-sequential-rn-ec.js';
 const OWNER=attentionSlotOwner;
@@ -18,5 +18,5 @@ function resolveIncident(detail){const ref=detail.targetRef,control=attr(documen
 function bindTargetResolver(){if(targetResolverBound)return;targetResolverBound=true;document.addEventListener('ictc:work-target-request',event=>{const detail=event.detail,ref=detail?.targetRef;if(!ref||detail.resolved)return;if(ref.procedureId==='monitoring')resolveMonitoring(detail);else if(ref.procedureId==='incidents')resolveIncident(detail);});}
 const PRIMARY_SELECTOR=Object.freeze({monitoring:':scope > [data-rn-primary-work="sources"]',incidents:':scope > .section-block'});
 function declare(host,id){return declareProcedureEditorialOrder(host,{procedureId:id,owner:OWNER,order:RN_EC_EDITORIAL_ORDER[id],controlSelector:':scope > .hero,:scope > #aiSetup',primarySelector:PRIMARY_SELECTOR[id]});}
-export function renderRn(){const host=$('#monitoringView');if(!host||host.hidden)return;ensureEditorialCompositionCss();bindTargetResolver();declare(host,'monitoring');ensureSequence(host,'monitoring');ensureQueueWindow($('#missionsList'),'.mission-card',{id:'monitoring-jobs',label:'monitoraggi',budget:6});compactList($('#catalogList'),'.catalog-card',6,'Altre fonti');}
-export function renderEc(){const host=$('#incidentsView');if(!host||host.hidden)return;ensureEditorialCompositionCss();bindTargetResolver();declare(host,'incidents');ensureSequence(host,'incidents');compactList($('#incidentList'),'.incident-card',6,'Altri fascicoli evento');}
+export function renderRn(){const host=$('#monitoringView');if(!host||host.hidden)return;ensureEditorialCompositionCss();bindTargetResolver();declare(host,'monitoring');ensureSequence(host,'monitoring');ensureQueueWindow($('#missionsList'),'.mission-card',{id:'monitoring-jobs',label:'monitoraggi',budget:6});}
+export function renderEc(){const host=$('#incidentsView');if(!host||host.hidden)return;ensureEditorialCompositionCss();bindTargetResolver();declare(host,'incidents');ensureSequence(host,'incidents');ensureQueueWindow($('#incidentList'),'.incident-card',{id:'incidents',label:'fascicoli evento',budget:6});}

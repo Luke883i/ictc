@@ -107,22 +107,31 @@ function registryWrap(host,{id,label,process,count,open=false}){
     details.dataset.a6Registry=id;
     details.open=open;
     const summary=document.createElement('summary');
-    summary.innerHTML=`<span>${label}</span><small data-a6-registry-count-group data-semantic-count-owner="primary"><b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span></small>`;
+    summary.innerHTML=`<span>${label}</span><small data-a6-registry-count-group data-semantic-count-owner="primary"><b data-a6-registry-count>0 di 0</b></small>`;
     journey(summary,{process,intent:`inspect-${id}-registry`});
     host.parentElement?.insertBefore(details,host);
     details.append(summary,host);
   }
+  const queueId=id==='monitoring'?'monitoring-jobs':id;
+  let queue=details.querySelector(`:scope > [data-seq-queue-tools="${CSS.escape(queueId)}"]`);
+  if(!queue){
+    const sibling=host.previousElementSibling;
+    if(sibling?.matches?.(`[data-seq-queue-tools="${CSS.escape(queueId)}"]`))queue=sibling;
+  }
+  if(queue&&queue.parentElement!==details)details.insertBefore(queue,host);
   const summary=details.querySelector(':scope > summary');
   if(summary){
     journey(summary,{process,intent:`inspect-${id}-registry`});
+    const legacyCount=summary.querySelector(':scope > .counter');if(legacyCount){legacyCount.hidden=true;legacyCount.dataset.semanticCountOwner='retired';legacyCount.setAttribute('aria-hidden','true');}
+    for(const stale of summary.querySelectorAll('[data-a6-registry-count-label],[data-a6-registry-total]'))stale.remove();
     let countGroup=summary.querySelector('[data-a6-registry-count-group]');
-    if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0</b><span data-a6-registry-count-label></span><span aria-hidden="true"> · </span><span data-a6-registry-total></span>';summary.append(countGroup);}
+    if(!countGroup){countGroup=document.createElement('small');countGroup.dataset.a6RegistryCountGroup='';countGroup.dataset.semanticCountOwner='primary';countGroup.innerHTML='<b data-a6-registry-count>0 di 0</b>';summary.append(countGroup);}
   }
   const previousTotal=Number(details.dataset.a6RegistryTotal||0),nextTotal=Number(count||0);
-  if(open&&nextTotal>0&&previousTotal===0)details.open=true;
+  if(details.dataset.a6RegistryDefaultApplied!=='true'&&!open){details.open=false;details.dataset.a6RegistryDefaultApplied='true';}
+  if(open&&nextTotal>0&&previousTotal===0){details.open=true;details.dataset.a6RegistryDefaultApplied='true';}
   details.dataset.a6RegistryTotal=String(nextTotal);
-  const total=details.querySelector('[data-a6-registry-total]');
-  if(total)total.textContent=`${Number(count||0)} totali`;
+  const countNode=details.querySelector('[data-a6-registry-count]');if(countNode)countNode.textContent=`${nextTotal} di ${nextTotal}`;
   return details;
 }
 
@@ -173,12 +182,8 @@ function applyCardFilter(id){
     if(visible)shown++;
   }
   const count=details.querySelector('[data-a6-registry-count]');
-  const label=details.querySelector('[data-a6-registry-count-label]');
   const total=Number(details.dataset.a6RegistryTotal||0);
-  if(count)count.textContent=String(shown);
-  if(label)label.textContent=filter==='all'&&!query?'':' '+String(select?.selectedOptions?.[0]?.textContent||'visibili').toLocaleLowerCase('it-IT');
-  const totalNode=details.querySelector('[data-a6-registry-total]');
-  if(totalNode)totalNode.hidden=shown===total&&filter==='all'&&!query;
+  if(count)count.textContent=`${shown} di ${total}`;
   details.dataset.a6VisibleCount=String(shown);
   details.dataset.a6CountSemantics=filter==='all'&&!query?'total':'visible-filtered';
 }
@@ -199,18 +204,17 @@ function monitoringOwner(){
   const material=root.querySelector('.contribute-card');if(material){const h=material.querySelector('h2'),p=material.querySelector('h2 + p');if(h)h.textContent='Materiali in ingresso';if(p)p.textContent='Originali conservati che possono generare una fonte candidata, ma non sono ancora fonti verificate.';}
   const list=root.querySelector('#missionsList');if(!list)return;
   const byId=new Map((state.data?.missions||[]).map(item=>[item.id,item]));
-  const details=registryWrap(list,{id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:true});
-  ensureFilter(details,{id:'monitoring',process:'monitoring',defaultValue:'current',options:[['current','Correnti'],['active','Attivi'],['inactive','Non attivi'],['draft','Bozze'],['all','Tutti']]});
+  const details=registryWrap(list,{id:'monitoring',label:'Monitoraggi',process:'monitoring',count:byId.size,open:false});
   let unbound=0;
   for(const card of list.querySelectorAll('.mission-card,article')){
     const id=missionId(card),item=byId.get(id);
     if(!id||!item){card.dataset.a6RecordBinding='unresolved';unbound++;continue;}
-    card.dataset.a6FilterCard='';card.dataset.a6RecordBinding='stable-id';card.dataset.a6RecordId=id;card.dataset.a6RecordState=item.state||'';card.dataset.a6RecordSearch=searchText(item);
+    card.dataset.a6FilterCard='';card.dataset.a6RecordBinding='stable-id';card.dataset.a6RecordId=id;card.dataset.a6RecordState=item.state||'';card.dataset.recordState=item.state||'';card.dataset.a6RecordSearch=searchText(item);
     const activations=(item.history||item.auditTrail||[]).filter(event=>['monitoring.mission.activated','monitoring.mission.resumed'].includes(event?.type||event?.eventType)).length;
     const cycles=activations>0?activations:Number(item.runCount||0)>0?1:0;
     card.dataset.a6ActivationCycles=String(cycles);
   }
-  details.dataset.a6UnboundRecords=String(unbound);applyCardFilter('monitoring');
+  details.dataset.a6UnboundRecords=String(unbound);
 }
 
 function incidentId(card){return card.querySelector('[data-open-incident]')?.dataset.openIncident||'';}
@@ -221,19 +225,18 @@ function incidentOwner(){
   const list=root.querySelector('#incidentList');if(!list)return;
   const byId=new Map((state.data?.incidents||[]).map(item=>[item.id,item]));
   const details=registryWrap(list,{id:'incidents',label:'Eventi registrati',process:'incidents',count:byId.size,open:true});
-  ensureFilter(details,{id:'incidents',process:'incidents',defaultValue:'open',options:[['open','Aperti'],['clarifying','In chiarimento'],['review','Da approvare'],['submitted','Inviati'],['closed','Chiusi'],['all','Tutti']]});
   let unbound=0;
   for(const card of list.querySelectorAll('.incident-card,article')){
     const id=incidentId(card),item=byId.get(id);
     if(!id||!item){card.dataset.a6RecordBinding='unresolved';unbound++;continue;}
-    card.dataset.a6FilterCard='';card.dataset.a6RecordBinding='stable-id';card.dataset.a6RecordId=id;card.dataset.a6RecordState=item.state||'';card.dataset.a6RecordSearch=searchText(item);
+    card.dataset.a6FilterCard='';card.dataset.a6RecordBinding='stable-id';card.dataset.a6RecordId=id;card.classList.add('p2-record-row');card.dataset.enduserPrimitive='RecordRow';card.dataset.recordGrammar='row-list';card.dataset.recordId=id;card.dataset.a6RecordState=item.state||'';card.dataset.recordState=item.state||'';card.dataset.a6RecordSearch=searchText(item);
     if(TERMINAL_INCIDENT_STATES.has(item.state)){
       card.dataset.a6TerminalRecord='true';
       for(const node of card.querySelectorAll('[data-procedure-record-next],.procedure-record-facts span,.procedure-record-facts li')){if(/verifica formulazione|chiarimento|approvazione/i.test(String(node.textContent||'')))node.hidden=true;}
       const open=card.querySelector('[data-open-incident]');if(open)open.textContent='Consulta fascicolo';
     }
   }
-  details.dataset.a6UnboundRecords=String(unbound);applyCardFilter('incidents');
+  details.dataset.a6UnboundRecords=String(unbound);
 }
 
 function recordId(card){

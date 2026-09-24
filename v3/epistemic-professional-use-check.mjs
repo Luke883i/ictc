@@ -30,9 +30,10 @@ assert.equal(projection.lenses.length, 12);
 assert.match(projection.claimBoundary, /non.*autor|not.*author|non.*decision/i);
 
 const productText = [ui,lensUi,lattice].join('\n');
-for (const token of ['data-epistemic-lens','epistemicLensContext','Lente professionale','Contesto PMI','businessThread','professionalLenses','conteggi, non score']) {
+for (const token of ['data-epistemic-lens','epistemicLensContext','Lente professionale','Contesto PMI','businessThread','professionalLenses']) {
   assert.ok(productText.includes(token), `professional EP-01 product contract missing ${token}`);
 }
+assert.ok(productText.toLocaleLowerCase('it-IT').includes('conteggi, non score'),'professional EP-01 product contract missing score boundary');
 assert.ok(active.includes('installEpistemicProfessionalLenses'), 'professional lens enhancer must be in active experience');
 assert.ok(lensUi.includes('installed=true;ensureLensUi();bind();sync();'), 'professional lens structure must mount deterministically after canonical EP-01 view creation, before lazy data load');
 
@@ -59,5 +60,6 @@ assert.ok(browser.includes("'duplicateProofMetaEntry':False") || browser.include
 assert.ok(lensUi.includes('currentThread') && lensUi.includes('data-epistemic-basis') && lensUi.includes('epistemicContextSearch'), 'EP-01 professional context search must route back through canonical atom navigation');
 assert.ok(lattice.includes("schemaVersion:'1.3.0'") && lattice.includes('epistemicProfessionalDiagnostics') && lattice.includes('rnSemanticAtoms'), 'lattice projection v1.3 must expose diagnostics plus bounded RN semantic atoms without changing decision authority');
 assert.ok(browser.includes('sameProjectionDigestAcrossLenses') && browser.includes('demoProjectionAuthority'), 'browser must prove lens digest conservation and Suite 3.0 projection authority');
+assert.ok(browser.includes("assert digest[:12] not in page.locator('#epistemicLensContext').inner_text()"),'professional browser must keep projection digest out of repeated lens context');
 
 console.log('epistemic-professional-use-check: ok (12 bounded lenses / A3 progressive EP-01 authority after evidence meaning / EP-01 v1.3 / deterministic lens mount / Suite 3.0 canonical synthetic projection / deprecated 2.2 generator lineage / screenshot matrix contract)');

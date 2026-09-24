@@ -292,7 +292,7 @@ jobs:
           if not p.exists(): sys.exit(0)
           d=json.loads(p.read_text()); phase=d.get('phase',''); kinds={x.get('kind') for x in d.get('anomalies',[])}
           proc=any(code in phase for code in ['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'])
-          proc_kinds={'editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-after-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis'}
+          proc_kinds={'editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-before-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis'}
           sys.exit(1 if proc or proc_kinds & kinds else 0)
           PY
       - name: Diagnostic phase / onto proof-ep
@@ -315,7 +315,7 @@ jobs:
           p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
           if not p.exists(): sys.exit(0)
           d=json.loads(p.read_text()); kinds=sorted({x.get('kind') for x in d.get('anomalies',[])})
-          proc=['editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-after-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis']
+          proc=['editorial-order-prefix','editorial-owned-block-missing','editorial-owned-block-order','technical-trace-not-visible','context-not-before-native-work','claim-boundary-not-present-in-process-trace','rn-missing-reason-placeholder','rn-source-state-rail','ec-title-ellipsis']
           hit=[x for x in proc if x in kinds]
           print('ONTO_PROC_ANOMALIES='+','.join(hit))
           if hit:
