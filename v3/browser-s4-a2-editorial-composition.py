@@ -43,7 +43,7 @@ def audit(page,code,pid,host):
   nodes=(mutation.get('added') or [])+(mutation.get('removed') or [])
   decision_only=bool(nodes) and all(node.get('exec')==pid and 'procedure-decision-frame' in str(node.get('cls') or '') for node in nodes)
   if not decision_only:editorial_mutations.append(mutation)
- decision=root.locator(f':scope > .procedure-decision-frame[data-executive-procedure="{pid}"]');expect(decision).to_have_count(1);assert primary.evaluate('(p,d)=>p.nextElementSibling===d',decision.element_handle()),f'{pid}: decision context not settled after canonical primary'
+ decision=root.locator(f':scope > .procedure-decision-frame[data-executive-procedure="{pid}"]');expect(decision).to_have_count(1);assert primary.evaluate('(p,d)=>Boolean(p.compareDocumentPosition(d)&Node.DOCUMENT_POSITION_FOLLOWING)',decision.element_handle()),f'{pid}: decision context not after canonical primary'
  if editorial_mutations:
   first=editorial_mutations[0]; nodes=first.get('added') or first.get('removed') or []; n=nodes[0] if nodes else {}; node='-'.join(str(n.get(k,'') or '') for k in ['tag','id','cls','slot','attention','exec','seq']) or str(first.get('target','node')); safe=''.join(ch if ch.isalnum() or ch in '-_' else '-' for ch in node)[:96]; PHASE=f"{code}-post-commit-{first.get('type','mutation')}-{safe}"[:180]
  assert editorial_mutations==[],(pid,'late editorial hierarchy mutation',editorial_mutations)

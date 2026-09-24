@@ -24,7 +24,8 @@ function ensureFrame(id){const root=rootFor(id),p=EXEC[id];if(!root||!p)return;c
   let frame=root.querySelector(`:scope > .procedure-decision-frame[data-executive-procedure="${CSS.escape(id)}"]`);
   const primary=root.querySelector(':scope > [data-editorial-slot="primary"]');
   if(!frame){frame=document.createElement('section');frame.className='procedure-decision-frame';frame.dataset.executiveProcedure=id;root.append(frame);}
-  if(primary&&frame.previousElementSibling!==primary)primary.after(frame);else if(!primary&&frame.parentElement!==root)root.append(frame);
+  const frameAfterPrimary=primary&&Boolean(primary.compareDocumentPosition(frame)&Node.DOCUMENT_POSITION_FOLLOWING);
+  if(primary&&!frameAfterPrimary)primary.after(frame);else if(!primary&&frame.parentElement!==root)root.append(frame);
   frame.classList.add('procedure-decision-frame');frame.dataset.executiveProcedure=id;frame.dataset.structuralPlacementAuthority='procedure-editorial-slots';frame.setAttribute('aria-label',`${p.code} · orientamento del processo`);frame.innerHTML=frameMarkup(id);anchor(frame.querySelector('summary'),id,'boundary','inspect-claim-boundary','navigation','none');
 }
 function normalizeHub(){const host=$('#procedureHub');if(!host)return;const intro=$('#processesView .processes-head h1 ~ p');if(intro)intro.textContent='Sette procedure distinte. Ogni scheda mostra ciò che governa, l’attenzione aperta e la decisione successiva.';
