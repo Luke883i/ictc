@@ -1,5 +1,6 @@
 import json,os,pathlib,traceback
 from playwright.sync_api import expect,sync_playwright
+from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4865').rstrip('/');RESULTS=[];PHASE='init'
 def mark(x):
  global PHASE;PHASE=x
@@ -15,7 +16,7 @@ def metrics(page,label):
  assert data['focusOverlap']==0,(label,data['offenders'][:3])
  RESULTS.append({'oracle':'fixed-persistent-non-overlap','reserveOracle':'reserve-coupling','reflow':'reflow-1440-390-320','rootTrap':'root-trap-negative','case':label,**data})
 def run(browser,w,h,label):
- mark(label+'-context');ctx=browser.new_context(viewport={'width':w,'height':h});ctx.add_init_script("try{localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','home')}catch{}");p=ctx.new_page();p.set_default_timeout(30000);mark(label+'-load');p.goto(BASE+'/',wait_until='networkidle');expect(p.locator('html')).to_have_attribute('data-ictc-experience','market-1');expect(p.locator('#stableLegalFooter')).to_be_visible();expect(p.locator('#homeView')).to_be_visible();mark(label+'-geometry');metrics(p,label);ctx.close()
+ mark(label+'-context');ctx=browser.new_context(viewport={'width':w,'height':h});ctx.add_init_script("try{localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','home')}catch{}");p=ctx.new_page();p.set_default_timeout(30000);mark(label+'-load');p.goto(BASE+'/',wait_until='networkidle');ensure_onboarded(p,BASE,'user');expect(p.locator('html')).to_have_attribute('data-ictc-experience','market-1');expect(p.locator('#stableLegalFooter')).to_be_visible();expect(p.locator('#homeView')).to_be_visible();mark(label+'-geometry');metrics(p,label);ctx.close()
 try:
  with sync_playwright() as pw:
   opts={'headless':True,'args':['--no-sandbox']}

@@ -1,11 +1,12 @@
 import json, os, pathlib, traceback, urllib.parse
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4874').rstrip('/')
 EXPECTED=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').lower()
-PHASE='init'; RESULTS=[]; WRITES=[]; ERRORS=[]
+PHASE='init'; RESULTS=[]; WRITES=[]; ONBOARDING_WRITES=[]; ERRORS=[]
 def phase_token(value): return ''.join(ch if ch.isalnum() else '-' for ch in str(value)).strip('-')[:72] or 'none'
 PROCEDURES=[('RN-01','monitoring','#monitoringView'),('EC-01','incidents','#incidentsView'),('AO-01','objects','#grcWorkspace'),('MC-01','coverage','#grcWorkspace'),('AP-01','actions','#grcWorkspace'),('RC-01','risks','#grcWorkspace'),('AR-01','assurance','#grcWorkspace')]
 
@@ -13,7 +14,7 @@ def fail(exc):
     phase=PHASE
     if ERRORS and phase.startswith('EC-01-mount'):
         phase=f"{phase}-pageerror-{phase_token(ERRORS[-1])}"
-    payload={'ok':False,'slice':'S4-A6','executionUnit':'A6-UX4','phase':phase,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS}
+    payload={'ok':False,'slice':'S4-A6','executionUnit':'A6-UX4','phase':phase,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'results':RESULTS,'writes':WRITES,'onboardingWrites':ONBOARDING_WRITES,'pageErrors':ERRORS}
     (ART/'browser-s4-a6-ux4-semantic-surface-error.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf8')
     print(f'::error title=A6-UX4::{phase}: {type(exc).__name__}: {exc}',flush=True)
 
@@ -123,11 +124,22 @@ def desktop(browser):
     ctx=browser.new_context(viewport={'width':1440,'height':950}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
     page=ctx.new_page(); page.set_default_timeout(30000)
     page.on('pageerror',lambda e: ERRORS.append(str(e)))
-    page.on('request',lambda r: WRITES.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
+    def track_write(r):
+        if not (r.url.startswith(BASE+'/api/') and r.method!='GET'): return
+        item={'method':r.method,'path':urllib.parse.urlparse(r.url).path}
+        (ONBOARDING_WRITES if item['path']=='/api/profile/onboarding' else WRITES).append(item)
+    page.on('request',track_write)
     PHASE='home-open'; page.goto(BASE+'/?view=home',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE='home-title'; expect(page.locator('#homeTitle')).to_have_text('Integrated Compliance Tower Control')
-    PHASE='home-onboarding-entry'; onboarding=page.locator('[data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'
-    PHASE='home-onboarding-replay'; onboarding.click(); onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','replay-readonly'); assert onboarding_dialog.locator('[data-onboarding-next]:visible').count()==0; page.keyboard.press('Escape'); expect(onboarding_dialog).not_to_be_visible(); assert onboarding.evaluate('b=>document.activeElement===b')
+    PHASE='home-onboarding-first-run'; onboarding=page.locator('[data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'; onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','first-run-gate')
+    for step in range(5):
+        PHASE=f'home-onboarding-progress-{step+1}'
+        next_button=onboarding_dialog.locator('[data-onboarding-next]:visible'); expect(next_button).to_have_count(1)
+        with page.expect_response(lambda response: urllib.parse.urlparse(response.url).path=='/api/profile/onboarding' and response.request.method=='PATCH') as response_info:
+            next_button.click()
+        assert response_info.value.ok,(step,response_info.value.status)
+    PHASE='home-onboarding-accepted'; expect(onboarding_dialog).not_to_be_visible(); assert len(ONBOARDING_WRITES)==5,ONBOARDING_WRITES
+    PHASE='home-onboarding-replay'; onboarding.click(); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','replay-readonly'); assert onboarding_dialog.locator('[data-onboarding-next]:visible').count()==0; page.keyboard.press('Escape'); expect(onboarding_dialog).not_to_be_visible(); assert onboarding.evaluate('b=>document.activeElement===b')
     opens=page.locator('#homePriorities .home-priority-open:visible')
     if opens.count():
         PHASE='home-icon'; assert all('→' not in (opens.nth(i).inner_text() or '') for i in range(opens.count())); svg=opens.first.locator('svg'); box=svg.bounding_box(); assert not box or max(box['width'],box['height'])<=14.5,box
@@ -153,7 +165,7 @@ def auditor_incident(browser):
     ctx=browser.new_context(viewport={'width':1280,'height':900}); ctx.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')")
     page=ctx.new_page(); page.set_default_timeout(30000); local_writes=[]
     page.on('request',lambda r: local_writes.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
-    PHASE='EC-01-auditor-processes'; page.goto(BASE+'/?view=processes',wait_until='networkidle'); r=open_process(page,'EC-01','incidents','#incidentsView')
+    PHASE='EC-01-auditor-processes'; page.goto(BASE+'/?view=processes',wait_until='networkidle'); ensure_onboarded(page,BASE,'auditor'); r=open_process(page,'EC-01','incidents','#incidentsView')
     PHASE='EC-01-auditor-fixture-visible'; opener=r.locator('[data-open-incident]').first; assert opener.count()>0,'seeded auditor fixture must be visible'
     PHASE='EC-01-auditor-open'; opener.click(); dialog=page.locator('#incidentWorkspace'); expect(dialog).to_be_visible(); assert dialog.evaluate("d=>d.contains(document.activeElement)")
     PHASE='EC-01-auditor-readonly'; assert dialog.locator('[data-answer-question],[data-answer-unknown],[data-generate-draft],[data-save-manual],[data-save-formulation],[data-submit-incident],[data-close-incident]').count()==0
@@ -182,9 +194,9 @@ try:
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
         desktop(browser); auditor_incident(browser); mobile(browser,390,844); mobile(browser,320,800)
-        PHASE='write-boundary'; assert not WRITES,WRITES
+        PHASE='write-boundary'; assert not WRITES,WRITES; assert len(ONBOARDING_WRITES)==5,ONBOARDING_WRITES
         report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX4','expectedBuildSha':EXPECTED or None,'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS,'landingPages':['Home','Processi di Compliance','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','Evidenze ICTC'],'oracles':['single-visible-operational-collection','typed-native-actionability','resolved-target-reveal','zero-work-vacuous-binding','integrated-scope-control','compact-orientation','canonical-source-truth','auditor-incident-readonly','auditor-action-readonly','onboarding-replay-readonly','record-action-hierarchy','context-dedup','reference-band','action-effect-grammar','RN-material-merge','EC-heading-dedup','standard-browser-dedup','single-modal-scroll-authority','local-x-overflow','page-reflow','mobile-390','mobile-320','read-only-navigation-no-write'],'claimBoundary':'Exact-head Chromium repository UI semantics and geometry only; not representative human usability, accessibility certification, legal/compliance conclusion, deployment effectiveness, enterprise-candidate promotion or enterprise-ready proof.'}
         (ART/'browser-s4-a6-ux4-semantic-surface.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
-        print(json.dumps({'ok':True,'executionUnit':'A6-UX4','procedures':7,'mobile':[390,320],'writes':0}),flush=True); browser.close()
+        print(json.dumps({'ok':True,'executionUnit':'A6-UX4','procedures':7,'mobile':[390,320],'writes':0,'onboardingWrites':len(ONBOARDING_WRITES)}),flush=True); browser.close()
 except BaseException as exc:
     fail(exc); traceback.print_exc(); raise

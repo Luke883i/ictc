@@ -1,5 +1,6 @@
 import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 PROCESS_IDS={'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
@@ -24,7 +25,7 @@ try:
   launch={'headless':True,'args':['--no-sandbox']}
   if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1365,'height':900});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
-  page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/',wait_until='networkidle')
+  page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/',wait_until='networkidle');ensure_onboarded(page,BASE,'admin')
   PHASE='bootstrap-kernel';b=api(page,'admin','/api/bootstrap');assert b['status']==200,b;data=b['body'];assert data['projectionContext']['scope']=='actor-visible';assert data['projectionContext']['asOf'];assert data['projectionContext']['transactionSelection']=='current-state';assert data['projectionContext']['historicalStateSelected'] is False;assert data['procedureRegistry']['authority']=='canonical-procedure-registry';assert len(data['procedureRegistry']['procedures'])==7;assert data['metricCatalog']['authority']=='canonical-procedure-registry.metricSpecs';assert all(x.get('drilldown') for x in data['metricCatalog']['metrics']);assert data['subjectVersions']['authority']=='subject-version-working-index';assert data['epistemic']['metaGrammar']['families']==['observed','derived','proposed','decided','attested']
   codes=list(PROCESS_IDS);seen=[];standards_seen=[];progressive_seen=[]
   for code in codes:

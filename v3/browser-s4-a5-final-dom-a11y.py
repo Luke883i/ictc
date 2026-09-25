@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -88,6 +89,7 @@ def reduced_motion(browser):
     page = ctx.new_page()
     phase('reduced-motion-load')
     page.goto(BASE + '/', wait_until='networkidle')
+    ensure_onboarded(page,BASE,'user')
     phase('reduced-motion-nav')
     expect(page.locator('.service-nav [data-service="processes"]')).to_be_visible()
     page.locator('.service-nav [data-service="processes"]').click()
@@ -107,6 +109,7 @@ def run_viewport(browser, width, height, label):
     page = ctx.new_page()
     phase(f'{label}-load')
     page.goto(BASE + '/', wait_until='networkidle')
+    ensure_onboarded(page,BASE,'user')
     wait_current_home(page, label)
     phase(f'{label}-home-reflow')
     no_overflow(page, f'{label}:home')
@@ -157,6 +160,7 @@ try:
         page.on('pageerror', lambda error: PAGE_ERRORS.append(str(error)))
         phase('desktop-load')
         page.goto(BASE + '/', wait_until='networkidle')
+        ensure_onboarded(page,BASE,'admin')
         wait_current_home(page, 'desktop')
 
         phase('desktop-home-reflow')
