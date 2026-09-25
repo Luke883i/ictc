@@ -88,7 +88,7 @@ def audit_procedure(page,code,pid,root):
     if pid not in ['monitoring','incidents']:
         PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
     PHASE=f'{code}-orientation'
-    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Fondamento'); expect(orientation).to_contain_text('Limite'); expect(orientation).not_to_contain_text('Riferimenti')
+    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Perché esiste'); expect(orientation).to_contain_text('Cosa non conclude'); expect(orientation).not_to_contain_text('Riferimenti')
     PHASE=f'{code}-context'
     anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]'); expect(anatomy).to_have_count(1); expect(anatomy).to_be_visible()
     assert r.locator('.procedure-decision-frame details.composition-process-context:visible').count()==0
@@ -126,6 +126,8 @@ def desktop(browser):
     page.on('request',lambda r: WRITES.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
     PHASE='home-open'; page.goto(BASE+'/?view=home',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE='home-title'; expect(page.locator('#homeTitle')).to_have_text('Integrated Compliance Tower Control')
+    PHASE='home-onboarding-entry'; onboarding=page.locator('[data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'
+    PHASE='home-onboarding-replay'; onboarding.click(); onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','replay-readonly'); assert onboarding_dialog.locator('[data-onboarding-next]:visible').count()==0; page.keyboard.press('Escape'); expect(onboarding_dialog).not_to_be_visible(); assert onboarding.evaluate('b=>document.activeElement===b')
     opens=page.locator('#homePriorities .home-priority-open:visible')
     if opens.count():
         PHASE='home-icon'; assert all('→' not in (opens.nth(i).inner_text() or '') for i in range(opens.count())); svg=opens.first.locator('svg'); box=svg.bounding_box(); assert not box or max(box['width'],box['height'])<=14.5,box
@@ -157,7 +159,9 @@ def auditor_incident(browser):
     PHASE='EC-01-auditor-readonly'; assert dialog.locator('[data-answer-question],[data-answer-unknown],[data-generate-draft],[data-save-manual],[data-save-formulation],[data-submit-incident],[data-close-incident]').count()==0
     assert dialog.locator('#questionValue:not([disabled])').count()==0; assert dialog.locator('[data-download-evidence]').count()>=1
     page.keyboard.press('Escape'); expect(dialog).not_to_be_visible(); assert not local_writes,local_writes
-    RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True}); ctx.close()
+    RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True})
+    PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace'); forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
+    RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':0}); ctx.close()
 
 def mobile(browser,width,height):
     global PHASE
@@ -179,7 +183,7 @@ try:
         browser=pw.chromium.launch(**launch)
         desktop(browser); auditor_incident(browser); mobile(browser,390,844); mobile(browser,320,800)
         PHASE='write-boundary'; assert not WRITES,WRITES
-        report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX4','expectedBuildSha':EXPECTED or None,'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS,'landingPages':['Home','Processi di Compliance','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','Evidenze ICTC'],'oracles':['single-visible-operational-collection','typed-native-actionability','resolved-target-reveal','zero-work-vacuous-binding','integrated-scope-control','compact-orientation','canonical-source-truth','auditor-incident-readonly','record-action-hierarchy','context-dedup','reference-band','action-effect-grammar','RN-material-merge','EC-heading-dedup','standard-browser-dedup','single-modal-scroll-authority','local-x-overflow','page-reflow','mobile-390','mobile-320','read-only-navigation-no-write'],'claimBoundary':'Exact-head Chromium repository UI semantics and geometry only; not representative human usability, accessibility certification, legal/compliance conclusion, deployment effectiveness, enterprise-candidate promotion or enterprise-ready proof.'}
+        report={'ok':True,'slice':'S4-A6','executionUnit':'A6-UX4','expectedBuildSha':EXPECTED or None,'results':RESULTS,'writes':WRITES,'pageErrors':ERRORS,'landingPages':['Home','Processi di Compliance','RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01','Evidenze ICTC'],'oracles':['single-visible-operational-collection','typed-native-actionability','resolved-target-reveal','zero-work-vacuous-binding','integrated-scope-control','compact-orientation','canonical-source-truth','auditor-incident-readonly','auditor-action-readonly','onboarding-replay-readonly','record-action-hierarchy','context-dedup','reference-band','action-effect-grammar','RN-material-merge','EC-heading-dedup','standard-browser-dedup','single-modal-scroll-authority','local-x-overflow','page-reflow','mobile-390','mobile-320','read-only-navigation-no-write'],'claimBoundary':'Exact-head Chromium repository UI semantics and geometry only; not representative human usability, accessibility certification, legal/compliance conclusion, deployment effectiveness, enterprise-candidate promotion or enterprise-ready proof.'}
         (ART/'browser-s4-a6-ux4-semantic-surface.json').write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf8')
         print(json.dumps({'ok':True,'executionUnit':'A6-UX4','procedures':7,'mobile':[390,320],'writes':0}),flush=True); browser.close()
 except BaseException as exc:
