@@ -9,3 +9,11 @@
 [data-journey-intent]{scroll-margin-top:7rem}button[data-journey-intent],summary[data-journey-intent]{min-height:44px}
 @media(max-width:800px){.rn-scheduler-form fieldset,.rn-source-policy-grid,.rn-ai-suggestions-body dl{grid-template-columns:1fr}}
 
+
+/* UIUX mining closure V2: canonical bounded dialog shell. */
+html[data-ictc-experience="market-1"] dialog[open] .dialog-shell{max-height:min(92dvh,56rem);overflow:hidden}
+html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>header{position:sticky;top:0;z-index:2}
+html[data-ictc-experience="market-1"] dialog[open] .dialog-body{min-height:0;overflow:auto;overscroll-behavior:contain}
+html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer{position:sticky;bottom:0;z-index:2}
+html[data-ictc-experience="market-1"] dialog[open] :is(button,a[href],input,select,textarea,summary){scroll-margin-block:12px}
+@media(max-width:620px){html[data-ictc-experience="market-1"] dialog[open] .dialog-shell{max-height:calc(100dvh - .7rem);border-radius:18px}html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer{flex-direction:column}html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer :is(button,a[href]){width:100%;min-height:44px}}
