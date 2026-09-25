@@ -32,7 +32,7 @@ function sourceLaws(s){
   ];
   return Object.freeze({
     sevenProcedureOrder:(s.rn.split(ORDER_TOKEN).length-1)===2&&(s.grc.split(ORDER_TOKEN).length-1)===5,
-    oneOrientationGuide:s.frame.includes('data-procedure-orientation-token="guide"')&&s.frame.includes('Come leggere questa procedura')&&!s.frame.includes("orientationToken('basis'"),
+    oneOrientationGuide:s.frame.includes('data-procedure-orientation-token="guide"')&&s.frame.includes('Perimetro e criteri ·')&&s.frame.includes('Perché esiste')&&s.frame.includes('Cosa non conclude')&&!s.frame.includes("orientationToken('basis'"),
     orientationSemantics:s.frame.includes('data-orientation-basis')&&s.frame.includes('data-orientation-boundary'),
     nativeQueueOwner:s.rn.includes("ensureQueueWindow($('#missionsList')")&&s.rn.includes("ensureQueueWindow($('#incidentList')")&&!s.rn.includes('compactList('),
     queueCountOwner:s.seq.includes("registryCount.textContent=\`\${shown} di \${matching.length}\`")&&s.seq.includes("tools.dataset.enduserPrimitive='ControlRail'"),

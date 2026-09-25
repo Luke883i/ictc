@@ -310,7 +310,8 @@ try:
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
         page=browser.new_page()
-        ensure_onboarded(page,BASE,'user')
+        page.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
+        ensure_onboarded(page,BASE,'admin')
         for viewport,width,height in VIEWPORTS:
             page.set_viewport_size({'width':width,'height':height})
             for surface,view,procedure,root in SURFACES:

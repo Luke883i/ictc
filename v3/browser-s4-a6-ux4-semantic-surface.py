@@ -164,8 +164,9 @@ def auditor_incident(browser):
     fixture.close()
     ctx=browser.new_context(viewport={'width':1280,'height':900}); ctx.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')")
     page=ctx.new_page(); page.set_default_timeout(30000); local_writes=[]
+    PHASE='EC-01-auditor-processes'; page.goto(BASE+'/?view=processes',wait_until='networkidle'); ensure_onboarded(page,BASE,'auditor')
     page.on('request',lambda r: local_writes.append({'method':r.method,'path':urllib.parse.urlparse(r.url).path}) if r.url.startswith(BASE+'/api/') and r.method!='GET' else None)
-    PHASE='EC-01-auditor-processes'; page.goto(BASE+'/?view=processes',wait_until='networkidle'); ensure_onboarded(page,BASE,'auditor'); r=open_process(page,'EC-01','incidents','#incidentsView')
+    r=open_process(page,'EC-01','incidents','#incidentsView')
     PHASE='EC-01-auditor-fixture-visible'; opener=r.locator('[data-open-incident]').first; assert opener.count()>0,'seeded auditor fixture must be visible'
     PHASE='EC-01-auditor-open'; opener.click(); dialog=page.locator('#incidentWorkspace'); expect(dialog).to_be_visible(); assert dialog.evaluate("d=>d.contains(document.activeElement)")
     PHASE='EC-01-auditor-readonly'; assert dialog.locator('[data-answer-question],[data-answer-unknown],[data-generate-draft],[data-save-manual],[data-save-formulation],[data-submit-incident],[data-close-incident]').count()==0

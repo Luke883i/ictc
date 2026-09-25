@@ -29,4 +29,5 @@ def ensure_onboarded(page, base, role='admin'):
         raise AssertionError(f'onboarding prepare not accepted: {result}')
     if str(page.url).startswith(base):
         page.reload(wait_until='networkidle')
+        page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&Number(document.documentElement.dataset.experienceCycle||0)>0")
     return {'prepared': True, 'accepted': True, 'source': 'profile/onboarding'}
