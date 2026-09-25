@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -19,6 +20,7 @@ def request(ctx,method,path,data=None):
     return response.json()
 
 def open_risks(page):
+    ensure_onboarded(page,BASE,'admin')
     page.goto(BASE+'/?view=processes',wait_until='networkidle')
     card=page.locator('#procedureHub [data-process-code="RC-01"]')
     expect(card).to_be_visible()

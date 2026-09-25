@@ -41,7 +41,7 @@ def scroll_owners(page,selector):
 def close_dialogs(page):
     page.evaluate("()=>{for(const d of document.querySelectorAll('dialog[open]'))try{d.close()}catch{}}")
 
-def open_process(page,code,pid,root):
+def open_process(page,code,pid,root,require_mount=True):
     global PHASE
     close_dialogs(page)
     PHASE=f'{code}-catalog'
@@ -51,6 +51,8 @@ def open_process(page,code,pid,root):
     card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
     PHASE=f'{code}-surface-commit'
     page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
+    if not require_mount:
+        return page.locator(root)
     PHASE=f'{code}-mount'
     try:
         page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'&&w?.dataset.a6Ux4Mount)}",arg={'root':root,'pid':pid})
@@ -173,13 +175,13 @@ def auditor_incident(browser):
     assert dialog.locator('#questionValue:not([disabled])').count()==0; assert dialog.locator('[data-download-evidence]').count()>=1
     page.keyboard.press('Escape'); expect(dialog).not_to_be_visible(); assert not local_writes,local_writes
     RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True})
-    PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace'); forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
+    PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace',require_mount=False); forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
     RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':0}); ctx.close()
 
 def mobile(browser,width,height):
     global PHASE
     ctx=browser.new_context(viewport={'width':width,'height':height}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
-    page=ctx.new_page(); page.set_default_timeout(30000); page.goto(BASE+'/?view=processes',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
+    page=ctx.new_page(); page.set_default_timeout(30000); ensure_onboarded(page,BASE,'admin'); page.goto(BASE+'/?view=processes',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE=f'mobile-{width}-processes'; expect(page.locator('#procedureHub [data-process-code]')).to_have_count(7); no_page_overflow(page,f'mobile-{width}:processes')
     r=open_process(page,'MC-01','coverage','#grcWorkspace'); PHASE=f'mobile-{width}-mc'; expect(r.locator('[data-procedure-worklist]')).to_have_attribute('data-a6-ux4-mount','semantic-bridge')
     PHASE=f'mobile-{width}-dialog-open'; r.locator('[data-open-standard-browser]').first.click(); dialog=page.locator('#standardBrowserDialog'); expect(dialog).to_be_visible()

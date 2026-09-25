@@ -1,5 +1,6 @@
 import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -182,7 +183,7 @@ try:
   browser=pw.chromium.launch(**launch)
   for role in ROLES:
    for vp,width,height in VIEWPORTS:
-    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
+    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);ensure_onboarded(page,BASE,role);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
     if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
     ai_shell=page.locator('#runtimeStatus');actual_tone=ai_shell.get_attribute('data-tone');tooltip=ai_shell.get_attribute('data-tooltip');aria_hidden=ai_shell.get_attribute('aria-hidden')
     if ai_shell.is_visible():anomaly('ai-status-shell-visible',role,vp,'shell',True,False)
