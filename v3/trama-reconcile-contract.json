@@ -439,6 +439,7 @@
       "active-root",
       "active-referenced",
       "active-generated",
+      "dynamic-retained",
       "compatibility-required",
       "migration-only",
       "lineage-only",
@@ -513,7 +514,7 @@
       "recursive",
       "import("
     ],
-    "authorityLikePattern": "(?:^|[-_/])(authority|owner|registry|governance|runtime|server|store|router|writer|sot)(?:[-_.?/]|$)",
+    "authorityLikePattern": "(?:^|[-_])(authority|owner|registry|governance|server|store|router|writer|sot)(?:[-_.]|$)",
     "oracleLikePattern": "(?:check|test|saturation|mutation|fuzz|browser|diagnostic|probe)",
     "parallelRuntimeRootPattern": "^(?:app|lib|runtime|src|v1|v2)/",
     "purposeKinds": [
@@ -539,7 +540,14 @@
       "parallelRuntimeRoot": "BLOCKED_UNLESS_EXPLICITLY_RETAINED",
       "narrativeDocumentationReferenceKeepsRuntimeAlive": false,
       "exactExecutableOrGovernanceReferenceRequiredForActiveCode": true,
-      "preferExistingOwnerBeforeNewFile": true
+      "preferExistingOwnerBeforeNewFile": true,
+      "baseDiffSource": "git-merge-base-origin-base-ref",
+      "requiresFullHistory": true,
+      "addedRetirementCandidate": "BLOCKED",
+      "addedNeedsClassification": "BLOCKED",
+      "addedAuthorityCompetition": "BLOCKED",
+      "addedParallelRuntimeRoot": "BLOCKED_UNLESS_EXPLICIT_RETAINED_ROLE",
+      "existingRetirementDebtMayRemainButOnlyShrink": true
     },
     "retirementProcess": {
       "automaticRouting": true,
@@ -558,7 +566,8 @@
       "retirementCandidateRequiresNoDynamicLoaderRisk": true,
       "deletionRequiresDedicatedSemanticSlice": true,
       "deletionRequiresExactHeadGreen": true,
-      "reintroductionWithoutNewPurposeEvidence": "BLOCKED"
+      "reintroductionWithoutNewPurposeEvidence": "BLOCKED",
+      "dynamicAmbiguity": "RETAIN_UNTIL_DISAMBIGUATED"
     },
     "humanContract": {
       "technicalFileChoiceRequired": false,
@@ -570,7 +579,15 @@
         "external-evidence-or-decision-when-required"
       ]
     },
-    "claimBoundary": "Purpose census and retirement routing are repository-bounded evidence. Static/reference analysis may conservatively retain ambiguous files; it cannot prove production usage, legal necessity or external operational effectiveness."
+    "claimBoundary": "Purpose census and retirement routing are repository-bounded evidence. Static/reference analysis is conservative: dynamic-loader ambiguity is retained rather than deleted; qualification coverage is audit-probe coverage, not probability. The census cannot prove production usage, legal necessity or external operational effectiveness.",
+    "repositoryMetaRoots": [
+      ".gitignore",
+      ".editorconfig",
+      ".nvmrc",
+      "LICENSE",
+      ".github/CODEOWNERS",
+      "package-lock.json"
+    ]
   },
   "purposeModelReceipt": {
     "execution": "standalone deterministic semantic runtime model in assistant container",

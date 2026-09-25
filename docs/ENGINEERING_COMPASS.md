@@ -6,7 +6,7 @@
 Portare ICTC dallo stato osservato a Enterprise Candidate ricalcolando product truth authority runtime AI security evidence human deployment risk DevOps documentazione traiettoria e slice minima.
 
 ## DOVE SIAMO
-- **Sintesi:** 6 aree repository aperte; 4 rail esterni; 5 candidati retirement; 0 eliminabili senza una slice dedicata; next C2-DELIVERY-PROVENANCE.
+- **Sintesi:** 6 aree repository aperte; 4 rail esterni; repository-purpose census attivo; next C2-DELIVERY-PROVENANCE.
 - **Orizzonti:** Locale 11 domini TRAMA; Intermedio 16 assi; Globale ENTERPRISE_CANDIDATE; 9 gap non-terminali; 0 debiti di riconciliazione; critical path C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT; external E3-HUMAN, E3-GOV, E4-DEPLOY
 - **Governance:** GOV-WB6
 

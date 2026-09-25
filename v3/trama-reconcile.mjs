@@ -35,8 +35,8 @@ export function validateReconcileContract(c){
  const pg=c?.repositoryPurposeGovernance||{},states=pg.states||[],admission=pg.futureAdmission||{},retire=pg.retirementProcess||{},human=pg.humanContract||{};
  ck(pg.classification==='zero-authority-derived-file-purpose-census-and-retirement-router'&&pg.authorityEffect==='NONE'&&pg.sourceOfTruth===false&&pg.writer===false,'PURPOSE_BOUNDARY');
  ck(pg.censusSource==='git-ls-tree-head'&&pg.everyTrackedFileMustClassify===true&&pg.qualificationCoverageMinimum===0.95&&pg.qualificationProbes===20,'PURPOSE_CENSUS');
- for(const st of ['active-root','active-referenced','active-generated','compatibility-required','migration-only','lineage-only','deprecated-test','retirement-candidate','needs-classification'])ck(states.includes(st),'PURPOSE_STATE',st);
- ck(admission.needsClassification==='BLOCKED'&&admission.newUnreferencedFile==='BLOCKED'&&admission.unboundAuthorityLikeFile==='BLOCKED'&&admission.parallelRuntimeRoot==='BLOCKED_UNLESS_EXPLICITLY_RETAINED'&&admission.preferExistingOwnerBeforeNewFile===true,'PURPOSE_ADMISSION');
+ for(const st of ['active-root','active-referenced','active-generated','dynamic-retained','compatibility-required','migration-only','lineage-only','deprecated-test','retirement-candidate','needs-classification'])ck(states.includes(st),'PURPOSE_STATE',st);
+ ck(admission.needsClassification==='BLOCKED'&&admission.newUnreferencedFile==='BLOCKED'&&admission.unboundAuthorityLikeFile==='BLOCKED'&&admission.parallelRuntimeRoot==='BLOCKED_UNLESS_EXPLICITLY_RETAINED'&&admission.addedRetirementCandidate==='BLOCKED'&&admission.addedNeedsClassification==='BLOCKED'&&admission.addedAuthorityCompetition==='BLOCKED'&&admission.addedParallelRuntimeRoot==='BLOCKED_UNLESS_EXPLICIT_RETAINED_ROLE'&&admission.requiresFullHistory===true&&admission.existingRetirementDebtMayRemainButOnlyShrink===true&&admission.preferExistingOwnerBeforeNewFile===true,'PURPOSE_ADMISSION');
  ck(retire.automaticRouting===true&&retire.automaticDeletion===false&&retire.retirementCandidateRequiresCoverageAtLeast===0.95&&retire.retirementCandidateRequiresZeroLiveInboundRefs===true&&retire.retirementCandidateRequiresNoAuthorityBinding===true&&retire.retirementCandidateRequiresNoDynamicLoaderRisk===true&&retire.deletionRequiresDedicatedSemanticSlice===true&&retire.deletionRequiresExactHeadGreen===true,'PURPOSE_RETIREMENT');
  ck(human.technicalFileChoiceRequired===false&&human.classificationChoiceRequired===false&&human.retirementMechanismChoiceRequired===false,'PURPOSE_HUMAN_BURDEN');
  const pm=c?.purposeModelReceipt||{};ck(pm.cycles===10&&pm.casesPerCycle===10000000&&pm.totalCases===100000000&&pm.rootFailureFamilies===48&&pm.rootPairs===1128&&pm.survivors===0&&pm.deletionKilled===48&&pm.noNoveltyTail===10000&&pm.compressionTail===10000&&Array.isArray(pm.receipts)&&pm.receipts.length===10,'PURPOSE_MODEL_RECEIPT');
@@ -127,7 +127,7 @@ export function repositoryPurposeCensus(root=DEFAULT_ROOT,contract=loadReconcile
  const basenameRows=new Map();for(const file of files){const b=path.posix.basename(file),a=basenameRows.get(b)||[];a.push(file);basenameRows.set(b,a);}const uniqueBasename=new Map([...basenameRows].filter(([,v])=>v.length===1).map(([k,v])=>[k,v[0]]));
  const bodies=new Map(),refs=new Map(),inbound=new Map(files.map(x=>[x,[]]));for(const file of files){const body=readablePurposeText(root,file);bodies.set(file,body);const r=purposeRefs(file,body,fileSet,uniqueBasename);refs.set(file,r);for(const target of r)inbound.get(target).push(file);}
  const executableRoots=new Set((pg.executableRoots||[]).filter(x=>fileSet.has(x)));for(const file of files)if(file.startsWith('.github/workflows/')&&/\.ya?ml$/i.test(file))executableRoots.add(file);
- const governanceRoots=new Set((pg.governanceRoots||[]).filter(x=>fileSet.has(x))),activeManifest=new Set(),lineageManifest=new Set(),generatedManifest=new Set();
+ const governanceRoots=new Set((pg.governanceRoots||[]).filter(x=>fileSet.has(x))),repositoryMetaRoots=new Set((pg.repositoryMetaRoots||[]).filter(x=>fileSet.has(x))),activeManifest=new Set(),lineageManifest=new Set(),generatedManifest=new Set();
  for(const [file,entry] of manifestBy){if((pg.manifestActiveLifecycles||[]).includes(entry.lifecycle))activeManifest.add(file);if((pg.manifestLineageLifecycles||[]).includes(entry.lifecycle))lineageManifest.add(file);if((pg.manifestGeneratedLifecycles||[]).includes(entry.lifecycle))generatedManifest.add(file);}
  const generated=new Set([...generatedManifest,...files.filter(f=>(pg.generatedPathPrefixes||[]).some(prefix=>f.startsWith(prefix))||(pg.generatedExactPaths||[]).includes(f))]);
  const closure=roots=>{const seen=new Set(roots),queue=[...roots];while(queue.length){const source=queue.shift();if(purposeKind(source)==='documentation'&&!governanceRoots.has(source))continue;for(const target of refs.get(source)||[])if(!seen.has(target)){seen.add(target);queue.push(target);}}return seen;};
@@ -135,23 +135,47 @@ export function repositoryPurposeCensus(root=DEFAULT_ROOT,contract=loadReconcile
  const dynamicDirs=new Set();for(const source of liveReach)for(const d of dynamicPurposeDirectories(source,bodies.get(source),files))dynamicDirs.add(d);
  const min=Number(pg.qualificationCoverageMinimum||0.95),probeCount=Number(pg.qualificationProbes||20),authorityRe=new RegExp(pg.authorityLikePattern,'i'),oracleRe=new RegExp(pg.oracleLikePattern,'i'),parallelRe=new RegExp(pg.parallelRuntimeRootPattern,'i');
  const rows=files.map(file=>{
-  const manifestEntry=manifestBy.get(file)||null,legacyEntry=legacyBy.get(file)||null,rootExecutable=executableRoots.has(file),rootGovernance=governanceRoots.has(file),manifestActive=activeManifest.has(file),isGenerated=generated.has(file),executable=execReach.has(file),governed=govReach.has(file),live=liveReach.has(file),incoming=inbound.get(file)||[],liveInbound=incoming.filter(x=>liveReach.has(x));
-  const dynamicRisk=[...dynamicDirs].some(d=>file.startsWith(d+'/'))&&!live,authorityLike=authorityRe.test(file)&&!oracleRe.test(file),parallelRuntimeRoot=parallelRe.test(file),ambiguousBasename=(basenameRows.get(path.posix.basename(file))||[]).length>1;
+  const kind=purposeKind(file),manifestEntry=manifestBy.get(file)||null,legacyEntry=legacyBy.get(file)||null,rootExecutable=executableRoots.has(file),rootGovernance=governanceRoots.has(file),repositoryMeta=repositoryMetaRoots.has(file),manifestActive=activeManifest.has(file),isGenerated=generated.has(file),executable=execReach.has(file),governed=govReach.has(file),live=liveReach.has(file),incoming=inbound.get(file)||[],liveInbound=incoming.filter(x=>liveReach.has(x));
+  const dynamicRisk=[...dynamicDirs].some(d=>file.startsWith(d+'/'))&&!live,authorityLike=['runtime','data-contract'].includes(kind)&&authorityRe.test(path.posix.basename(file))&&!oracleRe.test(file),parallelRuntimeRoot=parallelRe.test(file),ambiguousBasename=(basenameRows.get(path.posix.basename(file))||[]).length>1;
   const unresolved=[];if(dynamicRisk)unresolved.push('dynamic-loader-risk');if(ambiguousBasename&&!incoming.length)unresolved.push('ambiguous-basename');if(bodies.get(file)===null&&!/\.(?:png|xlsx|b64)$/i.test(file))unresolved.push('text-unreadable');const qualificationCoverage=Math.max(0,(probeCount-unresolved.length)/probeCount);
   let state='needs-classification',reason='no deterministic purpose evidence';
-  if(rootExecutable||rootGovernance||manifestActive){state='active-root';reason=rootExecutable?'executable root':rootGovernance?'governance root':'active documentation manifest';}
+  if(rootExecutable||rootGovernance||repositoryMeta||manifestActive){state='active-root';reason=rootExecutable?'executable root':rootGovernance?'governance root':repositoryMeta?'repository metadata root':'active documentation manifest';}
   else if(live){state='active-referenced';reason=executable?'reachable from executable root':'reachable from machine-readable governance root';}
   else if(isGenerated){state='active-generated';reason='generated lifecycle/path contract';}
   else if(legacyEntry&&['compatibility-required','migration-only','lineage-only','deprecated-test'].includes(legacyEntry.classification)){state=legacyEntry.classification;reason='explicit legacy role';}
   else if(lineageManifest.has(file)){state='lineage-only';reason='documentation manifest lineage';}
-  else if(dynamicRisk){state='needs-classification';reason='possible dynamic loader reachability';}
-  else if(authorityLike){state='needs-classification';reason='unbound authority-like object cannot be auto-retired';}
-  else if(qualificationCoverage>=min){state='retirement-candidate';reason=legacyEntry?.classification==='retirement-candidate'?'explicit legacy retirement candidate':'observed unreferenced after qualification probes';}
-  const useState=['active-root','active-referenced','active-generated'].includes(state)?'current-use':['compatibility-required','migration-only','lineage-only','deprecated-test'].includes(state)?'retained-purpose':'observed-unreferenced';
-  return Object.freeze({path:file,kind:purposeKind(file),state,useState,reason,qualificationCoverage,liveInbound:Object.freeze(liveInbound.sort()),inboundCount:incoming.length,outboundCount:(refs.get(file)||[]).length,dynamicRisk,authorityLike,parallelRuntimeRoot,manifestLifecycle:manifestEntry?.lifecycle||null,legacyClassification:legacyEntry?.classification||null});
+  else if(dynamicRisk){state='dynamic-retained';reason='possible dynamic loader reachability; retained conservatively';}
+  else if(qualificationCoverage>=min){state='retirement-candidate';reason=authorityLike?'unbound authority-like object routed to retirement':legacyEntry?.classification==='retirement-candidate'?'explicit legacy retirement candidate':'observed unreferenced after qualification probes';}
+  const useState=['active-root','active-referenced','active-generated'].includes(state)?'current-use':['dynamic-retained','compatibility-required','migration-only','lineage-only','deprecated-test'].includes(state)?'retained-purpose':'observed-unreferenced';
+  return Object.freeze({path:file,kind,state,useState,reason,qualificationCoverage,liveInbound:Object.freeze(liveInbound.sort()),inboundCount:incoming.length,outboundCount:(refs.get(file)||[]).length,dynamicRisk,authorityLike,parallelRuntimeRoot,manifestLifecycle:manifestEntry?.lifecycle||null,legacyClassification:legacyEntry?.classification||null});
  });
- const byState=Object.fromEntries(pg.states.map(st=>[st,rows.filter(x=>x.state===st).length])),needsClassification=rows.filter(x=>x.state==='needs-classification'),retirementCandidates=rows.filter(x=>x.state==='retirement-candidate'),authorityCompetition=needsClassification.filter(x=>x.authorityLike),parallelRuntimeDebt=rows.filter(x=>x.parallelRuntimeRoot&&!['active-root','active-referenced','compatibility-required','migration-only','lineage-only','deprecated-test'].includes(x.state));
+ const byState=Object.fromEntries(pg.states.map(st=>[st,rows.filter(x=>x.state===st).length])),needsClassification=rows.filter(x=>x.state==='needs-classification'),retirementCandidates=rows.filter(x=>x.state==='retirement-candidate'),authorityCompetition=retirementCandidates.filter(x=>x.authorityLike),parallelRuntimeDebt=rows.filter(x=>x.parallelRuntimeRoot&&!['active-root','active-referenced','dynamic-retained','compatibility-required','migration-only','lineage-only','deprecated-test'].includes(x.state));
  return Object.freeze({schema:'ictc-repository-purpose-census/v1',authorityEffect:'NONE',projectionIsSot:false,writer:false,censusSource:'git-ls-tree-head',totalFiles:files.length,classifiedFiles:rows.length-needsClassification.length,coverage:(rows.length-needsClassification.length)/Math.max(1,rows.length),byState:Object.freeze(byState),rows:Object.freeze(rows),needsClassification:Object.freeze(needsClassification),retirementCandidates:Object.freeze(retirementCandidates),authorityCompetition:Object.freeze(authorityCompetition),parallelRuntimeDebt:Object.freeze(parallelRuntimeDebt),dynamicDirectories:Object.freeze([...dynamicDirs].sort()),automaticDeletion:false,claimBoundary:pg.claimBoundary});
+}
+
+
+function addedPurposeFilesAgainstBase(root){
+ const base=String(process.env.GITHUB_BASE_REF||'').trim();
+ if(!base)return Object.freeze({evaluated:false,baseRef:null,mergeBase:null,added:Object.freeze([]),reason:'non-pr-or-base-ref-unavailable'});
+ const fetch=spawnSync('git',['-C',root,'rev-parse','--verify','origin/'+base],{encoding:'utf8'});
+ if(fetch.status!==0)return Object.freeze({evaluated:false,baseRef:base,mergeBase:null,added:Object.freeze([]),reason:'origin-base-ref-unavailable'});
+ const mb=spawnSync('git',['-C',root,'merge-base','HEAD','origin/'+base],{encoding:'utf8'});
+ if(mb.status!==0)return Object.freeze({evaluated:false,baseRef:base,mergeBase:null,added:Object.freeze([]),reason:'merge-base-unavailable'});
+ const mergeBase=mb.stdout.trim(),diff=spawnSync('git',['-C',root,'diff','--name-only','--diff-filter=A','-z',mergeBase+'...HEAD'],{encoding:'utf8',maxBuffer:16*1024*1024});
+ if(diff.status!==0)return Object.freeze({evaluated:false,baseRef:base,mergeBase,added:Object.freeze([]),reason:'added-file-diff-unavailable'});
+ return Object.freeze({evaluated:true,baseRef:base,mergeBase,added:Object.freeze(diff.stdout.split('\0').filter(Boolean).map(x=>x.replaceAll('\\','/')).sort()),reason:null});
+}
+export function repositoryPurposeAdmission(root=DEFAULT_ROOT,contract=loadReconcileContract(root),census=repositoryPurposeCensus(root,contract)){
+ const change=addedPurposeFilesAgainstBase(root),byPath=new Map(census.rows.map(x=>[x.path,x])),violations=[];
+ if(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_EVENT_NAME==='pull_request'&&!change.evaluated)violations.push({code:'PURPOSE_BASE_DIFF_UNAVAILABLE',reason:change.reason});
+ for(const file of change.added){
+  const row=byPath.get(file);if(!row){violations.push({code:'ADDED_FILE_NOT_IN_CENSUS',path:file});continue;}
+  if(row.state==='needs-classification')violations.push({code:'ADDED_NEEDS_CLASSIFICATION',path:file});
+  if(row.state==='retirement-candidate')violations.push({code:'ADDED_UNREFERENCED_SCAFFOLD',path:file});
+  if(row.authorityLike&&!['active-root','active-referenced'].includes(row.state))violations.push({code:'ADDED_AUTHORITY_COMPETITION',path:file});
+  if(row.parallelRuntimeRoot&&!['active-root','active-referenced','compatibility-required','migration-only'].includes(row.state))violations.push({code:'ADDED_PARALLEL_RUNTIME_ROOT',path:file});
+ }
+ return Object.freeze({schema:'ictc-repository-purpose-admission/v1',authorityEffect:'NONE',evaluated:change.evaluated,baseRef:change.baseRef,mergeBase:change.mergeBase,addedFiles:change.added,violations:Object.freeze(violations),ok:violations.length===0,claimBoundary:'PR admission guard only; current pre-existing retirement debt may remain but new unreferenced/competing scaffolding is fail-closed.'});
 }
 
 function finding(map,id){return map.find(x=>x.id===id)||null;}

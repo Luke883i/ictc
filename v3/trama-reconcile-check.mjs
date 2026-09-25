@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {appendFile,readFile} from 'node:fs/promises';
-import {deriveExpectedReconciliation,interactionMode,isGenericContinuationIntent,legacyCensus,loadReconcileContract,nextGovernedAction,reconcileAuthority,repositoryPurposeCensus,validateReconcileContract} from './trama-reconcile.mjs';
+import {deriveExpectedReconciliation,interactionMode,isGenericContinuationIntent,legacyCensus,loadReconcileContract,nextGovernedAction,reconcileAuthority,repositoryPurposeAdmission,repositoryPurposeCensus,validateReconcileContract} from './trama-reconcile.mjs';
 
 const contract=loadReconcileContract();
 assert.deepEqual(validateReconcileContract(contract),[]);
@@ -40,6 +40,9 @@ if(process.env.GITHUB_STEP_SUMMARY){
 }
 assert.equal(purpose.needsClassification.length,0,'repository purpose census needs classification: '+JSON.stringify(purpose.needsClassification.slice(0,80).map(x=>({path:x.path,reason:x.reason,q:x.qualificationCoverage,dynamic:x.dynamicRisk,authorityLike:x.authorityLike}))));
 assert.equal(purpose.coverage,1);
+const admission=repositoryPurposeAdmission(undefined,contract,purpose);
+if(process.env.GITHUB_STEP_SUMMARY){await appendFile(process.env.GITHUB_STEP_SUMMARY,'\n### New-file admission\n'+JSON.stringify(admission,null,2)+'\n');}
+assert.equal(admission.ok,true,'repository purpose admission: '+JSON.stringify(admission));
 
 for(const phrase of ['ora','ora?','ora che si fa','e adesso','prosegui','continua','what next','now what','continue']){
  assert.equal(isGenericContinuationIntent(phrase,contract),true,phrase);
@@ -79,7 +82,7 @@ console.log(JSON.stringify({
  suite:'GOV-TRAMA-RECONCILE-1',
  methodFamilies:contract.method.canonicalFamilies,
  campaigns:contract.campaigns.length,
- legacyCandidates:legacy.pathRows.length,purpose:{total:purpose.totalFiles,byState:purpose.byState,retirementCandidates:purpose.retirementCandidates.length,needsClassification:purpose.needsClassification.length,coverage:purpose.coverage},
+ legacyCandidates:legacy.pathRows.length,purpose:{total:purpose.totalFiles,byState:purpose.byState,retirementCandidates:purpose.retirementCandidates.length,needsClassification:purpose.needsClassification.length,coverage:purpose.coverage,admission:{evaluated:admission.evaluated,addedFiles:admission.addedFiles.length,violations:admission.violations.length}},
  blockingLegacy:legacy.blocking.length,
  unknownLegacy:legacy.unknown.length,
  reconciled:{serial:expected.serial,conditionals:expected.conditionals},
