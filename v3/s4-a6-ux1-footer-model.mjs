@@ -17,6 +17,7 @@ export function validateA6Ux1({css,styles,registry,workflow,browser}){
  ])check(has(css,token),code,token);
  check(/(?:^|[;{])\s*height\s*:\s*var\(--a6-ux1-footer-reserve\)!important/.test(String(css||'')),'HEIGHT_RESERVE_COUPLING','height must equal reserve');
  check(!has(css,'position:static!important'),'NO_STATIC_REGRESSION','static footer resurrected');
+ check(!has(css,'height:auto!important'),'NO_AUTO_HEIGHT','fixed footer height must remain reserve-coupled');
  const body=(String(css||'').match(/body\{([^}]*)\}/)||[])[1]||'';
  check(!/display\s*:\s*flex/.test(body),'NO_BODY_FLEX','body flex-root');
  check(!/position\s*:\s*fixed/.test(body),'NO_BODY_FIXED','body fixed');
