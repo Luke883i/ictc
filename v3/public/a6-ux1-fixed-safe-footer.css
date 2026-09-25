@@ -1,24 +1,24 @@
-/* S4-A6 / A6-UX1 lineage retained: current footer geometry is flow-safe and non-occlusive. */
+/* S4-A6 / A6-UX1: one fixed, safe, non-authoritative legal footer on every landing. */
 html[data-ictc-experience="market-1"]{
   --a6-ux1-footer-min:44px;
   --a6-ux1-footer-safe-bottom:env(safe-area-inset-bottom,0px);
-  --a6-ux1-footer-reserve:0px;
-  scroll-padding-bottom:0px;
+  --a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom));
+  scroll-padding-bottom:calc(var(--a6-ux1-footer-reserve) + 12px);
 }
 html[data-ictc-experience="market-1"] body{
-  padding-bottom:0!important;
+  padding-bottom:var(--a6-ux1-footer-reserve)!important;
 }
 html[data-ictc-experience="market-1"] #stableLegalFooter,
 html[data-ictc-experience="market-1"] .stable-legal-footer{
-  position:static!important;
-  inset:auto!important;
-  width:100%;
-  height:auto!important;
-  min-height:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))!important;
+  position:fixed!important;
+  left:0!important;right:0!important;bottom:0!important;top:auto!important;
+  width:100%;height:auto!important;
+  min-height:var(--a6-ux1-footer-reserve)!important;
   box-sizing:border-box;
   padding-bottom:var(--a6-ux1-footer-safe-bottom)!important;
-  z-index:auto;
+  z-index:40;
 }
+html[data-ictc-experience="market-1"] :is(main,.view,[tabindex],button,a,input,select,textarea,summary){scroll-margin-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)}
 @media(max-width:760px){
   html[data-ictc-experience="market-1"]{--a6-ux1-footer-min:52px}
 }
