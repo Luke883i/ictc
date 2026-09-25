@@ -6,7 +6,7 @@ const source={footer:read('./public/a6-ux1-fixed-safe-footer.css'),stable:read('
 assert.equal(validateUiuxMiningV2Coverage().ok,true);assert.equal(UIUX_MINING_V2_COVERAGE.issueCount,352);
 const sourceLaws=Object.freeze({
  M1:source.footer.includes('position:fixed!important')&&source.footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important')&&source.footer.includes('env(safe-area-inset-bottom,0px)'),
- M2:source.stable.includes("api('/api/profile/onboarding'")&&source.server.includes("pathname==='/api/profile/onboarding'")&&source.model.includes("authority:'user-record'")&&source.model.includes("authority:'synthetic-demo-fixture'"),
+ M2:source.stable.includes("api('/api/profile/onboarding'")&&source.stable.includes("onboardingState(){return state.data?.experience?.onboarding||null")&&source.stable.includes('if(!value)return')&&source.server.includes("pathname==='/api/profile/onboarding'")&&source.model.includes("authority:'user-record'")&&source.model.includes("authority:'synthetic-demo-fixture'"),
  M3:source.slots.includes("SUPPORT_NAMES=new Set(['reference','advanced-context'])")&&source.frame.includes('Perimetro e criteri')&&source.frame.includes('Perché esiste')&&source.frame.includes('Cosa non conclude'),
  M4:source.worklist.includes("count.textContent=`${filtered.length}/${source.length}`")&&source.worklist.includes('data-worklist-clear-inline')&&source.anatomy.includes('overlapping-non-additive')&&source.anatomy.includes('non sommabili'),
  M5:source.presentation.includes("uiuxActionHierarchy='record-local'")&&source.p2.includes('.procedure-record-facts')&&source.p2.includes('.procedure-action-rail'),
@@ -21,7 +21,7 @@ assert.deepEqual(Object.entries(sourceLaws).filter(([,ok])=>!ok),[],'production-
 const ciLaws=Object.freeze({
  handoffCurrent:source.handoff.includes('procedure-support-rail')&&!source.handoff.includes('.procedure-decision-frame .composition-process-context'),
  onboardingPrecondition:source.browserSupport.includes('/api/profile/onboarding')&&source.browserSupport.includes('_settle_onboarding_dom'),
- focusPrecondition:source.browserA5.indexOf("ensure_onboarded(page,BASE,'admin')")>=0&&source.browserA5.indexOf("ensure_onboarded(page,BASE,'admin')")<source.browserA5.indexOf("page.goto(BASE + '/', wait_until='networkidle')"),
+ focusPrecondition:source.browserA5.includes("page.set_default_timeout(30000)\n        ensure_onboarded(page,BASE,'admin')\n        page.on('pageerror'")&&source.browserA5.includes("phase('desktop-load')\n        page.goto(BASE + '/', wait_until='networkidle')"),
  supportRailCurrent:source.browserOnto.includes("reference=rail.locator(':scope > [data-editorial-slot=\"reference\"]')")&&source.browserFinetune.includes('procedure-support-rail')
 });
 assert.deepEqual(Object.entries(ciLaws).filter(([,ok])=>!ok),[],'current CI/browser rails drift from governed UIUX topology');
