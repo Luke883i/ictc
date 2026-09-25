@@ -102,3 +102,10 @@ Historical/candidate documents are useful for design lineage but do not override
 49. Monitora l'entropia come firma del reticolo di debt/stato, non come maturity score. Ogni debt attivo deve conservare source ID/path, owner, evidence class, target, dipendenze, related debt, falsifier e claim boundary.
 50. Enterprise Candidate va letto dal ferro all'esperienza umana tramite `v3/trama-enterprise-dod.json#experienceLattice`; nessuna astrazione superiore può sintetizzare E3-HUMAN, E3-GOV o E4-DEPLOY mancanti.
 51. Le landing canoniche rispettano l'ordine `identity -> primary work/decision -> bounded list -> context/evidence -> technical detail`. Home mostra la decisione prima della worklist max-3; Processi resta row-list 7/7; Evidenze è decision/evidence-first con dettaglio progressivo. Vietati card-wall, first-plane list non bounded e visual order che contraddice il DOM semantico.
+
+## GOV-REPOSITORY-PURPOSE-1 — file purpose, admission and retirement
+
+52. Ogni file Git-tracked deve derivare un purpose deterministico dal checkout corrente: root eseguibile/governance, reachability eseguibile, lifecycle documentale/generated, oppure classe legacy esplicita. Una menzione narrativa in documentazione non mantiene vivo un runtime.
+53. `needs-classification` è fail-closed. Un nuovo file non referenziato, un authority-like object non legato agli owner correnti o un runtime root parallelo non possono entrare come scaffolding implicito: prima riusa un owner esistente o dichiara una migrazione/falsificatore espliciti.
+54. Il ritiro è automatico nel routing ma non nella cancellazione: `retirement-candidate` richiede almeno 95% di qualification coverage, zero live inbound reference, nessun binding di authority e nessun dynamic-loader risk; la rimozione fisica richiede una semantic slice dedicata, deletion oracle ed exact-head green.
+55. L'AI possiede classificazione, dependency archaeology, mutation tier e percorso di deprecazione/ritiro. L'utente non deve scegliere file, framework o meccanismi tecnici; resta proprietario di intento, accettazione materiale ed eventuale evidenza/decisione esterna.

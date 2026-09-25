@@ -36,6 +36,16 @@ The derived operator guidance is deterministic and intentionally low-burden: the
 
 The strategic 10M gate invokes the semantic runtime evaluator for every mutation composition. This is real runtime execution of the semantic evaluator, not ten million browser sessions, builds, deployments or external-human trials.
 
+## Repository purpose census and canonical retirement
+
+TRAMA-RECONCILE now treats the **entire committed Git tree** as a governed surface. Every tracked file must resolve to a deterministic purpose state: active root/reference/generated, compatibility/migration/lineage/deprecated retention, qualified retirement candidate, or fail-closed `needs-classification`.
+
+The census distinguishes executable/governance reachability from narrative documentation. A current document may describe an old runtime without making that runtime current again. Static references, package/workflow/gate entrypoints, machine-readable authority bindings, documentation lifecycle and explicit legacy roles are evaluated separately.
+
+Retirement is a canonical lifecycle, not deletion-by-age: `ACTIVE -> OBSERVED_UNREFERENCED -> QUALIFIED_RETIREMENT -> DEPRECATION_OR_LINEAGE_IF_REQUIRED -> RETIRE_READY_AFTER_DELETION_ORACLE -> REMOVED`. Routing is automatic; deletion is never automatic. A retirement candidate requires at least 95% **qualification coverage** (audit-probe coverage, not probability), zero live executable/governance inbound references, no authority binding and no unresolved dynamic-loader risk.
+
+Future admission is fail-closed: unreferenced new scaffolding, unbound authority-like files and parallel runtime roots cannot silently enter the repository. The preferred response is reuse/contraction of an existing owner; a genuine new owner requires an explicit migration/authority decision and falsifier.
+
 ## Cognitive-order contract
 
 Canonical first-plane order is:

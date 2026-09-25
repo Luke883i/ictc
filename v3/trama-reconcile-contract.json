@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "sliceId": "GOV-TRAMA-RECONCILE-1",
   "name": "Observed State <-> Convergence Authority Reconciliation",
   "classification": "trama-owned-zero-authority-reconciliation-profile",
@@ -368,7 +368,10 @@
       "G09 documentation/workbook/Compass co-transition with planning semantics",
       "G10 merge remains human-authorized and is not release/completion",
       "G11 exact-head evidence binds acceptance; semantic mutations remain model evidence",
-      "G12 no Enterprise Ready legal compliance market-fit or production-effectiveness claim is created"
+      "G12 no Enterprise Ready legal compliance market-fit or production-effectiveness claim is created",
+      "G13 every tracked file has a deterministic purpose/lifecycle classification or fails closed",
+      "G14 future files cannot enter as unreferenced scaffolding, parallel authority or parallel runtime root",
+      "G15 retirement is automatically routed but physical deletion requires a dedicated exact-head deletion oracle"
     ],
     "intermediate": [
       "I01 C5 reconciles terminal repository-side only when source predicates validate",
@@ -382,7 +385,10 @@
       "I09 state vocabulary is granular enough to avoid todo/done information loss",
       "I10 stale planning encoded in current gates is replaced by reconciled semantics without rewriting lineage models",
       "I11 legacy file-name/version markers are classified by current role, not age/name alone",
-      "I12 Compass emits local/intermediate/global distance, DoD metrics and one next action"
+      "I12 Compass emits local/intermediate/global distance, DoD metrics and one next action",
+      "I13 executable/governance reachability is distinct from narrative documentation mention",
+      "I14 current/generated/compatibility/migration/lineage/deprecated purposes remain distinct from retirement candidates",
+      "I15 qualification coverage is an audit-coverage ratio, never a probability or maturity score"
     ],
     "local": [
       "L01 reconciliation contract is machine-readable and validator-complete",
@@ -400,7 +406,11 @@
       "L13 generated Compass is byte-consistent with governed orientation",
       "L14 3M multi-abstraction mutation campaign has zero unsafe survivors and full 64-family pair coverage",
       "L15 100k no-novelty tail yields zero unmapped reconciliation failure families",
-      "L16 exact PR head must pass canonical repository CI without weakening product/test together"
+      "L16 exact PR head must pass canonical repository CI without weakening product/test together",
+      "L17 repository purpose census covers every git-tracked file",
+      "L18 needs-classification count is zero on accepted exact head",
+      "L19 retirement candidates have >=95% qualification coverage and zero live executable/governance inbound reference",
+      "L20 10M purpose-lifecycle mutation campaign has zero survivors and complete 48-family pair coverage"
     ]
   },
   "localModelReceipt": {
@@ -416,5 +426,192 @@
     "digest": "abeac003d6f3f518f44c74b4f1963e8391b868396078a5b047fd93cfd7f225ca",
     "claimBoundary": "model qualification only; repository integration is established only by exact-head repository checks/CI"
   },
-  "claimBoundary": "Zero-authority reconciliation/governance evidence. It may update durable planning only through the canonical convergence authority co-transition; it cannot manufacture external human/GitHub/deployment evidence or prove Enterprise Ready, legal compliance, production security, market fit or formal global minimality."
+  "claimBoundary": "Zero-authority reconciliation/governance evidence. It may update durable planning only through the canonical convergence authority co-transition; it cannot manufacture external human/GitHub/deployment evidence or prove Enterprise Ready, legal compliance, production security, market fit or formal global minimality.",
+  "repositoryPurposeGovernance": {
+    "classification": "zero-authority-derived-file-purpose-census-and-retirement-router",
+    "authorityEffect": "NONE",
+    "sourceOfTruth": false,
+    "writer": false,
+    "censusSource": "git-ls-tree-head",
+    "qualificationCoverageMinimum": 0.95,
+    "everyTrackedFileMustClassify": true,
+    "states": [
+      "active-root",
+      "active-referenced",
+      "active-generated",
+      "dynamic-retained",
+      "compatibility-required",
+      "migration-only",
+      "lineage-only",
+      "deprecated-test",
+      "retirement-candidate",
+      "needs-classification"
+    ],
+    "executableRoots": [
+      "package.json",
+      "v3/server.mjs",
+      "v3/public/index.html",
+      "v3/current-gate-registry.mjs",
+      "v3/current-release-suite.mjs"
+    ],
+    "governanceRoots": [
+      "AGENTS.md",
+      "docs/authority-matrix.yaml",
+      "docs/documentation-manifest.json",
+      "docs/convergence/convergence-authority.json",
+      "v3/product-contract.json",
+      "v3/semantic-owner-contract.json",
+      "v3/release-identity.json",
+      "v3/trama-engineering-contract.json",
+      "v3/trama-compass-governance.json",
+      "v3/trama-enterprise-dod.json",
+      "v3/trama-reconcile-contract.json",
+      "v3/as-is-convergence-contract.json",
+      "v3/gaps.json",
+      "audit/remediation-registry.json"
+    ],
+    "manifestActiveLifecycles": [
+      "current",
+      "operating",
+      "policy",
+      "roadmap",
+      "source-input"
+    ],
+    "manifestLineageLifecycles": [
+      "lineage"
+    ],
+    "manifestGeneratedLifecycles": [
+      "generated"
+    ],
+    "generatedPathPrefixes": [
+      "docs/generated/"
+    ],
+    "generatedExactPaths": [
+      "artifacts/release-manifest.json"
+    ],
+    "executableReferenceExtensions": [
+      "mjs",
+      "js",
+      "json",
+      "css",
+      "py",
+      "yml",
+      "yaml",
+      "html",
+      "sh",
+      "txt",
+      "svg",
+      "png",
+      "b64",
+      "xlsx",
+      "sha256",
+      "example"
+    ],
+    "dynamicLoaderTokens": [
+      "readdir",
+      "glob",
+      "walk",
+      "recursive",
+      "import("
+    ],
+    "authorityLikePattern": "(?:^|[-_])(authority|owner|registry|governance|server|store|router|writer|sot)(?:[-_.]|$)",
+    "oracleLikePattern": "(?:check|test|saturation|mutation|fuzz|browser|diagnostic|probe)",
+    "parallelRuntimeRootPattern": "^(?:app|lib|runtime|src|v1|v2)/",
+    "purposeKinds": [
+      "governance",
+      "workflow",
+      "runtime",
+      "ui",
+      "oracle",
+      "documentation",
+      "data-contract",
+      "fixture",
+      "generated",
+      "asset",
+      "config",
+      "artifact",
+      "unknown"
+    ],
+    "qualificationProbes": 20,
+    "futureAdmission": {
+      "needsClassification": "BLOCKED",
+      "newUnreferencedFile": "BLOCKED",
+      "unboundAuthorityLikeFile": "BLOCKED",
+      "parallelRuntimeRoot": "BLOCKED_UNLESS_EXPLICITLY_RETAINED",
+      "narrativeDocumentationReferenceKeepsRuntimeAlive": false,
+      "exactExecutableOrGovernanceReferenceRequiredForActiveCode": true,
+      "preferExistingOwnerBeforeNewFile": true,
+      "baseDiffSource": "git-merge-base-origin-base-ref",
+      "requiresFullHistory": true,
+      "addedRetirementCandidate": "BLOCKED",
+      "addedNeedsClassification": "BLOCKED",
+      "addedAuthorityCompetition": "BLOCKED",
+      "addedParallelRuntimeRoot": "BLOCKED_UNLESS_EXPLICIT_RETAINED_ROLE",
+      "existingRetirementDebtMayRemainButOnlyShrink": true
+    },
+    "retirementProcess": {
+      "automaticRouting": true,
+      "automaticDeletion": false,
+      "flow": [
+        "ACTIVE",
+        "OBSERVED_UNREFERENCED",
+        "QUALIFIED_RETIREMENT",
+        "DEPRECATION_OR_LINEAGE_IF_REQUIRED",
+        "RETIRE_READY_AFTER_DELETION_ORACLE",
+        "REMOVED"
+      ],
+      "retirementCandidateRequiresCoverageAtLeast": 0.95,
+      "retirementCandidateRequiresZeroLiveInboundRefs": true,
+      "retirementCandidateRequiresNoAuthorityBinding": true,
+      "retirementCandidateRequiresNoDynamicLoaderRisk": true,
+      "deletionRequiresDedicatedSemanticSlice": true,
+      "deletionRequiresExactHeadGreen": true,
+      "reintroductionWithoutNewPurposeEvidence": "BLOCKED",
+      "dynamicAmbiguity": "RETAIN_UNTIL_DISAMBIGUATED"
+    },
+    "humanContract": {
+      "technicalFileChoiceRequired": false,
+      "classificationChoiceRequired": false,
+      "retirementMechanismChoiceRequired": false,
+      "humanOwns": [
+        "product-intent",
+        "material-acceptance",
+        "external-evidence-or-decision-when-required"
+      ]
+    },
+    "claimBoundary": "Purpose census and retirement routing are repository-bounded evidence. Static/reference analysis is conservative: dynamic-loader ambiguity is retained rather than deleted; qualification coverage is audit-probe coverage, not probability. The census cannot prove production usage, legal necessity or external operational effectiveness.",
+    "repositoryMetaRoots": [
+      ".gitignore",
+      ".editorconfig",
+      ".nvmrc",
+      "LICENSE",
+      ".github/CODEOWNERS",
+      "package-lock.json"
+    ]
+  },
+  "purposeModelReceipt": {
+    "execution": "standalone deterministic semantic runtime model in assistant container",
+    "cycles": 10,
+    "casesPerCycle": 10000000,
+    "totalCases": 100000000,
+    "rootFailureFamilies": 48,
+    "rootPairs": 1128,
+    "survivors": 0,
+    "deletionKilled": 48,
+    "noNoveltyTail": 10000,
+    "compressionTail": 10000,
+    "receipts": [
+      "6ab9655afe908bf4b693cfcba6d934f04a0e54c773c8b6f8b126d6c446750048",
+      "5e65f41d42d0bae2b5d6923c46b199cff6a6ef3a6b6d6a8b0b4e902ca0379c33",
+      "f19c487459aabc87e6e997e3ed4ad8bb85c1d176448e6eb9ede16a3ac3c0e78c",
+      "325b15478dc064113fd0b8a94ceae793a35231a828f0f4d7fd50016bb2480d31",
+      "ae7ce06ab144c5462579f8fc370594f400fcd1cfb328a75aea521060a5082a46",
+      "bc5e70fca0716503b6ee07ca9a29229a8ffd59eb2bf4b340b4fc1a74f2e25b6f",
+      "f342ab2870e9760968b5e510f27b864cf82f2a24f1e0387d1bbd8d4a742c3144",
+      "a155f2a65ed277ca48687060a3f73d4ef9d9dfe4c3dfea2f45177a162ca532bf",
+      "557bc012b2459d8f76c0a3def42e2e32dec74f3c6c0493fdc5801ae902030d7c",
+      "e92007d73e342ae3e90bdba6c0535e07e310c6a0d7ce226399db10aa2d1b5e33"
+    ],
+    "claimBoundary": "Semantic model qualification only; exact repository classification is established by repositoryPurposeCensus on the checked-out exact head."
+  }
 }
