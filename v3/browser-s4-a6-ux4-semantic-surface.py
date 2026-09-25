@@ -51,7 +51,7 @@ def open_process(page,code,pid,root,require_mount=True):
     card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
     PHASE=f'{code}-surface-commit'
     if not require_mount:
-        page.wait_for_function("""x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame[data-procedure-frame="canonical-1-9"]'),code=f?.querySelector('.procedure-frame-code')?.textContent||'',primary=f?.querySelector('[data-procedure-primary]');return !!(r&&r.offsetParent!==null&&f&&code.includes(x.code)&&primary?.textContent?.trim()==='Consulta registrazioni')}""",arg={'root':root,'code':code})
+        page.wait_for_function("""x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame[data-procedure-frame="canonical-1-9"]'),code=f?.querySelector('.procedure-frame-code')?.textContent||'';return !!(r&&r.offsetParent!==null&&f&&code.includes(x.code))}""",arg={'root':root,'code':code})
         return page.locator(root)
     page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
     PHASE=f'{code}-mount'
@@ -176,8 +176,10 @@ def auditor_incident(browser):
     assert dialog.locator('#questionValue:not([disabled])').count()==0; assert dialog.locator('[data-download-evidence]').count()>=1
     page.keyboard.press('Escape'); expect(dialog).not_to_be_visible(); assert not local_writes,local_writes
     RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True})
-    PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace',require_mount=False); forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
-    RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':0}); ctx.close()
+    PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace',require_mount=False)
+    PHASE='AP-01-auditor-primary'; primary=actions.locator(':scope > .procedure-frame [data-procedure-primary="actions"]'); expect(primary).to_have_text('Consulta registrazioni'); before=page.locator('main > .view:not([hidden])').get_attribute('id'); primary.click(); page.wait_for_timeout(120); after=page.locator('main > .view:not([hidden])').get_attribute('id'); assert before==after=='grcView',(before,after)
+    PHASE='AP-01-auditor-controls'; forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
+    RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':0,'processBoundPrimary':True}); ctx.close()
 
 def mobile(browser,width,height):
     global PHASE

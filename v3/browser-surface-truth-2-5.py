@@ -57,6 +57,7 @@ try:
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':1440,'height':950})
   ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   page=ctx.new_page(); page.set_default_timeout(30000)
+  ensure_onboarded(page,BASE,'admin')
 
   PHASE='home'; open_view(page,'home','#homeView'); snapshot(page,'chrome','.topbar'); snapshot(page,'home','#homeView')
   expect(page.locator('#ictcManifest')).to_have_count(0); expect(page.locator('#homePulse')).to_be_hidden(); expect(page.locator('#homePriorities')).to_be_visible(); no_overflow(page)
