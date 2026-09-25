@@ -17,3 +17,12 @@ html[data-ictc-experience="market-1"] dialog[open] .dialog-body{min-height:0;ove
 html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer{position:sticky;bottom:0;z-index:2}
 html[data-ictc-experience="market-1"] dialog[open] :is(button,a[href],input,select,textarea,summary){scroll-margin-block:12px}
 @media(max-width:620px){html[data-ictc-experience="market-1"] dialog[open] .dialog-shell{max-height:calc(100dvh - .7rem);border-radius:18px}html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer{flex-direction:column}html[data-ictc-experience="market-1"] dialog[open] .dialog-shell>footer :is(button,a[href]){width:100%;min-height:44px}}
+
+/* UIUX mining closure V2: onboarding gate reuses the canonical dialog shell. */
+.onboarding-dialog .onboarding-progress{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.65rem .75rem;border:1px solid var(--line);border-radius:12px;background:#fff}
+.onboarding-dialog .onboarding-steps{display:grid;gap:.45rem;margin:0;padding:0;list-style:none}
+.onboarding-dialog .onboarding-steps>li{display:grid;grid-template-columns:auto 1fr;gap:.65rem;padding:.6rem;border:1px solid var(--line);border-radius:12px;background:#fff}
+.onboarding-dialog .onboarding-steps>li[data-complete="true"]{border-color:#9fd8c7;background:#f0fbf7}
+.onboarding-dialog .onboarding-steps p{margin:.15rem 0;color:var(--muted)}
+.onboarding-dialog[data-onboarding-mode="first-run-gate"] [data-onboarding-close]{display:none!important}
+@media(max-width:620px){.onboarding-dialog .onboarding-progress{align-items:flex-start;flex-direction:column}}
