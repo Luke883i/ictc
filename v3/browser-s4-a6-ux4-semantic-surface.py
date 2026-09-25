@@ -50,9 +50,10 @@ def open_process(page,code,pid,root,require_mount=True):
     card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible()
     card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
     PHASE=f'{code}-surface-commit'
-    page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
     if not require_mount:
+        page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.pid)}",arg={'root':root,'pid':pid})
         return page.locator(root)
+    page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
     PHASE=f'{code}-mount'
     try:
         page.wait_for_function("x=>{const r=document.querySelector(x.root),w=r?.querySelector(':scope > [data-procedure-attention-slot=\"'+x.pid+'\"] [data-procedure-worklist]');return !!(document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'&&w?.dataset.a6Ux4Mount)}",arg={'root':root,'pid':pid})

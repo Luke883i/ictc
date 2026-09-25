@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {UIUX_MINING_V2_COVERAGE,validateUiuxMiningV2Coverage} from './uiux-converge-0-model.mjs';
 const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
-const source={footer:read('./public/a6-ux1-fixed-safe-footer.css'),stable:read('./public/ui/stable-shell.js'),model:read('./runtime/model.mjs'),server:read('./server.mjs'),slots:read('./public/ui/procedure-editorial-slots.js'),frame:read('./public/ui/procedure-frame.js'),worklist:read('./public/ui/procedure-worklist.js'),anatomy:read('./public/ui/procedure-anatomy.js'),presentation:read('./public/ui/procedure-ui-ux-1-6.js'),common:read('./public/ui/common.js'),actions:read('./public/ui/actions.js'),grcbase:read('./public/ui/grc-workspace-base.js'),standard:read('./public/ui/standard-browser.js'),proof:read('./public/ui/proof-workspace-3-2.js'),ep:read('./public/ui/epistemic-workspace-3-2.js'),admin:read('./public/ui/admin-workspace-3-2.js'),p2:read('./public/enduser-composition-p2.css')};
+const source={footer:read('./public/a6-ux1-fixed-safe-footer.css'),stable:read('./public/ui/stable-shell.js'),model:read('./runtime/model.mjs'),server:read('./server.mjs'),slots:read('./public/ui/procedure-editorial-slots.js'),frame:read('./public/ui/procedure-frame.js'),worklist:read('./public/ui/procedure-worklist.js'),anatomy:read('./public/ui/procedure-anatomy.js'),presentation:read('./public/ui/procedure-ui-ux-1-6.js'),common:read('./public/ui/common.js'),actions:read('./public/ui/actions.js'),grcbase:read('./public/ui/grc-workspace-base.js'),standard:read('./public/ui/standard-browser.js'),proof:read('./public/ui/proof-workspace-3-2.js'),ep:read('./public/ui/epistemic-workspace-3-2.js'),admin:read('./public/ui/admin-workspace-3-2.js'),p2:read('./public/enduser-composition-p2.css'),handoff:read('./grc-coverage-handoff-3-2-saturation.mjs'),browserSupport:read('./browser_test_support.py'),browserUx3:read('./browser-s4-a6-ux3-operational-surface.py'),browserA5:read('./browser-s4-a5-final-dom-a11y.py'),browserOnto:read('./browser-onto-compliance-v1.py'),browserFinetune:read('./browser-procedure-finetuning-1-4-base.py')};
 assert.equal(validateUiuxMiningV2Coverage().ok,true);assert.equal(UIUX_MINING_V2_COVERAGE.issueCount,352);
 const sourceLaws=Object.freeze({
  M1:source.footer.includes('position:fixed!important')&&source.footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important')&&source.footer.includes('env(safe-area-inset-bottom,0px)'),
@@ -18,6 +18,13 @@ const sourceLaws=Object.freeze({
  M11:source.common.includes("feedbackKind=error?'error':'status'")&&source.common.includes("setAttribute('aria-live'")&&source.actions.includes('setInteractionBusy(trigger,true)')&&source.grcbase.includes('setInteractionBusy(trigger,true)')
 });
 assert.deepEqual(Object.entries(sourceLaws).filter(([,ok])=>!ok),[],'production-source baseline does not materialize all 11 mechanisms');
+const ciLaws=Object.freeze({
+ handoffCurrent:source.handoff.includes('procedure-support-rail')&&!source.handoff.includes('.procedure-decision-frame .composition-process-context'),
+ onboardingPrecondition:source.browserSupport.includes('/api/profile/onboarding')&&source.browserSupport.includes('_settle_onboarding_dom'),
+ focusPrecondition:source.browserA5.indexOf("ensure_onboarded(page,BASE,'admin')")>=0&&source.browserA5.indexOf("ensure_onboarded(page,BASE,'admin')")<source.browserA5.indexOf("page.goto(BASE + '/', wait_until='networkidle')"),
+ supportRailCurrent:source.browserOnto.includes("reference=rail.locator(':scope > [data-editorial-slot=\"reference\"]')")&&source.browserFinetune.includes('procedure-support-rail')
+});
+assert.deepEqual(Object.entries(ciLaws).filter(([,ok])=>!ok),[],'current CI/browser rails drift from governed UIUX topology');
 const base=()=>({
  footerFixed:true,footerReserve:true,safeArea:true,focusReserve:true,footerOwners:1,
  onboardingGate:true,onboardingPersisted:true,onboardingAcceptWrites:1,onboardingReplayReadOnly:true,onboardingHeaderEntry:true,onboardingProgressMonotonic:true,
@@ -30,7 +37,8 @@ const base=()=>({
  emptyFirstPlanes:0,technicalFirst:false,proofVerdict:false,epWrites:0,adminEpistemicAuthority:false,specialPlaneOwners:1,
  auditorWrites:0,mobileOverflow:false,roleCopyConsistent:true,hiddenFocusableActions:0,targetMin:44,navigationOwners:1,
  errorIdentified:true,statusAnnounced:true,busyVisible:true,duplicateSubmit:false,recoveryReachable:true,freshnessVisible:true,
- businessWriteAuthorities:1,procedures:7,humanAuthority:true,evidenceNotConclusion:true
+ businessWriteAuthorities:1,procedures:7,humanAuthority:true,evidenceNotConclusion:true,
+ ciHandoffCurrent:true,ciOnboardingPrepared:true,ciFocusPrecondition:true,ciSupportRailCurrent:true
 });
 function fail(s){const f=[];
  if(!s.footerFixed||!s.footerReserve||!s.safeArea||!s.focusReserve||s.footerOwners!==1)f.push('M1');
@@ -44,6 +52,8 @@ function fail(s){const f=[];
  if(s.emptyFirstPlanes||s.technicalFirst||s.proofVerdict||s.epWrites||s.adminEpistemicAuthority||s.specialPlaneOwners!==1)f.push('M9');
  if(s.auditorWrites||s.mobileOverflow||!s.roleCopyConsistent||s.hiddenFocusableActions||s.targetMin<44||s.navigationOwners!==1)f.push('M10');
  if(!s.errorIdentified||!s.statusAnnounced||!s.busyVisible||s.duplicateSubmit||!s.recoveryReachable||!s.freshnessVisible)f.push('M11');
+ if(!s.ciHandoffCurrent||!s.ciSupportRailCurrent)f.push('M3');
+ if(!s.ciOnboardingPrepared||!s.ciFocusPrecondition)f.push('M2');
  if(s.businessWriteAuthorities!==1||s.procedures!==7||!s.humanAuthority||!s.evidenceNotConclusion)f.push('P0');return [...new Set(f)];}
 const F=[
  ['footer-static',s=>s.footerFixed=false],['footer-zero-reserve',s=>s.footerReserve=false],['footer-safe-area-lost',s=>s.safeArea=false],['footer-focus-occluded',s=>s.focusReserve=false],['second-footer-owner',s=>s.footerOwners=2],
@@ -56,13 +66,14 @@ const F=[
  ['flat-standard-document',s=>s.standardModel='flat-nodes'],['provenance-first-plane',s=>s.provenanceProgressive=false],['licensed-text-laundered',s=>s.rightsTruth=false],['hierarchy-cycle-unbounded',s=>s.hierarchyBounded=false],['source-digest-lost',s=>s.sourceDigest=false],['standard-action-wall',s=>s.standardPrimaryMax=3],
  ['empty-special-plane',s=>s.emptyFirstPlanes=1],['technical-special-first',s=>s.technicalFirst=true],['proof-as-verdict',s=>s.proofVerdict=true],['ep-write-authority',s=>s.epWrites=1],['admin-epistemic-authority',s=>s.adminEpistemicAuthority=true],['duplicate-special-plane-owner',s=>s.specialPlaneOwners=2],
  ['auditor-write-visible',s=>s.auditorWrites=1],['mobile-horizontal-overflow',s=>s.mobileOverflow=true],['role-copy-mismatch',s=>s.roleCopyConsistent=false],['hidden-write-focusable',s=>s.hiddenFocusableActions=1],['touch-target-small',s=>s.targetMin=32],['second-navigation-owner',s=>s.navigationOwners=2],
- ['silent-error',s=>s.errorIdentified=false],['silent-success',s=>s.statusAnnounced=false],['long-write-no-busy',s=>s.busyVisible=false],['duplicate-submit',s=>s.duplicateSubmit=true],['failure-no-recovery',s=>s.recoveryReachable=false],['stale-state-unmarked',s=>s.freshnessVisible=false]
+ ['silent-error',s=>s.errorIdentified=false],['silent-success',s=>s.statusAnnounced=false],['long-write-no-busy',s=>s.busyVisible=false],['duplicate-submit',s=>s.duplicateSubmit=true],['failure-no-recovery',s=>s.recoveryReachable=false],['stale-state-unmarked',s=>s.freshnessVisible=false],
+ ['ci-retired-dom-authority',s=>s.ciHandoffCurrent=false],['ci-onboarding-precondition-bypass',s=>s.ciOnboardingPrepared=false],['ci-focus-precondition-after-navigation',s=>s.ciFocusPrecondition=false],['ci-support-rail-topology-drift',s=>s.ciSupportRailCurrent=false]
 ];
-assert.equal(F.length,64);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
+assert.equal(F.length,68);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
 let seed=0x25c0ffee;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0};const TOTAL=10_000_000,DISCOVERY=9_000_000;const hits=Object.fromEntries(F.map(([id])=>[id,0])),familiesSeen=new Set(),novelInHoldout=new Set();let lastNovelTrial=-1,maxDepth=0;
 for(let i=0;i<TOTAL;i++){const s=base(),depth=1+(rnd()%6),chosen=new Set();maxDepth=Math.max(maxDepth,depth);while(chosen.size<depth)chosen.add(rnd()%F.length);for(const k of chosen){F[k][1](s);hits[F[k][0]]++;}const failures=fail(s);if(!failures.length)throw new Error(`survivor ${i}`);for(const family of failures){if(!familiesSeen.has(family)){familiesSeen.add(family);lastNovelTrial=i;if(i>=DISCOVERY)novelInHoldout.add(family);}}}
 assert.ok(Object.values(hits).every(n=>n>0));assert.equal(novelInHoldout.size,0,`holdout novelty: ${[...novelInHoldout]}`);
 const mechanisms=[...Array(11)].map((_,i)=>`M${i+1}`),deletedMechanismKills=[];for(const mechanism of mechanisms){const s=base();const family=F.find(([id,mutate])=>{const c=base();mutate(c);return fail(c).includes(mechanism);});assert.ok(family,`no deletion witness ${mechanism}`);family[1](s);assert.ok(fail(s).includes(mechanism));deletedMechanismKills.push(mechanism);}
 let pairKills=0;for(let i=0;i<mechanisms.length;i++)for(let j=i+1;j<mechanisms.length;j++){const s=base();for(const mechanism of [mechanisms[i],mechanisms[j]]){const family=F.find(([,mutate])=>{const c=base();mutate(c);return fail(c).includes(mechanism);});family[1](s);}const observed=fail(s);assert.ok(observed.includes(mechanisms[i])&&observed.includes(mechanisms[j]));pairKills++;}
 const issueCoverage=Object.fromEntries(Object.entries(UIUX_MINING_V2_COVERAGE.mechanisms).map(([id,value])=>[id,value.issues.length]));assert.equal(Object.values(issueCoverage).reduce((a,b)=>a+b,0),352);
-console.log(JSON.stringify({ok:true,slice:'UIUX-MINING-CLOSURE-V2',campaign:'source-calibrated complete end-user semantic runtime model',trials:TOTAL,killed:TOTAL,survivors:0,mutationFamilies:F.length,normalizedFailureFamilies:[...familiesSeen].sort(),lastNovelTrial,discoveryTrials:DISCOVERY,holdoutTrials:TOTAL-DISCOVERY,holdoutNovelFamilies:0,maxMutationDepth:maxDepth,mechanismDeletionOracle:{killed:deletedMechanismKills.length,total:11},pairDeletionOracle:{killed:pairKills,total:55},issueCoverage,totalIssues:352,registerSha256:UIUX_MINING_V2_COVERAGE.registerSha256,seed:'0x25c0ffee',claimBoundary:'10,000,000 deterministic source-calibrated semantic runtime-model compositions over complete end-user obligations; not 10M browser sessions, representative users, accessibility certification, legal/compliance proof or deployment effectiveness.'}));
+console.log(JSON.stringify({ok:true,slice:'UIUX-MINING-CLOSURE-V2',campaign:'source-calibrated complete end-user semantic runtime model',trials:TOTAL,killed:TOTAL,survivors:0,mutationFamilies:F.length,ciFailureFamilies:4,normalizedFailureFamilies:[...familiesSeen].sort(),lastNovelTrial,discoveryTrials:DISCOVERY,holdoutTrials:TOTAL-DISCOVERY,holdoutNovelFamilies:0,maxMutationDepth:maxDepth,mechanismDeletionOracle:{killed:deletedMechanismKills.length,total:11},pairDeletionOracle:{killed:pairKills,total:55},issueCoverage,totalIssues:352,registerSha256:UIUX_MINING_V2_COVERAGE.registerSha256,seed:'0x25c0ffee',claimBoundary:'10,000,000 deterministic source-calibrated semantic runtime-model compositions over complete end-user obligations; not 10M browser sessions, representative users, accessibility certification, legal/compliance proof or deployment effectiveness.'}));
