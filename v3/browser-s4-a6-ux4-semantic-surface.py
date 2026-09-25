@@ -51,7 +51,7 @@ def open_process(page,code,pid,root,require_mount=True):
     card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
     PHASE=f'{code}-surface-commit'
     if not require_mount:
-        page.wait_for_function("x=>{const r=document.querySelector(x.root);return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.pid)}",arg={'root':root,'pid':pid})
+        page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame[data-procedure-frame=\\"canonical-1-9\\"]'),code=f?.querySelector('.procedure-frame-code')?.textContent||'',primary=f?.querySelector('[data-procedure-primary]');return !!(r&&r.offsetParent!==null&&f&&code.includes(x.code)&&primary?.textContent?.trim()==='Consulta registrazioni')}",arg={'root':root,'code':code})
         return page.locator(root)
     page.wait_for_function("x=>{const r=document.querySelector(x.root),f=r?.querySelector(':scope > .procedure-frame');return !!(r&&r.offsetParent!==null&&f&&f.querySelector('.procedure-frame-code')?.textContent?.includes(x.code))}",arg={'root':root,'code':code})
     PHASE=f'{code}-mount'
