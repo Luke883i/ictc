@@ -14,7 +14,7 @@ const sourceLaws=Object.freeze({
  M7:source.presentation.includes('monitorManagerDialog')&&source.presentation.includes('Gestisci monitoraggi')&&source.presentation.includes('data-monitor-manager-id'),
  M8:source.standard.includes('data-standard-depth')&&source.standard.includes('standard-node-provenance')&&source.standard.includes('knowledgePack'),
  M9:[source.proof,source.ep,source.admin].every(x=>x.includes('hideEmptyPresentation'))&&source.proof.includes('node.hidden=bodyEmpty')&&source.proofSurface.includes("reason:'proof-data-rendered'"),
- M10:source.presentation.includes("const readOnly=(state.data?.actor?.role||state.role)==='auditor'||p.readOnly===true")&&source.presentation.includes("node.remove()")&&source.p2.includes('@media(max-width:719px)'),
+ M10:source.presentation.includes("const readOnly=state.role==='auditor'||state.data?.actor?.role==='auditor'||p.readOnly===true")&&source.presentation.includes("node.remove()")&&source.p2.includes('@media(max-width:719px)'),
  M11:source.common.includes("feedbackKind=error?'error':'status'")&&source.common.includes("setAttribute('aria-live'")&&source.actions.includes('setInteractionBusy(trigger,true)')&&source.grcbase.includes('setInteractionBusy(trigger,true)')
 });
 assert.deepEqual(Object.entries(sourceLaws).filter(([,ok])=>!ok),[],'production-source baseline does not materialize all 11 mechanisms');
@@ -38,7 +38,7 @@ const base=()=>({
  monitorManagers:1,inlineMonitorWall:false,jobGranular:true,monitorPrimaryMax:1,monitorSearch:true,
  standardModel:'hierarchical-sections-v1',provenanceProgressive:true,rightsTruth:true,hierarchyBounded:true,sourceDigest:true,standardPrimaryMax:1,
  emptyFirstPlanes:0,technicalFirst:false,proofVerdict:false,epWrites:0,adminEpistemicAuthority:false,specialPlaneOwners:1,
- auditorWrites:0,mobileOverflow:false,roleCopyConsistent:true,hiddenFocusableActions:0,targetMin:44,navigationOwners:1,
+ auditorWrites:0,auditorFailClosed:true,mobileOverflow:false,roleCopyConsistent:true,hiddenFocusableActions:0,targetMin:44,navigationOwners:1,
  errorIdentified:true,statusAnnounced:true,busyVisible:true,duplicateSubmit:false,recoveryReachable:true,freshnessVisible:true,
  businessWriteAuthorities:1,procedures:7,humanAuthority:true,evidenceNotConclusion:true,
  ciHandoffCurrent:true,ciOnboardingPrepared:true,ciFocusPrecondition:true,ciSupportRailCurrent:true,ciProofAsyncRecovery:true,ciLegacyOnboardingCoverage:true,ciAuditorReadinessSeparated:true
@@ -53,7 +53,7 @@ function fail(s){const f=[];
  if(s.monitorManagers!==1||s.inlineMonitorWall||!s.jobGranular||s.monitorPrimaryMax>1||!s.monitorSearch)f.push('M7');
  if(s.standardModel!=='hierarchical-sections-v1'||!s.provenanceProgressive||!s.rightsTruth||!s.hierarchyBounded||!s.sourceDigest||s.standardPrimaryMax>1)f.push('M8');
  if(s.emptyFirstPlanes||s.technicalFirst||s.proofVerdict||s.epWrites||s.adminEpistemicAuthority||s.specialPlaneOwners!==1)f.push('M9');
- if(s.auditorWrites||s.mobileOverflow||!s.roleCopyConsistent||s.hiddenFocusableActions||s.targetMin<44||s.navigationOwners!==1)f.push('M10');
+ if(s.auditorWrites||!s.auditorFailClosed||s.mobileOverflow||!s.roleCopyConsistent||s.hiddenFocusableActions||s.targetMin<44||s.navigationOwners!==1)f.push('M10');
  if(!s.errorIdentified||!s.statusAnnounced||!s.busyVisible||s.duplicateSubmit||!s.recoveryReachable||!s.freshnessVisible)f.push('M11');
  if(!s.ciHandoffCurrent||!s.ciSupportRailCurrent)f.push('M3');
  if(!s.ciOnboardingPrepared||!s.ciFocusPrecondition||!s.ciLegacyOnboardingCoverage)f.push('M2');
@@ -70,11 +70,11 @@ const F=[
  ['inline-monitor-wall',s=>s.inlineMonitorWall=true],['second-monitor-manager',s=>s.monitorManagers=2],['monitor-job-opaque',s=>s.jobGranular=false],['monitor-two-primary',s=>s.monitorPrimaryMax=2],['monitor-search-lost',s=>s.monitorSearch=false],
  ['flat-standard-document',s=>s.standardModel='flat-nodes'],['provenance-first-plane',s=>s.provenanceProgressive=false],['licensed-text-laundered',s=>s.rightsTruth=false],['hierarchy-cycle-unbounded',s=>s.hierarchyBounded=false],['source-digest-lost',s=>s.sourceDigest=false],['standard-action-wall',s=>s.standardPrimaryMax=3],
  ['empty-special-plane',s=>s.emptyFirstPlanes=1],['technical-special-first',s=>s.technicalFirst=true],['proof-as-verdict',s=>s.proofVerdict=true],['ep-write-authority',s=>s.epWrites=1],['admin-epistemic-authority',s=>s.adminEpistemicAuthority=true],['duplicate-special-plane-owner',s=>s.specialPlaneOwners=2],
- ['auditor-write-visible',s=>s.auditorWrites=1],['mobile-horizontal-overflow',s=>s.mobileOverflow=true],['role-copy-mismatch',s=>s.roleCopyConsistent=false],['hidden-write-focusable',s=>s.hiddenFocusableActions=1],['touch-target-small',s=>s.targetMin=32],['second-navigation-owner',s=>s.navigationOwners=2],
+ ['auditor-write-visible',s=>s.auditorWrites=1],['auditor-role-projection-disagreement',s=>s.auditorFailClosed=false],['mobile-horizontal-overflow',s=>s.mobileOverflow=true],['role-copy-mismatch',s=>s.roleCopyConsistent=false],['hidden-write-focusable',s=>s.hiddenFocusableActions=1],['touch-target-small',s=>s.targetMin=32],['second-navigation-owner',s=>s.navigationOwners=2],
  ['silent-error',s=>s.errorIdentified=false],['silent-success',s=>s.statusAnnounced=false],['long-write-no-busy',s=>s.busyVisible=false],['duplicate-submit',s=>s.duplicateSubmit=true],['failure-no-recovery',s=>s.recoveryReachable=false],['stale-state-unmarked',s=>s.freshnessVisible=false],
  ['ci-retired-dom-authority',s=>s.ciHandoffCurrent=false],['ci-onboarding-precondition-bypass',s=>s.ciOnboardingPrepared=false],['ci-focus-precondition-after-navigation',s=>s.ciFocusPrecondition=false],['ci-support-rail-topology-drift',s=>s.ciSupportRailCurrent=false],['ci-proof-async-hidden-stale',s=>s.ciProofAsyncRecovery=false],['ci-legacy-onboarding-gap',s=>s.ciLegacyOnboardingCoverage=false],['ci-auditor-readiness-copy-conflated',s=>s.ciAuditorReadinessSeparated=false]
 ];
-assert.equal(F.length,71);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
+assert.equal(F.length,72);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
 let seed=0x25c0ffee;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0};const TOTAL=10_000_000,DISCOVERY=9_000_000;const hits=Object.fromEntries(F.map(([id])=>[id,0])),familiesSeen=new Set(),novelInHoldout=new Set();let lastNovelTrial=-1,maxDepth=0;
 for(let i=0;i<TOTAL;i++){const s=base(),depth=1+(rnd()%6),chosen=new Set();maxDepth=Math.max(maxDepth,depth);while(chosen.size<depth)chosen.add(rnd()%F.length);for(const k of chosen){F[k][1](s);hits[F[k][0]]++;}const failures=fail(s);if(!failures.length)throw new Error(`survivor ${i}`);for(const family of failures){if(!familiesSeen.has(family)){familiesSeen.add(family);lastNovelTrial=i;if(i>=DISCOVERY)novelInHoldout.add(family);}}}
 assert.ok(Object.values(hits).every(n=>n>0));assert.equal(novelInHoldout.size,0,`holdout novelty: ${[...novelInHoldout]}`);
