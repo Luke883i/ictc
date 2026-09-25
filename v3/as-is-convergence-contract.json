@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "contractId": "GOV-ASIS-CONVERGENCE-1",
   "classification": "zero-authority-derived-as-is-closure-and-convergence-contract",
   "authorityEffect": "NONE",
@@ -29,7 +29,9 @@
     "v3/public/enterprise-workspace-3-2.css",
     "v3/public/semantic-workspace-closure-3-2-1.css",
     "v3/public/ui/proof-surface.js",
-    "v3/public/ui/operational-surface-a6-ux3.js"
+    "v3/public/ui/operational-surface-a6-ux3.js",
+    "v3/semantic-owner-contract.json",
+    "v3/trama-reconcile-contract.json"
   ],
   "debtKinds": [
     "gap",
@@ -248,5 +250,220 @@
     "rule": "Enterprise Candidate is a multi-abstraction evidence posture experienced consistently from infrastructure engineers through operators, administrators, auditors and end users; no layer may synthesize missing E3/E4 evidence.",
     "selfAttestationForbidden": true
   },
-  "claimBoundary": "Repository/control-plane and source-level UI ordering evidence only. This contract cannot prove representative-human usability, assistive-technology effectiveness, deployment effectiveness, legal compliance, production security, protected-branch enforcement, Enterprise Candidate, Enterprise Ready or formal global minimality."
+  "claimBoundary": "Repository/control-plane and source-level UI ordering evidence only. This contract cannot prove representative-human usability, assistive-technology effectiveness, deployment effectiveness, legal compliance, production security, protected-branch enforcement, Enterprise Candidate, Enterprise Ready or formal global minimality.",
+  "falsificationTopology": {
+    "classification": "zero-authority-derived-falsification-topology",
+    "sourceOfTruth": false,
+    "writer": false,
+    "noMaturityScore": true,
+    "nodeStatusVocabulary": [
+      "CONVERGED_E2",
+      "OPEN_REPOSITORY",
+      "EXTERNAL_REQUIRED",
+      "STALE",
+      "UNCLASSIFIED"
+    ],
+    "edgeStatusVocabulary": [
+      "COVERED",
+      "PARTIAL",
+      "STALE"
+    ],
+    "unknownActiveDebt": "BLOCKED_DISCOVER_OWNER",
+    "nodes": [
+      {
+        "id": "N0",
+        "key": "PRODUCT_CLAIM",
+        "debtRefs": [
+          "GAP-021",
+          "S5-CANDIDATE-SEAL"
+        ]
+      },
+      {
+        "id": "N1",
+        "key": "AUTHORITY_ONTOLOGY",
+        "debtRefs": []
+      },
+      {
+        "id": "N2",
+        "key": "DATA_STATE",
+        "debtRefs": []
+      },
+      {
+        "id": "N3",
+        "key": "TRUST_IDENTITY_EGRESS",
+        "debtRefs": [
+          "GAP-007",
+          "GAP-009",
+          "F-05",
+          "F-10"
+        ]
+      },
+      {
+        "id": "N4",
+        "key": "RUNTIME_API_CAPACITY",
+        "debtRefs": [
+          "F-13",
+          "C3-CAPACITY-CONTRACT"
+        ]
+      },
+      {
+        "id": "N5",
+        "key": "AI_CONTROL",
+        "debtRefs": [
+          "F-15",
+          "C4-AI-EVAL-DRIFT"
+        ]
+      },
+      {
+        "id": "N6",
+        "key": "DELIVERY_PROVENANCE_GOV",
+        "debtRefs": [
+          "F-01",
+          "F-06",
+          "GAP-022",
+          "F5",
+          "C2-DELIVERY-PROVENANCE"
+        ]
+      },
+      {
+        "id": "N7",
+        "key": "OPERATIONS_RECOVERY",
+        "debtRefs": [
+          "F-02",
+          "F-04",
+          "F-07",
+          "F-12",
+          "GAP-014"
+        ]
+      },
+      {
+        "id": "N8",
+        "key": "PROJECTION_HUMAN",
+        "debtRefs": [
+          "F-16",
+          "GAP-008",
+          "GAP-012"
+        ]
+      },
+      {
+        "id": "N9",
+        "key": "EVIDENCE_ASSURANCE",
+        "debtRefs": [
+          "F-14"
+        ]
+      },
+      {
+        "id": "N10",
+        "key": "EVOLUTION_DOCS_LEGACY",
+        "debtRefs": [
+          "GAP-006",
+          "GAP-020",
+          "F4",
+          "F7",
+          "F8",
+          "C1-COMPAT-CONTRACTION",
+          "S4-A6-CLOSE"
+        ]
+      },
+      {
+        "id": "N11",
+        "key": "EXTERNAL_RAILS",
+        "debtRefs": [
+          "E3-HUMAN",
+          "E3-GOV",
+          "E4-DEPLOY"
+        ],
+        "external": true
+      }
+    ],
+    "edges": [
+      {
+        "from": "N10",
+        "to": "N4"
+      },
+      {
+        "from": "N10",
+        "to": "N6"
+      },
+      {
+        "from": "N1",
+        "to": "N4"
+      },
+      {
+        "from": "N4",
+        "to": "N2"
+      },
+      {
+        "from": "N3",
+        "to": "N5"
+      },
+      {
+        "from": "N3",
+        "to": "N9"
+      },
+      {
+        "from": "N5",
+        "to": "N0"
+      },
+      {
+        "from": "N2",
+        "to": "N7"
+      },
+      {
+        "from": "N2",
+        "to": "N8"
+      },
+      {
+        "from": "N2",
+        "to": "N9"
+      },
+      {
+        "from": "N6",
+        "to": "N11"
+      },
+      {
+        "from": "N7",
+        "to": "N11"
+      },
+      {
+        "from": "N8",
+        "to": "N11"
+      },
+      {
+        "from": "N9",
+        "to": "N11"
+      },
+      {
+        "from": "N11",
+        "to": "N0"
+      }
+    ],
+    "retirement": {
+      "censusOwner": "v3/trama-reconcile.mjs#legacyCensus",
+      "retirementClass": "retirement-candidate",
+      "unknownClass": "blocking-unclassified",
+      "deletionRequiresDedicatedOracle": true,
+      "automaticDeletion": false
+    },
+    "operatorGuidance": {
+      "audience": "non-technical-human",
+      "deterministic": true,
+      "exactlyOneNextAction": true,
+      "technicalChoiceRequiredFromHuman": false,
+      "frameworkChoiceRequiredFromHuman": false,
+      "mutationBudgetChoiceRequiredFromHuman": false,
+      "askHumanOnlyFor": [
+        "product-intent",
+        "material-acceptance",
+        "external-evidence-or-decision-when-required"
+      ]
+    },
+    "runtimeMutation": {
+      "rootFailureFamilies": 32,
+      "trials": 10000000,
+      "tail": 10000,
+      "actualEvaluatorInvocations": true,
+      "claimBoundary": "Runtime evaluator calls are semantic executions, not browser/build/deployment executions or external assurance."
+    }
+  }
 }

@@ -26,6 +26,16 @@ The canonical target remains `v3/trama-enterprise-dod.json`. Its experience latt
 
 Enterprise Candidate therefore means that the same bounded product semantics remain coherent through every layer. It does **not** mean Enterprise Ready and cannot synthesize E3-HUMAN, E3-GOV or E4-DEPLOY.
 
+## Derived falsification topology and safe retirement
+
+AS-IS now derives a **12-node / 15-edge falsification topology** from the existing product, owner, debt, convergence, enterprise-target and legacy authorities. The topology is a projection: it stores no maturity score, writes no product/runtime/convergence state and cannot close E3-HUMAN, E3-GOV or E4-DEPLOY.
+
+Every active debt must resolve to exactly one primary falsification node; an unmapped active debt fails closed as `BLOCKED_DISCOVER_OWNER`. Legacy cleanup reuses `trama-reconcile.legacyCensus()`: a file may be proposed for retirement only when it is already classified `retirement-candidate`, and deletion still requires a dedicated oracle/slice. `blocking-unclassified` is never treated as safe deletion.
+
+The derived operator guidance is deterministic and intentionally low-burden: the human supplies product intent, material acceptance or genuinely external evidence/decision when required. TRAMA derives owner, technical slice, mutation tier, tests, rollback and stop condition from repository state rather than asking a non-technical user to choose them.
+
+The strategic 10M gate invokes the semantic runtime evaluator for every mutation composition. This is real runtime execution of the semantic evaluator, not ten million browser sessions, builds, deployments or external-human trials.
+
 ## Cognitive-order contract
 
 Canonical first-plane order is:
