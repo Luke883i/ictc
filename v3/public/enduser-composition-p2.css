@@ -374,3 +374,16 @@ html[data-enduser-composition="p2"] .epistemic-level-nav{display:flex;align-item
 html[data-enduser-composition="p2"] .epistemic-level-nav>[aria-current="step"]{font-weight:var(--weight-label);color:var(--color-text)}
 html[data-enduser-composition="p2"] .epistemic-lens-diagnostics{margin:.1rem 0;color:var(--color-muted);font-size:var(--type-caption);line-height:1.45}
 @media(max-width:719px){html[data-enduser-composition="p2"] .epistemic-toolbar{grid-template-columns:1fr;align-items:stretch}html[data-enduser-composition="p2"] .epistemic-toolbar>.epistemic-a3-detail{width:100%}html[data-enduser-composition="p2"] .market-ai-link-toggle{white-space:normal}}
+
+/* UIUX mining closure V2: compact shared support/control/record grammar. */
+html[data-enduser-composition="p2"] .procedure-support-rail{display:grid;gap:.35rem;margin:.25rem 0 .55rem;padding:.35rem .45rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+html[data-enduser-composition="p2"] .procedure-support-rail>[data-editorial-slot]{margin:0!important;padding:0!important}
+html[data-enduser-composition="p2"] .procedure-support-rail :is(details,section,article){margin-block:.15rem!important}
+html[data-enduser-composition="p2"] .procedure-metric-strip{position:relative;padding-bottom:1.25rem}
+html[data-enduser-composition="p2"] .procedure-metric-boundary{position:absolute;left:.55rem;bottom:.2rem;color:var(--color-muted);font-size:var(--type-caption)}
+html[data-enduser-composition="p2"] .procedure-worklist-filters[data-enduser-primitive="ControlRail"]{grid-template-columns:minmax(14rem,1fr) minmax(9rem,auto) auto auto;align-items:end}
+html[data-enduser-composition="p2"] .procedure-worklist-filters [data-worklist-count]{white-space:nowrap;align-self:center}
+html[data-enduser-composition="p2"] .procedure-record-card .procedure-record-facts{grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.35rem}
+html[data-enduser-composition="p2"] .procedure-record-card .procedure-action-rail{gap:.35rem}
+@media(min-width:720px){html[data-enduser-composition="p2"] .procedure-worklist-filters[data-enduser-primitive="ControlRail"]{display:grid!important;grid-auto-flow:column}html[data-enduser-composition="p2"] .procedure-worklist-filters input[type="search"]{min-width:14rem}}
+@media(max-width:719px){html[data-enduser-composition="p2"] .procedure-worklist-filters[data-enduser-primitive="ControlRail"]{grid-template-columns:1fr!important}html[data-enduser-composition="p2"] .procedure-support-rail{margin-inline:0}}
