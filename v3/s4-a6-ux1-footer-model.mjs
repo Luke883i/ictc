@@ -12,9 +12,10 @@ export function validateA6Ux1({css,styles,registry,workflow,browser}){
   ['--a6-ux1-footer-min:44px','DESKTOP_MIN'],['--a6-ux1-footer-min:52px','MOBILE_MIN'],['env(safe-area-inset-bottom,0px)','SAFE_AREA'],
   ['--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))','RESERVE_COUPLING'],
   ['scroll-padding-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)','ROOT_SCROLL_PADDING'],['padding-bottom:var(--a6-ux1-footer-reserve)!important','BODY_RESERVE'],
-  ['position:fixed!important','FIXED_POSITION'],['bottom:0!important','BOTTOM_INSET'],['height:auto!important','AUTO_HEIGHT'],['min-height:var(--a6-ux1-footer-reserve)!important','MIN_HEIGHT'],
+  ['position:fixed!important','FIXED_POSITION'],['bottom:0!important','BOTTOM_INSET'],['min-height:var(--a6-ux1-footer-reserve)!important','MIN_HEIGHT'],
   ['scroll-margin-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)','FOCUS_RESERVE']
  ])check(has(css,token),code,token);
+ check(/(?:^|[;{])\s*height\s*:\s*var\(--a6-ux1-footer-reserve\)!important/.test(String(css||'')),'HEIGHT_RESERVE_COUPLING','height must equal reserve');
  check(!has(css,'position:static!important'),'NO_STATIC_REGRESSION','static footer resurrected');
  const body=(String(css||'').match(/body\{([^}]*)\}/)||[])[1]||'';
  check(!/display\s*:\s*flex/.test(body),'NO_BODY_FLEX','body flex-root');

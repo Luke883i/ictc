@@ -12,7 +12,7 @@ html[data-ictc-experience="market-1"] #stableLegalFooter,
 html[data-ictc-experience="market-1"] .stable-legal-footer{
   position:fixed!important;
   left:0!important;right:0!important;bottom:0!important;top:auto!important;
-  width:100%;height:auto!important;
+  width:100%;height:var(--a6-ux1-footer-reserve)!important;
   min-height:var(--a6-ux1-footer-reserve)!important;
   box-sizing:border-box;
   padding-bottom:var(--a6-ux1-footer-safe-bottom)!important;

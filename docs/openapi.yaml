@@ -475,6 +475,10 @@ paths:
     patch:
       summary: Modifica stato, ruolo o profilo utente
       responses: { '200': { description: Utente aggiornato con receipt } }
+  /api/profile/onboarding:
+    patch:
+      summary: Registra progressione e accettazione onboarding dell'utente corrente
+      responses: { '200': { description: Stato onboarding aggiornato o replay read-only se gia accettato } }
   /api/admin/identity:
     get:
       summary: Legge la configurazione identita e la proiezione runtime
