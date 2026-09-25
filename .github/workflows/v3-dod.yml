@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: Historical V3 semantic replay
@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: Historical V3 runtime replay
