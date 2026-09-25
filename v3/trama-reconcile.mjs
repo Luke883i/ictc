@@ -17,7 +17,7 @@ export const loadReconcileContract=(root=DEFAULT_ROOT)=>json(root,RECONCILE_CONT
 
 export function validateReconcileContract(c){
  const f=[],ck=(v,code,detail='')=>{if(!v)f.push({code,detail});};
- ck(c?.schemaVersion==='1.0.0'&&c?.sliceId==='GOV-TRAMA-RECONCILE-1','ID');
+ ck(c?.schemaVersion==='1.1.0'&&c?.sliceId==='GOV-TRAMA-RECONCILE-1','ID');
  ck(c?.classification==='trama-owned-zero-authority-reconciliation-profile'&&c?.authorityEffect==='NONE','AUTHORITY');
  ck(c?.createsNewSot===false&&c?.createsNewRoadmapCursor===false,'NO_SECOND_SOT');
  ck(c?.method?.parent==='TRAMA'&&c?.method?.profile==='TRAMA-RECONCILE'&&c?.method?.canonicalFamilies===24,'METHOD');
@@ -32,6 +32,14 @@ export function validateReconcileContract(c){
  ck(classes.length===6&&new Set(classes).size===6&&classes.includes('blocking-unclassified'),'LEGACY_CLASSES');
  ck(rules.length>=20&&rules.every(x=>x.pattern&&classes.includes(x.classification)&&typeof x.blocking==='boolean'),'LEGACY_RULES');
  ck((legacy.contentSites||[]).length>=6&&legacy.contentSites.every(x=>x.path&&x.token&&classes.includes(x.classification)),'LEGACY_CONTENT');
+ const pg=c?.repositoryPurposeGovernance||{},states=pg.states||[],admission=pg.futureAdmission||{},retire=pg.retirementProcess||{},human=pg.humanContract||{};
+ ck(pg.classification==='zero-authority-derived-file-purpose-census-and-retirement-router'&&pg.authorityEffect==='NONE'&&pg.sourceOfTruth===false&&pg.writer===false,'PURPOSE_BOUNDARY');
+ ck(pg.censusSource==='git-ls-tree-head'&&pg.everyTrackedFileMustClassify===true&&pg.qualificationCoverageMinimum===0.95&&pg.qualificationProbes===20,'PURPOSE_CENSUS');
+ for(const st of ['active-root','active-referenced','active-generated','compatibility-required','migration-only','lineage-only','deprecated-test','retirement-candidate','needs-classification'])ck(states.includes(st),'PURPOSE_STATE',st);
+ ck(admission.needsClassification==='BLOCKED'&&admission.newUnreferencedFile==='BLOCKED'&&admission.unboundAuthorityLikeFile==='BLOCKED'&&admission.parallelRuntimeRoot==='BLOCKED_UNLESS_EXPLICITLY_RETAINED'&&admission.preferExistingOwnerBeforeNewFile===true,'PURPOSE_ADMISSION');
+ ck(retire.automaticRouting===true&&retire.automaticDeletion===false&&retire.retirementCandidateRequiresCoverageAtLeast===0.95&&retire.retirementCandidateRequiresZeroLiveInboundRefs===true&&retire.retirementCandidateRequiresNoAuthorityBinding===true&&retire.retirementCandidateRequiresNoDynamicLoaderRisk===true&&retire.deletionRequiresDedicatedSemanticSlice===true&&retire.deletionRequiresExactHeadGreen===true,'PURPOSE_RETIREMENT');
+ ck(human.technicalFileChoiceRequired===false&&human.classificationChoiceRequired===false&&human.retirementMechanismChoiceRequired===false,'PURPOSE_HUMAN_BURDEN');
+ const pm=c?.purposeModelReceipt||{};ck(pm.cycles===10&&pm.casesPerCycle===10000000&&pm.totalCases===100000000&&pm.rootFailureFamilies===48&&pm.rootPairs===1128&&pm.survivors===0&&pm.deletionKilled===48&&pm.noNoveltyTail===10000&&pm.compressionTail===10000&&Array.isArray(pm.receipts)&&pm.receipts.length===10,'PURPOSE_MODEL_RECEIPT');
  ck((c?.reconciliationRules||[]).length===8,'RECON_RULES');
  const cp=c?.criticalPathPolicy||{};ck(cp.oneNextAction===true&&cp.next==='C2-DELIVERY-PROVENANCE','CRITICAL_PATH');
  ck(JSON.stringify(cp.reconciledPath)==='["C2-DELIVERY-PROVENANCE","C1-COMPAT-CONTRACTION","C3-CAPACITY-CONTRACT","C4-AI-EVAL-DRIFT"]','CRITICAL_PATH_ORDER');
@@ -68,6 +76,82 @@ export function legacyCensus(root=DEFAULT_ROOT,contract=loadReconcileContract(ro
   censusSource:'git-ls-tree-head',
   contentMissing:contentRows.filter(x=>!x.present||!x.contains)
  });
+}
+
+
+const PURPOSE_EXTENSIONS=Object.freeze(['mjs','js','json','css','py','yml','yaml','md','html','sh','txt','svg','png','b64','xlsx','sha256','example']);
+function purposeKind(file){
+ if(file.startsWith('.github/workflows/'))return'workflow';
+ if(file.startsWith('docs/'))return'documentation';
+ if(file.startsWith('v3/public/ui/')||file.startsWith('v3/public/')&&/\.(?:js|css|html|svg|png)$/i.test(file))return'ui';
+ if(/(?:check|test|saturation|mutation|fuzz|browser|diagnostic|probe)/i.test(file))return'oracle';
+ if(file.startsWith('v3/runtime/')||file==='v3/server.mjs'||file==='v3/store.mjs')return'runtime';
+ if(/(?:schema\.json|ya?ml)$/i.test(file)||file.startsWith('schemas/'))return'data-contract';
+ if(/fixture|seed/i.test(file))return'fixture';
+ if(file.startsWith('artifacts/'))return'artifact';
+ if(/\.(?:css|svg|png|b64)$/i.test(file))return'asset';
+ if(/(?:package(?:-lock)?\.json|\.nvmrc|\.editorconfig|\.gitignore)$/i.test(file))return'config';
+ if(file.endsWith('.md'))return'documentation';
+ if(file.endsWith('.json'))return'data-contract';
+ if(/\.(?:mjs|js|py|sh)$/i.test(file))return'runtime';
+ return'unknown';
+}
+function readablePurposeText(root,file){
+ try{const b=readFileSync(path.join(root,file));if(b.length>2*1024*1024||b.includes(0))return null;return b.toString('utf8');}catch{return null;}
+}
+function purposeRefs(file,body,fileSet,uniqueBasename){
+ if(!body)return Object.freeze([]);
+ const out=new Set(),dir=path.posix.dirname(file),exts=PURPOSE_EXTENSIONS.map(x=>'.'+x);
+ const resolve=raw=>{
+  let token=String(raw||'').trim().replace(/^['"(<!\[]+|['")>;,:!\]]+$/g,'').split('#')[0].split('?')[0].replaceAll('\\','/');
+  if(!token||token.includes('://')||token.startsWith('node:'))return;
+  const candidates=[];
+  if(token.startsWith('./')||token.startsWith('../'))candidates.push(path.posix.normalize(path.posix.join(dir,token)));else candidates.push(token.replace(/^\/+/,''));
+  const base=[...candidates];for(const candidate of base)if(!path.posix.extname(candidate))for(const ext of exts)candidates.push(candidate+ext);
+  for(const candidate of candidates)if(fileSet.has(candidate)&&candidate!==file)out.add(candidate);
+ };
+ const pathish=body.match(/(?:\.{1,2}\/|[A-Za-z0-9_.@-]+\/)[A-Za-z0-9_./@-]+/g)||[];for(const token of pathish)resolve(token);
+ const names=body.match(/[A-Za-z0-9_.@-]+\.(?:mjs|js|json|css|py|yml|yaml|md|html|sh|txt|svg|png|b64|xlsx|sha256|example)/gi)||[];
+ for(const name of names){resolve(name);const unique=uniqueBasename.get(name);if(unique&&unique!==file)out.add(unique);}
+ return Object.freeze([...out].sort());
+}
+function dynamicPurposeDirectories(file,body,files){
+ if(!body||!/(?:readdir|glob|walk|recursive|import\s*\()/i.test(body))return[];
+ const dir=path.posix.dirname(file),out=new Set(),quoted=[...body.matchAll(/['"]([^'"\n]{1,140})['"]/g)].map(x=>x[1]);
+ for(let token of quoted){token=token.replaceAll('\\','/').split('#')[0].split('?')[0];if(/\s/.test(token)||token.includes('://'))continue;const candidates=token.startsWith('./')||token.startsWith('../')?[path.posix.normalize(path.posix.join(dir,token))]:[token.replace(/^\/+/,'')];for(const candidate of candidates)if(files.some(f=>f.startsWith(candidate.replace(/\/+$/,'')+'/')))out.add(candidate.replace(/\/+$/,''));}
+ return[...out];
+}
+export function repositoryPurposeCensus(root=DEFAULT_ROOT,contract=loadReconcileContract(root)){
+ const pg=contract.repositoryPurposeGovernance,files=committedRepositoryFiles(root),fileSet=new Set(files),legacy=legacyCensus(root,contract),legacyBy=new Map(legacy.pathRows.map(x=>[x.path,x]));
+ const manifest=json(root,'docs/documentation-manifest.json'),manifestBy=new Map((manifest.documents||[]).map(x=>[x.path,x]));
+ const basenameRows=new Map();for(const file of files){const b=path.posix.basename(file),a=basenameRows.get(b)||[];a.push(file);basenameRows.set(b,a);}const uniqueBasename=new Map([...basenameRows].filter(([,v])=>v.length===1).map(([k,v])=>[k,v[0]]));
+ const bodies=new Map(),refs=new Map(),inbound=new Map(files.map(x=>[x,[]]));for(const file of files){const body=readablePurposeText(root,file);bodies.set(file,body);const r=purposeRefs(file,body,fileSet,uniqueBasename);refs.set(file,r);for(const target of r)inbound.get(target).push(file);}
+ const executableRoots=new Set((pg.executableRoots||[]).filter(x=>fileSet.has(x)));for(const file of files)if(file.startsWith('.github/workflows/')&&/\.ya?ml$/i.test(file))executableRoots.add(file);
+ const governanceRoots=new Set((pg.governanceRoots||[]).filter(x=>fileSet.has(x))),activeManifest=new Set(),lineageManifest=new Set(),generatedManifest=new Set();
+ for(const [file,entry] of manifestBy){if((pg.manifestActiveLifecycles||[]).includes(entry.lifecycle))activeManifest.add(file);if((pg.manifestLineageLifecycles||[]).includes(entry.lifecycle))lineageManifest.add(file);if((pg.manifestGeneratedLifecycles||[]).includes(entry.lifecycle))generatedManifest.add(file);}
+ const generated=new Set([...generatedManifest,...files.filter(f=>(pg.generatedPathPrefixes||[]).some(prefix=>f.startsWith(prefix))||(pg.generatedExactPaths||[]).includes(f))]);
+ const closure=roots=>{const seen=new Set(roots),queue=[...roots];while(queue.length){const source=queue.shift();if(purposeKind(source)==='documentation'&&!governanceRoots.has(source))continue;for(const target of refs.get(source)||[])if(!seen.has(target)){seen.add(target);queue.push(target);}}return seen;};
+ const execReach=closure(executableRoots),governanceBindingRoots=new Set([...governanceRoots].filter(x=>!x.endsWith('.md')||x==='docs/authority-matrix.yaml')),govReach=closure(governanceBindingRoots),liveReach=new Set([...execReach,...govReach]);
+ const dynamicDirs=new Set();for(const source of liveReach)for(const d of dynamicPurposeDirectories(source,bodies.get(source),files))dynamicDirs.add(d);
+ const min=Number(pg.qualificationCoverageMinimum||0.95),probeCount=Number(pg.qualificationProbes||20),authorityRe=new RegExp(pg.authorityLikePattern,'i'),oracleRe=new RegExp(pg.oracleLikePattern,'i'),parallelRe=new RegExp(pg.parallelRuntimeRootPattern,'i');
+ const rows=files.map(file=>{
+  const manifestEntry=manifestBy.get(file)||null,legacyEntry=legacyBy.get(file)||null,rootExecutable=executableRoots.has(file),rootGovernance=governanceRoots.has(file),manifestActive=activeManifest.has(file),isGenerated=generated.has(file),executable=execReach.has(file),governed=govReach.has(file),live=liveReach.has(file),incoming=inbound.get(file)||[],liveInbound=incoming.filter(x=>liveReach.has(x));
+  const dynamicRisk=[...dynamicDirs].some(d=>file.startsWith(d+'/'))&&!live,authorityLike=authorityRe.test(file)&&!oracleRe.test(file),parallelRuntimeRoot=parallelRe.test(file),ambiguousBasename=(basenameRows.get(path.posix.basename(file))||[]).length>1;
+  const unresolved=[];if(dynamicRisk)unresolved.push('dynamic-loader-risk');if(ambiguousBasename&&!incoming.length)unresolved.push('ambiguous-basename');if(bodies.get(file)===null&&!/\.(?:png|xlsx|b64)$/i.test(file))unresolved.push('text-unreadable');const qualificationCoverage=Math.max(0,(probeCount-unresolved.length)/probeCount);
+  let state='needs-classification',reason='no deterministic purpose evidence';
+  if(rootExecutable||rootGovernance||manifestActive){state='active-root';reason=rootExecutable?'executable root':rootGovernance?'governance root':'active documentation manifest';}
+  else if(live){state='active-referenced';reason=executable?'reachable from executable root':'reachable from machine-readable governance root';}
+  else if(isGenerated){state='active-generated';reason='generated lifecycle/path contract';}
+  else if(legacyEntry&&['compatibility-required','migration-only','lineage-only','deprecated-test'].includes(legacyEntry.classification)){state=legacyEntry.classification;reason='explicit legacy role';}
+  else if(lineageManifest.has(file)){state='lineage-only';reason='documentation manifest lineage';}
+  else if(dynamicRisk){state='needs-classification';reason='possible dynamic loader reachability';}
+  else if(authorityLike){state='needs-classification';reason='unbound authority-like object cannot be auto-retired';}
+  else if(qualificationCoverage>=min){state='retirement-candidate';reason=legacyEntry?.classification==='retirement-candidate'?'explicit legacy retirement candidate':'observed unreferenced after qualification probes';}
+  const useState=['active-root','active-referenced','active-generated'].includes(state)?'current-use':['compatibility-required','migration-only','lineage-only','deprecated-test'].includes(state)?'retained-purpose':'observed-unreferenced';
+  return Object.freeze({path:file,kind:purposeKind(file),state,useState,reason,qualificationCoverage,liveInbound:Object.freeze(liveInbound.sort()),inboundCount:incoming.length,outboundCount:(refs.get(file)||[]).length,dynamicRisk,authorityLike,parallelRuntimeRoot,manifestLifecycle:manifestEntry?.lifecycle||null,legacyClassification:legacyEntry?.classification||null});
+ });
+ const byState=Object.fromEntries(pg.states.map(st=>[st,rows.filter(x=>x.state===st).length])),needsClassification=rows.filter(x=>x.state==='needs-classification'),retirementCandidates=rows.filter(x=>x.state==='retirement-candidate'),authorityCompetition=needsClassification.filter(x=>x.authorityLike),parallelRuntimeDebt=rows.filter(x=>x.parallelRuntimeRoot&&!['active-root','active-referenced','compatibility-required','migration-only','lineage-only','deprecated-test'].includes(x.state));
+ return Object.freeze({schema:'ictc-repository-purpose-census/v1',authorityEffect:'NONE',projectionIsSot:false,writer:false,censusSource:'git-ls-tree-head',totalFiles:files.length,classifiedFiles:rows.length-needsClassification.length,coverage:(rows.length-needsClassification.length)/Math.max(1,rows.length),byState:Object.freeze(byState),rows:Object.freeze(rows),needsClassification:Object.freeze(needsClassification),retirementCandidates:Object.freeze(retirementCandidates),authorityCompetition:Object.freeze(authorityCompetition),parallelRuntimeDebt:Object.freeze(parallelRuntimeDebt),dynamicDirectories:Object.freeze([...dynamicDirs].sort()),automaticDeletion:false,claimBoundary:pg.claimBoundary});
 }
 
 function finding(map,id){return map.find(x=>x.id===id)||null;}

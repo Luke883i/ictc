@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
-import {deriveExpectedReconciliation,interactionMode,isGenericContinuationIntent,legacyCensus,loadReconcileContract,nextGovernedAction,reconcileAuthority,validateReconcileContract} from './trama-reconcile.mjs';
+import {appendFile,readFile} from 'node:fs/promises';
+import {deriveExpectedReconciliation,interactionMode,isGenericContinuationIntent,legacyCensus,loadReconcileContract,nextGovernedAction,reconcileAuthority,repositoryPurposeCensus,validateReconcileContract} from './trama-reconcile.mjs';
 
 const contract=loadReconcileContract();
 assert.deepEqual(validateReconcileContract(contract),[]);
@@ -27,6 +27,19 @@ assert.equal(legacy.unknown.length,0,'all detected legacy/versioned candidates m
 assert.equal(legacy.contentMissing.length,0,'explicit content-level legacy sites drifted');
 assert.ok(legacy.blocking.length>0,'C1 must remain evidence-backed open while blocking legacy residue exists');
 for(const cls of ['compatibility-required','migration-only','lineage-only','deprecated-test','retirement-candidate','blocking-unclassified'])assert.ok(Object.hasOwn(legacy.counts,cls),cls);
+const purpose=repositoryPurposeCensus();
+assert.equal(purpose.censusSource,'git-ls-tree-head');
+assert.equal(purpose.authorityEffect,'NONE');assert.equal(purpose.projectionIsSot,false);assert.equal(purpose.writer,false);assert.equal(purpose.automaticDeletion,false);
+assert.equal(purpose.totalFiles,purpose.rows.length);assert.equal(purpose.classifiedFiles+purpose.needsClassification.length,purpose.totalFiles);
+for(const row of purpose.retirementCandidates){assert.ok(row.qualificationCoverage>=contract.repositoryPurposeGovernance.qualificationCoverageMinimum,row.path);assert.equal(row.liveInbound.length,0,row.path);assert.equal(row.dynamicRisk,false,row.path);}
+if(process.env.GITHUB_STEP_SUMMARY){
+ const candidateLines=purpose.retirementCandidates.slice(0,120).map(x=>'- '+x.path+' | '+x.kind+' | q='+x.qualificationCoverage.toFixed(2)).join('\n');
+ const unknownLines=purpose.needsClassification.slice(0,120).map(x=>'- '+x.path+' | '+x.reason+' | q='+x.qualificationCoverage.toFixed(2)).join('\n');
+ const summary='## Repository purpose census\n\nTracked: **'+purpose.totalFiles+'** | classified: **'+purpose.classifiedFiles+'** | needs-classification: **'+purpose.needsClassification.length+'** | retirement-candidate: **'+purpose.retirementCandidates.length+'**\n\n### By state\n\n'+JSON.stringify(purpose.byState,null,2)+'\n\n### Needs classification\n'+(unknownLines||'- none')+'\n\n### Retirement candidates (first 120)\n'+(candidateLines||'- none')+'\n';
+ await appendFile(process.env.GITHUB_STEP_SUMMARY,summary);
+}
+assert.equal(purpose.needsClassification.length,0,'repository purpose census needs classification: '+JSON.stringify(purpose.needsClassification.slice(0,80).map(x=>({path:x.path,reason:x.reason,q:x.qualificationCoverage,dynamic:x.dynamicRisk,authorityLike:x.authorityLike}))));
+assert.equal(purpose.coverage,1);
 
 for(const phrase of ['ora','ora?','ora che si fa','e adesso','prosegui','continua','what next','now what','continue']){
  assert.equal(isGenericContinuationIntent(phrase,contract),true,phrase);
@@ -66,7 +79,7 @@ console.log(JSON.stringify({
  suite:'GOV-TRAMA-RECONCILE-1',
  methodFamilies:contract.method.canonicalFamilies,
  campaigns:contract.campaigns.length,
- legacyCandidates:legacy.pathRows.length,
+ legacyCandidates:legacy.pathRows.length,purpose:{total:purpose.totalFiles,byState:purpose.byState,retirementCandidates:purpose.retirementCandidates.length,needsClassification:purpose.needsClassification.length,coverage:purpose.coverage},
  blockingLegacy:legacy.blocking.length,
  unknownLegacy:legacy.unknown.length,
  reconciled:{serial:expected.serial,conditionals:expected.conditionals},

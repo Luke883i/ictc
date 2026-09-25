@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {legacyCensus} from './trama-reconcile.mjs';
+import {legacyCensus,repositoryPurposeCensus} from './trama-reconcile.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT=path.resolve(HERE,'..');
@@ -123,8 +123,8 @@ export function deriveFalsificationTopology(root=DEFAULT_ROOT,all=normalizeKnown
   return Object.freeze({schema:'ictc-falsification-topology/v1',authorityEffect:'NONE',projectionIsSot:false,noMaturityScore:true,nodes:Object.freeze(nodes),edges:Object.freeze(edges),unclassifiedActiveDebt:Object.freeze(unclassified.map(x=>x.sourceId)),blocked:unclassified.length>0});
 }
 export function deriveRetirementFrontier(root=DEFAULT_ROOT){
-  const legacy=legacyCensus(root),retirement=(legacy.pathRows||[]).filter(x=>x.classification==='retirement-candidate'),safe=retirement.filter(x=>!x.blocking),blockingRetirement=retirement.filter(x=>x.blocking);
-  return Object.freeze({schema:'ictc-retirement-frontier/v1',censusSource:legacy.censusSource,counts:legacy.counts,retirementCandidates:Object.freeze(retirement.map(x=>x.path).sort()),blockingRetirementCandidates:Object.freeze(blockingRetirement.map(x=>x.path).sort()),safeDeleteNow:Object.freeze(safe.map(x=>x.path).sort()),blockingUnclassified:Object.freeze((legacy.unknown||[]).map(x=>x.path).sort()),automaticDeletion:false,deletionRequiresDedicatedOracle:true});
+  const legacy=legacyCensus(root),purpose=repositoryPurposeCensus(root),retirement=purpose.retirementCandidates;
+  return Object.freeze({schema:'ictc-retirement-frontier/v2',censusSource:purpose.censusSource,legacyCounts:legacy.counts,purposeCounts:purpose.byState,totalFiles:purpose.totalFiles,classifiedFiles:purpose.classifiedFiles,purposeCoverage:purpose.coverage,retirementCandidates:Object.freeze(retirement.map(x=>x.path).sort()),qualifiedRetirement:Object.freeze(retirement.map(x=>({path:x.path,kind:x.kind,qualificationCoverage:x.qualificationCoverage,reason:x.reason}))),safeDeleteNow:Object.freeze([]),blockingUnclassified:Object.freeze(purpose.needsClassification.map(x=>x.path).sort()),authorityCompetition:Object.freeze(purpose.authorityCompetition.map(x=>x.path).sort()),parallelRuntimeDebt:Object.freeze(purpose.parallelRuntimeDebt.map(x=>x.path).sort()),automaticRouting:true,automaticDeletion:false,deletionRequiresDedicatedOracle:true,claimBoundary:purpose.claimBoundary});
 }
 export function deriveOperatorGuidance({topology,retirement,next}){
   const open=topology.nodes.filter(x=>x.state==='OPEN_REPOSITORY').map(x=>x.id),external=topology.nodes.filter(x=>x.state==='EXTERNAL_REQUIRED').map(x=>x.id),blocked=topology.blocked||retirement.blockingUnclassified.length>0,nextSlice=String(next?.slice||'STOP');
