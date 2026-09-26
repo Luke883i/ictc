@@ -26,7 +26,7 @@ const ciLaws=Object.freeze({
  proofAsyncRecovery:source.proof.includes('node.hidden=bodyEmpty')&&source.proofSurface.includes("reason:'proof-data-rendered'"),
  legacyOnboardingCoverage:[source.browserRnTruth,source.browserSurfaceTruth].every(x=>x.includes("ensure_onboarded(page,BASE,'admin')")),
  auditorReadinessSeparated:source.browserUx4.includes("PHASE='AP-01-auditor-primary'")&&source.browserUx4.includes("processBoundPrimary':True"),
- rnMonitorOracleCurrent:source.browserFinetune.includes('[data-open-monitor-manager]')&&source.browserFinetune.includes('#monitorManagerDialog')&&!source.browserFinetune.includes('[data-rn-open-scheduler]')
+ rnMonitorOracleCurrent:source.browserFinetune.includes('[data-open-monitor-manager]')&&source.browserFinetune.includes('#monitorManagerDialog')&&source.browserFinetune.includes('[data-a6-registry-count]')&&!source.browserFinetune.includes('data-a6-registry-total')&&!source.browserFinetune.includes('[data-rn-open-scheduler]')
 });
 assert.deepEqual(Object.entries(ciLaws).filter(([,ok])=>!ok),[],'current CI/browser rails drift from governed UIUX topology');
 const base=()=>({
