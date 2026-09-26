@@ -178,8 +178,10 @@ def auditor_incident(browser):
     RESULTS.append({'oracle':'auditor-incident-readonly','fixtureWrites':1,'auditorWrites':len(local_writes),'modalFocus':True,'escapeClose':True})
     PHASE='AP-01-auditor-readonly'; actions=open_process(page,'AP-01','actions','#grcWorkspace',require_mount=False)
     PHASE='AP-01-auditor-primary'; primary=actions.locator(':scope > .procedure-frame [data-procedure-primary="actions"]'); expect(primary).to_have_text('Consulta registrazioni'); before=page.locator('main > .view:not([hidden])').get_attribute('id'); primary.click(); page.wait_for_timeout(120); after=page.locator('main > .view:not([hidden])').get_attribute('id'); assert before==after=='grcView',(before,after)
-    PHASE='AP-01-auditor-controls'; forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'; assert actions.locator(forbidden).count()==0,actions.locator(forbidden).count(); assert actions.locator('.procedure-record-card[data-read-only="true"]').count()>=1; assert not local_writes,local_writes
-    RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':0,'processBoundPrimary':True}); ctx.close()
+    PHASE='AP-01-auditor-controls'; forbidden='[data-action-adopt],[data-action-ai],[data-action-progress],[data-uiux-action-quick],[data-uiux-action-verify],[data-uiux-action-state]'
+    page.wait_for_function("""x=>{const r=document.querySelector(x.root);if(!r)return false;const cards=[...r.querySelectorAll('.grc-list > article.procedure-record-card')],forbidden=r.querySelectorAll(x.forbidden);return forbidden.length===0&&cards.every(card=>card.dataset.readOnly==='true')}""",arg={'root':'#grcWorkspace','forbidden':forbidden})
+    cards=actions.locator('.grc-list > article.procedure-record-card'); read_only_cards=actions.locator('.grc-list > article.procedure-record-card[data-read-only="true"]'); forbidden_count=actions.locator(forbidden).count(); assert forbidden_count==0,forbidden_count; assert read_only_cards.count()==cards.count(),(read_only_cards.count(),cards.count()); assert not local_writes,local_writes
+    RESULTS.append({'oracle':'auditor-action-readonly','auditorWrites':len(local_writes),'writeControls':forbidden_count,'processBoundPrimary':True,'recordCount':cards.count(),'readOnlyRecordCount':read_only_cards.count(),'settled':True}); ctx.close()
 
 def mobile(browser,width,height):
     global PHASE
