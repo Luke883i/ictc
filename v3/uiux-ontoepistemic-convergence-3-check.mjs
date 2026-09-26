@@ -36,7 +36,7 @@ const mechanismLaws={
  M4:src.worklist.includes("count.textContent=`${filtered.length}/${source.length}`")&&src.worklist.includes('data-worklist-clear-inline')&&src.anatomyJs.includes('overlapping-non-additive')&&src.anatomyJs.includes('non sommabili'),
  M5:src.presentation.includes("uiuxActionHierarchy='record-local'")&&src.p2.includes('.procedure-record-facts')&&src.p2.includes('.procedure-action-rail'),
  M6:src.common.includes('dialogInvokers')&&src.common.includes("dialog.dataset.dirty='true'")&&src.common.includes('window.confirm')&&src.common.includes('invoker.focus')&&src.common.includes('firstDialogFocus'),
- M7:src.presentation.includes('monitorManagerDialog')&&src.presentation.includes('Gestisci monitoraggi')&&src.presentation.includes('data-monitor-manager-id'),
+ M7:src.presentation.includes('monitorManagerDialog')&&src.presentation.includes('Gestisci monitoraggi')&&src.presentation.includes('data-monitor-manager-id')&&src.presentation.includes('new Map((missions||[]).filter(item=>item?.id).map(item=>[item.id,item]))')&&src.presentation.includes('canonical.length'),
  M8:src.standard.includes('data-standard-depth')&&src.standard.includes('standard-node-provenance')&&src.standard.includes('knowledgePack')&&src.standard.includes('<span class="standard-objective-chip"'),
  M9:[src.proof,src.ep,src.adminws].every(x=>x.includes('hideEmptyPresentation')),
  M10:src.presentation.includes("state.role==='auditor'")&&src.presentation.includes("state.data?.actor?.role==='auditor'")&&src.presentation.includes("p.readOnly===true")&&src.presentation.includes("node.remove()")&&src.p2.includes('@media(max-width:719px)'),

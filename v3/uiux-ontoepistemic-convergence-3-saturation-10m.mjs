@@ -11,7 +11,7 @@ const sourceLaws=Object.freeze({
  M4:source.worklist.includes("count.textContent=`${filtered.length}/${source.length}`")&&source.worklist.includes('data-worklist-clear-inline')&&source.anatomy.includes('overlapping-non-additive')&&source.anatomy.includes('non sommabili'),
  M5:source.presentation.includes("uiuxActionHierarchy='record-local'")&&source.p2.includes('.procedure-record-facts')&&source.p2.includes('.procedure-action-rail'),
  M6:source.common.includes('dialogInvokers')&&source.common.includes("dialog.dataset.dirty='true'")&&source.common.includes('invoker.focus')&&source.common.includes('firstDialogFocus'),
- M7:source.presentation.includes('monitorManagerDialog')&&source.presentation.includes('Gestisci monitoraggi')&&source.presentation.includes('data-monitor-manager-id'),
+ M7:source.presentation.includes('monitorManagerDialog')&&source.presentation.includes('Gestisci monitoraggi')&&source.presentation.includes('data-monitor-manager-id')&&source.presentation.includes('new Map((missions||[]).filter(item=>item?.id).map(item=>[item.id,item]))')&&source.presentation.includes('canonical.length'),
  M8:source.standard.includes('data-standard-depth')&&source.standard.includes('standard-node-provenance')&&source.standard.includes('knowledgePack'),
  M9:[source.proof,source.ep,source.admin].every(x=>x.includes('hideEmptyPresentation'))&&source.proof.includes('node.hidden=bodyEmpty')&&source.proofSurface.includes("reason:'proof-data-rendered'"),
  M10:source.presentation.includes("const readOnly=state.role==='auditor'||state.data?.actor?.role==='auditor'||p.readOnly===true")&&source.presentation.includes("node.remove()")&&source.p2.includes('@media(max-width:719px)'),
