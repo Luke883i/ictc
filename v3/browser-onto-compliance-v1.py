@@ -1,5 +1,6 @@
 import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -68,15 +69,15 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:6]!=['reference','advanced-context','metrics','attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','advanced-context','metrics','attention','controls','primary'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
- reference=root.locator(':scope > [data-editorial-slot="reference"]').first;metrics=root.locator(':scope > [data-editorial-slot="metrics"]').first;attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]');primary=root.locator(':scope > [data-editorial-slot="primary"]').first
+ reference=rail.locator(':scope > [data-editorial-slot="reference"]').first;advanced=rail.locator(':scope > [data-editorial-slot="advanced-context"]').first;metrics=root.locator(':scope > [data-editorial-slot="metrics"]').first;attention=root.locator(':scope > [data-editorial-slot="attention"]').first;controls=root.locator(':scope > [data-editorial-slot="controls"]');primary=root.locator(':scope > [data-editorial-slot="primary"]').first
  if rail.count()!=1 or embedded.count()!=0:anomaly('support-rail-parentage',role,vp,proc['code'],{'sibling':rail.count(),'insideHeader':embedded.count()},{'sibling':1,'insideHeader':0})
- elif not (reference.count() and metrics.count() and attention.count() and controls.count() and primary.count()):anomaly('editorial-owned-block-missing',role,vp,proc['code'],{'reference':reference.count(),'metrics':metrics.count(),'attention':attention.count(),'controls':controls.count(),'primary':primary.count()},{'reference':1,'metrics':1,'attention':1,'controls':'>=1','primary':1})
+ elif not (reference.count() and advanced.count() and metrics.count() and attention.count() and controls.count() and primary.count()):anomaly('editorial-owned-block-missing',role,vp,proc['code'],{'reference':reference.count(),'advancedContext':advanced.count(),'metrics':metrics.count(),'attention':attention.count(),'controls':controls.count(),'primary':primary.count()},{'reference':1,'advancedContext':1,'metrics':1,'attention':1,'controls':'>=1','primary':1})
  else:
   control_handles=[controls.nth(i).element_handle() for i in range(controls.count())]
-  physical_ok=frame.evaluate('(f,r)=>f.nextElementSibling===r',reference.element_handle()) and reference.evaluate('(r,s)=>r.nextElementSibling===s',rail.element_handle()) and rail.evaluate('(s,m)=>s.nextElementSibling===m',metrics.element_handle()) and metrics.evaluate('(m,a)=>m.nextElementSibling===a',attention.element_handle()) and attention.evaluate('(a,c)=>a.nextElementSibling===c',control_handles[0])
+  physical_ok=frame.evaluate('(f,s)=>f.nextElementSibling===s',rail.element_handle()) and reference.evaluate('(r,a)=>r.nextElementSibling===a',advanced.element_handle()) and rail.evaluate('(s,m)=>s.nextElementSibling===m',metrics.element_handle()) and metrics.evaluate('(m,a)=>m.nextElementSibling===a',attention.element_handle()) and attention.evaluate('(a,c)=>a.nextElementSibling===c',control_handles[0])
   for i in range(len(control_handles)-1):physical_ok=physical_ok and controls.nth(i).evaluate('(c,n)=>c.nextElementSibling===n',control_handles[i+1])
   physical_ok=physical_ok and controls.nth(controls.count()-1).evaluate('(c,p)=>c.nextElementSibling===p',primary.element_handle())
-  if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>reference>advanced-context-support>metrics>attention>controls[1..n]>primary')
+  if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>support(reference>advanced-context)>metrics>attention>controls[1..n]>primary')
  context=page.locator(proc['context']);anatomy=page.locator(proc['anatomy']);work=page.locator(proc['work']).first
  try:context.wait_for(state='visible',timeout=5000);anatomy.wait_for(state='visible',timeout=5000);work.wait_for(state='visible',timeout=5000)
  except Exception:anomaly('technical-trace-not-visible',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'owner-declared context slot with visible anatomy before native work');return
@@ -182,7 +183,7 @@ try:
   browser=pw.chromium.launch(**launch)
   for role in ROLES:
    for vp,width,height in VIEWPORTS:
-    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
+    PHASE=f'{role}-{vp}-bootstrap';ctx=browser.new_context(viewport={'width':width,'height':height});ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','home')");page=ctx.new_page();page.set_default_timeout(30000);ensure_onboarded(page,BASE,role);page.goto(BASE+'/?view=home',wait_until='networkidle');data=api_json(page,'/api/bootstrap',role);registry={x['id']:x for x in data.get('procedureRegistry',{}).get('procedures',[])};families=data.get('procedureRegistry',{}).get('commonSubstrate',{}).get('epistemicFamilies',[]);revision=int(data.get('revision',0));assert len(registry)==7 and families;llm=data.get('settings',{}).get('llm',{});expected_ai='ready' if llm.get('ready') else ('key-missing' if llm.get('configured') else 'unconfigured');actual_ai=page.locator('#runtimeStatus').get_attribute('data-ai-state');
     if actual_ai!=expected_ai:anomaly('ai-status-truth',role,vp,'shell',actual_ai,expected_ai)
     ai_shell=page.locator('#runtimeStatus');actual_tone=ai_shell.get_attribute('data-tone');tooltip=ai_shell.get_attribute('data-tooltip');aria_hidden=ai_shell.get_attribute('aria-hidden')
     if ai_shell.is_visible():anomaly('ai-status-shell-visible',role,vp,'shell',True,False)
@@ -193,10 +194,10 @@ try:
     if [x.strip() for x in labels]!=expected:anomaly('top-navigation-language',role,vp,'shell',labels,expected)
     no_overflow(page,role,vp,'home');one_h1(page,role,vp,'home');
     if width>=761 and height>=720:
-     m=page.evaluate("""()=>{const home=document.querySelector('#homeView')?.getBoundingClientRect(),footerEl=document.querySelector('#stableLegalFooter,.stable-legal-footer'),footer=footerEl?.getBoundingClientRect();return{inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow,homeTop:home?.top,homeBottom:home?.bottom,footerTop:footer?.top,footerPosition:footerEl?getComputedStyle(footerEl).position:null}}""")
+     m=page.evaluate("""()=>{const home=document.querySelector('#homeView')?.getBoundingClientRect(),footerEl=document.querySelector('#stableLegalFooter,.stable-legal-footer'),footer=footerEl?.getBoundingClientRect(),bs=getComputedStyle(document.body),hs=getComputedStyle(document.documentElement),px=v=>parseFloat(v)||0;return{inner:innerHeight,html:document.documentElement.scrollHeight,body:document.body.scrollHeight,overflow:getComputedStyle(document.body).overflow,homeTop:home?.top,homeBottom:home?.bottom,footerTop:footer?.top,footerBottom:footer?.bottom,footerHeight:footer?.height,footerPosition:footerEl?getComputedStyle(footerEl).position:null,bodyPaddingBottom:px(bs.paddingBottom),scrollPaddingBottom:px(hs.scrollPaddingBottom)}}""")
      if m['overflow']=='hidden':anomaly('home-scroll-clipped',role,vp,'home',m,'body overflow must remain scroll-capable')
-     if m.get('footerPosition')!='static':anomaly('home-footer-position',role,vp,'home',m,'footer in normal flow')
-     if m.get('footerTop') is not None and m.get('homeBottom') is not None and m['footerTop']<m['homeBottom']-1:anomaly('home-footer-flow',role,vp,'home',m,'footer follows home without overlap')
+     if m.get('footerPosition')!='fixed':anomaly('home-footer-position',role,vp,'home',m,'footer fixed with reserved flow')
+     if m.get('footerBottom') is None or abs(m['footerBottom']-m['inner'])>3 or m.get('footerHeight',0)<43.5 or m.get('bodyPaddingBottom',0)<m.get('footerHeight',0)-2 or m.get('scrollPaddingBottom',0)<m.get('footerHeight',0)-2:anomaly('home-footer-reserve',role,vp,'home',m,'fixed footer must be viewport-bound with body/root reserve')
     shot(page,role,vp,'home',width);page.locator('.service-nav [data-service="processes"]').click();cards=page.locator('#procedureHub .procedure-card');expect(cards).to_have_count(7);expect(page.locator('#procedureHub .procedure-card:visible')).to_have_count(7);h=visible_columns(page);expected_cols=1
     if h['count']!=7:anomaly('process-hub-count',role,vp,'processes',h['count'],7)
     if h['columns']!=expected_cols:anomaly('process-hub-columns',role,vp,'processes',h['columns'],expected_cols)

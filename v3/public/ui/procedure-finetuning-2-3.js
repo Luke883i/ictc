@@ -1,21 +1,9 @@
-import { $, api, filesPayload, notify, showReceipt, state } from './common.js';
+import { $, api, filesPayload, notify, showReceipt, state, interactionBusyTarget, setInteractionBusy } from './common.js';
 import { refresh } from './controller.js';
 
 let installed=false;
 
-async function write(action,success){
-  try{
-    const result=await action();
-    showReceipt(result);
-    await refresh();
-    if(success)notify(success);
-    return result;
-  }catch(error){
-    if(error.code==='revision-conflict')await refresh().catch(()=>{});
-    notify(error.message,true);
-    return null;
-  }
-}
+async function write(action,success){const trigger=interactionBusyTarget();setInteractionBusy(trigger,true);try{const result=await action();showReceipt(result);await refresh();if(success)notify(success);return result;}catch(error){if(error.code==='revision-conflict')await refresh().catch(()=>{});notify(error.message,true);return null;}finally{setInteractionBusy(trigger,false);}}
 
 function ensureStyle(){
   if(document.querySelector('link[data-procedure-finetuning-23]'))return;

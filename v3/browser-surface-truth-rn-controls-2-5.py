@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -21,7 +22,7 @@ try:
   launch={'headless':True,'args':['--no-sandbox']}
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
-  page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/?view=processes',wait_until='networkidle')
+  page=ctx.new_page();page.set_default_timeout(30000);ensure_onboarded(page,BASE,'admin');page.goto(BASE+'/?view=processes',wait_until='networkidle')
   card=page.locator('#procedureHub [data-process-code="RN-01"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();expect(page.locator('#monitoringView')).to_be_visible();page.wait_for_timeout(180)
   bad=page.locator('#monitoringView').evaluate("""root=>{const vis=e=>{const s=getComputedStyle(e);return !e.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0};const named=e=>{if((e.innerText||'').trim()||e.getAttribute('aria-label')||e.getAttribute('aria-labelledby'))return true;if(['INPUT','SELECT','TEXTAREA'].includes(e.tagName)){if(e.id&&document.querySelector(`label[for="${CSS.escape(e.id)}"]`))return true;if(e.closest('label'))return true;}return false};return [...root.querySelectorAll('button,a[href],input,select,textarea,summary')].filter(vis).filter(e=>!named(e)).map(e=>{const data=[...e.attributes].filter(a=>a.name.startsWith('data-')).slice(0,4).map(a=>`${a.name}=${a.value}`).join(',');const parent=e.parentElement;return{tag:e.tagName.toLowerCase(),id:e.id||'',cls:String(e.className||''),data,parent:`${parent?.tagName?.toLowerCase()||''}.${String(parent?.className||'').split(/\\s+/).filter(Boolean).slice(0,3).join('.')}`,html:e.outerHTML.slice(0,360)}})}""")
   if bad:

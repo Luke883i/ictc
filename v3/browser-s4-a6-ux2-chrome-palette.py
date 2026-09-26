@@ -32,7 +32,7 @@ def run(browser,w,h,label):
       const v=n=>root.getPropertyValue(n).trim();
       return {headerImage:hs.backgroundImage,footerImage:fs.backgroundImage,headerColor:hs.color,footerColor:fs.color,
         header:[v('--chrome-header-start'),v('--chrome-header-mid'),v('--chrome-header-end')],footer:[v('--chrome-footer-start'),v('--chrome-footer-mid'),v('--chrome-footer-end')],on:v('--chrome-on-dark'),muted:v('--chrome-on-dark-muted'),
-        position:fs.position,footerTop:fr.top,mainBottom:document.querySelector('main').getBoundingClientRect().bottom,footerHeight:fr.height,bodyPaddingBottom:px(bs.paddingBottom),scrollPaddingBottom:px(rs.scrollPaddingBottom),docWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
+        position:fs.position,footerTop:fr.top,footerBottom:fr.bottom,viewportHeight:innerHeight,mainBottom:document.querySelector('main').getBoundingClientRect().bottom,footerHeight:fr.height,bodyPaddingBottom:px(bs.paddingBottom),scrollPaddingBottom:px(rs.scrollPaddingBottom),docWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
     }""")
     assert 'linear-gradient' in data['headerImage'],data
     assert 'linear-gradient' in data['footerImage'],data
@@ -40,10 +40,10 @@ def run(browser,w,h,label):
     for bg in data['header']+data['footer']:
         assert contrast(data['on'],bg)>=4.5,(data['on'],bg,contrast(data['on'],bg))
         assert contrast(data['muted'],bg)>=4.5,(data['muted'],bg,contrast(data['muted'],bg))
-    assert data['position']=='static',data
-    assert data['footerTop']>=data['mainBottom']-2,data
-    assert data['bodyPaddingBottom']<=1.5,data
-    assert data['scrollPaddingBottom']<=1.5,data
+    assert data['position']=='fixed',data
+    assert abs(data['footerBottom']-data['viewportHeight'])<=3,data
+    assert data['bodyPaddingBottom']>=data['footerHeight']-2,data
+    assert data['scrollPaddingBottom']>=data['footerHeight']-2,data
     assert data['docWidth']<=data['viewportWidth']+2,data
     RESULTS.append({'case':label,**data,'minOnDarkContrast':min(contrast(data['on'],x) for x in data['header']+data['footer']),'minMutedContrast':min(contrast(data['muted'],x) for x in data['header']+data['footer'])})
     p.screenshot(path=str(ART/f'browser-s4-a6-ux2-chrome-palette-{label}.png'),full_page=False); ctx.close()

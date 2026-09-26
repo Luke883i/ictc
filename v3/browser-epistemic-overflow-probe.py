@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -51,6 +52,7 @@ try:
                 ctx.add_init_script(f"localStorage.setItem('ictc-role','{role}');localStorage.setItem('ictc-service','processes')")
                 page=ctx.new_page(); page.set_default_timeout(30000)
                 page.goto(BASE+'/?view=processes',wait_until='networkidle')
+                ensure_onboarded(page,BASE,role)
                 open_epistemic(page)
                 metric=measure(page)
                 if metric['delta']>1:

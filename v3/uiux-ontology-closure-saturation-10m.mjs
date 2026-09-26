@@ -61,7 +61,7 @@ function sourceLaws(s){
     epNoDigestFirstPlane:s.ep.includes('label.dataset.projectionDigest=digest')&&!s.ep.includes('· digest ${(p.projectionSha256'),
     backNoSelf:s.router.includes('if (!from || sameRoute(from, current))'),
     aiOptional:!s.workbench.includes("kind: 'configure-ai'")&&s.workbench.indexOf("kind: 'create-monitoring'")<s.workbench.indexOf("if (!llmReady) return nextAction({ kind: 'monitor-activity'"),
-    orientationTokens:s.frame.includes('data-procedure-orientation-token="guide"')&&s.frame.includes('data-orientation-basis')&&s.frame.includes('data-orientation-boundary')&&s.frame.includes('Come leggere questa procedura')&&s.frame.includes('procedure-orientation-popover'),
+    orientationTokens:s.frame.includes('data-procedure-orientation-token="guide"')&&s.frame.includes('data-orientation-basis')&&s.frame.includes('data-orientation-boundary')&&s.frame.includes('Perimetro e criteri ·')&&s.frame.includes('Perché esiste')&&s.frame.includes('Cosa non conclude')&&s.frame.includes('procedure-orientation-popover'),
     orientationTransient:s.frame.includes('data-orientation-transient="true"')&&s.frame.includes("addEventListener('pointerdown'")&&s.frame.includes("addEventListener('pointerover'")&&s.frame.includes("addEventListener('pointerout'")&&s.frame.includes("addEventListener('focusin'")&&s.frame.includes("addEventListener('focusout'")&&s.frame.includes("event.key!=='Escape'")&&s.frame.includes("(hover: hover) and (pointer: fine)"),
     procedureMetrics:s.anatomy.includes('function localMetrics(')&&s.anatomy.includes('data-procedure-metrics=')&&s.anatomy.includes("editorialSlot(host,'metrics')"),
     canonicalStateRail:s.p2.includes('--p2-state-rail:7.5rem')&&s.p2.includes('word-break:normal')&&s.p2.includes('hyphens:none'),

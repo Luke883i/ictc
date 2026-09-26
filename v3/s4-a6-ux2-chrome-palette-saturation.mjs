@@ -24,7 +24,7 @@ const families=Object.freeze([
  ['forced-colors-removed',s=>({...s,chrome:s.chrome.replace('@media(forced-colors:active)','@media(forced-colors-never:active)')})],
  ['reduced-motion-removed',s=>({...s,chrome:s.chrome.replace('@media(prefers-reduced-motion:reduce)','@media(prefers-reduced-motion:no-preference)')})],
  ['ux1-palette-contamination',s=>({...s,ux1:s.ux1+'\nhtml[data-ictc-experience="market-1"] #stableLegalFooter{background:#fff}\n'})],
- ['ux1-overlay-resurrection',s=>({...s,ux1:s.ux1.replace('position:static!important','position:fixed!important')})],
+ ['ux1-static-regression',s=>({...s,ux1:s.ux1.replace('position:fixed!important','position:static!important')})],
  ['gate-workflow-detached',s=>({...s,registry:s.registry.replace("'v3/s4-a6-ux2-chrome-palette-check.mjs',",''),workflow:s.workflow.replace('node v3/s4-a6-ux2-chrome-palette-check.mjs','node v3/noop.mjs')})]
 ]);
 for(const [id,mutate] of families){const mutated=mutate({...baseline});assert.notDeepEqual(mutated,baseline,`no-op mutation family: ${id}`);assert.ok(validateChromePalette(mutated).length>0,`preflight survivor: ${id}`);}

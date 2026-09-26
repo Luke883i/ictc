@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -56,6 +57,7 @@ try:
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':1440,'height':950})
   ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   page=ctx.new_page(); page.set_default_timeout(30000)
+  ensure_onboarded(page,BASE,'admin')
 
   PHASE='home'; open_view(page,'home','#homeView'); snapshot(page,'chrome','.topbar'); snapshot(page,'home','#homeView')
   expect(page.locator('#ictcManifest')).to_have_count(0); expect(page.locator('#homePulse')).to_be_hidden(); expect(page.locator('#homePriorities')).to_be_visible(); no_overflow(page)
@@ -66,7 +68,7 @@ try:
   for code,root in [('RN-01','#monitoringView'),('EC-01','#incidentsView'),('AO-01','#grcView'),('MC-01','#grcView'),('AP-01','#grcView'),('RC-01','#grcView'),('AR-01','#grcView')]:
    PHASE=f'procedure-{code}'; open_process(page,code); expect(page.locator(root)).to_be_visible(); assert visible_orientation_count(page,root)==1,(code,visible_orientation_count(page,root)); snapshot(page,f'procedure:{code}',root)
    expect(page.locator(f'{root} [data-surface-information-value]')).to_have_count(0)
-   detail=page.locator(f'{root} .procedure-decision-frame details.composition-process-context')
+   detail=page.locator(f'{root} > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy')
    if detail.count(): assert detail.get_attribute('open') is None
    no_overflow(page)
 
@@ -87,7 +89,7 @@ try:
   PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
   PHASE='settings'; open_profile(page); expect(page.locator('#stableProfileMenu #openSettings')).to_be_hidden(); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); page.locator('#adminCenter [data-admin-nav="ai"]').click(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible(); provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); expect(provider).not_to_have_attribute('open',''); provider.locator(':scope > summary').click(); settings=page.locator('#settingsDialog[data-admin-embedded="ai"]'); expect(settings).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); policy=settings.locator('details[data-settings-section="policy"]'); expect(policy).to_have_count(1); expect(policy).not_to_have_attribute('open',''); page.keyboard.press('Escape')
 
-  PHASE='mobile'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); open_process(m,'AO-01'); snapshot(m,'mobile:AO-01','#grcView'); no_overflow(m); mc.close()
+  PHASE='mobile'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); ensure_onboarded(m,BASE,'admin'); open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); open_process(m,'AO-01'); snapshot(m,'mobile:AO-01','#grcView'); no_overflow(m); mc.close()
 
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
