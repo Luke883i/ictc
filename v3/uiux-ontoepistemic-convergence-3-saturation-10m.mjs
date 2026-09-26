@@ -25,7 +25,8 @@ const ciLaws=Object.freeze({
  supportRailCurrent:source.browserOnto.includes("reference=rail.locator(':scope > [data-editorial-slot=\"reference\"]')")&&source.browserFinetune.includes('procedure-support-rail'),
  proofAsyncRecovery:source.proof.includes('node.hidden=bodyEmpty')&&source.proofSurface.includes("reason:'proof-data-rendered'"),
  legacyOnboardingCoverage:[source.browserRnTruth,source.browserSurfaceTruth].every(x=>x.includes("ensure_onboarded(page,BASE,'admin')")),
- auditorReadinessSeparated:source.browserUx4.includes("PHASE='AP-01-auditor-primary'")&&source.browserUx4.includes("processBoundPrimary':True")
+ auditorReadinessSeparated:source.browserUx4.includes("PHASE='AP-01-auditor-primary'")&&source.browserUx4.includes("processBoundPrimary':True"),
+ rnMonitorOracleCurrent:source.browserFinetune.includes('[data-open-monitor-manager]')&&source.browserFinetune.includes('#monitorManagerDialog')&&!source.browserFinetune.includes('[data-rn-open-scheduler]')
 });
 assert.deepEqual(Object.entries(ciLaws).filter(([,ok])=>!ok),[],'current CI/browser rails drift from governed UIUX topology');
 const base=()=>({
@@ -41,7 +42,7 @@ const base=()=>({
  auditorWrites:0,auditorFailClosed:true,mobileOverflow:false,roleCopyConsistent:true,hiddenFocusableActions:0,targetMin:44,navigationOwners:1,
  errorIdentified:true,statusAnnounced:true,busyVisible:true,duplicateSubmit:false,recoveryReachable:true,freshnessVisible:true,
  businessWriteAuthorities:1,procedures:7,humanAuthority:true,evidenceNotConclusion:true,
- ciHandoffCurrent:true,ciOnboardingPrepared:true,ciFocusPrecondition:true,ciSupportRailCurrent:true,ciProofAsyncRecovery:true,ciLegacyOnboardingCoverage:true,ciAuditorReadinessSeparated:true
+ ciHandoffCurrent:true,ciOnboardingPrepared:true,ciFocusPrecondition:true,ciSupportRailCurrent:true,ciProofAsyncRecovery:true,ciLegacyOnboardingCoverage:true,ciAuditorReadinessSeparated:true,ciRnMonitorOracleCurrent:true
 });
 function fail(s){const f=[];
  if(!s.footerFixed||!s.footerReserve||!s.safeArea||!s.focusReserve||s.footerOwners!==1)f.push('M1');
@@ -59,6 +60,7 @@ function fail(s){const f=[];
  if(!s.ciOnboardingPrepared||!s.ciFocusPrecondition||!s.ciLegacyOnboardingCoverage)f.push('M2');
  if(!s.ciProofAsyncRecovery)f.push('M9');
  if(!s.ciAuditorReadinessSeparated)f.push('M10');
+ if(!s.ciRnMonitorOracleCurrent)f.push('M7');
  if(s.businessWriteAuthorities!==1||s.procedures!==7||!s.humanAuthority||!s.evidenceNotConclusion)f.push('P0');return [...new Set(f)];}
 const F=[
  ['footer-static',s=>s.footerFixed=false],['footer-zero-reserve',s=>s.footerReserve=false],['footer-safe-area-lost',s=>s.safeArea=false],['footer-focus-occluded',s=>s.focusReserve=false],['second-footer-owner',s=>s.footerOwners=2],
@@ -72,13 +74,13 @@ const F=[
  ['empty-special-plane',s=>s.emptyFirstPlanes=1],['technical-special-first',s=>s.technicalFirst=true],['proof-as-verdict',s=>s.proofVerdict=true],['ep-write-authority',s=>s.epWrites=1],['admin-epistemic-authority',s=>s.adminEpistemicAuthority=true],['duplicate-special-plane-owner',s=>s.specialPlaneOwners=2],
  ['auditor-write-visible',s=>s.auditorWrites=1],['auditor-role-projection-disagreement',s=>s.auditorFailClosed=false],['mobile-horizontal-overflow',s=>s.mobileOverflow=true],['role-copy-mismatch',s=>s.roleCopyConsistent=false],['hidden-write-focusable',s=>s.hiddenFocusableActions=1],['touch-target-small',s=>s.targetMin=32],['second-navigation-owner',s=>s.navigationOwners=2],
  ['silent-error',s=>s.errorIdentified=false],['silent-success',s=>s.statusAnnounced=false],['long-write-no-busy',s=>s.busyVisible=false],['duplicate-submit',s=>s.duplicateSubmit=true],['failure-no-recovery',s=>s.recoveryReachable=false],['stale-state-unmarked',s=>s.freshnessVisible=false],
- ['ci-retired-dom-authority',s=>s.ciHandoffCurrent=false],['ci-onboarding-precondition-bypass',s=>s.ciOnboardingPrepared=false],['ci-focus-precondition-after-navigation',s=>s.ciFocusPrecondition=false],['ci-support-rail-topology-drift',s=>s.ciSupportRailCurrent=false],['ci-proof-async-hidden-stale',s=>s.ciProofAsyncRecovery=false],['ci-legacy-onboarding-gap',s=>s.ciLegacyOnboardingCoverage=false],['ci-auditor-readiness-copy-conflated',s=>s.ciAuditorReadinessSeparated=false]
+ ['ci-retired-dom-authority',s=>s.ciHandoffCurrent=false],['ci-onboarding-precondition-bypass',s=>s.ciOnboardingPrepared=false],['ci-focus-precondition-after-navigation',s=>s.ciFocusPrecondition=false],['ci-support-rail-topology-drift',s=>s.ciSupportRailCurrent=false],['ci-proof-async-hidden-stale',s=>s.ciProofAsyncRecovery=false],['ci-legacy-onboarding-gap',s=>s.ciLegacyOnboardingCoverage=false],['ci-auditor-readiness-copy-conflated',s=>s.ciAuditorReadinessSeparated=false],['ci-rn-monitor-oracle-legacy',s=>s.ciRnMonitorOracleCurrent=false]
 ];
-assert.equal(F.length,72);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
+assert.equal(F.length,73);assert.deepEqual(fail(base()),[]);for(const [id,mutate] of F){const s=base();mutate(s);assert.ok(fail(s).length,`preflight survivor ${id}`);}
 let seed=0x25c0ffee;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0};const TOTAL=10_000_000,DISCOVERY=9_000_000;const hits=Object.fromEntries(F.map(([id])=>[id,0])),familiesSeen=new Set(),novelInHoldout=new Set();let lastNovelTrial=-1,maxDepth=0;
 for(let i=0;i<TOTAL;i++){const s=base(),depth=1+(rnd()%6),chosen=new Set();maxDepth=Math.max(maxDepth,depth);while(chosen.size<depth)chosen.add(rnd()%F.length);for(const k of chosen){F[k][1](s);hits[F[k][0]]++;}const failures=fail(s);if(!failures.length)throw new Error(`survivor ${i}`);for(const family of failures){if(!familiesSeen.has(family)){familiesSeen.add(family);lastNovelTrial=i;if(i>=DISCOVERY)novelInHoldout.add(family);}}}
 assert.ok(Object.values(hits).every(n=>n>0));assert.equal(novelInHoldout.size,0,`holdout novelty: ${[...novelInHoldout]}`);
 const mechanisms=[...Array(11)].map((_,i)=>`M${i+1}`),deletedMechanismKills=[];for(const mechanism of mechanisms){const s=base();const family=F.find(([id,mutate])=>{const c=base();mutate(c);return fail(c).includes(mechanism);});assert.ok(family,`no deletion witness ${mechanism}`);family[1](s);assert.ok(fail(s).includes(mechanism));deletedMechanismKills.push(mechanism);}
 let pairKills=0;for(let i=0;i<mechanisms.length;i++)for(let j=i+1;j<mechanisms.length;j++){const s=base();for(const mechanism of [mechanisms[i],mechanisms[j]]){const family=F.find(([,mutate])=>{const c=base();mutate(c);return fail(c).includes(mechanism);});family[1](s);}const observed=fail(s);assert.ok(observed.includes(mechanisms[i])&&observed.includes(mechanisms[j]));pairKills++;}
 const issueCoverage=Object.fromEntries(Object.entries(UIUX_MINING_V2_COVERAGE.mechanisms).map(([id,value])=>[id,value.issues.length]));assert.equal(Object.values(issueCoverage).reduce((a,b)=>a+b,0),352);
-console.log(JSON.stringify({ok:true,slice:'UIUX-MINING-CLOSURE-V2',campaign:'source-calibrated complete end-user semantic runtime model',trials:TOTAL,killed:TOTAL,survivors:0,mutationFamilies:F.length,ciFailureFamilies:7,normalizedFailureFamilies:[...familiesSeen].sort(),lastNovelTrial,discoveryTrials:DISCOVERY,holdoutTrials:TOTAL-DISCOVERY,holdoutNovelFamilies:0,maxMutationDepth:maxDepth,mechanismDeletionOracle:{killed:deletedMechanismKills.length,total:11},pairDeletionOracle:{killed:pairKills,total:55},issueCoverage,totalIssues:352,registerSha256:UIUX_MINING_V2_COVERAGE.registerSha256,seed:'0x25c0ffee',claimBoundary:'10,000,000 deterministic source-calibrated semantic runtime-model compositions over complete end-user obligations; not 10M browser sessions, representative users, accessibility certification, legal/compliance proof or deployment effectiveness.'}));
+console.log(JSON.stringify({ok:true,slice:'UIUX-MINING-CLOSURE-V2',campaign:'source-calibrated complete end-user semantic runtime model',trials:TOTAL,killed:TOTAL,survivors:0,mutationFamilies:F.length,ciFailureFamilies:8,normalizedFailureFamilies:[...familiesSeen].sort(),lastNovelTrial,discoveryTrials:DISCOVERY,holdoutTrials:TOTAL-DISCOVERY,holdoutNovelFamilies:0,maxMutationDepth:maxDepth,mechanismDeletionOracle:{killed:deletedMechanismKills.length,total:11},pairDeletionOracle:{killed:pairKills,total:55},issueCoverage,totalIssues:352,registerSha256:UIUX_MINING_V2_COVERAGE.registerSha256,seed:'0x25c0ffee',claimBoundary:'10,000,000 deterministic source-calibrated semantic runtime-model compositions over complete end-user obligations; not 10M browser sessions, representative users, accessibility certification, legal/compliance proof or deployment effectiveness.'}));

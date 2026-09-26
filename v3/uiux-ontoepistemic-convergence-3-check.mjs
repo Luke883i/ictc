@@ -25,6 +25,7 @@ assert.ok(src.admin.includes('adoptSettingsSurface')&&src.admin.includes("settin
 assert.ok(src.footer.includes('position:fixed!important')&&src.footer.includes('--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))')&&!src.footer.includes('position:static!important'),'R7 non-occlusive footer');
 for(const token of ['uiux-ontoepistemic-convergence-3-check.mjs','uiux-ontoepistemic-convergence-3-saturation-10m.mjs'])assert.ok(src.registry.includes(token)&&src.workflow.includes(token),'O1 missing '+token);
 for(const token of ['RN-01-source-truth','record-action-hierarchy','EC-01-auditor-readonly','AP-01-auditor-readonly','home-onboarding-replay','data-procedure-orientation="compact"'])assert.ok(src.browser.includes(token),'O1 browser oracle '+token);
+assert.ok(src.browserFinetune.includes('[data-open-monitor-manager]')&&src.browserFinetune.includes('#monitorManagerDialog')&&!src.browserFinetune.includes('[data-rn-open-scheduler]'),'O1 RN monitor browser oracle must follow the canonical monitor manager');
 
 const miningCoverage=validateUiuxMiningV2Coverage();assert.equal(miningCoverage.ok,true,`V2 issue coverage drift: ${miningCoverage.errors.join(',')}`);assert.equal(miningCoverage.issueCount,352);assert.equal(miningCoverage.mechanisms,11);assert.equal(UIUX_MINING_V2_COVERAGE.registerSha256,'43333a22d54533cad68aa398b093a8811cce9a9e1081aca194ec19e1145840e6');
 const mechanismLaws={
@@ -37,7 +38,7 @@ const mechanismLaws={
  M7:src.presentation.includes('monitorManagerDialog')&&src.presentation.includes('Gestisci monitoraggi')&&src.presentation.includes('data-monitor-manager-id'),
  M8:src.standard.includes('data-standard-depth')&&src.standard.includes('standard-node-provenance')&&src.standard.includes('knowledgePack')&&src.standard.includes('<span class="standard-objective-chip"'),
  M9:[src.proof,src.ep,src.adminws].every(x=>x.includes('hideEmptyPresentation')),
- M10:src.presentation.includes("const readOnly=(state.data?.actor?.role||state.role)==='auditor'||p.readOnly===true")&&src.presentation.includes("node.remove()")&&src.p2.includes('@media(max-width:719px)'),
+ M10:src.presentation.includes("state.role==='auditor'")&&src.presentation.includes("state.data?.actor?.role==='auditor'")&&src.presentation.includes("p.readOnly===true")&&src.presentation.includes("node.remove()")&&src.p2.includes('@media(max-width:719px)'),
  M11:src.common.includes("feedbackKind=error?'error':'status'")&&src.common.includes("setAttribute('aria-live'")&&src.common.includes('setInteractionBusy')&&src.actions.includes('setInteractionBusy(trigger,true)')&&src.grcbase.includes('setInteractionBusy(trigger,true)')&&src.presentation.includes('setInteractionBusy(trigger,true)')
 };
 for(const [id,ok] of Object.entries(mechanismLaws))assert.ok(ok,`V2 mechanism law not materialized: ${id}`);
