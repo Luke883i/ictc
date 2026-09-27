@@ -822,6 +822,127 @@ jobs:
           d=json.loads(p.read_text()); kinds={x.get('kind') for x in d.get('violations',[])}
           sys.exit(1 if {'empty-census','coverage','critical-coverage','fake-visible','unknown-critical'} & kinds else 0)
           PY
+      - name: Diagnostic exact / surface empty census
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          vs=json.loads(p.read_text()).get('violations',[])
+          sys.exit(1 if any(x.get('kind')=='empty-census' for x in vs) else 0)
+          PY
+      - name: Diagnostic exact / surface confidence coverage
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          vs=json.loads(p.read_text()).get('violations',[])
+          sys.exit(1 if any(x.get('kind')=='coverage' for x in vs) else 0)
+          PY
+      - name: Diagnostic exact / surface critical coverage
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          vs=json.loads(p.read_text()).get('violations',[])
+          sys.exit(1 if any(x.get('kind')=='critical-coverage' for x in vs) else 0)
+          PY
+      - name: Diagnostic exact / surface fake visible
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          vs=json.loads(p.read_text()).get('violations',[])
+          sys.exit(1 if any(x.get('kind')=='fake-visible' for x in vs) else 0)
+          PY
+      - name: Diagnostic exact / surface unknown critical
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          vs=json.loads(p.read_text()).get('violations',[])
+          sys.exit(1 if any(x.get('kind')=='unknown-critical' for x in vs) else 0)
+          PY
+      - name: Diagnostic exact / surface home-processes
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={x.get('name') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if names & {'chrome','home','processes'} else 0)
+          PY
+      - name: Diagnostic exact / surface procedure RN-EC
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={x.get('name') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if names & {'procedure:RN-01','procedure:EC-01'} else 0)
+          PY
+      - name: Diagnostic exact / surface procedure GRC
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={x.get('name') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if names & {'procedure:AO-01','procedure:MC-01','procedure:AP-01','procedure:RC-01','procedure:AR-01'} else 0)
+          PY
+      - name: Diagnostic exact / surface proof-ep
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={x.get('name') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if names & {'proof','epistemic'} else 0)
+          PY
+      - name: Diagnostic exact / surface admin-settings
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={x.get('name') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if names & {'dialog:admin','dialog:settings'} else 0)
+          PY
+      - name: Diagnostic exact / surface mobile
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          names={str(x.get('name','')) for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if any(x.startswith('mobile:') for x in names) else 0)
+          PY
       - name: Diagnostic exact / surface aggregate targets
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash
