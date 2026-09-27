@@ -176,6 +176,111 @@ jobs:
           if not p.exists(): sys.exit(0)
           sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='settings' else 0)
           PY
+      - name: Diagnostic causal / base EC
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase=='ec' or phase.startswith('EC-01') else 0)
+          PY
+      - name: Diagnostic causal / base AO
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase=='ao' or phase.startswith('AO-01') else 0)
+          PY
+      - name: Diagnostic causal / base MC
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase=='mc' or phase.startswith('MC-01') else 0)
+          PY
+      - name: Diagnostic causal / base AP
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase=='ap' or phase.startswith('AP-01') else 0)
+          PY
+      - name: Diagnostic causal / base mobile
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase.startswith('mobile') else 0)
+          PY
+      - name: Diagnostic causal / surface mobile bootstrap
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-bootstrap' else 0)
+          PY
+      - name: Diagnostic causal / surface mobile processes
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-processes' else 0)
+          PY
+      - name: Diagnostic causal / surface mobile AO open
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-ao-open' else 0)
+          PY
+      - name: Diagnostic causal / surface mobile AO snapshot
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-ao-snapshot' else 0)
+          PY
+      - name: Diagnostic causal / surface mobile overflow
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-overflow' else 0)
+          PY
       - name: Diagnostic causal / surface mobile
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash
