@@ -98,6 +98,7 @@ try:
 
   PHASE='mobile-bootstrap'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); ensure_onboarded(m,BASE,'admin'); PHASE='mobile-processes'; open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); PHASE='mobile-ao-open'; open_process(m,'AO-01'); PHASE='mobile-ao-snapshot'; snapshot(m,'mobile:AO-01','#grcView'); PHASE='mobile-overflow'; no_overflow(m); mc.close()
 
+  PHASE='aggregate-verdict'
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
   assert aggregate_cov>=.95,aggregate_cov; assert aggregate_critical==1,aggregate_critical; assert not VIOLATIONS,VIOLATIONS

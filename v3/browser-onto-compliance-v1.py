@@ -115,7 +115,7 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  no_overflow(page,role,vp,proc['code']);one_h1(page,role,vp,proc['code']);shot(page,role,vp,proc['code'],width);scenes.append({'role':role,'viewport':vp,'surface':proc['code'],'editorialOrder':order})
 
 def audit_proof(page,role,vp,width):
- global PHASE;PHASE=f'{role}-{vp}-proof';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofContent')).to_be_visible();wait_canonical_evidence_entry(page);data=api_json(page,'/api/standard-proof',role);title=(page.locator('#proofTitle').text_content() or '').strip()
+ global PHASE;PHASE=f'{role}-{vp}-proof-open';page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofContent')).to_be_visible();PHASE=f'{role}-{vp}-proof-canonical-entry';wait_canonical_evidence_entry(page);PHASE=f'{role}-{vp}-proof-structure';data=api_json(page,'/api/standard-proof',role);title=(page.locator('#proofTitle').text_content() or '').strip()
  if title!='Evidenze ICTC':anomaly('evidence-title-language',role,vp,'proof',title,'Evidenze ICTC')
  root=page.locator('#proofView');facts=page.locator('#proofContent > .proof-fact-strip');investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]');decisions=page.locator('#proofContent > details[data-proof-domain="decisions"]')
  if root.get_attribute('data-proof-reading-order')!=PROOF_READING_ORDER:anomaly('evidence-reading-order-marker',role,vp,'proof',root.get_attribute('data-proof-reading-order'),PROOF_READING_ORDER)
@@ -130,7 +130,7 @@ def audit_proof(page,role,vp,width):
  order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null)).filter(Boolean)""")
  projected=[x for x in order if x in expected_order]
  if projected!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',projected,expected_order)
- reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]')
+ PHASE=f'{role}-{vp}-proof-reading';reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]')
  if reading.count()!=1:anomaly('evidence-progressive-reading-missing',role,vp,'proof',reading.count(),1)
  else:
   if reading.get_attribute('open') is not None:anomaly('evidence-technical-reading-open-by-default',role,vp,'proof',True,False)
@@ -150,7 +150,7 @@ def audit_proof(page,role,vp,width):
   reading.locator(':scope > summary').click()
  text=page.locator('#proofView').inner_text()
  if re.search(r'\b\d+(?:[.,]\d+)?\s*%',text):anomaly('evidence-percentage-verdict',role,vp,'proof',re.findall(r'\b\d+(?:[.,]\d+)?\s*%',text),'no compliance/certainty percentage')
- no_overflow(page,role,vp,'proof');one_h1(page,role,vp,'proof');shot(page,role,vp,'proof',width)
+ PHASE=f'{role}-{vp}-proof-geometry';no_overflow(page,role,vp,'proof');one_h1(page,role,vp,'proof');shot(page,role,vp,'proof',width)
 
 def epistemic_network_coverage(page,role,known_ids):
  seen=set();offset=0;limit=200;pages=0;exhausted=False
@@ -161,19 +161,19 @@ def epistemic_network_coverage(page,role,known_ids):
  known=set(known_ids);return {'seen':sorted(seen),'unknown':sorted(seen-known),'pages':pages,'offset':offset,'exhausted':exhausted}
 
 def audit_ep(page,role,vp,width,expected_ids,revision):
- global PHASE;PHASE=f'{role}-{vp}-EP-01';page.locator('.service-nav [data-service="processes"]').click()
+ global PHASE;PHASE=f'{role}-{vp}-EP-01-open';page.locator('.service-nav [data-service="processes"]').click()
  if role in ('admin','auditor'):
   page.locator('.service-nav [data-service="proof"]').click();expect(page.locator('#proofView')).to_be_visible();wait_canonical_evidence_entry(page);investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');expect(investigation).to_have_count(1)
   if investigation.get_attribute('open') is None:investigation.locator(':scope > summary').click()
   action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click();expect(page.locator('#epistemicView')).to_be_visible();page.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r',arg=revision)
-  current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role);expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])});actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
+  PHASE=f'{role}-{vp}-EP-01-projection';current=api_json(page,'/api/epistemic-lattice?offset=0&limit=80',role);expected_current=sorted({str(a.get('procedureId') or 'cross-cutting') for a in current.get('atoms',[])});actual_current=sorted(page.locator('[data-explore-procedure]').evaluate_all('ns=>[...new Set(ns.map(n=>n.dataset.exploreProcedure).filter(Boolean))].sort()'))
   if actual_current!=expected_current:anomaly('epistemic-current-page-projection-mismatch',role,vp,'EP-01',actual_current,expected_current)
   if role not in network_coverage_checked:
-   coverage=epistemic_network_coverage(page,role,expected_ids)
+   PHASE=f'{role}-{vp}-EP-01-network';coverage=epistemic_network_coverage(page,role,expected_ids)
    if coverage['unknown']:anomaly('epistemic-network-unknown-procedure',role,vp,'EP-01',coverage,sorted(expected_ids))
    if not coverage['exhausted']:anomaly('epistemic-network-pagination-not-exhausted',role,vp,'EP-01',coverage,'walk reaches revision 1 within 40 pages')
    network_coverage_checked.add(role)
-  no_overflow(page,role,vp,'EP-01');one_h1(page,role,vp,'EP-01');shot(page,role,vp,'EP-01',width)
+  PHASE=f'{role}-{vp}-EP-01-geometry';no_overflow(page,role,vp,'EP-01');one_h1(page,role,vp,'EP-01');shot(page,role,vp,'EP-01',width)
  elif page.locator('#proofView #epistemicMetaCard').count():anomaly('epistemic-meta-visible-to-user',role,vp,'processes',True,False)
 
 try:

@@ -811,6 +811,148 @@ jobs:
           d=json.loads(p.read_text()); phase=d.get('phase','')
           sys.exit(1 if phase.endswith('-proof') or 'EP-01' in phase or phase=='aggregate-verdict' else 0)
           PY
+      - name: Diagnostic exact / surface aggregate coverage
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); kinds={x.get('kind') for x in d.get('violations',[])}
+          sys.exit(1 if {'empty-census','coverage','critical-coverage','fake-visible','unknown-critical'} & kinds else 0)
+          PY
+      - name: Diagnostic exact / surface aggregate targets
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if 'small-target' in kinds else 0)
+          PY
+      - name: Diagnostic exact / surface aggregate naming
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if 'unnamed' in kinds else 0)
+          PY
+      - name: Diagnostic exact / surface aggregate disclosure
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          kinds={x.get('kind') for x in json.loads(p.read_text()).get('violations',[])}
+          sys.exit(1 if 'disclosure-depth' in kinds else 0)
+          PY
+      - name: Diagnostic exact / onto proof open
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-proof-open' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto proof canonical entry
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-proof-canonical-entry' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto proof structure
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-proof-structure' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto proof reading
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-proof-reading' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto proof geometry
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-proof-geometry' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto EP projection
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-EP-01-projection' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto EP network
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-EP-01-network' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto EP geometry
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if '-EP-01-geometry' in phase else 0)
+          PY
+      - name: Diagnostic exact / onto aggregate
+        if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-onto-compliance-v1-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); sys.exit(1 if d.get('phase')=='aggregate-verdict' else 0)
+          PY
       - name: Diagnostic exact / onto proc-anomalies
         if: ${{ always() && matrix.id == 'onto-compliance-v1' }}
         shell: bash
