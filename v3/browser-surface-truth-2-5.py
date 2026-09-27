@@ -31,7 +31,9 @@ def open_view(page,view,selector):
 def open_process(page,code):
  open_view(page,'processes','#processesView')
  card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible()
- card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click(); page.wait_for_timeout(160)
+ card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
+ root='#monitoringView' if code=='RN-01' else '#incidentsView' if code=='EC-01' else '#grcWorkspace'
+ page.wait_for_function("""root=>{const r=document.querySelector(root),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(r&&r.offsetParent!==null&&r.dataset.editorialOrderValid==='true'&&r.dataset.compositionSurface&&d)}""",arg=root)
 
 def visible_orientation_count(page,selector):
  return page.locator(selector).evaluate("""root=>[...root.querySelectorAll('.procedure-frame,.hero:not([data-editorial-slot="controls"])')].filter(e=>{const s=getComputedStyle(e);return !e.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0}).length""")
