@@ -106,6 +106,50 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic causal / procedure-finetuning base RN
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase.lower()=='rn' or phase.startswith('RN-01') else 0)
+          PY
+      - name: Diagnostic causal / procedure-finetuning base non-RN
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(0 if phase.lower()=='rn' or phase.startswith('RN-01') else 1)
+          PY
+      - name: Diagnostic causal / procedure-finetuning surface RN
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase=='procedure-RN-01' else 0)
+          PY
+      - name: Diagnostic causal / procedure-finetuning surface non-RN
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(0 if phase=='procedure-RN-01' else 1)
+          PY
       - name: Diagnostic exact / procedure-finetuning base
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash
