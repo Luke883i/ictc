@@ -106,6 +106,112 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic causal / RN journey metadata
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-journey' else 0)
+          PY
+      - name: Diagnostic causal / RN manager entry
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-manager-entry' else 0)
+          PY
+      - name: Diagnostic causal / RN manager open
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-manager-open' else 0)
+          PY
+      - name: Diagnostic causal / RN manager count
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-manager-count' else 0)
+          PY
+      - name: Diagnostic causal / RN unnamed manager entry
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-surface-truth-rn-controls-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          bad=json.loads(p.read_text()).get('bad') or []
+          sys.exit(1 if any('data-open-monitor-manager' in str(x.get('html','')) for x in bad) else 0)
+          PY
+      - name: Diagnostic causal / RN unnamed other
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-surface-truth-rn-controls-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          bad=json.loads(p.read_text()).get('bad') or []
+          sys.exit(1 if bad and not any('data-open-monitor-manager' in str(x.get('html','')) for x in bad) else 0)
+          PY
+      - name: Diagnostic causal / surface home-processes
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase in {'home','processes'} else 0)
+          PY
+      - name: Diagnostic causal / surface other-procedure
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase.startswith('procedure-') and phase!='procedure-RN-01' else 0)
+          PY
+      - name: Diagnostic causal / surface proof-epistemic
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase in {'proof','epistemic'} else 0)
+          PY
+      - name: Diagnostic causal / surface admin-settings-mobile
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          phase=str(json.loads(p.read_text()).get('phase',''))
+          sys.exit(1 if phase in {'admin','settings','mobile'} else 0)
+          PY
       - name: Diagnostic causal / procedure-finetuning base RN
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash
