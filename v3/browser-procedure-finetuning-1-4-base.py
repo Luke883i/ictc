@@ -34,7 +34,10 @@ try:
    PHASE='rn-layout';expect(page.locator('#monitoringView > [data-finetune-compass="monitoring"]')).to_have_count(0);context_closed(page,'#monitoringView')
    PHASE='rn-journey';no_orphans(page,'#monitoringView')
    PHASE='rn-manager-entry';manager=page.locator('#monitoringView [data-open-monitor-manager]');expect(manager).to_have_count(1);expect(manager).to_have_text('Gestisci monitoraggi')
-   PHASE='rn-manager-open';manager.click();monitor=page.locator('#monitorManagerDialog');expect(monitor).to_be_visible();expect(monitor.locator('[data-monitor-manager-search]')).to_be_visible();expect(monitor.locator('[data-monitor-manager-count]')).to_be_visible()
+   PHASE='rn-manager-click';manager.click();monitor=page.locator('#monitorManagerDialog')
+   PHASE='rn-manager-dialog-visible';expect(monitor).to_be_visible()
+   PHASE='rn-manager-search-visible';expect(monitor.locator('[data-monitor-manager-search]')).to_be_visible()
+   PHASE='rn-manager-count-visible';expect(monitor.locator('[data-monitor-manager-count]')).to_be_visible()
    PHASE='rn-manager-count';rows=monitor.locator('[data-monitor-manager-id]');registry=page.locator('#monitoringView > [data-rn-monitoring-secondary][data-a6-registry="monitoring"]');count_text=registry.locator(':scope > summary [data-a6-registry-count]').inner_text().strip();total=int(count_text.rsplit(' di ',1)[-1]);assert rows.count()==total,(rows.count(),total,count_text)
 
   if rows.count():expect(rows.first.locator('[data-open-plan]')).to_have_text('Apri monitoraggio')
