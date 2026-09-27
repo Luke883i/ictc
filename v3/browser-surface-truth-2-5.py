@@ -15,8 +15,13 @@ def fail(exc):
  print(f'::error title=browser-surface-truth-2-5::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
- m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
- assert max(m['html'],m['body'])<=m['inner']+1,m
+ global PHASE
+ m=page.evaluate("""()=>{const inner=innerWidth,html=document.documentElement.scrollWidth,body=document.body.scrollWidth,visible=e=>{const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0};const offenders=[...document.querySelectorAll('body *')].filter(visible).map(e=>{const r=e.getBoundingClientRect();return{tag:e.tagName.toLowerCase(),id:e.id||'',cls:String(e.className||'').split(/\\s+/).filter(Boolean).slice(0,5),left:r.left,right:r.right,width:r.width,scrollWidth:e.scrollWidth,clientWidth:e.clientWidth}}).filter(x=>x.right>inner+1||x.left<-1||x.scrollWidth>x.clientWidth+1).sort((a,b)=>Math.max(b.right-inner,b.scrollWidth-b.clientWidth)-Math.max(a.right-inner,a.scrollWidth-a.clientWidth)).slice(0,12);return{inner,html,body,offenders}}""")
+ if max(m['html'],m['body'])>m['inner']+1:
+  joined=' '.join(' '.join([x.get('id',''),*x.get('cls',[])]) for x in m.get('offenders',[])).lower()
+  kind='frame' if 'procedure-frame' in joined else 'records' if any(x in joined for x in ['grc-list','procedure-record','record-row']) else 'shell' if any(x in joined for x in ['topbar','service-nav','stable-']) else 'market' if any(x in joined for x in ['market-','standard-','scope']) else 'other'
+  PHASE=f'{PHASE}-{kind}'
+  raise AssertionError(m)
 
 def open_view(page,view,selector):
  page.goto(f'{BASE}/?view={view}',wait_until='networkidle')

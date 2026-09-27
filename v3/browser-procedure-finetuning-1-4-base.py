@@ -29,7 +29,7 @@ try:
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");page=ctx.new_page();page.set_default_timeout(30000);writes=[];ensure_onboarded(page,BASE,'admin');page.on('request',lambda req:writes.append({'method':req.method,'url':req.url}) if req.url.startswith(BASE+'/api/') and req.method!='GET' else None);page.goto(BASE+'/?view=processes',wait_until='networkidle')
   PHASE='hub';expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
   for code,label in LABELS.items():
-   c=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(c).to_be_visible();expect(c.locator('.finetune-card-nature')).to_have_count(0);expect(c.locator('.finetune-card-decision')).to_have_count(0);expect(c.locator(':scope > footer .procedure-primary')).to_have_text(label);no_orphans(page,f'#procedureHub [data-process-code="{code}"]')
+   PHASE=f'hub-{code}';c=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(c).to_be_visible();expect(c.locator('.finetune-card-nature')).to_have_count(0);expect(c.locator('.finetune-card-decision')).to_have_count(0);expect(c.locator(':scope > footer .procedure-primary')).to_have_text(label);no_orphans(page,f'#procedureHub [data-process-code="{code}"]')
    PHASE='rn-open';open_process(page,'RN-01')
    PHASE='rn-layout';expect(page.locator('#monitoringView > [data-finetune-compass="monitoring"]')).to_have_count(0);context_closed(page,'#monitoringView')
    PHASE='rn-journey';no_orphans(page,'#monitoringView')
