@@ -106,6 +106,50 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Diagnostic exact / procedure-finetuning base
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); print('FINETUNING_BASE_PHASE='+str(d.get('phase','unknown')))
+          raise SystemExit('procedure-finetuning base failed at '+str(d.get('phase','unknown')))
+          PY
+      - name: Diagnostic exact / procedure-finetuning executive
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-executive-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); print('FINETUNING_EXECUTIVE_PHASE='+str(d.get('phase','unknown')))
+          raise SystemExit('procedure-finetuning executive failed at '+str(d.get('phase','unknown')))
+          PY
+      - name: Diagnostic exact / procedure-finetuning RN controls
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-surface-truth-rn-controls-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); print('FINETUNING_RN_CONTROLS='+str((d.get('bad') or [])[:2]))
+          raise SystemExit('procedure-finetuning RN controls failed')
+          PY
+      - name: Diagnostic exact / procedure-finetuning surface truth
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-surface-truth-2-5-error.json')
+          if not p.exists(): sys.exit(0)
+          d=json.loads(p.read_text()); print('FINETUNING_SURFACE_TRUTH_PHASE='+str(d.get('phase','unknown')))
+          raise SystemExit('procedure-finetuning surface truth failed at '+str(d.get('phase','unknown')))
+          PY
       - name: Diagnostic phase / v2.1 rn-ec
         if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
         shell: bash
