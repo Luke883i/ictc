@@ -221,6 +221,36 @@ jobs:
           if not p.exists(): sys.exit(0)
           sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='mobile-overflow-other' else 0)
           PY
+      - name: Diagnostic causal / RN open
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-open' else 0)
+          PY
+      - name: Diagnostic causal / RN layout
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-layout' else 0)
+          PY
+      - name: Diagnostic causal / RN manager click
+        if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path('artifacts/browser-procedure-finetuning-1-4-error.json')
+          if not p.exists(): sys.exit(0)
+          sys.exit(1 if str(json.loads(p.read_text()).get('phase',''))=='rn-manager-click' else 0)
+          PY
       - name: Diagnostic causal / RN journey metadata
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash

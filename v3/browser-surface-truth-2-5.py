@@ -16,9 +16,9 @@ def fail(exc):
 
 def no_overflow(page):
  global PHASE
- m=page.evaluate("""()=>{const inner=innerWidth,html=document.documentElement.scrollWidth,body=document.body.scrollWidth,visible=e=>{const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0};const offenders=[...document.querySelectorAll('body *')].filter(visible).map(e=>{const r=e.getBoundingClientRect();return{tag:e.tagName.toLowerCase(),id:e.id||'',cls:String(e.className||'').split(/\\s+/).filter(Boolean).slice(0,5),left:r.left,right:r.right,width:r.width,scrollWidth:e.scrollWidth,clientWidth:e.clientWidth}}).filter(x=>x.right>inner+1||x.left<-1||x.scrollWidth>x.clientWidth+1).sort((a,b)=>Math.max(b.right-inner,b.scrollWidth-b.clientWidth)-Math.max(a.right-inner,a.scrollWidth-a.clientWidth)).slice(0,12);return{inner,html,body,offenders}}""")
+ m=page.evaluate("""()=>{const inner=innerWidth,html=document.documentElement.scrollWidth,body=document.body.scrollWidth;const offenders=[];if(Math.max(html,body)>inner+1){for(const e of document.querySelectorAll('body *')){const r=e.getBoundingClientRect();if(r.right>inner+1||r.left<-1){offenders.push({tag:e.tagName.toLowerCase(),id:e.id||'',cls:e.getAttribute('class')||'',left:r.left,right:r.right,width:r.width});if(offenders.length>=12)break;}}}return{inner,html,body,offenders}}""")
  if max(m['html'],m['body'])>m['inner']+1:
-  joined=' '.join(' '.join([x.get('id',''),*x.get('cls',[])]) for x in m.get('offenders',[])).lower()
+  joined=' '.join(f"{x.get('id','')} {x.get('cls','')}" for x in m.get('offenders',[])).lower()
   kind='frame' if 'procedure-frame' in joined else 'records' if any(x in joined for x in ['grc-list','procedure-record','record-row']) else 'shell' if any(x in joined for x in ['topbar','service-nav','stable-']) else 'market' if any(x in joined for x in ['market-','standard-','scope']) else 'other'
   PHASE=f'{PHASE}-{kind}'
   raise AssertionError(m)
