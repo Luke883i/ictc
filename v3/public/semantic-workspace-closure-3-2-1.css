@@ -80,3 +80,8 @@ html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout=
 html[data-uiux-absorption="656"] #proofContent>details.proof-section>summary small{max-width:72ch}
 html[data-uiux-absorption="656"] :is(#proofView,#epistemicView) details[data-secondary-disclosure="true"]>summary{min-height:44px}
 @media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important}}
+
+/* UIUX-656 CI convergence: equal-width process actions remain deterministic after row contraction. */
+html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary{inline-size:12rem!important;min-inline-size:12rem!important;max-inline-size:12rem!important;box-sizing:border-box;overflow:hidden}
+html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary{inline-size:100%!important;min-inline-size:0!important;max-inline-size:none!important}}
