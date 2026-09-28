@@ -17,7 +17,8 @@ function clearOrientationClose(token){if(token?.__ictcOrientationClose){clearTim
 function scheduleOrientationClose(token){if(!token)return;clearOrientationClose(token);token.__ictcOrientationClose=setTimeout(()=>{token.__ictcOrientationClose=null;if(!token.matches(':hover')&&!token.contains(document.activeElement))token.removeAttribute('open');},90);}
 function installOrientationTransientDisclosure(){
  document.addEventListener('pointerdown',event=>{const token=orientationTokenFrom(event.target);if(!token)return;token.__ictcOrientationPointerFocus=true;setTimeout(()=>{token.__ictcOrientationPointerFocus=false;},0);},true);
- document.addEventListener('pointerover',event=>{if(!orientationFinePointer()||!orientationPointerIntent(event))return;const token=orientationTokenFrom(event.target);if(!token)return;clearOrientationClose(token);token.setAttribute('open','');},true);
+ document.addEventListener('pointerover',event=>{if(!orientationFinePointer())return;const token=orientationTokenFrom(event.target);if(!token)return;clearOrientationClose(token);},true);
+ document.addEventListener('pointermove',event=>{if(!orientationFinePointer()||!orientationPointerIntent(event))return;const token=orientationTokenFrom(event.target);if(!token)return;clearOrientationClose(token);token.setAttribute('open','');},true);
  document.addEventListener('pointerout',event=>{if(!orientationFinePointer())return;const token=orientationTokenFrom(event.target);if(!token||token.contains(event.relatedTarget))return;scheduleOrientationClose(token);},true);
  document.addEventListener('focusin',event=>{const token=orientationTokenFrom(event.target);if(!token||token.__ictcOrientationPointerFocus)return;clearOrientationClose(token);token.setAttribute('open','');},true);
  document.addEventListener('focusout',event=>{const token=orientationTokenFrom(event.target);if(!token||token.contains(event.relatedTarget))return;scheduleOrientationClose(token);},true);

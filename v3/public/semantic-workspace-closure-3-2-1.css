@@ -79,7 +79,7 @@ html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout=
 html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{white-space:normal!important;line-height:1.35!important}
 html[data-uiux-absorption="656"] #proofContent>details.proof-section>summary small{max-width:72ch}
 html[data-uiux-absorption="656"] :is(#proofView,#epistemicView) details[data-secondary-disclosure="true"]>summary{min-height:44px}
-@media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important}}
+@media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important;grid-template-areas:"code title" "purpose purpose" "action action"!important}html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]>footer{width:100%!important;justify-self:stretch!important}}
 
 /* UIUX-656 CI convergence: equal-width process actions remain deterministic after row contraction. */
 html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary{inline-size:12rem!important;min-inline-size:12rem!important;max-inline-size:12rem!important;box-sizing:border-box;overflow:hidden}

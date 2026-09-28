@@ -701,7 +701,9 @@
         "v3/public/ui/grc-workspace-3-2.js",
         "v3/public/ui/procedure-ui-ux-1-6.js",
         "v3/public/ui/proof-workspace-3-2.js",
-        "v3/public/ui/procedure-sequential-ao-mc.js"
+        "v3/public/ui/procedure-sequential-ao-mc.js",
+        "v3/public/ui/procedure-sequential-dom.js",
+        "v3/public/ui/semantic-surface-a6-ux4.js"
       ],
       "property": "Large registries expose a bounded initial work set with state/search triage and explicit reveal of remaining records; catalog explanation is separated from record operation.",
       "findingIds": [
