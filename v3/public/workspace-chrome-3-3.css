@@ -45,3 +45,10 @@ html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar 
 /* UI-INTENT-9: concise visible brand; anchor aria-label preserves full product identity. */
 html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand small{display:none!important}
 html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .topbar .brand b{font-size:18px;line-height:1;font-weight:760}
+
+/* UIUX-656-ABSORB-1: shell focus and narrow-screen semantic contraction. */
+html[data-uiux-absorption="656"] .profile-authority-note{margin:.35rem .55rem;color:var(--color-muted);font-size:max(.78rem,12px);line-height:1.35}
+html[data-uiux-absorption="656"] .topbar .service-nav{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+html[data-uiux-absorption="656"] .topbar .service-nav button{flex:0 0 auto}
+@media(max-width:760px){html[data-uiux-absorption="656"] .topbar .stable-header-inner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.35rem}html[data-uiux-absorption="656"] .topbar .brand{min-width:0}html[data-uiux-absorption="656"] .topbar .global-command-trigger span{display:none}html[data-uiux-absorption="656"] .topbar .global-command-trigger{width:44px;min-width:44px;padding:0;justify-content:center}html[data-uiux-absorption="656"] .topbar .stable-profile-menu .profile-summary-copy small{display:none}}
+@media(max-width:520px){html[data-uiux-absorption="656"] .topbar .service-nav button{min-height:44px;padding-inline:.55rem;font-size:max(.78rem,12px)}html[data-uiux-absorption="656"] .topbar .demo-context-card{width:44px;min-width:44px;justify-content:center}}

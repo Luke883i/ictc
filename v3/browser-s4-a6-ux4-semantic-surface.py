@@ -134,15 +134,15 @@ def desktop(browser):
     page.on('request',track_write)
     PHASE='home-open'; page.goto(BASE+'/?view=home',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE='home-title'; expect(page.locator('#homeTitle')).to_have_text('Integrated Compliance Tower Control')
-    PHASE='home-onboarding-first-run'; onboarding=page.locator('[data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'; onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','first-run-gate')
+    PHASE='home-onboarding-first-run'; onboarding=page.locator('.service-nav [data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'; assert page.locator('#stableProfileMenu [data-onboarding-replay]').count()==0,'Replay utility must not coexist with first-run navigation'; onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','first-run-gate')
     for step in range(5):
         PHASE=f'home-onboarding-progress-{step+1}'
         next_button=onboarding_dialog.locator('[data-onboarding-next]:visible'); expect(next_button).to_have_count(1)
         with page.expect_response(lambda response: urllib.parse.urlparse(response.url).path=='/api/profile/onboarding' and response.request.method=='PATCH') as response_info:
             next_button.click()
         assert response_info.value.ok,(step,response_info.value.status)
-    PHASE='home-onboarding-accepted'; expect(onboarding_dialog).not_to_be_visible(); assert len(ONBOARDING_WRITES)==5,ONBOARDING_WRITES
-    PHASE='home-onboarding-replay'; onboarding.click(); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','replay-readonly'); assert onboarding_dialog.locator('[data-onboarding-next]:visible').count()==0; page.keyboard.press('Escape'); expect(onboarding_dialog).not_to_be_visible(); assert onboarding.evaluate('b=>document.activeElement===b')
+    PHASE='home-onboarding-accepted'; expect(onboarding_dialog).not_to_be_visible(); assert len(ONBOARDING_WRITES)==5,ONBOARDING_WRITES; assert page.locator('.service-nav [data-onboarding-open]').count()==0,'Accepted onboarding must leave primary navigation'
+    PHASE='home-onboarding-replay'; profile=page.locator('#stableProfileMenu'); profile.locator(':scope > summary').click(); replay=profile.locator('[data-onboarding-replay]'); expect(replay).to_be_visible(); replay.click(); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','replay-readonly'); assert onboarding_dialog.locator('[data-onboarding-next]:visible').count()==0; page.keyboard.press('Escape'); expect(onboarding_dialog).not_to_be_visible(); assert replay.evaluate('b=>document.activeElement===b'); profile.locator(':scope > summary').click(); expect(profile).not_to_have_attribute('open','')
     opens=page.locator('#homePriorities .home-priority-open:visible')
     if opens.count():
         PHASE='home-icon'; assert all('→' not in (opens.nth(i).inner_text() or '') for i in range(opens.count())); svg=opens.first.locator('svg'); box=svg.bounding_box(); assert not box or max(box['width'],box['height'])<=14.5,box

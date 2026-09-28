@@ -73,3 +73,14 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-heade
 html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub .procedure-card footer,.procedure-frame-actions) :is(button,a[href]){box-sizing:border-box;min-height:44px;inline-size:12rem;min-inline-size:12rem;display:inline-flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card footer{display:flex;align-items:center;justify-content:flex-end;gap:.5rem}
 @media(max-width:760px){html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub .procedure-card footer,.procedure-frame-actions){width:100%}html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub .procedure-card footer,.procedure-frame-actions) :is(button,a[href]){inline-size:100%;min-inline-size:0}html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card footer{justify-content:stretch}}
+
+/* UIUX-656-ABSORB-1: process and evidence landing contraction. */
+html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:4.4rem minmax(0,1fr) auto!important;grid-template-areas:"code title action" "code purpose action"!important;gap:.12rem .65rem!important;padding:.58rem .72rem!important;min-height:0!important}
+html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{white-space:normal!important;line-height:1.35!important}
+html[data-uiux-absorption="656"] #proofContent>details.proof-section>summary small{max-width:72ch}
+html[data-uiux-absorption="656"] :is(#proofView,#epistemicView) details[data-secondary-disclosure="true"]>summary{min-height:44px}
+@media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important}html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]>footer{width:100%!important;justify-self:stretch!important}}
+
+/* UIUX-656 CI convergence: equal-width process actions remain deterministic after row contraction. */
+html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary{inline-size:12rem!important;min-inline-size:12rem!important;max-inline-size:12rem!important;box-sizing:border-box;overflow:hidden}
+html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary>span{min-width:0;overflow:hidden;text-overflow:ellipsis}

@@ -408,5 +408,31 @@
     "mainSha": "a261ac1eda47dec254d824b373b5706f54483d0b",
     "observedOn": "2026-09-22",
     "meaning": "post-GOV-TRAMA-COMPASS-1 main preimage used by GOV-TRAMA-RECONCILE-1; not a live pointer"
-  }
+  },
+  "intentionalDeviations": [
+    {
+      "id": "UIUX-656-ABSORB-1",
+      "kind": "intentional-deviation",
+      "state": "candidate",
+      "baseObservation": {
+        "mainSha": "64ae869dbaf7706617ddd870fc41c8636bc13f2d",
+        "mergedPr": 208,
+        "observedOn": "2026-09-28",
+        "meaning": "immutable post-PR208 preimage for the user-directed UI/UX reconciliation; not a live pointer"
+      },
+      "scope": "bounded post-UIUX-CONVERGE-0 defect reconciliation of 656 screenshot-derived findings into existing canonical UI owners",
+      "preserves": [
+        "UIUX-CONVERGE-0 terminal history",
+        "S4-A6-CLOSE remains blocked",
+        "S5-CANDIDATE-SEAL remains blocked",
+        "critical path C2 -> C1 -> C3 -> C4",
+        "E3-HUMAN, E3-GOV and E4-DEPLOY remain external"
+      ],
+      "criticalPathChanged": false,
+      "serialBridgeCreated": false,
+      "reopensHistoricalSlice": false,
+      "nextGovernedAction": "C2-DELIVERY-PROVENANCE",
+      "claimBoundary": "Repository-bounded UI/UX defect reconciliation only; no representative-human usability, legal/compliance correctness, deployment effectiveness or Enterprise Candidate conclusion."
+    }
+  ]
 }
