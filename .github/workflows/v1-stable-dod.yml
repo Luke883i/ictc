@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 16
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: 1.2 market profile
@@ -63,7 +63,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@v6
         with: {python-version: '3.12'}
