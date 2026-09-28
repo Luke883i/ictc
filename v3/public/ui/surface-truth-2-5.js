@@ -3,7 +3,7 @@ const PARTICIPANT='surface-truth-2-5';
 const SEMANTIC='h1,h2,h3,h4,h5,h6,p,small,label,button,a[href],input,select,textarea,summary,dt,dd,th,td,legend,li,span,b,strong,em,option,[role="status"],[role="alert"],.surface-chip,.counter,.empty';
 const RUNTIME_ROOTS=['#runtimeStatus','#homePulse','#homePriorities','#homeReason','#missionCount','#missionsList','#catalogCount','#catalogList','#contributionList','#incidentCount','#incidentList','#proofPulse','#toast','#sourceBody','#planBody','#incidentWorkspace .dialog-body','#grcWorkspace .grc-list','#proofView .surface-data-region','#epistemicView .surface-data-region'];
 const DERIVED_ROOTS=['#procedureHub','.procedure-frame','.procedure-decision-frame','.procedure-record-card','[data-surface-context-strip]','[data-surface-information-value]','[data-dialog-information-value]','#ictcManifest','.procedure-queue-tools'];
-const GENERATED_ROOTS=['#homeView','#processesView','#monitoringView','#incidentsView','#grcView','#proofView','#epistemicView','#stableProfileMenu','#globalCommandDialog','#globalCommandTrigger','#stableLegalFooter','#adminCenter'];
+const GENERATED_ROOTS=['#homeView','#processesView','#monitoringView','#incidentsView','#grcView','#proofView','#epistemicView','#stableProfileMenu','#globalCommandDialog','#globalCommandTrigger','#stableLegalFooter','#adminCenter','[data-onboarding-open]','#ictcDemoCard'];
 const COMPATIBILITY='[data-ao-legacy-summary="suppressed"],.procedure-record-legacy-meta,[data-compatibility-surface]';
 const FAKE='[data-demo],[data-mock],[data-fake],.demo-only,.mock-only,.ai-lens-demo';
 let installed=false,pending=false,observer=null;
