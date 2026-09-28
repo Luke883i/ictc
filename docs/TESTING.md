@@ -169,3 +169,10 @@ Il legacy census è vincolato al tree committed dell'exact HEAD con `git ls-tree
 `GOV-ASIS-CONVERGENCE-1` aggiunge tier **scoped** 100k / 1M / 10M per AS-IS ratchet, Enterprise Candidate target, authority topology, document/governance coherence e cognitive order cross-surface. Non cambia i tier generici TRAMA 1k / 100k / 1M.
 
 Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure family richiedono remodelling. La saturazione semantica chiude solo quando `M+10k` non aggiunge nuove root family; la compressione chiude solo quando `N+10k` non trova un set di meccanismi più piccolo senza perdita. Mutation count resta model evidence, mai prova fisica, umana, deployment o legale.
+
+
+### HUMAN-REALITY-RUNTIME-1
+
+`node v3/human-reality-runtime-check.mjs` verifica il value object `decisionContext` come estensione authority-zero dei checkpoint umani esistenti: 20 primitive H01–H20 preservate, 10 assi strutturati, outcome neutrality, binding audit/epistemic, retention nelle projection e assenza di store/writer/SOT paralleli.
+
+`node v3/human-reality-runtime-saturation-10m.mjs --trials 10000000 --holdout 1000000 --seed <N>` esercita 32 failure family dalla finalità umana fino al binding runtime/evidence, tutte le 496 coppie, cross-layer compositions, deletion oracle e pairwise no-loss compression dei 10 assi. I trial sono evaluator calls del modello semantico, non browser session, persone, casi legali o mutazioni fisiche del codice. L'accettazione locale richiede 10 cicli completi con seed distinti e zero survivor/novel family.

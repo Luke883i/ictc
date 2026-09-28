@@ -65,6 +65,13 @@ La lineage ha depth massima 8 e rifiuta un target già presente tra i processi v
 
 EpistemicStep separa initiator, executor e producer. `metadata.epistemicEffects` è il forward write contract. Una compatibility registry pin-na le action AI legacy note a `proposed` e producer AI per evitare classificazioni errate durante la migrazione. In assenza di effect esplicito, una proposta legacy conserva almeno una basis tecnica registrata: predecessor SubjectVersion quando esiste, altrimenti digest dell'input del comando. Questa basis tecnica preserva lineage e non valida la correttezza sostanziale della proposta. Il fallback da action name resta debito esplicito e non è la destinazione architetturale.
 
+
+## Human decision context — bounded, non-authoritative
+
+I checkpoint umani esistenti possono registrare un `decisionContext` strutturato per preservare condizioni operative che non sono riducibili alla sola motivazione: intento operativo, incertezze, posizioni/dissenso, vincoli, handoff, escalation, eccezioni, urgenza, limitation e recovery. Il value object è opzionale e non introduce un writer, store, registry o authority parallela: resta proprietà della decision/review/attestation occurrence nativa.
+
+Il contesto ha `authorityEffect = NONE`. Non cambia outcome, permessi o state transition; non prova i fatti dichiarati, non rende applicabile una norma, non giustifica automaticamente un'eccezione e non trasforma una limitation in evidenza. Quando presente, il `Store` normalizza lo stesso contesto, ne lega il digest all'evento audit hash-linked e lo propaga nell'`epistemic_step`; le projection di decisione/traccia lo conservano senza ampliare lo scope di lettura.
+
 ## UI constitution C0.1
 
 `installActiveExperience()` è l'unico composition root. I participant finali restano esattamente cinque:

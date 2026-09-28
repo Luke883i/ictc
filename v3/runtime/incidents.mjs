@@ -3,6 +3,7 @@ import { asString, now } from '../domain.mjs';
 import { applyAnswers, currentFormulation, deriveQuestions, formulationRecord, submissionReadiness } from '../question-engine.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
 import { ensureIncidentOwner, findIncident, incidentProjection } from './model.mjs';
+import { withDecisionContext } from './decision-context.mjs';
 
 function derivedCommand(command, suffix) {
   return command.id ? { ...command, id: `${command.id}-${suffix}`, expectedRevision: null } : {};
@@ -126,7 +127,7 @@ export function createIncidentHandler({ store, permissions }) {
         incident.finalNarrative = current.narrative;
         incident.state = 'submitted';
         incident.submittedAt = now();
-        incident.submissionConfirmation = { by: actor.id, at: now(), formulationSha256: current.sha256 };
+        incident.submissionConfirmation = withDecisionContext({ by: actor.id, at: now(), formulationSha256: current.sha256 }, input);
         incident.updatedAt = now();
         return incidentProjection(incident);
       }, commandFrom(request));
