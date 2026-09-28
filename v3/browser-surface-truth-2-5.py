@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -14,8 +15,13 @@ def fail(exc):
  print(f'::error title=browser-surface-truth-2-5::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 
 def no_overflow(page):
- m=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})')
- assert max(m['html'],m['body'])<=m['inner']+1,m
+ global PHASE
+ m=page.evaluate("""()=>{const inner=innerWidth,html=document.documentElement.scrollWidth,body=document.body.scrollWidth;const offenders=[];if(Math.max(html,body)>inner+1){for(const e of document.querySelectorAll('body *')){const r=e.getBoundingClientRect();if(r.right>inner+1||r.left<-1){offenders.push({tag:e.tagName.toLowerCase(),id:e.id||'',cls:e.getAttribute('class')||'',left:r.left,right:r.right,width:r.width});if(offenders.length>=12)break;}}}return{inner,html,body,offenders}}""")
+ if max(m['html'],m['body'])>m['inner']+1:
+  joined=' '.join(f"{x.get('id','')} {x.get('cls','')}" for x in m.get('offenders',[])).lower()
+  kind='frame' if 'procedure-frame' in joined else 'records' if any(x in joined for x in ['grc-list','procedure-record','record-row']) else 'shell' if any(x in joined for x in ['topbar','service-nav','stable-']) else 'market' if any(x in joined for x in ['market-','standard-','scope']) else 'other'
+  PHASE=f'{PHASE}-{kind}'
+  raise AssertionError(m)
 
 def open_view(page,view,selector):
  page.goto(f'{BASE}/?view={view}',wait_until='networkidle')
@@ -25,7 +31,9 @@ def open_view(page,view,selector):
 def open_process(page,code):
  open_view(page,'processes','#processesView')
  card=page.locator(f'#procedureHub [data-process-code="{code}"]'); expect(card).to_be_visible()
- card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click(); page.wait_for_timeout(160)
+ card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click()
+ root='#monitoringView' if code=='RN-01' else '#incidentsView' if code=='EC-01' else '#grcWorkspace'
+ page.wait_for_function("""root=>{const r=document.querySelector(root),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(r&&r.offsetParent!==null&&r.dataset.editorialOrderValid==='true'&&r.dataset.compositionSurface&&d)}""",arg=root)
 
 def visible_orientation_count(page,selector):
  return page.locator(selector).evaluate("""root=>[...root.querySelectorAll('.procedure-frame,.hero:not([data-editorial-slot="controls"])')].filter(e=>{const s=getComputedStyle(e);return !e.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length>0}).length""")
@@ -56,6 +64,7 @@ try:
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':1440,'height':950})
   ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
   page=ctx.new_page(); page.set_default_timeout(30000)
+  ensure_onboarded(page,BASE,'admin')
 
   PHASE='home'; open_view(page,'home','#homeView'); snapshot(page,'chrome','.topbar'); snapshot(page,'home','#homeView')
   expect(page.locator('#ictcManifest')).to_have_count(0); expect(page.locator('#homePulse')).to_be_hidden(); expect(page.locator('#homePriorities')).to_be_visible(); no_overflow(page)
@@ -66,7 +75,7 @@ try:
   for code,root in [('RN-01','#monitoringView'),('EC-01','#incidentsView'),('AO-01','#grcView'),('MC-01','#grcView'),('AP-01','#grcView'),('RC-01','#grcView'),('AR-01','#grcView')]:
    PHASE=f'procedure-{code}'; open_process(page,code); expect(page.locator(root)).to_be_visible(); assert visible_orientation_count(page,root)==1,(code,visible_orientation_count(page,root)); snapshot(page,f'procedure:{code}',root)
    expect(page.locator(f'{root} [data-surface-information-value]')).to_have_count(0)
-   detail=page.locator(f'{root} .procedure-decision-frame details.composition-process-context')
+   detail=page.locator(f'{root} > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy')
    if detail.count(): assert detail.get_attribute('open') is None
    no_overflow(page)
 
@@ -87,8 +96,9 @@ try:
   PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
   PHASE='settings'; open_profile(page); expect(page.locator('#stableProfileMenu #openSettings')).to_be_hidden(); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); page.locator('#adminCenter [data-admin-nav="ai"]').click(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible(); provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); expect(provider).not_to_have_attribute('open',''); provider.locator(':scope > summary').click(); settings=page.locator('#settingsDialog[data-admin-embedded="ai"]'); expect(settings).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); policy=settings.locator('details[data-settings-section="policy"]'); expect(policy).to_have_count(1); expect(policy).not_to_have_attribute('open',''); page.keyboard.press('Escape')
 
-  PHASE='mobile'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); open_process(m,'AO-01'); snapshot(m,'mobile:AO-01','#grcView'); no_overflow(m); mc.close()
+  PHASE='mobile-bootstrap'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); ensure_onboarded(m,BASE,'admin'); PHASE='mobile-processes'; open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); PHASE='mobile-ao-open'; open_process(m,'AO-01'); PHASE='mobile-ao-snapshot'; snapshot(m,'mobile:AO-01','#grcView'); PHASE='mobile-overflow'; no_overflow(m); mc.close()
 
+  PHASE='aggregate-verdict'
   visible=sum(x['visible'] for x in INVENTORY); high=sum(x['high'] for x in INVENTORY); critical=sum(x['critical'] for x in INVENTORY); critical_high=sum(x['criticalHigh'] for x in INVENTORY)
   aggregate_cov=high/visible if visible else 0; aggregate_critical=critical_high/critical if critical else 1
   assert aggregate_cov>=.95,aggregate_cov; assert aggregate_critical==1,aggregate_critical; assert not VIOLATIONS,VIOLATIONS

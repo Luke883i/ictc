@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts' / 'uiux-beauty-p4'
@@ -309,6 +310,8 @@ try:
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
         page=browser.new_page()
+        page.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
+        ensure_onboarded(page,BASE,'admin')
         for viewport,width,height in VIEWPORTS:
             page.set_viewport_size({'width':width,'height':height})
             for surface,view,procedure,root in SURFACES:

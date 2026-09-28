@@ -1,5 +1,6 @@
 import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 PROCESS_IDS={'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
@@ -14,7 +15,7 @@ def api(page,role,path,method='GET',body=None):
  return page.evaluate("""async ({role,path,method,body})=>{const headers={'content-type':'application/json','x-ictc-role':role};const r=await fetch(path,{method,headers,body:body==null?undefined:JSON.stringify(body)});let data=null;try{data=await r.json()}catch{}return {status:r.status,body:data};}""",{'role':role,'path':path,'method':method,'body':body})
 def open_process(page,code):
  global PHASE
- page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();pid=PROCESS_IDS[code];root,owner=ROOT_OWNER[pid];PHASE=f'owner-ready:{code}';page.wait_for_function("x=>{const r=document.querySelector(x.root),a=r?.querySelector(`:scope > [data-procedure-attention-slot=\"${x.pid}\"]`),rail=r?.querySelector(':scope > .procedure-support-rail'),ctx=rail?.querySelector(':scope > [data-editorial-slot=\"advanced-context\"]'),ref=r?.querySelector(':scope > [data-editorial-slot=\"reference\"]');return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.pid&&r.dataset.editorialOwner===x.owner&&r.dataset.editorialOrderValid==='true'&&a&&ctx?.querySelector(`[data-procedure-anatomy=\"${x.pid}\"]`)&&ref?.querySelector(`[data-procedure-standard-applications=\"${x.pid}\"]`))}",arg={'root':root,'owner':owner,'pid':pid})
+ page.locator('.service-nav [data-service="processes"]').click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .procedure-primary,:scope > footer .primary').first.click();pid=PROCESS_IDS[code];root,owner=ROOT_OWNER[pid];PHASE=f'owner-ready:{code}';page.wait_for_function("x=>{const r=document.querySelector(x.root),a=r?.querySelector(`:scope > [data-procedure-attention-slot=\"${x.pid}\"]`),rail=r?.querySelector(':scope > .procedure-support-rail'),ctx=rail?.querySelector(':scope > [data-editorial-slot=\"advanced-context\"]'),ref=rail?.querySelector(':scope > [data-editorial-slot=\"reference\"]');return !!(r&&r.offsetParent!==null&&r.dataset.compositionSurface===x.pid&&r.dataset.editorialOwner===x.owner&&r.dataset.editorialOrderValid==='true'&&a&&ctx?.querySelector(`[data-procedure-anatomy=\"${x.pid}\"]`)&&ref?.querySelector(`[data-procedure-standard-applications=\"${x.pid}\"]`))}",arg={'root':root,'owner':owner,'pid':pid})
 def no_horizontal_overflow(page,label):
  metric=page.evaluate('()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})');assert max(metric['html'],metric['body'])<=metric['inner']+1,(label,metric)
 def proof_order(page):
@@ -24,7 +25,7 @@ try:
   launch={'headless':True,'args':['--no-sandbox']}
   if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1365,'height':900});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
-  page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/',wait_until='networkidle')
+  page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE+'/',wait_until='networkidle');ensure_onboarded(page,BASE,'admin')
   PHASE='bootstrap-kernel';b=api(page,'admin','/api/bootstrap');assert b['status']==200,b;data=b['body'];assert data['projectionContext']['scope']=='actor-visible';assert data['projectionContext']['asOf'];assert data['projectionContext']['transactionSelection']=='current-state';assert data['projectionContext']['historicalStateSelected'] is False;assert data['procedureRegistry']['authority']=='canonical-procedure-registry';assert len(data['procedureRegistry']['procedures'])==7;assert data['metricCatalog']['authority']=='canonical-procedure-registry.metricSpecs';assert all(x.get('drilldown') for x in data['metricCatalog']['metrics']);assert data['subjectVersions']['authority']=='subject-version-working-index';assert data['epistemic']['metaGrammar']['families']==['observed','derived','proposed','decided','attested']
   codes=list(PROCESS_IDS);seen=[];standards_seen=[];progressive_seen=[]
   for code in codes:

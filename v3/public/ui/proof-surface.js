@@ -122,6 +122,7 @@ function renderProof(data, revision = currentRevision()) {
   $('#proofLoading').hidden = true;
   $('#proofError').hidden = true;
   $('#proofContent').hidden = false;
+  document.dispatchEvent(new CustomEvent('ictc:rendered',{detail:{surface:'proof',reason:'proof-data-rendered'}}));
 }
 
 function clearCache() {

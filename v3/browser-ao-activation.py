@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ART=pathlib.Path(os.environ.get('ICTC_ARTIFACT_DIR',str(pathlib.Path.cwd()/'artifacts')))
 ART.mkdir(exist_ok=True)
@@ -31,6 +32,7 @@ try:
         PHASE='open-ao'
         page=ctx.new_page()
         page.set_default_timeout(20000)
+        ensure_onboarded(page,BASE,'admin')
         page.goto(BASE+'/',wait_until='networkidle')
         page.locator('.service-nav [data-service="processes"]').click()
         card=page.locator('#procedureHub [data-process-code="AO-01"]')

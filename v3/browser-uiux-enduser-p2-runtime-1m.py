@@ -1,5 +1,6 @@
 import hashlib, json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -134,7 +135,7 @@ try:
   if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch)
   ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
-  page=ctx.new_page();page.set_default_timeout(30000);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  page=ctx.new_page();page.set_default_timeout(30000);ensure_onboarded(page,BASE,'admin');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   results={};total=killed=survivors=harness=0
   for surface,spec in SPECS.items():
    navigate(page,surface,spec);PHASE=f'mutate:{surface}'

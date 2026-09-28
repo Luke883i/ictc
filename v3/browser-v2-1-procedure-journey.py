@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -218,7 +219,7 @@ try:
         page.on('pageerror', lambda e: errors.append(str(e)))
 
         PHASE = 'bootstrap'
-        page.goto(BASE+'/?view=processes', wait_until='networkidle')
+        page.goto(BASE+'/?view=processes', wait_until='networkidle'); ensure_onboarded(page,BASE,'admin')
         expect(page.locator('#procedureHub .procedure-card')).to_have_count(7)
         initial = current_revision(page)
         assert initial == int(bootstrap(page).get('revision') or 0)
@@ -363,7 +364,7 @@ try:
         PHASE = 'mobile'
         mcx = browser.new_context(viewport={'width':390,'height':844})
         mcx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','epistemic')")
-        m = mcx.new_page(); m.goto(BASE+'/?view=epistemic', wait_until='networkidle')
+        m = mcx.new_page(); m.goto(BASE+'/?view=epistemic', wait_until='networkidle'); ensure_onboarded(m,BASE,'admin')
         expect(m.locator('#epistemicView')).to_be_visible()
         m.wait_for_function('(r)=>Number(document.querySelector("#epistemicView")?.dataset.loadedRevision||0)>=r', arg=final_rev)
         expect(m.locator('[data-epistemic-mode="explore"]')).to_have_attribute('aria-pressed', 'true')
@@ -374,7 +375,7 @@ try:
         PHASE = 'reduced-motion-route'
         rcx = browser.new_context(viewport={'width':1280,'height':850}, reduced_motion='reduce')
         rcx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
-        rp = rcx.new_page(); rp.goto(BASE+'/?view=processes', wait_until='networkidle')
+        rp = rcx.new_page(); rp.goto(BASE+'/?view=processes', wait_until='networkidle'); ensure_onboarded(rp,BASE,'admin')
         action_card = rp.locator('#procedureHub [data-process-code="AP-01"]')
         expect(action_card).to_be_visible()
         action_card.locator(':scope > footer .primary').click()

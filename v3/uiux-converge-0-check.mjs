@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateUiuxConvergeContract, CANONICAL_SURFACES } from './uiux-converge-0-model.mjs';
+import { validateUiuxConvergeContract, validateUiuxMiningV2Coverage, UIUX_MINING_V2_COVERAGE, CANONICAL_SURFACES } from './uiux-converge-0-model.mjs';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
 const [contractRaw,closureRaw,entryRaw,tokens,icons,shell,frame,native,enterprise,closureCss,compositionCss,registry,index]=await Promise.all([
   read('./uiux-converge-0-contract.json'),read('./capability-closure-e2-contract.json'),read('./uiux-prototype-entry-contract.json'),
@@ -8,7 +8,7 @@ const [contractRaw,closureRaw,entryRaw,tokens,icons,shell,frame,native,enterpris
   read('./public/enterprise-workspace-3-2.css'),read('./public/semantic-workspace-closure-3-2-1.css'),read('./public/semantic-composition-3-1.css'),read('./current-gate-registry.mjs'),read('./public/index.html')
 ]);
 const contract=JSON.parse(contractRaw),closure=JSON.parse(closureRaw),entry=JSON.parse(entryRaw),verdict=validateUiuxConvergeContract(contract);
-assert.equal(verdict.ok,true,verdict.errors.join('\n'));
+assert.equal(verdict.ok,true,verdict.errors.join('\n'));const mining=validateUiuxMiningV2Coverage();assert.equal(mining.ok,true,mining.errors.join('\n'));assert.equal(mining.issueCount,352);assert.equal(UIUX_MINING_V2_COVERAGE.registerSha256,'43333a22d54533cad68aa398b093a8811cce9a9e1081aca194ec19e1145840e6');
 assert.deepEqual(new Set(contract.surfaceProgram.map(x=>x.id)),new Set(CANONICAL_SURFACES));
 assert.deepEqual(new Set(closure.surfaceUnits.map(x=>x.id)),new Set(CANONICAL_SURFACES));
 assert.equal(entry.nextSerialSlice,'UIUX-CONVERGE-0');assert.equal(entry.capabilityClosure.rerunBeforeDone,true);assert.equal(contract.sliceTerminal,true);assert.equal(contract.reconciliation?.id,'GOV-TRAMA-RECONCILE-1');assert.ok(contract.reconciliation.externalBoundary.includes('E3-HUMAN'));
@@ -29,8 +29,8 @@ assert.ok(!closureCss.includes('repeat(3,minmax(0,1fr))')&&!closureCss.includes(
 assert.ok(!compositionCss.includes('#homeView')&&!compositionCss.includes('#processesView')&&!compositionCss.includes('#proofView'),'shared composition layer must not retake Home/Processi/Proof local presentation');
 assert.ok(!compositionCss.includes('#procedureHub{display')&&!compositionCss.includes('.procedure-frame-main'),'shared composition layer must not override Process Hub/procedure-frame geometry');
 for(const source of [shell,frame]){assert.equal(source.includes('>→<'),false,'ASCII right arrow must not remain in canonical touched action source');assert.equal(source.includes('>←<'),false,'ASCII left arrow must not remain in canonical touched action source');assert.equal(source.includes('<i aria-hidden="true">→</i>'),false,'legacy arrow i-tag must not remain');}
-for(const source of [shell,frame,native])assert.equal(source.includes('/api/'),false,'UIUX convergence pass must not introduce business API routes');
+assert.equal(frame.includes('/api/'),false,'Procedure frame convergence must not introduce business API routes');assert.equal(native.includes('/api/'),false,'Native lattice convergence must not introduce business API routes');const shellRoutes=[...shell.matchAll(/api\(['"](\/api\/[^'"]+)/g)].map(x=>x[1]);assert.deepEqual([...new Set(shellRoutes)],['/api/profile/onboarding'],'Shell may call only the existing store/audit onboarding profile route; no business write authority is introduced.');
 const gates=['v3/capability-closure-e2-check.mjs','v3/capability-closure-e2-saturation.mjs','v3/uiux-converge-0-check.mjs','v3/uiux-converge-0-style-saturation.mjs','v3/uiux-converge-0-e2e-saturation.mjs'];
 for(const gate of gates)assert.ok(registry.includes(`'${gate}'`),`current registry missing ${gate}`);
 assert.ok(registry.indexOf("'v3/capability-closure-e2-check.mjs'")<registry.indexOf("'v3/uiux-converge-0-check.mjs'"),'UIUX rail must remain downstream of capability closure');
-console.log(JSON.stringify({ok:true,profile:'UIUX-CONVERGE-0/P1',surfaces:13,procedures:7,homePriorityMax:3,homeTitleOwner:'static-canonical',controlMinPx:44,processHub:'local-owner-row-list',icons:'inline-lucide-compatible-svg',latePresentationOverridesRetired:['Home','Process Hub','Procedure Frame','Proof'],businessRuntimeChanged:false,sliceTerminal:true,reconciledBy:'GOV-TRAMA-RECONCILE-1'}));
+console.log(JSON.stringify({ok:true,profile:'UIUX-CONVERGE-0/P1',surfaces:13,procedures:7,homePriorityMax:3,homeTitleOwner:'static-canonical',controlMinPx:44,processHub:'local-owner-row-list',icons:'inline-lucide-compatible-svg',latePresentationOverridesRetired:['Home','Process Hub','Procedure Frame','Proof'],businessRuntimeChanged:false,miningIssuesCovered:352,miningMechanisms:11,sliceTerminal:true,reconciledBy:'GOV-TRAMA-RECONCILE-1'}));

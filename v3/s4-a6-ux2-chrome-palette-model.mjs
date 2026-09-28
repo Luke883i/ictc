@@ -29,7 +29,7 @@ export function validateChromePalette(s){const f=[];const fail=(code,detail)=>f.
   if(s.styles.includes('business-surface-convergence-2-7-closure.css'))fail('RETIRED_CLOSURE_IMPORT','styles.css');
   if(s.closureExists)fail('RETIRED_CLOSURE_FILE','physical closure remains');
   const imports=[...s.styles.matchAll(/@import\s+url\(['"]([^'"]+)['"]\)/g)].map(x=>x[1]);if(imports.at(-1)!=='./a6-ux1-fixed-safe-footer.css')fail('UX1_FINAL_GEOMETRY_IMPORT',imports.at(-1));
-  if(!/position:static!important/.test(s.ux1)||!s.ux1.includes('scroll-padding-bottom:0px')||!s.ux1.includes('padding-bottom:0!important')||!s.ux1.includes('--a6-ux1-footer-reserve:0px'))fail('UX1_GEOMETRY','flow-safe contract drift');
+  if(!/position:fixed!important/.test(s.ux1)||!s.ux1.includes('scroll-padding-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)')||!s.ux1.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important')||!s.ux1.includes('--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))'))fail('UX1_GEOMETRY','fixed-safe contract drift');
   if(/(?:^|[;{])\s*(?:background(?:-color|-image)?|color)\s*:/m.test(s.ux1))fail('UX1_PALETTE_CONTAMINATION','geometry resolver owns palette');
   const hs=HEADER.map(t=>hexValue(s.tokens,t)),fs=FOOTER.map(t=>hexValue(s.tokens,t)),on=hexValue(s.tokens,'--chrome-on-dark'),muted=hexValue(s.tokens,'--chrome-on-dark-muted');
   if([...hs,...fs,on,muted].some(x=>!x))fail('TOKEN_PARSE','missing hex token');else{

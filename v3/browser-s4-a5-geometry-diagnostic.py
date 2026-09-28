@@ -1,5 +1,6 @@
 import json, os, pathlib
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
@@ -14,7 +15,7 @@ with sync_playwright() as pw:
     browser=pw.chromium.launch(**launch)
     ctx=browser.new_context(viewport={'width':390,'height':844})
     ctx.add_init_script("try{localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','home')}catch{}")
-    p=ctx.new_page();p.set_default_timeout(30000);p.goto(BASE+'/',wait_until='networkidle')
+    p=ctx.new_page();p.set_default_timeout(30000);p.goto(BASE+'/',wait_until='networkidle');ensure_onboarded(p,BASE,'user')
     expect(p.locator('#homePriorities')).to_have_attribute('data-home-work-queue','3.2')
     p.locator('.service-nav [data-service="processes"]').click()
     expect(p.locator('#procedureHub .procedure-card')).to_have_count(7)

@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -26,4 +27,5 @@ export function runSaturation(id,{trials=1_000_000,tail=100_000,seed=1n}={}){con
 export function gitBlobSha(content){const b=Buffer.from(content);return crypto.createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex');}
 export const readJson=(root,rel)=>JSON.parse(fs.readFileSync(path.join(root,rel),'utf8'));export const readText=(root,rel)=>fs.readFileSync(path.join(root,rel),'utf8');export const countToken=(text,token)=>text.split(token).length-1;
 export function loadContract(root){return readJson(root,'v3/gov-intent-assurance-contract.json');}
-export function assertBaselineBindings(root,contract=loadContract(root)){const drift=[];for(const [rel,expected] of Object.entries(contract.baselineBindings)){const actual=gitBlobSha(fs.readFileSync(path.join(root,rel)));if(actual!==expected)drift.push({path:rel,expected,actual});}if(drift.length)throw Error(`baseline binding drift: ${JSON.stringify(drift)}`);return{ok:true,baselineMainSha:contract.baselineMainSha,bindings:Object.keys(contract.baselineBindings).length};}
+function historicalBlobSha(root,baselineMainSha,rel){try{return execFileSync('git',['-C',root,'rev-parse',`${baselineMainSha}:${rel}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}catch(error){throw Error(`baseline history unavailable for ${baselineMainSha}:${rel}; checkout must include full history`);}}
+export function assertBaselineBindings(root,contract=loadContract(root)){const drift=[];for(const [rel,expected] of Object.entries(contract.baselineBindings)){const actual=historicalBlobSha(root,contract.baselineMainSha,rel);if(actual!==expected)drift.push({path:rel,expected,actual});}if(drift.length)throw Error(`historical baseline binding drift: ${JSON.stringify(drift)}`);return{ok:true,baselineMainSha:contract.baselineMainSha,bindings:Object.keys(contract.baselineBindings).length,observation:'historical-tree'};}

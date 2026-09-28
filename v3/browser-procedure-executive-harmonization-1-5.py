@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -94,6 +95,7 @@ try:
         ctx=browser.new_context(viewport={'width':1440,'height':950})
         ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
         page=ctx.new_page(); page.set_default_timeout(30000)
+        ensure_onboarded(page,BASE,'admin')
         page.goto(BASE+'/?view=processes',wait_until='networkidle')
 
         PHASE='hub'
@@ -132,6 +134,7 @@ try:
         mobile=browser.new_context(viewport={'width':390,'height':844})
         mobile.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
         m=mobile.new_page(); m.set_default_timeout(30000)
+        ensure_onboarded(m,BASE,'admin')
         m.goto(BASE+'/?view=processes',wait_until='networkidle')
         no_overflow(m)
         PHASE='mobile-ar'

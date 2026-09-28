@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback, urllib.parse
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -79,7 +80,7 @@ try:
    assert build.get('exact') is True,build
    assert build.get('dirty') is False,build
 
-  page=ctx.new_page();page.set_default_timeout(30000)
+  page=ctx.new_page();page.set_default_timeout(30000);ensure_onboarded(page,BASE,'admin')
   def on_response(res):
    if res.url.startswith(BASE+'/api/'):
     NETWORK.append({'method':res.request.method,'path':urllib.parse.urlparse(res.url).path,'status':res.status,'requestId':res.headers.get('x-request-id')})
