@@ -1,8 +1,8 @@
-import { $, $$, api, esc, notify, showReceipt, splitList, state } from './common.js';
+import { $, $$, api, esc, notify, showReceipt, splitList, state, interactionBusyTarget, setInteractionBusy } from './common.js';
 import { refresh } from './controller.js';
 let installed=false,actionOrigin=null;
 const later=()=>queueMicrotask(()=>enhance());
-async function write(action,message){try{const result=await action();showReceipt(result);await refresh();notify(message);return result;}catch(error){notify(error.message,true);return null;}}
+async function write(action,message){const trigger=interactionBusyTarget();setInteractionBusy(trigger,true);try{const result=await action();showReceipt(result);await refresh();if(message)notify(message);return result;}catch(error){notify(error.message,true);return null;}finally{setInteractionBusy(trigger,false);}}
 function activeObjects(predicate=()=>true){return(state.data?.grc?.objects?.objects||[]).filter(x=>x.status==='active'&&predicate(x));}
 function objectOptions(predicate=()=>true){return activeObjects(predicate).map(x=>`<option value="${esc(x.id)}">${esc(x.name)} · ${esc(x.type)}</option>`).join('');}
 function requirementOptions(){return objectOptions(x=>x.type==='requirement');}

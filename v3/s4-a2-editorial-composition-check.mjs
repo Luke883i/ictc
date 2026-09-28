@@ -18,7 +18,7 @@ assert.doesNotMatch(anatomy,/workAnchor\(|\.after\(box\)|insertAdjacentHTML\('af
 assert.match(anatomy,/editorialSlot\(host,'advanced-context'\)/);
 assert.match(anatomy,/editorialSlot\(host,'reference'\)/);
 assert.match(helper,/function insertDeclared\(/,'synthetic slots must be born in the declared position');
-assert.match(helper,/function supportRail\(/,'support rail resolver missing');assert.match(helper,/function insertSupport\(/,'context support slot must be born inside ProcedureFrame support rail');assert.match(helper,/const SUPPORT_NAMES=new Set\(\['advanced-context'\]\)/,'reference must be an independent top-level evidence slot');assert.match(helper,/validPhysicalOrder/,'grouped physical ordering must be validated');
+assert.match(helper,/function supportRail\(/,'support rail resolver missing');assert.match(helper,/function insertSupport\(/,'context support slot must be born inside ProcedureFrame support rail');assert.match(helper,/const SUPPORT_NAMES=new Set\(\['reference','advanced-context'\]\)/,'reference and advanced context must share one canonical support rail');assert.match(helper,/validPhysicalOrder/,'grouped physical ordering must be validated');
 assert.match(helper,/for\(const name of order\)/,'synthetic slots must be constructed left-to-right without late repair');
 assert.doesNotMatch(helper,/insertAdjacentElement\('afterend',slot\)/,'attention-specific adjacency authority is retired');
 assert.match(helper,/host\.querySelectorAll\(selector\).*node=>node\.parentElement===host/,'direct operational role selector must stay host-bound');assert.match(frame,/procedure-support-rail/,'ProcedureFrame must own support rail geometry');assert.doesNotMatch(frame,/Perché conta/,'duplicated rationale control must be retired');

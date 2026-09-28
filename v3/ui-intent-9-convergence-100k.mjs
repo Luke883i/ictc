@@ -13,7 +13,7 @@ const workflow=read('../.github/workflows/ci.yml');
 assert.ok(chrome.includes('.topbar{height:var(--ui-header-h)!important;min-height:var(--ui-header-h)!important}'));
 assert.ok(chrome.includes('.topbar .stable-header-inner{height:100%!important}'));
 assert.ok(home.includes('height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('max-height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('#homeView{box-sizing:border-box;'));
-assert.ok(footer.includes('--a6-ux1-footer-reserve:0px')&&footer.includes('padding-bottom:0!important')&&footer.includes('position:static!important')&&!footer.includes('position:fixed!important'));
+assert.ok(footer.includes('--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))')&&footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important')&&footer.includes('position:fixed!important')&&!footer.includes('position:static!important'));
 assert.ok(journey.includes('.evidence-export-menu>div{position:absolute;z-index:76;'));
 assert.ok(evidence.includes("ictc:evidence-download-complete")&&evidence.includes('menuClosed: true'));
 assert.ok(browser.includes("page.expect_response")&&browser.includes("__ictcEvidenceDownloads")&&browser.includes("__ictcEvidenceAnchorClicks")&&browser.includes("HTMLAnchorElement.prototype.click")&&browser.includes("content-length")&&!browser.includes("response.body()")&&!browser.includes('page.expect_download(timeout=60000)'));
@@ -26,7 +26,7 @@ const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
 const ri=n=>rnd()%n;
 const valid=()=>({
   headerOwner:'chrome-3.3',headerToken:56,effectiveHeader:56,homeExtra:0,viewport:720+ri(900),
-  footerReserve:0,bodyFooterReserve:0,bodyOverflow:'auto',formats:[...FORMATS],
+  footerReserve:44,bodyFooterReserve:44,bodyOverflow:'auto',formats:[...FORMATS],
   fetchStatus:200,payloadBytes:1+ri(2_000_000),lifecycleOrderValid:true,
   completionFormat:'pdf',requestedFormat:'pdf',
   completionBase:'/api/evidence/mission/x',requestedBase:'/api/evidence/mission/x',
@@ -87,4 +87,4 @@ for(let i=0;i<100_000;i++){
   for(const family of chosen)assert.ok(observed.includes(family),`mutation survived: ${family}; observed=${observed.join(',')}`);
 }
 assert.ok(Object.values(coverage).every(n=>n>5000),coverage);
-console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-budget-does-not-require-overlay-reserve','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority','sequential-browser-harness-suppresses-native-download-manager-side-effect','evidence-popup-remains-above-local-chrome'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));
+console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-budget-reserves-fixed-footer','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority','sequential-browser-harness-suppresses-native-download-manager-side-effect','evidence-popup-remains-above-local-chrome'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));

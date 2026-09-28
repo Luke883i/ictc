@@ -11,6 +11,8 @@ const epSource=read('./public/ui/epistemic-workspace-3-2.js');
 const adminSource=read('./public/ui/admin-workspace-3-2.js');
 const homeSource=read('./public/ui/stable-shell.js');
 const copySource=read('./public/ui/product-copy.js');
+const serverSource=read('./server.mjs');
+const modelSource=read('./runtime/model.mjs');
 let gateSource='';try{gateSource=read('./current-gate-registry.mjs');}catch{}
 
 const ALL_SEEDS=Object.freeze(['UI-OBJECT-TYPE-COMPRESSION-1','DEMO-TRUTH-METADATA-1','STANDARD-KNOWLEDGE-PACK-UX-1','EP-ADMIN-LANDING-1','HOMEBOARDING-1']);
@@ -76,7 +78,7 @@ assert.match(browserSource,/data-standard-document-model="word-like"/);assert.ma
 assert.match(epSource,/enduserGrammar='progressive-knowledge-explorer'/);assert.match(epSource,/epistemicAuthority='read-explore-only'/);assert.match(epSource,/epistemicWriteAuthority='none'/);assert.match(epSource,/epistemicFirstPlane='knowledge-explorer'/);assert.ok(!epSource.includes("document.createElement('section')"),'EP seed must type the existing first plane, not add a tutorial plane');
 assert.match(adminSource,/enduserGrammar='configuration-console'/);assert.match(adminSource,/adminAuthority='configuration-only'/);assert.match(adminSource,/adminEpistemicAuthority='none'/);assert.match(adminSource,/adminWriteAuthority='server-routes-only'/);assert.match(adminSource,/adminFirstPlane='configuration-console'/);assert.ok(!adminSource.includes("document.createElement('section')"),'Admin seed must type the existing first plane, not add a tutorial plane');
 
-assert.match(copySource,/export const HOMEBOARDING=/);assert.match(copySource,/bad-fragmented-compliance/);assert.match(copySource,/worst-untraceable-decisions/);assert.match(homeSource,/demo\?\.learningBasis/);assert.match(homeSource,/item\?\.knowledgePack/);assert.ok(!homeSource.includes('learningScenarios'),'Home must consume factual DEMO basis, not DEMO-authored teaching copy');assert.match(homeSource,/detail\.open=false/);assert.ok(!/api\(|fetch\(|method:\s*['"]POST/.test(homeSource),'HomeBoarding must introduce no writer/network authority');
+assert.match(copySource,/export const HOMEBOARDING=/);assert.match(copySource,/bad-fragmented-compliance/);assert.match(copySource,/worst-untraceable-decisions/);assert.match(homeSource,/demo\?\.learningBasis/);assert.match(homeSource,/item\?\.knowledgePack/);assert.ok(!homeSource.includes('learningScenarios'),'Home must consume factual DEMO basis, not DEMO-authored teaching copy');assert.match(homeSource,/ictcOnboardingDialog/);assert.match(homeSource,/api\('\/api\/profile\/onboarding'/);assert.match(homeSource,/method:'PATCH'/);assert.match(serverSource,/pathname==='\/api\/profile\/onboarding'/);assert.match(serverSource,/profile\.onboarding\.updated/);assert.match(serverSource,/if\(accepted\)\{json\(response,200,\{result:/);assert.match(serverSource,/replayed:true/);assert.match(modelSource,/authority:'user-record'/);assert.match(modelSource,/authority:'synthetic-demo-fixture'/);assert.ok(!homeSource.includes('localStorage.setItem(\'ictc-onboarding'),'Onboarding persistence must remain store/audit owned, not localStorage authority');
 assert.equal((copySource.match(/bad-fragmented-compliance/g)||[]).length,1);assert.equal((demoSource.match(/bad-fragmented-compliance/g)||[]).length,0,'BAD/WORST copy must have exactly one authority');
 
 const globalGates=['v3/seed-runtime-supply-chain-check.mjs','v3/seed-runtime-supply-chain-saturation-10m.mjs'];
@@ -87,7 +89,7 @@ const localDoD={
   standards:{provenanceDigest:true,rightsBoundary:true,hierarchicalModel:true,cycleFailClosed:true,depthBounded:true,wordLikeProjection:true},
   epistemic:{typedExistingFirstPlane:true,readExploreOnly:true,writeAuthority:'none',newTutorialPlane:false},
   admin:{typedExistingFirstPlane:true,configurationOnly:true,epistemicAuthority:'none',writeAuthority:'server-routes-only',newTutorialPlane:false},
-  home:{progressive:true,singleCopyOwner:true,consumesDemoBasis:true,consumesKnowledgePackSummary:true,newWriter:false}
+  home:{progressive:true,singleCopyOwner:true,consumesDemoBasis:true,consumesKnowledgePackSummary:true,persistedOnExistingUserRecord:true,acceptedAtWriteOnce:true,replayReadOnly:true,newWriterSubsystem:false}
 };
 const intermediateDoD={supplyChain:'UI typing -> {DEMO truth, Standard pack, EP/Admin} -> HomeBoarding',acceptedPrerequisite:'UI-OBJECT-TYPE-COMPRESSION-1',prSeeds:PR_SEEDS,parallelRuntimeAuthority:0,parallelWriter:0,educationalCopyOwners:1,externalEvidenceSynthesized:false};
 const report={ok:true,control:'SEED-RUNTIME-SUPPLY-CHAIN-1',allSeeds:ALL_SEEDS,prSeeds:PR_SEEDS,localDoD,intermediateDoD,globalDoD:{runtimeReadback:true,global10mGate:gateSource?globalGates.every(g=>gateSource.includes(g)):null,exactHead:'requires candidate CI after remote materialization',postMergeMain:'requires merge'},runtimeEvidence:{demoProcedures:Object.keys(samples).length,demoMetadataDigest:demoDigest,standardPackDigest:pack.packDigest,standardHierarchyDigest:pack.hierarchyDigest},claimBoundary:'Repository-bounded semantic/runtime evidence. This check does not establish representative-human usability, external evidence truth, deployment assurance, legal compliance or post-merge acceptance.'};

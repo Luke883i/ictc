@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
@@ -86,6 +87,7 @@ def reduced_motion(browser):
     ctx = browser.new_context(viewport={'width': 1280, 'height': 850}, reduced_motion='reduce')
     ctx.add_init_script("try { localStorage.setItem('ictc-role','user'); localStorage.setItem('ictc-service','processes'); } catch {}")
     page = ctx.new_page()
+    ensure_onboarded(page,BASE,'user')
     phase('reduced-motion-load')
     page.goto(BASE + '/', wait_until='networkidle')
     phase('reduced-motion-nav')
@@ -105,6 +107,7 @@ def run_viewport(browser, width, height, label):
     ctx = browser.new_context(viewport={'width': width, 'height': height})
     ctx.add_init_script("try { localStorage.setItem('ictc-role','user'); localStorage.setItem('ictc-service','home'); } catch {}")
     page = ctx.new_page()
+    ensure_onboarded(page,BASE,'user')
     phase(f'{label}-load')
     page.goto(BASE + '/', wait_until='networkidle')
     wait_current_home(page, label)
@@ -154,6 +157,7 @@ try:
         ctx.add_init_script("try { localStorage.setItem('ictc-role','admin'); localStorage.setItem('ictc-service','home'); } catch {}")
         page = ctx.new_page()
         page.set_default_timeout(30000)
+        ensure_onboarded(page,BASE,'admin')
         page.on('pageerror', lambda error: PAGE_ERRORS.append(str(error)))
         phase('desktop-load')
         page.goto(BASE + '/', wait_until='networkidle')
