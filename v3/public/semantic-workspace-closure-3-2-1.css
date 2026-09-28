@@ -79,4 +79,4 @@ html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout=
 html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]>.procedure-purpose{white-space:normal!important;line-height:1.35!important}
 html[data-uiux-absorption="656"] #proofContent>details.proof-section>summary small{max-width:72ch}
 html[data-uiux-absorption="656"] :is(#proofView,#epistemicView) details[data-secondary-disclosure="true"]>summary{min-height:44px}
-@media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important;grid-template-areas:"code title" "purpose purpose" "action action"!important}}
+@media(max-width:719px){html[data-uiux-absorption="656"] #procedureHub .procedure-card[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important}}
