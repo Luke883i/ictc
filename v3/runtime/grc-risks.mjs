@@ -1,5 +1,6 @@
 import { asString, now, sha256, uniqueStrings } from '../domain.mjs';
 import { actorPrincipalRef, bindActionRefs, bindObjectRefs, principalRef } from './reference-contract.mjs';
+import { withDecisionContext } from './decision-context.mjs';
 
 export const DEFAULT_RISK_CONFIG=Object.freeze({likelihood:{min:1,max:5,labels:['Raro','Improbabile','Possibile','Probabile','Quasi certo']},impact:{min:1,max:5,labels:['Trascurabile','Limitato','Significativo','Grave','Critico']}});
 const ASSESSMENTS=new Set(['inherent','residual']),TREATMENTS=new Set(['mitigate','accept','avoid','transfer']);
@@ -20,7 +21,7 @@ export function reviewRisk(item,input,actor,{state=null}={}){
   if(assessmentType==='residual'&&!(item.reviews||[]).some(x=>(x.assessmentType||'inherent')==='inherent'))throw Object.assign(new Error('Valuta prima il rischio inerente'),{status:409,code:'risk-inherent-required'});
   const likelihood=Number(input.likelihood),impact=Number(input.impact);if(!Number.isFinite(likelihood)||!Number.isFinite(impact)||likelihood<1||likelihood>5||impact<1||impact>5)throw Object.assign(new Error('Likelihood e impact 1..5 richiesti'),{status:400,code:'risk-rating-required'});
   const reason=asString(input.reason,12000);if(!reason)throw Object.assign(new Error('Motivazione rating richiesta'),{status:400,code:'rating-reason-required'});
-  const score=riskScore(likelihood,impact),controlRefs=uniqueStrings(input.controlRefs,100,500),explicitControlIds=bindingIds(input.controlRefs),objectBindings=state?bindObjectRefs(item.objectIds||[],state,{activeOnly:true,label:'Oggetto rischio'}):structuredClone(item.objectBindings||[]),controlBindings=state?bindObjectRefs([...new Set([...(item.controlIds||[]),...explicitControlIds])],state,{allowedTypes:['control','control-implementation'],activeOnly:true,label:'Controllo rischio'}):structuredClone(item.controlBindings||[]),actionBindings=state?bindActionRefs(item.actionIds||[],state):structuredClone(item.actionBindings||[]),review={assessmentType,likelihood,impact,score,band:riskBand(score),reason,controlRefs,objectBindings,controlBindings,actionBindings,by:actor.id,byRef:actorPrincipalRef(actor),at:now(),proposalSha256:sha256(item.proposal)};
+  const score=riskScore(likelihood,impact),controlRefs=uniqueStrings(input.controlRefs,100,500),explicitControlIds=bindingIds(input.controlRefs),objectBindings=state?bindObjectRefs(item.objectIds||[],state,{activeOnly:true,label:'Oggetto rischio'}):structuredClone(item.objectBindings||[]),controlBindings=state?bindObjectRefs([...new Set([...(item.controlIds||[]),...explicitControlIds])],state,{allowedTypes:['control','control-implementation'],activeOnly:true,label:'Controllo rischio'}):structuredClone(item.controlBindings||[]),actionBindings=state?bindActionRefs(item.actionIds||[],state):structuredClone(item.actionBindings||[]),review=withDecisionContext({assessmentType,likelihood,impact,score,band:riskBand(score),reason,controlRefs,objectBindings,controlBindings,actionBindings,by:actor.id,byRef:actorPrincipalRef(actor),at:now(),proposalSha256:sha256(item.proposal)},input);
   item.objectBindings=objectBindings;item.controlBindings=controlBindings;item.actionBindings=actionBindings;item.reviews.push(review);item.state='reviewed';item.updatedAt=review.at;return item;
 }
 
@@ -47,7 +48,7 @@ export function decideRiskTreatment(item,input,actor,{state=null}={}){
   const review=effectiveRiskReview(item);if(!review)throw Object.assign(new Error('Valuta il rischio prima del trattamento'),{status:409,code:'risk-review-required'});
   const decision=asString(input.decision,40).toLowerCase();if(!TREATMENTS.has(decision))throw Object.assign(new Error('Trattamento rischio non valido'),{status:400,code:'risk-treatment-invalid'});
   const reason=asString(input.reason,12000);if(!reason)throw Object.assign(new Error('Motivazione trattamento richiesta'),{status:400,code:'risk-treatment-reason-required'});
-  const ownerRef=state?principalRef(input.ownerRef??input.owner,state):null,treatment={decision,reason,owner:asString(input.owner,300)||ownerRef?.displayName||ownerRef?.id||'',ownerRef,reviewAt:asString(input.reviewAt,80),by:actor.id,byRef:actorPrincipalRef(actor),at:now(),assessmentSha256:sha256(review),assessmentType:review.assessmentType||'inherent'};
+  const ownerRef=state?principalRef(input.ownerRef??input.owner,state):null,treatment=withDecisionContext({decision,reason,owner:asString(input.owner,300)||ownerRef?.displayName||ownerRef?.id||'',ownerRef,reviewAt:asString(input.reviewAt,80),by:actor.id,byRef:actorPrincipalRef(actor),at:now(),assessmentSha256:sha256(review),assessmentType:review.assessmentType||'inherent'},input);
   item.treatments=[...(item.treatments||[]),treatment];item.updatedAt=treatment.at;return item;
 }
 

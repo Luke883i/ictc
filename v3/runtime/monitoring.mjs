@@ -275,8 +275,8 @@ export function createMonitoringRuntime({ store, permissions, runningMissions })
       if (!reason) throw httpError(400, 'Motiva la decisione sulla fonte', 'reason-required');
       const before = store.snapshot(), source = findCatalog(before, params.id), privacyReviewed = input.privacyReviewed === true;
       const verificationBasis = decision === 'verified' ? assertRnVerifiableSource(source, { privacyReviewed }) : null;
-      const envelope = await store.mutateDecided(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason, verificationBasis, privacyReviewed }, draft => {
-        const current = applyCatalogDecision(findCatalog(draft, params.id), decision, reason, actor.id);
+      const envelope = await store.mutateDecided(actor, 'catalog.source.decided', { type: 'catalog', id: params.id }, { decision, reason, verificationBasis, privacyReviewed, decisionContext: input.decisionContext }, draft => {
+        const current = applyCatalogDecision(findCatalog(draft, params.id), decision, reason, actor.id, input.decisionContext);
         if (verificationBasis) current.rnVerification = { ...verificationBasis, privacyReviewed, by: actor.id, at: now() };
         return current;
       }, commandFrom(request));
