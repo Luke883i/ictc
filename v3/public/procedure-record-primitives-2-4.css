@@ -30,3 +30,19 @@
 .grc-list>.procedure-record-card>p.quiet{display:none}
 @media(max-width:720px){.procedure-action-rail{align-items:stretch}.procedure-action-rail>*{flex:1 1 180px}.procedure-action-rail>.procedure-evidence-action{margin-inline-start:0}.procedure-record-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.procedure-record-facts .surface-chip{min-width:0;width:100%}}
 @media(max-width:460px){.procedure-record-facts{grid-template-columns:1fr}.procedure-action-rail>*{flex-basis:100%}.procedure-queue-tools>*{flex:1 1 100%!important;width:100%;max-width:100%}}
+
+/* UIUX-656-ABSORB-1: comparable rows, bounded facts/actions and responsive contraction. */
+html[data-uiux-absorption="656"] .procedure-record-card{grid-template-columns:minmax(12rem,1.25fr) minmax(11rem,2fr) minmax(15rem,1.45fr) auto;grid-template-areas:"head summary facts actions";align-items:center;column-gap:.75rem;row-gap:.25rem;padding:.72rem .82rem}
+html[data-uiux-absorption="656"] .procedure-record-card>header{grid-area:head;min-width:0}
+html[data-uiux-absorption="656"] .procedure-record-card>.procedure-record-summary{grid-area:summary;min-width:0}
+html[data-uiux-absorption="656"] .procedure-record-card>.procedure-record-facts{grid-area:facts;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
+html[data-uiux-absorption="656"] .procedure-record-card>.procedure-action-rail{grid-area:actions;border-top:0;padding-top:0;margin-top:0;justify-content:flex-end}
+html[data-uiux-absorption="656"] .procedure-record-facts .surface-chip:nth-child(n+4){display:none}
+html[data-uiux-absorption="656"] .procedure-action-rail>[data-uiux-record-primary]{display:inline-flex;min-height:44px}
+html[data-uiux-absorption="656"] .procedure-action-overflow{flex-basis:auto;border-top:0;padding-top:0}
+html[data-uiux-absorption="656"] .procedure-action-overflow>summary{min-height:44px;display:inline-flex;align-items:center;font-size:max(.78rem,12px)}
+html[data-uiux-absorption="656"] .procedure-support-rail{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
+html[data-uiux-absorption="656"] .procedure-support-rail>details,html[data-uiux-absorption="656"] .procedure-support-rail [data-editorial-slot]{min-width:0}
+html[data-uiux-absorption="656"] .market-framework-card{min-width:0;overflow-wrap:anywhere}
+@media(max-width:980px){html[data-uiux-absorption="656"] .procedure-record-card{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"head actions" "summary summary" "facts facts"}html[data-uiux-absorption="656"] .procedure-record-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){html[data-uiux-absorption="656"] .procedure-record-card{grid-template-columns:1fr;grid-template-areas:"head" "summary" "facts" "actions";padding:.65rem}html[data-uiux-absorption="656"] .procedure-record-card>.procedure-record-facts{grid-template-columns:1fr 1fr}html[data-uiux-absorption="656"] .procedure-record-facts .surface-chip:nth-child(n+3){display:none}html[data-uiux-absorption="656"] .procedure-record-card>.procedure-action-rail{justify-content:stretch}html[data-uiux-absorption="656"] .procedure-action-rail>[data-uiux-record-primary]{width:100%;justify-content:center}html[data-uiux-absorption="656"] .procedure-support-rail{grid-template-columns:1fr}}

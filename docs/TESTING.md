@@ -176,3 +176,10 @@ Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure fa
 `node v3/human-reality-runtime-check.mjs` verifica il value object `decisionContext` come estensione authority-zero dei checkpoint umani esistenti: 20 primitive H01–H20 preservate, 10 assi strutturati, outcome neutrality, binding audit/epistemic, retention nelle projection e assenza di store/writer/SOT paralleli.
 
 `node v3/human-reality-runtime-saturation-10m.mjs` esercita 32 failure family dalla finalità umana fino al binding runtime/evidence, tutte le 496 coppie, cross-layer compositions, deletion oracle e pairwise no-loss compression dei 10 assi. I trial sono evaluator calls del modello semantico, non browser session, persone, casi legali o mutazioni fisiche del codice. La qualifica usata per questa slice esegue il comando con 10.000.000 trial, 1.000.000 di holdout e seed distinti per ciclo; l'accettazione locale richiede 10 cicli completi con zero survivor/novel family.
+
+
+### UIUX-656-ABSORB-1
+
+`node v3/uiux-656-absorption-check.mjs` verifica la riconciliazione lossless dei 656 finding screenshot-derived: 656/656 mapping primario, 22/22 superfici, 12/12 root-cause, 10 meccanismi, owner canonici e nessuna nuova composition/write authority.
+
+`node v3/uiux-656-absorption-saturation-10m.mjs` esercita 32 failure family da linguaggio business e densità dei record fino a responsive/accessibilità e governance owner, includendo tutte le 496 coppie, cross-layer composition, deletion oracle e no-loss compression dei 10 meccanismi. I trial sono evaluator calls del modello semantico: non sono browser session, human study, deployment evidence o code mutant compilati.
