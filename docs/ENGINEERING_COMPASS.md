@@ -25,10 +25,16 @@ Nessuna scelta tecnica richiesta. Esprimi solo intento di prodotto o accettazion
 
 **Incertezza:** GitHub server-side, persone rappresentative e deployment richiedono evidenza osservata sul relativo rail; questa proiezione diventa stale quando mutano gli owner sorgente.
 
+## DETERMINISTIC DELIVERY CHANNEL
+- **Sequenza:** INTENT → OBSERVE → QUALIFY → SLICE → MATERIALIZE → WITNESS → CLOSE → ACT.
+- **Input umano:** solo intento e accettazione materiale; 0 scelte tecniche.
+- **Chiusura:** 10 binding obbligatori; se uno manca la slice resta OPEN/BLOCKED. Un intento runtime richiede delta materiale + evidenza claim-matched; la UI/UX visibile usa ADJUSTED.
+- **Preimage / next:** UNBOUND · C2-DELIVERY-PROVENANCE.
+
 ## LOSSLESS SEMANTICS 0.11
 - **Profilo:** ICTC-LOSSLESS-SEMANTICS-0.11 · authority-zero · global N non raggiunta.
-- **Fingerprint input semantici:** 4f560d93203d105d su 48 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
-- **Semantic core 0.11:** 5fb4ef2f537775a3 · revision 0.11.1 hardening · self-sufficient e fail-closed.
+- **Fingerprint input semantici:** 2ca7647729578cbf su 48 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
+- **Semantic core 0.11:** 86c3aa230a87f877 · revision 0.11.2 · self-sufficient e fail-closed.
 - **Sequenza canonica combinata:** C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT · owner: docs/convergence/convergence-authority.json#planningState. 0.11 non possiede il cursore.
 - **Visible cutover:** ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND; R1-R5 restano responsabilità di falsificazione, compresse negli owner esistenti.
 - **Closure:** Q1/Q2 sono evidenza generata; implementation absorption 656/656 resta distinta dalla forensic atomic closure bloccata finché manca provenance atomica.
