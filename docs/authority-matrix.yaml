@@ -46,6 +46,8 @@ surfaces:
     profile: v3/trama-compass-governance.json
     enterprise_target: v3/trama-enterprise-dod.json
     compass: docs/ENGINEERING_COMPASS.md
+    lossless_semantics_profile: v3/trama-compass-governance.json#losslessSemantics
+    lossless_semantics_projection: docs/ENGINEERING_COMPASS.md#LOSSLESS-SEMANTICS-0.11
     runtime: v3/trama-engineering.mjs
     checker: v3/trama-engineering-check.mjs
     saturation: v3/trama-engineering-saturation.mjs
