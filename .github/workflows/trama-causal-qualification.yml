@@ -10,6 +10,8 @@ permissions:
 jobs:
   causal-10-campaigns:
     name: causal-10-campaigns
+    env:
+      ICTC_TRAMA_EXACT_HEAD: '1'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
