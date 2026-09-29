@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { evidenceCheckoutIdentity } from './runtime/evidence-checkout-identity.mjs';
 
+const checkout=evidenceCheckoutIdentity();
 const root=new URL('./',import.meta.url);
 const baseline={
   encoding:await readFile(new URL('public/ui/security-encoding.js',root),'utf8'),
@@ -10,7 +12,11 @@ const baseline={
   server:await readFile(new URL('server.mjs',root),'utf8'),
   storage:await readFile(new URL('runtime/attachment-storage.mjs',root),'utf8'),
   integrity:await readFile(new URL('runtime/attachment-integrity.mjs',root),'utf8'),
-  workflow:await readFile(new URL('../.github/workflows/security.yml',root),'utf8')
+  workflow:await readFile(new URL('../.github/workflows/security.yml',root),'utf8'),
+  identity:await readFile(new URL('runtime/evidence-checkout-identity.mjs',root),'utf8'),
+  fi01Dom:await readFile(new URL('security-fi01-dom-cdp-check.mjs',root),'utf8'),
+  mainMutation:await readFile(new URL('security-main-mutation-1m.mjs',root),'utf8'),
+  runtimeDod:await readFile(new URL('security-runtime-dod-check.mjs',root),'utf8')
 };
 
 function oracles(files){
@@ -29,7 +35,10 @@ function oracles(files){
     noDirectAttachmentJoin:!/[.]join\((?:cleanPath|quarantinePath|store[.](?:cleanAttachmentsPath|quarantinePath)),\s*attachmentId\)/.test(files.storage+files.integrity),
     sastRequired:/\n  repository-sast:\n/.test(files.workflow)&&files.workflow.includes('security-sast-check.mjs')&&!/repository-sast:[\s\S]{0,180}\n\s+if:/.test(files.workflow),
     runtimeDodRequired:/\n  runtime-security-dod:\n/.test(files.workflow)&&files.workflow.includes('security-runtime-dod-check.mjs')&&files.workflow.includes('security-main-mutation-1m.mjs'),
-    checkoutCredentialsDisabled:(files.workflow.match(/actions\/checkout@/g)||[]).length===(files.workflow.match(/persist-credentials:\s*false/g)||[]).length
+    checkoutCredentialsDisabled:(files.workflow.match(/actions\/checkout@/g)||[]).length===(files.workflow.match(/persist-credentials:\s*false/g)||[]).length,
+    exactEvidenceIdentity:files.identity.includes("git(root,['rev-parse','HEAD'])")&&files.identity.includes("--untracked-files=no")&&files.fi01Dom.includes('evidenceCheckoutIdentity()')&&files.mainMutation.includes('evidenceCheckoutIdentity()')&&files.runtimeDod.includes('evidenceCheckoutIdentity()')&&files.fi01Dom.includes("authority:'chromium-cdp-fi01-production-renderer-dom',checkout,")&&files.mainMutation.includes("authority:'local-security-main-mutation-campaign',checkout,")&&files.runtimeDod.includes("authority:'security-runtime-dod',checkout,"),
+    exactSecurityCheckout:(files.workflow.match(/ICTC_EXPECTED_SHA:/g)||[]).length>=2&&(files.workflow.match(/ref: \$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.sha \}\}/g)||[]).length>=2,
+    semanticRetryForbidden:files.fi01Dom.includes('semanticAttempts=1')&&files.fi01Dom.includes("transportRetry('cdp-transport',3")&&!files.fi01Dom.includes('semanticRetry')
   };
 }
 
@@ -55,7 +64,11 @@ const mutants=[
   ['SAST-JOB-CONDITIONAL','workflow',s=>s.replace('  repository-sast:\n    runs-on:','  repository-sast:\n    if: ${{ vars.ICTC_ENABLE_GHAS == \'true\' }}\n    runs-on:')],
   ['SAST-CHECK-REMOVED','workflow',s=>s.replace('      - run: node v3/security-sast-check.mjs\n','')],
   ['RUNTIME-DOD-REMOVED','workflow',s=>s.replace('      - run: node v3/security-runtime-dod-check.mjs\n','')],
-  ['CHECKOUT-CREDENTIALS','workflow',s=>s.replace(/persist-credentials: false/g,'persist-credentials: true')]
+  ['CHECKOUT-CREDENTIALS','workflow',s=>s.replace(/persist-credentials: false/g,'persist-credentials: true')],
+  ['EVIDENCE-EXPECTED-SHA-REMOVED','workflow',s=>s.replace('ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}','ICTC_EXPECTED_SHA_REMOVED: 1')],
+  ['EVIDENCE-CHECKOUT-REF-REMOVED','workflow',s=>s.replace('ref: ${{ github.event.pull_request.head.sha || github.sha }}','ref: main')],
+  ['FI01-SEMANTIC-RETRY','fi01Dom',s=>s.replace('semanticAttempts=1','semanticAttempts=2')],
+  ['EVIDENCE-STATIC-SHA','mainMutation',s=>s.replace('checkout,seed:SEED',"baseSha:'c35ed3479eff20826bb49d8280c3ea1e37be2fdc',seed:SEED")]
 ];
 
 const rows=[];
@@ -64,5 +77,5 @@ for(const [id,file,mutate] of mutants){
   const files={...baseline,[file]:changed},after=oracles(files),killedBy=Object.entries(after).filter(([name,ok])=>baseOracle[name]&&!ok).map(([name])=>name);
   const killed=killedBy.length>0;rows.push({id,file,killed,killedBy});assert.equal(killed,true,`${id} survived implementation-mutant rail`);
 }
-const report={schemaVersion:'1.0.0',authority:'security-implementation-mutants',baseSha:'c35ed3479eff20826bb49d8280c3ea1e37be2fdc',mutantCount:rows.length,killed:rows.filter(x=>x.killed).length,survivors:rows.filter(x=>!x.killed).length,mutants:rows,claimBoundary:'Targeted source-level implementation mutants over the remediated security topology. This establishes oracle sensitivity for named regressions; it is not exhaustive mutation coverage.'};
+const report={schemaVersion:'1.1.0',authority:'security-implementation-mutants',checkout,mutantCount:rows.length,killed:rows.filter(x=>x.killed).length,survivors:rows.filter(x=>!x.killed).length,mutants:rows,claimBoundary:'Targeted source-level implementation mutants over the remediated security topology. This establishes oracle sensitivity for named regressions; it is not exhaustive mutation coverage.'};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/security-implementation-mutants.json',import.meta.url),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
