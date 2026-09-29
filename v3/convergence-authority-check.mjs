@@ -11,6 +11,7 @@ import {deriveExpectedReconciliation,reconcileAuthority} from './trama-reconcile
 const HERE=path.dirname(fileURLToPath(import.meta.url)),ROOT=path.resolve(HERE,'..');
 const BASELINE_MAIN='122b18e8bb672774a0380492eb27580c255f9458';
 const RECON_MAIN='a261ac1eda47dec254d824b373b5706f54483d0b';
+const POST214_MAIN='bc43a700d3667669ec4021c5334b66cebdaac751',POST214_HEAD='9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2';
 const A='docs/convergence/convergence-authority.json',W='docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx';
 const CHAIN=['GOV-WB4','TRUTH-0','SCOPE-0','REALITY-0','DECIDE-0','UIUX-CONVERGE-0','S4-A6-CLOSE','S5-CANDIDATE-SEAL'];
 const STATES=['done','done','done','done','done','done','blocked','blocked'];
@@ -74,6 +75,14 @@ export function validateAuthority(a,ctx){
  const debt=Object.fromEntries((a?.internalDebt||[]).map(x=>[x.id,x]));
  ck(debt['GOV-MERGE-TRUTH-LAG']?.status==='resolved'&&debt['UIUX-STRUCTURAL-COMPRESSION']?.status==='resolved-in-reconciliation'&&debt['F-13']?.status==='open'&&debt['GAP-020']?.status==='open'&&debt['GAP-021']?.status==='open','DEBT');
  ck(eq(a?.externalRails?.map(x=>x.id),['E3-HUMAN','E3-GOV','E4-DEPLOY'])&&a.externalRails.every(x=>x.state==='external'),'RAILS');
+ const acts=a?.postMergeActs||[],act=acts.find(x=>x.id==='POST-214-ACT'),gov=act?.externalObservations?.e3Gov;
+ ck(acts.length>=1&&act?.kind==='immutable-post-merge-act-observation'&&act?.mergedPr===214&&act?.mergeSha===POST214_MAIN&&act?.candidateHead===POST214_HEAD&&act?.planDelta===false&&act?.criticalPathChanged===false&&act?.serialBridgeCreated===false&&act?.nextGovernedAction==='C2-DELIVERY-PROVENANCE','POST214_ACT');
+ ck(act?.candidateCi?.total===99&&act?.candidateCi?.success===95&&act?.candidateCi?.skipped===4&&act?.candidateCi?.failures===0&&act?.candidateCi?.pending===0,'POST214_CANDIDATE_CI');
+ ck(act?.postMergeMainCi?.total===58&&act?.postMergeMainCi?.success===55&&act?.postMergeMainCi?.skipped===3&&act?.postMergeMainCi?.failures===0&&act?.postMergeMainCi?.pending===0,'POST214_MAIN_CI');
+ ck(gov?.rail==='E3-GOV'&&gov?.gapId==='GAP-022'&&gov?.status==='OPEN_OBSERVED_NEGATIVE'&&gov?.branch==='main'&&gov?.branchApiProtected===false&&gov?.branchProtectionDetail==='UNAVAILABLE_403_INTEGRATION_PERMISSION'&&gov?.closesRail===false,'POST214_E3_GOV');
+ ck(eq((gov?.repositoryRulesets||[]).map(x=>[x.id,x.enforcement,x.appliesToMain]),[[23649690,'active',false],[23649691,'active',false]])&&gov.repositoryRulesets.every(x=>eq(x.include,['refs/heads/GOV-01'])),'POST214_RULESETS');
+ ck(String(gov?.conclusion||'').includes('organization-level')&&String(act?.claimBoundary||'').includes('does not create a live pointer'),'POST214_BOUNDARY');
+ ck(act?.localFalsification?.trials===10000000&&act?.localFalsification?.operatorFamilies===29&&act?.localFalsification?.pairCoverage===406&&act?.localFalsification?.mathematicalPairs===406&&act?.localFalsification?.survivors===0&&act?.localFalsification?.deletionOracle?.cases===29&&act?.localFalsification?.deletionOracle?.killed===29&&act?.localFalsification?.deletionOracle?.survivors===0&&act?.localFalsification?.noNoveltyTail?.trials===100000&&act?.localFalsification?.noNoveltyTail?.survivors===0&&/^[0-9a-f]{64}$/.test(act?.localFalsification?.receiptSha256||''),'POST214_FALSIFICATION');
  ck(a?.s5Seal?.enterpriseCandidate===false&&a?.s5Seal?.enterpriseReady===false,'NO_PROMOTION');
 
  const rec=a?.reconciliations||[];
@@ -117,6 +126,11 @@ function run(root=ROOT){
   x=>x.stateSemantics.postMergeReconciliationRequired=false,
   x=>x.reconciliationObservation.mainSha='future',
   x=>x.externalRails=x.externalRails.filter(r=>r.id!=='E3-HUMAN'),
+  x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').mergeSha='future',
+  x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').nextGovernedAction='C4-AI-EVAL-DRIFT',
+  x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').planDelta=true,
+  x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').externalObservations.e3Gov.closesRail=true,
+  x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').externalObservations.e3Gov.repositoryRulesets[0].appliesToMain=true,
   x=>x.s5Seal.enterpriseCandidate=true,
   x=>x.reconciliations=x.reconciliations.filter(r=>r.id!=='REC-GOV-TRAMA-COMPASS-1-MAIN'),
   x=>x.projection.version='GOV-WB5-TRAJECTORY-141'

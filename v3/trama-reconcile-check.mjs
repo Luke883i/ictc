@@ -70,6 +70,7 @@ const authority=JSON.parse(authorityRaw);
 assert.equal(authority.governanceRevision,'GOV-WB6');
 assert.equal(authority.reconciliationObservation?.mergedPr,183);
 assert.equal(authority.reconciliationObservation?.mainSha,contract.observedPreimage.mainSha);
+const act=authority.postMergeActs?.find(x=>x.id==='POST-214-ACT');assert.equal(act?.mergedPr,214);assert.equal(act?.mergeSha,'bc43a700d3667669ec4021c5334b66cebdaac751');assert.equal(act?.candidateHead,'9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2');assert.equal(act?.planDelta,false);assert.equal(act?.nextGovernedAction,'C2-DELIVERY-PROVENANCE');assert.equal(act?.externalObservations?.e3Gov?.status,'OPEN_OBSERVED_NEGATIVE');assert.equal(act?.externalObservations?.e3Gov?.closesRail,false);
 for(const gate of ['v3/trama-reconcile-check.mjs','v3/trama-reconcile-saturation.mjs'])assert.equal(registry.split("'"+gate+"'").length-1,1,gate);
 assert.ok(registry.indexOf("'v3/trama-engineering-saturation.mjs'")<registry.indexOf("'v3/trama-reconcile-check.mjs'"));
 assert.ok(registry.indexOf("'v3/trama-reconcile-check.mjs'")<registry.indexOf("'v3/c3-capacity-contract-check.mjs'"));

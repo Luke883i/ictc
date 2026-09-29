@@ -22,6 +22,7 @@ Questo documento non replica più la “prossima slice” corrente. Il critical 
 
 - **E3-HUMAN:** GAP-012 / representative human + assistive-technology evidence.
 - **E3-GOV:** GAP-022 branch protection/ruleset/review enforcement richiede osservazione live di GitHub; un file versionato non può auto-certificarne lo stato.
+  - **POST-214 ACT (osservazione immutabile, 29/09/2026):** `main` ha riportato `protected=false`; i due ruleset repository attivi osservati (`GOV-01-1`, `GOV-01-2`) includono solo `refs/heads/GOV-01`, non `main`. Il dettaglio branch-protection ha restituito 403 all'integrazione, quindi controlli organization-level/non accessibili non sono esclusi. GAP-022 resta aperto; nessuna closure E3-GOV è inferita.
 - **E4-DEPLOY:** GAP-007 scanner efficacy, GAP-009 identity effectiveness, GAP-014 production observability; ulteriori F-* E4 restano nel remediation registry.
 
 Repository simulation, green CI e mutation counts non sostituiscono E3/E4.
