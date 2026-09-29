@@ -33,7 +33,7 @@ Nessuna scelta tecnica richiesta. Esprimi solo intento di prodotto o accettazion
 
 ## LOSSLESS SEMANTICS 0.11
 - **Profilo:** ICTC-LOSSLESS-SEMANTICS-0.11 · authority-zero · global N non raggiunta.
-- **Fingerprint input semantici:** 2ad9c9fb701a9ad5 su 54 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
+- **Fingerprint input semantici:** 0eb86666ef97310e su 54 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
 - **Semantic core 0.11:** a74e50d082239370 · revision 0.11.3 · self-sufficient e fail-closed.
 - **Sequenza canonica combinata:** C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT · owner: docs/convergence/convergence-authority.json#planningState. 0.11 non possiede il cursore.
 - **Visible cutover:** ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND; R1-R5 restano responsabilità di falsificazione, compresse negli owner esistenti.
