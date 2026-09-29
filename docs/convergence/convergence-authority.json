@@ -434,5 +434,86 @@
       "nextGovernedAction": "C2-DELIVERY-PROVENANCE",
       "claimBoundary": "Repository-bounded UI/UX defect reconciliation only; no representative-human usability, legal/compliance correctness, deployment effectiveness or Enterprise Candidate conclusion."
     }
+  ],
+  "postMergeActs": [
+    {
+      "id": "POST-214-ACT",
+      "kind": "immutable-post-merge-act-observation",
+      "mergedPr": 214,
+      "mergeSha": "bc43a700d3667669ec4021c5334b66cebdaac751",
+      "candidateHead": "9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2",
+      "observedOn": "2026-09-29",
+      "planDelta": false,
+      "criticalPathChanged": false,
+      "serialBridgeCreated": false,
+      "nextGovernedAction": "C2-DELIVERY-PROVENANCE",
+      "candidateCi": {
+        "total": 99,
+        "success": 95,
+        "skipped": 4,
+        "failures": 0,
+        "pending": 0
+      },
+      "postMergeMainCi": {
+        "total": 58,
+        "success": 55,
+        "skipped": 3,
+        "failures": 0,
+        "pending": 0
+      },
+      "externalObservations": {
+        "e3Gov": {
+          "rail": "E3-GOV",
+          "gapId": "GAP-022",
+          "status": "OPEN_OBSERVED_NEGATIVE",
+          "branch": "main",
+          "branchApiProtected": false,
+          "branchProtectionDetail": "UNAVAILABLE_403_INTEGRATION_PERMISSION",
+          "repositoryRulesets": [
+            {
+              "id": 23649690,
+              "name": "GOV-01-1",
+              "enforcement": "active",
+              "include": [
+                "refs/heads/GOV-01"
+              ],
+              "appliesToMain": false
+            },
+            {
+              "id": 23649691,
+              "name": "GOV-01-2",
+              "enforcement": "active",
+              "include": [
+                "refs/heads/GOV-01"
+              ],
+              "appliesToMain": false
+            }
+          ],
+          "conclusion": "No repository-level main protection was observed: the main branch API reported protected=false and the two repository rulesets target refs/heads/GOV-01, not main. The detailed branch-protection endpoint was inaccessible to the integration, so organization-level or otherwise inaccessible controls are not excluded.",
+          "closesRail": false
+        }
+      },
+      "localFalsification": {
+        "schema": "post214-act-falsifier/v1",
+        "seedHex": "0x2140ac71",
+        "trials": 10000000,
+        "operatorFamilies": 29,
+        "pairCoverage": 406,
+        "mathematicalPairs": 406,
+        "survivors": 0,
+        "deletionOracle": {
+          "cases": 29,
+          "killed": 29,
+          "survivors": 0
+        },
+        "noNoveltyTail": {
+          "trials": 100000,
+          "survivors": 0
+        },
+        "receiptSha256": "7772e5a62b5e1e4523a8d0d7635afc8a62496f3ba26485fe7191791bd40b3333",
+        "boundary": "Compiled semantic/model falsification only; repository CI and external GitHub observations remain separate evidence classes."
+      },
+      "claimBoundary": "Immutable observation of PR214 merge, exact candidate/main CI census and repository-level GitHub governance evidence. It does not create a live pointer, change the convergence plan, close E3-GOV, prove organization-level governance, promote Enterprise Candidate or imply deployment/human effectiveness."
+    }
   ]
 }
