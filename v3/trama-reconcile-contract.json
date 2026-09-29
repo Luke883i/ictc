@@ -300,9 +300,9 @@
     },
     {
       "id": "R4-C2",
-      "predicate": "audit F-06 remains in-remediation",
+      "predicate": "audit F-06 remains in-remediation until exact-head attestation CI, merge and post-merge ACT",
       "expected": "C2-DELIVERY-PROVENANCE=in-progress",
-      "boundary": "SBOM/pins do not equal completed provenance/signing"
+      "boundary": "Candidate exact-head SBOM/provenance/signing evidence is E2 but does not become terminal C2 merely because the PR can attest itself; merge plus ACT must observe terminal evidence."
     },
     {
       "id": "R5-C3",

@@ -16,7 +16,7 @@ Questo documento non replica più la “prossima slice” corrente. Il critical 
 
 - **GAP-020 → S4-A6-CLOSE:** UX1-UX4 sono merged; restano la convergenza delle slice condizionali applicabili e il seal repository-bounded di assurance contraction.
 - **GAP-021 → S5-CANDIDATE-SEAL:** evidence seal atomico su exact-head, solo dopo S4-A6-CLOSE.
-- **F-06 → C2-DELIVERY-PROVENANCE**, **F-13 → C3-CAPACITY-CONTRACT**, **F-15 → C4-AI-EVAL-DRIFT** restano non risolti nel remediation registry.
+- **F-06 → C2-DELIVERY-PROVENANCE:** il candidate implementa exact-head archive + CycloneDX + GitHub OIDC/Sigstore build/SBOM attestations + repository-bound verification nel composite gate; F-06 resta `in-remediation` fino a merge e POST-C2 ACT. **F-13 → C3-CAPACITY-CONTRACT** e **F-15 → C4-AI-EVAL-DRIFT** restano non risolti nel remediation registry.
 
 ## Rail esterni che il repository non può auto-chiudere
 

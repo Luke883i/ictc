@@ -22,17 +22,6 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - run: npm audit --audit-level=high
-      - name: Generate CycloneDX SBOM
-        shell: bash
-        run: |
-          mkdir -p artifacts
-          npm sbom --sbom-format cyclonedx > artifacts/ictc-sbom.cdx.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
-        with:
-          name: ictc-sbom
-          path: artifacts/ictc-sbom.cdx.json
-          if-no-files-found: error
-          retention-days: 30
   runtime-security-dod:
     env:
       ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
