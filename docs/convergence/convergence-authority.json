@@ -26,9 +26,8 @@
     "completedThrough": "UIUX-CONVERGE-0",
     "nextSerialSlice": "S4-A6-CLOSE",
     "nextSerialState": "blocked",
-    "nextConditionalSlice": "C2-DELIVERY-PROVENANCE",
+    "nextConditionalSlice": "C1-COMPAT-CONTRACTION",
     "criticalPath": [
-      "C2-DELIVERY-PROVENANCE",
       "C1-COMPAT-CONTRACTION",
       "C3-CAPACITY-CONTRACT",
       "C4-AI-EVAL-DRIFT"
@@ -98,7 +97,7 @@
     },
     {
       "id": "C2-DELIVERY-PROVENANCE",
-      "state": "in-progress",
+      "state": "done",
       "eligibleAfter": "TRUTH-0",
       "mustResolveBefore": "S4-A6-CLOSE",
       "debtRefs": [
@@ -248,7 +247,7 @@
     },
     {
       "id": "F-06",
-      "status": "in-remediation",
+      "status": "resolved",
       "target": "C2-DELIVERY-PROVENANCE"
     },
     {
@@ -400,7 +399,7 @@
     "bindingSheet": "BINDING",
     "integrityRule": "checker hashes exact artifact and validates semantic binding tokens; authority never self-references a mutable workbook hash"
   },
-  "claimBoundary": "UIUX-CONVERGE-0 and C5 are reconciled repository-terminal from current executable evidence. C1 remains open on blocking compatibility/retirement debt; C2/C3/C4 are in-progress with F-06/F-13/F-15 residuals. S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked; GAP-020/GAP-021 remain open; E3-HUMAN, E3-GOV and E4-DEPLOY remain external. No enterprise-ready, representative-human-usability, legal/compliance, certification, market-fit, HA, approved RTO/RPO or production-effectiveness conclusion.",
+  "claimBoundary": "UIUX-CONVERGE-0, C5 and C2 are repository-terminal. C1 remains open; C3/C4 remain in-progress. S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked; GAP-020/GAP-021 remain open; E3-HUMAN, E3-GOV and E4-DEPLOY remain external.",
   "reconciliationObservation": {
     "id": "REC-GOV-TRAMA-COMPASS-1-MAIN",
     "kind": "immutable-observation",
