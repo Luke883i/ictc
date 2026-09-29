@@ -153,6 +153,8 @@ La Bussola separa sempre locale, intermedio e globale e propone una sola prossim
 
 La stessa route integra `losslessSemantics 0.11` dal profilo TRAMA esistente: non è una nuova authority. Combina automaticamente il target Enterprise Candidate con la sequenza corrente di `convergence-authority.json`; un fingerprint deterministico degli owner/input rende stale la Bussola quando cambia la semantica rilevante. Ogni PR materiale dichiara `UPDATED` oppure `NO_SEMANTIC_DELTA`.
 
+Per chi non è tecnico, questo significa che basta descrivere **cosa deve cambiare** e accettare materialmente l'esito: TRAMA deve derivare owner, slice, test e percorso `INTENT → OBSERVE → QUALIFY → SLICE → MATERIALIZE → WITNESS → CLOSE → ACT`. Se manca un binding o una prova coerente con il claim, la slice resta OPEN/BLOCKED invece di chiedere all'utente una scelta tecnica.
+
 ## Se chiedi “ora che si fa?”
 
 Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `v3/trama-reconcile-contract.json` e restituire una sola prossima slice con:

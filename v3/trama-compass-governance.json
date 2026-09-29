@@ -561,7 +561,99 @@
       "Proof rail: visible delta needs exact epoch + differential witness + closure ledger; CI/source presence alone cannot certify adjustment."
     ],
     "immutableSemanticCore": true,
-    "semanticCoreRevision": "0.11.1",
-    "semanticCoreFingerprint": "5fb4ef2f537775a3"
+    "semanticCoreRevision": "0.11.2",
+    "deliveryChannel": {
+      "schema": "ictc-trama-deterministic-delivery-channel/v1",
+      "modelFingerprint": "52282a4aa4df2ce4",
+      "authorityEffect": "NONE",
+      "createsNewSot": false,
+      "createsNewRoadmapCursor": false,
+      "ownerReuseFirst": true,
+      "humanTechnicalChoicesMax": 0,
+      "stages": [
+        "INTENT",
+        "OBSERVE",
+        "QUALIFY",
+        "SLICE",
+        "MATERIALIZE",
+        "WITNESS",
+        "CLOSE",
+        "ACT"
+      ],
+      "singleNextAction": true,
+      "requiredBindings": [
+        "intentDigest",
+        "exactPreimage",
+        "semanticNeighborhood",
+        "ownerSet",
+        "targetPredicates",
+        "negativePredicates",
+        "runtimeDelta",
+        "witnessReceipt",
+        "closureVerdict",
+        "exactPostimage"
+      ],
+      "runtimeRules": [
+        "material runtime intent requires material runtime delta",
+        "CSS hiding cannot substitute runtime semantics",
+        "copy cannot substitute interaction",
+        "no global post-render presentation authority"
+      ],
+      "failClosed": [
+        "UNKNOWN_OWNER",
+        "PARALLEL_AUTHORITY",
+        "NO_MATERIAL_DELTA",
+        "NO_TARGET_PREDICATE",
+        "LEGACY_SURVIVES",
+        "EPOCH_MISMATCH",
+        "WITNESS_MISSING",
+        "CLOSURE_INFERRED",
+        "MULTIPLE_NEXT_ACTIONS",
+        "HUMAN_TECH_CHOICE_REQUIRED"
+      ],
+      "closureStatuses": [
+        "IMPLEMENTED_RUNTIME_PASS",
+        "RETIRED_AS_LEGACY",
+        "EXTERNAL_EVIDENCE",
+        "BLOCKED_ATOMIC_PROVENANCE"
+      ],
+      "localFalsification": {
+        "strategic": {
+          "seedHex": "0x210011",
+          "trials": 10000,
+          "operatorFamilies": 63,
+          "abstractionLayers": 10,
+          "pairwise": 2016,
+          "survivors": 0
+        },
+        "semantic": {
+          "seedHex": "0x9e3779b9",
+          "trials": 1000000,
+          "operatorFamilies": 63,
+          "abstractionLayers": 10,
+          "pairwise": 2016,
+          "survivors": 0
+        },
+        "deletionOracle": {
+          "cases": 44,
+          "killed": 44
+        },
+        "noNoveltyTail": {
+          "trials": 10000,
+          "survivors": 0
+        },
+        "localCiCycles": {
+          "cycles": 10,
+          "strategicTrialsPerCycle": 10000,
+          "semanticTrialsPerCycle": 10000,
+          "tailTrialsPerCycle": 1000,
+          "failedCycles": 0
+        },
+        "boundary": "Independent local semantic/model falsification; not repository CI, browser, representative-human, deployment or legal proof."
+      },
+      "closeRule": "No material development is closed until required bindings are exact-head bound; runtime intent additionally requires material delta and claim-matched witness. Visible UI/UX uses ADJUSTED.",
+      "claimBoundary": "Zero-authority orchestration contract inside TRAMA/losslessSemantics; it cannot create owners, infer closure, replace runtime evidence or promote Enterprise Candidate."
+    },
+    "semanticCoreFingerprint": "86c3aa230a87f877"
   }
 }
