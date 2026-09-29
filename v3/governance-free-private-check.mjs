@@ -46,8 +46,17 @@ function evaluateRequiredChecks(required, checkRuns) {
 
 async function githubJson(url, token) {
   const response = await fetch(url, { headers: { accept: 'application/vnd.github+json', authorization: `Bearer ${token}`, 'x-github-api-version': '2022-11-28' } });
-  if (!response.ok) throw new Error(`GitHub API ${response.status}: ${await response.text()}`);
+  if (!response.ok) {
+    const error = new Error(`GitHub API ${response.status}: ${await response.text()}`);
+    error.status = response.status;
+    error.retryAfterMs = Math.max(0, Number(response.headers.get('retry-after') || 0) * 1000);
+    throw error;
+  }
   return response.json();
+}
+function retryableObservationError(error) {
+  const status = Number(error?.status || 0);
+  return status === 0 || status === 403 || status === 404 || status === 409 || status === 422 || status === 429 || status >= 500;
 }
 async function associatedPullRequests(sha) {
   const token = process.env.GITHUB_TOKEN, repository = process.env.GITHUB_REPOSITORY, api = process.env.GITHUB_API_URL || 'https://api.github.com';
@@ -56,17 +65,15 @@ async function associatedPullRequests(sha) {
 }
 async function checkRuns(sha, requiredNames = []) {
   const token = process.env.GITHUB_TOKEN, repository = process.env.GITHUB_REPOSITORY, api = process.env.GITHUB_API_URL || 'https://api.github.com';
-  if (!token || !repository) throw new Error('GITHUB_TOKEN/GITHUB_REPOSITORY assente');
-  const names = [...new Set(requiredNames.map(name => String(name || '')).filter(Boolean))];
+  if (!token || !repository) throw Object.assign(new Error('GITHUB_TOKEN/GITHUB_REPOSITORY assente'), { status: 401 });
+  const names = new Set(requiredNames.map(name => String(name || '')).filter(Boolean));
   const runs = [];
-  for (const name of names) {
-    for (let page = 1; page <= 20; page += 1) {
-      const payload = await githubJson(`${api}/repos/${repository}/commits/${sha}/check-runs?check_name=${encodeURIComponent(name)}&filter=latest&per_page=100&page=${page}`, token);
-      const pageRuns = payload.check_runs || [];
-      runs.push(...pageRuns);
-      if (pageRuns.length < 100) break;
-      if (page === 20) throw new Error(`Check-run pagination limit exceeded for ${name}`);
-    }
+  for (let page = 1; page <= 20; page += 1) {
+    const payload = await githubJson(`${api}/repos/${repository}/commits/${sha}/check-runs?filter=latest&per_page=100&page=${page}`, token);
+    const pageRuns = payload.check_runs || [];
+    runs.push(...pageRuns.filter(run => names.has(run.name)));
+    if (pageRuns.length < 100) break;
+    if (page === 20) throw Object.assign(new Error('Check-run pagination limit exceeded'), { status: 422 });
   }
   return runs;
 }
@@ -74,13 +81,24 @@ async function waitForRequiredChecks(sha, required) {
   const waitMs = Math.max(0, Math.min(60 * 60_000, Number(process.env.ICTC_GOV_WAIT_MS || 55 * 60_000)));
   const intervalMs = Math.max(1000, Math.min(30_000, Number(process.env.ICTC_GOV_POLL_MS || 10_000)));
   const deadline = Date.now() + waitMs;
-  let result;
+  let result = fail('Required exact-SHA checks non osservati', 'required-checks-not-green'), lastError = null;
   do {
-    result = evaluateRequiredChecks(required, await checkRuns(sha, required));
-    if (result.ok) return result;
-    const terminalFailure = result.blockers?.some(item => item.status === 'completed' && item.conclusion && !['success'].includes(item.conclusion));
-    if (terminalFailure || Date.now() >= deadline) return result;
-    await sleep(intervalMs);
+    try {
+      result = evaluateRequiredChecks(required, await checkRuns(sha, required));
+      lastError = null;
+      if (result.ok) return result;
+      const terminalFailure = result.blockers?.some(item => item.status === 'completed' && item.conclusion && item.conclusion !== 'success');
+      if (terminalFailure) return result;
+    } catch (error) {
+      if (!retryableObservationError(error)) throw error;
+      lastError = error;
+    }
+    if (Date.now() >= deadline) {
+      if (lastError) return fail('Required exact-SHA checks non osservabili entro il deadline', 'required-checks-observation-unavailable', { status: Number(lastError.status || 0), error: lastError.message });
+      return result;
+    }
+    const retryAfterMs = Math.max(0, Number(lastError?.retryAfterMs || 0));
+    await sleep(Math.max(intervalMs, Math.min(30_000, retryAfterMs)));
   } while (true);
 }
 
@@ -97,7 +115,12 @@ function selfTest(policy) {
     ['accept-green-checks', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
     ['prefer-latest-duplicate-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'failure' }, { id: 2, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
     ['reject-missing-check', evaluateRequiredChecks(required, []).code === 'required-checks-not-green'],
-    ['reject-skipped-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'skipped' }]).code === 'required-checks-not-green']
+    ['reject-skipped-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'skipped' }]).code === 'required-checks-not-green'],
+    ['retry-network-observation', retryableObservationError({ status: 0 }) === true],
+    ['retry-secondary-rate-limit', retryableObservationError({ status: 403 }) === true],
+    ['retry-rate-limit', retryableObservationError({ status: 429 }) === true],
+    ['retry-server-error', retryableObservationError({ status: 503 }) === true],
+    ['reject-bad-credentials', retryableObservationError({ status: 401 }) === false]
   ];
   const failed = tests.filter(([, ok]) => !ok).map(([name]) => name);
   return { ok: failed.length === 0, tests: Object.fromEntries(tests), failed };
