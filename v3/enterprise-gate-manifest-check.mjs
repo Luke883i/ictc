@@ -13,6 +13,8 @@ assert.deepEqual(policy.requiredPostMergeChecks, manifest.requiredPostMergeCheck
 assert.deepEqual(manifest.requiredPreMergeChecks, ['enterprise-candidate']);
 assert.deepEqual(manifest.requiredPostMergeChecks, ['enterprise-candidate']);
 assert.ok(Array.isArray(manifest.localGates) && manifest.localGates.length >= 8);
+assert.deepEqual(manifest.localGates.find(item=>item.id==='delivery-provenance'),{id:'delivery-provenance',command:'node v3/delivery-provenance-check.mjs',grade:'E2'});
+assert.equal(manifest.externalBlockers.includes('signed build provenance verification'),false);
 const ids = manifest.localGates.map(item => item.id);
 assert.equal(new Set(ids).size, ids.length, 'duplicate gate ids');
 for (const gate of manifest.localGates) {
@@ -22,4 +24,7 @@ for (const gate of manifest.localGates) {
 }
 assert.ok(manifest.externalBlockers.length >= 5);
 assert.match(manifest.claimBoundary, /never establishes enterprise-ready/i);
+assert.ok(workflow.includes('actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'));
+assert.ok(workflow.includes('actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6'));
+assert.ok(workflow.includes('gh attestation verify'));
 console.log(`enterprise-gate-manifest: ok (${manifest.localGates.length} local gates, posture=${manifest.posture})`);

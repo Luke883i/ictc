@@ -5,7 +5,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-permissions: {contents: read}
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
 concurrency:
   group: enterprise-candidate-${{ github.ref }}
   cancel-in-progress: true
@@ -22,6 +25,43 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
+      - run: node v3/delivery-provenance-check.mjs
+      - name: Generate exact-candidate CycloneDX SBOM
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          npm sbom --sbom-format cyclonedx > artifacts/ictc-sbom.cdx.json
+      - name: Prepare exact-candidate delivery provenance
+        id: delivery
+        env:
+          ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node v3/delivery-provenance-check.mjs --prepare
+      - name: Attest candidate build provenance
+        id: build_attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ steps.delivery.outputs.bundle_path }}
+      - name: Attest candidate SBOM
+        id: sbom_attest
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: ${{ steps.delivery.outputs.bundle_path }}
+          sbom-path: artifacts/ictc-sbom.cdx.json
+      - name: Verify candidate attestations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh attestation verify "${{ steps.delivery.outputs.bundle_path }}" --repo "$GITHUB_REPOSITORY"
+      - name: Finalize delivery provenance receipt
+        env:
+          ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          ICTC_BUILD_ATTEST_ID: ${{ steps.build_attest.outputs.attestation-id }}
+          ICTC_BUILD_ATTEST_URL: ${{ steps.build_attest.outputs.attestation-url }}
+          ICTC_BUILD_BUNDLE_PATH: ${{ steps.build_attest.outputs.bundle-path }}
+          ICTC_SBOM_ATTEST_ID: ${{ steps.sbom_attest.outputs.attestation-id }}
+          ICTC_SBOM_ATTEST_URL: ${{ steps.sbom_attest.outputs.attestation-url }}
+          ICTC_SBOM_BUNDLE_PATH: ${{ steps.sbom_attest.outputs.bundle-path }}
+          ICTC_GH_VERIFY: passed
+        run: node v3/delivery-provenance-check.mjs --finalize
       - run: node v3/enterprise-gate-manifest-check.mjs
       - run: node v3/convergence-authority-check.mjs
       - name: Contributor runtime contract
@@ -79,5 +119,14 @@ jobs:
             artifacts/enterprise-t-runtime-stress.json
             artifacts/convergence-authority-receipt.json
             artifacts/convergence-authority-saturation.json
+            artifacts/delivery-provenance-contract.json
+            artifacts/delivery-provenance-saturation-10m.json
+            artifacts/ictc-sbom.cdx.json
+            artifacts/ictc-candidate-*.zip
+            artifacts/delivery-provenance.json
+            artifacts/delivery-checksums.sha256
+            artifacts/delivery-provenance-receipt.json
+            artifacts/ictc-build-provenance.sigstore.jsonl
+            artifacts/ictc-sbom-attestation.sigstore.jsonl
           if-no-files-found: warn
           retention-days: 30
