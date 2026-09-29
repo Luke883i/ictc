@@ -5,7 +5,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { authenticatedRateLimitKey, edgeRateLimitKey, attachmentStoragePath, normalizeAttachmentId } from './runtime/security-boundaries.mjs';
 import { htmlEsc, safeHref, internalReferencePanelMarkup } from './public/ui/security-encoding.js';
 import { aiNetworkOptIns } from './network-policy.mjs';
+import { evidenceCheckoutIdentity } from './runtime/evidence-checkout-identity.mjs';
 
+const checkout=evidenceCheckoutIdentity();
 const TOTAL=1_000_000,SEED=0x51c7c147;let seed=SEED>>>0;
 const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
 const families=new Map();let killed=0,survivors=0;const witness=[];
@@ -46,5 +48,5 @@ for(let i=0;i<250_000;i++){
 }
 
 assert.equal(killed+survivors,TOTAL);assert.equal(survivors,0);
-const report={schemaVersion:'1.0.0',authority:'local-security-main-mutation-campaign',baseSha:'c35ed3479eff20826bb49d8280c3ea1e37be2fdc',seed:SEED,totalExecutions:TOTAL,killed,survivors,families:Object.fromEntries([...families].map(([k,v])=>[k,{...v,checksumHex:v.checksum.toString(16).padStart(8,'0')}])),witness,claimBoundary:'Deterministic same-circuit mutation/oracle evidence over candidate security boundary primitives. Not full repository CI, independent penetration testing, human review, or deployment attestation.'};
+const report={schemaVersion:'1.1.0',authority:'local-security-main-mutation-campaign',checkout,seed:SEED,totalExecutions:TOTAL,killed,survivors,families:Object.fromEntries([...families].map(([k,v])=>[k,{...v,checksumHex:v.checksum.toString(16).padStart(8,'0')}])),witness,claimBoundary:'Deterministic same-circuit mutation/oracle evidence over candidate security boundary primitives. Not full repository CI, independent penetration testing, human review, or deployment attestation.'};
 await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/security-main-mutation-1m.json',import.meta.url),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
