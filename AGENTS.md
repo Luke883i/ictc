@@ -119,3 +119,12 @@ Historical/candidate documents are useful for design lineage but do not override
 59. Un intento runtime non si chiude con marker, CSS hiding o sola copy quando il difetto è di interazione/composizione: serve delta materiale e witness claim-matched. Per UI/UX visibile `ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND`; Q1/Q2 restano evidence projection generated senza write authority.
 60. Implementation absorption 656/656 e forensic atomic closure restano distinti; l'assenza degli atomic body originari non diventa `RESOLVED` per inferenza. Il canale riusa owner esistenti e blocca ogni parallel authority/presentation root salvo migrazione esplicita e falsificabile.
 61. Dopo tool fact, PR/CI e merge esegui ACT, invalida evidence stale e deriva esattamente una next action o STOP/BLOCKED. Il canale non promuove Enterprise Candidate e non chiude E3-HUMAN, E3-GOV o E4-DEPLOY.
+
+
+## GOV-TRAMA-E2E-1 — ferro → utente, allineamento continuo
+
+62. Il nome canonico semplice dell'analisi multi-astrazione è **TRAMA E2E**. Gli strati restano posseduti da `v3/trama-reconcile-contract.json#campaigns` nell'ordine `L0-FERRO → L1-PERSISTENCE → L2-RUNTIME → L3-SEMANTIC → L4-GOVERNANCE → L5-PRODUCT → L6-EXPERIENCE → L7-ENTERPRISE`; TRAMA E2E non crea un nuovo owner.
+63. Le 24 famiglie metodo restano possedute da `v3/trama-engineering-contract.json#methodSaturation.families` e vengono lette tramite sei cluster: `UNDERSTAND, EXECUTE, PROTECT, EXPERIENCE, CONTROL, FALSIFY`. I cluster sono una compressione di orientamento, non nuove metodologie concorrenti.
+64. **Ogni PR** è sottoposta al contratto TRAMA, non solo quelle che toccano file TRAMA. La PR dichiara layer E2E, cluster metodo, witness di allineamento adiacente e hygiene delta; CI valida body, exact base/head, purpose admission dei nuovi file e disposizione `UPDATED|NO_SEMANTIC_DELTA`.
+65. Ogni nuovo file deve avere purpose deterministico nel repository-purpose census. Ogni rimozione deve partire da `retirement-candidate` o da duplicazione dimostrata, preservare owner correnti ed essere coperta da deletion oracle; età, nome o assenza apparente di uso non bastano.
+66. L'agente deve mantenere coerenza verticale: una modifica a uno strato non può dichiararsi chiusa se rompe il contratto con lo strato immediatamente inferiore/superiore, se usa evidence di SHA diverso, se introduce authority parallela o se sostituisce un delta runtime richiesto con documentazione/governance soltanto.

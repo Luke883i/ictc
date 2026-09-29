@@ -155,6 +155,8 @@ La stessa route integra `losslessSemantics 0.11` dal profilo TRAMA esistente: no
 
 Per chi non è tecnico, questo significa che basta descrivere **cosa deve cambiare** e accettare materialmente l'esito: TRAMA deve derivare owner, slice, test e percorso `INTENT → OBSERVE → QUALIFY → SLICE → MATERIALIZE → WITNESS → CLOSE → ACT`. Se manca un binding o una prova coerente con il claim, la slice resta OPEN/BLOCKED invece di chiedere all'utente una scelta tecnica.
 
+Il nome breve della verifica completa dal substrato tecnico all'esperienza finale è **TRAMA E2E (ferro → utente)**. Gli otto layer restano nel contratto TRAMA-RECONCILE e le 24 famiglie metodo restano nel contratto TRAMA: il nome è una compressione operativa, non una nuova authority. Ogni PR deve dichiarare layer toccati, cluster metodo, witness di allineamento verticale e hygiene delta.
+
 ## Se chiedi “ora che si fa?”
 
 Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `v3/trama-reconcile-contract.json` e restituire una sola prossima slice con:

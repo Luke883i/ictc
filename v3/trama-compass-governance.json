@@ -389,12 +389,15 @@
       "trackedInputs": [
         ".github/PULL_REQUEST_TEMPLATE.md",
         ".github/workflows/security.yml",
+        ".github/workflows/trama-causal-qualification.yml",
         "AGENTS.md",
         "docs/START_HERE.md",
         "docs/authority-matrix.yaml",
         "docs/convergence/convergence-authority.json",
         "docs/documentation-manifest.json",
+        "scripts/repository-contract.mjs",
         "v3/as-is-convergence-contract.json",
+        "v3/docs-command-contract-check.mjs",
         "v3/gaps.json",
         "v3/public/procedure-record-primitives-2-4.css",
         "v3/public/semantic-workspace-closure-3-2-1.css",
@@ -424,6 +427,8 @@
         "v3/trama-engineering-saturation.mjs",
         "v3/trama-engineering.mjs",
         "v3/trama-enterprise-dod.json",
+        "v3/trama-reconcile-contract.json",
+        "v3/trama-reconcile.mjs",
         "v3/uiux-656-absorption-contract.json"
       ]
     },
@@ -567,7 +572,7 @@
       "Proof rail: visible delta needs exact epoch + differential witness + closure ledger; CI/source presence alone cannot certify adjustment."
     ],
     "immutableSemanticCore": true,
-    "semanticCoreRevision": "0.11.3",
+    "semanticCoreRevision": "0.11.4",
     "deliveryChannel": {
       "schema": "ictc-trama-deterministic-delivery-channel/v1",
       "authorityEffect": "NONE",
@@ -665,6 +670,119 @@
       "claimBoundary": "Zero-authority orchestration contract inside TRAMA/losslessSemantics; it cannot create owners, infer closure, replace runtime evidence or promote Enterprise Candidate.",
       "localModelReceiptSha256": "e65de9175f1a27b1fbf3a316ba79a044758b20ab88c39a56fcc29fd8ec7cbb9c"
     },
-    "semanticCoreFingerprint": "a74e50d082239370"
+    "e2eAlignment": {
+      "schema": "ictc-trama-e2e-alignment/v1",
+      "canonicalName": "TRAMA E2E",
+      "humanName": "Ferro -> Utente",
+      "authorityEffect": "NONE",
+      "createsNewSot": false,
+      "layerOwner": "v3/trama-reconcile-contract.json#campaigns",
+      "canonicalLayerIds": [
+        "L0-FERRO",
+        "L1-PERSISTENCE",
+        "L2-RUNTIME",
+        "L3-SEMANTIC",
+        "L4-GOVERNANCE",
+        "L5-PRODUCT",
+        "L6-EXPERIENCE",
+        "L7-ENTERPRISE"
+      ],
+      "methodFamilyOwner": "v3/trama-engineering-contract.json#methodSaturation.families",
+      "methodClusters": {
+        "UNDERSTAND": [
+          "F01_PRODUCT_SCOPE_VALUE",
+          "F02_REPOSITORY_ARCHAEOLOGY",
+          "F03_ARCHITECTURE_TRADEOFFS",
+          "F04_PRODUCT_QUALITY",
+          "F05_CODE_STATIC_QUALITY"
+        ],
+        "EXECUTE": [
+          "F06_RUNTIME_DYNAMIC",
+          "F11_DATA_GOVERNANCE",
+          "F13_IDENTITY_TRUST",
+          "F15_RELIABILITY_RESILIENCE",
+          "F16_PERFORMANCE_CAPACITY",
+          "F17_OBSERVABILITY_INCIDENT",
+          "F18_DEPLOYMENT_RELEASE"
+        ],
+        "PROTECT": [
+          "F08_THREAT_MODELING",
+          "F09_SECURE_SDLC_APPSEC",
+          "F10_SUPPLY_CHAIN",
+          "F12_AI_GOVERNANCE",
+          "F14_PRIVACY_COMPLIANCE"
+        ],
+        "EXPERIENCE": [
+          "F19_UX_HUMAN_FACTORS",
+          "F20_ACCESSIBILITY",
+          "F21_DOCS_OPERABILITY"
+        ],
+        "CONTROL": [
+          "F22_GOVERNANCE_OWNERSHIP",
+          "F23_RISK_AUDIT_ASSURANCE"
+        ],
+        "FALSIFY": [
+          "F07_TESTING_FALSIFICATION",
+          "F24_FLOW_CONTINUOUS_IMPROVEMENT"
+        ]
+      },
+      "alignmentRules": [
+        "ALL_PR_EVALUATED",
+        "MATERIAL_PR_FIELDS",
+        "E2E_LAYER_DECLARATION",
+        "ADJACENT_ALIGNMENT_WITNESS",
+        "EXACT_HEAD_EVIDENCE",
+        "SEMANTIC_FINGERPRINT_DISPOSITION",
+        "NEW_FILE_PURPOSE_ADMISSION",
+        "RETIREMENT_DELETION_ORACLE",
+        "POST_MERGE_ACT"
+      ],
+      "prFields": [
+        "trajectoryImpact",
+        "convergenceSlice",
+        "intentDigest",
+        "exactPreimage",
+        "semanticNeighborhood",
+        "ownerSet",
+        "targetPredicates",
+        "negativePredicates",
+        "runtimeDelta",
+        "witnessReceipt",
+        "closureVerdict",
+        "exactPostimage",
+        "losslessDisposition",
+        "semanticFingerprint",
+        "nextAction",
+        "e2eLayers",
+        "methodClusters",
+        "alignmentWitness",
+        "hygieneDelta"
+      ],
+      "canonicalTemplate": ".github/PULL_REQUEST_TEMPLATE.md",
+      "purposeCensusOwner": "v3/trama-reconcile.mjs#repositoryPurposeCensus",
+      "purposeAdmissionOwner": "v3/trama-reconcile.mjs#repositoryPurposeAdmission",
+      "retirementOwner": "v3/as-is-convergence.mjs#deriveRetirementFrontier",
+      "localFalsification": {
+        "compiledCampaigns": 4,
+        "trialsPerCampaign": 10000000,
+        "totalTrials": 40000000,
+        "operatorFamilies": 29,
+        "pairwisePerCampaign": 406,
+        "survivors": 0,
+        "deletionOracle": {
+          "cases": 64,
+          "killed": 64,
+          "survivors": 0
+        },
+        "noNoveltyTail": {
+          "trials": 100000,
+          "newFamilies": 0
+        },
+        "receiptSha256": "1213d43b4a263c8ac4e9e7b11bc97290f9b5566ccef69996b97af2287d6bc9b2",
+        "boundary": "Compiled semantic/model falsification only; not repository CI, browser, deployment, representative-human, legal or server-side enforcement proof."
+      },
+      "claimBoundary": "Zero-authority alignment projection over existing TRAMA method families, reconciliation layers and repository-purpose governance. It cannot create a new runtime owner, infer product closure or replace claim-matched evidence."
+    },
+    "semanticCoreFingerprint": "1007e81096d76272"
   }
 }

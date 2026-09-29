@@ -2,13 +2,6 @@ name: TRAMA causal qualification
 
 on:
   pull_request:
-    paths:
-      - 'v3/trama-causal-qualification*'
-      - 'v3/trama-engineering*'
-      - 'docs/authority-matrix.yaml'
-      - 'AGENTS.md'
-      - 'docs/TESTING.md'
-      - '.github/workflows/trama-causal-qualification.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,12 +10,16 @@ permissions:
 jobs:
   causal-10-campaigns:
     name: causal-10-campaigns
+    env:
+      ICTC_TRAMA_EXACT_HEAD: '1'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22.16.0'

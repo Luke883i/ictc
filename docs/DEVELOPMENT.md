@@ -146,3 +146,10 @@ Prima di una modifica cross-cutting, `node v3/as-is-convergence.mjs` compila una
 Le closure già registrate sono un **ratchet**: una ricomparsa silenziosa produce `BLOCKED_REOPEN_WITH_EVIDENCE`. Per campagne strategiche cross-abstraction il tier è 100k / 1M / 10M; i tier TRAMA generici 1k / 100k / 1M restano invariati. Al ceiling, nuova failure family o survivor richiedono remodelling. Saturazione semantica = `M+10k` senza novità; saturazione di compressione = `N+10k` senza ulteriore compressione lossless.
 
 L'ordine cognitivo di prima superficie è `identity -> primary work/decision -> bounded list -> context/evidence -> technical detail`. Il browser può provare DOM, geometry e disclosure E2; comprensione, efficienza, trust calibration e tecnologie assistive restano E3-HUMAN.
+
+
+## TRAMA E2E — ferro → utente
+
+**TRAMA E2E** è il nome canonico semplice del controllo multi-astrazione. Non introduce una nuova authority: riusa gli otto campaign layer di `v3/trama-reconcile-contract.json` da `L0-FERRO` a `L7-ENTERPRISE` e le 24 famiglie metodo di `v3/trama-engineering-contract.json`, compresse nei cluster `UNDERSTAND / EXECUTE / PROTECT / EXPERIENCE / CONTROL / FALSIFY`.
+
+Ogni PR dichiara i layer toccati e un witness di allineamento con i layer adiacenti. Il gate TRAMA gira su **ogni pull request**, lega base/head Git, valida il body concreto, verifica purpose admission dei nuovi file e impedisce `NO_SEMANTIC_DELTA` quando cambia un input semanticamente tracciato. Il repository-purpose census resta globale: si elimina solo ciò che è qualificato per il ritiro e coperto da deletion oracle; non si cancella per età o naming.
