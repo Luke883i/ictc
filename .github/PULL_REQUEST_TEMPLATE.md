@@ -67,22 +67,28 @@ Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni
 ## Deterministic delivery channel (TRAMA + lossless semantics 0.11)
 
 - Intent digest: `<sha256 from TRAMA intent card>`
-- Exact preimage: `<base/candidate preimage SHA>`
+- Exact preimage: `CI_BASE`
 - Semantic neighborhood / owner set: `<derived nodes + existing owners>`
 - Target predicates: `<what must become true>`
 - Negative predicates: `<legacy/parallel-authority states that must stay false>`
 - Material runtime delta: `<files/behaviour changed | N/A only for non-runtime intent>`
 - Witness receipt: `<exact-head oracle/receipt refs | BLOCKED>`
 - Closure verdict: `<IMPLEMENTED_RUNTIME_PASS|RETIRED_AS_LEGACY|EXTERNAL_EVIDENCE|BLOCKED_ATOMIC_PROVENANCE|OPEN>`
-- Exact postimage: `<PR HEAD SHA>`
+- Exact postimage: `CI_HEAD`
 - Lossless semantics disposition: `<UPDATED|NO_SEMANTIC_DELTA>`
-- Current semantic input fingerprint: `<value from TRAMA>`
+- Current semantic input fingerprint: `CI_COMPUTED`
 - One next action after ACT: `<slice|STOP|BLOCKED>`
+- TRAMA E2E layers: `<L0-FERRO,...,L7-ENTERPRISE>`
+- Method clusters: `<UNDERSTAND,EXECUTE,PROTECT,EXPERIENCE,CONTROL,FALSIFY>`
+- Adjacent-layer alignment witness: `<what proves touched layers remain coherent with neighbors>`
+- Repository hygiene delta: `<added files classified + retired files/deletion oracle | none>`
 
 - [ ] L'utente ha fornito solo intento/accettazione materiale; nessuna scelta tecnica necessaria è stata scaricata sull'utente.
 - [ ] Owner esistenti riusati; nessuna nuova SOT, presentation authority, roadmap cursor, workflow o gate creati per chiudere la slice.
 - [ ] Se l'intento è runtime, marker/CSS hiding/copy-only non sostituiscono il delta materiale; per UI/UX visibile vale `ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND`.
 - [ ] Nessuna closure è inferita: required bindings e witness sono exact-head bound; `NO_SEMANTIC_DELTA` richiede fingerprint invariato.
+- [ ] `TRAMA E2E` è stato valutato dal ferro all'astrazione utente: layer dichiarati, cluster metodo dichiarati, allineamento adiacente verificato e purpose admission dei nuovi file passata.
+- [ ] Ogni rimozione deriva dal repository-purpose census ed è coperta da deletion oracle; nessun file viene eliminato solo perché vecchio.
 - [ ] Q1/Q2 restano evidence projection generated; implementation absorption 656/656 resta distinta dalla forensic atomic closure.
 
 ## GOV-01F — Free/private compensating governance

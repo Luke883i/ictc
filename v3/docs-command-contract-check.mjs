@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.dirname(here);
-const normativeFiles = ['README.md','docs/DEVELOPMENT.md','docs/TESTING.md','.github/pull_request_template.md'];
+const normativeFiles = ['README.md','docs/DEVELOPMENT.md','docs/TESTING.md','.github/PULL_REQUEST_TEMPLATE.md'];
 const launcherCommands = new Set(['start','demo','stop','restart','status','logs','doctor','test','audit','help']);
 
 function isDocumentedCommand(text) { return /^(npm\s+(?:ci(?:\s+--ignore-scripts)?|start|test|run\s+\S+)|\.\/ictc\.sh\s+\S+|node\s+v3\/\S+)/.test(text.trim()); }
