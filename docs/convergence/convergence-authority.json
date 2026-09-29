@@ -399,7 +399,7 @@
     "bindingSheet": "BINDING",
     "integrityRule": "checker hashes exact artifact and validates semantic binding tokens; authority never self-references a mutable workbook hash"
   },
-  "claimBoundary": "UIUX-CONVERGE-0, C5 and C2 are repository-terminal. C1 remains open; C3/C4 remain in-progress. S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked; GAP-020/GAP-021 remain open; E3-HUMAN, E3-GOV and E4-DEPLOY remain external.",
+  "claimBoundary": "UIUX-CONVERGE-0, C5 and C2 are repository-terminal. C1 remains open; C3/C4 remain in-progress. S4-A6-CLOSE and S5-CANDIDATE-SEAL remain blocked; GAP-020/GAP-021 remain open; E3-HUMAN, E3-GOV and E4-DEPLOY remain external. No enterprise-ready, representative-human-usability, legal/compliance, certification, market-fit, HA, approved RTO/RPO or production-effectiveness conclusion.",
   "reconciliationObservation": {
     "id": "REC-GOV-TRAMA-COMPASS-1-MAIN",
     "kind": "immutable-observation",
@@ -513,6 +513,80 @@
         "boundary": "Compiled semantic/model falsification only; repository CI and external GitHub observations remain separate evidence classes."
       },
       "claimBoundary": "Immutable observation of PR214 merge, exact candidate/main CI census and repository-level GitHub governance evidence. It does not create a live pointer, change the convergence plan, close E3-GOV, prove organization-level governance, promote Enterprise Candidate or imply deployment/human effectiveness."
+    },
+    {
+      "id": "POST-216-ACT",
+      "kind": "immutable-post-merge-terminal-reconciliation",
+      "mergedPr": 216,
+      "mergeSha": "deabdf00916551a5ad0423ffbb3e56d6abe57168",
+      "candidateHead": "e12c596b5de18b7e6896820dfdb871fe4ba66a21",
+      "observedOn": "2026-09-30",
+      "planDelta": true,
+      "criticalPathChanged": true,
+      "serialBridgeCreated": false,
+      "terminalTransition": {
+        "finding": "F-06",
+        "findingTo": "resolved",
+        "slice": "C2-DELIVERY-PROVENANCE",
+        "sliceTo": "done",
+        "nextConditionalSlice": "C1-COMPAT-CONTRACTION",
+        "criticalPath": [
+          "C1-COMPAT-CONTRACTION",
+          "C3-CAPACITY-CONTRACT",
+          "C4-AI-EVAL-DRIFT"
+        ]
+      },
+      "candidateCi": {
+        "total": 99,
+        "success": 95,
+        "skipped": 4,
+        "failures": 0,
+        "pending": 0
+      },
+      "postMergeMainCi": {
+        "total": 58,
+        "success": 55,
+        "skipped": 3,
+        "failures": 0,
+        "pending": 0
+      },
+      "deliveryEvidence": {
+        "workflowRunId": 36638712167,
+        "postMergeArtifactId": 11065024699,
+        "postMergeArtifactDigest": "sha256:b87a77471f96f51006e60fb8379e9f9c16533b1a3e0cc74b73a7a97f9d7a8f90",
+        "candidateArtifactId": 11065107618,
+        "candidateArtifactDigest": "sha256:21793e9c7eb7855a3f56c06e17aba56cc2a3abbfdfeda9a85cfcc9dfba64cc04",
+        "requiredStepsPassed": true,
+        "evidenceClass": "E2",
+        "repositoryBound": true
+      },
+      "localFalsification": {
+        "seedHex": "0x216c2c10",
+        "trials": 10000000,
+        "operatorFamilies": 34,
+        "mathematicalPairs": 561,
+        "observedPairs": 561,
+        "survivors": 0,
+        "deletionKilled": 34,
+        "noNoveltyTail": 1000000,
+        "novelFamilies": 0,
+        "receiptSha256": "814ca247c2242e48b0c6e89989000c4120cebf3671c71194b29944d02766b5de"
+      },
+      "localCycles": {
+        "cycles": 10,
+        "statesPerCycle": 100000,
+        "totalStates": 1000000,
+        "survivors": 0,
+        "deletionKilledPerCycle": 34,
+        "receiptSha256": "3c782f11ca0ab7260863ec77c4ee98e0a8bc83ac61250b75ace8dc743222969b"
+      },
+      "externalRailsUnchanged": [
+        "E3-HUMAN",
+        "E3-GOV",
+        "E4-DEPLOY"
+      ],
+      "nextGovernedAction": "C1-COMPAT-CONTRACTION",
+      "claimBoundary": "Repository E2 closure for F-06/C2 only; external rails and release/deployment decisions remain separate."
     }
   ]
 }

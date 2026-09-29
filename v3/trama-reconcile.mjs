@@ -41,8 +41,8 @@ export function validateReconcileContract(c){
  ck(human.technicalFileChoiceRequired===false&&human.classificationChoiceRequired===false&&human.retirementMechanismChoiceRequired===false,'PURPOSE_HUMAN_BURDEN');
  const pm=c?.purposeModelReceipt||{};ck(pm.cycles===10&&pm.casesPerCycle===10000000&&pm.totalCases===100000000&&pm.rootFailureFamilies===48&&pm.rootPairs===1128&&pm.survivors===0&&pm.deletionKilled===48&&pm.noNoveltyTail===10000&&pm.compressionTail===10000&&Array.isArray(pm.receipts)&&pm.receipts.length===10,'PURPOSE_MODEL_RECEIPT');
  ck((c?.reconciliationRules||[]).length===8,'RECON_RULES');
- const cp=c?.criticalPathPolicy||{};ck(cp.oneNextAction===true&&cp.next==='C2-DELIVERY-PROVENANCE','CRITICAL_PATH');
- ck(JSON.stringify(cp.reconciledPath)==='["C2-DELIVERY-PROVENANCE","C1-COMPAT-CONTRACTION","C3-CAPACITY-CONTRACT","C4-AI-EVAL-DRIFT"]','CRITICAL_PATH_ORDER');
+ const cp=c?.criticalPathPolicy||{};ck(cp.oneNextAction===true&&cp.next==='C1-COMPAT-CONTRACTION','CRITICAL_PATH');
+ ck(JSON.stringify(cp.reconciledPath)==='["C1-COMPAT-CONTRACTION","C3-CAPACITY-CONTRACT","C4-AI-EVAL-DRIFT"]','CRITICAL_PATH_ORDER');
  for(const level of ['global','intermediate','local'])ck((c?.dod?.[level]||[]).length>=12,'DOD_'+level.toUpperCase());
  const receipt=c?.localModelReceipt||{};ck(receipt.cases===3000000&&receipt.campaigns===8&&receipt.rootFailureFamilies===64&&receipt.rootPairs===2016&&receipt.survivors===0&&receipt.deletionKilled===64&&receipt.noNoveltyTail===100000&&receipt.novelFamilies===0,'MODEL_RECEIPT');
  return f;

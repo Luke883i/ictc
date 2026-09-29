@@ -86,7 +86,8 @@ export function validateCapabilityTruth({truth,releaseIdentity,documentationMani
    const e=ext.find(x=>x.id===id); check(e?.status==='external-evidence-required',`${id}: external status drift`); check(same(e?.gapIds,[gapId]),`${id}: gap mapping drift`); check(e?.rail===rail,`${id}: rail drift`);
  }
  const findings=Object.fromEntries((remediation?.findings||[]).map(f=>[f.id,f]));
- for(const id of ['F-06','F-13','F-15']) check(findings[id]?.requiredGrade==='E2'&&['open','in-remediation'].includes(findings[id]?.status),`${id}: E2 debt classification drift`);
+ check(findings['F-06']?.requiredGrade==='E2'&&findings['F-06']?.status==='resolved','F-06: E2 terminal delivery provenance drift');
+ for(const id of ['F-13','F-15']) check(findings[id]?.requiredGrade==='E2'&&['open','in-remediation'].includes(findings[id]?.status),`${id}: E2 debt classification drift`);
  for(const id of ['F-01','F-14','F-16']) check(findings[id]?.requiredGrade==='E3'&&findings[id]?.status==='blocked-external',`${id}: E3 boundary classification drift`);
  for(const id of ['F-02','F-04','F-05','F-07','F-10','F-12']) check(findings[id]?.requiredGrade==='E4'&&findings[id]?.status==='blocked-external',`${id}: E4 boundary classification drift`);
  const openText=JSON.stringify(open).toLowerCase(); for(const frag of truth?.staleOpenClaimFragments||[]) check(!openText.includes(String(frag).toLowerCase()),`stale/forbidden open claim present: ${frag}`);
@@ -108,7 +109,8 @@ export function selfTestCapabilityTruth(fixture){return [
  failMutation('a6-lineage-lost',fixture,x=>x.truth.s4Progress.completedExecutionUnits.pop()),
  failMutation('scope-skip',fixture,x=>x.truth.s4Progress.nextConvergenceSlice='REALITY-0'),
  failMutation('e3-human-boundary-lost',fixture,x=>x.truth.externalEvidenceBoundaries=x.truth.externalEvidenceBoundaries.filter(e=>e.rail!=='E3-HUMAN')),
- failMutation('e3-grade-laundered',fixture,x=>x.remediation.findings.find(f=>f.id==='F-16').requiredGrade='E2')
+ failMutation('e3-grade-laundered',fixture,x=>x.remediation.findings.find(f=>f.id==='F-16').requiredGrade='E2'),
+ failMutation('f06-reopened',fixture,x=>x.remediation.findings.find(f=>f.id==='F-06').status='in-remediation')
  ];}
 
 const direct=process.argv[1]&&pathToFileURL(path.resolve(process.argv[1])).href===import.meta.url;

@@ -300,9 +300,9 @@
     },
     {
       "id": "R4-C2",
-      "predicate": "audit F-06 remains in-remediation",
-      "expected": "C2-DELIVERY-PROVENANCE=in-progress",
-      "boundary": "SBOM/pins do not equal completed provenance/signing"
+      "predicate": "audit F-06 is resolved after exact-candidate provenance verification and post-merge ACT",
+      "expected": "C2-DELIVERY-PROVENANCE=done",
+      "boundary": "repository-bounded E2 terminality only; release, deployment and external assurance remain separate"
     },
     {
       "id": "R5-C3",
@@ -346,13 +346,12 @@
       "low"
     ],
     "reconciledPath": [
-      "C2-DELIVERY-PROVENANCE",
       "C1-COMPAT-CONTRACTION",
       "C3-CAPACITY-CONTRACT",
       "C4-AI-EVAL-DRIFT"
     ],
-    "next": "C2-DELIVERY-PROVENANCE",
-    "nextWhy": "F-06 is the highest-severity unresolved repository conditional and closes supply-chain/release provenance obligations needed before S4-A6-CLOSE",
+    "next": "C1-COMPAT-CONTRACTION",
+    "nextWhy": "C2/F-06 is terminal; C1 is first unresolved because F7 plus blocking compatibility/retirement residue remain before S4-A6-CLOSE",
     "oneNextAction": true
   },
   "dod": {
@@ -377,7 +376,7 @@
       "I01 C5 reconciles terminal repository-side only when source predicates validate",
       "I02 UIUX reconciles terminal repository-side while E3-HUMAN remains visible",
       "I03 C1 remains open while blocking compatibility/retirement debt exists",
-      "I04 C2 represents partial provenance state without laundering SBOM into signing/provenance completion",
+      "I04 C2 is terminal only after exact-candidate provenance verification plus post-merge ACT; external rails remain separate",
       "I05 C3 represents implemented benchmark substrate plus residual F-13 separately while E4 remains an external rail",
       "I06 C4 represents budget controls separately from eval/drift rollback",
       "I07 S4 remains blocked until every applicable conditional is terminal",
@@ -395,8 +394,8 @@
       "L02 reconciliation runtime derives source-backed expected state from current owners",
       "L03 convergence authority revision is GOV-WB6 and preserves PR141 baseline history",
       "L04 immutable PR183 preimage is recorded as reconciliation observation",
-      "L05 C5=done; UIUX serial=done; C1=todo; C2/C3/C4=in-progress",
-      "L06 next conditional is C2-DELIVERY-PROVENANCE; S4/S5 remain blocked",
+      "L05 C5=done; UIUX serial=done; C1=todo; C2=done; C3/C4=in-progress",
+      "L06 next conditional is C1-COMPAT-CONTRACTION; S4/S5 remain blocked",
       "L07 legacy path census has zero blocking-unclassified candidates",
       "L08 explicit content-level legacy sites are classified",
       "L09 generic phrases such as ora/prosegui/what next map to GLOBAL_ACT",

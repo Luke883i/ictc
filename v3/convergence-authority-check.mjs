@@ -12,11 +12,12 @@ const HERE=path.dirname(fileURLToPath(import.meta.url)),ROOT=path.resolve(HERE,'
 const BASELINE_MAIN='122b18e8bb672774a0380492eb27580c255f9458';
 const RECON_MAIN='a261ac1eda47dec254d824b373b5706f54483d0b';
 const POST214_MAIN='bc43a700d3667669ec4021c5334b66cebdaac751',POST214_HEAD='9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2';
+const POST216_MAIN='deabdf00916551a5ad0423ffbb3e56d6abe57168',POST216_HEAD='e12c596b5de18b7e6896820dfdb871fe4ba66a21';
 const A='docs/convergence/convergence-authority.json',W='docs/convergence/ICTC_CONVERGENCE_AUTHORITY_ACTIVE.xlsx';
 const CHAIN=['GOV-WB4','TRUTH-0','SCOPE-0','REALITY-0','DECIDE-0','UIUX-CONVERGE-0','S4-A6-CLOSE','S5-CANDIDATE-SEAL'];
 const STATES=['done','done','done','done','done','done','blocked','blocked'];
 const CS=['C1-COMPAT-CONTRACTION','C2-DELIVERY-PROVENANCE','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT','C5-SEMANTIC-OWNER-COMPRESSION'];
-const CS_STATES=['todo','in-progress','in-progress','in-progress','done'];
+const CS_STATES=['todo','done','in-progress','in-progress','done'];
 const HISTORY_RECONCILIATIONS=[['REC-A6-UX2-MAIN',132,'A6-UX2'],['REC-A6-UX3-MAIN',134,'A6-UX3'],['REC-A6-UX4-MAIN',135,'A6-UX4'],['REC-GOV-WB4-MAIN',136,'GOV-WB4'],['REC-TRUTH-0-MAIN',137,'TRUTH-0'],['REC-UIUX-SCOPE-0-MAIN',138,'UIUX-SCOPE-0'],['REC-SCOPE-0-MAIN',139,'SCOPE-0'],['REC-REALITY-0-MAIN',140,'REALITY-0']];
 const WORK_UNITS=['UXW-01-COMMON-SHELL-AND-MOUNT-COMPRESSION','UXW-02-HOME','UXW-03-PROCESS-HUB','UXW-04-RN-01','UXW-05-EC-01','UXW-06-AO-01','UXW-07-MC-01','UXW-08-AP-01','UXW-09-RC-01','UXW-10-AR-01','UXW-11-ADMIN','UXW-12-EPISTEMIC','UXW-13-PROOF','UXW-14-CROSS-SURFACE-FALSIFICATION'];
 const DECIDE_DIGEST='74190cb8e1053515cf763a2db73af6ef3777c9fa68db134295cfa71388fe99b2';
@@ -52,8 +53,8 @@ export function validateAuthority(a,ctx){
  ck(a?.reconciliationObservation?.mainSha===RECON_MAIN&&a?.reconciliationObservation?.mergedPr===183&&String(a?.reconciliationObservation?.meaning).includes('not a live pointer'),'RECON_OBSERVATION');
 
  const p=a?.planningState||{};
- ck(p.completedThrough==='UIUX-CONVERGE-0'&&p.nextSerialSlice==='S4-A6-CLOSE'&&p.nextSerialState==='blocked'&&p.nextConditionalSlice==='C2-DELIVERY-PROVENANCE'&&p.parentS4A6RemainsOpen===true&&p.noNewSerialBridge===true,'PLAN');
- ck(eq(p.criticalPath,['C2-DELIVERY-PROVENANCE','C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT']),'CRITICAL_PATH');
+ ck(p.completedThrough==='UIUX-CONVERGE-0'&&p.nextSerialSlice==='S4-A6-CLOSE'&&p.nextSerialState==='blocked'&&p.nextConditionalSlice==='C1-COMPAT-CONTRACTION'&&p.parentS4A6RemainsOpen===true&&p.noNewSerialBridge===true,'PLAN');
+ ck(eq(p.criticalPath,['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT']),'CRITICAL_PATH');
 
  ck(eq(a?.serialChain?.map(x=>x.id),CHAIN)&&eq(a?.serialChain?.map(x=>x.state),STATES),'CHAIN');
  ck(a?.serialChain?.every((x,i)=>x.order===i+1&&x.dependsOn===(i?CHAIN[i-1]:null)),'CHAIN_DEP');
@@ -73,7 +74,7 @@ export function validateAuthority(a,ctx){
  ck(a?.sourceOfTruth?.some(x=>x.id==='SOT-TRAJECTORY'&&String(x.rule).includes('derived audit')),'SOT_AUDIT');
 
  const debt=Object.fromEntries((a?.internalDebt||[]).map(x=>[x.id,x]));
- ck(debt['GOV-MERGE-TRUTH-LAG']?.status==='resolved'&&debt['UIUX-STRUCTURAL-COMPRESSION']?.status==='resolved-in-reconciliation'&&debt['F-13']?.status==='open'&&debt['GAP-020']?.status==='open'&&debt['GAP-021']?.status==='open','DEBT');
+ ck(debt['GOV-MERGE-TRUTH-LAG']?.status==='resolved'&&debt['UIUX-STRUCTURAL-COMPRESSION']?.status==='resolved-in-reconciliation'&&debt['F-06']?.status==='resolved'&&debt['F-13']?.status==='open'&&debt['F-15']?.status==='in-remediation'&&debt['GAP-020']?.status==='open'&&debt['GAP-021']?.status==='open','DEBT');
  ck(eq(a?.externalRails?.map(x=>x.id),['E3-HUMAN','E3-GOV','E4-DEPLOY'])&&a.externalRails.every(x=>x.state==='external'),'RAILS');
  const acts=a?.postMergeActs||[],act=acts.find(x=>x.id==='POST-214-ACT'),gov=act?.externalObservations?.e3Gov;
  ck(acts.length>=1&&act?.kind==='immutable-post-merge-act-observation'&&act?.mergedPr===214&&act?.mergeSha===POST214_MAIN&&act?.candidateHead===POST214_HEAD&&act?.planDelta===false&&act?.criticalPathChanged===false&&act?.serialBridgeCreated===false&&act?.nextGovernedAction==='C2-DELIVERY-PROVENANCE','POST214_ACT');
@@ -83,6 +84,15 @@ export function validateAuthority(a,ctx){
  ck(eq((gov?.repositoryRulesets||[]).map(x=>[x.id,x.enforcement,x.appliesToMain]),[[23649690,'active',false],[23649691,'active',false]])&&gov.repositoryRulesets.every(x=>eq(x.include,['refs/heads/GOV-01'])),'POST214_RULESETS');
  ck(String(gov?.conclusion||'').includes('organization-level')&&String(act?.claimBoundary||'').includes('does not create a live pointer'),'POST214_BOUNDARY');
  ck(act?.localFalsification?.trials===10000000&&act?.localFalsification?.operatorFamilies===29&&act?.localFalsification?.pairCoverage===406&&act?.localFalsification?.mathematicalPairs===406&&act?.localFalsification?.survivors===0&&act?.localFalsification?.deletionOracle?.cases===29&&act?.localFalsification?.deletionOracle?.killed===29&&act?.localFalsification?.deletionOracle?.survivors===0&&act?.localFalsification?.noNoveltyTail?.trials===100000&&act?.localFalsification?.noNoveltyTail?.survivors===0&&/^[0-9a-f]{64}$/.test(act?.localFalsification?.receiptSha256||''),'POST214_FALSIFICATION');
+ const act216=acts.find(x=>x.id==='POST-216-ACT'),d216=act216?.deliveryEvidence,t216=act216?.terminalTransition;
+ ck(acts.length>=2&&act216?.kind==='immutable-post-merge-terminal-reconciliation'&&act216?.mergedPr===216&&act216?.mergeSha===POST216_MAIN&&act216?.candidateHead===POST216_HEAD&&act216?.planDelta===true&&act216?.criticalPathChanged===true&&act216?.serialBridgeCreated===false&&act216?.nextGovernedAction==='C1-COMPAT-CONTRACTION','POST216_ACT');
+ ck(act216?.candidateCi?.total===99&&act216?.candidateCi?.success===95&&act216?.candidateCi?.skipped===4&&act216?.candidateCi?.failures===0&&act216?.candidateCi?.pending===0,'POST216_CANDIDATE_CI');
+ ck(act216?.postMergeMainCi?.total===58&&act216?.postMergeMainCi?.success===55&&act216?.postMergeMainCi?.skipped===3&&act216?.postMergeMainCi?.failures===0&&act216?.postMergeMainCi?.pending===0,'POST216_MAIN_CI');
+ ck(t216?.finding==='F-06'&&t216?.findingTo==='resolved'&&t216?.slice==='C2-DELIVERY-PROVENANCE'&&t216?.sliceTo==='done'&&t216?.nextConditionalSlice==='C1-COMPAT-CONTRACTION'&&eq(t216?.criticalPath,['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT']),'POST216_TRANSITION');
+ ck(d216?.workflowRunId===36638712167&&d216?.postMergeArtifactId===11065024699&&d216?.candidateArtifactId===11065107618&&d216?.requiredStepsPassed===true&&d216?.evidenceClass==='E2'&&d216?.repositoryBound===true,'POST216_DELIVERY');
+ ck(eq(act216?.externalRailsUnchanged,['E3-HUMAN','E3-GOV','E4-DEPLOY'])&&String(act216?.claimBoundary||'').includes('release/deployment decisions remain separate'),'POST216_BOUNDARY');
+ ck(act216?.localFalsification?.seedHex==='0x216c2c10'&&act216?.localFalsification?.trials===10000000&&act216?.localFalsification?.operatorFamilies===34&&act216?.localFalsification?.mathematicalPairs===561&&act216?.localFalsification?.observedPairs===561&&act216?.localFalsification?.survivors===0&&act216?.localFalsification?.deletionKilled===34&&act216?.localFalsification?.noNoveltyTail===1000000&&act216?.localFalsification?.novelFamilies===0&&/^[0-9a-f]{64}$/.test(act216?.localFalsification?.receiptSha256||''),'POST216_FALSIFICATION');
+ ck(act216?.localCycles?.cycles===10&&act216?.localCycles?.statesPerCycle===100000&&act216?.localCycles?.totalStates===1000000&&act216?.localCycles?.survivors===0&&act216?.localCycles?.deletionKilledPerCycle===34&&/^[0-9a-f]{64}$/.test(act216?.localCycles?.receiptSha256||''),'POST216_CYCLES');
  ck(a?.s5Seal?.enterpriseCandidate===false&&a?.s5Seal?.enterpriseReady===false,'NO_PROMOTION');
 
  const rec=a?.reconciliations||[];
@@ -100,12 +110,12 @@ export function validateAuthority(a,ctx){
 
  const expected=deriveExpectedReconciliation(ctx.root);
  ck(eq(expected.conditionals,Object.fromEntries(CS.map((id,i)=>[id,CS_STATES[i]]))),'RECON_EXPECTED_CONDITIONAL');
- ck(expected.serial['UIUX-CONVERGE-0']==='done'&&expected.planning.nextConditionalSlice==='C2-DELIVERY-PROVENANCE','RECON_EXPECTED_PLAN');
+ ck(expected.serial['UIUX-CONVERGE-0']==='done'&&expected.conditionals['C2-DELIVERY-PROVENANCE']==='done'&&expected.planning.nextConditionalSlice==='C1-COMPAT-CONTRACTION','RECON_EXPECTED_PLAN');
  const audit=reconcileAuthority(ctx.root,a);
  ck(audit.coherent===true,'RECON_COHERENCE',JSON.stringify(audit.debt));
 
  const cb=String(a?.claimBoundary||'').toLowerCase();
- for(const t of ['c1','c2/c3/c4','gap-020/gap-021','e3-human','e3-gov','e4-deploy','no enterprise-ready','representative-human-usability'])ck(cb.includes(t),'BOUNDARY',t);
+ for(const t of ['c2 are repository-terminal','c1 remains open','c3/c4 remain in-progress','gap-020/gap-021','e3-human','e3-gov','e4-deploy','no enterprise-ready','representative-human-usability'])ck(cb.includes(t),'BOUNDARY',t);
  return f;
 }
 
@@ -122,7 +132,7 @@ function run(root=ROOT){
   x=>x.planningState.nextSerialState='eligible',
   x=>x.serialChain.find(y=>y.id==='UIUX-CONVERGE-0').state='eligible',
   x=>x.conditionalSlices.find(y=>y.id==='C5-SEMANTIC-OWNER-COMPRESSION').state='todo',
-  x=>x.conditionalSlices.find(y=>y.id==='C2-DELIVERY-PROVENANCE').state='done',
+  x=>x.conditionalSlices.find(y=>y.id==='C2-DELIVERY-PROVENANCE').state='in-progress',
   x=>x.stateSemantics.postMergeReconciliationRequired=false,
   x=>x.reconciliationObservation.mainSha='future',
   x=>x.externalRails=x.externalRails.filter(r=>r.id!=='E3-HUMAN'),
@@ -131,6 +141,11 @@ function run(root=ROOT){
   x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').planDelta=true,
   x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').externalObservations.e3Gov.closesRail=true,
   x=>x.postMergeActs.find(y=>y.id==='POST-214-ACT').externalObservations.e3Gov.repositoryRulesets[0].appliesToMain=true,
+  x=>x.postMergeActs.find(y=>y.id==='POST-216-ACT').mergeSha='future',
+  x=>x.postMergeActs.find(y=>y.id==='POST-216-ACT').nextGovernedAction='C2-DELIVERY-PROVENANCE',
+  x=>x.postMergeActs.find(y=>y.id==='POST-216-ACT').terminalTransition.findingTo='in-remediation',
+  x=>x.postMergeActs.find(y=>y.id==='POST-216-ACT').deliveryEvidence.requiredStepsPassed=false,
+  x=>x.postMergeActs.find(y=>y.id==='POST-216-ACT').externalRailsUnchanged.pop(),
   x=>x.s5Seal.enterpriseCandidate=true,
   x=>x.reconciliations=x.reconciliations.filter(r=>r.id!=='REC-GOV-TRAMA-COMPASS-1-MAIN'),
   x=>x.projection.version='GOV-WB5-TRAJECTORY-141'

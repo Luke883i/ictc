@@ -10,7 +10,7 @@ assert.deepEqual(legacy.unknown,[]);
 assert.equal(legacy.contentMissing.length,0);
 assert.equal(expected.conditionals['C5-SEMANTIC-OWNER-COMPRESSION'],'done');
 assert.equal(expected.serial['UIUX-CONVERGE-0'],'done');
-assert.equal(expected.planning.nextConditionalSlice,'C2-DELIVERY-PROVENANCE');
+assert.equal(expected.planning.nextConditionalSlice,'C1-COMPAT-CONTRACTION');
 
 const CAMPAIGNS=[
  ['L0-FERRO',['dependency-drift','filesystem-drift','process-boundary-drift','entrypoint-drift','runtime-version-drift','clean-host-drift','temp-artifact-drift','physical-proof-launder']],
@@ -34,7 +34,7 @@ const realMutants=[
  a=>a.planningState.nextSerialState='eligible',
  a=>a.serialChain.find(x=>x.id==='UIUX-CONVERGE-0').state='eligible',
  a=>a.conditionalSlices.find(x=>x.id==='C5-SEMANTIC-OWNER-COMPRESSION').state='todo',
- a=>a.conditionalSlices.find(x=>x.id==='C2-DELIVERY-PROVENANCE').state='done',
+ a=>a.conditionalSlices.find(x=>x.id==='C2-DELIVERY-PROVENANCE').state='in-progress',
  a=>a.conditionalSlices.find(x=>x.id==='C3-CAPACITY-CONTRACT').state='done',
  a=>a.conditionalSlices.find(x=>x.id==='C4-AI-EVAL-DRIFT').state='done',
  a=>a.reconciliationObservation.mainSha='future',
