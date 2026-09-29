@@ -64,14 +64,26 @@ Elenca i test realmente eseguiti sulla exact head. `skipped`, verde di un commit
 
 Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni server-side di GitHub o deployment non vanno dichiarate verificate senza osservazione esterna.
 
-## Lossless semantics 0.11
+## Deterministic delivery channel (TRAMA + lossless semantics 0.11)
 
+- Intent digest: `<sha256 from TRAMA intent card>`
+- Exact preimage: `<base/candidate preimage SHA>`
+- Semantic neighborhood / owner set: `<derived nodes + existing owners>`
+- Target predicates: `<what must become true>`
+- Negative predicates: `<legacy/parallel-authority states that must stay false>`
+- Material runtime delta: `<files/behaviour changed | N/A only for non-runtime intent>`
+- Witness receipt: `<exact-head oracle/receipt refs | BLOCKED>`
+- Closure verdict: `<IMPLEMENTED_RUNTIME_PASS|RETIRED_AS_LEGACY|EXTERNAL_EVIDENCE|BLOCKED_ATOMIC_PROVENANCE|OPEN>`
+- Exact postimage: `<PR HEAD SHA>`
 - Lossless semantics disposition: `<UPDATED|NO_SEMANTIC_DELTA>`
 - Current semantic input fingerprint: `<value from TRAMA>`
-- Canonical sequence owner: `docs/convergence/convergence-authority.json#planningState`
-- [ ] TRAMA ha valutato `losslessSemantics 0.11` sulla candidate state; se il fingerprint è cambiato, `docs/ENGINEERING_COMPASS.md` è stato rigenerato.
-- [ ] `NO_SEMANTIC_DELTA` è usato solo con fingerprint invariato; nessuna nuova SOT, presentation authority, roadmap cursor, workflow o gate è stata creata per soddisfare il profilo.
-- [ ] Q1/Q2 restano evidence projection generated e implementation absorption 656/656 resta distinta dalla forensic atomic closure.
+- One next action after ACT: `<slice|STOP|BLOCKED>`
+
+- [ ] L'utente ha fornito solo intento/accettazione materiale; nessuna scelta tecnica necessaria è stata scaricata sull'utente.
+- [ ] Owner esistenti riusati; nessuna nuova SOT, presentation authority, roadmap cursor, workflow o gate creati per chiudere la slice.
+- [ ] Se l'intento è runtime, marker/CSS hiding/copy-only non sostituiscono il delta materiale; per UI/UX visibile vale `ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND`.
+- [ ] Nessuna closure è inferita: required bindings e witness sono exact-head bound; `NO_SEMANTIC_DELTA` richiede fingerprint invariato.
+- [ ] Q1/Q2 restano evidence projection generated; implementation absorption 656/656 resta distinta dalla forensic atomic closure.
 
 ## GOV-01F — Free/private compensating governance
 
