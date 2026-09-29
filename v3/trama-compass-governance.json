@@ -236,5 +236,167 @@
     "compressionNoFurtherLossTail": 10000,
     "deletionOracleRequired": true,
     "semanticMutationIsPhysicalProof": false
+  },
+  "losslessSemantics": {
+    "schemaVersion": "0.11",
+    "id": "ICTC-LOSSLESS-SEMANTICS-0.11",
+    "sourceIteration": "11diN",
+    "classification": "trama-derived-zero-authority-enterprise-candidate-convergence-profile",
+    "authorityEffect": "NONE",
+    "createsNewSot": false,
+    "createsNewRoadmapCursor": false,
+    "globalNReached": false,
+    "canonicalSequenceOwner": "docs/convergence/convergence-authority.json#planningState",
+    "enterpriseTargetOwner": "v3/trama-enterprise-dod.json",
+    "projection": "docs/ENGINEERING_COMPASS.md",
+    "projectionAuthoritative": false,
+    "sourcePreimage": {
+      "visibleCutoverMdSha256": "4a10870e73187979df7ccf1d5bcf05afe32c8f2eaa25589c8acf9d24c4976a3c",
+      "sourceAtoms": 108,
+      "absorbedAtoms": 108,
+      "coverage": 1
+    },
+    "visibleCutover": {
+      "adjustedFormula": [
+        "DELTA_material",
+        "TARGET",
+        "!LEGACY",
+        "EPOCH_BOUND",
+        "WITNESS_BOUND"
+      ],
+      "runtimeResponsibilities": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "closureResponsibilities": [
+        "Q1",
+        "Q2"
+      ],
+      "materializationAxes": [
+        "target phenotype contract",
+        "owner-local realization",
+        "differential closure"
+      ],
+      "implementationAbsorption": "656/656 phenotype/property closure with F->UXM and runtime witness coverage",
+      "forensicAtomicClosure": "BLOCKED until original atomic bodies+witness binding or explicit superseding atomic ledger",
+      "closureNotionsMustRemainDistinct": true,
+      "budgets": {
+        "visibleFactsPerRecordMax": 3,
+        "visiblePrimaryActionsPerRecordMax": 1,
+        "initialRegistryPerClusterMax": 6,
+        "mobileSemanticLayersMax": 3,
+        "interactiveTargetPxMin": 44,
+        "pageHorizontalOverflowPxMax": 0
+      },
+      "surfaceTargets": {
+        "Home": "useful decision/work dominates brand/product exposition; next decision + bounded worklist dominate above fold",
+        "Processes": "retain row-list architecture; compress purpose/action geometry rather than rewrite it",
+        "Procedures": "keep 3-fact/1-primary primitives; remove first-plane support/method/card-wall weight and evidence-action competition",
+        "Onboarding": "guided fact -> scope -> decision -> work -> evidence path using existing business paths",
+        "Admin": "blocker/impact/fix before provider/IdP/configuration detail",
+        "Proof": "reconstruction question -> decisions/evidence -> supporting method/technical detail",
+        "EP": "what/why/changed/missing reconstruction before graph/lattice terminology",
+        "Mobile": "contract semantic layers; overflow-x:auto + stacking cannot be primary adaptation"
+      }
+    },
+    "evidence": {
+      "q1Generated": true,
+      "q2Generated": true,
+      "q1Fields": [
+        "preSha",
+        "postSha",
+        "runtimeAssetEpoch",
+        "role",
+        "viewport",
+        "state",
+        "DOM order",
+        "firstActionY",
+        "primaryCTA count",
+        "facts count",
+        "initial registry count",
+        "semantic layer count",
+        "overflow px",
+        "tooltip-critical count",
+        "legacy markers",
+        "visible-text digest",
+        "screenshot sha256"
+      ],
+      "q2Statuses": [
+        "IMPLEMENTED_RUNTIME_PASS",
+        "RETIRED_AS_LEGACY",
+        "EXTERNAL_EVIDENCE",
+        "BLOCKED_ATOMIC_PROVENANCE"
+      ],
+      "sourceCampaignEvidenceClass": "SOURCE-ASSERTED / NOT INDEPENDENTLY REPLAYED",
+      "sourceCampaign": {
+        "trials": 1000000,
+        "operatorFamilies": 26,
+        "feasiblePairs": 302,
+        "materialViolationFamilies": 31,
+        "lastNewMaterialFamilyMutation": 182,
+        "noNoveltyTail": 10000,
+        "unsafeSurvivors": 0,
+        "minimalityR": "5/5",
+        "minimalityRQ": "7/7"
+      },
+      "absorptionFalsification": {
+        "trials": 10000000,
+        "rootFailureFamilies": 49,
+        "pairwise": 1176,
+        "survivors": 0,
+        "claimBoundary": "model-based semantic-loss/authority-inflation falsification; not CI/browser/human/deployment proof"
+      }
+    },
+    "updatePolicy": {
+      "everyMaterialPrMustEvaluate": true,
+      "semanticInputFingerprintRequired": true,
+      "regenerateProjectionOnFingerprintChange": true,
+      "noSemanticDeltaRequiresUnchangedFingerprint": true,
+      "dispositions": [
+        "UPDATED",
+        "NO_SEMANTIC_DELTA"
+      ],
+      "targetOwnerRefsIncluded": true,
+      "generatedProjectionOnly": true,
+      "trackedInputs": [
+        "AGENTS.md",
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "docs/START_HERE.md",
+        "docs/authority-matrix.yaml",
+        "docs/documentation-manifest.json",
+        "docs/convergence/convergence-authority.json",
+        "v3/trama-compass-governance.json",
+        "v3/trama-engineering.mjs",
+        "v3/trama-engineering-check.mjs",
+        "v3/trama-engineering-saturation.mjs",
+        "v3/trama-enterprise-dod.json",
+        "v3/semantic-owner-contract.json",
+        "v3/as-is-convergence-contract.json",
+        "v3/gaps.json",
+        "v3/uiux-656-absorption-contract.json",
+        "v3/public/ui/semantic-composition-model.js",
+        "v3/public/ui/active-experience.js",
+        "v3/public/ui/experience-constitution.js",
+        "v3/public/ui/experience-lifecycle.js",
+        "v3/public/ui/stable-shell.js",
+        "v3/public/ui/operational-surface-a6-ux3.js",
+        "v3/public/ui/procedure-executive-harmonization-1-5.js",
+        "v3/public/ui/admin-workspace-3-2.js",
+        "v3/public/ui/proof-workspace-3-2.js",
+        "v3/public/ui/epistemic-workspace-3-2.js",
+        "v3/public/ui/product-copy.js",
+        "v3/public/ui/procedure-ui-ux-1-6.js",
+        "v3/public/ui/procedure-sequential-dom.js",
+        "v3/public/ui/procedure-sequential-ao-mc.js",
+        "v3/public/workspace-chrome-3-3.css",
+        "v3/public/procedure-record-primitives-2-4.css",
+        "v3/public/semantic-workspace-closure-3-2-1.css"
+      ]
+    },
+    "stopCondition": "Reopen visible-cutover design on implementation/browser survivor, new surface phenotype, owner/authority conflict, or recovery of the missing atomic source artifact.",
+    "claimBoundary": "Zero-authority derived convergence profile. It cannot replace canonical owners, change the convergence sequence, promote Enterprise Candidate, close E3-HUMAN/E3-GOV/E4-DEPLOY, or turn model mutation into browser/human/deployment evidence."
   }
 }

@@ -24,3 +24,11 @@ Nessuna scelta tecnica richiesta. Esprimi solo intento di prodotto o accettazion
 **Blocker esterni:** E3-HUMAN, E3-GOV, E4-DEPLOY.
 
 **Incertezza:** GitHub server-side, persone rappresentative e deployment richiedono evidenza osservata sul relativo rail; questa proiezione diventa stale quando mutano gli owner sorgente.
+
+## LOSSLESS SEMANTICS 0.11
+- **Profilo:** ICTC-LOSSLESS-SEMANTICS-0.11 · authority-zero · global N non raggiunta.
+- **Fingerprint input semantici:** db9a244f6b1170fb su 47 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
+- **Sequenza canonica combinata:** C2-DELIVERY-PROVENANCE -> C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT · owner: docs/convergence/convergence-authority.json#planningState. 0.11 non possiede il cursore.
+- **Visible cutover:** ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND; R1-R5 restano responsabilità di falsificazione, compresse negli owner esistenti.
+- **Closure:** Q1/Q2 sono evidenza generata; implementation absorption 656/656 resta distinta dalla forensic atomic closure bloccata finché manca provenance atomica.
+- **PR contract:** ogni PR materiale valuta il profilo; esiti ammessi UPDATED o NO_SEMANTIC_DELTA.

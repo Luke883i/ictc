@@ -64,6 +64,15 @@ Elenca i test realmente eseguiti sulla exact head. `skipped`, verde di un commit
 
 Descrivi compatibilità, migrazioni, rischio residuo e rollback. Le impostazioni server-side di GitHub o deployment non vanno dichiarate verificate senza osservazione esterna.
 
+## Lossless semantics 0.11
+
+- Lossless semantics disposition: `<UPDATED|NO_SEMANTIC_DELTA>`
+- Current semantic input fingerprint: `<value from TRAMA>`
+- Canonical sequence owner: `docs/convergence/convergence-authority.json#planningState`
+- [ ] TRAMA ha valutato `losslessSemantics 0.11` sulla candidate state; se il fingerprint è cambiato, `docs/ENGINEERING_COMPASS.md` è stato rigenerato.
+- [ ] `NO_SEMANTIC_DELTA` è usato solo con fingerprint invariato; nessuna nuova SOT, presentation authority, roadmap cursor, workflow o gate è stata creata per soddisfare il profilo.
+- [ ] Q1/Q2 restano evidence projection generated e implementation absorption 656/656 resta distinta dalla forensic atomic closure.
+
 ## GOV-01F — Free/private compensating governance
 
 - [ ] exact PR HEAD SHA osservato prima del merge
