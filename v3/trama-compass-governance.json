@@ -254,7 +254,11 @@
       "visibleCutoverMdSha256": "4a10870e73187979df7ccf1d5bcf05afe32c8f2eaa25589c8acf9d24c4976a3c",
       "sourceAtoms": 108,
       "absorbedAtoms": 108,
-      "coverage": 1
+      "coverage": 1,
+      "sourceLines": 150,
+      "immutable": true,
+      "baselineMainSha": "b284b308841d4b179b410746614a764c3466db16",
+      "sourceBasis": "semantic bundle v0.10 + controlled UI/UX DOCX + exact-main source contracts"
     },
     "visibleCutover": {
       "adjustedFormula": [
@@ -293,12 +297,12 @@
       },
       "surfaceTargets": {
         "Home": "useful decision/work dominates brand/product exposition; next decision + bounded worklist dominate above fold",
-        "Processes": "retain row-list architecture; compress purpose/action geometry rather than rewrite it",
-        "Procedures": "keep 3-fact/1-primary primitives; remove first-plane support/method/card-wall weight and evidence-action competition",
-        "Onboarding": "guided fact -> scope -> decision -> work -> evidence path using existing business paths",
-        "Admin": "blocker/impact/fix before provider/IdP/configuration detail",
-        "Proof": "reconstruction question -> decisions/evidence -> supporting method/technical detail",
-        "EP": "what/why/changed/missing reconstruction before graph/lattice terminology",
+        "Processes": "retain current row-list architecture; compress purpose/action geometry rather than rewrite it",
+        "Procedures": "keep 3-fact/1-primary primitives; remove remaining first-plane support/method/card-wall weight and evidence-action competition",
+        "Onboarding": "replace five explanatory text steps with a guided fact -> scope -> decision -> work -> evidence path using existing business paths",
+        "Admin": "task-first is structural, not only a heading; blocker/impact/fix before provider/IdP/configuration detail",
+        "Proof": "current facts>method>decisions ordering is incompatible; use reconstruction question -> decisions/evidence -> supporting method/technical detail",
+        "EP": "promote what/why/changed/missing reconstruction and results; graph/lattice modes become progressive tools",
         "Mobile": "contract semantic layers; overflow-x:auto + stacking cannot be primary adaptation"
       }
     },
@@ -340,7 +344,18 @@
         "noNoveltyTail": 10000,
         "unsafeSurvivors": 0,
         "minimalityR": "5/5",
-        "minimalityRQ": "7/7"
+        "minimalityRQ": "7/7",
+        "seedHex": "0x9e3779b9",
+        "seedUint32": 2654435769,
+        "mathematicalPairs": 325,
+        "mutuallyExclusivePairs": 23,
+        "mutantsKilled": 1000000,
+        "cleanCandidateScenarios": 100000,
+        "cleanCandidateFailures": 0,
+        "minimalityRSubsets": 31,
+        "minimalityRQSubsets": 127,
+        "additionalRuntimeResponsibilitiesAfterTail": 0,
+        "scopeBoundary": "Deterministic semantic runtime-model evidence; not one million Chromium sessions or representative-human usability evidence."
       },
       "absorptionFalsification": {
         "trials": 10000000,
@@ -348,6 +363,16 @@
         "pairwise": 1176,
         "survivors": 0,
         "claimBoundary": "model-based semantic-loss/authority-inflation falsification; not CI/browser/human/deployment proof"
+      },
+      "phenotypeClosureGroups": [
+        "G01-G12",
+        "E01-E12"
+      ],
+      "witnessSemantics": {
+        "screenshotRole": "human-readable witness",
+        "semanticVectorRole": "stable oracle",
+        "q2MappingRule": "each F-ID preserves UXM mapping and attaches mechanism-level runtime verdict plus affected witness receipt refs",
+        "missingAtomicResolvedForbidden": true
       }
     },
     "updatePolicy": {
@@ -397,6 +422,146 @@
       ]
     },
     "stopCondition": "Reopen visible-cutover design on implementation/browser survivor, new surface phenotype, owner/authority conflict, or recovery of the missing atomic source artifact.",
-    "claimBoundary": "Zero-authority derived convergence profile. It cannot replace canonical owners, change the convergence sequence, promote Enterprise Candidate, close E3-HUMAN/E3-GOV/E4-DEPLOY, or turn model mutation into browser/human/deployment evidence."
+    "claimBoundary": "Zero-authority derived convergence profile. It cannot replace canonical owners, change the convergence sequence, promote Enterprise Candidate, close E3-HUMAN/E3-GOV/E4-DEPLOY, or turn model mutation into browser/human/deployment evidence.",
+    "semanticCoverage": {
+      "sourceLines": 150,
+      "sourceAtoms": 108,
+      "canonicalNodes": 18,
+      "canonicalNodesReached": 18,
+      "numericInvariants": 28,
+      "q1FieldCount": 17,
+      "q2StatusCount": 4,
+      "surfaceTargetCount": 8,
+      "concreteFileLandings": 18,
+      "profileSelfSufficient": true
+    },
+    "responsibilities": {
+      "R1": {
+        "name": "SURFACE_SEMANTIC_CONTRACT_V2",
+        "obligation": "Extend existing semantic composition/product contract; no new renderer/SOT.",
+        "invariants": [
+          "first-plane role/order",
+          "primary-action budget",
+          "facts budget",
+          "initial-list budget",
+          "critical-inline requirement",
+          "mobile layer budget",
+          "allowed technical depth",
+          "forbidden legacy phenotype"
+        ],
+        "trackLandings": [
+          "v3/public/ui/semantic-composition-model.js",
+          "v3/product-contract.json",
+          "v3/uiux-656-absorption-contract.json"
+        ]
+      },
+      "R2": {
+        "name": "LOCAL_FIRST_PLANE_CUTOVER",
+        "obligation": "Existing local owners implement first-plane phenotype; no global post-render rewriter.",
+        "invariants": [
+          "Shell/Home: useful decision/work dominates brand/product exposition",
+          "Process catalogue: seven compare-first rows",
+          "Procedures: work before method/context",
+          "Onboarding: actual scenario/action path, not text manifesto",
+          "Admin: blocker/impact/fix before provider/IdP/configuration detail",
+          "Proof: reconstruction question/decision/evidence before method/taxonomy",
+          "EP: what/why/changed/missing reconstruction before lattice terminology"
+        ],
+        "trackLandings": [
+          "v3/public/ui/stable-shell.js",
+          "v3/public/ui/operational-surface-a6-ux3.js",
+          "v3/public/ui/procedure-executive-harmonization-1-5.js",
+          "v3/public/ui/admin-workspace-3-2.js",
+          "v3/public/ui/proof-workspace-3-2.js",
+          "v3/public/ui/epistemic-workspace-3-2.js",
+          "v3/public/ui/product-copy.js"
+        ]
+      },
+      "R3": {
+        "name": "RUNTIME_WORKSET_BUDGETS",
+        "obligation": "Density semantics live in runtime/DOM, not CSS hiding.",
+        "invariants": [
+          "<=3 visible facts per record",
+          "<=1 visible primary action per record",
+          "evidence/secondary actions progressive",
+          "initial registry <=6 per cluster with explicit reveal",
+          "actionable work may never be hidden by triage"
+        ],
+        "trackLandings": [
+          "v3/public/ui/procedure-ui-ux-1-6.js",
+          "v3/public/ui/procedure-sequential-dom.js",
+          "v3/public/ui/procedure-sequential-ao-mc.js"
+        ]
+      },
+      "R4": {
+        "name": "VIEWPORT_SEMANTIC_CONTRACTION",
+        "obligation": "Mobile is a different semantic budget of the same owner, not a stacked desktop.",
+        "invariants": [
+          "zero page horizontal overflow",
+          "<=3 simultaneous semantic layers",
+          ">=44px interactive targets",
+          "reduced facts/actions/context versus desktop",
+          "no second mobile presentation authority"
+        ],
+        "trackLandings": [
+          "v3/public/workspace-chrome-3-3.css",
+          "v3/public/procedure-record-primitives-2-4.css",
+          "v3/public/semantic-workspace-closure-3-2-1.css"
+        ]
+      },
+      "R5": {
+        "name": "CONVERGENCE_AND_LEGACY_RETIREMENT",
+        "obligation": "Reuse existing experience lifecycle; retire touched legacy only after exact-head witnesses.",
+        "invariants": [
+          "negative browser/static oracles remain",
+          "late rewrite that restores legacy is a hard failure",
+          "prefer no lifecycle code change unless a real late-owner counterexample requires it"
+        ],
+        "trackLandings": [
+          "v3/public/ui/experience-lifecycle.js",
+          "v3/public/ui/active-experience.js"
+        ]
+      },
+      "Q1": {
+        "name": "EXACT_DIFFERENTIAL_WITNESS_RECEIPT",
+        "obligation": "Generated exact pre/post/epoch semantic-vector witness; screenshot is human-readable witness and semantic vector is stable oracle.",
+        "invariants": [
+          "reuse/extend existing browser suites",
+          "bind witness to preimage and postimage SHA"
+        ],
+        "trackLandings": []
+      },
+      "Q2": {
+        "name": "FINDING_CLOSURE_LEDGER",
+        "obligation": "Generated closure projection over existing F->UXM mapping; each F-ID keeps mechanism verdict and witness refs; missing atomic body is never inferred RESOLVED.",
+        "invariants": [
+          "status vocabulary remains typed",
+          "projection has no runtime write authority"
+        ],
+        "trackLandings": []
+      }
+    },
+    "rejectedAlternatives": [
+      "source/marker-only -> fails visible cutover",
+      "CSS-only -> fails interaction/order/dynamic density",
+      "global rewriter/new UI root -> rejected as parallel presentation authority",
+      "local cutover without retirement -> legacy survives",
+      "local cutover without runtime budgets -> dynamic density survives",
+      "local cutover without mobile contraction -> mobile remains stacked/overflow-prone",
+      "complete local-owner lattice -> zero modeled target failure"
+    ],
+    "reflections": [
+      "Evidence boundary: atomic historical proof cannot be fabricated; split implementation absorption from forensic atomic closure.",
+      "Scope compression: visible cutover is P0; regulatory packs and new human workflow semantics are not required in the same slice.",
+      "Authority: use existing local owners; reject a global UI rewriter and new composition root.",
+      "Contract: one existing semantic-composition contract carries order/budgets/viewport/legacy predicates.",
+      "Dynamic work: record and registry density requires runtime windowing, not CSS hiding.",
+      "Specialized surfaces: onboarding/Admin/Proof/EP need interaction/order changes, not copy markers.",
+      "Mobile and retirement: mobile contraction and negative legacy closure are independently falsifiable responsibilities.",
+      "Proof rail: visible delta needs exact epoch + differential witness + closure ledger; CI/source presence alone cannot certify adjustment."
+    ],
+    "immutableSemanticCore": true,
+    "semanticCoreRevision": "0.11.1",
+    "semanticCoreFingerprint": "5fb4ef2f537775a3"
   }
 }
