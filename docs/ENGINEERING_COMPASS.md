@@ -7,7 +7,7 @@ Portare ICTC dallo stato osservato a Enterprise Candidate ricalcolando product t
 
 ## DOVE SIAMO
 - **Sintesi:** 5 aree repository aperte; 5 rail esterni; repository-purpose census attivo; next C1-COMPAT-CONTRACTION.
-- **Orizzonti:** Locale 11 domini TRAMA; Intermedio 16 assi; Globale ENTERPRISE_CANDIDATE; 7 gap non-terminali; 0 debiti di riconciliazione; critical path C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT; external E3-HUMAN, E3-GOV, E4-DEPLOY
+- **Orizzonti:** Locale 11 domini TRAMA; Intermedio 16 assi; Globale ENTERPRISE_CANDIDATE; 9 gap non-terminali; 0 debiti di riconciliazione; critical path C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT; external E3-HUMAN, E3-GOV, E4-DEPLOY
 - **Governance:** GOV-WB6
 
 ## COSA FACCIO ADESSO
