@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { appendFile, copyFile, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { appendFile, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,7 +56,7 @@ async function prepare(){
  const provenancePath=path.join(ARTIFACTS,'delivery-provenance.json');await writeFile(provenancePath,JSON.stringify(provenance,null,2)+'\n');const prov=await fileDigest(provenancePath);
  const checksums=`${bundle.sha256}  ${bundleName}\n${sbomMeta.sha256}  ictc-sbom.cdx.json\n${prov.sha256}  delivery-provenance.json\n`;await writeFile(path.join(ARTIFACTS,'delivery-checksums.sha256'),checksums);
  await output('bundle_path',bundlePath);await output('bundle_name',bundleName);await output('bundle_sha256',bundle.sha256);await output('sbom_path',path.join(ARTIFACTS,'ictc-sbom.cdx.json'));
- console.log(JSON.stringify({ok:true,mode:'prepare',candidateSha:executionSha,treeSha,bundle,{bundle,sbom:sbomMeta,provenance:prov}));
+ console.log(JSON.stringify({ok:true,mode:'prepare',candidateSha:executionSha,treeSha,bundle,sbom:sbomMeta,provenance:prov}));
 }
 
 async function finalize(){
