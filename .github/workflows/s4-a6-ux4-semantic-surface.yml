@@ -43,6 +43,10 @@ jobs:
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
       - name: A6-UX4 semantic source contract
         run: node v3/s4-a6-ux4-semantic-surface-check.mjs
+      - name: Compliance ontology runtime source contract
+        run: node v3/compliance-ontology-runtime-check.mjs
+      - name: Compliance ontology runtime falsification 10,000,000
+        run: node v3/compliance-ontology-runtime-saturation-10m.mjs
       - name: UIUX onto-epistemic convergence 3 source contract
         run: node v3/uiux-ontoepistemic-convergence-3-check.mjs
       - name: UIUX onto-epistemic convergence 3 falsification 10,000,000
@@ -98,6 +102,10 @@ jobs:
           fi
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           exit "$rc"
+      - name: Compliance ontology exact-head browser
+        env:
+          ICTC_COMPLIANCE_MODE: returning
+        run: python -u v3/browser-compliance-ontology-runtime.py
       - name: Parse A6-UX4 browser failure
         id: ux4_diag
         if: steps.ux4_browser.outcome == 'failure'
