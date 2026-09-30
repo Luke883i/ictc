@@ -8,14 +8,14 @@ const expected=deriveExpectedReconciliation();
 assert.equal(expected.conditionals['C5-SEMANTIC-OWNER-COMPRESSION'],'done');
 assert.equal(expected.serial['UIUX-CONVERGE-0'],'done');
 assert.equal(expected.conditionals['C1-COMPAT-CONTRACTION'],'todo');
-assert.equal(expected.conditionals['C2-DELIVERY-PROVENANCE'],'in-progress');
+assert.equal(expected.conditionals['C2-DELIVERY-PROVENANCE'],'done');
 assert.equal(expected.conditionals['C3-CAPACITY-CONTRACT'],'in-progress');
 assert.equal(expected.conditionals['C4-AI-EVAL-DRIFT'],'in-progress');
 assert.equal(expected.planning.completedThrough,'UIUX-CONVERGE-0');
 assert.equal(expected.planning.nextSerialSlice,'S4-A6-CLOSE');
 assert.equal(expected.planning.nextSerialState,'blocked');
-assert.equal(expected.planning.nextConditionalSlice,'C2-DELIVERY-PROVENANCE');
-assert.deepEqual(expected.planning.criticalPath,['C2-DELIVERY-PROVENANCE','C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT']);
+assert.equal(expected.planning.nextConditionalSlice,'C1-COMPAT-CONTRACTION');
+assert.deepEqual(expected.planning.criticalPath,['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT']);
 assert.deepEqual(expected.externalRails,['E3-HUMAN','E3-GOV','E4-DEPLOY']);
 assert.equal(expected.evidence.c5Ready,true);
 assert.equal(expected.evidence.uiuxReady,true);
@@ -56,7 +56,7 @@ assert.equal(audit.coherent,true,JSON.stringify(audit.debt));
 assert.deepEqual(audit.debt,[]);
 const action=nextGovernedAction();
 assert.equal(action.state,'READY_TO_PLAN');
-assert.equal(action.slice,'C2-DELIVERY-PROVENANCE');
+assert.equal(action.slice,'C1-COMPAT-CONTRACTION');
 
 const [authorityRaw,registry,compass,development,testing,agents]=await Promise.all([
  readFile(new URL('../docs/convergence/convergence-authority.json',import.meta.url),'utf8'),
@@ -70,11 +70,11 @@ const authority=JSON.parse(authorityRaw);
 assert.equal(authority.governanceRevision,'GOV-WB6');
 assert.equal(authority.reconciliationObservation?.mergedPr,183);
 assert.equal(authority.reconciliationObservation?.mainSha,contract.observedPreimage.mainSha);
-const act=authority.postMergeActs?.find(x=>x.id==='POST-214-ACT');assert.equal(act?.mergedPr,214);assert.equal(act?.mergeSha,'bc43a700d3667669ec4021c5334b66cebdaac751');assert.equal(act?.candidateHead,'9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2');assert.equal(act?.planDelta,false);assert.equal(act?.nextGovernedAction,'C2-DELIVERY-PROVENANCE');assert.equal(act?.externalObservations?.e3Gov?.status,'OPEN_OBSERVED_NEGATIVE');assert.equal(act?.externalObservations?.e3Gov?.closesRail,false);
+const act=authority.postMergeActs?.find(x=>x.id==='POST-214-ACT');assert.equal(act?.mergedPr,214);assert.equal(act?.mergeSha,'bc43a700d3667669ec4021c5334b66cebdaac751');assert.equal(act?.candidateHead,'9e8f5a0fa6bbaf925db3bcc5a591c63d41c205f2');assert.equal(act?.planDelta,false);assert.equal(act?.nextGovernedAction,'C2-DELIVERY-PROVENANCE');assert.equal(act?.externalObservations?.e3Gov?.status,'OPEN_OBSERVED_NEGATIVE');assert.equal(act?.externalObservations?.e3Gov?.closesRail,false);const act216=authority.postMergeActs?.find(x=>x.id==='POST-216-ACT');assert.equal(act216?.mergedPr,216);assert.equal(act216?.mergeSha,'deabdf00916551a5ad0423ffbb3e56d6abe57168');assert.equal(act216?.candidateHead,'e12c596b5de18b7e6896820dfdb871fe4ba66a21');assert.equal(act216?.terminalTransition?.findingTo,'resolved');assert.equal(act216?.terminalTransition?.sliceTo,'done');assert.equal(act216?.deliveryEvidence?.requiredStepsPassed,true);assert.equal(act216?.nextGovernedAction,'C1-COMPAT-CONTRACTION');
 for(const gate of ['v3/trama-reconcile-check.mjs','v3/trama-reconcile-saturation.mjs'])assert.equal(registry.split("'"+gate+"'").length-1,1,gate);
 assert.ok(registry.indexOf("'v3/trama-engineering-saturation.mjs'")<registry.indexOf("'v3/trama-reconcile-check.mjs'"));
 assert.ok(registry.indexOf("'v3/trama-reconcile-check.mjs'")<registry.indexOf("'v3/c3-capacity-contract-check.mjs'"));
-for(const token of ['GOV-WB6','C2-DELIVERY-PROVENANCE','Locale','Intermedio','Globale','E3-HUMAN','E3-GOV','E4-DEPLOY'])assert.ok(compass.includes(token),'Compass '+token);
+for(const token of ['GOV-WB6','C1-COMPAT-CONTRACTION','Locale','Intermedio','Globale','E3-HUMAN','E3-GOV','E4-DEPLOY'])assert.ok(compass.includes(token),'Compass '+token);
 for(const token of ['GOV-TRAMA-RECONCILE-1','GLOBAL_ACT','ora che si fa'])assert.ok(agents.includes(token)||development.includes(token)||testing.includes(token),'docs '+token);
 assert.equal([agents,development,testing].some(body=>body.includes('C2-DELIVERY-PROVENANCE')),false,'operating governance docs must not shadow the live next conditional slice');
 

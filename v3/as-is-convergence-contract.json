@@ -80,10 +80,12 @@
       "F-03",
       "F-08",
       "F-09",
-      "F-11"
+      "F-11",
+      "F-06"
     ],
     "lockedTerminalConditionalIds": [
-      "C5-SEMANTIC-OWNER-COMPRESSION"
+      "C5-SEMANTIC-OWNER-COMPRESSION",
+      "C2-DELIVERY-PROVENANCE"
     ],
     "lockedTerminalSerialIds": [
       "GOV-WB4",

@@ -43,4 +43,4 @@ La firma/attestazione usa **GitHub OIDC** e **Sigstore** in modalità keyless tr
 
 Il subject firmato è l'archivio `git archive` dell'esatto SHA candidato; `package.json`, `package-lock.json`, tree SHA, archivio, SBOM e provenance manifest sono digest-bound nel receipt.
 
-**merge non equivale a release**: merge, release/deployment, review indipendente, Enterprise Candidate ed Enterprise Ready restano transizioni distinte. La PR candidata mantiene F-06/C2 `in-remediation`; la terminalità richiede exact-head CI, merge e POST-C2 ACT.
+**merge non equivale a release**: merge, release/deployment, review indipendente, Enterprise Candidate ed Enterprise Ready restano transizioni distinte. La PR #216 ha mantenuto F-06/C2 `in-remediation` sul candidate; dopo exact-head CI, merge, verifica post-merge e POST-216 ACT, F-06/C2 è repository-terminal E2. Questa terminalità non modifica i rail E3/E4.

@@ -25,8 +25,8 @@ async function staticCheck(){
   readJson('audit/remediation-registry.json'),readText('.github/workflows/enterprise-candidate.yml'),readText('.github/workflows/security.yml'),readJson('.github/enterprise-gate-manifest.json'),readText('v3/current-gate-registry.mjs'),readText('docs/RELEASE.md')
  ]);
  const f06=registry.findings.find(x=>x.id==='F-06');
- assert.ok(f06,'F-06 missing');assert.equal(f06.gate,'repository');assert.equal(f06.requiredGrade,'E2');assert.equal(f06.status,'in-remediation');
- assert.match(f06.rootControl,/SBOM\/provenance\/signature pipeline/i);assert.match(f06.repositoryPosture,/provenance\/signature pipeline remains/i);
+ assert.ok(f06,'F-06 missing');assert.equal(f06.gate,'repository');assert.equal(f06.requiredGrade,'E2');assert.equal(f06.status,'resolved');
+ assert.match(f06.rootControl,/SBOM\/provenance\/signature pipeline/i);assert.match(f06.repositoryPosture,/exact-candidate|post-merge main/i);
  const claimBoundary='Repository-bounded E2 delivery evidence only. Candidate attestation/signing does not itself mean merge approval, release, deployment, independent review, Enterprise Candidate or Enterprise Ready. F-06/C2 transition to terminal only after merge plus post-merge ACT.';
  for(const token of [
   "id-token: write","attestations: write","contents: read","ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
