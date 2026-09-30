@@ -66,7 +66,7 @@ try:
   page=ctx.new_page(); page.set_default_timeout(30000)
   ensure_onboarded(page,BASE,'admin')
 
-  PHASE='home'; open_view(page,'home','#homeView'); snapshot(page,'chrome','.topbar'); snapshot(page,'home','#homeView')
+  PHASE='home'; open_view(page,'home','#homeView'); expect(page.locator('html')).to_have_attribute('data-visible-cutover-epoch','uiux-656-v1'); expect(page.locator('#homeView')).to_have_attribute('data-visible-cutover','1'); expect(page.locator('#homeView')).to_have_attribute('data-visible-cutover-epoch','uiux-656-v1'); snapshot(page,'chrome','.topbar'); snapshot(page,'home','#homeView')
   expect(page.locator('#ictcManifest')).to_have_count(0); expect(page.locator('#homePulse')).to_be_hidden(); expect(page.locator('#homePriorities')).to_be_visible(); no_overflow(page)
 
   PHASE='processes'; open_view(page,'processes','#processesView'); snapshot(page,'processes','#processesView')
@@ -79,7 +79,7 @@ try:
    if detail.count(): assert detail.get_attribute('open') is None
    no_overflow(page)
 
-  PHASE='proof'; open_view(page,'proof','#proofView'); page.wait_for_function("expected=>document.querySelector('#proofView')?.dataset.proofReadingOrder===expected",arg=PROOF_READING_ORDER); snapshot(page,'proof','#proofView')
+  PHASE='proof'; open_view(page,'proof','#proofView'); page.wait_for_function("expected=>document.querySelector('#proofView')?.dataset.proofReadingOrder===expected",arg=PROOF_READING_ORDER); expect(page.locator('#proofView')).to_have_attribute('data-visible-cutover','1'); expect(page.locator('#proofView')).to_have_attribute('data-visible-cutover-epoch','uiux-656-v1'); snapshot(page,'proof','#proofView')
   expect(page.locator('#proofView [data-surface-information-value]')).to_have_count(0)
   investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]'); trace=page.locator('#proofContent > details[data-proof-workspace="trace-reconstruction"]'); decision=page.locator('#proofContent > details[data-proof-domain="decisions"]'); standards=page.locator('#proofContent > details[data-proof-domain="evidence-basis"]')
   for disclosure in [investigation,trace,decision,standards]: expect(disclosure).to_be_visible()
@@ -88,12 +88,12 @@ try:
   order=page.locator('#proofContent > details').evaluate_all("nodes=>nodes.map(n=>n.dataset.proofWorkspace||n.dataset.proofDomain||n.dataset.compositionDetail||'unknown')"); expected_details=['decisions','trace-reconstruction','evidence-basis','epistemic-investigation','interpretation','external','integrity','export']; assert [x for x in order if x in expected_details]==expected_details,order
   reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]'); expect(reading).to_be_visible(); assert reading.get_attribute('open') is None
 
-  PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); snapshot(page,'epistemic','#epistemicView')
+  PHASE='epistemic'; open_view(page,'epistemic','#epistemicView'); expect(page.locator('#epistemicView')).to_have_attribute('data-visible-cutover','1'); expect(page.locator('#epistemicView')).to_have_attribute('data-visible-cutover-epoch','uiux-656-v1'); snapshot(page,'epistemic','#epistemicView')
   expect(page.locator('#epistemicTitle')).to_have_text('Ricostruisci decisioni, fonti ed evidenze')
   rules=page.locator('#epistemicView details[data-epistemic-workspace="rules"]'); expect(rules).to_be_visible(); assert rules.get_attribute('open') is None
   expect(rules.locator('.epistemic-claim-boundary')).to_have_count(0); expect(page.locator('#epistemicView > .epistemic-claim-boundary,#epistemicView .surface-panel > .epistemic-claim-boundary')).to_have_count(1); expect(page.locator('.epistemic-claim-boundary')).to_be_visible()
 
-  PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
+  PHASE='admin'; open_view(page,'home','#homeView'); open_profile(page); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); expect(page.locator('#adminCenter')).to_have_attribute('data-visible-cutover','1'); expect(page.locator('#adminCenter')).to_have_attribute('data-visible-cutover-epoch','uiux-656-v1'); snapshot(page,'dialog:admin','#adminCenter'); expect(page.locator('#adminMetrics')).to_be_hidden(); page.keyboard.press('Escape')
   PHASE='settings'; open_profile(page); expect(page.locator('#stableProfileMenu #openSettings')).to_be_hidden(); page.locator('#stableProfileMenu #openAdminCenter').dispatch_event('click'); expect(page.locator('#adminCenter')).to_be_visible(); page.locator('#adminCenter [data-admin-nav="ai"]').click(); expect(page.locator('#adminCenter [data-admin-view="ai"]')).to_be_visible(); provider=page.locator('#adminCenter details[data-admin-progressive="ai-provider"]'); expect(provider).to_have_count(1); expect(provider).not_to_have_attribute('open',''); provider.locator(':scope > summary').click(); settings=page.locator('#settingsDialog[data-admin-embedded="ai"]'); expect(settings).to_be_visible(); snapshot(page,'dialog:settings','#settingsDialog'); policy=settings.locator('details[data-settings-section="policy"]'); expect(policy).to_have_count(1); expect(policy).not_to_have_attribute('open',''); page.keyboard.press('Escape')
 
   PHASE='mobile-bootstrap'; mc=browser.new_context(viewport={'width':390,'height':844}); mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')"); m=mc.new_page(); m.set_default_timeout(30000); ensure_onboarded(m,BASE,'admin'); PHASE='mobile-processes'; open_view(m,'processes','#processesView'); snapshot(m,'mobile:processes','#processesView'); PHASE='mobile-ao-open'; open_process(m,'AO-01'); PHASE='mobile-ao-snapshot'; snapshot(m,'mobile:AO-01','#grcView'); PHASE='mobile-overflow'; no_overflow(m); mc.close()
