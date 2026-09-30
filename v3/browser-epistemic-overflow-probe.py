@@ -22,7 +22,7 @@ def open_epistemic(page):
     expect(action).to_be_visible()
     action.click()
     expect(page.locator('#epistemicView')).to_be_visible()
-    expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
+    expect(page.locator('#epistemicTitle')).to_have_text('Ricostruisci decisioni, fonti ed evidenze')
     page.wait_for_function("()=>Number(document.querySelector('#epistemicView')?.dataset.loadedRevision||0)>0")
 
 def measure(page):
