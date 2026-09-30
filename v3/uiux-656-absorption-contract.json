@@ -1299,6 +1299,66 @@
         "0x217c0f0a"
       ],
       "receiptSha256": "2c97a2d4c09ae2413361943410bfb630201b89a998d3a5db8b49070a5f6ee1ba"
+    },
+    "postMergeHardening": {
+      "id": "POST-219-CUTOVER-EPOCH-HARDEN",
+      "mergedPr": 219,
+      "observedMainSha": "af13cfa3177486f91552012b76d72192bce2997a",
+      "finding": "VISIBLE-CUTOVER-1 declared EPOCH_BOUND, but only the global html marker carried uiux-656-v1; Home, Proof, EP and Admin exposed visibleCutover=1 without a local epoch binding.",
+      "authorityEffect": "NONE",
+      "createsNewSot": false,
+      "runtimeOwners": [
+        "v3/public/ui/stable-shell.js",
+        "v3/public/ui/proof-workspace-3-2.js",
+        "v3/public/ui/epistemic-workspace-3-2.js",
+        "v3/public/ui/admin-workspace-3-2.js"
+      ],
+      "invariants": {
+        "H1": "global visible-cutover marker and uiux-656-v1 epoch remain exact",
+        "H2": "Home, Proof, EP and Admin each materialize visibleCutover=1 plus visibleCutoverEpoch=uiux-656-v1 in their existing local owner",
+        "H3": "surface-truth browser witness checks local marker+epoch on all four surfaces",
+        "H4": "UIUX-656 source checker rejects missing or divergent local epoch bindings",
+        "H5": "no new presentation owner, store, finalizer, SOT or external-rail closure is introduced"
+      },
+      "localFalsification": {
+        "schema": "post219-cutover-epoch-hardening/v1",
+        "seedHex": "0x219a0d17",
+        "trials": 10000000,
+        "discovery": 9000000,
+        "holdout": 1000000,
+        "failureFamilies": 40,
+        "pairCoverage": 780,
+        "pairTotal": 780,
+        "survivors": 0,
+        "falsePositive": 0,
+        "deletionOracle": {
+          "killed": 40,
+          "total": 40
+        },
+        "holdoutNovelFamilies": 0,
+        "minFamilyHits": 723110,
+        "maxFamilyHits": 3693143,
+        "receiptSha256": "99eb08f3a3a2ce9a406f1915c5b214f360f62ad7941ae1f4503fe19f32170835",
+        "boundary": "Seeded compiled semantic/model falsification only; browser, repository CI, representative-human, deployment and legal/compliance evidence remain separate."
+      },
+      "localCycles": {
+        "schema": "post219-cutover-epoch-hardening-cycles/v1",
+        "cycles": 10,
+        "statesPerCycle": 100000,
+        "totalStates": 1000000,
+        "survivors": 0,
+        "deletionOraclePerCycle": {
+          "killed": 40,
+          "total": 40
+        },
+        "seedRange": [
+          "0x219a0d17",
+          "0x219a0d20"
+        ],
+        "receiptSha256": "c7a3c0f16a963cfe7e79cd51a31cf25302b380175e47929795edaa8f5bd89a17"
+      },
+      "cleanupPolicy": "Do not migrate another wave of historical oracles. The existing UIUX-656 source checker plus surface-truth browser witness own epoch coherence; other oracles remain claim-specific.",
+      "claimBoundary": "Runtime-visible cutover hardening only. It proves neither representative-human usability nor deployment effectiveness and does not close E3-HUMAN, E3-GOV, E4-DEPLOY, Enterprise Candidate or Enterprise Ready."
     }
   }
 }
