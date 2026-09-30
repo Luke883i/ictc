@@ -106,7 +106,7 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{grid-area:p
 
 
 /* VISIBLE-CUTOVER-1 — local Home/EP/Admin geometry; no new presentation owner. */
-html[data-visible-cutover="1"] #homeView[data-home-first-plane="decision>worklist"] .home-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(16rem,.42fr);grid-template-areas:"intro next" "priorities priorities";align-items:start;gap:.8rem}
+html[data-visible-cutover="1"] #homeView[data-home-first-plane="decision>worklist"] .home-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(16rem,.42fr);grid-template-areas:"intro next" "priorities priorities"!important;align-items:start;gap:.8rem}
 html[data-visible-cutover="1"] #homeView[data-home-first-plane="decision>worklist"] .home-intro{grid-area:intro}
 html[data-visible-cutover="1"] #homeView[data-home-first-plane="decision>worklist"] .home-next{grid-area:next;margin:0!important;align-self:stretch}
 html[data-visible-cutover="1"] #epistemicView [data-epistemic-reconstruction]{display:grid;gap:.45rem;margin:0 0 .55rem;padding:.72rem .82rem;border:1px solid var(--landing-border);border-radius:14px;background:var(--workspace-landing);box-shadow:var(--elevation-rest)}
