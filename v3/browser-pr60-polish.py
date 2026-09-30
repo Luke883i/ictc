@@ -75,7 +75,7 @@ def ensure_rn_evidence_menu(page):
     menu=page.locator('.evidence-export-menu:visible').first;expect(menu).to_be_visible();return menu
 
 def direct_order(page):
-    return page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null)).filter(Boolean)""")
+    return page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.dataset.proofReconstructionQuestion?'reconstruction':(n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null))).filter(Boolean)""")
 
 def assert_meaning_first(page):
     expect(page.locator('#proofView')).to_be_visible();expect(page.locator('#proofTitle')).to_have_text('Evidenze ICTC');expect(page.locator('.proof-semantic-qualifier')).to_have_count(0);expect(page.locator('#proofView [data-proof-tab]')).to_have_count(0)
@@ -85,7 +85,7 @@ def assert_meaning_first(page):
     for node in [decisions,standards,trace,investigation,reading]:
         expect(node).not_to_have_attribute('open','')
     expect(investigation.locator(':scope > summary')).to_contain_text('Reticolo epistemico');expect(trace.locator(':scope > summary')).to_contain_text('Ricostruisci un elemento di lavoro');expect(decisions.locator(':scope > summary')).to_contain_text('Decisioni e tracciabilità');expect(standards.locator(':scope > summary')).to_contain_text('Riferimenti e basi');expect(reading.locator(':scope > summary b')).to_have_text('Criteri di lettura e sintesi tecnica')
-    expected=['facts','interpretation','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','external','integrity','export'];order=direct_order(page);assert [x for x in order if x in expected]==expected,order
+    expected=['reconstruction','decisions','trace-reconstruction','facts','evidence-basis','epistemic-investigation','interpretation','external','integrity','export'];order=direct_order(page);assert [x for x in order if x in expected]==expected,order
     expect(page.locator('#proofMethodTitle')).to_be_hidden();expect(page.locator('#traceExplorer')).to_be_hidden();expect(investigation.locator('[data-service="epistemic"]')).to_be_hidden()
     min_height(page,'#proofContent > details[data-proof-workspace="epistemic-investigation"] > summary');min_height(page,'#proofContent > details[data-proof-workspace="trace-reconstruction"] > summary');min_height(page,'#proofContent > details[data-proof-domain="decisions"] > summary');min_height(page,'#proofContent > details[data-proof-domain="evidence-basis"] > summary');min_height(page,'#proofContent > details[data-composition-detail="proof-reading"] > summary');no_overflow(page);return reading
 
