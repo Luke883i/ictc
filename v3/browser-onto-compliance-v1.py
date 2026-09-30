@@ -17,7 +17,7 @@ PROCEDURES=[
  {'code':'AR-01','id':'assurance','root':'#grcWorkspace','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','context':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"]','anatomy':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy'}]
 OWNER={'monitoring':'procedure-sequential-rn-ec.js','incidents':'procedure-sequential-rn-ec.js','objects':'grc-workspace-3-2.js','coverage':'grc-workspace-3-2.js','actions':'grc-workspace-3-2.js','risks':'grc-workspace-3-2.js','assurance':'grc-workspace-3-2.js'}
 SCREENSHOT_WIDTHS={390,1280}
-PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=set()
 
 def anomaly(kind,role,vp,surface,measured,expected): anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})

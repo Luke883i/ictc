@@ -6,7 +6,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PHASE='init'; INVENTORY=[]; VIOLATIONS=[]
-PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 SEMANTIC='h1,h2,h3,h4,p,small,label,button,a[href],input,select,textarea,summary,dt,dd,th,td,legend,li,span,b,strong,em,[role="status"],[role="alert"],.surface-chip,.counter,.empty'
 
 def fail(exc):

@@ -5,7 +5,7 @@ from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
-PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 PHASE='init'
 
 def fail(error):
@@ -98,7 +98,7 @@ try:
         ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','proof')")
         page=ctx.new_page();page.set_default_timeout(30000);proof_requests=[];page.on('request',lambda request: proof_requests.append(request.url) if '/api/standard-proof' in request.url else None)
 
-        PHASE='evidence-meaning-first';ensure_onboarded(page,BASE,'admin');page.goto(BASE+'/?view=proof',wait_until='networkidle');ready(page);reading=assert_meaning_first(page)
+        PHASE='reconstruction-first';ensure_onboarded(page,BASE,'admin');page.goto(BASE+'/?view=proof',wait_until='networkidle');ready(page);reading=assert_meaning_first(page)
         PHASE='evidence-render-idempotence';before_order=direct_order(page);page.evaluate("()=>{for(let i=0;i<8;i++)document.dispatchEvent(new CustomEvent('ictc:rendered'));}");page.wait_for_timeout(180);assert direct_order(page)==before_order,(before_order,direct_order(page));assert_meaning_first(page)
         PHASE='evidence-refresh-ownership';initial_requests=len(proof_requests);assert initial_requests>=1,proof_requests;revision=int(page.locator('html').get_attribute('data-ictc-projection-revision') or 0);page.evaluate("r=>document.dispatchEvent(new CustomEvent('ictc:projection-committed',{detail:{revision:r,actorRole:'admin'}}))",revision+1);page.wait_for_function('(count)=>performance.getEntriesByType("resource").filter(x=>x.name.includes("/api/standard-proof")).length>=count',arg=initial_requests+1);page.wait_for_function('(r)=>Number(document.querySelector("#proofView")?.dataset.loadedRevision||0)>=r',arg=revision+1);ready(page);assert_meaning_first(page)
         PHASE='evidence-keyboard-disclosure';reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]');summary=reading.locator(':scope > summary');summary.focus();summary.press('Enter');expect(reading).to_have_attribute('open','');expect(page.locator('#proofMethodTitle')).to_be_visible();expect(page.locator('.proof-reading-card')).to_have_count(3);summary.press(' ');expect(reading).not_to_have_attribute('open','');expect(summary).to_be_focused();summary.press('Enter');expect(reading).to_have_attribute('open','');page.screenshot(path=str(ART/'ux-pr60-evidence-desktop.png'),full_page=True)

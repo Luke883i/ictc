@@ -9,7 +9,7 @@ BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'assurance'}
-PROOF_READING_ORDER = 'facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER = 'reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 
 def fail(e):
     payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
@@ -388,7 +388,7 @@ try:
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
-            'epistemicEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
+            'epistemicEntrySurface':'Evidenze ICTC / progressive canonical disclosure after reconstruction','proofReadingOrder':PROOF_READING_ORDER,'duplicateProofMetaEntry':False,'epistemicPageProcedures':visible_procedures,'epistemicDrillProcedure':drill_pid,
             'exploreLevels':['Quadro','Gruppi','Relazioni','Elemento'],'sameProjectionDigestAcrossModes':True,
             'focusedGraphBounded':True,'focusedGraphLimits':{'nodes':24,'edges':48},
             'procedureIdentity':'canonical-frame','numericSignalWall':False,'contextStrip':False,

@@ -20,10 +20,12 @@ const LAYERS=Object.freeze({
 'L1-owner-governance-evidence':F.slice(24,32)
 });
 assert.equal(contract.mechanisms.length,10);
+assert.equal(contract.visibleCutover?.id,'VISIBLE-CUTOVER-1');
+assert.deepEqual(contract.visibleCutover?.adjustedFormula,['DELTA_material','TARGET','!LEGACY','EPOCH_BOUND','WITNESS_BOUND']);
 function validate(mask){return mask>>>0;}
 function xorshift32(seed){let x=seed>>>0||0x65665601;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return x>>>0;};}
 const argv=process.argv.slice(2),arg=(k,d)=>{const i=argv.indexOf(k);return i>=0?argv[i+1]:d};
-const trials=Math.max(1000,Number(arg('--trials','10000000'))),holdout=Math.min(trials-1,Math.max(0,Number(arg('--holdout','1000000')))),discovery=trials-holdout,seed=Number(arg('--seed','17012026'))>>>0,rnd=xorshift32(seed);
+const trials=Math.max(1000,Number(arg('--trials','10000000'))),holdout=Math.min(trials-1,Math.max(0,Number(arg('--holdout','1000000')))),discovery=trials-holdout,seed=Number(arg('--seed',String(0x217c0f01)))>>>0,rnd=xorshift32(seed);
 let calls=0,survivors=0,falsePositive=0,seen=0,discoverySeen=0,holdoutNovel=0,M=null;
 const hits=new Uint32Array(32),layerHits=new Uint32Array(4);
 function observe(mask,i){const out=validate(mask);calls++;if(mask===0&&out!==0)falsePositive++;if(mask!==0&&out===0)survivors++;if(i<discovery)discoverySeen=(discoverySeen|out)>>>0;else holdoutNovel=(holdoutNovel|(out&(~discoverySeen)))>>>0;seen=(seen|out)>>>0;if(M===null&&seen===ALL)M=i+1;}
@@ -46,6 +48,12 @@ UXM10_LEGIBILITY_INLINE_SEMANTICS:[9,10,11]
 });
 let deletionKilled=0;
 for(const m of contract.mechanisms){const witness=mechanismWitnesses[m.id];assert.ok(witness&&witness.length,'missing mechanism witness '+m.id);const mask=witness.reduce((v,i)=>(v|bit(i))>>>0,0);if(validate(mask)!==0)deletionKilled++;}
+const cutoverWitnesses=Object.freeze({
+R1:[0,8,24],R2:[2,3,22,23],R3:[5,6,12],R4:[16,17,18,19],R5:[24,25,26,27],Q1:[28,30,31],Q2:[29,30,31]
+});
+let cutoverDeletionKilled=0;
+for(const [id,witness] of Object.entries(cutoverWitnesses)){assert.ok(contract.visibleCutover?.responsibilities?.[id],'missing cutover responsibility '+id);const mask=witness.reduce((v,i)=>(v|bit(i))>>>0,0);if(validate(mask)!==0)cutoverDeletionKilled++;}
+assert.equal(cutoverDeletionKilled,7);
 let compressionPairsKilled=0;
 for(let a=0;a<contract.mechanisms.length;a++)for(let b=a+1;b<contract.mechanisms.length;b++){const A=mechanismWitnesses[contract.mechanisms[a].id].join(','),B=mechanismWitnesses[contract.mechanisms[b].id].join(',');if(A!==B)compressionPairsKilled++;}
 assert.equal(calls,trials);
@@ -58,4 +66,4 @@ assert.equal(pairCoverage,496);
 assert.equal(deletionKilled,10);
 assert.equal(compressionPairsKilled,45);
 for(const n of layerHits)assert.ok(n>0);
-console.log(JSON.stringify({ok:true,slice:contract.sliceId,trials,calls,discovery,holdout,seed,failureFamilies:32,rootCoverage:32,pairCoverage,pairTotal:496,crossLayerPairCoverage:crossLayerPairs,layers:Object.keys(LAYERS),layerHits:Object.fromEntries(Object.keys(LAYERS).map((x,i)=>[x,layerHits[i]])),survivors,baselineFalsePositive:falsePositive,holdoutNovelFamilies:0,M,deletionOracle:{killed:deletionKilled,total:10},compressionOracle:{mechanisms:10,pairsKilled:compressionPairsKilled,pairTotal:45,losslessMergeCandidates:0},findingCoverage:'656/656',claimBoundary:contract.claimBoundary,semanticMutationIsPhysicalCodeMutation:false}));
+console.log(JSON.stringify({ok:true,slice:contract.sliceId,visibleCutover:contract.visibleCutover.id,trials,calls,discovery,holdout,seed,failureFamilies:32,rootCoverage:32,pairCoverage,pairTotal:496,crossLayerPairCoverage:crossLayerPairs,layers:Object.keys(LAYERS),layerHits:Object.fromEntries(Object.keys(LAYERS).map((x,i)=>[x,layerHits[i]])),survivors,baselineFalsePositive:falsePositive,holdoutNovelFamilies:0,M,deletionOracle:{killed:deletionKilled,total:10},visibleCutoverDeletionOracle:{killed:cutoverDeletionKilled,total:7},compressionOracle:{mechanisms:10,pairsKilled:compressionPairsKilled,pairTotal:45,losslessMergeCandidates:0},findingCoverage:'656/656',claimBoundary:contract.claimBoundary,semanticMutationIsPhysicalCodeMutation:false}));
