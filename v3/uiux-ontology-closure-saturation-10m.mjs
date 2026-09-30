@@ -66,12 +66,12 @@ function sourceLaws(s){
     procedureMetrics:s.anatomy.includes('function localMetrics(')&&s.anatomy.includes('data-procedure-metrics=')&&s.anatomy.includes("editorialSlot(host,'metrics')"),
     canonicalStateRail:s.p2.includes('--p2-state-rail:7.5rem')&&s.p2.includes('word-break:normal')&&s.p2.includes('hyphens:none'),
     canonicalControlRail:s.p2.includes('.procedure-queue-tools,.procedure-worklist-filters')&&s.p2.includes('data-enduser-primitive="ControlRail"'),
-    proofMethodFirst:s.proof.includes("root.dataset.proofReadingOrder='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'")&&s.proof.includes('ordered(content,[factStrip,interpretation,decisions,trace,standards,investigation'),
+    proofReconstructionFirst:s.proof.includes("root.dataset.proofReadingOrder='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'")&&s.proof.includes('ordered(content,[question,decisions,trace,factStrip,standards,investigation,interpretation'),
     proofReadingGuide:s.proof.includes("guide.dataset.proofReadingGuide='operational-five-part'")&&s.proof.includes('WORKSPACE_COPY.proof.readingGuide')&&['Cosa osserva','Cosa non prova','Come leggere gli stati','Fonti e provenienza','Quando serve verifica esterna'].every(token=>s.native.includes(token)),
     proofPeerGrammar:s.proof.includes("peer.dataset.proofVisualGrammar='peer-section'")&&s.p2.includes('data-proof-visual-grammar="peer-section"'),
     adminSingleEntry:s.active.includes("for(const button of[admin])")&&s.active.includes("settings.dataset.legacyControl='admin-ai-entry'"),
     neutralAiState:s.enterprise.includes('status.hidden=true')&&s.enterprise.includes("status.dataset.legacyControl='shell-ai-status'")&&!s.enterprise.includes('status.dataset.tooltip=view.tooltip')&&s.adminWork.includes('admin-configuration-state'),
-    epistemicTrajectory:s.epWorkspace.includes('find>narrow>result>select>reconstruct>deepen')&&s.epWorkspace.includes('Torna a Evidenze ICTC'),
+    epistemicReconstructionTrajectory:s.epWorkspace.includes('reconstruct>find>result>select>deepen')&&s.epWorkspace.includes('Torna a Evidenze ICTC'),
     nativeRepresentationTruth:s.native.includes('procedure-metrics-before-runtime-work')&&s.native.includes('canonical-control-rail-one')&&s.native.includes('neutral-ai-configuration-status'),
     adminBusinessLanguage:!s.admin.includes('>Control plane<')
   };
@@ -122,11 +122,11 @@ const SOURCE_MUTANTS=[
   ['procedure-metrics-lost',s=>({...s,anatomy:s.anatomy.replace("editorialSlot(host,'metrics')","editorialSlot(host,'attention')")})],
   ['state-rail-drifts',s=>({...s,p2:s.p2.replace('--p2-state-rail:7.5rem','--p2-state-rail:auto')})],
   ['control-rail-drifts',s=>({...s,p2:s.p2.replaceAll('.procedure-queue-tools,.procedure-worklist-filters','.procedure-queue-tools')})],
-  ['proof-method-demoted',s=>({...s,proof:s.proof.replace('ordered(content,[factStrip,interpretation,decisions,trace,standards,investigation','ordered(content,[factStrip,decisions,trace,standards,investigation,interpretation')})],
+  ['proof-reconstruction-demoted',s=>({...s,proof:s.proof.replace('ordered(content,[question,decisions,trace,factStrip,standards,investigation,interpretation','ordered(content,[factStrip,decisions,trace,standards,investigation,interpretation')})],
   ['proof-peer-style-diverges',s=>({...s,proof:s.proof.replace("peer.dataset.proofVisualGrammar='peer-section'","peer.dataset.proofVisualGrammar='legacy-section'")})],
   ['admin-second-entry',s=>({...s,active:s.active.replace('for(const button of[admin])','for(const button of[admin,settings])')})],
   ['ai-shell-badge-returns',s=>({...s,enterprise:s.enterprise.replace('status.hidden=true','status.hidden=false')})],
-  ['ep-trajectory-regresses',s=>({...s,epWorkspace:s.epWorkspace.replace('find>narrow>result>select>reconstruct>deepen','find>narrow>explore>select>reconstruct>deepen')})],
+  ['ep-trajectory-regresses',s=>({...s,epWorkspace:s.epWorkspace.replace('reconstruct>find>result>select>deepen','find>narrow>result>select>reconstruct>deepen')})],
   ['representation-truth-invariant-lost',s=>({...s,native:s.native.replace('canonical-control-rail-one','canonical-control-rail-retired')})],
   ['admin-control-plane',s=>({...s,admin:s.admin.replace('>Amministrazione</p>','>Control plane</p>')})]
 ];

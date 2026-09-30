@@ -7,7 +7,7 @@ ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4811').rstrip('/')
 VIEWPORTS=[('mobile',390,844),('tablet',768,1024),('desktop',1280,900),('wide',1600,1000)]
 ROLES=['admin','auditor']
-PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 PHASE='init'; anomalies=[]
 
 def open_epistemic(page):
@@ -22,7 +22,7 @@ def open_epistemic(page):
     expect(action).to_be_visible()
     action.click()
     expect(page.locator('#epistemicView')).to_be_visible()
-    expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
+    expect(page.locator('#epistemicTitle')).to_have_text('Ricostruisci decisioni, fonti ed evidenze')
     page.wait_for_function("()=>Number(document.querySelector('#epistemicView')?.dataset.loadedRevision||0)>0")
 
 def measure(page):

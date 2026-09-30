@@ -1232,5 +1232,73 @@
       "Does the UI avoid implying legal applicability, compliance, effectiveness or external assurance?"
     ]
   ],
-  "claimBoundary": "This contract proves repository-bounded absorption/classification and executable UI composition properties only. It does not prove representative-human usability, beauty, legal/compliance correctness, organizational effectiveness, deployment effectiveness, E3-HUMAN, E3-GOV, E4-DEPLOY, Enterprise Candidate or Enterprise Ready."
+  "claimBoundary": "This contract proves repository-bounded absorption/classification and executable UI composition properties only. It does not prove representative-human usability, beauty, legal/compliance correctness, organizational effectiveness, deployment effectiveness, E3-HUMAN, E3-GOV, E4-DEPLOY, Enterprise Candidate or Enterprise Ready.",
+  "visibleCutover": {
+    "id": "VISIBLE-CUTOVER-1",
+    "mode": "post-terminal-UIUX-CONVERGE-0-runtime-cutover",
+    "authorityEffect": "NONE",
+    "createsNewSot": false,
+    "adjustedFormula": [
+      "DELTA_material",
+      "TARGET",
+      "!LEGACY",
+      "EPOCH_BOUND",
+      "WITNESS_BOUND"
+    ],
+    "epoch": "uiux-656-v1",
+    "responsibilities": {
+      "R1": "target phenotype is sourced from losslessSemantics.visibleCutover and this existing UIUX-656 contract",
+      "R2": "Home/Onboarding, Proof, EP and Admin materialize target order in their existing local owners",
+      "R3": "existing 3-fact/1-primary and initial-registry budgets remain blocking",
+      "R4": "mobile semantic layers remain <=3 with page horizontal overflow forbidden",
+      "R5": "no new presentation finalizer, business writer, SOT or parallel owner",
+      "Q1": "exact-head source/browser/current-semantic rails are the differential witness",
+      "Q2": "UIUX-656 finding ledger remains the closure ledger"
+    },
+    "targets": {
+      "home": "decision>worklist; product exposition secondary",
+      "onboarding": "fact>scope>decision>work>evidence",
+      "proof": "reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export",
+      "epistemic": "reconstruct>find>result>select>deepen; graph and technical modes progressive",
+      "admin": "blocker>impact>fix before provider/identity implementation detail",
+      "procedures": "3 facts max, 1 visible primary action, method/support progressive",
+      "mobile": "<=3 simultaneous semantic layers; no page horizontal overflow"
+    },
+    "localFalsification": {
+      "seedHex": "0x217c0f01",
+      "trials": 10000000,
+      "discovery": 9000000,
+      "holdout": 1000000,
+      "failureFamilies": 32,
+      "pairCoverage": 496,
+      "pairTotal": 496,
+      "survivors": 0,
+      "deletionOracle": {
+        "killed": 7,
+        "total": 7
+      },
+      "holdoutNovelFamilies": 0,
+      "boundary": "Compiled semantic model only; browser, representative-human, deployment and legal/compliance evidence remain separate.",
+      "receiptSha256": "6bff3d62c72dadb2a68ec5b881acf05e52602b2af0b7b409d45b682024fb757f",
+      "minFamilyHits": 778827,
+      "maxFamilyHits": 783028
+    },
+    "claimBoundary": "Runtime UI composition cutover only. It does not prove representative-human usability, deployment effectiveness, legal/compliance correctness, E3-HUMAN, E3-GOV, E4-DEPLOY or Enterprise Candidate.",
+    "localCycles": {
+      "cycles": 10,
+      "statesPerCycle": 100000,
+      "totalStates": 1000000,
+      "survivors": 0,
+      "failureFamilies": 32,
+      "deletionOraclePerCycle": {
+        "killed": 7,
+        "total": 7
+      },
+      "seedRange": [
+        "0x217c0f01",
+        "0x217c0f0a"
+      ],
+      "receiptSha256": "2c97a2d4c09ae2413361943410bfb630201b89a998d3a5db8b49070a5f6ee1ba"
+    }
+  }
 }

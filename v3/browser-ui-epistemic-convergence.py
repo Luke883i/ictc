@@ -3,13 +3,13 @@ from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
-PROOF_READING_ORDER='facts>method>decisions>trace>evidence-basis>epistemic>external>integrity>export'
+PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
 def fail(exc):
  payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()};(ART/'browser-ui-epistemic-convergence-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-ui-epistemic-convergence::{PHASE}: {type(exc).__name__}: {exc}',flush=True)
 def processes(page): return page.locator('.service-nav [data-service="processes"]')
 def proof(page): return page.locator('.service-nav [data-service="proof"]')
 def open_epistemic(page):
- proof(page).click();expect(page.locator('#proofView')).to_be_visible();page.wait_for_function("expected=>document.querySelector('#proofView')?.dataset.proofReadingOrder===expected",arg=PROOF_READING_ORDER);investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');expect(investigation).to_have_count(1);expect(page.locator('#proofView #epistemicMetaCard')).to_have_count(0);assert investigation.get_attribute('open') is None;investigation.locator(':scope > summary').click();action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click();expect(page.locator('#epistemicView')).to_be_visible();expect(page.locator('#epistemicTitle')).to_have_text('Relazioni tra decisioni, fonti ed evidenze')
+ proof(page).click();expect(page.locator('#proofView')).to_be_visible();page.wait_for_function("expected=>document.querySelector('#proofView')?.dataset.proofReadingOrder===expected",arg=PROOF_READING_ORDER);investigation=page.locator('#proofContent > details[data-proof-workspace="epistemic-investigation"]');expect(investigation).to_have_count(1);expect(page.locator('#proofView #epistemicMetaCard')).to_have_count(0);assert investigation.get_attribute('open') is None;investigation.locator(':scope > summary').click();action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click();expect(page.locator('#epistemicView')).to_be_visible();expect(page.locator('#epistemicTitle')).to_have_text('Ricostruisci decisioni, fonti ed evidenze')
 def open_process(page,code):
  processes(page).click();card=page.locator(f'#procedureHub [data-process-code="{code}"]');expect(card).to_be_visible();card.locator(':scope > footer .primary').click();page.wait_for_timeout(100)
 def no_overflow(page):

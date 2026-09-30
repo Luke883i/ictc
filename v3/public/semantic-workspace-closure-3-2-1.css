@@ -84,3 +84,12 @@ html[data-uiux-absorption="656"] :is(#proofView,#epistemicView) details[data-sec
 /* UIUX-656 CI convergence: equal-width process actions remain deterministic after row contraction. */
 html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary{inline-size:12rem!important;min-inline-size:12rem!important;max-inline-size:12rem!important;box-sizing:border-box;overflow:hidden}
 html[data-uiux-absorption="656"] #procedureHub .procedure-card footer .procedure-primary>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+
+
+/* VISIBLE-CUTOVER-1 — Proof reconstruction first plane within the existing semantic owner. */
+html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question]{display:grid;gap:.18rem;margin:0 0 .15rem;padding:.72rem .82rem;border:1px solid var(--landing-border);border-radius:12px;background:var(--workspace-landing);box-shadow:var(--elevation-rest)}
+html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question] :is(h2,p){margin:0;max-width:72ch}
+html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question] h2{font-size:var(--type-heading);line-height:1.25}
+html[data-visible-cutover="1"] #proofContent>details[data-proof-domain="decisions"],html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="trace-reconstruction"]{border-color:color-mix(in srgb,var(--color-brand) 28%,var(--color-border))!important}
+html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{margin-top:.2rem!important;background:var(--color-surface-subtle)}
+@media(max-width:719px){html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question]{padding:.62rem .68rem}html[data-visible-cutover="1"] #proofContent>.proof-fact-strip{display:grid;grid-template-columns:1fr}html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{order:8}}
