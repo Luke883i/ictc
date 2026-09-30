@@ -26,8 +26,8 @@
 @import url('./semantic-closure.css');
 @import url('./a6-ux3-operational-surface.css');
 @import url('./a6-ux4-semantic-surface.css');
-@import url('./a6-ux1-fixed-safe-footer.css');
 @import url('./compliance-context.css');
+@import url('./a6-ux1-fixed-safe-footer.css');
 
 [hidden]{display:none!important}
 /* A6-UX3/UX4 must never use presentation display rules to defeat native hidden state. */
