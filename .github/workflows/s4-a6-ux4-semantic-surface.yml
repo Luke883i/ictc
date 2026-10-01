@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 concurrency:
   group: s4-a6-ux4-semantic-surface-${{ github.ref }}
   cancel-in-progress: true
@@ -133,13 +134,40 @@ jobs:
             done
           done
           exit "$rc"
-      - name: LPE browser diagnostic · ${{ steps.lpe_browser.outputs.surface }} @ ${{ steps.lpe_browser.outputs.viewport }} · ${{ steps.lpe_browser.outputs.phase }}
+      - name: LPE browser diagnostic · ${{ steps.lpe_browser.outputs.surface }} @ ${{ steps.lpe_browser.outputs.viewport }}
         if: steps.lpe_browser.outcome == 'failure'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          error="artifacts/compliance-ontology-runtime/returning__${{ steps.lpe_browser.outputs.viewport }}__${{ steps.lpe_browser.outputs.surface }}-error.json"
+          surface='${{ steps.lpe_browser.outputs.surface }}'
+          viewport='${{ steps.lpe_browser.outputs.viewport }}'
+          error="artifacts/compliance-ontology-runtime/returning__${viewport}__${surface}-error.json"
+          phase='no-error-artifact'
+          message='browser contract failed'
+          if [ -f "$error" ]; then
+            phase="$(python -c "import json,sys; d=json.load(open(sys.argv[1])); print(str(d.get('phase') or 'unknown'))" "$error")"
+            message="$(python -c "import json,sys; d=json.load(open(sys.argv[1])); print(str(d.get('error') or 'browser contract failed').replace(chr(10),' ')[:72])" "$error")"
+          fi
+          description="${surface}@${viewport}:${phase}: ${message}"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=failure -f context='ictc/lpe-v2-browser' \
+            -f description="${description:0:140}" \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-compliance-ontology-runtime.py" >/dev/null || true
           cat "$error" || true
           exit 1
+      - name: Publish LPE browser success provenance
+        if: steps.lpe_browser.outcome == 'success'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=success -f context='ictc/lpe-v2-browser' \
+            -f description='14 LPE equivalents x 3 viewport classes green' \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-compliance-ontology-runtime.py" >/dev/null || true
       - name: Parse A6-UX4 browser failure
         id: ux4_diag
         if: steps.ux4_browser.outcome == 'failure'
