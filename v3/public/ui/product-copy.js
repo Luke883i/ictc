@@ -14,7 +14,7 @@ export const COMMON_COMPLIANCE_METHOD=Object.freeze(['Obblighi applicabili','Ris
 
 export const HOMEBOARDING=Object.freeze({
   title:'Impara ICTC gestendo un caso',
-  lead:'Parti da un fatto concreto: capisci che cosa è successo, chi deve decidere, quale lavoro serve e quale evidenza resterà dopo la decisione.',
+  lead:'Impara prima il modello: perché esistono le regole, quando possono riguardare l’impresa, come diventano obblighi, responsabilità, controlli, evidenze e riesami. Poi applicalo a un caso concreto.',
   chain:Object.freeze([
     Object.freeze({id:'capture-fact',step:'1',title:'Registra il fatto senza anticipare la conclusione',text:'Descrivi evento, fonte o cambiamento; separa ciò che sai da ciò che manca o è ancora controverso.'}),
     Object.freeze({id:'qualify-scope',step:'2',title:'Capisci quale perimetro richiede verifica',text:'Collega il fatto a processo, oggetto, requisito o rischio senza trasformare il collegamento in applicabilità o conformità.'}),
@@ -26,7 +26,7 @@ export const HOMEBOARDING=Object.freeze({
     Object.freeze({id:'bad-fragmented-compliance',level:'bad',title:'Quando il lavoro si frammenta',chain:Object.freeze(['copie dello stesso oggetto','owner divergenti','controlli ripetuti','evidenze incoerenti','lavoro ridondante'])}),
     Object.freeze({id:'worst-untraceable-decisions',level:'worst',title:'Quando una decisione non è ricostruibile',chain:Object.freeze(['fatto senza contesto','decisione senza owner','azione senza verifica','evidenza senza provenienza','stato non falsificabile'])})
   ]),
-  boundary:'Questa guida insegna a usare ICTC su un caso concreto: non determina applicabilità normativa, conformità, certificazione, efficacia dei controlli o responsabilità legale.'
+  boundary:'Questa guida descrive concetti e pratiche di governance della compliance. Non determina applicabilità normativa, conformità, certificazione, efficacia dei controlli o responsabilità legale per un caso concreto.'
 });
 
 export const SURFACE_INFORMATION=Object.freeze({
@@ -57,3 +57,4 @@ export const PRODUCT_COPY=Object.freeze({
  proofBoundary:'Le evidenze descrivono controlli osservabili di ICTC; non costituiscono certificazione, conclusione legale, security assessment del deployment o giudizio di conformità dell’organizzazione.',
  proofAction:'Apri Evidenze ICTC'
 });
+
