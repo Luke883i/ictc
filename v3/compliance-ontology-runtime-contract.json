@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "slice": "COMPLIANCE-ONTOLOGY-RUNTIME-1",
   "authorityEffect": "NONE",
   "laws": [
@@ -62,7 +62,115 @@
     ],
     "noNewStore": true,
     "noNewWriter": true,
-    "noNewRegistry": true
+    "noNewRegistry": true,
+    "lpeCompositionV2FindingCoverage": 400
   },
-  "claimBoundary": "Presentation/runtime semantics and browser evidence only; no legal applicability, compliance, certification, control-effectiveness, deployment or independent-assurance conclusion."
+  "claimBoundary": "Presentation/runtime semantics and browser evidence only; no legal applicability, compliance, certification, control-effectiveness, deployment or independent-assurance conclusion.",
+  "compositionV2": {
+    "id": "LPE-COMPOSITION-CLOSURE-1",
+    "trajectoryImpact": "neutral",
+    "authorityEffect": "NONE",
+    "sourceArtifact": "ICTC_UIUX_LPE_AUDIT_V2_2026-10-01.docx",
+    "sourceSha256": "f16282acacfaf478da3a9f7e76a6d3e547880c1a38d284282fbcc6c317485041",
+    "coverage": {
+      "lpes": 14,
+      "localFindings": 350,
+      "systemicFindings": 50,
+      "totalFindings": 400,
+      "primitives": 8,
+      "failureFamilies": 33,
+      "mutationTrials": 10000000
+    },
+    "primitives": [
+      {
+        "id": "R1",
+        "name": "Task-first Dynamic Frame",
+        "local": 84,
+        "systemic": 12,
+        "total": 96
+      },
+      {
+        "id": "R2",
+        "name": "Action-State Contract",
+        "local": 56,
+        "systemic": 8,
+        "total": 64
+      },
+      {
+        "id": "R3",
+        "name": "Progressive Disclosure Placement Grammar",
+        "local": 70,
+        "systemic": 10,
+        "total": 80
+      },
+      {
+        "id": "R4",
+        "name": "Canonical Context & Boundary Sidecar",
+        "local": 14,
+        "systemic": 2,
+        "total": 16
+      },
+      {
+        "id": "R5",
+        "name": "Worklist & Comparison Grammar",
+        "local": 42,
+        "systemic": 6,
+        "total": 48
+      },
+      {
+        "id": "R6",
+        "name": "Decision–Evidence Lens",
+        "local": 14,
+        "systemic": 2,
+        "total": 16
+      },
+      {
+        "id": "R7",
+        "name": "Route & Progression Rail",
+        "local": 28,
+        "systemic": 4,
+        "total": 32
+      },
+      {
+        "id": "R8",
+        "name": "Adaptive Semantic Budget",
+        "local": 42,
+        "systemic": 6,
+        "total": 48
+      }
+    ],
+    "physicalRules": [
+      "task/state/action before generic context",
+      "one primary action per state",
+      "generic context closed by default",
+      "context sidecar after work plane",
+      "decision-specific caveat stays inline",
+      "repeated work remains comparable",
+      "evidence stays adjacent or one disclosure step away",
+      "route and recovery remain explicit",
+      "mobile contracts semantic layers instead of stacking desktop"
+    ],
+    "globalDoD": [
+      "400/400 audit units preserved and mapped once",
+      "no new product/runtime/business authority",
+      "10M semantic mutation campaign: zero survivor and zero false positive",
+      "exact-head browser covers 14 LPE equivalents at desktop and narrow viewports",
+      "claim boundary keeps E3-HUMAN/E3-GOV/E4-DEPLOY external"
+    ],
+    "intermediateDoD": [
+      "R1-R8 all have runtime owner and deletion oracle",
+      "Home/Processes/RN/EC/AO/MC/AP/RC/AR/Proof/EP context mounts after work",
+      "Admin exposes deterministic status>ai>identity progression",
+      "sidecar is closed by default and focus returns to its trigger",
+      "responsive sidecar becomes bottom sheet without horizontal overflow"
+    ],
+    "localDoD": [
+      "canonical context packet remains single source",
+      "no context sidecar performs business writes",
+      "process lifecycle is progressive detail",
+      "GRC work renders before context",
+      "Proof content and EP canonical panel render before context",
+      "browser receipt binds exact build SHA"
+    ]
+  }
 }

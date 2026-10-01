@@ -102,10 +102,20 @@ jobs:
           fi
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           exit "$rc"
-      - name: Compliance ontology exact-head browser
-        env:
-          ICTC_COMPLIANCE_MODE: returning
-        run: python -u v3/browser-compliance-ontology-runtime.py
+      - name: Compliance ontology exact-head browser · 14 LPE × 3 viewports
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          surfaces='home processes monitoring incidents grc_objects grc_coverage grc_actions grc_risks grc_assurance proof epistemic admin'
+          for viewport in 1440x950 390x844 320x720; do
+            for surface in $surfaces; do
+              echo "LPE witness: $surface @ $viewport"
+              ICTC_COMPLIANCE_MODE=returning \
+              ICTC_COMPLIANCE_VIEWPORT="$viewport" \
+              ICTC_COMPLIANCE_SURFACE="$surface" \
+              python -u v3/browser-compliance-ontology-runtime.py
+            done
+          done
       - name: Parse A6-UX4 browser failure
         id: ux4_diag
         if: steps.ux4_browser.outcome == 'failure'
