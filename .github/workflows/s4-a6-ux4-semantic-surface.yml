@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  pull-requests: write
 concurrency:
   group: s4-a6-ux4-semantic-surface-${{ github.ref }}
   cancel-in-progress: true
@@ -15,82 +14,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Temporary transport · repair PR 223 TRAMA contract
-        if: github.event_name == 'pull_request' && github.event.pull_request.number == 223
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        shell: bash
-        run: |
-          cat > "$RUNNER_TEMP/pr-body.md" <<'EOF'
-          ## Intent
-          Close the LPE composition debt losslessly: keep the #222 business/compliance semantics, but make the experience task-first, progressive and physically stable across the 14 LPE equivalents.
-          
-          ## Authority / claim boundary
-          Authority effect: **NONE**. Existing local presentation owners and the existing compliance packet remain authoritative. No new store, writer, registry, router, action bus, roadmap cursor or presentation authority.
-          
-          This PR establishes repository/runtime composition evidence. It does not establish legal applicability, compliance, certification, control effectiveness, representative-human usability, deployment assurance or independent assurance.
-          
-          ## Runtime closure
-          - Generic compliance context is closed by default and exposed as a progressive sidecar.
-          - Desktop uses a drawer; narrow viewports use a bottom sheet.
-          - Work precedes generic context on Home, Processes, RN-01, EC-01, AO-01, MC-01, AP-01, RC-01, AR-01, Proof and EP-01.
-          - Admin progression is explicit: Stato > AI > Accessi.
-          - Close returns focus to the disclosure trigger.
-          - The 400-unit LPE audit ledger remains lossless in the existing finding owner.
-          
-          ## Falsification
-          - 400/400 audit units mapped
-          - 8/8 closure primitives
-          - 10,000,000 semantic/model trials per terminal local cycle
-          - 33/33 failure families; 528/528 pairs
-          - 0 survivors; 0 false positives; 0 holdout novelty
-          - deletion oracle 8/8; no-loss compression 28/28
-          - 10/10 terminal local cycles on the frozen candidate before PR materialization
-          
-          ## TRAMA machine contract
-          - Trajectory impact: neutral
-          - Convergence slice: NONE
-          - Intent digest: d6e88bea906b7709b1fac75a6abf2461747b80db253bfb503f48a598e6a6995d
-          - Exact preimage: CI_BASE
-          - Exact postimage: CI_HEAD
-          - Semantic neighborhood / owner set: compliance-context.js + stable-shell.js + procedure-frame.js + grc-workspace-base.js + proof-workspace-3-2.js + epistemic-workspace-3-2.js + admin-center.js; existing UI presentation owners only
-          - Target predicates: task/work before generic context; context closed by default; disclosure physically idempotent; deterministic focus return; 14 LPE x 3 viewport exact-head witness; no horizontal overflow
-          - Negative predicates: no new business writer/store/router/registry/presentation authority; no hidden decision-specific caveat; no context-before-work regression; no DOM churn from idempotent placement
-          - Material runtime delta: progressive context sidecar + work-before-context mounting + responsive drawer/bottom-sheet + explicit Admin progression + exact-head browser matrix
-          - Witness receipt: BLOCKED
-          - Closure verdict: OPEN
-          - Lossless semantics disposition: UPDATED
-          - Current semantic input fingerprint: CI_COMPUTED
-          - One next action after ACT: STOP
-          - TRAMA E2E layers: L2-RUNTIME,L3-SEMANTIC,L4-GOVERNANCE,L6-EXPERIENCE,L7-ENTERPRISE
-          - Method clusters: UNDERSTAND,EXECUTE,EXPERIENCE,CONTROL,FALSIFY
-          - Adjacent-layer alignment witness: compliance source contract + 10M saturation + A2/A6/browser exact-head + authority/convergence gates on the same PR HEAD
-          - Repository hygiene delta: no permanent new files; existing owner/check/workflow files only; no new authority
-          
-          ## DoD
-          ### Global
-          - [x] 400/400 audit units have one closure mapping
-          - [x] 8/8 primitives retained by deletion oracle
-          - [x] no new authority
-          - [x] claim boundary preserved
-          - [ ] exact-head CI all green
-          
-          ### Intermediate
-          - [x] 14 LPE equivalents bound to the composition contract
-          - [x] task-first progressive-context runtime implemented
-          - [x] responsive disclosure and focus recovery implemented
-          - [ ] remote browser and composite gates all green
-          
-          ### Local
-          - [x] generic context closed by default
-          - [x] work-before-context mounting
-          - [x] Admin progression explicit
-          - [x] lossless audit ledger bound
-          - [ ] exact-head regressions green
-          
-          EOF
-          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" -f body="$(cat "$RUNNER_TEMP/pr-body.md")" >/dev/null
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
