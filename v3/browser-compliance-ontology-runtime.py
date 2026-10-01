@@ -44,7 +44,9 @@ def check_context(page,key,root):
  mark('overflow'); no_overflow(page)
 
 def check_admin(page):
- goto(page,'home','#homeView'); page.locator('#openAdminCenter').click(); dlg=page.locator('#adminCenter[open]'); expect(dlg).to_be_visible(); assert dlg.locator('.admin-nav').get_attribute('data-admin-progression')=='status>ai>identity'; rows=[]
+ goto(page,'home','#homeView'); menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible();
+ if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
+ admin=menu.locator('#openAdminCenter'); expect(admin).to_be_visible(); admin.click(); dlg=page.locator('#adminCenter[open]'); expect(dlg).to_be_visible(); assert dlg.locator('.admin-nav').get_attribute('data-admin-progression')=='status>ai>identity'; rows=[]
  for key in ['overview','ai','identity']:
   dlg.locator(f'[data-admin-nav="{key}"]').click(); view=dlg.locator(f'[data-admin-view="{key}"]'); expect(view).to_be_visible(); heading=view.locator('h3').first; expect(heading).to_be_visible(); no_overflow(page); rows.append('admin_'+key)
  dlg.locator('[data-admin-close]').click(); return rows
