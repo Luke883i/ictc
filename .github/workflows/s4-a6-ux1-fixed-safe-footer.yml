@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 concurrency:
   group: s4-a6-ux1-fixed-safe-footer-${{ github.ref }}
   cancel-in-progress: true
@@ -57,7 +58,41 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: A6-UX1 exact-head Chromium geometry
+        id: ux1_browser
+        continue-on-error: true
         run: python -u v3/browser-s4-a6-ux1-fixed-safe-footer.py
+      - name: Publish A6-UX1 failure provenance
+        if: steps.ux1_browser.outcome == 'failure'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          error='artifacts/browser-s4-a6-ux1-fixed-safe-footer-error.json'
+          phase='no-error-artifact'
+          message='fixed footer browser contract failed'
+          if [ -f "$error" ]; then
+            phase="$(python -c "import json; d=json.load(open('$error')); print(str(d.get('phase') or 'unknown'))")"
+            message="$(python -c "import json; d=json.load(open('$error')); print(str(d.get('message') or 'browser contract failed').replace(chr(10),' ')[:96])")"
+          fi
+          description="${phase}: ${message}"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=failure -f context='ictc/s4-a6-ux1-browser' \
+            -f description="${description:0:140}" \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a6-ux1-fixed-safe-footer.py" >/dev/null || true
+          cat "$error" || true
+          exit 1
+      - name: Publish A6-UX1 success provenance
+        if: steps.ux1_browser.outcome == 'success'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=success -f context='ictc/s4-a6-ux1-browser' \
+            -f description='fixed footer geometry green at 1440/390/320' \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a6-ux1-fixed-safe-footer.py" >/dev/null || true
       - name: Stop current runtime
         if: always()
         run: ./ictc.sh stop --profile current || true

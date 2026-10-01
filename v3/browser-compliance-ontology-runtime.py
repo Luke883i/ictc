@@ -24,7 +24,7 @@ def placement_ok(page,key,root):
  if key=='home': return follows(page,'#homePriorities',ctx)
  if key=='processes': return follows(page,'#procedureHub',ctx)
  if key in ('monitoring','incidents'): return page.evaluate("([r,c])=>document.querySelector(r)?.lastElementChild?.matches(c)===true",[root,ctx])
- if key.startswith('grc_'): return page.evaluate("c=>document.querySelector('.grc-body')?.lastElementChild?.matches(c)===true",ctx)
+ if key.startswith('grc_'): return follows(page,'#grcWorkspace > .grc-body',f'#grcWorkspace > [data-compliance-context="{key}"]')
  if key=='proof': return follows(page,'#proofContent',ctx)
  if key=='epistemic': return page.evaluate("c=>{const x=document.querySelector(c),p=document.querySelector('#epistemicView .surface-panel');return !!(p&&x&&(p.compareDocumentPosition(x)&Node.DOCUMENT_POSITION_FOLLOWING))}",ctx)
  return False
