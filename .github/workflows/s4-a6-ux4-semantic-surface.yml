@@ -103,19 +103,43 @@ jobs:
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           exit "$rc"
       - name: Compliance ontology exact-head browser · 14 LPE × 3 viewports
+        id: lpe_browser
+        continue-on-error: true
         shell: bash
         run: |
-          set -Eeuo pipefail
+          set +e
           surfaces='home processes monitoring incidents grc_objects grc_coverage grc_actions grc_risks grc_assurance proof epistemic admin'
-          for viewport in 1440x950 390x844 320x720; do
+          rc=0
+          for viewport in 1440x950 1024x768 390x844; do
             for surface in $surfaces; do
               echo "LPE witness: $surface @ $viewport"
               ICTC_COMPLIANCE_MODE=returning \
               ICTC_COMPLIANCE_VIEWPORT="$viewport" \
               ICTC_COMPLIANCE_SURFACE="$surface" \
               python -u v3/browser-compliance-ontology-runtime.py
+              rc=$?
+              if [ "$rc" -ne 0 ]; then
+                error="artifacts/compliance-ontology-runtime/returning__${viewport}__${surface}-error.json"
+                leaf='no-error-artifact'
+                if [ -f "$error" ]; then
+                  leaf="$(python -c "import json,sys; d=json.load(open(sys.argv[1])); t=str(d.get('traceback') or d.get('error') or 'unknown').splitlines(); print(next((x.strip() for x in reversed(t) if x.strip()),'unknown'))" "$error")"
+                fi
+                safe_leaf="$(printf '%s' "$leaf" | tr -cs '[:alnum:]._- ' '-' | cut -c1-96)"
+                echo "surface=$surface" >> "$GITHUB_OUTPUT"
+                echo "viewport=$viewport" >> "$GITHUB_OUTPUT"
+                echo "leaf=$safe_leaf" >> "$GITHUB_OUTPUT"
+                break 2
+              fi
             done
           done
+          exit "$rc"
+      - name: LPE browser diagnostic · ${{ steps.lpe_browser.outputs.surface }} @ ${{ steps.lpe_browser.outputs.viewport }} · ${{ steps.lpe_browser.outputs.leaf }}
+        if: steps.lpe_browser.outcome == 'failure'
+        shell: bash
+        run: |
+          error="artifacts/compliance-ontology-runtime/returning__${{ steps.lpe_browser.outputs.viewport }}__${{ steps.lpe_browser.outputs.surface }}-error.json"
+          cat "$error" || true
+          exit 1
       - name: Parse A6-UX4 browser failure
         id: ux4_diag
         if: steps.ux4_browser.outcome == 'failure'
