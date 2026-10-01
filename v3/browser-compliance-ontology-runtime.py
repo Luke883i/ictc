@@ -30,9 +30,18 @@ def placement_ok(page,key,root):
  return False
 
 def check_context(page,key,root):
- loc=page.locator(f'{root} [data-compliance-context="{key}"]'); assert loc.count()==1,(key,loc.count()); expect(loc).to_be_visible(); assert loc.get_attribute('open') is None,key; assert placement_ok(page,key,root),(key,'context-before-work'); summary=loc.locator(':scope > summary'); expect(summary).to_be_visible(); summary.focus(); summary.press('Enter'); expect(loc.locator('.compliance-context-body')).to_be_visible(); assert loc.locator('[data-compliance-atom]').count()==3,key; txt=loc.inner_text();
+ def mark(name): out['phase']=f'{key}-{name}'
+ mark('present'); loc=page.locator(f'{root} [data-compliance-context="{key}"]'); assert loc.count()==1,(key,loc.count()); expect(loc).to_be_visible()
+ mark('closed-default'); assert loc.get_attribute('open') is None,key
+ mark('placement'); assert placement_ok(page,key,root),(key,'context-before-work')
+ mark('open'); summary=loc.locator(':scope > summary'); expect(summary).to_be_visible(); summary.focus(); summary.press('Enter'); expect(loc.locator('.compliance-context-body')).to_be_visible()
+ mark('atoms'); assert loc.locator('[data-compliance-atom]').count()==3,key; txt=loc.inner_text()
+ mark('tokens')
  for token in ['Capire','Decidere','Dimostrare','Limite']: assert token in txt,(key,token)
- assert loc.locator('.compliance-regime-chip').count()>=3,key; close=loc.locator('[data-compliance-sidecar-close]'); close.click(); assert loc.get_attribute('open') is None,key; assert page.evaluate("e=>e===document.activeElement",summary.element_handle()),(key,'focus-return'); no_overflow(page)
+ mark('regimes'); assert loc.locator('.compliance-regime-chip').count()>=3,key
+ mark('close'); close=loc.locator('[data-compliance-sidecar-close]'); close.click(); assert loc.get_attribute('open') is None,key
+ mark('focus-return'); assert page.evaluate("e=>e===document.activeElement",summary.element_handle()),(key,'focus-return')
+ mark('overflow'); no_overflow(page)
 
 def check_admin(page):
  goto(page,'home','#homeView'); page.locator('#openAdminCenter').click(); dlg=page.locator('#adminCenter[open]'); expect(dlg).to_be_visible(); assert dlg.locator('.admin-nav').get_attribute('data-admin-progression')=='status>ai>identity'; rows=[]

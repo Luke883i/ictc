@@ -120,20 +120,20 @@ jobs:
               rc=$?
               if [ "$rc" -ne 0 ]; then
                 error="artifacts/compliance-ontology-runtime/returning__${viewport}__${surface}-error.json"
-                leaf='no-error-artifact'
+                phase='no-error-artifact'
                 if [ -f "$error" ]; then
-                  leaf="$(python -c "import json,sys; d=json.load(open(sys.argv[1])); t=str(d.get('traceback') or d.get('error') or 'unknown').splitlines(); print(next((x.strip() for x in reversed(t) if x.strip()),'unknown'))" "$error")"
+                  phase="$(python -c "import json,sys; d=json.load(open(sys.argv[1])); print(str(d.get('phase') or 'unknown'))" "$error")"
                 fi
-                safe_leaf="$(printf '%s' "$leaf" | tr -cs '[:alnum:]._- ' '-' | cut -c1-96)"
+                safe_phase="$(printf '%s' "$phase" | tr -cs '[:alnum:]._- ' '-' | cut -c1-96)"
                 echo "surface=$surface" >> "$GITHUB_OUTPUT"
                 echo "viewport=$viewport" >> "$GITHUB_OUTPUT"
-                echo "leaf=$safe_leaf" >> "$GITHUB_OUTPUT"
+                echo "phase=$safe_phase" >> "$GITHUB_OUTPUT"
                 break 2
               fi
             done
           done
           exit "$rc"
-      - name: LPE browser diagnostic · ${{ steps.lpe_browser.outputs.surface }} @ ${{ steps.lpe_browser.outputs.viewport }} · ${{ steps.lpe_browser.outputs.leaf }}
+      - name: LPE browser diagnostic · ${{ steps.lpe_browser.outputs.surface }} @ ${{ steps.lpe_browser.outputs.viewport }} · ${{ steps.lpe_browser.outputs.phase }}
         if: steps.lpe_browser.outcome == 'failure'
         shell: bash
         run: |
