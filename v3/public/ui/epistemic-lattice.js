@@ -5,7 +5,7 @@ const META=Object.freeze({id:'epistemic-lattice',code:'EP-01',label:'Reticolo ep
 const LEVEL_LABELS=Object.freeze({overview:'Quadro',groups:'Gruppi',relations:'Relazioni',atom:'Atomo'});
 const EMPTY_FAMILY='__unclassified__';
 const GRAPH_MAX_NODES=24,GRAPH_MAX_EDGES=48;
-const PROCEDURE_LABELS=Object.freeze({monitoring:'Monitoraggio normativo',incidents:'Eventi e segnalazioni',objects:'Oggetti rilevanti',coverage:'Standard e Controlli',actions:'Azioni correttive',risks:'Rischi di compliance',assurance:'Questionari e verifiche','cross-cutting':'Trasversale','epistemic-lattice':'Trasversale'});
+const PROCEDURE_LABELS=Object.freeze({monitoring:'Monitoraggio normativo',incidents:'Eventi e segnalazioni',objects:'Oggetti rilevanti',coverage:'Perimetro normativo e controlli',actions:'Azioni correttive',risks:'Rischi di compliance',assurance:'Questionari e verifiche','cross-cutting':'Trasversale','epistemic-lattice':'Trasversale'});
 const STATUS_LABELS=Object.freeze({recorded:'Registrato',observed:'Osservato',proposed:'Proposto',reviewed:'Riesaminato',decided:'Deciso',attested:'Attestato'});
 const FAMILY_LABELS=Object.freeze({'cross-cutting':'Trasversale',coverage:'Standard e mapping',monitoring:'Monitoraggio',incidents:'Eventi',objects:'Oggetti',actions:'Azioni',risks:'Rischi',assurance:'Verifiche'});
 const KIND_LABELS=Object.freeze({'epistemic-step':'Passaggio epistemico','policy-recorded':'Policy registrata','subject-version':'Versione soggetto','subject-versioned':'Versione soggetto'});

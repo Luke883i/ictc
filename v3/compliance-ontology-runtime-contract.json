@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "slice": "COMPLIANCE-ONTOLOGY-RUNTIME-1",
   "authorityEffect": "NONE",
   "laws": [
@@ -63,7 +63,8 @@
     "noNewStore": true,
     "noNewWriter": true,
     "noNewRegistry": true,
-    "lpeCompositionV2FindingCoverage": 400
+    "lpeCompositionV2FindingCoverage": 400,
+    "regulatoryAuditClosureFindingCoverage": 645
   },
   "claimBoundary": "Presentation/runtime semantics and browser evidence only; no legal applicability, compliance, certification, control-effectiveness, deployment or independent-assurance conclusion.",
   "compositionV2": {
@@ -172,5 +173,280 @@
       "Proof content and EP canonical panel render before context",
       "browser receipt binds exact build SHA"
     ]
+  },
+  "regulatoryClosureV1": {
+    "id": "REGULATORY-FIRST-PLANE-AUDIT-CLOSURE-1",
+    "trajectoryImpact": "neutral",
+    "authorityEffect": "NONE",
+    "sourceArtifact": "ICTC_UIUX_REGULATORY_AUDIT_CLOSURE_2026-10-02.docx",
+    "sourceSha256": "571484707c894c6c194b491a4fabf718a7f6844d77ced3742c2b81fbadd3b76a",
+    "coverage": {
+      "persistentLpes": 11,
+      "dialogContainers": 29,
+      "asIsVisualStates": 43,
+      "findingLensesPerState": 15,
+      "totalFindingUnits": 645,
+      "onboardingEvidenceStates": 6,
+      "toBeEvidenceStates": 8,
+      "legalPrimers": 5,
+      "governedReferences": 22,
+      "directPrimitives": 7,
+      "adjacentInheritedPrimitives": 1,
+      "mutationTrials": 10000000,
+      "failureFamilies": 27
+    },
+    "intentAtoms": [
+      "preserve every audited finding as a machine-verifiable unit",
+      "make normative/compliance content first-plane without creating a fourth service authority",
+      "separate source/reference from applicability, mapping, compliance and evidence conclusions",
+      "keep legal primers immediate and full catalog drilldownable",
+      "route applicability decisions to MC-01 rather than deciding them in presentation",
+      "require explicit human onboarding acceptance and keep its receipt reconstructible",
+      "preserve task-first composition, progressive disclosure, focus safety and responsive semantic recomposition",
+      "reuse current stores, writers, routers, registries and presentation owners"
+    ],
+    "globalDoD": [
+      {
+        "id": "G01",
+        "obligation": "645/645 audited AS-IS finding units preserved losslessly with source digest",
+        "witness": "compliance-ontology-runtime-check.mjs"
+      },
+      {
+        "id": "G02",
+        "obligation": "every finding has exactly one lens, direct primitive and runtime reference set",
+        "witness": "compliance-ontology-runtime-check.mjs"
+      },
+      {
+        "id": "G03",
+        "obligation": "Normativa & Compliance is globally discoverable but canonical data-service authority remains exactly three",
+        "witness": "regulatory-surface-contract-check.mjs + browser-regulatory-surface.py"
+      },
+      {
+        "id": "G04",
+        "obligation": "five legal primers and full 22-reference catalog are source-aware and drilldownable",
+        "witness": "regulatory-surface-contract-check.mjs + browser-regulatory-surface.py"
+      },
+      {
+        "id": "G05",
+        "obligation": "reference, applicability, mapping, compliance and evidence conclusions remain explicitly distinct",
+        "witness": "regulatory-surface-contract-check.mjs"
+      },
+      {
+        "id": "G06",
+        "obligation": "onboarding acceptance requires explicit human action and post-acceptance receipt remains visible",
+        "witness": "regulatory-surface-contract-check.mjs + seed-runtime-supply-chain-check.mjs"
+      },
+      {
+        "id": "G07",
+        "obligation": "desktop and narrow viewport preserve bounded readable composition and drilldown",
+        "witness": "browser-regulatory-surface.py"
+      },
+      {
+        "id": "G08",
+        "obligation": "no new store, writer, router, business registry or product authority",
+        "witness": "regulatory-surface-contract-check.mjs"
+      },
+      {
+        "id": "G09",
+        "obligation": "10M seeded semantic mutations yield zero survivors, zero false positives and zero holdout novelty; deletion and pairwise no-loss oracles pass",
+        "witness": "regulatory-surface-saturation-10m.mjs"
+      },
+      {
+        "id": "G10",
+        "obligation": "exact-head remote browser witness binds the PR build before merge",
+        "witness": "s4-a6-ux4-semantic-surface.yml"
+      }
+    ],
+    "intermediateDoD": [
+      {
+        "id": "I01",
+        "obligation": "R1 task/state/action remains before generic explanatory content",
+        "owners": [
+          "stable-shell.js",
+          "active-experience.js"
+        ]
+      },
+      {
+        "id": "I02",
+        "obligation": "R2 primary/secondary action hierarchy and next-best-action remain explicit",
+        "owners": [
+          "procedure-frame.js",
+          "grc-workspace-base.js",
+          "procedure-market-ux.js"
+        ]
+      },
+      {
+        "id": "I03",
+        "obligation": "R3 contextual detail stays progressive and overlays remain bounded",
+        "owners": [
+          "compliance-context.js",
+          "regulatory-surface.js",
+          "standard-browser.js"
+        ]
+      },
+      {
+        "id": "I04",
+        "obligation": "R4 normative source and boundary obtain a canonical first-plane projection",
+        "owners": [
+          "regulatory-surface.js",
+          "regulatory-primers.js",
+          "standard-browser.js"
+        ]
+      },
+      {
+        "id": "I05",
+        "obligation": "R6 evidence/caveat stays adjacent to decisions or one disclosure step away",
+        "owners": [
+          "proof-workspace-3-2.js",
+          "epistemic-workspace-3-2.js"
+        ]
+      },
+      {
+        "id": "I06",
+        "obligation": "R7 naming and routes expose Normativa & Compliance and MC-01 handoff clearly",
+        "owners": [
+          "index.html",
+          "semantic-foundation-processes.js",
+          "cross-procedure-create.js"
+        ]
+      },
+      {
+        "id": "I07",
+        "obligation": "R8 density, target size, focus and mobile layout remain bounded",
+        "owners": [
+          "regulatory-surface.css",
+          "stable-shell.js",
+          "compliance-context.css"
+        ]
+      },
+      {
+        "id": "I08",
+        "obligation": "R5 stays inherited from #223 and is not falsely claimed as a direct root of this audit",
+        "owners": [
+          "compliance-ontology-runtime-contract.json"
+        ]
+      },
+      {
+        "id": "I09",
+        "obligation": "onboarding first-run gate cannot close/accept before completion",
+        "owners": [
+          "stable-shell.js",
+          "server.mjs"
+        ]
+      },
+      {
+        "id": "I10",
+        "obligation": "accepted onboarding exposes acceptedAt/elapsed evidence in profile without a second persistence authority",
+        "owners": [
+          "stable-shell.js",
+          "server.mjs",
+          "runtime/model.mjs"
+        ]
+      },
+      {
+        "id": "I11",
+        "obligation": "five legal regimes are first-plane with authority/time/source/scope/drilldown",
+        "owners": [
+          "regulatory-surface.js",
+          "regulatory-primers.js"
+        ]
+      },
+      {
+        "id": "I12",
+        "obligation": "remaining standards/frameworks remain type-separated and available through canonical standard browser",
+        "owners": [
+          "regulatory-surface.js",
+          "standard-browser.js"
+        ]
+      },
+      {
+        "id": "I13",
+        "obligation": "regulatory surface routes qualification to MC-01 and performs no applicability decision itself",
+        "owners": [
+          "regulatory-surface.js",
+          "grc-workspace-base.js"
+        ]
+      },
+      {
+        "id": "I14",
+        "obligation": "presentation terminology says Normativa, standard e perimetro / Perimetro e controlli consistently",
+        "owners": [
+          "index.html",
+          "standard-browser.js",
+          "semantic-foundation-processes.js",
+          "procedure-finetuning-1-4.js"
+        ]
+      },
+      {
+        "id": "I15",
+        "obligation": "all 43 AS-IS states remain semantically represented by the 645-unit ledger",
+        "owners": [
+          "compliance-ontology-runtime-findings.json"
+        ]
+      }
+    ],
+    "localDoD": [
+      {
+        "id": "L01",
+        "predicate": "index has exactly one data-regulatory-open entry and no data-service=regulatory"
+      },
+      {
+        "id": "L02",
+        "predicate": "active-experience installs regulatory surface once"
+      },
+      {
+        "id": "L03",
+        "predicate": "regulatory surface has authorityEffect=none"
+      },
+      {
+        "id": "L04",
+        "predicate": "regulatory surface projects exactly five canonical primers"
+      },
+      {
+        "id": "L05",
+        "predicate": "runtime catalog contributes exactly 17 non-primer reference cards in seeded witness"
+      },
+      {
+        "id": "L06",
+        "predicate": "each legal primer exposes primary source and optional canonical standard drilldown"
+      },
+      {
+        "id": "L07",
+        "predicate": "scope badges distinguish tracked/reference/not-used/undeclared"
+      },
+      {
+        "id": "L08",
+        "predicate": "claim boundary includes reference != applicability, mapping != compliance, evidence != conclusion"
+      },
+      {
+        "id": "L09",
+        "predicate": "MC-01 CTA closes presentation dialog before navigating to work"
+      },
+      {
+        "id": "L10",
+        "predicate": "regulatory dialog is full-width bounded on <=620px and no horizontal overflow"
+      },
+      {
+        "id": "L11",
+        "predicate": "profile shows onboardingAcceptanceEvidence=user-record after accept"
+      },
+      {
+        "id": "L12",
+        "predicate": "server rejects accept when progress < 100 and acceptedAt is write-once"
+      },
+      {
+        "id": "L13",
+        "predicate": "standard browser labels Normativa, standard e controlli"
+      },
+      {
+        "id": "L14",
+        "predicate": "all 645 unit ids are unique and raw payload digest matches source contract"
+      },
+      {
+        "id": "L15",
+        "predicate": "27/27 mutation families have deletion witness and 351/351 pairwise no-loss witness"
+      }
+    ],
+    "claimBoundary": "Repository/runtime composition and exact-head browser evidence only; legal applicability, compliance, certification, control effectiveness, representative-human usability, production deployment and independent assurance remain external."
   }
 }

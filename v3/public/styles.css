@@ -27,6 +27,7 @@
 @import url('./a6-ux3-operational-surface.css');
 @import url('./a6-ux4-semantic-surface.css');
 @import url('./compliance-context.css');
+@import url('./regulatory-surface.css');
 @import url('./a6-ux1-fixed-safe-footer.css');
 
 [hidden]{display:none!important}
