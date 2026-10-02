@@ -42,12 +42,19 @@ jobs:
           node --check v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
           python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
+          python -m py_compile v3/browser-regulatory-surface.py
+          node --check v3/regulatory-surface-contract-check.mjs
+          node --check v3/regulatory-surface-saturation-10m.mjs
       - name: A6-UX4 semantic source contract
         run: node v3/s4-a6-ux4-semantic-surface-check.mjs
       - name: Compliance ontology runtime source contract
         run: node v3/compliance-ontology-runtime-check.mjs
       - name: Compliance ontology runtime falsification 10,000,000
         run: node v3/compliance-ontology-runtime-saturation-10m.mjs
+      - name: Regulatory audit closure source contract · 645/645
+        run: node v3/regulatory-surface-contract-check.mjs
+      - name: Regulatory audit closure falsification · 10,000,000
+        run: node v3/regulatory-surface-saturation-10m.mjs
       - name: UIUX onto-epistemic convergence 3 source contract
         run: node v3/uiux-ontoepistemic-convergence-3-check.mjs
       - name: UIUX onto-epistemic convergence 3 falsification 10,000,000
@@ -168,6 +175,37 @@ jobs:
             -f state=success -f context='ictc/lpe-v2-browser' \
             -f description='14 LPE equivalents x 3 viewport classes green' \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-compliance-ontology-runtime.py" >/dev/null || true
+      - name: Regulatory audit exact-head browser · onboarding + desktop/mobile
+        id: regulatory_browser
+        continue-on-error: true
+        shell: bash
+        run: |
+          rm -f artifacts/browser-regulatory-surface.json
+          python -u v3/browser-regulatory-surface.py
+      - name: Publish regulatory audit browser success
+        if: steps.regulatory_browser.outcome == 'success'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=success -f context='ictc/regulatory-audit-browser' \
+            -f description='645-unit contract + explicit onboarding + regulatory desktop/mobile green' \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-regulatory-surface.py" >/dev/null || true
+      - name: Regulatory audit browser diagnostic
+        if: steps.regulatory_browser.outcome == 'failure'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state=failure -f context='ictc/regulatory-audit-browser' \
+            -f description='exact-head onboarding/regulatory browser contract failed' \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-regulatory-surface.py" >/dev/null || true
+          cat artifacts/browser-regulatory-surface.json || true
+          exit 1
       - name: Parse A6-UX4 browser failure
         id: ux4_diag
         if: steps.ux4_browser.outcome == 'failure'
@@ -211,6 +249,7 @@ jobs:
             artifacts/s4-a6-ux4-uiux-mount-fuzz-100k.json
             artifacts/s4-a6-ux4-ontology-uiux-fuzz-100k.json
             artifacts/browser-s4-a6-ux4-semantic-surface*.json
+            artifacts/browser-regulatory-surface.json
             artifacts/convergence-authority-*.json
           if-no-files-found: warn
           retention-days: 30
