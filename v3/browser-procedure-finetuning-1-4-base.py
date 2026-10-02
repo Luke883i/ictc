@@ -3,7 +3,7 @@ from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
-LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta norme e controlli','AP-01':'Gestisci remediation'}
+LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta perimetro e controlli','AP-01':'Gestisci remediation'}
 PROC={'RN-01':('monitoring','#monitoringView','procedure-sequential-rn-ec.js'),'EC-01':('incidents','#incidentsView','procedure-sequential-rn-ec.js'),'AO-01':('objects','#grcWorkspace','grc-workspace-3-2.js'),'MC-01':('coverage','#grcWorkspace','grc-workspace-3-2.js'),'AP-01':('actions','#grcWorkspace','grc-workspace-3-2.js')}
 def fail(e):
  (ART/'browser-procedure-finetuning-1-4-error.json').write_text(json.dumps({'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()},indent=2),encoding='utf8');print(f'::error title=browser-procedure-finetuning::{PHASE}: {type(e).__name__}: {e}',flush=True)
