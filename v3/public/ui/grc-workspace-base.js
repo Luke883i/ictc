@@ -6,7 +6,7 @@ import { navigateSurface } from './surface-router.js';
 const IDS=['objects','coverage','actions','risks','assurance'];
 const META={
   objects:['AO-01','Inventario','Oggetti rilevanti','Sistemi, dispositivi, servizi, dati, fornitori, processi, policy e controlli in un registro governato.','Aggiungi oggetto'],
-  coverage:['MC-01','Perimetro normativo e controlli','Scope, mapping e copertura','Dichiara il perimetro da verificare, valida i mapping e mantieni distinti gap, N.A. e irrisolti.','Aggiungi requisito'],
+  coverage:['MC-01','Standard e controlli','Perimetro normativo e controlli','Dichiara il perimetro da verificare, valida i mapping e mantieni distinti gap, N.A. e irrisolti.','Aggiungi requisito'],
   actions:['AP-01','Azioni correttive','Azioni e remediation','Trasforma gap, finding e rischi in lavoro persistente con responsabile, priorità, scadenza e ricevute.','Crea azione'],
   risks:['RC-01','Rischi','Rischi di compliance','Valida scenari e rating. La heatmap consolidata usa soltanto valutazioni umane.','Aggiungi scenario'],
   assurance:['AR-01','Questionari e verifiche','Assurance e autovalutazione','Preserva la richiesta originale, usa l’AI per una bozza bounded e approva umanamente le risposte.','Nuova richiesta']

@@ -10,6 +10,8 @@ const shell=read('./public/ui/stable-shell.js');
 const server=read('./server.mjs');
 const model=read('./runtime/model.mjs');
 const browser=read('./public/ui/standard-browser.js');
+const grcBase=read('./public/ui/grc-workspace-base.js');
+const market=read('./public/ui/procedure-market-ux.js');
 const css=read('./public/regulatory-surface.css');
 const contract=JSON.parse(read('./compliance-ontology-runtime-contract.json'));
 const findings=JSON.parse(read('./compliance-ontology-runtime-findings.json'));
@@ -58,6 +60,8 @@ assert.ok(shell.includes('onboardingAcceptanceEvidence')&&shell.includes('accept
 assert.ok(server.includes("pathname==='/api/profile/onboarding'")&&server.includes("profile.onboarding.updated")&&server.includes("if(accept&&nextProgress<100)"),'explicit onboarding acceptance server guard missing');
 assert.ok(model.includes("authority:'user-record'")||model.includes('authority: \'user-record\''),'onboarding receipt must remain user-record authority');
 assert.ok(browser.includes('Normativa, standard e controlli'),'standard-browser regulatory naming missing');
+assert.ok(grcBase.includes("coverage:['MC-01','Standard e controlli','Perimetro normativo e controlli'"),'MC-01 canonical label must remain separate from presentation title');
+assert.ok(market.includes("head.querySelector('h1').textContent='Perimetro normativo e controlli'"),'MC-01 presentation title missing');
 assert.ok(css.includes('@media(max-width:620px)')&&css.includes('100dvh'),'responsive modal contract missing');
 const forbidden=['localStorage.setItem(\'ictc-onboarding','new Map(','/api/regulatory','method:\'POST\''];
 for(const token of forbidden)assert.ok(!surface.includes(token),'new presentation authority/write path: '+token);
