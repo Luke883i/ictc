@@ -5,6 +5,7 @@ import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createServer} from 'node:net';
+import {procedureAdapterIds} from './runtime/procedure-adapters.mjs';
 const dir=await mkdtemp(join(tmpdir(),'ictc-release-e2-'));
 function freePort(){return new Promise((resolve,reject)=>{const s=createServer();s.once('error',reject);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});}
 let child;let output='';try{
@@ -14,7 +15,7 @@ let child;let output='';try{
   let payload;let httpStatus=0;
   const deadline=Date.now()+20_000;
   while(Date.now()<deadline){if(child.exitCode!==null)break;try{const r=await fetch(`http://127.0.0.1:${port}/api/health`,{signal:AbortSignal.timeout(1500)});httpStatus=r.status;payload=await r.json();if(r.ok)break;}catch{}await new Promise(r=>setTimeout(r,200));}
-  const ids=['monitoring','incidents','objects','coverage','actions','risks','assurance'];
+  const ids=procedureAdapterIds();
   const integrityOK=payload?.integrity?.ok===true||payload?.integrity?.valid===true;
   const procedureCount=Array.isArray(payload?.services)?payload.services.filter(x=>ids.includes(x)).length:0;
   const witness={schemaVersion:'1.0.0',classification:'E2-loopback-runtime-readback',healthHttp:httpStatus,integrityOK,procedureCount,portScope:'127.0.0.1',externalAttestation:false};
