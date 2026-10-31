@@ -38,7 +38,7 @@ const homeNarrativeOracle=(h,sh,style)=>(
   sh.includes('catalogue.filter(item=>item.enabled!==false)')&&
   sh.includes("const placeholder=item.kind==='placeholder'")&&
   sh.includes("placeholder?'Area prevista, non operativa.")&&
-  sh.includes("esc(item.description||'Descrizione non disponibile.')")&&
+  sh.includes("esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')")&&
   sh.includes("if(!source)throw new Error('Regulatory example source unavailable: '")&&
   sh.includes('if(host.innerHTML!==html)host.innerHTML=html;')&&
   sh.includes('data-service="proof"')&&
@@ -53,7 +53,7 @@ const narrativeMutants=[
   [shell,'catalogue.filter(item=>item.enabled!==false)','catalogue',null,null],
   [shell,"const placeholder=item.kind==='placeholder'","const placeholder=false",null,null],
   [shell,"placeholder?'Area prevista, non operativa.","placeholder?'",null,null],
-  [shell,"esc(item.description||'Descrizione non disponibile.')","item.description||'Descrizione non disponibile.'",null,null],
+  [shell,"esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')","item.description||'Descrizione non disponibile.'",null,null],
   [shell,"if(!source)throw new Error('Regulatory example source unavailable: '","if(false)throw new Error('Regulatory example source unavailable: '",null,null],
   [shell,'if(host.innerHTML!==html)host.innerHTML=html;','host.innerHTML=html;',null,null],
   [shell,'data-service="proof"','data-service="home"',null,null],
