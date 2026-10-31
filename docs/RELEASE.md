@@ -42,6 +42,14 @@ ICTC deve meritare un rilascio attraverso una catena attribuibile: **software ve
 7. **Release authority:** decidere GO/NO-GO solo dopo risoluzione o eccezione formalmente autorizzata e tracciata di GAP-007/009/012/014/020/021/022; non autocertificare l'eccezione con una stringa CI.
 8. **Deployment operator:** verificare il medesimo artefatto attestato, ambiente, smoke e rollback dopo approvazione; produrre ricevute attribuibili E4.
 
+## C2 — provenance e attestazione del candidato esatto
+
+Il controllo C2 del repository parte dall'**exact candidate** (checkout della exact PR HEAD) e produce nello stesso job l'archivio candidato tramite `git archive`, **CycloneDX** SBOM, manifest di provenance e digest degli input/output. Il subject corrisponde allo SHA e al tree SHA del candidato, non a una ricostruzione indipendente.
+
+La firma e l'attestazione repository-bounded usano **GitHub OIDC** e **Sigstore** in modalità keyless con action pin immutabili. Il workflow esegue la verifica `gh attestation verify` sul subject e sul repository prima della ricevuta canonica C2; build provenance, SBOM attestation, `package.json`, `package-lock.json`, archivio e digest sono collegati all'exact checkout.
+
+**merge non equivale a release**: CI, firma, verifica C2 e merge non sono approvazione umana, deployment attestato, Enterprise Candidate o Enterprise Ready. F-06/C2 è repository-terminal E2 dopo POST-216 ACT, ma i rail E3/E4 restano separati. Nessuna procedura qui crea una seconda pipeline SBOM o un canale alternativo di signing.
+
 ## Comandi realmente presenti
 
 ```bash
