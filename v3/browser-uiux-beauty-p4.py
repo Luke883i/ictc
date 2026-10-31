@@ -124,7 +124,9 @@ JS_AUDIT = r'''({surface,width}) => {
   }
   if(surface==='admin'){
     const rows=[...root.querySelectorAll('.procedure-policy-row')],small=rows[0]?.querySelector('small'),bold=rows[0]?.querySelector('b');
-    check('admin-seven-procedure-rows',rows.length===7,{count:rows.length});
+    check('admin-nine-catalogue-rows',rows.length===9,{count:rows.length});
+    check('admin-seven-operational-switches',rows.filter(row=>row.querySelector('input[data-operational="true"]')).length===7,{count:rows.filter(row=>row.querySelector('input[data-operational="true"]')).length});
+    check('admin-two-inert-placeholders',rows.filter(row=>row.querySelector('input[data-operational="false"]')).length===2,{count:rows.filter(row=>row.querySelector('input[data-operational="false"]')).length});
     if(small)check('admin-secondary-readable',px(small)>=12.4,{font:px(small)});
     if(small&&bold)check('admin-hierarchy',px(bold)>px(small),{title:px(bold),support:px(small)});
     check('admin-policy-canonical-title',(root.querySelector('#procedureAdminPanel .procedure-admin-head h3')?.textContent||'').trim()==='Disponibilità operativa dei processi',{text:root.querySelector('#procedureAdminPanel .procedure-admin-head h3')?.textContent});

@@ -21,6 +21,7 @@ with sync_playwright() as pw:
  elif PROBE=='procedures':
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
+  expect(hub).to_have_attribute('data-catalogue-item-count','9')
   expect(hub.locator('[data-procedure-id]')).to_have_count(7)
   expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
   entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
