@@ -18,7 +18,7 @@ with sync_playwright() as pw:
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
- elif PROBE in ('procedures','procedures-structure','procedures-legend','procedures-alignment'):
+ elif PROBE=='procedures' or PROBE in ('procedures-structure','procedures-legend','procedures-alignment'):
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
