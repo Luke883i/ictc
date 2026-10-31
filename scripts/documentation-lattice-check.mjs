@@ -1,3 +1,4 @@
+import {checkReadiness} from './review-readiness-check.mjs';
 import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -17,6 +18,7 @@ for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('v3/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
 const pkg=JSON.parse(await read('package.json'));
+const reviewerReadiness=checkReadiness(root); check(reviewerReadiness.ok,`review-readiness E2 invariants: ${reviewerReadiness.failures.join(',')}`);
 const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContract,runtimeModel,serverText,securityText,gapsText]=await Promise.all([read('v3/semantic-owner-contract.json'),read('docs/openapi.yaml'),read('v3/uiux-converge-0-contract.json'),read('v3/current-gate-registry.mjs'),read('scripts/repository-contract.mjs'),read('v3/runtime/model.mjs'),read('v3/server.mjs'),read('SECURITY.md'),read('v3/gaps.json')]);
 const semanticOwner=JSON.parse(semanticOwnerText),debt=semanticOwner.repositoryCoherenceDebt||{},debtFindings=Array.isArray(debt.findings)?debt.findings:[],debtById=Object.fromEntries(debtFindings.map(item=>[item.id,item])),uiuxContract=JSON.parse(uiuxContractText),gaps=JSON.parse(gapsText);
 const linkTargets=new Map();

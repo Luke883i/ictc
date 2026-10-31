@@ -23,3 +23,13 @@ Le decisioni architetturali sono registrate in `docs/decisions/`. Una nuova ADR 
 - nessuna scrittura critica senza readback;
 - nessuna modifica generata a mano;
 - review obbligatoria per schema, API, auth e AI authority.
+
+## Decisione e accettazione della review
+
+La reviewer-readiness di una PR richiede evidenza E2 sull'exact-head: diff,
+owner, predicati falsificabili, prove realmente eseguite, limiti e rollback.
+`CONTRIBUTING.md` descrive l'handoff; la PR usa il template canonico.
+L'approvazione **indipendente** e l'enforcement server-side di `main` sono
+controlli GitHub E3-GOV distinti, da verificare live. Il maintainer può
+integrare solo dopo gli obblighi applicabili; nessun documento o checker può
+simulare l'esistenza di un altro reviewer umano.

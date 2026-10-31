@@ -30,6 +30,30 @@ Do not convert AI output into an operational/legal conclusion without a recorded
 
 Use `.github/PULL_REQUEST_TEMPLATE.md`. Keep semantic commits small. The PR description must identify affected authority, scope/non-goals, claim boundary, current rail, tests actually run, compatibility, residual risk and rollback. For stacked work, declare the prerequisite PR/branch explicitly.
 
+## Human review handoff (repository E2 vs GitHub E3)
+
+A reviewable PR must name its existing authority from `docs/authority-matrix.yaml`,
+its bounded semantic change, positive and negative invariants, exact base/head SHA,
+file diff, commands **actually executed** with results, residual debt, and rollback.
+The PR template is the submission form, not an approval receipt. The reviewer
+independently compares the diff with the canonical owner and reproduces critical
+checks; the maintainer controls integration, not the business decision.
+
+`docs/PRODUCT.md` owns product purpose; `docs/11_ARCHITECTURE.md` and the
+executable runtime own AS-IS design; `v3/release-identity.json` owns the release;
+`docs/documentation-manifest.json` classifies documents; `docs/convergence/`
+plans changes but never rewrites Git's live facts. The deployment operator owns
+operational controls and evidence; authorized business decision makers retain
+human approvals. None of these roles is created by this documentation.
+
+**Two non-equivalent review states:** `review-ready` means the candidate and its
+receipts can be independently assessed; `review-enforced` requires live GitHub
+branch rules, effective reviewer permissions, required checks and actual human
+approval on the exact head. `GOV-01F` è un controllo compensativo, non branch protection server-side.
+CODEOWNERS, a green CI, AI or a local
+review simulation do not establish `review-enforced` or E4 deployment assurance.
+See `GAP-022` / E3-GOV and `GAP-012` / E3-HUMAN in `v3/gaps.json`.
+
 ## Testing
 
 At minimum:
