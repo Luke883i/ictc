@@ -124,3 +124,39 @@ html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] .admin-
 html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] details[data-composition-detail="technical-controls"]{order:1}
 @media(max-width:900px){html[data-visible-cutover="1"] #homeView[data-home-first-plane="decision>worklist"] .home-hero{grid-template-columns:1fr;grid-template-areas:"intro" "next" "priorities"!important}html[data-visible-cutover="1"] #epistemicView .epistemic-reconstruction-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){html[data-visible-cutover="1"] #epistemicView .epistemic-reconstruction-grid{grid-template-columns:1fr}html[data-visible-cutover="1"] #epistemicView [data-epistemic-reconstruction] p{display:none}}
+
+
+/* HOME-COMPLIANCE-1 — local Home value narrative; no global finalizer. */
+#homeView .home-compliance-overview{display:grid;gap:.75rem;margin:.7rem 0 1.25rem;min-width:0}
+#homeView .home-compliance-heading,#homeView .home-compliance-story,#homeView .home-compliance-questions,#homeView .home-compliance-answer,#homeView .home-compliance-detail,#homeView .home-compliance-end{min-width:0;border:1px solid var(--color-border);border-radius:13px;background:var(--color-surface);padding:.85rem 1rem}
+#homeView .home-compliance-heading{background:var(--workspace-landing);padding:1rem 1.15rem}
+#homeView .home-compliance-overview :is(h2,h3,h4,p){margin:0}
+#homeView .home-compliance-overview h2{font-size:clamp(1.35rem,2.25vw,1.9rem);line-height:1.2;letter-spacing:-.025em;margin:.2rem 0 .38rem}
+#homeView .home-compliance-overview h3{font-size:1.04rem;line-height:1.35;margin-bottom:.42rem}
+#homeView .home-compliance-overview h4{font-size:.92rem}
+#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:82ch}
+#homeView .home-compliance-story p,#homeView .home-compliance-answer p{max-width:90ch;line-height:1.55}
+#homeView .home-compliance-questions ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;list-style:none;margin:0;padding:0}
+#homeView .home-compliance-questions li{min-width:0;padding:.65rem .75rem;background:var(--color-bg);border:1px solid var(--color-border);border-radius:10px}
+#homeView .home-compliance-questions li p{font-size:.88rem;line-height:1.45;color:var(--color-muted);margin-top:.2rem}
+#homeView .home-compliance-answer{display:grid;gap:.4rem}
+#homeView .home-compliance-method{font-weight:650;font-size:.9rem;padding-top:.35rem}
+#homeView .home-compliance-detail>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:650;line-height:1.4}
+#homeView .home-compliance-detail>summary:focus-visible,#homeView .home-compliance-route:focus-visible,#homeView .home-compliance-case-sources a:focus-visible{outline:3px solid var(--color-focus, currentColor);outline-offset:3px}
+#homeView .home-compliance-example-note{color:var(--color-muted);font-size:.86rem;margin:.3rem 0 .6rem!important}
+#homeView .home-compliance-cases,#homeView .home-compliance-procedures{list-style:none;display:grid;gap:.5rem;margin:.5rem 0 0;padding:0}
+#homeView .home-compliance-cases{grid-template-columns:repeat(2,minmax(0,1fr))}
+#homeView .home-compliance-case{min-width:0;display:grid;gap:.38rem;align-content:start;border:1px solid var(--color-border);border-radius:10px;padding:.75rem}
+#homeView .home-compliance-case p{font-size:.9rem;line-height:1.45}
+#homeView .home-compliance-case small,#homeView .home-compliance-case-limit{color:var(--color-muted);font-size:.8rem}
+#homeView .home-compliance-case-sources{display:flex;gap:.7rem;flex-wrap:wrap}
+#homeView .home-compliance-case-sources a{font-weight:600;font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+#homeView .home-compliance-procedures li{display:grid;grid-template-columns:4.3rem minmax(0,1fr);gap:.6rem;align-items:start;padding:.5rem .2rem;border-bottom:1px solid var(--color-border)}
+#homeView .home-compliance-procedures li:last-child{border-bottom:0}
+#homeView .home-compliance-process-code{font-weight:700;font-size:.82rem}
+#homeView .home-compliance-procedures small{display:block;color:var(--color-muted);font-size:.86rem;line-height:1.45;margin-top:.15rem}
+#homeView .home-compliance-route{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;max-width:100%;margin-top:.55rem;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface);color:var(--color-text);font:inherit;cursor:pointer}
+#homeView .home-compliance-end{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+#homeView .home-compliance-end p{max-width:77ch;color:var(--color-muted);font-size:.84rem;line-height:1.45}
+@media(max-width:760px){#homeView .home-compliance-questions ul,#homeView .home-compliance-cases{grid-template-columns:minmax(0,1fr)}#homeView .home-compliance-end{display:grid}}
+@media(prefers-reduced-motion:reduce){#homeView .home-compliance-overview *{scroll-behavior:auto}}
