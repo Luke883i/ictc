@@ -160,3 +160,6 @@ html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] details
 #homeView .home-compliance-end p{max-width:77ch;color:var(--color-muted);font-size:.84rem;line-height:1.45}
 @media(max-width:760px){#homeView .home-compliance-questions ul,#homeView .home-compliance-cases{grid-template-columns:minmax(0,1fr)}#homeView .home-compliance-end{display:grid}}
 @media(prefers-reduced-motion:reduce){#homeView .home-compliance-overview *{scroll-behavior:auto}}
+
+/* Keep long educational content progressive, below the operative Home first plane. */
+#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}

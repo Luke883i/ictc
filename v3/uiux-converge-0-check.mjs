@@ -41,10 +41,12 @@ const homeNarrativeOracle=(h,sh,style)=>(
   sh.includes("esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')")&&
   sh.includes("if(!source)throw new Error('Regulatory example source unavailable: '")&&
   sh.includes('if(host.innerHTML!==html)host.innerHTML=html;')&&
-  sh.includes('data-service="proof"')&&
+  sh.includes('data-home-business-guide')&&
+  sh.includes('class="home-compliance-route" data-service="proof"')&&
   style.includes('#homeView .home-compliance-overview')&&
   style.includes('.home-compliance-detail>summary')&&
-  style.includes('@media(max-width:760px)')
+  style.includes('@media(max-width:760px)')&&
+  style.includes('#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}')
 );
 assert.ok(homeNarrativeOracle(index,shell,enterprise),'Home narrative projection / local owner contract broken');
 const narrativeMutants=[
@@ -56,8 +58,8 @@ const narrativeMutants=[
   [shell,"esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')","item.description||'Descrizione non disponibile.'",null,null],
   [shell,"if(!source)throw new Error('Regulatory example source unavailable: '","if(false)throw new Error('Regulatory example source unavailable: '",null,null],
   [shell,'if(host.innerHTML!==html)host.innerHTML=html;','host.innerHTML=html;',null,null],
-  [shell,'data-service="proof"','data-service="home"',null,null],
-  [enterprise,'#homeView .home-compliance-overview','#otherView .home-compliance-overview',null,null]
+  [shell,'class="home-compliance-route" data-service="proof"','class="home-compliance-route" data-service="home"',null,null],
+  [enterprise,'#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}','#otherView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}',null,null]
 ];
 for(const [source,from,to] of narrativeMutants){
   assert.ok(source.includes(from),'stale Home mutation fixture: '+from);

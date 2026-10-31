@@ -44,11 +44,11 @@ function renderHomeCompliance(){
   }).join('');
   const html='<div class="home-compliance-heading"><p class="eyebrow">ICTC · Compliance per le imprese</p><h2>'+esc(ICTC_MANIFEST.title)+'</h2><p class="home-compliance-lead">'+esc(ICTC_MANIFEST.lead)+'</p></div>'+
     '<div class="home-compliance-story"><h3>'+esc(HOME_COMPLIANCE.heading)+'</h3><p>'+esc(HOME_COMPLIANCE.lead)+'</p></div>'+
-    '<section class="home-compliance-questions" aria-label="Che cosa chiedono le norme"><h3>Che cosa chiedono le norme, in concreto?</h3><ul>'+requirements+'</ul></section>'+
+    '<details class="home-compliance-detail home-compliance-full" data-home-business-guide><summary>Che cosa richiedono le norme e come ICTC risponde</summary><div class="home-compliance-full-body"><section class="home-compliance-questions" aria-label="Che cosa chiedono le norme"><h3>Che cosa chiedono le norme, in concreto?</h3><ul>'+requirements+'</ul></section>'+
     '<section class="home-compliance-answer"><h3>Come risponde ICTC</h3><p>'+esc(HOME_COMPLIANCE.value)+'</p><p>'+esc(HOME_COMPLIANCE.economics)+'</p><p class="home-compliance-method">'+esc(ICTC_MANIFEST.method)+'</p></section>'+
     '<details class="home-compliance-detail" data-home-regulatory-cases><summary>Esempi aziendali: GDPR, D.Lgs. 231/2001, NIS2 e DORA</summary><p class="home-compliance-example-note">Esempi di questioni da valutare: non tutti i regimi si applicano a ogni impresa.</p><ul class="home-compliance-cases">'+cases+'</ul></details>'+
     '<details class="home-compliance-detail" data-home-procedure-catalogue><summary>'+esc(HOME_COMPLIANCE.procedureTitle)+' · '+visible.length+' voci disponibili</summary>'+(Array.isArray(catalogue)?'<ul class="home-compliance-procedures">'+catalogueRows+'</ul>':'<p>Catalogo non disponibile per il profilo corrente.</p>')+'<button type="button" class="home-compliance-route" data-service="processes">Apri Processi di Compliance '+uiIcon('arrow-up-right','ui-icon')+'</button></details>'+
-    '<div class="home-compliance-end"><p>'+esc(HOME_COMPLIANCE.boundary)+'</p><button type="button" class="home-compliance-route" data-service="proof">Consulta Evidenze ICTC '+uiIcon('arrow-up-right','ui-icon')+'</button></div>';
+    '<div class="home-compliance-end"><p>'+esc(HOME_COMPLIANCE.boundary)+'</p><button type="button" class="home-compliance-route" data-service="proof">Consulta Evidenze ICTC '+uiIcon('arrow-up-right','ui-icon')+'</button></div></div></details>';
   if(host.innerHTML!==html)host.innerHTML=html;
   host.dataset.homeNarrative='obligation-risk-cost-1';
 }
