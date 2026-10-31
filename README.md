@@ -3,178 +3,81 @@
 
 <!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 
-> **ROA Research Programme.** This repository is a component of the **ROA Research Programme — Computational Epistemics, Semantic Architectures & Governable AI Systems**, coordinated in [`Luke883i/academics`](https://github.com/Luke883i/academics) and theoretically anchored by [`Luke883i/ROA`](https://github.com/Luke883i/ROA). **Programme membership is a coordination/topology statement:** repository-local contracts and evidence remain authoritative for this repository, and membership alone does not imply formal derivation from ROA, conformance to ROA, empirical validation of ROA theory, or production readiness.
+> **Contesto di programma.** ICTC partecipa al [ROA Research Programme](https://github.com/Luke883i/academics), con riferimento teorico a [ROA](https://github.com/Luke883i/ROA). L'appartenenza indica coordinamento, **non** conformità teorica dimostrata, validazione indipendente o readiness produttiva. Le autorità di questo repository restano locali.
 
 # ICTC — Integrated Compliance Tower Control
 
-ICTC è un **sistema locale di governance della conoscenza di compliance**. Organizza fonti, requisiti, oggetti aziendali, rischi, azioni, richieste di verifica, decisioni umane ed evidenze senza trasformare il software in un motore autonomo di conclusioni legali o di conformità.
+ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
 
-La navigazione canonica è **Home / Processi di Compliance / Evidenze ICTC**. EP-01 è una vista trasversale sulle relazioni registrate e non costituisce un ottavo processo business.
+**Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
-## Cosa governa
+## Che cosa governa
 
-| Codice | Processo | Oggetto di lavoro |
-|---|---|---|
-| RN-01 | Monitoraggio normativo e fonti | fonti, pubblicazioni e cambiamenti da verificare |
-| EC-01 | Incidenti e quasi incidenti | fatti, chiarimenti, versioni e decisioni relative a un evento |
-| AO-01 | Inventario di sistemi e oggetti | sistemi, servizi, dati, fornitori, processi, policy e controlli |
-| MC-01 | Standard e Controlli | standard, requisiti, perimetro e mapping |
-| AP-01 | Azioni correttive | impegni di remediation fino alla verifica di chiusura |
-| RC-01 | Rischi di compliance | scenari, valutazioni, trattamenti e riesami |
-| AR-01 | Questionari e verifiche | richieste, response set, evidenze e approvazioni interne |
+| Codice | Processo business |
+| --- | --- |
+| RN-01 | Monitoraggio normativo e fonti |
+| EC-01 | Incidenti e quasi incidenti |
+| AO-01 | Inventario di sistemi, servizi, dati, fornitori e oggetti organizzativi |
+| MC-01 | Standard, requisiti, perimetro e mapping |
+| AP-01 | Azioni correttive e verifica di chiusura |
+| RC-01 | Rischi di compliance e riesami |
+| AR-01 | Questionari, richieste di evidenza e approvazioni interne |
 
-**EP-01 · Reticolo epistemico** rende esplorabili versioni, basi e relazioni tra decisioni, fonti ed evidenze. Non crea applicabilità, autorità decisionale o conclusioni di conformità.
+La navigazione principale è **Home / Processi di Compliance / Evidenze ICTC**: Home presenta al massimo **3 priorità**; il catalogo dei processi usa **one-row-per-procedure / row-list**. **EP-01 · Reticolo epistemico** è una vista trasversale sul reticolo epistemico e non costituisce un ottavo processo business. La superficie visibile «Normativa & Compliance» rende consultabili riferimenti, ma non determina autonomamente l'applicabilità legale.
 
-## Regole costituzionali
+## Avvio locale
 
-```text
-osservato ≠ vero nel mondo
-proposto ≠ deciso
-perimetro di lavoro ≠ applicabilità giuridica
-mapping ≠ conformità / efficacia
-completato ≠ chiuso e verificato
-evidenza ≠ conclusione
-rating ≠ probabilità oggettiva
-approvazione interna ≠ assurance indipendente
-integrità software ≠ autenticità esterna
-CI verde ≠ deployment assurance
-```
-
-L'AI può preparare, cercare, riassumere o proporre. I checkpoint che producono decisioni business restano umani e autorizzati.
-
-## Come leggere questo repository
-
-ICTC è anche un repository ingegneristicamente atipico: runtime, contratti semantici, owner map, regression oracle, falsificatori, lineage e prove di CI convivono nello stesso albero. **Recenza, nome del file e volume dei test non creano authority.**
-
-- Per **capire la forma del repository, la storia, il metodo e i limiti di inferenza**, parti da [Repository Atlas](docs/REPOSITORY_ATLAS.md).
-- Per **modificare il repository**, parti da [START_HERE](docs/START_HERE.md), che instrada verso l'owner e il falsificatore più vicini.
-
-L'Atlas è orientamento canonico, non una seconda product/runtime truth. I fatti Git live restano di Git/GitHub; le authority sostanziali restano quelle registrate.
-
-## Architettura AS-IS
-
-```text
-browser
-  v3/public · HTML/CSS/JavaScript vanilla
-        ↓ HTTP JSON
-v3/server.mjs
-        ↓
-v3/runtime/* · domain · enterprise · ai
-        ↓
-v3/store.mjs
-        ↓
-v3/sqlite-state-persistence.mjs
-        ↓
-state.sqlite
-  snapshot          stato corrente mutabile/versionato
-  audit             ledger hash-linked append-oriented
-  subject_payload   payload content-addressed
-  subject_version   storia semantica append-oriented
-  epistemic_step    causalità e authority append-oriented
-  command_result    replay/idempotenza durevole
-```
-
-Il runtime richiede Node.js `>=22.16.0`, usa `node:sqlite`, `PRAGMA journal_mode=WAL` e `PRAGMA synchronous=FULL`. ICTC non è un event store completo: lo snapshot corrente non viene ricostruito esclusivamente dall'audit ledger.
-
-Il default bind è `127.0.0.1:4173`. TLS, IdP, secret management, backup/restore, malware scanning, monitoring, HA e hardening host restano responsabilità del deployment.
-
-## UI/UX corrente — Native Semantic Lattice 3.2
-
-La regola corrente è **work first, explanation on demand**, con composizione locale delle superfici e annotazione globale minima.
-
-- `active-experience.js` è l'unico composition root e installa gli owner locali 3.2 prima dell'annotazione globale.
-- `native-workspace-3-2.js` aggrega il bootstrap tecnico di Proof, EP-01, Admin, GRC e dialoghi; non possiede business write authority.
-- `semantic-composition-runtime.js` è **annotation-only**: classifica surface/authority metadata e non riscrive copy business, non riordina DOM locale e non installa gli owner locali.
-- Home mostra una proposition aziendale unica e una attention queue limitata a **3 priorità**.
-- Processi di Compliance usa il catalogo corrente **one-row-per-procedure / row-list**: una riga per ciascuna delle sette procedure, con reflow semantico su viewport stretti e copy distinto tra catalogo e workspace.
-- Le procedure mantengono lavoro e decisione prima di KPI, metodo, boundary e trace.
-- Evidenze ICTC apre con il **Reticolo epistemico** e mantiene secondari decisioni/tracciabilità, metodo, integrità, verifiche esterne ed export.
-- EP-01 porta ricerca e relazioni prima di summary/compression e dettagli tecnici.
-- Admin esplicita gli effetti della disponibilità operativa senza trasformarla in applicabilità normativa.
-
-Il lifecycle costituzionale resta **C0.1** con ordine `harmonization → presentation → integrity → journey → annotation`; il journey corrente resta `2.2-sequential-onto-epistemic`.
-
-Il design system mantiene tre assi distinti: `uiComposition = 3.2`, `workspaceChrome = 3.3` e `uiPresentation = local-owners`. La presentation corrente è distribuita fra gli owner canonici dichiarati; `workspace-finetuning-3-4.css` è ritirato e non è un resolver current.
-
-## Evidenze ed export
-
-Evidenze ICTC collega pratica, decisione, evidenza e limite nel perimetro autorizzato. Gli export **PDF, XML, Markdown e ZIP** sono rappresentazioni dello stesso dossier autorizzato e non ampliano RBAC o scope. Receipt, digest e hash provano proprietà del record software entro il modello ICTC, non firma qualificata, trusted timestamp, autenticità esterna o non-ripudio.
-
-## Avvio portabile — BOOTSTRAP-0
-
-L'ingresso foreground canonico è Node/npm ed è adatto a workstation, CI e supervisor/PaaS:
+Requisiti: Node.js **>=22.16.0**, npm e una copia locale del repository.
 
 ```bash
 npm ci --ignore-scripts
 npm start
+# apri http://127.0.0.1:4173
 ```
 
-La demo sintetica usa gli stessi byte applicativi ma uno stato isolato e la Suite 3.0:
+Il bind predefinito è su loopback. Non esporre pubblicamente il profilo standard senza i controlli di identità, proxy, segreti e rete richiesti dal runtime. Come launcher locale alternativo: `./ictc.sh start --no-open`. Vedi [DEVELOPMENT](docs/DEVELOPMENT.md).
+
+Per la **DEMO sintetica e isolata**, usa `npm run demo`. `ICTC_PUBLIC_DEMO=1` è un profilo separato, anonimo e in sola lettura, riservato esclusivamente a dati sintetici; non è il profilo di deployment standard. Per il trasporto su Render DEMO servono `ICTC_HOST=0.0.0.0` e `ICTC_ALLOW_NETWORK_BIND=1`; il server usa `demo-runtime-3-0` e nel profilo pubblico `ICTC_TRUSTED_PROXY_SECRET` deve restare non impostato. Requisiti e limiti sono in [ARCHITECTURE](docs/11_ARCHITECTURE.md) e [RELEASE](docs/RELEASE.md).
+
+## Verifiche prima di una proposta
 
 ```bash
-npm run demo
-```
-
-Il launcher locale resta disponibile come supervisor e converge sullo stesso `v3/bootstrap.mjs`:
-
-```bash
-./ictc.sh start
-./ictc.sh demo
-./ictc.sh status
-./ictc.sh logs
-./ictc.sh doctor
-./ictc.sh stop
-./ictc.sh restart
-```
-
-Per servizi Node/PaaS che richiedono Build e Start command, incluso Render, usare:
-
-```text
-Build: npm ci --ignore-scripts && npm run build
-Start: npm start
-```
-
-`PORT` prevale su `ICTC_PORT`, quindi le porte assegnate dalla piattaforma restano autorevoli. Il default host resta `127.0.0.1`: BOOTSTRAP-0 non rende sicuro né abilita automaticamente un bind pubblico. Per Render inbound (`RENDER=true`, `RENDER_SERVICE_TYPE=web|pserv`) un host loopback fallisce esplicitamente con `paas-network-bind-required`; impostare `ICTC_HOST=0.0.0.0` soddisfa soltanto il requisito di trasporto e **non** concede fiducia identitaria. Nel profilo standard, un deployment non-loopback continua a richiedere la trusted-identity boundary già imposta dal runtime (`trusted-header`, opt-in esplicito al network bind, proxy secret e proxy/IdP upstream autorizzato). L'unica eccezione applicativa è la Public DEMO sintetica, anonima e read-only descritta sotto. Il filesystem Render è effimero per default e un persistent disk single-instance non equivale a shared durable enterprise authority. Il devcontainer resta il container locale canonico e conserva il bind loopback con port forwarding privato. Questa diagnostica non introduce un profilo enterprise e non anticipa le slice CEP-R* proposte in PR #163.
-
-### Render · DEMO pubblica sintetica in sola lettura
-
-Per pubblicare **solo** la DEMO Suite 3.0 sintetica su un Render Web Service:
-
-```text
-Build: npm ci --ignore-scripts && npm run build
-Start: npm run demo
-
-Environment:
-ICTC_HOST=0.0.0.0
-ICTC_ALLOW_NETWORK_BIND=1
-ICTC_PUBLIC_DEMO=1
-```
-
-Non impostare `PORT`: Render la assegna al servizio e ICTC le dà già precedenza. Non impostare `ICTC_IDENTITY_MODE`, `ICTC_TRUSTED_PROXY_SECRET`, `ICTC_MULTI_TENANT`, `ICTC_ALLOW_LOCAL_ACTOR_SWITCH` o `ICTC_ALLOW_LOCAL_TENANT_SWITCH`; se presenti da una configurazione precedente, rimuoverli. `npm run demo` seleziona Suite 3.0 e la runtime isolata `demo-runtime-3-0`.
-
-`ICTC_PUBLIC_DEMO=1` è un opt-in separato dal deployment standard: espone **soltanto dati sintetici DEMO**, espone le tre persone dimostrative `admin`, `user` e `auditor`; il ruolo richiesto è limitato a questa allowlist e l'actor corrispondente (`local-admin`, `local-user`, `local-auditor`) è derivato server-side. L'header client dell'actor e gli header proxy non sono autorità; le API restano limitate a `GET`/`HEAD`. Nessun proxy secret viene inviato al browser. La modalità è non autenticata e non va usata per dati reali, riservati o per assurance enterprise. Il deployment standard non-loopback continua a richiedere `trusted-header` e un vero proxy/IdP upstream. Il filesystem Render resta effimero per default.
-
-## Verifica
-
-```bash
-npm run bootstrap:check
-npm run bootstrap:saturation
+npm run docs:check
 npm test
 npm run release:check
-node v3/current-semantic-3-2.mjs
-node v3/native-semantic-lattice-3-2-check.mjs
-node v3/native-semantic-lattice-3-2-ui-check.mjs
-node v3/ui-finetuning-3-4-check.mjs
-node v3/native-semantic-lattice-3-2-saturation.mjs
-node v3/native-semantic-lattice-3-2-stress.mjs
 ```
 
-`bootstrap:saturation` esercita 1.000.000 di composizioni deterministiche su famiglie semantiche source-derived del bootstrap; non sono un milione di deploy o process launch. La saturation 3.2 esegue **10.000.000 trial di falsificazione del vocabolario modellato** su 220 famiglie dichiarate. Non sono 10 milioni di mutazioni del codice o browser session. Lo stress 3.2 esercita invece il contratto eseguibile C0.1 di ordinamento/validazione dei participant su un milione di casi deterministici. Browser journey ed exact-head CI restano evidenze separate.
+Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE.md) collega le modifiche agli owner e ai test. Questi sono **comandi da eseguire**, non attestazioni di passaggio in un ambiente specifico. Browser, sicurezza e verifiche di delivery hanno workflow distinti. Un milione di trial sul modello non equivale a un milione di mutazioni del codice o test con utenti.
 
-## Release e presa in carico
+## Architettura e limiti delle evidenze
 
-`v3/release-identity.json` resta l'autorità della release. Il profilo corrente conserva `journey = 2.2-sequential-onto-epistemic` e `constitution = C0.1`; Native Semantic Lattice 3.2 modifica composizione e gerarchia informativa senza creare un nuovo processo o una nuova write authority. Il registry documentale registra separatamente `workspaceChrome = 3.3` e `uiPresentation = local-owners`; la vecchia 3.4 resta lineage/retirement oracle e non current authority.
+`v3/public/` (HTML/CSS/JS) -> `v3/server.mjs` (HTTP, identità, permessi, handler) -> `v3/runtime-store.mjs` / `v3/store.mjs` -> persistenza SQLite rafforzata. Le letture usano proiezioni autorizzate; le scritture producono esiti/receipt e richiedono verifica su readback. Il benchmark enterprise PostgreSQL è un substrate distinto, non una prova sostitutiva del runtime SQLite standard.
 
-La branch protection server-side e gli altri gate indipendenti/deployment non possono essere auto-prodotti dal repository: restano blocker esterni quando non disponibili.
+**Identità di release:** `v3/release-identity.json` resta l'autorità della release. Il journey corrente è `2.2-sequential-onto-epistemic`, la costituzione è `C0.1`. La UI usa **Native Semantic Lattice 3.2**: `active-experience.js` è il composition root e la proiezione globale `semantic-composition-runtime.js` è **annotation-only**, non un secondo owner business.
 
-**Per prendere in carico il repository parti da `docs/START_HERE.md`.** Gli owner correnti sono in `docs/authority-matrix.yaml`; lo standard documentale è `docs/DOCUMENTATION_STANDARD.md`.
+**Evidenze e export:** PDF, XML, Markdown e ZIP sono rappresentazioni dello stesso dossier autorizzato; non estendono le autorizzazioni di lettura o l'assurance.
+
+**Osservato != vero; proposto != deciso; riferimento != applicabilità; mapping != conformità; completato != verificato; evidenza != conclusione; approvazione interna != assurance indipendente.** L'AI può assistere entro la policy configurata, ma non acquisisce autorità decisionale umana.
+
+## Dove trovare la fonte giusta
+
+| Domanda | Fonte iniziale canonica |
+| --- | --- |
+| Scopo e limiti del prodotto | [PRODUCT](docs/PRODUCT.md) |
+| Come orientarsi nel repository | [REPOSITORY_ATLAS](docs/REPOSITORY_ATLAS.md) |
+| Dove modificare codice e documenti | [START_HERE](docs/START_HERE.md) e [authority matrix](docs/authority-matrix.yaml) |
+| Come funziona il runtime attuale | [ARCHITECTURE AS-IS](docs/11_ARCHITECTURE.md) |
+| Quali documenti sono current, policy o storici | [Manifest](docs/documentation-manifest.json) e [standard](docs/DOCUMENTATION_STANDARD.md) |
+| Perché l'architettura si è evoluta | [PROJECT_TRAJECTORY](docs/PROJECT_TRAJECTORY.md) |
+| Quali test esistono e quali sono i loro limiti | [TESTING](docs/TESTING.md) |
+| Quale evidenza manca ancora | [GAP_REGISTER](docs/GAP_REGISTER.md) e [RELEASE](docs/RELEASE.md) |
+
+## Contribuire e fare review
+
+Leggi [CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md) e [AGENTS](AGENTS.md). Ogni PR dichiara intento, owner corrente, predicati positivi e negativi, percorso utente interessato, diff effettivo, verifiche eseguite **sulla stessa HEAD**, rischi residui e rollback. Prima di creare un nuovo layer, dimostra perché un owner esistente non possa assorbire la responsabilità.
+
+Il **contributor** propone e testa; il **reviewer** verifica diff, predicati ed evidenze; il **maintainer** governa l'integrazione; l'**operatore del deployment** e gli **organi decisionali aziendali** mantengono le responsabilità esterne di loro competenza. Questa è una distinzione operativa, non una dichiarazione che ICTC disponga già di reviewer indipendenti o di una nuova organizzazione.
+
+`.github/CODEOWNERS` indirizza la review ma **non impone da solo approvazioni**. Verifica ruleset e protezione live di GitHub prima di dichiarare review indipendente obbligatoria. `GOV-01F` è un controllo compensativo, non branch protection server-side.
+
+Per vulnerabilità usa [SECURITY](SECURITY.md), non issue pubbliche. Valgono [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) e licenza [MIT](LICENSE).

@@ -31,6 +31,17 @@ Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/
 
 Per una correzione locale non serve leggere l'intera genealogia. Se la modifica altera significato, authority, persistence, epistemic state o una surface condivisa, approfondisci i documenti proprietari indicati sotto. Se il problema richiede un nuovo layer, prima dimostra che nessun owner corrente possa assorbirlo.
 
+## Review readiness senza nuova authority
+
+Per una **review umana**, seguire [CONTRIBUTING](../CONTRIBUTING.md) e il
+[template PR](../.github/PULL_REQUEST_TEMPLATE.md): prima risolvere l'owner
+attraverso questa pagina, poi mostrare delta reale, invarianti, prova exact-head
+e limiti. La leggibilità della candidate è E2; l'obbligatorietà della review è
+E3-GOV e dipende da ruleset GitHub effettivi, non dal documento o da CODEOWNERS.
+Il deployment e la validazione con utenti reali mantengono evidenze E4/E3 esterne.
+Il controllo locale `scripts/review-readiness-check.mjs` osserva gli owner e
+la documentazione esistente: non definisce una seconda governance.
+
 ## Percorso di approfondimento
 
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
