@@ -18,25 +18,28 @@ with sync_playwright() as pw:
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
- elif PROBE=='procedures':
+ elif PROBE in ('procedures','procedures-structure','procedures-legend','procedures-alignment'):
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
-  expect(hub.locator('[data-procedure-id]')).to_have_count(7)
-  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
-  entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
-  assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
-  legend=p.locator('#processesView [data-maturity-legend]')
-  expect(legend).to_be_visible()
-  expect(legend.locator('[data-maturity]')).to_have_count(4)
-  for word in ['Pronto','Parziale','In costruzione','Segnaposto','Verde','Giallo','Arancione','Rosso','non attestazione di conformità']:
-   assert word in legend.inner_text(),word
-  badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
-  expect(badges).to_have_count(9)
-  assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim().length>0&&e.querySelector('svg')===null)")
-  offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
-  assert max(offsets)-min(offsets)<=2,offsets
-  assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
+  if PROBE in ('procedures','procedures-structure'):
+   expect(hub.locator('[data-procedure-id]')).to_have_count(7)
+   expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
+   entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
+   assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
+   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
+  if PROBE in ('procedures','procedures-legend'):
+   legend=p.locator('#processesView [data-maturity-legend]')
+   expect(legend).to_be_visible()
+   expect(legend.locator('[data-maturity]')).to_have_count(4)
+   for word in ['Pronto','Parziale','In costruzione','Segnaposto','Verde','Giallo','Arancione','Rosso','non attestazione di conformità']:
+    assert word in legend.inner_text(),word
+  if PROBE in ('procedures','procedures-alignment'):
+   badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
+   expect(badges).to_have_count(9)
+   assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim().length>0&&e.querySelector('svg')===null)")
+   offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
+   assert max(offsets)-min(offsets)<=2,offsets
  elif PROBE=='procedure-toggle':
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
