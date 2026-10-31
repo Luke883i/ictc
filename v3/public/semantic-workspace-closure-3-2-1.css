@@ -93,3 +93,15 @@ html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question
 html[data-visible-cutover="1"] #proofContent>details[data-proof-domain="decisions"],html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="trace-reconstruction"]{border-color:color-mix(in srgb,var(--color-brand) 28%,var(--color-border))!important}
 html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{margin-top:.2rem!important;background:var(--color-surface-subtle)}
 @media(max-width:719px){html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question]{padding:.62rem .68rem}html[data-visible-cutover="1"] #proofContent>.proof-fact-strip{display:grid;grid-template-columns:1fr}html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{order:8}}
+
+/* Compliance catalogue flags: declared product maturity is not a legal or release verdict. */
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card>header{display:flex;align-items:center;gap:.3rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;color:var(--color-muted)}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity .ui-icon{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="ready"]{color:#16834c}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="scaffold-yellow"]{color:#af8100}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="scaffold-orange"]{color:#c66b00}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="placeholder"]{color:#bd3737}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-unavailable{display:inline-block;max-width:12rem;font-size:var(--type-label);color:var(--color-muted);line-height:1.35;text-align:center}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-unavailable{text-align:left;max-width:none}}
+@media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity{color:CanvasText}}
