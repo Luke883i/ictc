@@ -26,6 +26,16 @@ with sync_playwright() as pw:
   expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
   entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
   assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
+  legend=p.locator('#processesView [data-maturity-legend]')
+  expect(legend).to_be_visible()
+  expect(legend.locator('[data-maturity]')).to_have_count(4)
+  for word in ['Pronto','Parziale','In costruzione','Segnaposto','Verde','Giallo','Arancione','Rosso','non attestazione di conformità']:
+   assert word in legend.inner_text(),word
+  badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
+  expect(badges).to_have_count(9)
+  assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim().length>0&&e.querySelector('svg')===null)")
+  offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
+  assert max(offsets)-min(offsets)<=2,offsets
   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
  elif PROBE=='procedure-toggle':
   p.locator('.service-nav [data-service="processes"]').click()

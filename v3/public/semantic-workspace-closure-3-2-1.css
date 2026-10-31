@@ -94,27 +94,73 @@ html[data-visible-cutover="1"] #proofContent>details[data-proof-domain="decision
 html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{margin-top:.2rem!important;background:var(--color-surface-subtle)}
 @media(max-width:719px){html[data-visible-cutover="1"] #proofContent>[data-proof-reconstruction-question]{padding:.62rem .68rem}html[data-visible-cutover="1"] #proofContent>.proof-fact-strip{display:grid;grid-template-columns:1fr}html[data-visible-cutover="1"] #proofContent>details[data-proof-workspace="interpretation"]{order:8}}
 
-/* Compliance catalogue flags: declared product maturity is not a legal or release verdict. */
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-card>header{display:flex;align-items:center;gap:.3rem;min-width:0}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;color:var(--color-muted)}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity .ui-icon{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="ready"]{color:#16834c}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="scaffold-yellow"]{color:#af8100}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="scaffold-orange"]{color:#c66b00}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity[data-maturity="placeholder"]{color:#bd3737}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-unavailable{display:inline-block;max-width:12rem;font-size:var(--type-label);color:var(--color-muted);line-height:1.35;text-align:center}
-@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-unavailable{text-align:left;max-width:none}}
-@media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"] #procedureHub .procedure-maturity{color:CanvasText}}
 
-/* Placeholder rows retain the 3.2.1 list grammar without posing as operational procedure-card records. */
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder[data-uiux-layout="row"]{display:grid!important;grid-template-columns:4.4rem minmax(0,1fr) auto!important;grid-template-areas:"code title action" "code purpose action"!important;align-items:center!important;gap:.12rem .65rem!important;min-height:var(--ui-row-compact)!important;padding:.58rem .72rem!important;border:1px solid var(--color-border)!important;border-radius:10px!important;background:var(--color-surface)!important;min-width:0}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>header{grid-area:code;display:flex;align-items:center;gap:.3rem;min-width:0}
+/* One visual maturity primitive shared by all nine catalogue rows and its explicit legend. */
+html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+  display:grid!important;
+  grid-template-columns:4.4rem minmax(0,1fr) 7.7rem 12rem!important;
+  grid-template-areas:"code title maturity action" "code purpose maturity action"!important;
+  align-items:center!important;
+  column-gap:.65rem!important;
+  row-gap:.12rem!important;
+  min-width:0;
+}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder[data-uiux-layout="row"]{
+  position:relative;padding:.58rem .72rem!important;min-height:var(--ui-row-compact)!important;
+  border:1px solid var(--color-border)!important;border-radius:10px!important;
+  background:var(--color-surface)!important;box-shadow:var(--elevation-rest)!important;
+}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>header{grid-area:code;min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .process-code{font-family:var(--font-mono);font-size:var(--type-label);color:var(--color-muted)}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>h2{grid-area:title;margin:0;font-size:var(--type-heading);line-height:1.25;min-width:0;overflow-wrap:anywhere}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>.procedure-purpose{grid-area:purpose;margin:0;color:var(--color-muted);font-size:var(--type-body);line-height:1.35;min-width:0}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{grid-area:action;justify-self:end}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-maturity{display:inline-flex;align-items:center;justify-content:center;color:#bd3737;width:16px;height:16px;flex:none}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-maturity .ui-icon{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{font-size:var(--type-label);color:var(--color-muted);line-height:1.35;text-align:center}
-@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder[data-uiux-layout="row"]{grid-template-columns:3.6rem minmax(0,1fr)!important;grid-template-areas:"code title" "purpose purpose" "action action"!important;gap:.18rem .45rem!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{justify-self:start;width:100%}html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{text-align:left}}
-@media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder{border-color:CanvasText!important}html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-maturity{color:CanvasText}}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{grid-area:action;justify-self:end;align-self:center;max-width:12rem}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{display:inline-block;max-width:12rem;text-align:center;font-size:var(--type-label);color:var(--color-muted);line-height:1.35}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)> .procedure-maturity{
+  display:inline-flex!important;grid-area:maturity!important;align-self:center;justify-self:start;
+}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity{
+  box-sizing:border-box;display:inline-flex;align-items:center;gap:.34rem;
+  max-width:100%;white-space:nowrap;border:1px solid currentColor;border-radius:999px;
+  padding:.18rem .46rem;font-size:.7rem;font-weight:650;line-height:1.25;
+  background:var(--color-surface);color:var(--color-muted);
+}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity::before{
+  content:"";display:block;flex:none;width:.38rem;height:.38rem;border-radius:50%;background:currentColor;
+}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity[data-maturity="ready"]{color:#14663f;background:#eaf6ee}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity[data-maturity="scaffold-yellow"]{color:#755500;background:#fff5d6}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity[data-maturity="scaffold-orange"]{color:#985100;background:#fff0df}
+html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity[data-maturity="placeholder"]{color:#a62b2b;background:#fdecec}
+html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity-legend{
+  display:flex;flex-wrap:wrap;gap:.4rem .85rem;align-items:center;
+  margin:.3rem 0 .65rem;padding:.48rem .6rem;border:1px solid var(--color-border);
+  border-radius:8px;background:var(--color-surface);font-size:.73rem;line-height:1.4;
+}
+html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-heading{font-weight:700;flex:none}
+html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-entry{display:inline-flex;align-items:center;gap:.32rem;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-boundary{flex-basis:100%;color:var(--color-muted);font-size:.7rem}
+@media(max-width:870px){
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+  grid-template-columns:4.4rem minmax(0,1fr) 7.7rem!important;
+  grid-template-areas:"code title maturity" "code purpose maturity" "code action action"!important;
+  row-gap:.25rem!important;
+ }
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)>footer{justify-self:start!important}
+}
+@media(max-width:719px){
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+  grid-template-columns:3.6rem minmax(0,1fr)!important;
+  grid-template-areas:"code maturity" "title title" "purpose purpose" "action action"!important;
+  gap:.22rem .45rem!important;
+ }
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)> .procedure-maturity{justify-self:end}
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{width:100%;justify-self:start!important}
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{text-align:left;max-width:none}
+ html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity-legend{gap:.4rem .6rem}
+ html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-entry{flex-basis:calc(50% - .3rem);flex-wrap:wrap}
+}
+@media(forced-colors:active){
+ html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity{color:CanvasText;background:Canvas;border-color:CanvasText}
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder{border-color:CanvasText!important}
+}
