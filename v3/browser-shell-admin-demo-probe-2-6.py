@@ -40,19 +40,30 @@ with sync_playwright() as pw:
    expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
    entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
    assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
-   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
+   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href],[data-catalogue-placeholder-id] [role="button"]').count()==0
+   assert hub.locator('[data-catalogue-placeholder-id] .procedure-purpose').all_text_contents()==['Area prevista, non operativa.']*2
   if PROBE in ('procedures','procedures-legend'):
    legend=p.locator('#processesView [data-maturity-legend]')
    expect(legend).to_be_visible()
    expect(legend.locator('[data-maturity]')).to_have_count(4)
-   for word in ['Pronto','Parziale','In costruzione','Segnaposto','Verde','Giallo','Arancione','Rosso','non attestazione di conformità']:
+   for word in ['Maturità','Pronto','Parziale','In costruzione','Segnaposto','non certifica conformità']:
     assert word in legend.inner_text(),word
+   for word in ['Verde','Giallo','Arancione','Rosso','funzioni previste disponibili','scaffold iniziale']:
+    assert word not in legend.inner_text(),word
+   icon_shapes=legend.locator('[data-maturity]').evaluate_all("els=>els.map(e=>({shape:e.querySelector('svg.maturity-icon')?.innerHTML,ink:getComputedStyle(e).color,bg:getComputedStyle(e).backgroundColor,label:e.getAttribute('aria-label'),text:e.textContent.trim()}))")
+   assert len({item['shape'] for item in icon_shapes})==4 and all(item['shape'] and item['text']=='' and item['label'] for item in icon_shapes),icon_shapes
+   assert len({item['bg'] for item in icon_shapes})==1 and len({item['ink'] for item in icon_shapes})==1,icon_shapes
   if PROBE in ('procedures','procedures-alignment'):
    badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
    expect(badges).to_have_count(9)
-   assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim().length>0&&e.querySelector('svg')===null)")
+   assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim()===''&&e.querySelectorAll('svg.maturity-icon').length===1&&e.getAttribute('role')==='img'&&e.getAttribute('aria-label')?.startsWith('Maturità dichiarata:'))")
    offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
    assert max(offsets)-min(offsets)<=2,offsets
+   heights=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
+   assert len(heights)==9 and max(heights)-min(heights)<=2,heights
+   unavailable=hub.locator('[data-catalogue-placeholder-id] .procedure-unavailable')
+   expect(unavailable).to_have_count(2)
+   assert unavailable.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.getAttribute('aria-disabled')==='true'&&!e.hasAttribute('tabindex')&&e.getBoundingClientRect().height>=44&&getComputedStyle(e).pointerEvents==='none')")
  elif PROBE=='procedure-toggle':
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
@@ -80,6 +91,13 @@ with sync_playwright() as pw:
   p.locator('.service-nav [data-service="processes"]').click()
   expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
  elif PROBE=='mobile':
-  m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m;open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
+  m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(p.locator('#procedureHub')).to_have_attribute('data-catalogue-item-count','9')
+  h=p.locator('#procedureHub > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
+  assert len(h)==9 and max(h)-min(h)<=2,h
+  assert p.locator('#procedureHub [data-catalogue-placeholder-id] .procedure-unavailable').count()==2
+  p.locator('.service-nav [data-service="home"]').click()
+  open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
  else:raise SystemExit(f'unknown probe {PROBE}')
  print({'ok':True,'probe':PROBE,'demo':DEMO,'demoProjectionAuthority':'demo-suite-3-0' if DEMO else None});ctx.close();browser.close()
