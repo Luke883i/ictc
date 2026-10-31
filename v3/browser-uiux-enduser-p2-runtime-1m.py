@@ -12,7 +12,7 @@ PHASE='init'
 
 SPECS={
  'home':dict(view='home',root='#homeView',identity='#homeTitle',primary_scope='.home-next',primary='.primary',record='#homePriorities .home-business-priority'),
- 'processes':dict(view='processes',root='#processesView',identity='.processes-head h1',primary_scope='#procedureHub .procedure-card:first-child footer',primary='.primary',record='#procedureHub .procedure-card:first-child'),
+ 'processes':dict(view='processes',root='#processesView',identity='.processes-head h1',primary_scope='#procedureHub .procedure-card footer',primary='.primary',record='#procedureHub .procedure-card'),
  'monitoring':dict(view='monitoring',root='#monitoringView',identity=':scope > .procedure-frame h1',primary_scope=':scope > .procedure-frame .procedure-frame-actions',primary='[data-enduser-primitive="PrimaryAction"]',secondary=':scope > .procedure-frame details[data-secondary-disclosure="true"]',boundary=':scope > .procedure-frame .procedure-orientation-token[data-enduser-primitive="BoundaryNote"]',record='.procedure-work-item.p2-record-row',count='[data-primary-count-owner="true"]',legacy=':scope > .hero > .hero-copy'),
  'incidents':dict(view='incidents',root='#incidentsView',identity=':scope > .procedure-frame h1',primary_scope=':scope > .procedure-frame .procedure-frame-actions',primary='[data-enduser-primitive="PrimaryAction"]',secondary=':scope > .procedure-frame details[data-secondary-disclosure="true"]',boundary=':scope > .procedure-frame .procedure-orientation-token[data-enduser-primitive="BoundaryNote"]',record='.procedure-work-item.p2-record-row',count='[data-primary-count-owner="true"]',legacy=':scope > .hero > .hero-copy'),
  'objects':dict(view='grc',procedure='objects',root='#grcWorkspace',identity=':scope > .procedure-frame h1',primary_scope=':scope > .procedure-frame .procedure-frame-actions',primary='[data-enduser-primitive="PrimaryAction"]',secondary=':scope > .procedure-frame details[data-secondary-disclosure="true"]',boundary=':scope > .procedure-frame .procedure-orientation-token[data-enduser-primitive="BoundaryNote"]',record='.grc-list > article.p2-record-row',count='[data-primary-count-owner="true"]',metric='.grc-kpis[data-metric-role="distribution"]'),
@@ -104,7 +104,7 @@ def navigate(page,surface,spec):
   menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
   if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
   page.locator('#openAdminCenter').click(); expect(page.locator('#adminCenter')).to_be_visible()
-  page.wait_for_function("()=>document.querySelectorAll('#procedurePolicyList .procedure-policy-row').length===7")
+  page.wait_for_function("()=>document.querySelectorAll('#procedurePolicyList .procedure-policy-row').length===9")
  elif spec['view']=='ai-settings':
   page.goto(BASE+'/?view=home',wait_until='networkidle')
   menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
@@ -121,7 +121,7 @@ def navigate(page,surface,spec):
   page.goto(BASE+f'/?view=grc&procedure={spec["procedure"]}',wait_until='networkidle'); expect(page.locator('#grcView')).to_be_visible(); page.wait_for_function("x=>document.querySelector('#grcWorkspace')?.dataset.compositionSurface===x",arg=spec['procedure'])
  else:
   page.goto(BASE+f'/?view={spec["view"]}',wait_until='networkidle'); expect(page.locator(spec['root'])).to_be_visible()
-  if surface=='processes': page.wait_for_function("()=>document.querySelectorAll('#procedureHub .procedure-card').length===7")
+  if surface=='processes': page.wait_for_function("()=>document.querySelectorAll('#procedureHub .procedure-card').length===7&&document.querySelectorAll('#procedureHub .catalogue-placeholder').length===2")
  page.wait_for_function("()=>document.documentElement.dataset.enduserComposition==='p2'")
 
 def fail(error):

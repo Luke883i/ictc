@@ -147,7 +147,7 @@ def desktop(browser):
     if opens.count():
         PHASE='home-icon'; assert all('→' not in (opens.nth(i).inner_text() or '') for i in range(opens.count())); svg=opens.first.locator('svg'); box=svg.bounding_box(); assert not box or max(box['width'],box['height'])<=14.5,box
     PHASE='home-reflow'; no_page_overflow(page,'desktop:home')
-    PHASE='processes-open'; page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub [data-process-code]')).to_have_count(7); no_page_overflow(page,'desktop:processes')
+    PHASE='processes-open'; page.locator('.service-nav [data-service="processes"]').click(); expect(page.locator('#procedureHub [data-procedure-id][data-process-code]')).to_have_count(7); no_page_overflow(page,'desktop:processes')
     for code,pid,root in PROCEDURES: audit_procedure(page,code,pid,root)
     PHASE='pre-proof-page-errors'; assert not ERRORS,ERRORS
     PHASE='proof-open'; page.locator('.service-nav [data-service="proof"]').click(); page.wait_for_function("()=>document.querySelector('#proofView')?.offsetParent!==null")
@@ -187,7 +187,7 @@ def mobile(browser,width,height):
     global PHASE
     ctx=browser.new_context(viewport={'width':width,'height':height}); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')")
     page=ctx.new_page(); page.set_default_timeout(30000); ensure_onboarded(page,BASE,'admin'); page.goto(BASE+'/?view=processes',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
-    PHASE=f'mobile-{width}-processes'; expect(page.locator('#procedureHub [data-process-code]')).to_have_count(7); no_page_overflow(page,f'mobile-{width}:processes')
+    PHASE=f'mobile-{width}-processes'; expect(page.locator('#procedureHub [data-procedure-id][data-process-code]')).to_have_count(7); no_page_overflow(page,f'mobile-{width}:processes')
     r=open_process(page,'MC-01','coverage','#grcWorkspace'); PHASE=f'mobile-{width}-mc'; expect(r.locator('[data-procedure-worklist]')).to_have_attribute('data-a6-ux4-mount','semantic-bridge')
     PHASE=f'mobile-{width}-dialog-open'; r.locator('[data-open-standard-browser]').first.click(); dialog=page.locator('#standardBrowserDialog'); expect(dialog).to_be_visible()
     PHASE=f'mobile-{width}-dialog-x'; no_local_x_overflow(page,'#standardBrowserDialog',f'mobile-{width}:dialog')

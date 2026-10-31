@@ -18,7 +18,7 @@ with sync_playwright() as pw:
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
- elif PROBE=='procedures':p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub [data-process-code]')).to_have_count(7);codes=p.locator('#procedureHub [data-process-code]').evaluate_all('els=>els.map(e=>e.dataset.processCode)');assert codes==['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],codes
+ elif PROBE=='procedures':p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub [data-procedure-id][data-process-code]')).to_have_count(7);codes=p.locator('#procedureHub [data-procedure-id][data-process-code]').evaluate_all('els=>els.map(e=>e.dataset.processCode)');assert codes==['MC-01','RN-01','AO-01','EC-01','AP-01','RC-01','AR-01'],codes
  elif PROBE=='mobile':
   m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m;open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
  else:raise SystemExit(f'unknown probe {PROBE}')

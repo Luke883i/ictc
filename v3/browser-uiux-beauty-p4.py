@@ -152,7 +152,7 @@ def mount(page, surface, view, procedure, root):
         menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
         if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()
         page.locator('#openAdminCenter').click(); expect(page.locator('#adminCenter')).to_be_visible()
-        page.wait_for_function('()=>document.querySelectorAll("#procedurePolicyList .procedure-policy-row").length===7')
+        page.wait_for_function('()=>document.querySelectorAll("#procedurePolicyList .procedure-policy-row").length===9')
     elif view == 'ai-settings':
         page.goto(f'{BASE}/?view=home', wait_until='networkidle')
         menu=page.locator('#stableProfileMenu'); expect(menu).to_be_visible()
