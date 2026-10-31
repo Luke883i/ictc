@@ -172,6 +172,14 @@
       "authoritative": true
     },
     {
+      "id": "release-operating",
+      "path": "docs/RELEASE.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": null,
+      "authoritative": false
+    },
+    {
       "id": "engineering-governance",
       "path": "docs/ENGINEERING_GOVERNANCE.md",
       "lifecycle": "policy",
