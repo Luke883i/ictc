@@ -116,7 +116,7 @@ html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>.procedure-purpose{grid-area:purpose;margin:0;color:var(--color-muted);font-size:var(--type-body);line-height:1.35;min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{grid-area:action;justify-self:end;align-self:center;max-width:12rem}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{display:inline-block;max-width:12rem;text-align:center;font-size:var(--type-label);color:var(--color-muted);line-height:1.35}
-html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)> .procedure-maturity{
+html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]> .procedure-maturity{
   display:inline-flex!important;grid-area:maturity!important;align-self:center;justify-self:start;
 }
 html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity{
@@ -154,7 +154,7 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-
   grid-template-areas:"code maturity" "title title" "purpose purpose" "action action"!important;
   gap:.22rem .45rem!important;
  }
- html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)> .procedure-maturity{justify-self:end}
+ html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]> .procedure-maturity{justify-self:end}
  html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder>footer{width:100%;justify-self:start!important}
  html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{text-align:left;max-width:none}
  html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity-legend{gap:.4rem .6rem}
