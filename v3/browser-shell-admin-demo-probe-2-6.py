@@ -14,6 +14,12 @@ def open_admin(p):
  expect(b).to_be_visible()
  b.click()
  expect(p.locator('#adminCenter')).to_be_visible()
+def open_policy_disclosure(p):
+ detail=p.locator('#adminCenter details[data-admin-progressive="procedure-policy"]')
+ expect(detail).to_have_count(1)
+ if detail.get_attribute('open') is None:
+  detail.locator(':scope > summary').click()
+ expect(detail).to_have_attribute('open','')
 with sync_playwright() as pw:
  launch={'headless':True,'args':['--no-sandbox']}
  if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
@@ -51,7 +57,7 @@ with sync_playwright() as pw:
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
-  p.locator('.service-nav [data-service="home"]').click();open_admin(p)
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p);open_policy_disclosure(p)
   expect(p.locator('#procedurePolicyList input')).to_have_count(9)
   op=p.locator('#procedurePolicyList input[name="policy-documents"]')
   expect(op).to_be_checked();op.uncheck()
@@ -64,7 +70,7 @@ with sync_playwright() as pw:
   assert hub.locator('[data-process-code="OP-01"]').count()==0
   assert hub.locator('[data-process-code="OG-01"]').count()==1
   expect(hub.locator('[data-procedure-id]')).to_have_count(7)
-  p.locator('.service-nav [data-service="home"]').click();open_admin(p)
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p);open_policy_disclosure(p)
   op=p.locator('#procedurePolicyList input[name="policy-documents"]')
   expect(op).not_to_be_checked();op.check()
   p.locator('#procedurePolicyAcknowledge').check()
