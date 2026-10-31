@@ -51,8 +51,10 @@ npm test
 npm run release:check
 node v3/release-readiness-e2-gate.mjs
 node v3/release-readiness-e2-mutation-1m.mjs
-# Dopo aver prodotto una ricevuta runtime isolata con il gate:
-# node v3/release-readiness-e2-check.mjs --require-release
+# Per falsificare esplicitamente il GO/NO-GO, creare una ricevuta runtime separata:
+ICTC_RELEASE_RUNTIME_WITNESS=/tmp/ictc-release-e2-witness.json node v3/release-readiness-e2-runtime.mjs
+ICTC_RELEASE_RUNTIME_WITNESS=/tmp/ictc-release-e2-witness.json node v3/release-readiness-e2-check.mjs --require-release
+# L'ultimo comando deve uscire con codice 3; rimuovere la ricevuta temporanea.
 ```
 
 `--require-release` è intenzionalmente **NO-GO** senza autorizzazione esterna verificata. Gli script storici `npm run visual`, `git:handshake` e `release:manifest` non sono comandi definiti nel `package.json` corrente: non usarli come criteri di certificazione.
