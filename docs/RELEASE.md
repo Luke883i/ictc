@@ -67,6 +67,26 @@ ICTC_RELEASE_RUNTIME_WITNESS=/tmp/ictc-release-e2-witness.json node v3/release-r
 
 `--require-release` è intenzionalmente **NO-GO** senza autorizzazione esterna verificata. Gli script storici `npm run visual`, `git:handshake` e `release:manifest` non sono comandi definiti nel `package.json` corrente: non usarli come criteri di certificazione.
 
+## Release evidence v2 — oracoli indipendenti e decisione condizionale (A1–A5)
+
+L'owner resta il **gate E2 corrente**, non nasce un nuovo release authority o workflow. Le osservazioni sono distinte:
+
+- **A1 — Falsificazione del codice:** `node v3/release-readiness-e2-product-mutants.mjs` copia la codebase in una directory temporanea, muta **10 file/superfici reali in serie** (health, registry, integrità, versione, documento, sicurezza), esegue il gate vero dopo ogni mutazione e cancella la copia. Ogni mutante deve essere *ucciso*. È un campione avversariale bounded, non un milione di patch.
+- **A2 — Priorità:** `selectConvergentPolicy()` valuta 1.000 candidate, applica vincoli e frontiera di Pareto, poi sceglie per ordine dichiarato: integrità dell'evidenza esterna, riuso degli owner, copertura e costo. Non presuppone un solo candidato ammissibile e non pretende ottimalità universale.
+- **A3 — Stato dinamico:** `L21–L23` non impongono più che i gap rimangano aperti: una chiusura o mitigazione è accettabile soltanto se il relativo esito è verificato da un soggetto esterno; la chiusura testuale da sola fallisce. Il gate E2 standard non può autocertificare il verificatore.
+- **A4 — Runtime:** il health readback usa la stessa registry costituzionale per l'atteso e confronta **insieme esatto, unicità, cardinalità, versione e integrità**. I duplicati che preservano il numero totale non superano più lo smoke.
+- **A5 — Decisione:** `evaluateReleaseEligibility()` esplicita i criteri per `GO_ELIGIBLE_PENDING_HUMAN_EXECUTION` solo con candidate exact-SHA/tree/digest, attestazioni E3/E4 indipendentemente verificate, gap chiusi o eccezioni verificate, identità separate per autore, reviewer e release authority. **È un predicato di eleggibilità, non un'azione di pubblicazione.** I test positivi usano un verificatore *fixture*, non credenziali o attestazioni vere. In assenza di verificatore esterno, `--require-release` rimane `NO_GO` (exit 3).
+
+`v3/release-readiness-e2-mutation-1m.mjs` rimane disponibile come **lineage del modello astratto**, ma non è più prova bloccante del prodotto: il milione di schedulazioni bitmask è tautologico rispetto ai bit attesi. La rail corrente usa i mutanti materiali e i controesempi E3/E4 verificabili; il legacy non viene eliminato per preservare la provenienza delle precedenti campagne. Nessun GO è stato osservato su un deployment reale.
+
+```bash
+node v3/release-readiness-e2-gate.mjs
+node v3/release-readiness-e2-decision-check.mjs
+node v3/release-readiness-e2-product-mutants.mjs
+# Verifica negativa: senza attestazione esterna, anche un witness reale NON autorizza il rilascio.
+# Creare il witness runtime con lo script sopra e rieseguire il comando --require-release.
+```
+
 ## Esito AS-IS e confine TO-BE
 
 All'ultima ricognizione l'AS-IS conserva `releaseStage=candidate`, `enterpriseCandidate=false`, `enterpriseReady=false`. Restano aperti `GAP-007`, `GAP-009`, `GAP-012`, `GAP-014`, `GAP-020`, `GAP-021`, `GAP-022`. Il DoD E2 può essere verde e il rilascio restare correttamente **BLOCKED**. S4-A6-CLOSE, C1/C3/C4 e S5-CANDIDATE-SEAL mantengono authority nella convergenza e non sono chiusi da questa guida.

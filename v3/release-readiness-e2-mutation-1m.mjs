@@ -45,6 +45,6 @@ for(let i=0;i<TOTAL;i++){
   if((i%10000)===0)digest.update(`${i}:${id}:${detectedBits}:`);
 }
 assert.equal(survivors,0);assert.equal(seen.size,families.length);assert.ok(lastNovelAt<DISCOVERY);
-const policy=selectConvergentPolicy();assert.equal(policy.evaluated,1000);assert.equal(policy.admissible,1);
+const policy=selectConvergentPolicy();assert.equal(policy.evaluated,1000);assert.ok(policy.admissible>1);assert.ok(policy.frontier>1);
 const receipt={ok:true,authority:'E2 bounded falsification only',seed:'0x51ee0b1a',trials:TOTAL,discovery:DISCOVERY,holdout:TOTAL-DISCOVERY,sourceBoundMaterialMutants:families.length,killed:detected.length,survivors,preseedPredicateCount:24,compositeFamilies:6,familyCoverage:[...coverage],lastNovelAt,holdoutNewDeclaredFamilies:0,policyCandidates:policy.evaluated,policyWinner:policy.winner.id,digest:digest.digest('hex'),claimBoundary:'30 real material source-derived semantic fact mutations executed once; 1M deterministic compiled semantic failure schedules, not 1M physical source edits, independent human observations, actual releases or deployments.'};
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});writeFileSync(new URL('../artifacts/release-readiness-e2-mutation-1m.json',import.meta.url),JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt));

@@ -14,16 +14,24 @@ export const RELEASE_EVIDENCE = Object.freeze([
 ]);
 // 10^3 policies are deliberately explored; only the fully scoped canonical fail-closed
 // policy can pass all three necessary constraints. This is a bounded model search.
+// Selection is a risk-prioritized, bounded trade-off; no unique optimum is presupposed.
+// Hard constraints: cover >=8/10 dimensions, evidence >=8/10 and <=1 extra authority.
+// Priority order: loss of external-evidence integrity, authority proliferation,
+// incomplete coverage, implementation complexity. Candidate coordinates are NOT proof.
 export function selectConvergentPolicy(){
   const candidates=[];
   for(let coverage=0;coverage<10;coverage++)for(let ownership=0;ownership<10;ownership++)for(let evidence=0;evidence<10;evidence++){
-    const fullScope=coverage===9, existingOwners=ownership===0, failClosed=evidence===9;
-    const admissible=fullScope&&existingOwners&&failClosed;
-    const penalty=(fullScope?0:100)+(existingOwners?0:100)+(failClosed?0:100);
-    candidates.push({id:`C${coverage}-${ownership}-${evidence}`,coverage:coverage+1,ownership,evidence,admissible,penalty});
+    const coverageAxes=coverage+1,evidenceAxes=evidence+1;
+    const admissible=coverageAxes>=8&&ownership<=1&&evidenceAxes>=8;
+    const risk=[10-evidenceAxes,ownership,10-coverageAxes];
+    const cost=coverageAxes*2+evidenceAxes*3+ownership*4;
+    candidates.push({id:`C${coverage}-${ownership}-${evidence}`,coverage:coverageAxes,ownership,evidence:evidenceAxes,admissible,risk,cost});
   }
-  const admissible=candidates.filter(c=>c.admissible).sort((a,b)=>a.penalty-b.penalty||a.id.localeCompare(b.id));
-  return {evaluated:candidates.length,admissible:admissible.length,winner:admissible[0],boundary:'10x10x10 bounded alternatives, not universal optimality'};
+  const eligible=candidates.filter(c=>c.admissible);
+  const dominates=(a,b)=>a.risk.every((v,i)=>v<=b.risk[i])&&a.cost<=b.cost&&(a.risk.some((v,i)=>v<b.risk[i])||a.cost<b.cost);
+  const frontier=eligible.filter(b=>!eligible.some(a=>a!==b&&dominates(a,b)));
+  const compare=(a,b)=>a.risk[0]-b.risk[0]||a.risk[1]-b.risk[1]||a.risk[2]-b.risk[2]||a.cost-b.cost||a.id.localeCompare(b.id);
+  return {evaluated:candidates.length,admissible:eligible.length,frontier:frontier.length,winner:[...frontier].sort(compare)[0],decision:'external-evidence first; zero new owners; full scope; then cost',boundary:'bounded priority/Pareto analysis, not a universal mathematical optimum'};
 }
 export const GLOBAL_DOD=Object.freeze([
   ['G1','ontology','Product, release profile and claim boundaries are distinct'],
@@ -63,30 +71,36 @@ export function evaluateReleaseFacts(f={}){
   const gap=id=>gaps.find(x=>x.id===id);
   const codes=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'];
   const envBlocked=['GAP-007','GAP-009','GAP-012','GAP-014','GAP-020','GAP-021','GAP-022'];
+  // Closure becomes valid only with externally verified provenance. 'open' is not
+  // a normative requirement: genuine progress must not become a test regression.
+  const verifiedClosure=id=>f.verifiedClosures?.[id]?.verified===true&&f.verifiedClosures[id].source==='external-verifier';
+  const gapLegible=id=>{const g=gap(id);return Boolean(g)&&['open','mitigated','closed'].includes(g.status)&&
+    (g.status==='open'||(g.status==='closed'&&verifiedClosure(id))||
+     (g.status==='mitigated'&&f.verifiedWaivers?.[id]?.verified===true&&f.verifiedWaivers[id].source==='external-verifier'));};
   const cs=[
     check('L01',codes.every(x=>p.includes(x))),
     check('L02',p.includes('EP-01')&&/non (è|costituisce) (un )?ottavo processo/i.test(p)),
     check('L03',f.package?.version===release.productVersion&&/^\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?$/.test(release.productVersion||'')),
-    check('L04',release.releaseStage==='candidate'&&truth.releaseClaim?.enterpriseCandidate===false&&truth.releaseClaim?.enterpriseReady===false),
+    check('L04',['candidate','experimental','enterprise-candidate'].includes(release.releaseStage)&&(release.releaseStage==='candidate'?(truth.releaseClaim?.enterpriseCandidate===false&&truth.releaseClaim?.enterpriseReady===false):f.verifiedReleaseTransition===true)),
     check('L05',f.staticImportsMissing===0&&Number.isInteger(f.staticImportsChecked)&&f.staticImportsChecked>0),
     check('L06',f.workflowRefsMissing===0&&f.workflowRefsChecked>0),
     check('L07',owners.constitutionalOwners?.compositionRoot==='v3/public/ui/active-experience.js'&&owners.constitutionalOwners?.finalGlobalResolver===null),
     check('L08',f.hasAuthorityMatrix===true),
     check('L09',codes.every(x=>readme.includes(x))&&owners.constitutionalOwners?.businessProcedureCount===7),
     check('L10',p.includes('applicabilità giuridica')&&p.includes('assurance indipendente')),
-    check('L11',startup.includes('assertBootstrapTransport')&&f.server.includes('requirePermission(')&&f.http.includes('assertSafeRuntimeBinding')),
+    check('L11',startup.includes('assertBootstrapTransport')&&f.server.includes('requirePermission(')&&f.server.includes('roles:ROLES,integrity:store.verifyChain()')&&f.http.includes('assertSafeRuntimeBinding')),
     check('L12',f.hasStore===true&&f.hasSqlite===true&&f.hasEnterprisePostgres===true),
     check('L13',f.runtime?.healthHttp===200),
     check('L14',f.runtime?.integrityOK===true&&f.runtime?.procedureCount===7),
     check('L15',docsManifest.entrypoint==='docs/START_HERE.md'&&doc.includes('entrypoint canonico')),
     check('L16',docsManifest.documents?.some(x=>x.path==='docs/ENGINEERING_COMPASS.md'&&x.lifecycle==='generated')===true),
     check('L17',policy.includes('enterprise-candidate')&&f.hasSecurityWorkflow===true),
-    check('L18',p.includes('CI verde != deployment assurance')&&truth.releaseClaim?.enterpriseReady===false),
+    check('L18',p.includes('CI verde != deployment assurance')&&(truth.releaseClaim?.enterpriseReady===false||f.verifiedReleaseTransition===true)),
     check('L19',f.contributing.includes('rollback')&&f.prTemplate.includes('## Affected authority')),
     check('L20',f.contributing.includes('review-enforced')&&f.contributing.includes('review-ready')),
-    check('L21',gap('GAP-022')?.status==='open'&&truth.externalEvidenceBoundaries?.some(x=>x.id==='E3-GOV-BRANCH-PROTECTION')),
-    check('L22',gap('GAP-012')?.status==='open'&&truth.externalEvidenceBoundaries?.some(x=>x.id==='E3-HUMAN-VALIDATION')),
-    check('L23',envBlocked.every(x=>gap(x)?.status==='open')&&truth.currentInternalBlockers?.some(x=>x.id==='S5-CANDIDATE-SEAL')),
+    check('L21',gapLegible('GAP-022')&&truth.externalEvidenceBoundaries?.some(x=>x.id==='E3-GOV-BRANCH-PROTECTION')),
+    check('L22',gapLegible('GAP-012')&&truth.externalEvidenceBoundaries?.some(x=>x.id==='E3-HUMAN-VALIDATION')),
+    check('L23',envBlocked.every(gapLegible)&&truth.currentInternalBlockers?.some(x=>x.id==='S5-CANDIDATE-SEAL')),
     check('L24',f.evidencePolicy==='fail-closed'&&f.releaseGrantProvided!==true)
   ];
   const passed=cs.filter(x=>x.ok).length,failures=cs.filter(x=>!x.ok).map(x=>x.id);
