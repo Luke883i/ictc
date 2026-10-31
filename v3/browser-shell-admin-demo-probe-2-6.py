@@ -27,6 +27,10 @@ with sync_playwright() as pw:
   entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
   assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
+ elif PROBE=='procedure-toggle':
+  p.locator('.service-nav [data-service="processes"]').click()
+  hub=p.locator('#procedureHub')
+  expect(hub).to_have_attribute('data-catalogue-item-count','9')
   p.locator('.service-nav [data-service="home"]').click();open_admin(p)
   expect(p.locator('#procedurePolicyList input')).to_have_count(9)
   op=p.locator('#procedurePolicyList input[name="policy-documents"]')

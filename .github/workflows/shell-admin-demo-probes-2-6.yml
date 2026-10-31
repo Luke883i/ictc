@@ -16,6 +16,7 @@ jobs:
           - {mode: standard, probe: desktop, port: 4830, expect_demo: '0'}
           - {mode: standard, probe: admin, port: 4831, expect_demo: '0'}
           - {mode: standard, probe: procedures, port: 4832, expect_demo: '0'}
+          - {mode: standard, probe: procedure-toggle, port: 4837, expect_demo: '0'}
           - {mode: standard, probe: mobile, port: 4833, expect_demo: '0'}
           - {mode: demo, probe: desktop, port: 4834, expect_demo: '1'}
           - {mode: demo, probe: admin, port: 4835, expect_demo: '1'}
