@@ -17,7 +17,7 @@ PROCEDURES=[
  {'code':'AR-01','id':'assurance','root':'#grcWorkspace','frame':'#grcWorkspace > .procedure-frame','work':'#grcWorkspace > .grc-body','context':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"]','anatomy':'#grcWorkspace > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy'}]
 OWNER={'monitoring':'procedure-sequential-rn-ec.js','incidents':'procedure-sequential-rn-ec.js','objects':'grc-workspace-3-2.js','coverage':'grc-workspace-3-2.js','actions':'grc-workspace-3-2.js','risks':'grc-workspace-3-2.js','assurance':'grc-workspace-3-2.js'}
 SCREENSHOT_WIDTHS={390,1280}
-PROOF_READING_ORDER='reconstruction>decisions>trace>facts>evidence-basis>epistemic>method>external>integrity>export'
+PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>integrity>external>export'
 PHASE='init'; scenes=[]; anomalies=[]; screenshots=[]; network_coverage_checked=set()
 
 def anomaly(kind,role,vp,surface,measured,expected): anomalies.append({'kind':kind,'role':role,'viewport':vp,'surface':surface,'measured':measured,'expected':expected,'signature':f'{surface}|{role}|{vp}|{kind}'})
@@ -126,28 +126,25 @@ def audit_proof(page,role,vp,width):
   elif disclosure.get_attribute('open') is not None:anomaly('evidence-technical-open-by-default',role,vp,'proof',name,'collapsed')
  if decisions.count()!=1:anomaly('evidence-workspace-owner-count',role,vp,'proof',{'workspace':'decisions','count':decisions.count()},{'workspace':'decisions','count':1})
  elif decisions.get_attribute('open') is not None:anomaly('evidence-secondary-open-by-default',role,vp,'proof','decisions','collapsed')
- expected_order=['reconstruction','decisions','trace-reconstruction','facts','evidence-basis','epistemic-investigation','interpretation','external','integrity','export']
- order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].map(n=>n.dataset.proofReconstructionQuestion?'reconstruction':(n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null))).filter(Boolean)""")
+ expected_order=['facts','decisions','trace-reconstruction','evidence-basis','epistemic-investigation','integrity','external','export']
+ order=page.evaluate("""()=>[...document.querySelector('#proofContent').children].filter(n=>!n.hidden).map(n=>n.dataset.proofReconstructionQuestion?'reconstruction':(n.classList.contains('proof-fact-strip')?'facts':(n.dataset.proofDomain||n.dataset.proofWorkspace||n.dataset.compositionDetail||null))).filter(Boolean)""")
  projected=[x for x in order if x in expected_order]
- if projected!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',projected,expected_order)
+ if projected!=expected_order or order!=expected_order:anomaly('evidence-workspace-order',role,vp,'proof',order,expected_order)
+ if page.locator('#proofContent > [data-proof-reconstruction-question]').count()!=0:anomaly('duplicate-evidence-hero',role,vp,'proof',True,False)
  PHASE=f'{role}-{vp}-proof-reading';reading=page.locator('#proofContent > details[data-composition-detail="proof-reading"]')
- if reading.count()!=1:anomaly('evidence-progressive-reading-missing',role,vp,'proof',reading.count(),1)
+ if reading.count()!=1:anomaly('evidence-technical-source-missing',role,vp,'proof',reading.count(),1)
  else:
-  if reading.get_attribute('open') is not None:anomaly('evidence-technical-reading-open-by-default',role,vp,'proof',True,False)
-  reading.locator(':scope > summary').click();expect(reading).to_have_attribute('open','')
+  if reading.is_visible() or reading.get_attribute('inert') is None or reading.get_attribute('open') is not None:anomaly('evidence-technical-source-not-inert',role,vp,'proof',{'visible':reading.is_visible(),'inert':reading.get_attribute('inert'),'open':reading.get_attribute('open')},'hidden and inert')
   guide=reading.locator('[data-proof-reading-guide]');expected_guide=['Cosa osserva','Cosa non prova','Come leggere gli stati','Fonti e provenienza','Quando serve verifica esterna']
   if guide.count()!=1:anomaly('evidence-reading-guide-count',role,vp,'proof',guide.count(),1)
   else:
-   titles=[x.strip() for x in guide.locator('[data-proof-reading-guide-item] b').all_inner_texts()]
+   titles=[x.strip() for x in guide.locator('[data-proof-reading-guide-item] b').all_text_contents()]
    if titles!=expected_guide:anomaly('evidence-reading-guide-order',role,vp,'proof',titles,expected_guide)
-  title_size=reading.evaluate("""e=>{const title=e.querySelector(':scope > summary b');if(!title)return null;const size=parseFloat(getComputedStyle(title).fontSize);return Number.isFinite(size)?size:null}""")
-  if title_size is None:anomaly('evidence-reading-guide-title-missing',role,vp,'proof',None,'measurable summary title')
-  elif title_size<16:anomaly('evidence-reading-guide-title-size',role,vp,'proof',title_size,'>=16px')
+  if reading.locator('.proof-reading-grid').count()!=1 or reading.locator('#proofMethodTitle').count()!=1:anomaly('evidence-technical-source-content-lost',role,vp,'proof',True,False)
   methods=page.locator('#proofEvidenceKinds li').count();expected_methods=len(data.get('proof',{}).get('evidenceKinds',[]))
   if methods!=expected_methods:anomaly('evidence-proof-method-count',role,vp,'proof',methods,expected_methods)
   mappings=page.locator('#proofBenchmarkMappings .proof-mapping');expected_maps=len(data.get('benchmarkFamilies',[]))
   if mappings.count()!=expected_maps:anomaly('evidence-benchmark-count',role,vp,'proof',mappings.count(),expected_maps)
-  reading.locator(':scope > summary').click()
  text=page.locator('#proofView').inner_text()
  if re.search(r'\b\d+(?:[.,]\d+)?\s*%',text):anomaly('evidence-percentage-verdict',role,vp,'proof',re.findall(r'\b\d+(?:[.,]\d+)?\s*%',text),'no compliance/certainty percentage')
  PHASE=f'{role}-{vp}-proof-geometry';no_overflow(page,role,vp,'proof');one_h1(page,role,vp,'proof');shot(page,role,vp,'proof',width)

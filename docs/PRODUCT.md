@@ -26,6 +26,8 @@ Il catalogo «Processi di Compliance» presenta inoltre **due placeholder non op
 
 EP-01 è una vista trasversale sul reticolo epistemico registrato. Non è un ottavo processo e non introduce una seconda business write authority.
 
+La landing **Evidenze ICTC** mostra, nell'ordine, il banner dei fatti registrati (decisioni, processi, integrità e ruolo), Decisioni e tracciabilità, Ricostruisci un elemento di lavoro, Riferimenti e basi, Reticolo epistemico, Integrità tecnica, Verifiche esterne ed Export. La sezione «Criteri di lettura e sintesi tecnica» resta disponibile come struttura informativa interna, ma è nascosta e non interattiva per l'utente finale. La domanda introduttiva ridondante non forma una seconda card: il contesto di ricostruzione resta nella descrizione della pagina. Il riordino non cambia dati, claim, diritti di lettura, verifiche esterne o autorità di esportazione.
+
 ## Baseline prototipale repository-bounded
 
 ICTC possiede già una baseline **operabile come prototipo repository-bounded**: runtime/launcher e bootstrap canonici, sette procedure, worklist/next-action projection, persistenza e reload, DEMO isolata, superfici epistemiche/evidenza, failure isolation Admin e acceptance browser su focus/responsive/overflow. Questa classificazione significa soltanto che il prodotto può essere esercitato e falsificato end-to-end nel perimetro automatizzato del repository.
