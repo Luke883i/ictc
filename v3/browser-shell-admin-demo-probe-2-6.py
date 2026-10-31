@@ -18,7 +18,36 @@ with sync_playwright() as pw:
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
- elif PROBE=='procedures':p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub [data-procedure-id][data-process-code]')).to_have_count(7);codes=p.locator('#procedureHub [data-procedure-id][data-process-code]').evaluate_all('els=>els.map(e=>e.dataset.processCode)');assert codes==['MC-01','RN-01','AO-01','EC-01','AP-01','RC-01','AR-01'],codes
+ elif PROBE=='procedures':
+  p.locator('.service-nav [data-service="processes"]').click()
+  hub=p.locator('#procedureHub')
+  expect(hub.locator('[data-procedure-id]')).to_have_count(7)
+  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
+  entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
+  assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
+  assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href]').count()==0
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p)
+  expect(p.locator('#procedurePolicyList input')).to_have_count(9)
+  op=p.locator('#procedurePolicyList input[name="policy-documents"]')
+  expect(op).to_be_checked();op.uncheck()
+  p.locator('#procedurePolicyAcknowledge').check()
+  p.locator('#procedurePolicyForm button[type="submit"]').click()
+  expect(op).not_to_be_checked()
+  p.locator('#adminCenter [data-admin-close]').click()
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(1)
+  assert hub.locator('[data-process-code="OP-01"]').count()==0
+  assert hub.locator('[data-process-code="OG-01"]').count()==1
+  expect(hub.locator('[data-procedure-id]')).to_have_count(7)
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p)
+  op=p.locator('#procedurePolicyList input[name="policy-documents"]')
+  expect(op).not_to_be_checked();op.check()
+  p.locator('#procedurePolicyAcknowledge').check()
+  p.locator('#procedurePolicyForm button[type="submit"]').click()
+  expect(op).to_be_checked()
+  p.locator('#adminCenter [data-admin-close]').click()
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
  elif PROBE=='mobile':
   m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m;open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
  else:raise SystemExit(f'unknown probe {PROBE}')
