@@ -19,6 +19,14 @@ assert.ok(index.includes('<h1 id="homeTitle">Cosa richiede una decisione</h1>')&
 assert.ok(shell.includes("uiIcon('arrow-up-right'")&&shell.includes("uiIcon('chevron-right'"),'Home directional actions must use icons');
 assert.ok(frame.includes('data-uiux-layout="row"')&&frame.includes("host.dataset.uiuxLayout='rows'"),'Process Hub row contract missing');
 assert.ok(frame.includes("uiIcon('chevron-left'")&&frame.includes("uiIcon('arrow-up-right'"),'Procedure icon affordances missing');
+for(const name of ["'badge-check'","'circle-half'","'wrench'","'circle-slash'"])assert.ok(icons.includes(name),'typed maturity pictogram absent '+name);
+for(const name of ["badge-check","circle-half","wrench","circle-slash"])assert.ok(frame.includes("icon:'"+name+"'"),'maturity model must retain distinct pictogram '+name);
+assert.ok(frame.includes('role="img" aria-label="Maturità dichiarata:')&&frame.includes("uiIcon(meta.icon,'ui-icon maturity-icon')"),'icon-only badges require accessible text and a typed SVG');
+assert.ok(!frame.includes("meta.color")&&frame.includes("Indicativa: non certifica conformità né disponibilità."),'legend must not rely on four colour names or long explanations');
+assert.ok(closureCss.includes('#procedureHub{grid-auto-rows:1fr!important}')&&closureCss.includes('grid-template-columns:4.4rem minmax(0,1fr) 2.6rem 12rem!important;'),'row height and small badge column must have one owner');
+assert.ok(frame.includes('aria-disabled="true"')&&frame.includes('Non disponibile</span>')&&!frame.includes('In preparazione · nessuna azione operativa'),'placeholder should be an inert affordance, not a business button');
+assert.ok(closureCss.includes('pointer-events:none;user-select:none;')&&closureCss.includes('min-height:44px;'),'disabled visual control must be inert and accessible in size');
+
 assert.ok(frame.includes('procedure-context-detail')&&frame.includes('procedure-boundary')&&frame.includes('procedure-value'),'procedure visible boundary/progressive rationale contract missing');
 for(const semanticNeedle of ['catalogueSummary:\'Fonti e cambiamenti da verificare','catalogueSummary:\'Azioni, responsabili, scadenze','catalogueSummary:\'Richieste, risposte versionate'])assert.ok(native.includes(semanticNeedle),`concise procedure copy missing ${semanticNeedle}`);
 assert.ok(enterprise.includes('.home-priority-main{display:grid;grid-template-columns:4.2rem')&&enterprise.includes('transition:var(--transition-interactive)'),'Home local owner must own compact interaction rows');

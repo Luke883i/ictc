@@ -6,7 +6,20 @@ def load(p):p.goto(BASE,wait_until='networkidle');ensure_onboarded(p,BASE,'admin
 def footer_effect(p):
  m=p.evaluate("""()=>{const f=document.querySelector('#stableLegalFooter'),main=document.querySelector('main');if(!f||!main)return{missing:true};const fr=f.getBoundingClientRect(),mr=main.getBoundingClientRect(),fs=getComputedStyle(f),bs=getComputedStyle(document.body),hs=getComputedStyle(document.documentElement),px=v=>parseFloat(v)||0,visible=e=>{const r=e.getBoundingClientRect(),st=getComputedStyle(e);return r.width>0&&r.height>0&&st.visibility!=='hidden'&&st.display!=='none'&&!e.disabled},controls=[...document.querySelectorAll('main button,main a[href],main input,main select,main textarea,main summary')].filter(visible),overlaps=controls.filter(e=>{const r=e.getBoundingClientRect();return Math.max(0,Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top))*Math.max(0,Math.min(r.right,fr.right)-Math.max(r.left,fr.left))>.5}).length;return{missing:false,position:fs.position,footerTop:fr.top,footerBottom:fr.bottom,viewportHeight:innerHeight,mainBottom:mr.bottom,footerHeight:fr.height,bodyPaddingBottom:px(bs.paddingBottom),scrollPaddingBottom:px(hs.scrollPaddingBottom),overlaps}}""");assert not m.get('missing') and m['position']=='fixed' and m['footerHeight']>=43.5 and abs(m['footerBottom']-m['viewportHeight'])<=3 and m['bodyPaddingBottom']>=m['footerHeight']-2 and m['scrollPaddingBottom']>=m['footerHeight']-2 and m['overlaps']==0,m;return m
 def open_admin(p):
- m=p.locator('#stableProfileMenu');expect(m).to_be_visible();m.locator(':scope > summary').click();b=p.locator('#stableProfileMenu #openAdminCenter');expect(b).to_be_visible();b.click();expect(p.locator('#adminCenter')).to_be_visible()
+ m=p.locator('#stableProfileMenu')
+ expect(m).to_be_visible()
+ if m.get_attribute('open') is None:
+  m.locator(':scope > summary').click()
+ b=p.locator('#stableProfileMenu #openAdminCenter')
+ expect(b).to_be_visible()
+ b.click()
+ expect(p.locator('#adminCenter')).to_be_visible()
+def open_policy_disclosure(p):
+ detail=p.locator('#adminCenter details[data-admin-progressive="procedure-policy"]')
+ expect(detail).to_have_count(1)
+ if detail.get_attribute('open') is None:
+  detail.locator(':scope > summary').click()
+ expect(detail).to_have_attribute('open','')
 with sync_playwright() as pw:
  launch={'headless':True,'args':['--no-sandbox']}
  if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
@@ -18,8 +31,73 @@ with sync_playwright() as pw:
   else:expect(p.locator('#ictcDemoCard')).to_have_count(0)
  elif PROBE=='admin':
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
- elif PROBE=='procedures':p.locator('.service-nav [data-service="processes"]').click();expect(p.locator('#procedureHub [data-process-code]')).to_have_count(7);codes=p.locator('#procedureHub [data-process-code]').evaluate_all('els=>els.map(e=>e.dataset.processCode)');assert codes==['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'],codes
+ elif PROBE=='procedures' or PROBE in ('procedures-structure','procedures-legend','procedures-alignment'):
+  p.locator('.service-nav [data-service="processes"]').click()
+  hub=p.locator('#procedureHub')
+  expect(hub).to_have_attribute('data-catalogue-item-count','9')
+  if PROBE in ('procedures','procedures-structure'):
+   expect(hub.locator('[data-procedure-id]')).to_have_count(7)
+   expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
+   entries=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>[e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity])")
+   assert entries==[['OP-01','placeholder'],['OG-01','placeholder'],['MC-01','ready'],['RN-01','scaffold-yellow'],['AO-01','scaffold-yellow'],['EC-01','ready'],['AP-01','scaffold-yellow'],['RC-01','scaffold-yellow'],['AR-01','scaffold-orange']],entries
+   assert hub.locator('[data-catalogue-placeholder-id] button,[data-catalogue-placeholder-id] a[href],[data-catalogue-placeholder-id] [role="button"]').count()==0
+   assert hub.locator('[data-catalogue-placeholder-id] .procedure-purpose').all_text_contents()==['Area prevista, non operativa.']*2
+  if PROBE in ('procedures','procedures-legend'):
+   legend=p.locator('#processesView [data-maturity-legend]')
+   expect(legend).to_be_visible()
+   expect(legend.locator('[data-maturity]')).to_have_count(4)
+   for word in ['Maturità','Pronto','Parziale','In costruzione','Segnaposto','non certifica conformità']:
+    assert word in legend.inner_text(),word
+   for word in ['Verde','Giallo','Arancione','Rosso','funzioni previste disponibili','scaffold iniziale']:
+    assert word not in legend.inner_text(),word
+   icon_shapes=legend.locator('[data-maturity]').evaluate_all("els=>els.map(e=>({shape:e.querySelector('svg.maturity-icon')?.innerHTML,ink:getComputedStyle(e).color,bg:getComputedStyle(e).backgroundColor,label:e.getAttribute('aria-label'),text:e.textContent.trim()}))")
+   assert len({item['shape'] for item in icon_shapes})==4 and all(item['shape'] and item['text']=='' and item['label'] for item in icon_shapes),icon_shapes
+   assert len({item['bg'] for item in icon_shapes})==1 and len({item['ink'] for item in icon_shapes})==1,icon_shapes
+  if PROBE in ('procedures','procedures-alignment'):
+   badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
+   expect(badges).to_have_count(9)
+   assert badges.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.textContent.trim()===''&&e.querySelectorAll('svg.maturity-icon').length===1&&e.getAttribute('role')==='img'&&e.getAttribute('aria-label')?.startsWith('Maturità dichiarata:'))")
+   offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
+   assert max(offsets)-min(offsets)<=2,offsets
+   heights=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
+   assert len(heights)==9 and max(heights)-min(heights)<=2,heights
+   unavailable=hub.locator('[data-catalogue-placeholder-id] .procedure-unavailable')
+   expect(unavailable).to_have_count(2)
+   assert unavailable.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.getAttribute('aria-disabled')==='true'&&!e.hasAttribute('tabindex')&&e.getBoundingClientRect().height>=44&&getComputedStyle(e).pointerEvents==='none')")
+ elif PROBE=='procedure-toggle':
+  p.locator('.service-nav [data-service="processes"]').click()
+  hub=p.locator('#procedureHub')
+  expect(hub).to_have_attribute('data-catalogue-item-count','9')
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p);open_policy_disclosure(p)
+  expect(p.locator('#procedurePolicyList input')).to_have_count(9)
+  op=p.locator('#procedurePolicyList input[name="policy-documents"]')
+  expect(op).to_be_checked();op.uncheck()
+  p.locator('#procedurePolicyAcknowledge').check()
+  p.locator('#procedurePolicyForm button[type="submit"]').click()
+  expect(op).not_to_be_checked()
+  p.locator('#adminCenter [data-admin-close]').click()
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(1)
+  assert hub.locator('[data-process-code="OP-01"]').count()==0
+  assert hub.locator('[data-process-code="OG-01"]').count()==1
+  expect(hub.locator('[data-procedure-id]')).to_have_count(7)
+  p.locator('.service-nav [data-service="home"]').click();open_admin(p);open_policy_disclosure(p)
+  op=p.locator('#procedurePolicyList input[name="policy-documents"]')
+  expect(op).not_to_be_checked();op.check()
+  p.locator('#procedurePolicyAcknowledge').check()
+  p.locator('#procedurePolicyForm button[type="submit"]').click()
+  expect(op).to_be_checked()
+  p.locator('#adminCenter [data-admin-close]').click()
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
  elif PROBE=='mobile':
-  m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m;open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
+  m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth,header:document.querySelector(".stable-header-inner")?.getBoundingClientRect().height||0})');assert max(m['h'],m['b'])<=m['w']+1,m;assert m['header']<=112,m
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(p.locator('#procedureHub')).to_have_attribute('data-catalogue-item-count','9')
+  h=p.locator('#procedureHub > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
+  assert len(h)==9 and max(h)-min(h)<=2,h
+  assert p.locator('#procedureHub [data-catalogue-placeholder-id] .procedure-unavailable').count()==2
+  p.locator('.service-nav [data-service="home"]').click()
+  open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m
  else:raise SystemExit(f'unknown probe {PROBE}')
  print({'ok':True,'probe':PROBE,'demo':DEMO,'demoProjectionAuthority':'demo-suite-3-0' if DEMO else None});ctx.close();browser.close()
