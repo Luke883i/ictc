@@ -1,46 +1,74 @@
-# Processo di release
+# ICTC — procedura di rilascio e DoD semantica
 
-## Precondizioni
+**Classificazione:** guida operativa E2, non fonte autonoma di product/release authority. Le versioni correnti sono possedute da `v3/release-identity.json` e `package.json`; l'identità del prodotto da `docs/PRODUCT.md`; lo stato dei gap da `v3/gaps.json`; il piano da `docs/convergence/convergence-authority.json`; i fatti Git, le approvazioni e i ruleset sono live su GitHub. La presente guida **non** autorizza una release.
+
+## Obiettivo ontologico finale
+
+ICTC deve meritare un rilascio attraverso una catena attribuibile: **software verificato → runtime osservato → prodotto delimitato → repository revisionabile → delivery exact-SHA attestata → decisione umana autorizzata → ambiente operativo verificato**. Una proprietà osservata in un livello non può promuoversi automaticamente negli altri. Una CI verde prova soltanto gli obblighi esercitati, non l'efficacia in produzione o una conclusione di compliance.
+
+**V.1 Experimental** è qui il nome di un *profilo di rilascio proposto*, non una nuova versione SemVer: l'AS-IS rimane ICTC `1.8.0`, `releaseStage: candidate`. **Enterprise Candidate** distingue la postura ingegneristica E2 del workflow `enterprise-candidate` dall'effettiva decisione di promuovere il prodotto. Nessuna delle due qualificazioni viene autoassegnata dal checker.
+
+## Derivazione retrograda dal rilascio
+
+| Piano | DoD globale | Sottosistema di evidenza | Falsificatore |
+|---|---|---|---|
+| G8 | GO/NO-GO attribuibile e non autocertificato | E3-GOV, E3-HUMAN, E4 | `--require-release` deve fallire senza prove indipendenti |
+| G7 | candidato esatto e revisionabile | diff, provenance, rollback, review | PR exact-HEAD e gate di delivery |
+| G6 | sicurezza e catena di evidenza separate | trust boundary, scanning, identity | rail security e gap esterni distinti |
+| G5 | documentazione e projection senza autorità duplicate | `START_HERE`, manifest, Compass | `npm run docs:check` |
+| G4 | esecuzione reale verificata | bootstrap isolato, `/api/health`, integrity, sette procedure | `release-readiness-e2-runtime.mjs` |
+| G3 | capacità software e decisionale governata | procedure adapter, RBAC, store, AI | `npm test`, runtime/security rail |
+| G2 | repository chiuso sul piano dei riferimenti statici | import locali e chiamate script CI | `release-readiness-e2-check.mjs` |
+| G1 | identità e limiti di prodotto espressi correttamente | release identity, PRODUCT, gap truth | `release-readiness-e2-check.mjs` |
+
+**12 DoD intermedi e 24 locali**: definizioni, parent ID, predicati e risultati computabili sono restituiti in JSON da `v3/release-readiness-e2-check.mjs`; non vengono duplicati come una seconda authority. Gli identificativi L01–L24 coprono processi, versioni, import, workflow, owner, decisioni, HTTP runtime, documentazione, sicurezza, review ed evidenze esterne.
+
+### Metriche e criteri di accettazione
+
+- `missingStaticImports=0`, `missingWorkflowRefs=0`, `localDoD=24/24`; nessuna soglia percentuale compensa un predicato mancante.
+- Runtime E2: bind `127.0.0.1`, stato temporaneo isolato, HTTP 200, `integrity.ok=true` (o `valid=true`), procedure effettivamente abilitate `7/7`; il test elimina lo stato temporaneo.
+- Falsificazione: 30 mutazioni materiali dei fatti semantici derivati dai sorgenti, una per famiglia e sei composte; 1.000.000 schedulazioni semantiche deterministiche, seed `0x51ee0b1a`, 100.000 holdout, sopravvissuti 0. È prova di **modello compilato**, non 1M rewrites di codice né proof di assenza universale.
+- Selezione: 1.000 combinazioni bounded di copertura × owner × affidabilità dell'evidenza; un solo candidato ammissibile nel modello (`C9-0-9`), senza pretesa di ottimalità universale.
+- Release gate: il solo `E2 PASS` **non concede** rilascio; `--require-release` deve produrre exit nonzero. Non si sostituiscono evidenze E3/E4 con valori hardcoded, mock, CI o file compilati localmente.
+
+## Checklist operativa, responsabilità e blocchi
+
+1. **Maintainer / reviewer:** verificare commit e Git tree esatti, PR diff, owner e rollback. Una PR merged non è un release tag, una review indipendente né una configurazione di branch protection.
+2. **Ingegneria:** eseguire `node v3/release-readiness-e2-gate.mjs`, `node v3/release-readiness-e2-mutation-1m.mjs`, `npm run docs:check`, `npm test`, `npm run release:check` sulla medesima candidate; salvare exit code, seed, SHA e ricevute. Per una release usare il workflow C2 SBOM/provenance/attestazione exact-SHA, non un pacchetto ricreato altrove.
+3. **Owner del prodotto:** verificare esattamente RN-01, EC-01, AO-01, MC-01, AP-01, RC-01, AR-01; EP-01 resta trasversale. Mapping, scoring e prova integrità non sono conformità giuridica.
+4. **Security/ops/IdP:** collaudare scanning, identità/deprovisioning, chiavi, backup/restore, osservabilità e attivazione dei controlli sul deployment. Sono evidenze esterne, non documenti che il repo possa firmare autonomamente.
+5. **Human reviewer / governance:** attestare review realmente indipendente e ruleset preventivi applicabili a `main`; verificare GAP-022 osservando GitHub, non `CODEOWNERS` o GOV-01F compensativo.
+6. **Utenti rappresentativi:** raccogliere validazione di comprensione, task, accessibilità assistiva (GAP-012). I browser test non rappresentano consenso umano.
+7. **Release authority:** decidere GO/NO-GO solo dopo risoluzione o eccezione formalmente autorizzata e tracciata di GAP-007/009/012/014/020/021/022; non autocertificare l'eccezione con una stringa CI.
+8. **Deployment operator:** verificare il medesimo artefatto attestato, ambiente, smoke e rollback dopo approvazione; produrre ricevute attribuibili E4.
+
+## C2 — provenance e attestazione del candidato esatto
+
+Il controllo C2 del repository parte dall'**exact candidate** (checkout della exact PR HEAD) e produce nello stesso job l'archivio candidato tramite `git archive`, **CycloneDX** SBOM, manifest di provenance e digest degli input/output. Il subject corrisponde allo SHA e al tree SHA del candidato, non a una ricostruzione indipendente.
+
+La firma e l'attestazione repository-bounded usano **GitHub OIDC** e **Sigstore** in modalità keyless con action pin immutabili. Il workflow esegue la verifica `gh attestation verify` sul subject e sul repository prima della ricevuta canonica C2; build provenance, SBOM attestation, `package.json`, `package-lock.json`, archivio e digest sono collegati all'exact checkout.
+
+**merge non equivale a release**: CI, firma, verifica C2 e merge non sono approvazione umana, deployment attestato, Enterprise Candidate o Enterprise Ready. F-06/C2 è repository-terminal E2 dopo POST-216 ACT, ma i rail E3/E4 restano separati. Nessuna procedura qui crea una seconda pipeline SBOM o un canale alternativo di signing.
+
+## Comandi realmente presenti
 
 ```bash
-npm ci
+npm ci --ignore-scripts
+npm run docs:check
 npm test
-npm run visual
-npm run git:handshake
-npm run release:manifest
+npm run release:check
+node v3/release-readiness-e2-gate.mjs
+node v3/release-readiness-e2-mutation-1m.mjs
+# Per falsificare esplicitamente il GO/NO-GO, creare una ricevuta runtime separata:
+ICTC_RELEASE_RUNTIME_WITNESS=/tmp/ictc-release-e2-witness.json node v3/release-readiness-e2-runtime.mjs
+ICTC_RELEASE_RUNTIME_WITNESS=/tmp/ictc-release-e2-witness.json node v3/release-readiness-e2-check.mjs --require-release
+# L'ultimo comando deve uscire con codice 3; rimuovere la ricevuta temporanea.
 ```
 
-## Versionamento
+`--require-release` è intenzionalmente **NO-GO** senza autorizzazione esterna verificata. Gli script storici `npm run visual`, `git:handshake` e `release:manifest` non sono comandi definiti nel `package.json` corrente: non usarli come criteri di certificazione.
 
-Usare Semantic Versioning:
+## Esito AS-IS e confine TO-BE
 
-- major: modifica incompatibile di schema, API o significato epistemico;
-- minor: capability retrocompatibile;
-- patch: correzione retrocompatibile.
+All'ultima ricognizione l'AS-IS conserva `releaseStage=candidate`, `enterpriseCandidate=false`, `enterpriseReady=false`. Restano aperti `GAP-007`, `GAP-009`, `GAP-012`, `GAP-014`, `GAP-020`, `GAP-021`, `GAP-022`. Il DoD E2 può essere verde e il rilascio restare correttamente **BLOCKED**. S4-A6-CLOSE, C1/C3/C4 e S5-CANDIDATE-SEAL mantengono authority nella convergenza e non sono chiusi da questa guida.
 
-Le versioni beta mantengono il suffisso prerelease.
-
-## Checklist
-
-- aggiornare `CHANGELOG.md`;
-- aggiornare versione in `package.json` e lockfile;
-- verificare OpenAPI e JSON Schema;
-- verificare migrazioni o compatibilità dati;
-- generare manifest SHA-256;
-- creare tag firmato quando l'infrastruttura lo consente;
-- allegare note con limiti e rollback.
-
-## Deployment futuro
-
-La release enterprise dovrà usare artifact immutabile, staging, smoke test, approvazione, canary o blue/green e receipt di deployment.
-
-
-## C2 — delivery provenance
-
-La pipeline canonica parte dall'**exact candidate** checkout e produce, nello stesso job, archivio candidato, **CycloneDX** SBOM, manifest di provenance e digest degli input/output.
-
-La firma/attestazione usa **GitHub OIDC** e **Sigstore** in modalità keyless tramite action pin immutabili. Il workflow crea sia build provenance sia SBOM attestation e deve completare `gh attestation verify --repo` prima di emettere il receipt C2.
-
-Il subject firmato è l'archivio `git archive` dell'esatto SHA candidato; `package.json`, `package-lock.json`, tree SHA, archivio, SBOM e provenance manifest sono digest-bound nel receipt.
-
-**merge non equivale a release**: merge, release/deployment, review indipendente, Enterprise Candidate ed Enterprise Ready restano transizioni distinte. La PR #216 ha mantenuto F-06/C2 `in-remediation` sul candidate; dopo exact-head CI, merge, verifica post-merge e POST-216 ACT, F-06/C2 è repository-terminal E2. Questa terminalità non modifica i rail E3/E4.
+La release, qualora autorizzata in futuro, richiede SemVer, changelog, tag/asset esatto, attestazione, note di incompatibilità, migrazioni, ricevute post-merge/post-deploy e rollback verificato; il suo contratto non viene soddisfatto dalla sola creazione di una PR.

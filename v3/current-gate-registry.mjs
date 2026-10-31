@@ -5,7 +5,7 @@ const releaseIdentity=JSON.parse(readFileSync(new URL('./release-identity.json',
 const documentationManifest=JSON.parse(readFileSync(new URL('../docs/documentation-manifest.json',import.meta.url),'utf8'));
 const axes=documentationManifest.versionAxes;
 
-export const POLICY_GATES=Object.freeze(['v3/runtime-temp-cleanup-contract-check.mjs','v3/ci-topology-contract-check.mjs']);
+export const POLICY_GATES=Object.freeze(['v3/runtime-temp-cleanup-contract-check.mjs','v3/ci-topology-contract-check.mjs','v3/release-readiness-e2-gate.mjs','v3/release-readiness-e2-mutation-1m.mjs']);
 export const LEGACY_DEMO_GATES=Object.freeze(['v3/demo-seed-contract-check.mjs','v3/demo-seed-saturation.mjs','v3/demo-outcome-audit-check.mjs','v3/demo-outcome-saturation.mjs','v3/demo-reality-context-check.mjs','v3/demo-procedure-ontology-check.mjs','v3/demo-operating-year-check.mjs','v3/demo-operating-year-saturation.mjs']);
 export const DEPRECATED_DEMO_SUITE_GATES=Object.freeze(['v3/demo-suite-2-2-module-load-check.mjs','v3/demo-suite-2-2-runtime-semantic-check.mjs','v3/demo-suite-2-2-runtime-store-check.mjs','v3/demo-suite-2-2-projection-closure-check.mjs']);
 export const DEMO_SUITE_GATES=Object.freeze(['v3/bootstrap-demo-3-0-cutover-check.mjs','v3/demo-suite-3-0-module-check.mjs','v3/demo-suite-3-0-runtime-store-check.mjs','v3/demo-suite-3-0-cutover-check.mjs','v3/demo-suite-3-0-ui-check.mjs','v3/demo-suite-3-0-lattice-check.mjs','v3/demo-suite-3-0-runtime-e2e-check.mjs','v3/demo-suite-3-0-cutover-mutation-1m.mjs']);
