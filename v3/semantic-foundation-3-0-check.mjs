@@ -54,6 +54,6 @@ check(!runtime.includes("label(frame.querySelector('h1')"),'semantic foundation 
 check(!runtime.includes("label(root.querySelector('#proofTitle')"),'semantic foundation must not rewrite canonical Evidenze ICTC identity');
 check(admin.includes('#adminCenter [data-admin-view="overview"]'),'procedure policy panel must belong to one Admin view');
 check(admin.includes('loadedPolicy=new Map')&&admin.includes('loadedPolicy=new Map(procedures.map'),'procedure policy diff must bind to loaded response');
-check(admin.includes('if(renderImpact()===0)'),'procedure policy no-op write must fail closed');
+check(admin.includes('if(renderImpact({preserveAcknowledgement:true})===0)')&&admin.includes('if(!preserveAcknowledgement)ack.checked=!dirty;')&&admin.includes("if(!$('#procedurePolicyAcknowledge')?.checked)"),'procedure policy no-op fails closed while submit preserves and requires explicit acknowledgement');
 check(!admin.includes('window.confirm'),'procedure policy impact must use structured in-UI confirmation');
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1);}console.log(JSON.stringify({ok:true,glossaryTerms:Object.keys(BUSINESS_GLOSSARY).length,processes:Object.keys(PROCEDURE_LANGUAGE).length,materialActions:MATERIAL_ACTION_COUNT,importanceDimensions:IMPORTANCE_DIMENSIONS.length,auditFindings:AUDIT_CLOSURE.totalFindings,uiTopology:'constitutional-annotation+semantic-composition',identityAuthority:'canonical-procedure-registry+Evidenze-ICTC'}));
