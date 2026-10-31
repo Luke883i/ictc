@@ -22,6 +22,8 @@ ICTC governa esattamente sette processi business:
 | RC-01 | Rischi di compliance | scenari, valutazioni, trattamenti e riesami |
 | AR-01 | Questionari e verifiche | richieste, response set, evidenze e approvazioni interne |
 
+Il catalogo «Processi di Compliance» presenta inoltre **due placeholder non operativi**, OP-01 (Regolamenti, Policy, Procedure, Istruzioni di Lavoro) e OG-01 (Strutture Organizzative, Deleghe, Poteri di Firma e di Rappresentanza). Sono voci informative senza adapter, writer, route o registro documentale autonomo. La loro visibilità, non la capacità operativa, è governata dalle feature flag admin già persistite nella procedure policy. Le nove righe seguono l’ordine OP, OG, MC, RN, AO, EC, AP, RC, AR. I maturity flag sono **classificazioni di prodotto dichiarate**, non attestazioni di conformità, qualità, readiness di rilascio o certificazione.
+
 EP-01 è una vista trasversale sul reticolo epistemico registrato. Non è un ottavo processo e non introduce una seconda business write authority.
 
 ## Baseline prototipale repository-bounded
