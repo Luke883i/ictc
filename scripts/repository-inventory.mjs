@@ -4,6 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {repositoryPurposeCensus} from '../v3/trama-reconcile.mjs';
 
 export const root=resolve(new URL('..',import.meta.url).pathname);
 const digest=v=>createHash('sha256').update(v).digest('hex');
@@ -27,25 +28,44 @@ export function classifyFile(file,registered){
 
 export function census(){
  const tracked=listTracked(),registered=new Map(declaredManifest().documents.map(d=>[d.path,d]));
+ const canonical=repositoryPurposeCensus(root),purposeByPath=new Map(canonical.rows.map(x=>[x.path,x]));
+ if(canonical.totalFiles!==tracked.length||canonical.coverage!==1)throw new Error('canonical purpose census does not fully cover tracked files');
  const entries=tracked.map(file=>{
    const bytes=readFileSync(join(root,file)); const meta=classifyFile(file,registered);
-   return {path:file,sha256:digest(bytes),bytes:bytes.length,...meta};
+   const purpose=purposeByPath.get(file);if(!purpose)throw new Error('missing canonical purpose: '+file);
+   return {path:file,sha256:digest(bytes),bytes:bytes.length,...meta,
+     purposeState:purpose.state,purposeKind:purpose.kind,purposeReason:purpose.reason,
+     purposeInbound:purpose.inboundCount,purposeOutbound:purpose.outboundCount,
+     purposeDynamicRisk:purpose.dynamicRisk,purposeQualificationCoverage:purpose.qualificationCoverage};
  });
  const counts={};for(const item of entries)counts[item.category]=(counts[item.category]||0)+1;
  const unregisteredDocs=entries.filter(e=>e.category==='document:unregistered').map(e=>e.path);
  const trackedSet=new Set(tracked);
  const missingManifest=[...registered.keys()].filter(p=>!trackedSet.has(p));
- const status={schemaVersion:1,source:'git ls-files + manifest + byte hashes',total:entries.length,classified:entries.length,counts,unregisteredDocsCount:unregisteredDocs.length,missingManifest,declaredSafeDeletes:0,automaticQuarantines:0,
+ const status={schemaVersion:2,source:'git ls-files + existing repositoryPurposeCensus + manifest + byte hashes',total:entries.length,classified:entries.length,counts,unregisteredDocsCount:unregisteredDocs.length,missingManifest,
+   canonicalPurposeCoverage:canonical.coverage,canonicalPurposeStates:canonical.byState,
+   observedRetirementCandidates:canonical.retirementCandidates.map(x=>x.path),
+   declaredSafeDeletes:0,automaticQuarantines:0,
   claimBoundary:'Path and manifest classifications are inventory evidence, NOT complete runtime reachability, absence of external consumers, or authorization to deprecate, quarantine, or delete.'};
  return {status,entries};
 }
-export function verifyInventory(data){
+export function verifyInventory(data,validatedBaseline=null){
   const e=data.entries,s=data.status;
   if(!e.length||e.length!==s.total||s.classified!==s.total||s.missingManifest.length||new Set(e.map(x=>x.path)).size!==e.length)throw new Error('inventory completeness/manifest mismatch');
   if(e.some(x=>!x.disposition.startsWith('HOLD_')&&!['PROTECT_AUTHORITY','PRESERVE_REGISTERED'].includes(x.disposition)))throw new Error('unproved disposition');
   if(s.declaredSafeDeletes!==0||s.automaticQuarantines!==0)throw new Error('unauthorized removal promotion');
+  // A validated baseline is supplied only by the bounded mutation test: one full
+  // disk/authority verification, then deterministic in-memory receipt perturbations.
+  if(validatedBaseline){
+    if(JSON.stringify(s)!==JSON.stringify(validatedBaseline.status))throw new Error('summary altered against validated baseline');
+    for(let i=0;i<e.length;i++)if(JSON.stringify(e[i])!==JSON.stringify(validatedBaseline.entries[i]))throw new Error('receipt altered against validated baseline');
+    return true;
+  }
   // Independently reconstruct the expected set and bytes, not just totals supplied by a caller.
   const actual=listTracked(),registered=new Map(declaredManifest().documents.map(d=>[d.path,d]));
+  const canonical=repositoryPurposeCensus(root),byPath=new Map(canonical.rows.map(x=>[x.path,x]));
+  if(s.canonicalPurposeCoverage!==canonical.coverage||JSON.stringify(s.canonicalPurposeStates)!==JSON.stringify(canonical.byState)||
+     JSON.stringify(s.observedRetirementCandidates)!==JSON.stringify(canonical.retirementCandidates.map(x=>x.path)))throw new Error('canonical purpose summary mismatched');
   if(actual.length!==e.length)throw new Error('tracked set mismatch');
   for(let i=0;i<actual.length;i++){
     const file=actual[i],observed=e[i];
@@ -53,6 +73,11 @@ export function verifyInventory(data){
     const bytes=readFileSync(join(root,file)),expected=classifyFile(file,registered);
     if(digest(bytes)!==observed.sha256||bytes.length!==observed.bytes)throw new Error(`bytes/digest mismatch ${file}`);
     for(const key of ['category','evidence','disposition'])if(observed[key]!==expected[key])throw new Error(`unsound ${key}: ${file}`);
+    const purpose=byPath.get(file);if(!purpose)throw new Error('missing canonical purpose row: '+file);
+    const bindings={purposeState:purpose.state,purposeKind:purpose.kind,purposeReason:purpose.reason,
+      purposeInbound:purpose.inboundCount,purposeOutbound:purpose.outboundCount,
+      purposeDynamicRisk:purpose.dynamicRisk,purposeQualificationCoverage:purpose.qualificationCoverage};
+    for(const [key,value] of Object.entries(bindings))if(observed[key]!==value)throw new Error(`unsound ${key}: ${file}`);
   }
   return true;
 }

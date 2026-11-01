@@ -584,6 +584,9 @@
       ".editorconfig",
       ".nvmrc",
       "LICENSE",
+      "LICENSE.md",
+      "NOTICE.md",
+      ".env.example",
       ".github/CODEOWNERS",
       "package-lock.json"
     ]

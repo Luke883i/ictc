@@ -36,7 +36,7 @@ La data più recente non conferisce autorità. PR, audit, DoD o prompt non diven
 
 ## Inventario Git e quarantena logica (distinti dal manifest)
 
-`npm run repo:inventory` produce una **ricevuta derivata** in `artifacts/repository-inventory.json`: ogni path tracciato da Git ha hash SHA-256, dimensione, categoria, fonte della classificazione e disposizione conservativa. Questa ricevuta non possiede alcuna authority né sostituisce il manifest dei documenti. Il numero di documenti non registrati è un debito di classificazione, non una prova di superfluità.
+`npm run repo:inventory` produce una **ricevuta derivata** in `artifacts/repository-inventory.json`: ogni path tracciato da Git ha hash SHA-256, dimensione, categoria, fonte della classificazione, stato di utilizzo proiettato da `repositoryPurposeCensus()` e disposizione conservativa. Questa ricevuta non possiede alcuna authority né sostituisce il manifest dei documenti. Il numero di documenti non registrati è un debito di classificazione, non una prova di superfluità.
 
 - `PROTECT_AUTHORITY`: documento dichiarato authoritative nel manifest; conservazione obbligata.
 - `PRESERVE_REGISTERED`: documento registrato e non authoritative; preservare la lineage o gli obblighi associati.

@@ -20,7 +20,7 @@ cat artifacts/repository-inventory.json
 cat artifacts/repository-retirement-mutations.json
 ```
 
-L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
+L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. Il falsificatore copre anche un tentativo di attribuire falsamente `retirement-candidate` a `LICENSE.md`. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
 
 ## Feedback per tipo di modifica
 
