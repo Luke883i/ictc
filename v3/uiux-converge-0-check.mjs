@@ -81,7 +81,7 @@ const homeOrderOracle=(h,sh,style)=>{
     sh.includes('Priorità per processo')&&sh.includes("ensureComplianceContext(root,'home',{after:workPlane,compact:true})")&&
     sh.includes('lastHomeComplianceHtml=html;')&&sh.includes("const host=$('#homeComplianceOverview');if(!host)return;")&&
     style.includes('height:auto;max-height:none;min-height:0;display:grid;align-content:start;')&&
-    style.includes('grid-template-areas:"intro" "priorities"!important')&&
+    style.includes('grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "priorities"!important')&&
     style.includes('padding-bottom:var(--a6-ux1-footer-reserve,44px)!important');
 };
 assert.ok(homeOrderOracle(index,shell,enterprise),'Home semantic four-plane order or inert badge retirement broken');
