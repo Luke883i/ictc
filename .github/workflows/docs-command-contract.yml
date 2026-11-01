@@ -28,6 +28,10 @@ jobs:
         run: npm run repo:retirement:mutations
       - name: Qualify each unregistered document with isolated removal counterfactual
         run: npm run docs:causal
+      - name: Protect first-party executable document references with physical deletion falsification
+        run: node scripts/executable-doc-reference-check.mjs --falsify
+      - name: Run seven-procedure three-role guide HTTP E2E and forbidden placeholders
+        run: node v3/e2e-guide-7x3-check.mjs
       - name: Enumerate canonical business-journey E2E denominator
         run: npm run e2e:denominator
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
@@ -41,5 +45,7 @@ jobs:
             artifacts/repository-inventory-falsification.json
             artifacts/document-causal-qualification.json
             artifacts/e2e-journey-denominator.json
+            artifacts/e2e-guides-7x3.json
+            artifacts/executable-doc-reference.json
           if-no-files-found: error
           retention-days: 30

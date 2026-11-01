@@ -225,3 +225,27 @@ La saturazione di `v3/trama-engineering-saturation.mjs` ha una propria superfici
 `npm run docs:check` esamina ora i target di collegamenti Markdown relativi da **tutti** i documenti sotto `docs/`, non solo dal gruppo autoritativo del manifest. Questo verifica la conservazione dei riferimenti osservabili senza attribuire ai materiali storici una nuova authority.
 
 `npm run docs:causal` rimuove fisicamente, uno alla volta in copia isolata, i documenti fuori manifest, ripristina ogni byte e registra una ricevuta per file. La prova negativa fallisce quando un documento destinazione di un link Markdown osservato non è intercettato da `docs:check`. Nel candidato PR239 la rilevazione è salita da 3 a 17 su 149; **132 non intercettati non significano 132 documenti inutili**. Gli import non letterali, la compatibilità esterna, le citazioni non Markdown e l'utilizzo umano richiedono prove separate. L'autorità documentale resta `docs/documentation-manifest.json`; zero file eliminati o deprecati automaticamente.
+
+### PR239 — first-party references and a second live HTTP coverage slice
+
+`node scripts/executable-doc-reference-check.mjs --falsify` now supplies an
+**independent** first-party consumer gate: enumerate explicit `docs/*.md` references
+from executable `v3/` sources and GitHub workflow files; require every referenced
+file to exist, and physically remove/restore each off-manifest target in an
+isolated copy to demonstrate failure when a real consumer edge is lost.
+This does **not** alter document authority or broaden `docs:check` into a
+runtime-source parser. The combined bounded evidence currently includes 17
+unregistered documents protected by Markdown links and 13 by first-party
+executable literals (six overlap): **24 distinct targets**, leaving 125
+outside both bounded oracles. Those 125 remain `HOLD_REVIEW`, NOT safe deletes.
+Dynamic paths, human usage, external references, legal retention and history
+are not excluded by either oracle; a single unrelated test passing does not
+prove the absence of dependencies.
+
+`node v3/e2e-guide-7x3-check.mjs` executes 21 additional live HTTP views
+(seven existing procedure guides × admin/user/auditor), validating the canonical
+process identifier, source authority, presence of human transition checkpoints,
+and three negative paths for placeholders/unknown procedures. It is a
+**different 21-cell slice** than the existing bootstrap 7×3 probe. These two
+read-only slices do not establish end-to-end completion of any of the 53
+documented business journey steps; no global E2E percentage is claimed.
