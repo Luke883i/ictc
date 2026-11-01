@@ -14,6 +14,35 @@ assert.ok(ai.includes("llm.ready?'ready':llm.configured?'key-missing':'unconfigu
 assert.ok(publicPack.includes('officialSourceConfirmed')&&publicPack.includes('standard-public-source-incomplete')&&publicPack.includes("contentMode:'official-public-text'"));
 assert.ok(standard.includes('neutralDescription')&&standard.includes('neutralKeywords')&&standard.includes('neutralOutline')&&standard.includes("neutralContentMode:'ictc-neutral-index'")&&standard.includes('licensed-reference-index'));
 assert.ok(browser.includes('Testo ufficiale pubblico')&&browser.includes('standard-official-text')&&browser.includes('standard-neutral-index')&&browser.includes('testo ufficiale esatto'));
-assert.ok(home.includes('[data-ictc-surface="home"] main{padding-top:0!important;padding-bottom:0!important;min-height:0!important}')&&home.includes('#homeView{box-sizing:border-box;height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px));max-height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('align-content:center;overflow:visible')&&home.includes('[hidden]{display:none!important}')&&!/html\[data-native-semantic-lattice[^\{]*\]\s*body\s*\{[^\}]*overflow\s*:\s*hidden/i.test(home));
+// HOME-ORDER-4 supersedes UI-INTENT-9's viewport-height clamp, not its footer or hidden-state protection.
+function homeLayoutOracle(source){
+ const block=source.match(/@media\(min-width:761px\) and \(min-height:720px\)\{([\s\S]*?)\n\}/)?.[1]||'';
+ const rules=[...block.matchAll(/html\[data-native-semantic-lattice="3\.2\.0"\]\[data-ictc-surface="home"\]\s+(main|#homeView)\{([^{}]*)\}/g)];
+ if(rules.length!==2||new Set(rules.map(x=>x[1])).size!==2)return false;
+ const declarations=selector=>Object.fromEntries((rules.find(x=>x[1]===selector)?.[2]||'').split(';').map(x=>x.trim()).filter(Boolean).map(x=>{const at=x.indexOf(':');return[x.slice(0,at).trim(),x.slice(at+1).trim()]}));
+ const main=declarations('main'),view=declarations('#homeView');
+ return main['padding-top']==='0!important'&&main['padding-bottom']==='var(--a6-ux1-footer-reserve,44px)!important'&&main['min-height']==='0!important'&&view['box-sizing']==='border-box'&&view.height==='auto'&&view['max-height']==='none'&&view['min-height']==='0'&&view.display==='grid'&&view['align-content']==='start'&&view.overflow==='visible'&&view['padding-top']==='0!important'&&view['padding-bottom']==='0!important'&&source.includes('\n[hidden]{display:none!important}\n')&&!/html\[data-native-semantic-lattice[^\{]*\]\s*body\s*\{[^\}]*overflow\s*:\s*hidden/i.test(source);
+}
+assert.ok(homeLayoutOracle(home),'Home must grow naturally, reserve footer space and preserve hidden controls');
+const homeLayoutMutants=[
+ ['viewport-clamp','height:auto;max-height:none','height:calc(100dvh - 100px);max-height:none'],
+ ['max-height-clamp','max-height:none;min-height:0','max-height:100dvh;min-height:0'],
+ ['content-centering','align-content:start;overflow:visible','align-content:center;overflow:visible'],
+ ['content-clipping','overflow:visible;padding-top','overflow:hidden;padding-top'],
+ ['missing-footer-reserve','padding-bottom:var(--a6-ux1-footer-reserve,44px)!important','padding-bottom:0!important'],
+ ['reduced-footer-reserve','--a6-ux1-footer-reserve,44px','--a6-ux1-footer-reserve,0px'],
+ ['forced-viewport-minimum','height:auto;max-height:none;min-height:0','height:auto;max-height:none;min-height:100dvh'],
+ ['layout-grid-retirement','min-height:0;display:grid;align-content:start','min-height:0;display:block;align-content:start'],
+ ['lost-border-box','box-sizing:border-box;height:auto','box-sizing:content-box;height:auto'],
+ ['view-top-obstruction','overflow:visible;padding-top:0!important','overflow:visible;padding-top:12px!important'],
+ ['main-top-obstruction','main{padding-top:0!important','main{padding-top:12px!important'],
+ ['lost-hidden-guard','\n[hidden]{display:none!important}\n','\n[hidden]{display:block!important}\n'],
+ ['body-scroll-lock','\n[hidden]{display:none!important}\n','\nhtml[data-native-semantic-lattice="3.2.0"] body{overflow:hidden}\n[hidden]{display:none!important}\n'],
+ ['duplicate-layout-owner','html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView{box-sizing:border-box','html[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView{height:100vh}\nhtml[data-native-semantic-lattice="3.2.0"][data-ictc-surface="home"] #homeView{box-sizing:border-box']
+];
+for(const [name,before,after] of homeLayoutMutants){
+ assert.ok(home.includes(before),'Home mutation preimage absent: '+name);
+ assert.equal(homeLayoutOracle(home.replace(before,after)),false,'Home regression survived: '+name);
+}
 assert.ok(chrome.includes('.topbar{height:var(--ui-header-h)!important;min-height:var(--ui-header-h)!important}')&&chrome.includes('.topbar .stable-header-inner{height:100%!important}'));
 console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9',images:9,dod:14,claimBoundary:'Source/runtime semantic closure. Public exact text requires a complete confirmed official pack; proprietary normative text remains license-gated.'}));
