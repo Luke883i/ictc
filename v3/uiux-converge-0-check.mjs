@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { validateUiuxConvergeContract, validateUiuxMiningV2Coverage, UIUX_MINING_V2_COVERAGE, CANONICAL_SURFACES } from './uiux-converge-0-model.mjs';
+import { HOME_COMPLIANCE, ICTC_MANIFEST } from './public/ui/product-copy.js';
+import { REGULATORY_PRIMERS } from './public/ui/regulatory-primers.js';
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
 const [contractRaw,closureRaw,entryRaw,tokens,icons,shell,frame,native,enterprise,closureCss,compositionCss,registry,index]=await Promise.all([
   read('./uiux-converge-0-contract.json'),read('./capability-closure-e2-contract.json'),read('./uiux-prototype-entry-contract.json'),
@@ -15,6 +17,57 @@ assert.equal(entry.nextSerialSlice,'UIUX-CONVERGE-0');assert.equal(entry.capabil
 for(const token of ['--ui-control-h:44px','--ui-row-compact:52px','--ui-row-max:64px','--type-display:','--weight-description:400','--transition-interactive:'])assert.ok(tokens.includes(token),`design token missing ${token}`);
 for(const icon of ["'arrow-up-right'","'chevron-left'","'chevron-right'","'info'"])assert.ok(icons.includes(icon),`icon primitive missing ${icon}`);
 assert.ok(shell.includes(".slice(0,3)"),'Home queue must converge to max 3');
+
+/* HOME-COMPLIANCE-1 — bound the business narrative to existing Home/copy/policy owners. */
+assert.ok(ICTC_MANIFEST.title.includes('Rispettare le norme')&&ICTC_MANIFEST.title.includes('rischi e costi'),'Home value proposition must be obligation-first');
+assert.deepEqual(HOME_COMPLIANCE.examples.map(item=>item.id),['GDPR','231/2001','NIS2','DORA']);
+assert.equal(Object.keys(REGULATORY_PRIMERS).length,5,'no sixth global regulatory primer');
+assert.equal(HOME_COMPLIANCE.questions.length,4);
+assert.ok(HOME_COMPLIANCE.economics.includes('non calcola automaticamente'),'cost capability may not be asserted');
+assert.ok(HOME_COMPLIANCE.boundary.includes('non certifica conformità')&&HOME_COMPLIANCE.boundary.includes('decisioni restano umane'));
+for(const item of HOME_COMPLIANCE.examples){
+  assert.ok(item.case.length>60&&item.paths.includes('-01'),'legal example needs a business question and existing process links');
+  assert.ok(item.sourceUrl||REGULATORY_PRIMERS[item.id]?.sourceUrl,'legal example requires primary source');
+}
+assert.ok(HOME_COMPLIANCE.examples.find(x=>x.id==='231/2001')?.boundary.includes('non è un adempimento automaticamente obbligatorio'));
+assert.ok(HOME_COMPLIANCE.examples.find(x=>x.id==='NIS2')?.nationalUrl.includes('24G00155'),'NIS2 Italy transposition reference absent');
+const homeNarrativeOracle=(h,sh,style)=>(
+  h.includes('id="homeComplianceOverview"')&&
+  h.indexOf('id="homePriorities"')<h.indexOf('id="homeComplianceOverview"')&&
+  sh.includes('renderHomePulse();renderHomeCompliance();renderHomeBoarding()')&&
+  sh.includes('catalogue.filter(item=>item.enabled!==false)')&&
+  sh.includes("const placeholder=item.kind==='placeholder'")&&
+  sh.includes("placeholder?'Area prevista, non operativa.")&&
+  sh.includes("esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')")&&
+  sh.includes("if(!source)throw new Error('Regulatory example source unavailable: '")&&
+  sh.includes('if(host.innerHTML!==html)host.innerHTML=html;')&&
+  sh.includes('data-home-business-guide')&&
+  sh.includes('class="home-compliance-route" data-service="proof"')&&
+  style.includes('#homeView .home-compliance-overview')&&
+  style.includes('.home-compliance-detail>summary')&&
+  style.includes('@media(max-width:760px)')&&
+  style.includes('#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}')
+);
+assert.ok(homeNarrativeOracle(index,shell,enterprise),'Home narrative projection / local owner contract broken');
+const narrativeMutants=[
+  [index,'id="homeComplianceOverview"','id="otherHomeOverview"',null,null],
+  [shell,'renderHomePulse();renderHomeCompliance();renderHomeBoarding()','renderHomePulse();renderHomeBoarding()',null,null],
+  [shell,'catalogue.filter(item=>item.enabled!==false)','catalogue',null,null],
+  [shell,"const placeholder=item.kind==='placeholder'","const placeholder=false",null,null],
+  [shell,"placeholder?'Area prevista, non operativa.","placeholder?'",null,null],
+  [shell,"esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')","item.description||'Descrizione non disponibile.'",null,null],
+  [shell,"if(!source)throw new Error('Regulatory example source unavailable: '","if(false)throw new Error('Regulatory example source unavailable: '",null,null],
+  [shell,'if(host.innerHTML!==html)host.innerHTML=html;','host.innerHTML=html;',null,null],
+  [shell,'class="home-compliance-route" data-service="proof"','class="home-compliance-route" data-service="home"',null,null],
+  [enterprise,'#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}','#otherView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}',null,null]
+];
+for(const [source,from,to] of narrativeMutants){
+  assert.ok(source.includes(from),'stale Home mutation fixture: '+from);
+  const changed=source.replace(from,to);
+  assert.ok(!homeNarrativeOracle(source===index?changed:index,source===shell?changed:shell,source===enterprise?changed:enterprise),
+    'Home semantic mutant survived: '+from);
+}
+
 assert.ok(index.includes('<h1 id="homeTitle">Cosa richiede una decisione</h1>')&&shell.includes("title.textContent='Cosa richiede una decisione'")&&shell.includes("homeFirstPlane='decision>worklist'")&&shell.includes("priorities.dataset.homeWorkQueue='3.2'")&&shell.includes("priorities.dataset.uiuxConverge='P1'"),'Home must be work-first and visible-cutover bounded');
 assert.ok(shell.includes("uiIcon('arrow-up-right'")&&shell.includes("uiIcon('chevron-right'"),'Home directional actions must use icons');
 assert.ok(frame.includes('data-uiux-layout="row"')&&frame.includes("host.dataset.uiuxLayout='rows'"),'Process Hub row contract missing');

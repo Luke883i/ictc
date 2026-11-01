@@ -2,12 +2,36 @@ export const SURFACE_LABELS=Object.freeze({home:'Home',processes:'Processi di Co
 
 export const ICTC_MANIFEST=Object.freeze({
   eyebrow:'Scopo ICTC',
-  title:'Conformità come lavoro umano verificabile.',
-  lead:'ICTC collega obblighi, rischi, controlli, responsabilità ed evidenze. L’AI prepara e ricerca; le decisioni restano umane.',
-  method:'Requisito → rischio o impatto → controllo o azione → responsabile → evidenza → limite.',
+  title:'Rispettare le norme. Governare rischi e costi.',
+  lead:'ICTC collega fonti, requisiti, rischi, controlli e interventi: aiuta imprese e PMI a organizzare la risposta agli obblighi applicabili e a usare con criterio le risorse.',
+  method:'Individuare → valutare → organizzare → attuare → verificare.',
   dataAndAi:'Dati e allegati restano nel runtime locale corrente; l’eventuale egress AI segue provider e policy configurati. Il modello non riceve autorità sul dato o sulle decisioni.',
   adminTelemetry:'L’amministrazione governa provider, modelli e budget e osserva l’uso AI; le trace registrano modello, digest, request-id e usage quando disponibili.',
   boundary:'ICTC supporta il lavoro di conformità: non determina da solo applicabilità normativa, conformità, certificazione, responsabilità legale o giudizi professionali.'
+});
+
+
+// HOME-COMPLIANCE-1: presentation-only narrative within the existing copy owner.
+// Legal examples are questions, never inferred legal applicability or a regulatory registry.
+export const HOME_COMPLIANCE=Object.freeze({
+  heading:'Perché rispettare le norme conta per l’impresa',
+  lead:'Rispettare le norme è parte del modo in cui un’impresa protegge persone, dati, servizi e continuità delle attività. Gli obblighi cambiano con settore, dimensione, ruolo e operazioni: comprenderli e attuarli richiede responsabilità, controlli, tempo e risorse.',
+  value:'ICTC collega fonti e requisiti da valutare a sistemi, processi, rischi, azioni ed evidenze. Aiuta a individuare lavoro necessario, evitare ricostruzioni ripetute e spiegare su quali basi sono state prese le decisioni.',
+  economics:'La compliance ha costi di persone, tecnologia, controlli e verifiche; anche carenze, incidenti e interruzioni possono avere conseguenze economiche. ICTC organizza il lavoro e le relative evidenze, ma non calcola automaticamente ROI, sanzioni o costi di non conformità.',
+  questions:Object.freeze([
+    Object.freeze({title:'Chi è in perimetro?',text:'Attività, settore, ruolo, dati, sistemi e fornitori: la norma è davvero pertinente al caso?'}),
+    Object.freeze({title:'Quali misure servono?',text:'Obblighi, controlli, procedure, scadenze e risultati attesi: quali sono richiesti?'}),
+    Object.freeze({title:'Chi decide e chi attua?',text:'Responsabilità, competenze e risorse: chi valuta, interviene e riesamina?'}),
+    Object.freeze({title:'Come si dimostra?',text:'Fonti, registrazioni, verifiche e limiti: che cosa è effettivamente documentato?'})
+  ]),
+  examples:Object.freeze([
+    Object.freeze({id:'GDPR',case:'Una PMI utilizza un CRM con dati di clienti: quali trattamenti, ruoli, misure e verifiche sono pertinenti?',paths:'AO-01 · MC-01 · AR-01'}),
+    Object.freeze({id:'231/2001',label:'D.Lgs. 231/2001',case:'Nella gestione di acquisti e fornitori, quali rischi-reato e presidi organizzativi meritano valutazione?',paths:'AO-01 · RC-01 · MC-01',sourceUrl:'https://www.normattiva.it/eli/id/2001/06/19/001G0293/CONSOLIDATED',boundary:'Il Modello 231 non è un adempimento automaticamente obbligatorio per ogni impresa; presupposti ed effetti richiedono valutazione giuridica.'}),
+    Object.freeze({id:'NIS2',case:'Un’organizzazione potenzialmente in perimetro deve riesaminare misure cyber, fornitori e gestione degli incidenti: che cosa si applica?',paths:'RN-01 · AO-01 · RC-01',nationalUrl:'https://www.normattiva.it/eli/id/2024/10/01/24G00155/CONSOLIDATED'}),
+    Object.freeze({id:'DORA',case:'Un’entità finanziaria interessata valuta la continuità di un servizio ICT critico e i relativi fornitori: quali controlli e prove servono?',paths:'AO-01 · RC-01 · AR-01'})
+  ]),
+  procedureTitle:'Le aree che compongono la risposta',
+  boundary:'Esempi illustrativi, non valutazioni di applicabilità. Registrare una fonte, collegare un controllo o produrre un’evidenza non certifica conformità né efficacia. L’AI assiste; le decisioni restano umane.'
 });
 
 export const COMMON_COMPLIANCE_METHOD=Object.freeze(['Obblighi applicabili','Rischio e impatto','Controlli e azioni','Responsabilità','Evidenze','Limiti e riesame']);
