@@ -51,7 +51,7 @@ la documentazione esistente: non definisce una seconda governance.
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
 2. [Repository Atlas](REPOSITORY_ATLAS.md) — forma del repository, classi di verità, metodo di lettura e inferenza assistita.
 3. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
-4. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
+4. [AGENTS](../AGENTS.md) — istruzioni per agenti AI, non un prerequisito di lettura, setup o sviluppo umano. I gate di CI e le responsabilità restano comunque vincolanti.
 5. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
 6. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
 7. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.

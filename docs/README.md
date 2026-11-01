@@ -2,6 +2,10 @@
 
 Questa pagina è un **indice subordinato**. Per decidere quale documento sia corrente usa [START_HERE](START_HERE.md), il [manifest](documentation-manifest.json) e la [matrice delle autorità](authority-matrix.yaml). La presenza di un link non assegna autorità né rende eliminabile una risorsa senza link.
 
+## Tre domande di primo ingresso
+
+Il [README root](../README.md) dà identità e avvio, questa pagina instrada verso gli owner. **Prodotto** = scopo e use case; **Software** = codice, dati, API e operazioni; **Repository** = ownership, test, CI e governance. Si può seguire questo indice **senza leggere AGENTS.md, prompt o genealogia AI**. Il [manifest](documentation-manifest.json) registra il sottoinsieme normato, non l'intero archivio Markdown: non registrato non significa eliminabile.
+
 ## Capire il prodotto
 
 - [PRODUCT](PRODUCT.md) — identità, sette processi, placeholder e limiti (autorità corrente).

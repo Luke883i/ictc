@@ -30,6 +30,20 @@ La conoscenza di ICTC **non è subordinata alla governance AI**. Un ingegnere en
 
 **Censimento non significa ritiro:** l'inventario attesta presenza, hash e classificazione di superficie; `document:unregistered` è una coda esplicita di esame, non sinonimo di allucinazione o obsolescenza. `software:candidate` e `verification:candidate` sono euristiche di path, non prove di esecuzione o di inutilità. Finché import dinamici, URL esterne, configurazioni, fixture, storia semantica e consumer terzi non sono esclusi mediante prove locali e indipendenti, ogni disposizione rimane `HOLD_*`. Nessun file è in quarantena fisica né dichiarato eliminabile da questo censimento. I documenti legali `LICENSE.md` e `NOTICE.md` e la configurazione di esempio `.env.example` sono radici di metadati esplicite nel contratto esistente: il fatto che non abbiano import di codice non è prova di inutilità.
 
+## Audit ex novo: bias e controprove del primo ingresso
+
+Il percorso standard è **Product → Software → Repository**. Le fonti sono owner e verificatori esistenti, non conversazioni AI. Questa è una verifica di leggibilità del repository, non una valutazione E3-HUMAN con ingegneri rappresentativi.
+
+| Bias/errore tipico | Controprova | Limite |
+| --- | --- | --- |
+| Anchoring/authority halo del programma di ricerca | README apre con ICTC e instrada ai tre piani prima del contesto ROA | La presenza del link non prova comprensione umana |
+| Automation bias o prerequisiti AI impliciti | CONTRIBUTING/DEVELOPMENT/START_HERE consentono la via non-AI; AGENTS è solo per agenti | La PR deve comunque rispettare CI e governance |
+| Confirmation bias dai test verdi | Confrontare journey dichiarati con HTTP, persistenza, receipt e casi non attestati | CI non sostituisce E3/E4 |
+| Proliferazione documentale = proliferazione delle autorità | Manifest registra authority/lifecycle; repository inventory censisce i file, separando HOLD da DELETE | I consumer esterni non sono esauriti dal grep |
+| Normalcy bias operativo | Confrontare `npm start`, SQLite e identità locale con CONFIGURATION/SECURITY/OPERATIONS | Il deployment enterprise resta prova esterna |
+
+Il percorso va verificato con un oracolo strutturale falsificabile e con un cold-start reale. Se il package registry è irraggiungibile o la review umana non è stata effettuata, dichiarare la prova incompleta invece di certificarla.
+
 ## Classi di verità
 
 | Classe | Owner / fonte | Da non confondere con |

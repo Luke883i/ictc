@@ -1,15 +1,27 @@
+# ICTC — Integrated Compliance Tower Control
+
+ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
+
+## Da zero: tre percorsi (senza prerequisiti AI)
+
+| Domanda | Punto di ingresso | Verifica sul software |
+| --- | --- | --- |
+| **Prodotto:** destinatari, capacità e limiti | [PRODUCT](docs/PRODUCT.md) → [user journey](docs/04_USER_JOURNEYS.md) | Sette processi e due placeholder; nessuna applicabilità legale automatica. |
+| **Software:** runtime, API e dati | [ARCHITECTURE AS-IS](docs/11_ARCHITECTURE.md) → [DEVELOPMENT](docs/DEVELOPMENT.md) → [CONFIGURATION](docs/CONFIGURATION.md) | `v3/bootstrap.mjs`, `v3/server.mjs`, SQLite; verificare contro codice e [OpenAPI](docs/openapi.yaml). |
+| **Repository:** modifiche, test e delivery | [START_HERE](docs/START_HERE.md) → [Atlas](docs/REPOSITORY_ATLAS.md) → [TESTING](docs/TESTING.md) | [Manifest](docs/documentation-manifest.json), [owner matrix](docs/authority-matrix.yaml), [Actions](.github/workflows/), exact HEAD. |
+
+Per esercire: [OPERATIONS](docs/OPERATIONS.md). `AGENTS.md` e TRAMA sono specializzazioni per l'uso di assistenti AI, **non prerequisiti** per comprendere, installare o modificare ICTC. La responsabilità delle decisioni e dei gate rimane agli owner e alla governance ordinaria.
+
+**Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
+
+## Contesto di programma (non autorità di prodotto)
+
 [![ROA Research Programme](https://img.shields.io/badge/ROA-Research_Programme-1f6feb)](https://github.com/Luke883i/academics)
 [![Programme Role](https://img.shields.io/badge/role-COMPLIANCE_VERTICAL-6f42c1)](https://github.com/Luke883i/academics#repository-map)
 
 <!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 
 > **Contesto di programma.** ICTC partecipa al [ROA Research Programme](https://github.com/Luke883i/academics), con riferimento teorico a [ROA](https://github.com/Luke883i/ROA). L'appartenenza indica coordinamento, **non** conformità teorica dimostrata, validazione indipendente o readiness produttiva. Le autorità di questo repository restano locali.
-
-# ICTC — Integrated Compliance Tower Control
-
-ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
-
-**Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
 ## Che cosa governa
 
@@ -82,7 +94,7 @@ Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE
 
 ## Contribuire e fare review
 
-Leggi [CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md) e [AGENTS](AGENTS.md). Ogni PR dichiara intento, owner corrente, predicati positivi e negativi, percorso utente interessato, diff effettivo, verifiche eseguite **sulla stessa HEAD**, rischi residui e rollback. Prima di creare un nuovo layer, dimostra perché un owner esistente non possa assorbire la responsabilità.
+Come ingegnere leggi [CONTRIBUTING](CONTRIBUTING.md) e [GOVERNANCE](GOVERNANCE.md). Per contributi tramite assistente AI, consulta anche [AGENTS](AGENTS.md): non è una seconda authority del prodotto. Ogni PR dichiara intento, owner corrente, predicati positivi e negativi, percorso utente interessato, diff effettivo, verifiche eseguite **sulla stessa HEAD**, rischi residui e rollback. Prima di creare un nuovo layer, dimostra perché un owner esistente non possa assorbire la responsabilità.
 
 Il **contributor** propone e testa; il **reviewer** verifica diff, predicati ed evidenze; il **maintainer** governa l'integrazione; l'**operatore del deployment** e gli **organi decisionali aziendali** mantengono le responsabilità esterne di loro competenza. Questa è una distinzione operativa, non una dichiarazione che ICTC disponga già di reviewer indipendenti o di una nuova organizzazione.
 
