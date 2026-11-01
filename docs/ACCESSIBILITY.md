@@ -25,8 +25,10 @@ Il primo livello mostra etichetta, stato, frase e prossima azione. Il dettaglio 
 
 ## Audit automatico
 
+Il comando indicato è il percorso eseguibile attualmente presente in `scripts/`. Non dedurre l'esistenza di uno script npm dal nome di un documento: verificare sempre `package.json`. L'audit automatico controlla proprietà statiche entro il proprio perimetro; non sostituisce VoiceOver/NVDA, navigazione assistita e test con persone rappresentative. [Testing](TESTING.md) distingue i gate E2 dalle evidenze E3-HUMAN.
+
 ```bash
-npm run audit:a11y
+node scripts/accessibility-audit.mjs
 ```
 
 Il validator zero-dependency verifica:

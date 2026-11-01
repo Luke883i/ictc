@@ -34,6 +34,19 @@ La separazione evita di confondere “perché esiste” con “cosa è authorita
 
 La data più recente non conferisce autorità. PR, audit, DoD o prompt non diventano current perché contengono una formulazione più nuova: l'owner deve essere dichiarato e raggiungibile dalla mappa canonica.
 
+## Inventario Git e quarantena logica (distinti dal manifest)
+
+`npm run repo:inventory` produce una **ricevuta derivata** in `artifacts/repository-inventory.json`: ogni path tracciato da Git ha hash SHA-256, dimensione, categoria, fonte della classificazione, stato di utilizzo proiettato da `repositoryPurposeCensus()` e disposizione conservativa. Questa ricevuta non possiede alcuna authority né sostituisce il manifest dei documenti. Il numero di documenti non registrati è un debito di classificazione, non una prova di superfluità.
+
+- `PROTECT_AUTHORITY`: documento dichiarato authoritative nel manifest; conservazione obbligata.
+- `PRESERVE_REGISTERED`: documento registrato e non authoritative; preservare la lineage o gli obblighi associati.
+- `HOLD_CONSUMERS`: software/test/workflow plausibilmente consumato; non si dichiara assenza di consumer dal nome.
+- `HOLD_REVIEW`: funzione non adeguatamente provata; nessuna eliminazione/quarantena automatica.
+
+Per passare da `HOLD` a proposta di ritiro occorrono prova dei consumer statici/dinamici, API/URL pubbliche, workflow, fixture, storia delle PR, compatibilità, owner e rollback. Una successiva review deve comprovare la conservazione semantica e ripetere i test con il file realmente tolto in un checkout isolato. La sola presenza di un'etichetta come `legacy`, `AI`, `generated` o di un import zero non prova eliminabilità. La **quarantena logica** è una classe di revisione; non rinomina né interrompe i consumer.
+
+Le mutazioni di `repo:retirement:mutations` verificano un oracolo di dodici obblighi in memoria: 10M trial e 1M falsificazioni negative non sono 10M patch applicate al repository e non certificano la cancellabilità dei singoli file.
+
 ## Product truth e lineage
 
 `docs/PRODUCT.md` è l'autorità corrente per identità, scope e confini del prodotto. `docs/00_PROMPT_CLARIFICATION.md` è `source-input`; documenti TO-BE/roadmap restano futuro intenzionale. Quando una decisione di lineage diventa AS-IS, si aggiorna l'owner current e si conserva il documento storico come evidence, senza duplicare l'autorità.
@@ -64,6 +77,16 @@ La documentazione è matura quando:
 - `npm run docs:check` è nella rail semantic current;
 - contributor, PR, support e security hanno route separate e verificabili;
 - nessun generated artifact è indicato come file da modificare manualmente.
+
+## Contratto di ricostruibilità e ritiro lossless
+
+La navigazione segue `README → START_HERE/ATLAS → owner canonico → componente/handler → falsificatore → ricevuta`. Ogni documento **current/operating/policy** deve rendere identificabili: destinatario e task, scopo e limiti, owner sostanziale, prerequisiti, ingressi e output, versione/provenienza pertinente, riferimento agli esecutori e test (dove esistono), stato probatorio. I documenti `lineage`, `source-input`, `roadmap` e `generated` espongono invece ruolo temporale e limiti; non ricevono current authority da un hyperlink.
+
+Per il software un singolo README per ogni file sarebbe rumore. La tracciabilità delle foglie è una **proiezione ricostruibile** da import, URL, entrypoint, contratti, test, workflow, metadati Git/PR e riferimenti dinamici; non un nuovo writer o registry di verità. Mantenere distinti `IMPORTS/READS/EXECUTES`, `DYNAMIC-LOAD/STATIC-URL`, `DOCUMENTS/PROVES` e `CO-CHANGED/MENTIONS`. Ogni edge inferito registra provenienza, esatto SHA, metodo, confidenza e limiti.
+
+**Regola fail-closed per la cancellazione:** `UNREFERENCED` significa soltanto *nessun riferimento osservato con i metodi applicati*, non `SAFE_DELETE`. Un candidato alla rimozione deve superare: (1) controllo authority, retention, external entry e URI statiche; (2) risoluzione dei path dinamici e dei consumer; (3) trasferimento lossless di eventuali claim unici; (4) rimozione reale in sandbox e test sia positivi sia negativi; (5) riesame della failure family e CI sulla stessa HEAD; (6) rollback riproducibile. Se una condizione è ignota, classificare `UNKNOWN / HOLD`, non eliminare.
+
+I metadati storici di una PR suggeriscono accoppiamenti e finalità, ma non provano la sicurezza di una delete. Un punteggio statistico può **ordinare la revisione**; non può sostituire il veto deterministico sulle superfici esposte, sull'autorità e sulle prove di non-uso. Non alterare assieme prodotto e oracolo per creare un falso verde.
 
 ## Falsificazione
 

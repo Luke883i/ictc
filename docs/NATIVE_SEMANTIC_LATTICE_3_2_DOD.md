@@ -2,6 +2,8 @@
 
 ## Stato corrente
 
+**Ordine delle authority:** [Product](PRODUCT.md) stabilisce il prodotto oggi visibile; questo DoD conserva il perimetro dell'architettura semantica 3.2. La presentazione locale dei nove elementi nel catalogo (sette procedure più due placeholder) e della Home a quattro sezioni è la successiva evoluzione delle PR #233–#238, non un nuovo global finalizer. Gli invarianti storici vanno letti come obiettivi delle relative slice, non come veto permanente su design successivi già implementati.
+
 **ICTC Enterprise Compliance Workspace 3.2 — Native Semantic Lattice**.
 
 La 3.2 sposta la gerarchia informativa verso owner locali. `active-experience.js` resta l'unico composition root; `semantic-composition-runtime.js` resta annotation-only. Nessuna business write authority o participant C0.1 viene creato dalla presentation.
@@ -13,8 +15,8 @@ La 3.2 sposta la gerarchia informativa verso owner locali. `active-experience.js
 3. Il composition root conserva Foundation 3.0 -> local native owners 3.2 -> global semantic annotation; C0.1 conserva harmonization -> presentation -> integrity -> journey -> annotation.
 4. catalogueSummary != workspacePurpose per 7/7 procedure.
 5. Processi usa capability matrix 3 -> 2 -> 1; record omogenei usano list/row grammar.
-6. Home presenta la proposition ICTC e una bounded attention queue, max 5, ordinata per severity prima del volume.
-7. Evidenze è epistemic-first: Reticolo epistemico, ricostruzione, quindi decisioni/tracciabilità; disclosure chiusi di default.
+6. Home presenta il contesto ICTC e una coda di attenzione limitata a tre priorità nella UI corrente; la precedente soglia di cinque appartiene alla storia della slice, non al contratto visibile post-#238.
+7. Evidenze segue il facts-first attuale: banner di fatti registrati, Decisioni e tracciabilità, Ricostruzione, Riferimenti, Reticolo epistemico e verifiche tecniche; il precedente ordine epistemic-first è superato dalla convergenza post-#234.
 8. EP-01 rende ricerca/relazioni primarie; dettagli tecnici sono progressivi.
 9. Admin controlla disponibilità operativa, non applicabilità legale, e conferma soltanto su diff.
 10. Stable header/footer sono posseduti dal Workspace Chrome 3.3.

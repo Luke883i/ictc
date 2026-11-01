@@ -6,6 +6,8 @@ Its job is to make the current state mechanically hard to misread: consolidate k
 
 ## AS-IS lock
 
+La projection di AS-IS è utile anche per la manutenzione documentale: la somiglianza di nomi, un hash uguale o una PR storica non dimostrano sostituibilità semantica. Qualunque ritiro si dimostra sui consumer effettivi e sulle evidenze preservate, mentre i metadati di archeologia restano derivati. Owner: [Atlas](REPOSITORY_ATLAS.md), [documentazione](DOCUMENTATION_STANDARD.md) e [convergence authority](convergence/convergence-authority.json).
+
 A closed debt may be reopened, but never silently. Reopening requires the authoritative source to change state and the new evidence/falsifier to remain attributable. A derived projection cannot close or reopen debt, and current product documentation must not embed a competing live roadmap pointer.
 
 The entropy signature is a digest of the normalized active-debt topology plus current documentation/UI drift and the selected next action. It is a comparison signal, not a maturity or compliance score.

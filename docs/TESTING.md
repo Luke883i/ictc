@@ -10,6 +10,18 @@ npm run release:check
 
 `npm test` esegue `test:current`: il documentation lattice check entra nella semantic current rail prima del runtime current. I rail storici restano regressioni/diagnostica e non ridefiniscono `v3/release-identity.json`.
 
+## Prova replicabile di inventario e ritiro conservativo
+
+```bash
+npm run repo:inventory
+npm run repo:inventory:falsify
+npm run repo:retirement:mutations
+cat artifacts/repository-inventory.json
+cat artifacts/repository-retirement-mutations.json
+```
+
+L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. Il falsificatore copre anche un tentativo di attribuire falsamente `retirement-candidate` a `LICENSE.md`. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
+
 ## Feedback per tipo di modifica
 
 Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di convergenza. La tabella orienta, non crea una seconda authority.
@@ -73,6 +85,12 @@ npm run docs:saturation
 ```
 
 `docs:check` verifica authority/lifecycle, raggiungibilità degli owner, product truth, community routing, PR contract e package wiring. `docs:saturation` falsifica il modello degli invarianti documentali; il numero di trial non è un numero di contributor study, browser session o code mutation indipendenti.
+
+## Prove per documentazione e ritiro di file
+
+Per modifiche documentali verificare nell'ordine: link e lifecycle del manifest, coerenza con l'owner eseguibile, evidenza positiva del comportamento e un mutante che falsifichi il claim. Per una proposta di ritiro, il censimento `zero inbound` e la somiglianza byte/testo sono soltanto **heuristic review signals**: prima della delete ispezionare import dinamici, caricamenti da URL, workflow, configurazioni esterne e retention di lineage. La prova è un checkout isolato **con rimozione realmente applicata**, seguito dai test target e dalla rail current, senza correggere simultaneamente un gate per far passare una delete erronea. Vedi [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) e [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md).
+
+Per lo storage il minimo nearest falsifier include `avvio vergine → persist → stop → riavvio sullo stesso stato → GET /api/runtime/integrity` e readback della revision; la semplice disponibilità HTTP o la validità della catena senza binding non certifica la riapertura. La failure family `state-head-mismatch` osservata nella Fase 1 resta aperta finché non è falsificata dopo una correzione del runtime. I test documentali non la chiudono.
 
 ## Livelli
 
@@ -183,3 +201,131 @@ Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure fa
 `node v3/uiux-656-absorption-check.mjs` verifica la riconciliazione lossless dei 656 finding screenshot-derived: 656/656 mapping primario, 22/22 superfici, 12/12 root-cause, 10 meccanismi, owner canonici e nessuna nuova composition/write authority.
 
 `node v3/uiux-656-absorption-saturation-10m.mjs` esercita 32 failure family da linguaggio business e densità dei record fino a responsive/accessibilità e governance owner, includendo tutte le 496 coppie, cross-layer composition, deletion oracle e no-loss compression dei 10 meccanismi. I trial sono evaluator calls del modello semantico: non sono browser session, human study, deployment evidence o code mutant compilati.
+
+## Copertura E2E: unità di misura e limite di inferenza
+
+Un indicatore riproducibile deve dichiarare il **denominatore** prima del risultato. Per misurare una copertura E2E del prodotto, enumerare le transizioni nei [sette journey](04_USER_JOURNEYS.md), il ruolo che le può compiere, lo stato iniziale, la mutazione attesa, il readback e il receipt; per ciascuna transizione eseguire il test sulla medesima revisione, registrando PASS, FAIL o SKIP. Non usare il numero di test, le operazioni [OpenAPI](openapi.yaml), i trial del modello o i path citati nei sorgenti come sostituti del denominatore di scenari eseguiti.
+
+Un censimento automatico di path API nei test è soltanto una **proxy statica di tracciabilità**: la presenza testuale del path non prova il metodo HTTP, l'autorizzazione, l'esecuzione o l'asserzione di readback. Se manca un catalogo esaustivo di scenari eseguiti, il valore `E2E coverage %` è **non misurabile**; riportare separatamente la proxy con regola di matching, numero di operazioni, limiti e revisione. La verifica di riavvio della stessa directory SQLite è uno scenario distinto dal bootstrap su stato vergine.
+
+## Ricevuta E2E delimitata della Fase 7
+
+`node v3/e2e-coverage-7x3-check.mjs` scrive `artifacts/e2e-coverage-7x3.json`: 21 casi = 7 processi canonici × 3 ruoli. Ogni caso esegue una richiesta HTTP reale su server e SQLite isolati, verifica identità di ruolo, proiezione per processo, integrità e lettura auditor. La percentuale risultante misura **solo questa matrice di proiezione/readback**, non i lifecycle business, le UI browser o le 121 operazioni OpenAPI. Gli impedimenti a Chromium nell'ambiente di esecuzione sono `BLOCKED`, non PASS.
+
+## PR239: qualificazione controfattuale individuale e denominatore E2E
+
+`npm run docs:causal` censisce i documenti Markdown/RST/TXT Git tracciati e fuori da `docs/documentation-manifest.json`, ricava per ciascuno SHA-256, titolo, classe descrittiva, riferimenti statici e link relativi, esegue in copia isolata la **rimozione fisica di quel singolo file**, lancia `node scripts/documentation-lattice-check.mjs`, ripristina il file e registra l'esito in `artifacts/document-causal-qualification.json`. La classificazione è **documentale e source-level**, non una review umana del contenuto né la dimostrazione dell'assenza di consumer esterni. La prova misura quanto l'oracolo documentale attuale si accorge della mancanza: un test che passa dopo la rimozione è un GAP di rilevazione, **non** un permesso di cancellazione. La disposition di ogni file resta `HOLD_REVIEW`. Non si modificano manifest o owner senza una decisione separata.
+
+`npm run e2e:denominator` legge il documento owner `docs/04_USER_JOURNEYS.md`, estrae nove varianti di journey dichiarate (sette processi, incluse le tre varianti RN-01), e censisce 53 passi numerati. La ricevuta `artifacts/e2e-journey-denominator.json` distingue i 21 readback HTTP processi×ruoli già eseguibili dal **percorso completo** azione→decisione umana→persistenza→readback→receipt. Nessun test parziale è promosso a prova del passo integrale. Il numeratore full-step non è attestato automaticamente e la copertura E2E globale di prodotto rimane `null`; il documento contiene inoltre interazioni UI/negative path/ruoli non necessariamente enumerati nei 53 passi. Questo è un **denominatore di lavoro dichiarato**, non un test globale passato.
+
+La saturazione di `v3/trama-engineering-saturation.mjs` ha una propria superficie e un proprio oracolo di no-novelty. I risultati non si possono estendere per inferenza alla saturazione globale del repository. Analogamente, una campagna di 10M scenari modellistici non è una campagna di 10M patch fisiche eseguite contro gli owner runtime.
+
+### Qualificazione documentale di ogni file fuori manifest — limiti dell'oracolo
+
+`npm run docs:check` esamina ora i target di collegamenti Markdown relativi da **tutti** i documenti sotto `docs/`, non solo dal gruppo autoritativo del manifest. Questo verifica la conservazione dei riferimenti osservabili senza attribuire ai materiali storici una nuova authority.
+
+`npm run docs:causal` rimuove fisicamente, uno alla volta in copia isolata, i documenti fuori manifest, ripristina ogni byte e registra una ricevuta per file. La prova negativa fallisce quando un documento destinazione di un link Markdown osservato non è intercettato da `docs:check`. Nel candidato PR239 la rilevazione è salita da 3 a 17 su 149; **132 non intercettati non significano 132 documenti inutili**. Gli import non letterali, la compatibilità esterna, le citazioni non Markdown e l'utilizzo umano richiedono prove separate. L'autorità documentale resta `docs/documentation-manifest.json`; zero file eliminati o deprecati automaticamente.
+
+### PR239 — first-party references and a second live HTTP coverage slice
+
+`node scripts/executable-doc-reference-check.mjs --falsify` now supplies an
+**independent** first-party consumer gate: enumerate explicit `docs/*.md` references
+from executable `v3/` sources and GitHub workflow files; require every referenced
+file to exist, and physically remove/restore each off-manifest target in an
+isolated copy to demonstrate failure when a real consumer edge is lost.
+This does **not** alter document authority or broaden `docs:check` into a
+runtime-source parser. The combined bounded evidence currently includes 17
+unregistered documents protected by Markdown links and 13 by first-party
+executable literals (six overlap): **24 distinct targets**, leaving 125
+outside both bounded oracles. Those 125 remain `HOLD_REVIEW`, NOT safe deletes.
+Dynamic paths, human usage, external references, legal retention and history
+are not excluded by either oracle; a single unrelated test passing does not
+prove the absence of dependencies.
+
+`node v3/e2e-guide-7x3-check.mjs` executes 21 additional live HTTP views
+(seven existing procedure guides × admin/user/auditor), validating the canonical
+process identifier, source authority, presence of human transition checkpoints,
+and three negative paths for placeholders/unknown procedures. It is a
+**different 21-cell slice** than the existing bootstrap 7×3 probe. These two
+read-only slices do not establish end-to-end completion of any of the 53
+documented business journey steps; no global E2E percentage is claimed.
+
+### PR239: percorso E2E interprocedurale e rischio documentale residuo
+
+`node v3/e2e-cross-process-receipts-check.mjs` esegue davvero HTTP e SQLite
+isolata per **AO→MC→AP→RC→AR**: creazione/attivazione dell'oggetto con
+rationale, mapping e decisione di gap, remediation adottata e avanzata,
+rischio collegato e riesaminato, richiesta assurance conservata. Ogni
+scrittura deve produrre una receipt con hash SHA-256; il readback GRC,
+l'evidence dossier e l'export devono concordare; una scrittura auditor viene
+rifiutata (403) senza modificare gli oggetti. La ricevuta è
+`artifacts/e2e-cross-process-receipts.json`. Il percorso è E2E **di cinque
+processi e dieci comandi**, non attestazione integrale delle 53 transizioni
+documentate, non approvazione umana indipendente né prova deployment E4.
+
+`node scripts/document-retention-review.mjs --falsify` proietta un inventario
+**individuale** dei 149 file documentali fuori manifest: hash dei byte,
+heading, ruolo descrittivo euristico, citazioni esplicite, link relativi e
+riferimenti letterali dai file `v3/` e workflow. I 24 documenti intercettati
+con **controprova fisica** dagli oracoli esistenti restano una classe distinta
+dal più ampio insieme di documenti con **riferimenti statici osservati**.
+Questi riferimenti statici non sono prova di reachability runtime. I file
+senza riferimenti osservati non sono eliminabili per assenza di riferimenti:
+richiedono review owner, rilevanza storica, consumer dinamici/esterni,
+regole di conservazione e falsificazioni di rimozione in ambiente
+rappresentativo. La ricevuta `artifacts/document-retention-review.json`
+non crea authority e respinge tampering di hash, numero, path,
+disposizione e certificati di cancellazione. **0 file autorizzati al delete.**
+
+No-novelty e no-maggiore-compressione-senza-perdita-semantica **globale**
+non sono provabili da campionamenti finiti sul sistema aperto: sono obiettivi
+da relativizzare a un dominio, a un oracolo ed a una famiglia di operatori,
+con controesempi, seed, invarianti e tail osservato. Il test TRAMA di
+saturazione certifica esclusivamente il proprio dominio finito; nessuna
+procedura deve trasformare il suo PASS in una chiusura globale.
+
+### PR239: attestazioni per passo e saturazione *finita* senza inflazione
+
+L'owner delle nove journey rimane [04_USER_JOURNEYS](04_USER_JOURNEYS.md). Dopo i test reali
+`node v3/e2e-cross-process-receipts-check.mjs` e `npm run e2e:denominator`,
+`node scripts/e2e-step-evidence-audit.mjs --falsify` produce
+`artifacts/e2e-step-evidence-ledger.json`. Le 53 righe hanno un ID composto
+scenario+processo+numero e una prova esplicita o `NO_STEP_WITNESS`.
+**Nove componenti tecniche** di passi AO/MC/AP/RC/AR sono collegate a comandi
+HTTP con receipt SHA-256 e readback; tutte mantengono
+`fullStepStatus=NOT_ATTESTED` perché un attore di test non è una decisione
+umana indipendente. Dieci falsificazioni bloccano hash inventati, passi
+aggiunti/tolti, promozioni `FULL_STEP_PROVEN` e false percentuali globali.
+RN/EC, il completamento delle altre transizioni, browser/user review e
+deployment restano non dimostrati. 9/53 è **copertura di componenti
+macchina nei passi dichiarati**, non 9/53 E2E integrali e non una stima
+della copertura globale del prodotto.
+
+Il modello di ritiro di `scripts/repository-retirement-mutations.mjs` possiede
+12 obblighi indipendenti con stati `FAILED`, `VERIFIED`, `UNKNOWN`.
+`node scripts/repository-retirement-mutations.mjs --cases=1 --negatives=1 --exhaustive-proof`
+esamina **esaustivamente i 3^12 = 531.441 profili**, verifica il round-trip
+dell'encoding base 3 e tutte le decisioni dell'oracolo, e fornisce 12
+controesempi alla rimozione di ciascun obbligo. Il certificato
+`artifacts/retirement-minimality-certificate.json` dimostra che la
+registrazione **a lunghezza fissa** dei 531.441 profili diagnostici richiede
+**almeno 20 bit**, rispetto ai 24 bit ingenui (2 bit per obbligo).
+Questa è una prova esatta e lossless **nel modello finito dichiarato**, non
+una prova della minimalità universale di ICTC, del codice, della sicurezza di
+ritirare file o dell'assenza di nuove failure family fuori dal modello.
+La decisione di ritiro su ogni documento è sempre `HOLD_REVIEW` finché
+owner umano, consumer esterni/dinamici, retention legale e regressioni
+rappresentative non sono provati; nessun certificato automatico di delete.
+
+Il falsificatore  `node scripts/document-retirement-gate-check.mjs --falsify`
+legge **soltanto** le evidenze derivabili da manifest, controfattuali già
+eseguiti, riferimenti runtime/CI e certificato del modello a 12 assi.
+Per ognuno dei 149 documenti emette una disposition `HOLD_UNKNOWN`, l'hash
+e gli obblighi `UNKNOWN`/`FAILED` in
+`artifacts/document-retirement-gate.json`. L'eventuale prova di una
+rimozione che non rompe `docs:check` dimostra **solo un limite dell'oracolo**.
+Almeno un obbligo di consumer esterno, decisione dell'owner o conservazione
+resta non verificato per ciascuno: **0 certificati safe-delete**. Otto
+mutanti di falsa autorizzazione vengono intercettati; nessun file viene
+spostato o cancellato. Il certificato non pretende assenza universale di
+dipendenze e non sostituisce la review umana o legale.

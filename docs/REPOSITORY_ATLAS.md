@@ -16,6 +16,34 @@ ICTC è un repository atipico: codice applicativo, contratti semantici, owner ma
 | L3 · Executable | Dove viene prodotto davvero l'effetto? | `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/`, `v3/public/`, owner specifici | codice/runtime prevalgono sulle descrizioni storiche |
 | L4 · Evidence & lineage | Perché esiste, come viene falsificato, cosa resta non provato? | `docs/TESTING.md`, `docs/DEVELOPMENT.md`, `docs/PROJECT_TRAJECTORY.md`, PR/CI GitHub | prova e storia non diventano automaticamente authority |
 
+## Ingresso standard per ingegnere esterno (senza AI)
+
+La conoscenza di ICTC **non è subordinata alla governance AI**. Un ingegnere enterprise con risorse illimitate può ricostruire ed esercire il prodotto mediante standard del software engineering, senza leggere prompt, conversazioni AI o workbook di traiettoria:
+
+1. **Prodotto e installazione:** `README.md`, `docs/PRODUCT.md`, `docs/DEVELOPMENT.md`, `docs/CONFIGURATION.md`. Avvio con Node 22, `npm ci`, `./ictc.sh start --no-open`.
+2. **Architettura verificabile:** `docs/11_ARCHITECTURE.md`, `docs/openapi.yaml`, `v3/bootstrap.mjs`, `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/` e `v3/public/`; il PostgreSQL enterprise C3 ha owner distinti. Confrontare descrizioni e codice, senza chiamare reale una capacità soltanto progettata.
+3. **Qualità, sicurezza e operatività:** `docs/TESTING.md`, `SECURITY.md`, `docs/OPERATIONS.md`, `docs/DATA_AND_STORAGE.md`, `.github/workflows/` e `.github/CODEOWNERS`; GitHub ruleset e production deployment sono prove esterne.
+4. **Contribuzione:** `CONTRIBUTING.md`, review di diff, test e receipt exact-head. `docs/START_HERE.md` accelera l'orientamento per dominio, ma non sostituisce le interfacce standard sopra.
+5. **Archeologia e deprecazione:** `npm run repo:inventory` genera `artifacts/repository-inventory.json` su tutto il tree Git tracciato; `npm run repo:retirement:mutations` testa la disciplina decisionale. I path senza prova non vengono cancellati o promossi implicitamente.
+
+**Elementi atipici gestiti in forma standard:** molte centinaia di test specialistici e workflow sono una stratigrafia da misurare, non una giustificazione di release; documenti *lineage/TO-BE* non sono codice corrente; prompt e `AGENTS.md` sono regole per assistenti, non la costituzione necessaria alla lettura del prodotto; TRAMA, Bussola e workbook sono proiezioni di processo a authority zero. Gli owner runtime e i gate riproducibili restano ispezionabili con strumenti comuni (`git`, Node, SQL, HTTP, Actions). La traccia AI non conferisce un privilegio di interpretazione.
+
+**Censimento non significa ritiro:** l'inventario attesta presenza, hash e classificazione di superficie; `document:unregistered` è una coda esplicita di esame, non sinonimo di allucinazione o obsolescenza. `software:candidate` e `verification:candidate` sono euristiche di path, non prove di esecuzione o di inutilità. Finché import dinamici, URL esterne, configurazioni, fixture, storia semantica e consumer terzi non sono esclusi mediante prove locali e indipendenti, ogni disposizione rimane `HOLD_*`. Nessun file è in quarantena fisica né dichiarato eliminabile da questo censimento. I documenti legali `LICENSE.md` e `NOTICE.md` e la configurazione di esempio `.env.example` sono radici di metadati esplicite nel contratto esistente: il fatto che non abbiano import di codice non è prova di inutilità.
+
+## Audit ex novo: bias e controprove del primo ingresso
+
+Il percorso standard è **Product → Software → Repository**. Le fonti sono owner e verificatori esistenti, non conversazioni AI. Questa è una verifica di leggibilità del repository, non una valutazione E3-HUMAN con ingegneri rappresentativi.
+
+| Bias/errore tipico | Controprova | Limite |
+| --- | --- | --- |
+| Anchoring/authority halo del programma di ricerca | README apre con ICTC e instrada ai tre piani prima del contesto ROA | La presenza del link non prova comprensione umana |
+| Automation bias o prerequisiti AI impliciti | CONTRIBUTING/DEVELOPMENT/START_HERE consentono la via non-AI; AGENTS è solo per agenti | La PR deve comunque rispettare CI e governance |
+| Confirmation bias dai test verdi | Confrontare journey dichiarati con HTTP, persistenza, receipt e casi non attestati | CI non sostituisce E3/E4 |
+| Proliferazione documentale = proliferazione delle autorità | Manifest registra authority/lifecycle; repository inventory censisce i file, separando HOLD da DELETE | I consumer esterni non sono esauriti dal grep |
+| Normalcy bias operativo | Confrontare `npm start`, SQLite e identità locale con CONFIGURATION/SECURITY/OPERATIONS | Il deployment enterprise resta prova esterna |
+
+Il percorso va verificato con un oracolo strutturale falsificabile e con un cold-start reale. Se il package registry è irraggiungibile o la review umana non è stata effettuata, dichiarare la prova incompleta invece di certificarla.
+
 ## Classi di verità
 
 | Classe | Owner / fonte | Da non confondere con |
@@ -116,6 +144,20 @@ branch     branch     branch
 Molti branch storici possono quindi essere letti come segnalibri di candidate state precedenti. Non sono automaticamente lavoro attivo, current authority o debito. Alcuni nomi `scratch`, `tmp` o `noop` sono residui di test/tooling e **non devono ricevere significato semantico**. Uno stesso branch può anche essere riutilizzato e avanzare: per la fotografia storica precisa usare sempre il PR head SHA / commit graph, non il nome del branch.
 
 La retention del branch è opzionale: eliminare un branch dopo il merge non elimina la storia canonica già conservata da commit e PR. Mantenerlo può aiutare l'archeologia; cancellarlo può ridurre rumore. In entrambi i casi `main` e gli owner correnti restano la fonte per l'AS-IS. Anche il numero di branch è quindi una fotografia volatile, non un KPI.
+
+## Archeologia verificabile: PR, main e snapshot
+
+Le PR sono **evidenza di traiettoria**, non la descrizione normativa del prodotto corrente. Per ciascuna candidate registrare: `PR #`, stato/merge SHA, base/head, file aggiunti/modificati/rimossi, owner coinvolti, motivazione, prove CI sulla exact HEAD, reversibilità e assorbimento nella fonte current. Il contenuto di una PR, anche merged, non prevale sull'owner eseguibile e sul contratto canonico del `main`. Un branch non è un identificatore temporale immutabile.
+
+Nella fotografia GitHub del **2026-11-01**, risultano 234 PR chiuse, di cui 219 merged; la merged **#238** è il commit `b0150d60…`, con tree `7f12c222…`. Lo ZIP analizzato nelle fasi di audit precedenti aveva lo **stesso tree**, non necessariamente lo stesso file `.git` o lo stesso contesto di deploy. Questi numeri sono una ricevuta storica: per lo stato live rieseguire la ricognizione GitHub, non copiare il conteggio in un registry di autorità.
+
+Tre tracce di co-cambiamento utili per l'analisi d'impatto: #235/#236 condividono cinque file Home, #233/#237 sette file Processi, #231/#232 sei file release. **Co-change è una probabilità di relazione da indagare**, non un arco `IMPORTS`, non una dipendenza attuale e non un vincolo permanente alla rimozione. Associare sempre alla PR il suo significato distinto: assorbimento, correzione, nuova capability, test, documentazione o retirement.
+
+## Inferenza di raggiungibilità ed eliminabilità
+
+Una mappa di dipendenze utile è un **multigrafo tipizzato**: `IMPORTS`, `CALLS`, `READS`, `DYNAMIC-LOADS`, `WORKFLOW-EXECUTES`, `STATIC-URL`, `EXTERNAL-ENTRY`, `DOCUMENTS`, `PROVES`, `CO-CHANGED`, `RETAINED-FOR-LINEAGE`. Ogni arco deve dichiarare **origine, target, metodo di estrazione, versione/HEAD, confidenza e controprova**. `MENTIONS` e `CO-CHANGED` sono indizi, non prova di raggiungibilità esecutiva. I file sotto `v3/public/` sono anche servibili via HTTP senza import statico: l'assenza di inbound nel grafo ESM è insufficiente.
+
+La fixture `v3/runtime/demo-suite-2-2-fixture.mjs` carica dodici file `.b64` con nomi costruiti dinamicamente: un'analisi che vede zero archi statici può sbagliare l'inferenza di eliminabilità. Una rimozione simulata in checkout isolato ha prodotto `ENOENT`. La duplicazione byte-per-byte di due CSS non dimostra identità di contratti URL. Per trasformare un candidato in ritiro applicare il [contratto documentale](DOCUMENTATION_STANDARD.md): verificare ingressi esterni, generazione dinamica, storia/retention, diff semantico e controprove reali, poi la CI exact-head. Uno stato `UNKNOWN` blocca la delete massiva.
 
 ## Debito di coerenza del repository — D-RSC
 

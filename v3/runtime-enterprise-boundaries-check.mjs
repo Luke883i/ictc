@@ -21,6 +21,31 @@ try{
   await authority.runTenant('alpha',async()=>assert.equal(authority.store.state.settings.organization.name,'Alpha'));
   assert.equal(authority.projection().isolation,'sqlite-per-tenant');await authority.closeAll();
 
+  // R-01: bootstrap and reopen the *same* SQLite root, preserving the original bound head.
+  const privacyRoot=path.join(root,'privacy-restart');
+  const firstPrivacy=await new RuntimeStore(privacyRoot).init();
+  await ensurePrivacyState(firstPrivacy);
+  assert.equal(firstPrivacy.verifyChain().ok,true);
+  assert.ok(Array.isArray(firstPrivacy.snapshot().privacyErasureReceipts));
+  const baselineRevision=firstPrivacy.snapshot().revision,baselineHead=firstPrivacy.verifyChain().head;
+  await ensurePrivacyState(firstPrivacy);
+  assert.equal(firstPrivacy.snapshot().revision,baselineRevision,'repeated privacy bootstrap must not mint a new event');
+  firstPrivacy.close();
+  const reopenedPrivacy=await new RuntimeStore(privacyRoot).init();
+  await ensurePrivacyState(reopenedPrivacy);
+  assert.equal(reopenedPrivacy.verifyChain().ok,true,'privacy reopen must preserve state-to-head integrity');
+  assert.equal(reopenedPrivacy.verifyChain().stateBound,true);
+  assert.equal(reopenedPrivacy.verifyChain().head,baselineHead,'reopen must preserve audit HEAD');
+  assert.equal(reopenedPrivacy.snapshot().revision,baselineRevision,'reopen must not mint an audit event');
+  await reopenedPrivacy.mutate(actor,'privacy.receipt-test',{type:'test-fixture',id:'privacy-restart'}, {}, draft=>{draft.privacyErasureReceipts.push({id:'retained-receipt'});return{retained:true};});
+  const receiptHead=reopenedPrivacy.verifyChain().head;
+  await ensurePrivacyState(reopenedPrivacy);
+  assert.equal(reopenedPrivacy.snapshot().privacyErasureReceipts[0]?.id,'retained-receipt','bootstrap must not erase pre-existing privacy receipts');
+  assert.equal(reopenedPrivacy.verifyChain().head,receiptHead,'non-empty privacy receipt list must not trigger a redundant binding');
+  reopenedPrivacy.state.privacyErasureReceipts.push({id:'unbound-test'});
+  assert.equal(reopenedPrivacy.verifyChain().ok,false,'silent unbound mutation must remain detectable');
+  reopenedPrivacy.close();
+
   const dataRoot=path.join(root,'data'),store=await new RuntimeStore(dataRoot).init();await ensurePrivacyState(store);
   const [file]=await store.saveAttachments([{name:'proof.txt',mime:'text/plain',dataBase64:Buffer.from('malware boundary proof').toString('base64')}]);
   const contributionId='contribution-boundary';await store.mutate(actor,'contribution.recorded',{type:'contribution',id:contributionId},{sha256:file.sha256},draft=>{draft.contributions.push({id:contributionId,links:[],text:'personal payload',note:'sensitive note',attachments:[file],state:'recorded',createdAt:new Date().toISOString(),createdBy:actor.id,enrichedAt:null,aiTrace:null,aiError:null,enrichmentAttempts:0});return draft.contributions.at(-1);});
