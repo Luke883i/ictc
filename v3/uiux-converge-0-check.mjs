@@ -84,7 +84,8 @@ const homeOrderOracle=(h,sh,style)=>{
     style.includes('grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "priorities"!important')&&
     style.includes('padding-bottom:var(--a6-ux1-footer-reserve,44px)!important')&&
     style.includes('#homeView .home-intro{padding:.2rem .35rem!important;gap:.28rem!important}')&&
-    style.includes('#homeView #homeTitle{font-size:clamp(1.35rem,2.2vw,1.8rem)!important');
+    style.includes('#homeView #homeTitle{font-size:clamp(1.35rem,2.2vw,1.8rem)!important')&&
+    style.includes('#homeView details.home-compliance-detail:not([open]) > :not(summary){display:none!important');
 };
 assert.ok(homeOrderOracle(index,shell,enterprise),'Home semantic four-plane order or inert badge retirement broken');
 for(const [preimage,from,to] of [
@@ -96,7 +97,8 @@ for(const [preimage,from,to] of [
   [shell,"const host=$('#homeComplianceOverview');if(!host)return;","const host=$('#homeComplianceOverview');if(!host||!state.data)return;"],
   [enterprise,'height:auto;max-height:none;min-height:0;display:grid;align-content:start;','height:100vh;max-height:100vh;min-height:0;display:grid;align-content:center;'],
   [enterprise,'grid-template-areas:"intro" "priorities"!important','grid-template-areas:"intro next" "priorities priorities"!important'],
-  [enterprise,'padding-bottom:var(--a6-ux1-footer-reserve,44px)!important','padding-bottom:0!important']
+  [enterprise,'padding-bottom:var(--a6-ux1-footer-reserve,44px)!important','padding-bottom:0!important'],
+  [enterprise,'#homeView details.home-compliance-detail:not([open]) > :not(summary){display:none!important','#homeView details.home-compliance-detail[open] > :not(summary){display:none!important']
 ]){
   assert.ok(preimage.includes(from),'stale Home-order mutant '+from);
   const candidate=preimage.replace(from,to);
