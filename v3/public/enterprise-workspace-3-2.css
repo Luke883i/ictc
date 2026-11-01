@@ -163,3 +163,14 @@ html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] details
 
 /* Keep long educational content progressive, below the operative Home first plane. */
 #homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}
+
+/* HOME-ORDER-4 compact density — local bounded Home owner, not global chrome. */
+html[data-native-semantic-lattice="3.2.0"] #homeView{gap:.55rem!important}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-compliance-overview{gap:.45rem;margin:.2rem 0 .35rem}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-compliance-heading{padding:.72rem .9rem}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-compliance-heading h2{font-size:clamp(1.65rem,2.4vw,2.1rem)}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-compliance-full{padding:.35rem .75rem}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-hero{padding:.48rem .72rem!important;margin:0!important;gap:.4rem!important}
+html[data-native-semantic-lattice="3.2.0"] #homeView .home-intro{padding:.2rem .35rem!important;gap:.28rem!important}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homeTitle{font-size:clamp(1.35rem,2.2vw,1.8rem)!important;line-height:1.2!important}
+html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:.2rem!important}
