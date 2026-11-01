@@ -51,7 +51,7 @@ with sync_playwright() as pw:
    for word in ['Indicativa: non certifica conformità né disponibilità.','Verde','Giallo','Arancione','Rosso','funzioni previste disponibili','scaffold iniziale']:
     assert word not in legend.inner_text(),word
    icon_shapes=legend.locator('[data-maturity]').evaluate_all("""els=>{
-    const rgb=css=>{const match=css.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/);return match?[+match[1],+match[2],+match[3]]:null};
+    const rgb=css=>{const match=css.match(/[0-9]+/g);return match&&match.length>=3?match.slice(0,3).map(Number):null};
     const lum=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
     const hue=c=>{const [r,g,b]=c.map(v=>v/255),max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min;if(delta<.045)return'grey';let angle=max===r?((g-b)/delta)%6:max===g?(b-r)/delta+2:(r-g)/delta+4;angle=(60*angle+360)%360;return angle>=95&&angle<=175?'green':angle>=39&&angle<=67?'yellow':angle>=15&&angle<39?'orange':'other'};
     return els.map(e=>{const style=getComputedStyle(e),bg=rgb(style.backgroundColor),fg=rgb(style.color),light=bg?lum(bg):null,dark=fg?lum(fg):null;
