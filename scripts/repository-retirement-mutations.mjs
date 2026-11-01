@@ -28,5 +28,52 @@ for(let i=0;i<negatives;i++){
  if(deletionDecision(facts)!=='HOLD_UNKNOWN')incorrectPromotion++;
 }
 const output={seed:'0x1c7c2026',cases,negatives,obligations:OBLIGATIONS,killed,escaped,incorrectPromotion,modelOnly:true,claimBoundary:'12-dimensional semantic evidence-gate mutations in memory; not edits to 10M files, not 10M real runtime tests, not proof of safe deletion.'};
-mkdirSync(join(root,'artifacts'),{recursive:true});writeFileSync(join(root,'artifacts/repository-retirement-mutations.json'),JSON.stringify(output,null,2)+'\n');
-console.log(JSON.stringify(output));if(escaped||incorrectPromotion)process.exit(1);
+if(!process.argv.includes('--exhaustive-proof')){
+ mkdirSync(join(root,'artifacts'),{recursive:true});
+ writeFileSync(join(root,'artifacts/repository-retirement-mutations.json'),JSON.stringify(output,null,2)+'\n');
+ console.log(JSON.stringify(output));
+}
+if(escaped||incorrectPromotion)process.exit(1);
+
+// Exhaustive, finite certificate. Only this fixed 12-axis three-state domain
+// can be saturated. A 20-bit base-3 index is information-theoretically minimal
+// for lossless encoding of its complete diagnostic state (3^12 profiles).
+if(process.argv.includes('--exhaustive-proof')){
+ const n=OBLIGATIONS.length,total=3**n,bits=Math.ceil(Math.log2(total)),seen=new Uint8Array(total);
+ const decode=index=>{const v=[];for(let i=0;i<n;i++){v.push(index%3);index=Math.floor(index/3);}return v;};
+ const encode=v=>v.reduceRight((a,x)=>a*3+x,0);
+ const outcome=v=>({decision:v.every(x=>x===1)?'REVIEWABLE_REMOVE_CANDIDATE':'HOLD_UNKNOWN',
+   diagnostics:v.map((x,i)=>x===1?null:{obligation:OBLIGATIONS[i],status:x===0?'FAILED':'UNKNOWN'}).filter(Boolean)});
+ let checked=0,roundTripErrors=0,promotionErrors=0,diagnosticErrors=0;
+ for(let index=0;index<total;index++){
+  const v=decode(index),roundTrip=encode(v);
+  if(roundTrip!==index)roundTripErrors++;
+  if(seen[roundTrip])diagnosticErrors++;
+  seen[roundTrip]=1;
+  const fact=Object.fromEntries(OBLIGATIONS.map((name,i)=>[name,v[i]===1?true:v[i]===0?false:null]));
+  const expected=deletionDecision(fact),actual=outcome(v);
+  if(expected!==actual.decision)promotionErrors++;
+  if(actual.diagnostics.length!==v.filter(x=>x!==1).length)diagnosticErrors++;
+  checked++;
+ }
+ // A single omitted axis always merges two different diagnostic profiles.
+ const axisCounterexamples=OBLIGATIONS.map((name,i)=>{
+  const a=Array(n).fill(1),b=[...a];b[i]=2;
+  const reduced=x=>x.filter((_,k)=>k!==i);
+  if(encode(reduced(a))!==encode(reduced(b))||JSON.stringify(outcome(a))===JSON.stringify(outcome(b)))throw Error('axis proof failed '+name);
+  return {obligation:name,baselineDecision:outcome(a).decision,mutantDecision:outcome(b).decision,
+    fullDiagnosticsDiffer:true,compressedAfterDroppingAxisEqual:true};
+ });
+ const wouldCollideAt19Bits=total>(2**(bits-1));
+ const collision=[0,2**(bits-1)];
+ if(!wouldCollideAt19Bits||collision[1]>=total||checked!==total||roundTripErrors||promotionErrors||diagnosticErrors||seen.some(x=>x!==1))throw Error('exhaustive finite certificate failed');
+ const certificate={schema:'ictc-bounded-retirement-minimality/v1',obligations:OBLIGATIONS,
+  alphabet:['FAILED','VERIFIED','UNKNOWN'],profiles:total,exhaustivelyChecked:checked,
+  roundTripErrors,promotionErrors,diagnosticErrors,
+  naiveFixedWidthBits:2*n,minimumFixedWidthBits:bits,
+  minimumProvenByPigeonhole:total>2**(bits-1)&&total<=2**bits,
+  lowerBitCollisionExample:collision,axisCounterexamples,
+  claimBoundary:'Lossless 20-bit fixed-width encoding of ALL 3^12 diagnostic profiles, exhaustively verified; optimal only for this finite 12-axis three-state contract. Does not imply repository, runtime, text, CI, AI or open-world semantic minimality.'};
+ writeFileSync(join(root,'artifacts/retirement-minimality-certificate.json'),JSON.stringify(certificate,null,2)+'\n');
+ console.log(JSON.stringify({ok:true,profiles:checked,bits,axisCounterexamples:axisCounterexamples.length,claimBoundary:certificate.claimBoundary}));
+}

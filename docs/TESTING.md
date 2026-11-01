@@ -283,3 +283,49 @@ da relativizzare a un dominio, a un oracolo ed a una famiglia di operatori,
 con controesempi, seed, invarianti e tail osservato. Il test TRAMA di
 saturazione certifica esclusivamente il proprio dominio finito; nessuna
 procedura deve trasformare il suo PASS in una chiusura globale.
+
+### PR239: attestazioni per passo e saturazione *finita* senza inflazione
+
+L'owner delle nove journey rimane [04_USER_JOURNEYS](04_USER_JOURNEYS.md). Dopo i test reali
+`node v3/e2e-cross-process-receipts-check.mjs` e `npm run e2e:denominator`,
+`node scripts/e2e-step-evidence-audit.mjs --falsify` produce
+`artifacts/e2e-step-evidence-ledger.json`. Le 53 righe hanno un ID composto
+scenario+processo+numero e una prova esplicita o `NO_STEP_WITNESS`.
+**Nove componenti tecniche** di passi AO/MC/AP/RC/AR sono collegate a comandi
+HTTP con receipt SHA-256 e readback; tutte mantengono
+`fullStepStatus=NOT_ATTESTED` perché un attore di test non è una decisione
+umana indipendente. Dieci falsificazioni bloccano hash inventati, passi
+aggiunti/tolti, promozioni `FULL_STEP_PROVEN` e false percentuali globali.
+RN/EC, il completamento delle altre transizioni, browser/user review e
+deployment restano non dimostrati. 9/53 è **copertura di componenti
+macchina nei passi dichiarati**, non 9/53 E2E integrali e non una stima
+della copertura globale del prodotto.
+
+Il modello di ritiro di `scripts/repository-retirement-mutations.mjs` possiede
+12 obblighi indipendenti con stati `FAILED`, `VERIFIED`, `UNKNOWN`.
+`node scripts/repository-retirement-mutations.mjs --cases=1 --negatives=1 --exhaustive-proof`
+esamina **esaustivamente i 3^12 = 531.441 profili**, verifica il round-trip
+dell'encoding base 3 e tutte le decisioni dell'oracolo, e fornisce 12
+controesempi alla rimozione di ciascun obbligo. Il certificato
+`artifacts/retirement-minimality-certificate.json` dimostra che la
+registrazione **a lunghezza fissa** dei 531.441 profili diagnostici richiede
+**almeno 20 bit**, rispetto ai 24 bit ingenui (2 bit per obbligo).
+Questa è una prova esatta e lossless **nel modello finito dichiarato**, non
+una prova della minimalità universale di ICTC, del codice, della sicurezza di
+ritirare file o dell'assenza di nuove failure family fuori dal modello.
+La decisione di ritiro su ogni documento è sempre `HOLD_REVIEW` finché
+owner umano, consumer esterni/dinamici, retention legale e regressioni
+rappresentative non sono provati; nessun certificato automatico di delete.
+
+Il falsificatore  `node scripts/document-retirement-gate-check.mjs --falsify`
+legge **soltanto** le evidenze derivabili da manifest, controfattuali già
+eseguiti, riferimenti runtime/CI e certificato del modello a 12 assi.
+Per ognuno dei 149 documenti emette una disposition `HOLD_UNKNOWN`, l'hash
+e gli obblighi `UNKNOWN`/`FAILED` in
+`artifacts/document-retirement-gate.json`. L'eventuale prova di una
+rimozione che non rompe `docs:check` dimostra **solo un limite dell'oracolo**.
+Almeno un obbligo di consumer esterno, decisione dell'owner o conservazione
+resta non verificato per ciascuno: **0 certificati safe-delete**. Otto
+mutanti di falsa autorizzazione vengono intercettati; nessun file viene
+spostato o cancellato. Il certificato non pretende assenza universale di
+dipendenze e non sostituisce la review umana o legale.

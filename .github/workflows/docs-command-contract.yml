@@ -38,6 +38,12 @@ jobs:
         run: node v3/e2e-cross-process-receipts-check.mjs
       - name: Enumerate canonical business-journey E2E denominator
         run: npm run e2e:denominator
+      - name: Reconcile actual receipts with each of 53 declared journey steps (no full-step inflation)
+        run: node scripts/e2e-step-evidence-audit.mjs --falsify
+      - name: Exhaustively prove bounded 12-axis retirement diagnostic encoding
+        run: node scripts/repository-retirement-mutations.mjs --cases=1 --negatives=1 --exhaustive-proof
+      - name: Fail closed on each of 149 document retirement decisions
+        run: node scripts/document-retirement-gate-check.mjs --falsify
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
@@ -53,5 +59,8 @@ jobs:
             artifacts/executable-doc-reference.json
             artifacts/document-retention-review.json
             artifacts/e2e-cross-process-receipts.json
+            artifacts/e2e-step-evidence-ledger.json
+            artifacts/retirement-minimality-certificate.json
+            artifacts/document-retirement-gate.json
           if-no-files-found: error
           retention-days: 30
