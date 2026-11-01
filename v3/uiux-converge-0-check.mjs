@@ -115,25 +115,25 @@ function pcOracle(f,c,s){
  if(['min-height:80px','font-size:var(--type-control,1rem)','padding:10px 12px','justify-content:space-between','border-radius:10px'].some(x=>!pair.includes(x)))return false;
  return s.includes('#processesView :is(.compliance-process-lifecycle,.compliance-context)>summary small{color:var(--color-muted);font-size:.78rem;font-weight:500;line-height:1.35}');
 }
-const pcHex=(h,s,l)=>{const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,a=h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];return'#'+a.map(v=>Math.round((v+m)*255).toString(16).padStart(2,'0')).join('')};
+const pcWrongColor=(r,g,b)=>'#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
 const pcOps=[
  ['narrow-max',(a,i)=>a[2]=a[2].replace('max-width:none!important;inline-size:100%','max-width:'+(360+i*7)+'px!important;inline-size:100%')],
  ['narrow-percent',(a,i)=>a[2]=a[2].replace('inline-size:100%;box-sizing:border-box','inline-size:'+(50+i*.49).toFixed(2)+'%;box-sizing:border-box')],
- ['false-ready',(a,i)=>a[2]=a[2].replace('--maturity-bg:#e5f4ec','--maturity-bg:'+pcHex(340+i%20,.57,.85+i%10*.004))],
- ['false-partial',(a,i)=>a[2]=a[2].replace('--maturity-bg:#fff5cf','--maturity-bg:'+pcHex(200+i%60,.57,.85+i%10*.004))],
- ['false-construction',(a,i)=>a[2]=a[2].replace('--maturity-bg:#fff0e3','--maturity-bg:'+pcHex(110+i%65,.57,.85+i%10*.004))],
- ['false-placeholder',(a,i)=>a[2]=a[2].replace('--maturity-bg:#edf0f3','--maturity-bg:'+pcHex(195+i%90,.65,.85+i%10*.004))],
+ ['false-ready',(a,i)=>a[2]=a[2].replace('--maturity-bg:#e5f4ec','--maturity-bg:'+pcWrongColor(240+i%10,140+Math.floor(i/10)*4,170+i%10))],
+ ['false-partial',(a,i)=>a[2]=a[2].replace('--maturity-bg:#fff5cf','--maturity-bg:'+pcWrongColor(145+i%10,175+Math.floor(i/10)*3,235+i%10))],
+ ['false-construction',(a,i)=>a[2]=a[2].replace('--maturity-bg:#fff0e3','--maturity-bg:'+pcWrongColor(170+i%10,230+Math.floor(i/10)*2,165+i%10))],
+ ['false-placeholder',(a,i)=>a[2]=a[2].replace('--maturity-bg:#edf0f3','--maturity-bg:'+pcWrongColor(190+i%10,185+Math.floor(i/10)*2,240+i%10))],
  ['overclaim',(a,i)=>a[0]=a[0].replace("ready:Object.freeze({label:'Pronto',icon:'badge-check'","ready:Object.freeze({label:'Pronto certificato livello "+(i+1)+"',icon:'circle-slash'")],
  ['wrong-count',(a,i)=>a[1]=a[1].replace('Come si collegano i processi</b>','Come si collegano i '+(i+1)+' processi</b>')],
  ['false-description',(a,i)=>a[1]=a[1].replace('Passaggi di lavoro tra fonti, rischi, azioni e verifiche.','Conformità automatica su '+(i+1)+' cicli certificati.')],
  ['short-summary',(a,i)=>a[2]=a[2].replace('min-height:80px;display:flex;align-items:center;justify-content:space-between','min-height:'+(30+i*.39).toFixed(2)+'px;display:flex;align-items:center;justify-content:space-between')]
 ];
 const pcBaseline=[frame,contextJs,closureCss],pcSeed=0x1c7c2026;assert.ok(pcOracle(...pcBaseline),'Processes landing must meet the source-level DoD');
-const pcCounts=Array(10).fill(0);let pcKilled=0;
+const pcCounts=Array(10).fill(0),pcSeen=new Set();let pcKilled=0;
 for(let trial=0;trial<1000;trial++){const k=(trial*7+pcSeed%10)%10,index=Math.floor(trial/10),mutant=[...pcBaseline];pcOps[k][1](mutant,index);pcCounts[k]++;
  assert.ok(mutant.some((v,i)=>v!==pcBaseline[i]),'Inert source mutation: '+pcOps[k][0]+':'+index);
- assert.ok(!pcOracle(...mutant),'Surviving source mutation: '+pcOps[k][0]+':'+index);pcKilled++;
+ assert.ok(!pcOracle(...mutant),'Surviving source mutation: '+pcOps[k][0]+':'+index);pcSeen.add(mutant.join('\u0000'));pcKilled++;
 }
-assert.equal(pcKilled,1000);assert.deepEqual(pcCounts,Array(10).fill(100));
+assert.equal(pcKilled,1000);assert.equal(pcSeen.size,1000,'Distinct source mutations');assert.deepEqual(pcCounts,Array(10).fill(100));
 
 console.log(JSON.stringify({ok:true,profile:'UIUX-CONVERGE-0/P1',surfaces:13,procedures:7,homePriorityMax:3,homeTitleOwner:'local-owner-visible-cutover',controlMinPx:44,processHub:'local-owner-row-list',icons:'inline-lucide-compatible-svg',latePresentationOverridesRetired:['Home','Process Hub','Procedure Frame','Proof'],businessRuntimeChanged:false,miningIssuesCovered:352,miningMechanisms:11,sliceTerminal:true,reconciledBy:'GOV-TRAMA-RECONCILE-1'}));
