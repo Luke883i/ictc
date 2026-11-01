@@ -12,7 +12,7 @@ const workflow=read('../.github/workflows/ci.yml');
 
 assert.ok(chrome.includes('.topbar{height:var(--ui-header-h)!important;min-height:var(--ui-header-h)!important}'));
 assert.ok(chrome.includes('.topbar .stable-header-inner{height:100%!important}'));
-assert.ok(home.includes('height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('max-height:calc(100dvh - var(--ui-header-h,56px) - var(--a6-ux1-footer-reserve,44px))')&&home.includes('#homeView{box-sizing:border-box;'));
+assert.ok(home.includes('main{padding-top:0!important;padding-bottom:var(--a6-ux1-footer-reserve,44px)!important;min-height:0!important}')&&home.includes('#homeView{box-sizing:border-box;height:auto;max-height:none;min-height:0;display:grid;align-content:start;overflow:visible')&&!home.includes('box-sizing:border-box;height:calc(100dvh'),'Home must grow naturally with reserved footer and no viewport clamp');
 assert.ok(footer.includes('--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))')&&footer.includes('padding-bottom:var(--a6-ux1-footer-reserve)!important')&&footer.includes('position:fixed!important')&&!footer.includes('position:static!important'));
 assert.ok(journey.includes('.evidence-export-menu>div{position:absolute;z-index:76;'));
 assert.ok(evidence.includes("ictc:evidence-download-complete")&&evidence.includes('menuClosed: true'));
@@ -25,7 +25,7 @@ let seed=0x166c011a;
 const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
 const ri=n=>rnd()%n;
 const valid=()=>({
-  headerOwner:'chrome-3.3',headerToken:56,effectiveHeader:56,homeExtra:0,viewport:720+ri(900),
+  headerOwner:'chrome-3.3',headerToken:56,effectiveHeader:56,homeHeight:960+ri(900),homeMaxHeight:'none',homeOverflow:'visible',viewport:720+ri(900),
   footerReserve:44,bodyFooterReserve:44,bodyOverflow:'auto',formats:[...FORMATS],
   fetchStatus:200,payloadBytes:1+ri(2_000_000),lifecycleOrderValid:true,
   completionFormat:'pdf',requestedFormat:'pdf',
@@ -37,8 +37,7 @@ function failures(s){
   const out=[];
   if(s.headerOwner!=='chrome-3.3')out.push('header-owner');
   if(s.headerToken!==s.effectiveHeader)out.push('header-token');
-  const homeHeight=s.viewport-s.headerToken-s.footerReserve+s.homeExtra;
-  if(s.effectiveHeader+homeHeight+s.bodyFooterReserve>s.viewport+1)out.push('home-budget');
+  if(s.homeHeight<=0||s.homeMaxHeight!=='none'||s.homeOverflow!=='visible')out.push('home-budget');
   if(s.bodyFooterReserve!==s.footerReserve)out.push('footer-reserve');
   if(s.bodyOverflow==='hidden')out.push('body-scroll');
   if(s.formats.join('|')!==FORMATS.join('|'))out.push('format-set');
@@ -58,7 +57,7 @@ function mutate(s,family){
   switch(family){
     case'header-owner':s.headerOwner='legacy-base';break;
     case'header-token':s.effectiveHeader=72;break;
-    case'home-budget':s.homeExtra=16;break;
+    case'home-budget':s.homeMaxHeight='viewport-clamped';break;
     case'footer-reserve':s.bodyFooterReserve=s.footerReserve+8;break;
     case'body-scroll':s.bodyOverflow='hidden';break;
     case'format-set':s.formats=s.formats.filter(x=>x!=='zip');break;
@@ -87,4 +86,4 @@ for(let i=0;i<100_000;i++){
   for(const family of chosen)assert.ok(observed.includes(family),`mutation survived: ${family}; observed=${observed.join(',')}`);
 }
 assert.ok(Object.values(coverage).every(n=>n>5000),coverage);
-console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-budget-reserves-fixed-footer','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority','sequential-browser-harness-suppresses-native-download-manager-side-effect','evidence-popup-remains-above-local-chrome'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));
+console.log(JSON.stringify({ok:true,slice:'UI-INTENT-9-CONVERGENCE',trials:100000,positives,mutants,multiMutations,families:FAMILIES.length,coverage,seed:'0x166c011a',collapsedInvariants:['canonical-header-token-owns-effective-box','home-natural-height-preserves-scroll-and-footer-reserve','authenticated-evidence-fetch-precedes-completion','download-phase-observability-covers-format-suffixes','single-presentation-authority','sequential-browser-harness-suppresses-native-download-manager-side-effect','evidence-popup-remains-above-local-chrome'],claimBoundary:'Deterministic semantic/source mutation evidence only; Chromium and exact-head CI remain independent runtime evidence.'}));

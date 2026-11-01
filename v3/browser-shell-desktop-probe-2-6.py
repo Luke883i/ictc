@@ -1,5 +1,6 @@
 import os
 from playwright.sync_api import expect,sync_playwright
+from browser_test_support import ensure_onboarded
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
 PROBE=os.environ.get('ICTC_DESKTOP_PROBE','nav')
 def footer_effect(page):
@@ -11,6 +12,8 @@ with sync_playwright() as pw:
     if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
     browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
     page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE,wait_until='networkidle');page.wait_for_function("()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'")
+    if PROBE.startswith('home-guide-'):
+        ensure_onboarded(page,BASE,'admin')
     if PROBE=='nav':
         expect(page.locator('.service-nav > [data-service]')).to_have_count(3)
         assert page.locator('.stable-header-inner').bounding_box()['height']<=70
@@ -18,5 +21,19 @@ with sync_playwright() as pw:
         menu=page.locator('#stableProfileMenu');expect(menu).to_be_visible();expect(menu).to_contain_text('Amministratore');expect(menu).to_contain_text('Ruolo attivo')
     elif PROBE=='footer':
         footer=page.locator('#stableLegalFooter');expect(footer).to_be_visible();footer_effect(page)
+    elif PROBE in ('home-guide-closed','home-guide-open','home-guide-reclose'):
+        guide=page.locator('#homeView details[data-home-business-guide]')
+        expect(guide).to_be_visible()
+        body=guide.locator(':scope > .home-compliance-full-body')
+        expect(body).to_be_hidden()
+        if PROBE!='home-guide-closed':
+            guide.locator(':scope > summary').click()
+            expect(guide).to_have_attribute('open','')
+            expect(body).to_be_visible()
+            expect(guide.locator('[data-home-regulatory-cases] .home-compliance-cases')).to_be_hidden()
+            if PROBE=='home-guide-reclose':
+                guide.locator(':scope > summary').click()
+                expect(guide).not_to_have_attribute('open','')
+                expect(body).to_be_hidden()
     else: raise SystemExit(f'unknown probe {PROBE}')
     print({'ok':True,'probe':PROBE});ctx.close();browser.close()

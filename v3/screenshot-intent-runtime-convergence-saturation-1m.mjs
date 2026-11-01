@@ -23,7 +23,7 @@ const sourceChecks=[
  [S.standard.includes('structuralProfile')&&S.standard.includes('neutralKeywords')&&S.standard.includes('neutralOutline'),'closed-source-specific-paraphrase'],
  [S.publicPack.includes('officialSourceConfirmed')&&S.publicPack.includes('standard-public-source-incomplete')&&S.publicPack.includes("contentMode:'official-public-text'"),'public-exact-text-proof-boundary'],
  [S.a6.includes('grid-template-columns:minmax(11rem,15rem) minmax(0,1fr)'),'standard-detail-space'],
- [S.home.includes('padding-top:0!important;padding-bottom:0!important;min-height:0!important')&&S.home.includes('box-sizing:border-box;height:calc(100dvh')&&S.home.includes('max-height:calc(100dvh')&&S.home.includes('align-content:center;overflow:visible'),'home-real-viewport-budget'],
+ [S.home.includes('main{padding-top:0!important;padding-bottom:var(--a6-ux1-footer-reserve,44px)!important;min-height:0!important}')&&S.home.includes('box-sizing:border-box;height:auto;max-height:none;min-height:0;display:grid;align-content:start;overflow:visible')&&!S.home.includes('box-sizing:border-box;height:calc(100dvh'),'home-natural-scroll-with-footer-reserve'],
  [!S.p2.includes('!important')&&S.p2.includes('.procedure-switch{display:grid')&&S.p2.includes('[data-rn-job-summary]')&&S.home.includes('#adminCenter .procedure-switch>i{display:none!important}'),'composition-formatting-and-local-owner'],
  [S.anatomy.includes('procedure-support-rail .procedure-context-detail'),'support-rail-css-owner']
 ];
@@ -38,7 +38,7 @@ const F=Object.freeze([
 ]);
 const valid=()=>({
  supportParent:'sibling',supportOrder:'reference>context>metrics>work',headerContainsSupport:false,
- viewport:900,header:56,footer:44,mainTop:0,mainBottom:0,homeHeight:800,bodyOverflow:'auto',
+ viewport:900,header:56,footer:44,mainTop:0,mainBottom:44,homeHeight:1100,homeMaxHeight:'none',homeOverflow:'visible',bodyOverflow:'auto',
  aiState:'unconfigured',aiShellVisible:false,aiColorVerdict:false,aiTooltip:false,aiCopy:'Configurazione AI non completata',
  policyEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],landingEnabled:['monitoring','incidents','objects','coverage','actions','risks','assurance'],
  adminAiParent:'admin',settingsForms:1,nativeSwitch:true,
@@ -49,7 +49,7 @@ function failures(s){const o=[];
  if(s.supportParent!=='sibling')o.push('support-parent');
  if(s.supportOrder!=='reference>context>metrics>work')o.push('support-order');
  if(s.headerContainsSupport)o.push('header-boundary');
- if(s.header+s.footer+s.homeHeight+s.mainTop+s.mainBottom>s.viewport+1)o.push('home-budget');
+ if(s.mainBottom!==s.footer||s.homeMaxHeight!=='none'||s.homeOverflow!=='visible'||s.homeHeight<=0)o.push('home-budget');
  if(s.bodyOverflow==='hidden')o.push('home-scroll-truth');
  if(!['ready','key-missing','unconfigured'].includes(s.aiState))o.push('ai-state');
  if(s.aiShellVisible)o.push('ai-shell-visible');
@@ -73,7 +73,7 @@ function failures(s){const o=[];
 }
 function mutate(s,f){switch(f){
  case'support-parent':s.supportParent='header';break;case'support-order':s.supportOrder='context>reference';break;
- case'header-boundary':s.headerContainsSupport=true;break;case'home-budget':s.homeHeight+=24;break;
+ case'header-boundary':s.headerContainsSupport=true;break;case'home-budget':s.homeMaxHeight='viewport-clamped';break;
  case'home-scroll-truth':s.bodyOverflow='hidden';break;case'ai-state':s.aiState='unknown';break;
  case'ai-shell-visible':s.aiShellVisible=true;break;case'ai-color-verdict':s.aiColorVerdict=true;break;case'ai-tooltip':s.aiTooltip=true;break;case'ai-copy':s.aiCopy='Sistema disponibile';break;
  case'policy-projection':s.policyEnabled=[];break;case'policy-readback':s.landingEnabled=s.landingEnabled.filter(x=>x!=='coverage');break;
@@ -95,6 +95,6 @@ for(let i=0;i<1_000_000;i++){
 }
 assert.ok(Math.min(...Object.values(coverage))>100000,coverage);
 mkdirSync(new URL('../artifacts/',import.meta.url),{recursive:true});
-const report={ok:true,slice:'SCREENSHOT-INTENT-RUNTIME-SEMANTIC-CONVERGENCE',trials:1_000_000,positives,mutatedTrials,multiMutations:multi,appliedMutations,families:F.length,coverage,survivors:0,seed:'0x51c0ffee',dod:{global:['single-authority','truthful-state','runtime-readback','no-false-green'],intermediate:['landing-composition','admin-control-plane','standard-content-boundary','rn-job-legibility'],local:['support-rail-sibling','home-viewport-fit','procedure-hide-readback','ai-neutral-admin-state','admin-ai-parent','standard-master-detail','job-materialization']},claimBoundary:'Deterministic semantic/source mutation evidence only. Chromium/runtime readback remain independent. Exact public-source text is supported only when a complete confirmed official pack is materialized; no official text is fabricated by this rail.'};
+const report={ok:true,slice:'SCREENSHOT-INTENT-RUNTIME-SEMANTIC-CONVERGENCE',trials:1_000_000,positives,mutatedTrials,multiMutations:multi,appliedMutations,families:F.length,coverage,survivors:0,seed:'0x51c0ffee',dod:{global:['single-authority','truthful-state','runtime-readback','no-false-green'],intermediate:['landing-composition','admin-control-plane','standard-content-boundary','rn-job-legibility'],local:['support-rail-sibling','home-natural-scroll-with-footer-reserve','procedure-hide-readback','ai-neutral-admin-state','admin-ai-parent','standard-master-detail','job-materialization']},claimBoundary:'Deterministic semantic/source mutation evidence only. Chromium/runtime readback remain independent. Exact public-source text is supported only when a complete confirmed official pack is materialized; no official text is fabricated by this rail.'};
 writeFileSync(new URL('../artifacts/screenshot-intent-runtime-convergence-1m.json',import.meta.url),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));
