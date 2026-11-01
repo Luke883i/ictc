@@ -1,5 +1,5 @@
 /* Semantic Workspace Closure 3.2.1 — canonical Processi, procedure-frame and Evidence presentation. UIUX-CONVERGE-0/P1 absorbs row/list geometry into the local owner. */
-html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head{background:var(--workspace-landing)!important;border:1px solid var(--landing-border)!important;border-radius:16px!important;box-shadow:var(--landing-shadow)!important;color:var(--color-text)!important;padding:.78rem .95rem!important;margin:.2rem 0 .55rem!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head{background:var(--workspace-landing)!important;border:1px solid var(--landing-border)!important;border-radius:16px!important;box-shadow:var(--landing-shadow)!important;color:var(--color-text)!important;padding:.78rem .95rem!important;margin:.2rem 0 .55rem!important;max-width:none!important;inline-size:100%;box-sizing:border-box;min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head h1{margin:0 0 .16rem;font-size:var(--type-title);font-weight:var(--weight-title);line-height:var(--leading-tight)}
 html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head p{max-width:var(--ui-reading-wide);margin:0;font-size:var(--type-body);font-weight:var(--weight-description);line-height:1.5;color:var(--color-muted)}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub{display:grid!important;grid-template-columns:1fr!important;grid-auto-rows:auto!important;gap:.35rem!important;align-items:stretch!important}
@@ -128,12 +128,16 @@ html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder 
 html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]>.procedure-maturity{
   display:inline-flex!important;grid-area:maturity!important;align-self:center;justify-self:center;
 }
-/* All four states use the same carta-da-zucchero treatment; symbol and accessible name disambiguate. */
+/* Independent green/yellow/orange/grey maturity variants; SVG + accessible name remain primary semantics. */
 html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity{
   box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
-  width:2rem;height:2rem;flex:0 0 2rem;border:1px solid #9bb7c7;border-radius:9px;
-  background:#e2edf2;color:#31566b;line-height:1;
+  width:2rem;height:2rem;flex:0 0 2rem;border:1px solid var(--maturity-border,#b7c0ca);border-radius:9px;
+  background:var(--maturity-bg,#edf0f3);color:var(--maturity-ink,#586474);line-height:1;
 }
+html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity[data-maturity="ready"]{--maturity-bg:#e5f4ec;--maturity-border:#85bda2;--maturity-ink:#175d3b}
+html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity[data-maturity="scaffold-yellow"]{--maturity-bg:#fff5cf;--maturity-border:#d7be73;--maturity-ink:#70520b}
+html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity[data-maturity="scaffold-orange"]{--maturity-bg:#fff0e3;--maturity-border:#d9a07d;--maturity-ink:#88431e}
+html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity[data-maturity="placeholder"]{--maturity-bg:#edf0f3;--maturity-border:#b7c0ca;--maturity-ink:#586474}
 html[data-native-semantic-lattice="3.2.0"] :is(#procedureHub,.procedure-maturity-legend) .procedure-maturity .maturity-icon{
   width:14px;height:14px;flex:0 0 14px;stroke-width:2;
 }
@@ -144,7 +148,6 @@ html[data-native-semantic-lattice="3.2.0"] #processesView .procedure-maturity-le
 }
 html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-heading{font-weight:700;flex:none}
 html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-entry{display:inline-flex;align-items:center;gap:.24rem;min-width:0;white-space:nowrap}
-html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-boundary{flex-basis:100%;color:var(--color-muted);font-size:.69rem}
 @media(max-width:870px){
   html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
     grid-template-columns:4.4rem minmax(0,1fr) 2.6rem!important;
@@ -170,3 +173,9 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-
   html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder{border-color:CanvasText!important}
   html[data-native-semantic-lattice="3.2.0"] #procedureHub .catalogue-placeholder .procedure-unavailable{background:Canvas;color:GrayText;border-color:GrayText;forced-color-adjust:auto}
 }
+
+/* Processi: equal summary geometry for lifecycle and context, scoped to the local landing owner. */
+html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary{box-sizing:border-box;min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line,#d8dee8);border-radius:10px;background:var(--surface-muted,#f5f7fa);color:inherit;font-size:var(--type-control,1rem);font-weight:650;line-height:1.3;cursor:pointer;list-style:none}
+html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary span:first-child{display:grid;gap:2px;min-width:0}
+html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary small{color:var(--color-muted);font-size:.78rem;font-weight:500;line-height:1.35}
+html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary::-webkit-details-marker{display:none}
