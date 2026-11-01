@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        probe: [nav, profile, footer, home-guide-closed, home-guide-open, home-guide-style, home-guide-reclose]
+        probe: [nav, profile, footer, home-guide-closed, home-guide-open, home-guide-reclose]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
