@@ -249,3 +249,37 @@ and three negative paths for placeholders/unknown procedures. It is a
 **different 21-cell slice** than the existing bootstrap 7×3 probe. These two
 read-only slices do not establish end-to-end completion of any of the 53
 documented business journey steps; no global E2E percentage is claimed.
+
+### PR239: percorso E2E interprocedurale e rischio documentale residuo
+
+`node v3/e2e-cross-process-receipts-check.mjs` esegue davvero HTTP e SQLite
+isolata per **AO→MC→AP→RC→AR**: creazione/attivazione dell'oggetto con
+rationale, mapping e decisione di gap, remediation adottata e avanzata,
+rischio collegato e riesaminato, richiesta assurance conservata. Ogni
+scrittura deve produrre una receipt con hash SHA-256; il readback GRC,
+l'evidence dossier e l'export devono concordare; una scrittura auditor viene
+rifiutata (403) senza modificare gli oggetti. La ricevuta è
+`artifacts/e2e-cross-process-receipts.json`. Il percorso è E2E **di cinque
+processi e dieci comandi**, non attestazione integrale delle 53 transizioni
+documentate, non approvazione umana indipendente né prova deployment E4.
+
+`node scripts/document-retention-review.mjs --falsify` proietta un inventario
+**individuale** dei 149 file documentali fuori manifest: hash dei byte,
+heading, ruolo descrittivo euristico, citazioni esplicite, link relativi e
+riferimenti letterali dai file `v3/` e workflow. I 24 documenti intercettati
+con **controprova fisica** dagli oracoli esistenti restano una classe distinta
+dal più ampio insieme di documenti con **riferimenti statici osservati**.
+Questi riferimenti statici non sono prova di reachability runtime. I file
+senza riferimenti osservati non sono eliminabili per assenza di riferimenti:
+richiedono review owner, rilevanza storica, consumer dinamici/esterni,
+regole di conservazione e falsificazioni di rimozione in ambiente
+rappresentativo. La ricevuta `artifacts/document-retention-review.json`
+non crea authority e respinge tampering di hash, numero, path,
+disposizione e certificati di cancellazione. **0 file autorizzati al delete.**
+
+No-novelty e no-maggiore-compressione-senza-perdita-semantica **globale**
+non sono provabili da campionamenti finiti sul sistema aperto: sono obiettivi
+da relativizzare a un dominio, a un oracolo ed a una famiglia di operatori,
+con controesempi, seed, invarianti e tail osservato. Il test TRAMA di
+saturazione certifica esclusivamente il proprio dominio finito; nessuna
+procedura deve trasformare il suo PASS in una chiusura globale.
