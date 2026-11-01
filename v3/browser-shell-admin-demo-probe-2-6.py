@@ -35,6 +35,16 @@ with sync_playwright() as pw:
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
+  # Read a single settled Processi epoch; do not weaken the structure, maturity or alignment assertions below.
+  p.wait_for_function("""()=>{const hub=document.querySelector('#procedureHub'),root=document.querySelector('#processesView');
+   if(!hub||!root||hub.dataset.catalogueItemCount!=='9')return false;
+   const records=[...hub.querySelectorAll(':scope > [data-process-code]')],legend=root.querySelector('[data-maturity-legend]');
+   if(records.length!==9||!legend||legend.querySelectorAll('[data-maturity]').length!==4)return false;
+   const badges=records.map(e=>e.querySelector(':scope > .procedure-maturity'));
+   const heights=records.map(e=>e.getBoundingClientRect().height);
+   if(badges.some(b=>!b||!b.querySelector('svg.maturity-icon'))||heights.some(h=>h<44)||Math.max(...heights)-Math.min(...heights)>2)return false;
+   return getComputedStyle(root).display!=='none'&&document.fonts.status==='loaded';
+  }""")
   if PROBE in ('procedures','procedures-structure'):
    expect(hub.locator('[data-procedure-id]')).to_have_count(7)
    expect(hub.locator('[data-catalogue-placeholder-id]')).to_have_count(2)
