@@ -65,6 +65,16 @@ La documentazione è matura quando:
 - contributor, PR, support e security hanno route separate e verificabili;
 - nessun generated artifact è indicato come file da modificare manualmente.
 
+## Contratto di ricostruibilità e ritiro lossless
+
+La navigazione segue `README → START_HERE/ATLAS → owner canonico → componente/handler → falsificatore → ricevuta`. Ogni documento **current/operating/policy** deve rendere identificabili: destinatario e task, scopo e limiti, owner sostanziale, prerequisiti, ingressi e output, versione/provenienza pertinente, riferimento agli esecutori e test (dove esistono), stato probatorio. I documenti `lineage`, `source-input`, `roadmap` e `generated` espongono invece ruolo temporale e limiti; non ricevono current authority da un hyperlink.
+
+Per il software un singolo README per ogni file sarebbe rumore. La tracciabilità delle foglie è una **proiezione ricostruibile** da import, URL, entrypoint, contratti, test, workflow, metadati Git/PR e riferimenti dinamici; non un nuovo writer o registry di verità. Mantenere distinti `IMPORTS/READS/EXECUTES`, `DYNAMIC-LOAD/STATIC-URL`, `DOCUMENTS/PROVES` e `CO-CHANGED/MENTIONS`. Ogni edge inferito registra provenienza, esatto SHA, metodo, confidenza e limiti.
+
+**Regola fail-closed per la cancellazione:** `UNREFERENCED` significa soltanto *nessun riferimento osservato con i metodi applicati*, non `SAFE_DELETE`. Un candidato alla rimozione deve superare: (1) controllo authority, retention, external entry e URI statiche; (2) risoluzione dei path dinamici e dei consumer; (3) trasferimento lossless di eventuali claim unici; (4) rimozione reale in sandbox e test sia positivi sia negativi; (5) riesame della failure family e CI sulla stessa HEAD; (6) rollback riproducibile. Se una condizione è ignota, classificare `UNKNOWN / HOLD`, non eliminare.
+
+I metadati storici di una PR suggeriscono accoppiamenti e finalità, ma non provano la sicurezza di una delete. Un punteggio statistico può **ordinare la revisione**; non può sostituire il veto deterministico sulle superfici esposte, sull'autorità e sulle prove di non-uso. Non alterare assieme prodotto e oracolo per creare un falso verde.
+
 ## Falsificazione
 
 `npm run docs:check` verifica il repository reale. `npm run docs:saturation` falsifica il modello degli invarianti. Il gate deve uccidere almeno: entrypoint mancante, doppia authority, prompt storico promosso a product truth, owner irraggiungibile, link rotto, drift degli assi di versione, security routing pubblico, PR contract incompleto, manifest divergente, stale current rail e package wiring rimosso.

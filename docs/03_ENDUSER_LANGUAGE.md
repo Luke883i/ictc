@@ -2,6 +2,8 @@
 
 ## Scopo
 
+Per la resa effettiva in UI, confrontare questa grammatica con [Product](PRODUCT.md), [journey](04_USER_JOURNEYS.md) e gli owner locali `v3/public/ui/product-copy.js` / `v3/public/ui/stable-shell.js`. Le etichette storiche dei documenti di design non sono, da sole, etichette correnti. La prova di comprensione richiede utenti rappresentativi e tecnologie assistive: uno snapshot DOM ne prova soltanto la rappresentazione osservata.
+
 ICTC usa un linguaggio aziendale di compliance che descrive **fonti, requisiti, perimetri, decisioni, responsabilita, azioni, evidenze e limiti** senza trasformare il software in un interprete autonomo della legge.
 
 La regola primaria resta: **registrare non significa concludere**. Il testo di una norma, uno standard, un mapping, un rating, una ricevuta o una proposta AI non acquisiscono autorita ulteriore per il solo fatto di essere mostrati in UI.

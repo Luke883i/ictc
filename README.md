@@ -59,6 +59,14 @@ Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE
 
 **Osservato != vero; proposto != deciso; riferimento != applicabilità; mapping != conformità; completato != verificato; evidenza != conclusione; approvazione interna != assurance indipendente.** L'AI può assistere entro la policy configurata, ma non acquisisce autorità decisionale umana.
 
+## Percorsi verificabili per ricostruire ICTC
+
+- **Capire il prodotto:** [PRODUCT](docs/PRODUCT.md) definisce sette processi, due placeholder e i limiti; le [user journey](docs/04_USER_JOURNEYS.md) descrivono i percorsi operativi.
+- **Ricostruire il software:** [Repository Atlas](docs/REPOSITORY_ATLAS.md) distingue current, lineage, entrypoint e prove; [Architecture AS-IS](docs/11_ARCHITECTURE.md) collega componenti, stato e boundary; [START_HERE](docs/START_HERE.md) indirizza dall'intento all'owner e al falsificatore.
+- **Esercire, verificare, contribuire:** [OPERATIONS](docs/OPERATIONS.md), [DATA_AND_STORAGE](docs/DATA_AND_STORAGE.md), [TESTING](docs/TESTING.md) e [CONTRIBUTING](CONTRIBUTING.md). Prima di usare un asset storico come fonte current, controllare [lifecycle e authority](docs/DOCUMENTATION_STANDARD.md).
+
+**Limite della mappa:** un import non provato non autorizza la cancellazione; un riferimento storico non rende current un file. Il contratto di preservazione e ritiro è in [DOCUMENTATION_STANDARD](docs/DOCUMENTATION_STANDARD.md); PR e commit spiegano la genealogia, mentre gli owner del `main` descrivono l'AS-IS.
+
 ## Dove trovare la fonte giusta
 
 | Domanda | Fonte iniziale canonica |

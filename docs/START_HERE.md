@@ -20,6 +20,7 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 | `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node v3/ai-network-policy-check.mjs` | `npm test` |
 | `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
 | `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
+| `retirement` | eliminazione o consolidamento di documenti, software, fixture o asset | [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) + [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md) + owner eseguibile | grafo tipizzato con dynamic-load/external-entry e rimozione in sandbox | prove positive/negative, rollback e CI exact-head |
 | `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node v3/convergence-authority-check.mjs` | `npm test` |
 | `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node v3/as-is-convergence-check.mjs` | `npm test` |
 | `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node v3/security-boundary-check.mjs` | `npm run release:check` |

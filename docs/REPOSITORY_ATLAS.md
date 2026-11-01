@@ -117,6 +117,20 @@ Molti branch storici possono quindi essere letti come segnalibri di candidate st
 
 La retention del branch è opzionale: eliminare un branch dopo il merge non elimina la storia canonica già conservata da commit e PR. Mantenerlo può aiutare l'archeologia; cancellarlo può ridurre rumore. In entrambi i casi `main` e gli owner correnti restano la fonte per l'AS-IS. Anche il numero di branch è quindi una fotografia volatile, non un KPI.
 
+## Archeologia verificabile: PR, main e snapshot
+
+Le PR sono **evidenza di traiettoria**, non la descrizione normativa del prodotto corrente. Per ciascuna candidate registrare: `PR #`, stato/merge SHA, base/head, file aggiunti/modificati/rimossi, owner coinvolti, motivazione, prove CI sulla exact HEAD, reversibilità e assorbimento nella fonte current. Il contenuto di una PR, anche merged, non prevale sull'owner eseguibile e sul contratto canonico del `main`. Un branch non è un identificatore temporale immutabile.
+
+Nella fotografia GitHub del **2026-11-01**, risultano 234 PR chiuse, di cui 219 merged; la merged **#238** è il commit `b0150d60…`, con tree `7f12c222…`. Lo ZIP analizzato nelle fasi di audit precedenti aveva lo **stesso tree**, non necessariamente lo stesso file `.git` o lo stesso contesto di deploy. Questi numeri sono una ricevuta storica: per lo stato live rieseguire la ricognizione GitHub, non copiare il conteggio in un registry di autorità.
+
+Tre tracce di co-cambiamento utili per l'analisi d'impatto: #235/#236 condividono cinque file Home, #233/#237 sette file Processi, #231/#232 sei file release. **Co-change è una probabilità di relazione da indagare**, non un arco `IMPORTS`, non una dipendenza attuale e non un vincolo permanente alla rimozione. Associare sempre alla PR il suo significato distinto: assorbimento, correzione, nuova capability, test, documentazione o retirement.
+
+## Inferenza di raggiungibilità ed eliminabilità
+
+Una mappa di dipendenze utile è un **multigrafo tipizzato**: `IMPORTS`, `CALLS`, `READS`, `DYNAMIC-LOADS`, `WORKFLOW-EXECUTES`, `STATIC-URL`, `EXTERNAL-ENTRY`, `DOCUMENTS`, `PROVES`, `CO-CHANGED`, `RETAINED-FOR-LINEAGE`. Ogni arco deve dichiarare **origine, target, metodo di estrazione, versione/HEAD, confidenza e controprova**. `MENTIONS` e `CO-CHANGED` sono indizi, non prova di raggiungibilità esecutiva. I file sotto `v3/public/` sono anche servibili via HTTP senza import statico: l'assenza di inbound nel grafo ESM è insufficiente.
+
+La fixture `v3/runtime/demo-suite-2-2-fixture.mjs` carica dodici file `.b64` con nomi costruiti dinamicamente: un'analisi che vede zero archi statici può sbagliare l'inferenza di eliminabilità. Una rimozione simulata in checkout isolato ha prodotto `ENOENT`. La duplicazione byte-per-byte di due CSS non dimostra identità di contratti URL. Per trasformare un candidato in ritiro applicare il [contratto documentale](DOCUMENTATION_STANDARD.md): verificare ingressi esterni, generazione dinamica, storia/retention, diff semantico e controprove reali, poi la CI exact-head. Uno stato `UNKNOWN` blocca la delete massiva.
+
 ## Debito di coerenza del repository — D-RSC
 
 Il runtime core può essere più coerente della sua meta-descrizione. ICTC tratta questo scarto come **Repository Semantic Coherence Debt (D-RSC)**: drift o ambiguità fra authority dichiarate, documentazione/API current, governance evidence ed executable owner. La proiezione machine-readable è `v3/semantic-owner-contract.json#repositoryCoherenceDebt`; non è un secondo gap register, una roadmap o una runtime authority.

@@ -2,6 +2,12 @@
 
 ## Autorità
 
+### Gerarchia delle prove per ricostruzione e ritiro
+
+L'owner attuale e il comportamento del `main` prevalgono sulla descrizione di una PR storica. La genealogia delle PR può identificare intenzioni, dipendenze evolutive, regressioni e sostituzioni, ma non costituisce un'autorizzazione ad eliminare. La mancanza di import statici è un segnale di triage e non supera caricamento dinamico, URL pubblico, workflow, conservazione storica o claim unico.
+
+La decisione di ritiro richiede un dossier con path e hash della preimage, prova del consumer testato, risultato della rimozione in ambiente isolato, outcome dei test, eventuale migrazione semantica e rollback. Fino a tale evidenza, il file resta conservato. Vedi [standard documentale](DOCUMENTATION_STANDARD.md), [Atlas](REPOSITORY_ATLAS.md) e [testing](TESTING.md).
+
 `docs/authority-matrix.yaml` stabilisce quali file sono autoritativi, derivati o informativi.
 
 ## Decisioni

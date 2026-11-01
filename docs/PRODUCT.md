@@ -53,6 +53,12 @@ L'AI può cercare, preparare, riassumere e proporre entro i contratti runtime. I
 
 ## Authority e cambiamenti
 
+### Come verificare una descrizione di prodotto
+
+Una capacità è **attuale** soltanto se il significato è compatibile con questa authority, l'owner runtime e una verifica pertinente. Le tre superfici principali sono Home (orientamento e lavoro autorizzato), Processi di Compliance (sette processi attivi più OP/OG informativi) ed Evidenze ICTC (provenienza e ricostruzione). Non trasformare una voce di navigazione, una scheda di maturità o una receipt in una nuova capacità di compliance.
+
+Per ricostruire un journey: [user journey](04_USER_JOURNEYS.md) → [architettura](11_ARCHITECTURE.md) → [API](openapi.yaml) e adapter/handler correnti → [testing](TESTING.md). La genealogia delle PR motiva le scelte ma non può prevalere sull'implementazione verificata. L'assenza di un path nei test è un limite di copertura, non evidenza di inutilità del codice.
+
 - Il contratto epistemico è in [02_EPISTEMIC_CONTRACT.md](02_EPISTEMIC_CONTRACT.md).
 - L'architettura AS-IS è in [11_ARCHITECTURE.md](11_ARCHITECTURE.md).
 - Il linguaggio end-user è in [03_ENDUSER_LANGUAGE.md](03_ENDUSER_LANGUAGE.md).

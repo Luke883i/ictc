@@ -74,6 +74,12 @@ npm run docs:saturation
 
 `docs:check` verifica authority/lifecycle, raggiungibilità degli owner, product truth, community routing, PR contract e package wiring. `docs:saturation` falsifica il modello degli invarianti documentali; il numero di trial non è un numero di contributor study, browser session o code mutation indipendenti.
 
+## Prove per documentazione e ritiro di file
+
+Per modifiche documentali verificare nell'ordine: link e lifecycle del manifest, coerenza con l'owner eseguibile, evidenza positiva del comportamento e un mutante che falsifichi il claim. Per una proposta di ritiro, il censimento `zero inbound` e la somiglianza byte/testo sono soltanto **heuristic review signals**: prima della delete ispezionare import dinamici, caricamenti da URL, workflow, configurazioni esterne e retention di lineage. La prova è un checkout isolato **con rimozione realmente applicata**, seguito dai test target e dalla rail current, senza correggere simultaneamente un gate per far passare una delete erronea. Vedi [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) e [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md).
+
+Per lo storage il minimo nearest falsifier include `avvio vergine → persist → stop → riavvio sullo stesso stato → GET /api/runtime/integrity` e readback della revision; la semplice disponibilità HTTP o la validità della catena senza binding non certifica la riapertura. La failure family `state-head-mismatch` osservata nella Fase 1 resta aperta finché non è falsificata dopo una correzione del runtime. I test documentali non la chiudono.
+
 ## Livelli
 
 | Livello | Cosa falsifica |
@@ -183,3 +189,13 @@ Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure fa
 `node v3/uiux-656-absorption-check.mjs` verifica la riconciliazione lossless dei 656 finding screenshot-derived: 656/656 mapping primario, 22/22 superfici, 12/12 root-cause, 10 meccanismi, owner canonici e nessuna nuova composition/write authority.
 
 `node v3/uiux-656-absorption-saturation-10m.mjs` esercita 32 failure family da linguaggio business e densità dei record fino a responsive/accessibilità e governance owner, includendo tutte le 496 coppie, cross-layer composition, deletion oracle e no-loss compression dei 10 meccanismi. I trial sono evaluator calls del modello semantico: non sono browser session, human study, deployment evidence o code mutant compilati.
+
+## Copertura E2E: unità di misura e limite di inferenza
+
+Un indicatore riproducibile deve dichiarare il **denominatore** prima del risultato. Per misurare una copertura E2E del prodotto, enumerare le transizioni nei [sette journey](04_USER_JOURNEYS.md), il ruolo che le può compiere, lo stato iniziale, la mutazione attesa, il readback e il receipt; per ciascuna transizione eseguire il test sulla medesima revisione, registrando PASS, FAIL o SKIP. Non usare il numero di test, le operazioni [OpenAPI](openapi.yaml), i trial del modello o i path citati nei sorgenti come sostituti del denominatore di scenari eseguiti.
+
+Un censimento automatico di path API nei test è soltanto una **proxy statica di tracciabilità**: la presenza testuale del path non prova il metodo HTTP, l'autorizzazione, l'esecuzione o l'asserzione di readback. Se manca un catalogo esaustivo di scenari eseguiti, il valore `E2E coverage %` è **non misurabile**; riportare separatamente la proxy con regola di matching, numero di operazioni, limiti e revisione. La verifica di riavvio della stessa directory SQLite è uno scenario distinto dal bootstrap su stato vergine.
+
+## Ricevuta E2E delimitata della Fase 7
+
+`node v3/e2e-coverage-7x3-check.mjs` scrive `artifacts/e2e-coverage-7x3.json`: 21 casi = 7 processi canonici × 3 ruoli. Ogni caso esegue una richiesta HTTP reale su server e SQLite isolati, verifica identità di ruolo, proiezione per processo, integrità e lettura auditor. La percentuale risultante misura **solo questa matrice di proiezione/readback**, non i lifecycle business, le UI browser o le 121 operazioni OpenAPI. Gli impedimenti a Chromium nell'ambiente di esecuzione sono `BLOCKED`, non PASS.

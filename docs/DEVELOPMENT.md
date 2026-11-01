@@ -14,6 +14,12 @@ Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 
 ## Prima di modificare
 
+### Prima di rimuovere file o «semplificare» una documentazione
+
+Leggere la [policy di preservazione](DOCUMENTATION_STANDARD.md) e l'[Atlas](REPOSITORY_ATLAS.md). Verificare i consumer attraverso import, manifest, `package.json`, workflow, caricamenti dinamici, URI HTTP pubbliche, fixture e storia delle PR; registrare il tipo di arco, non soltanto la sua presenza. Le PR possono segnalare co-change o supersessione, ma una PR merged non prova che un file corrente sia inutilizzato. Per il ritiro: prova lossless dei claim, rimozione materiale in checkout isolato, mutation/functional oracles, esito e rollback. In mancanza di qualunque veto verificato, lo stato resta `HOLD_UNKNOWN`, non `DELETE`.
+
+Nessun nuovo registro di file diventa authority: il censimento e i punteggi sono proiezioni derivate dall'albero Git, dall'owner matrix e dalle osservazioni dei test.
+
 1. Parti da `docs/START_HERE.md`, quindi leggi `AGENTS.md` e `docs/authority-matrix.yaml`.
 2. Identifica oggetto governato, authority owner e claim boundary.
 3. Formula il bug come invariante falsificabile, non come desiderio UI.
