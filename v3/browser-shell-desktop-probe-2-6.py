@@ -18,15 +18,17 @@ with sync_playwright() as pw:
         menu=page.locator('#stableProfileMenu');expect(menu).to_be_visible();expect(menu).to_contain_text('Amministratore');expect(menu).to_contain_text('Ruolo attivo')
     elif PROBE=='footer':
         footer=page.locator('#stableLegalFooter');expect(footer).to_be_visible();footer_effect(page)
-    elif PROBE=='home-guide':
+    elif PROBE in ('home-guide-closed','home-guide-open','home-guide-reclose'):
         guide=page.locator('#homeView details[data-home-business-guide]')
         expect(guide).to_be_visible()
         body=guide.locator(':scope > .home-compliance-full-body')
         expect(body).to_be_hidden()
-        guide.locator(':scope > summary').click()
-        expect(body).to_be_visible()
-        expect(guide.locator('[data-home-regulatory-cases] .home-compliance-cases')).to_be_hidden()
-        guide.locator(':scope > summary').click()
-        expect(body).to_be_hidden()
+        if PROBE!='home-guide-closed':
+            guide.locator(':scope > summary').click()
+            expect(body).to_be_visible()
+            expect(guide.locator('[data-home-regulatory-cases] .home-compliance-cases')).to_be_hidden()
+            if PROBE=='home-guide-reclose':
+                guide.locator(':scope > summary').click()
+                expect(body).to_be_hidden()
     else: raise SystemExit(f'unknown probe {PROBE}')
     print({'ok':True,'probe':PROBE});ctx.close();browser.close()
