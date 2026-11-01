@@ -16,6 +16,20 @@ ICTC è un repository atipico: codice applicativo, contratti semantici, owner ma
 | L3 · Executable | Dove viene prodotto davvero l'effetto? | `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/`, `v3/public/`, owner specifici | codice/runtime prevalgono sulle descrizioni storiche |
 | L4 · Evidence & lineage | Perché esiste, come viene falsificato, cosa resta non provato? | `docs/TESTING.md`, `docs/DEVELOPMENT.md`, `docs/PROJECT_TRAJECTORY.md`, PR/CI GitHub | prova e storia non diventano automaticamente authority |
 
+## Ingresso standard per ingegnere esterno (senza AI)
+
+La conoscenza di ICTC **non è subordinata alla governance AI**. Un ingegnere enterprise con risorse illimitate può ricostruire ed esercire il prodotto mediante standard del software engineering, senza leggere prompt, conversazioni AI o workbook di traiettoria:
+
+1. **Prodotto e installazione:** `README.md`, `docs/PRODUCT.md`, `docs/DEVELOPMENT.md`, `docs/CONFIGURATION.md`. Avvio con Node 22, `npm ci`, `./ictc.sh start --no-open`.
+2. **Architettura verificabile:** `docs/11_ARCHITECTURE.md`, `docs/openapi.yaml`, `v3/bootstrap.mjs`, `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/` e `v3/public/`; il PostgreSQL enterprise C3 ha owner distinti. Confrontare descrizioni e codice, senza chiamare reale una capacità soltanto progettata.
+3. **Qualità, sicurezza e operatività:** `docs/TESTING.md`, `SECURITY.md`, `docs/OPERATIONS.md`, `docs/DATA_AND_STORAGE.md`, `.github/workflows/` e `.github/CODEOWNERS`; GitHub ruleset e production deployment sono prove esterne.
+4. **Contribuzione:** `CONTRIBUTING.md`, review di diff, test e receipt exact-head. `docs/START_HERE.md` accelera l'orientamento per dominio, ma non sostituisce le interfacce standard sopra.
+5. **Archeologia e deprecazione:** `npm run repo:inventory` genera `artifacts/repository-inventory.json` su tutto il tree Git tracciato; `npm run repo:retirement:mutations` testa la disciplina decisionale. I path senza prova non vengono cancellati o promossi implicitamente.
+
+**Elementi atipici gestiti in forma standard:** molte centinaia di test specialistici e workflow sono una stratigrafia da misurare, non una giustificazione di release; documenti *lineage/TO-BE* non sono codice corrente; prompt e `AGENTS.md` sono regole per assistenti, non la costituzione necessaria alla lettura del prodotto; TRAMA, Bussola e workbook sono proiezioni di processo a authority zero. Gli owner runtime e i gate riproducibili restano ispezionabili con strumenti comuni (`git`, Node, SQL, HTTP, Actions). La traccia AI non conferisce un privilegio di interpretazione.
+
+**Censimento non significa ritiro:** l'inventario attesta presenza, hash e classificazione di superficie; `document:unregistered` è una coda esplicita di esame, non sinonimo di allucinazione o obsolescenza. `software:candidate` e `verification:candidate` sono euristiche di path, non prove di esecuzione o di inutilità. Finché import dinamici, URL esterne, configurazioni, fixture, storia semantica e consumer terzi non sono esclusi mediante prove locali e indipendenti, ogni disposizione rimane `HOLD_*`. Nessun file è in quarantena fisica né dichiarato eliminabile da questo censimento.
+
 ## Classi di verità
 
 | Classe | Owner / fonte | Da non confondere con |

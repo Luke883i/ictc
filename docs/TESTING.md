@@ -10,6 +10,18 @@ npm run release:check
 
 `npm test` esegue `test:current`: il documentation lattice check entra nella semantic current rail prima del runtime current. I rail storici restano regressioni/diagnostica e non ridefiniscono `v3/release-identity.json`.
 
+## Prova replicabile di inventario e ritiro conservativo
+
+```bash
+npm run repo:inventory
+npm run repo:inventory:falsify
+npm run repo:retirement:mutations
+cat artifacts/repository-inventory.json
+cat artifacts/repository-retirement-mutations.json
+```
+
+L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
+
 ## Feedback per tipo di modifica
 
 Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di convergenza. La tabella orienta, non crea una seconda authority.

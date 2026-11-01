@@ -34,6 +34,19 @@ La separazione evita di confondere “perché esiste” con “cosa è authorita
 
 La data più recente non conferisce autorità. PR, audit, DoD o prompt non diventano current perché contengono una formulazione più nuova: l'owner deve essere dichiarato e raggiungibile dalla mappa canonica.
 
+## Inventario Git e quarantena logica (distinti dal manifest)
+
+`npm run repo:inventory` produce una **ricevuta derivata** in `artifacts/repository-inventory.json`: ogni path tracciato da Git ha hash SHA-256, dimensione, categoria, fonte della classificazione e disposizione conservativa. Questa ricevuta non possiede alcuna authority né sostituisce il manifest dei documenti. Il numero di documenti non registrati è un debito di classificazione, non una prova di superfluità.
+
+- `PROTECT_AUTHORITY`: documento dichiarato authoritative nel manifest; conservazione obbligata.
+- `PRESERVE_REGISTERED`: documento registrato e non authoritative; preservare la lineage o gli obblighi associati.
+- `HOLD_CONSUMERS`: software/test/workflow plausibilmente consumato; non si dichiara assenza di consumer dal nome.
+- `HOLD_REVIEW`: funzione non adeguatamente provata; nessuna eliminazione/quarantena automatica.
+
+Per passare da `HOLD` a proposta di ritiro occorrono prova dei consumer statici/dinamici, API/URL pubbliche, workflow, fixture, storia delle PR, compatibilità, owner e rollback. Una successiva review deve comprovare la conservazione semantica e ripetere i test con il file realmente tolto in un checkout isolato. La sola presenza di un'etichetta come `legacy`, `AI`, `generated` o di un import zero non prova eliminabilità. La **quarantena logica** è una classe di revisione; non rinomina né interrompe i consumer.
+
+Le mutazioni di `repo:retirement:mutations` verificano un oracolo di dodici obblighi in memoria: 10M trial e 1M falsificazioni negative non sono 10M patch applicate al repository e non certificano la cancellabilità dei singoli file.
+
 ## Product truth e lineage
 
 `docs/PRODUCT.md` è l'autorità corrente per identità, scope e confini del prodotto. `docs/00_PROMPT_CLARIFICATION.md` è `source-input`; documenti TO-BE/roadmap restano futuro intenzionale. Quando una decisione di lineage diventa AS-IS, si aggiorna l'owner current e si conserva il documento storico come evidence, senza duplicare l'autorità.

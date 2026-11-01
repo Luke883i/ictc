@@ -2,6 +2,8 @@
 
 Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing: non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
 
+**Ingresso standard alternativo, senza strumenti AI:** [Repository Atlas · Ingresso standard](REPOSITORY_ATLAS.md), [Product](PRODUCT.md), [Architecture](11_ARCHITECTURE.md), [Development](DEVELOPMENT.md), [Operations](OPERATIONS.md) e [Testing](TESTING.md). La governance AI è una specializzazione opzionale della contribuzione, non il requisito di comprensione del software.
+
 ## Due ingressi, due problemi diversi
 
 - Se devi **capire che tipo di repository stai guardando**, prima leggi [Repository Atlas](REPOSITORY_ATLAS.md): forma del repository, classi di verità, storia/metodo e limiti di inferenza.
