@@ -42,8 +42,16 @@ with sync_playwright() as pw:
    if(records.length!==9||!legend||legend.querySelectorAll('[data-maturity]').length!==4)return false;
    const badges=records.map(e=>e.querySelector(':scope > .procedure-maturity'));
    const heights=records.map(e=>e.getBoundingClientRect().height);
-   if(badges.some(b=>!b||!b.querySelector('svg.maturity-icon'))||heights.some(h=>h<44)||Math.max(...heights)-Math.min(...heights)>2)return false;
-   return getComputedStyle(root).display!=='none'&&document.fonts.status==='loaded';
+   const offsets=badges.map(e=>e?.getBoundingClientRect().left);
+   const ready=badges.every(b=>b&&b.querySelector('svg.maturity-icon'))&&heights.every(h=>h>=44)&&
+    Math.max(...heights)-Math.min(...heights)<=2&&offsets.every(Number.isFinite)&&
+    Math.max(...offsets)-Math.min(...offsets)<=2&&getComputedStyle(root).display!=='none'&&document.fonts.status==='loaded';
+   if(!ready){delete window.__ictcProcessAlignmentSample;return false;}
+   const signature=JSON.stringify([heights.map(v=>v.toFixed(2)),offsets.map(v=>v.toFixed(2))]);
+   const previous=window.__ictcProcessAlignmentSample;
+   const frames=previous?.signature===signature?previous.frames+1:1;
+   window.__ictcProcessAlignmentSample={signature,frames};
+   return frames>=3;
   }""")
   if PROBE in ('procedures','procedures-structure'):
    expect(hub.locator('[data-procedure-id]')).to_have_count(7)
