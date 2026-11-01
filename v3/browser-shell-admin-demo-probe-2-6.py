@@ -46,13 +46,21 @@ with sync_playwright() as pw:
    legend=p.locator('#processesView [data-maturity-legend]')
    expect(legend).to_be_visible()
    expect(legend.locator('[data-maturity]')).to_have_count(4)
-   for word in ['Maturità','Pronto','Parziale','In costruzione','Segnaposto','non certifica conformità']:
+   for word in ['Maturità','Pronto','Parziale','In costruzione','Segnaposto']:
     assert word in legend.inner_text(),word
-   for word in ['Verde','Giallo','Arancione','Rosso','funzioni previste disponibili','scaffold iniziale']:
+   for word in ['Indicativa: non certifica conformità né disponibilità.','Verde','Giallo','Arancione','Rosso','funzioni previste disponibili','scaffold iniziale']:
     assert word not in legend.inner_text(),word
-   icon_shapes=legend.locator('[data-maturity]').evaluate_all("els=>els.map(e=>({shape:e.querySelector('svg.maturity-icon')?.innerHTML,ink:getComputedStyle(e).color,bg:getComputedStyle(e).backgroundColor,label:e.getAttribute('aria-label'),text:e.textContent.trim()}))")
-   assert len({item['shape'] for item in icon_shapes})==4 and all(item['shape'] and item['text']=='' and item['label'] for item in icon_shapes),icon_shapes
-   assert len({item['bg'] for item in icon_shapes})==1 and len({item['ink'] for item in icon_shapes})==1,icon_shapes
+   icon_shapes=legend.locator('[data-maturity]').evaluate_all("""els=>{
+    const rgb=css=>{const match=css.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/);return match?[+match[1],+match[2],+match[3]]:null};
+    const lum=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
+    const hue=c=>{const [r,g,b]=c.map(v=>v/255),max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min;if(delta<.045)return'grey';let angle=max===r?((g-b)/delta)%6:max===g?(b-r)/delta+2:(r-g)/delta+4;angle=(60*angle+360)%360;return angle>=95&&angle<=175?'green':angle>=39&&angle<=67?'yellow':angle>=15&&angle<39?'orange':'other'};
+    return els.map(e=>{const style=getComputedStyle(e),bg=rgb(style.backgroundColor),fg=rgb(style.color),light=bg?lum(bg):null,dark=fg?lum(fg):null;
+      return{state:e.dataset.maturity,shape:e.querySelector('svg.maturity-icon')?.innerHTML,ink:style.color,bg:style.backgroundColor,label:e.getAttribute('aria-label'),text:e.textContent.trim(),hue:bg?hue(bg):null,contrast:light===null||dark===null?0:(Math.max(light,dark)+.05)/(Math.min(light,dark)+.05)};});
+   }""")
+   expected=[('ready','green','Pronto'),('scaffold-yellow','yellow','Parziale'),('scaffold-orange','orange','In costruzione'),('placeholder','grey','Segnaposto')]
+   assert len(icon_shapes)==4 and [(x['state'],x['hue']) for x in icon_shapes]==[(state,color) for state,color,_ in expected],icon_shapes
+   assert len({item['shape'] for item in icon_shapes})==4 and len({item['bg'] for item in icon_shapes})==4,icon_shapes
+   assert all(item['shape'] and item['text']=='' and item['contrast']>=4.5 and item['label']=='Maturità dichiarata: '+name for item,(_,_,name) in zip(icon_shapes,expected)),icon_shapes
   if PROBE in ('procedures','procedures-alignment'):
    badges=hub.locator(':scope > [data-process-code] > .procedure-maturity')
    expect(badges).to_have_count(9)
