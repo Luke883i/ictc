@@ -112,7 +112,7 @@ function pcOracle(f,c,s){
  if(['--maturity-bg','--maturity-border','--maturity-ink'].some(t=>!badge.includes('var('+t)))return false;
  for(const [id,hue] of pcStates){const rule=pcRule(s,'.procedure-maturity[data-maturity="'+id+'"]{');const bg=pcRgb((rule.match(/--maturity-bg:(#[0-9a-f]{6})/i)||[])[1]||''),fg=pcRgb((rule.match(/--maturity-ink:(#[0-9a-f]{6})/i)||[])[1]||'');if(!bg||!fg||pcHue(bg)!==hue||pcContrast(bg,fg)<4.5)return false;}
  const pair=pcRule(s,'#processesView :is(.compliance-process-lifecycle,.compliance-context)>summary{');
- if(['min-height:72px','font-size:var(--type-control,1rem)','padding:10px 12px','justify-content:space-between','border-radius:10px'].some(x=>!pair.includes(x)))return false;
+ if(['min-height:80px','font-size:var(--type-control,1rem)','padding:10px 12px','justify-content:space-between','border-radius:10px'].some(x=>!pair.includes(x)))return false;
  return s.includes('#processesView :is(.compliance-process-lifecycle,.compliance-context)>summary small{color:var(--color-muted);font-size:.78rem;font-weight:500;line-height:1.35}');
 }
 const pcHex=(h,s,l)=>{const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,a=h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];return'#'+a.map(v=>Math.round((v+m)*255).toString(16).padStart(2,'0')).join('')};
@@ -126,7 +126,7 @@ const pcOps=[
  ['overclaim',(a,i)=>a[0]=a[0].replace("ready:Object.freeze({label:'Pronto',icon:'badge-check'","ready:Object.freeze({label:'Pronto certificato livello "+(i+1)+"',icon:'circle-slash'")],
  ['wrong-count',(a,i)=>a[1]=a[1].replace('Come si collegano i processi</b>','Come si collegano i '+(i+1)+' processi</b>')],
  ['false-description',(a,i)=>a[1]=a[1].replace('Passaggi di lavoro tra fonti, rischi, azioni e verifiche.','Conformità automatica su '+(i+1)+' cicli certificati.')],
- ['short-summary',(a,i)=>a[2]=a[2].replace('min-height:72px;display:flex;align-items:center;justify-content:space-between','min-height:'+(30+i*.39).toFixed(2)+'px;display:flex;align-items:center;justify-content:space-between')]
+ ['short-summary',(a,i)=>a[2]=a[2].replace('min-height:80px;display:flex;align-items:center;justify-content:space-between','min-height:'+(30+i*.39).toFixed(2)+'px;display:flex;align-items:center;justify-content:space-between')]
 ];
 const pcBaseline=[frame,contextJs,closureCss],pcSeed=0x1c7c2026;assert.ok(pcOracle(...pcBaseline),'Processes landing must meet the source-level DoD');
 const pcCounts=Array(10).fill(0);let pcKilled=0;

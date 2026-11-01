@@ -175,7 +175,7 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-
 }
 
 /* Processi: equal summary geometry for lifecycle and context, scoped to the local landing owner. */
-html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary{box-sizing:border-box;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line,#d8dee8);border-radius:10px;background:var(--surface-muted,#f5f7fa);color:inherit;font-size:var(--type-control,1rem);font-weight:650;line-height:1.3;cursor:pointer;list-style:none}
+html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary{box-sizing:border-box;min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line,#d8dee8);border-radius:10px;background:var(--surface-muted,#f5f7fa);color:inherit;font-size:var(--type-control,1rem);font-weight:650;line-height:1.3;cursor:pointer;list-style:none}
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary span:first-child{display:grid;gap:2px;min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary small{color:var(--color-muted);font-size:.78rem;font-weight:500;line-height:1.35}
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary::-webkit-details-marker{display:none}
