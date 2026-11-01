@@ -44,8 +44,13 @@ let cases=[];try{
   const restored=hash(readFileSync(current))===hash(buf);if(!restored)throw Error('restore mismatch: '+path);
   cases.push({path,sha256:hash(buf),bytes:buf.length,...classOf(path,body,links),incoming:links,counterfactual:{command:'node scripts/documentation-lattice-check.mjs',exit:probe.status,detectedByExistingDocsCheck:probe.status!==0,restored,scope:'existing docs manifest/links gate only; other runtime and external consumers not exercised'}});
  }
+ // Missing a document that is the target of an observed Markdown link must
+ // be detected by the document gate, independently of manifest registration.
+ // An unlinked document still needs separate consumer and owner review.
+ const undetectedLinked=cases.filter(c=>c.incoming.some(x=>x.evidence==='resolved-markdown-link')&&!c.counterfactual.detectedByExistingDocsCheck);
+ if(undetectedLinked.length)throw new Error('documentation checker missed linked files: '+undetectedLinked.map(c=>c.path).join(', '));
  const byOutcome={};for(const c of cases)byOutcome[c.topic]=(byOutcome[c.topic]||0)+1;
- const result={schema:'ictc-doc-causal-qualification/v1',baseSource:'tracked Git files + documentation manifest + full-text/relative-link references + real isolated file removal',total:candidates.length,qualified:cases.length,missing:candidates.filter(p=>!cases.some(c=>c.path===p)),summary:byOutcome,physicallyRemovedFiles:0,safeDeleteDecisions:0,claimBoundary:'Per-file causal counterfactual ONLY for existing docs check; a passing deletion probe exposes a gate gap, NEVER certifies safe deletion. All 149 kept HOLD_REVIEW; external and dynamic consumers not proven absent.',cases};
+ const result={schema:'ictc-doc-causal-qualification/v1',baseSource:'tracked Git files + documentation manifest + full-text/relative-link references + real isolated file removal',total:candidates.length,qualified:cases.length,missing:candidates.filter(p=>!cases.some(c=>c.path===p)),summary:byOutcome,physicallyRemovedFiles:0,safeDeleteDecisions:0,linkRemovalsDetected:cases.filter(c=>c.counterfactual.detectedByExistingDocsCheck).length,linkRegressionsEscaped:undetectedLinked.length,claimBoundary:'Per-file causal counterfactual ONLY for existing docs check; a passing deletion probe exposes a gate gap, NEVER certifies safe deletion. All 149 kept HOLD_REVIEW; external and dynamic consumers not proven absent.',cases};
  verifyQualification(result,candidates);
  mkdirSync(join(root,'artifacts'),{recursive:true});writeFileSync(join(root,'artifacts/document-causal-qualification.json'),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify({ok:true,total:result.total,qualified:result.qualified,summary:result.summary,removalDetected:cases.filter(c=>c.counterfactual.detectedByExistingDocsCheck).length,safeDeleteDecisions:0}));

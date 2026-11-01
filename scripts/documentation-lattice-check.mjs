@@ -1,5 +1,5 @@
 import {checkReadiness} from './review-readiness-check.mjs';
-import {readFile,stat} from 'node:fs/promises';
+import {readFile,stat,readdir} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel} from './documentation-lattice-lib.mjs';
@@ -23,7 +23,24 @@ const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContrac
 const semanticOwner=JSON.parse(semanticOwnerText),debt=semanticOwner.repositoryCoherenceDebt||{},debtFindings=Array.isArray(debt.findings)?debt.findings:[],debtById=Object.fromEntries(debtFindings.map(item=>[item.id,item])),uiuxContract=JSON.parse(uiuxContractText),gaps=JSON.parse(gapsText);
 const linkTargets=new Map();
 function localTargets(rel,text){const out=[];for(const m of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){const href=m[1].trim();if(!href||/^(https?:|mailto:|#)/.test(href))continue;out.push(path.normalize(path.join(path.dirname(rel),href.split('#')[0])))}return out}
-for(const d of docs.filter(d=>d.path.endsWith('.md'))){const text=await read(d.path),targets=localTargets(d.path,text);linkTargets.set(d.path,targets);for(const t of targets)check(await exists(t),`broken local link ${d.path} -> ${t}`)}
+// Link integrity is about repository readers, not just document authority.
+// Scan every Markdown file under docs/; registration still exclusively controls
+// authority/lifecycle and START_HERE depth. This protects linked lineage too.
+async function markdownFiles(dir='docs'){
+ const result=[];
+ for(const item of await readdir(path.join(root,dir),{withFileTypes:true})){
+   const rel=path.join(dir,item.name);
+   if(item.isDirectory())result.push(...await markdownFiles(rel));
+   else if(item.isFile()&&rel.endsWith('.md'))result.push(rel);
+ }
+ return result;
+}
+const registeredMarkdown=new Set(docs.filter(d=>d.path.endsWith('.md')).map(d=>d.path));
+for(const rel of (await markdownFiles()).sort()){
+ const targets=localTargets(rel,await read(rel));
+ if(registeredMarkdown.has(rel))linkTargets.set(rel,targets);
+ for(const t of targets)check(await exists(t),`broken local link ${rel} -> ${t}`);
+}
 async function depthFromStart(target){if(target==='docs/START_HERE.md')return 0;let frontier=['docs/START_HERE.md'];const seen=new Set(frontier);for(let depth=1;depth<=2;depth++){const next=[];for(const src of frontier){for(const t of linkTargets.get(src)||[]){if(t===target)return depth;if(!seen.has(t)&&linkTargets.has(t)){seen.add(t);next.push(t)}}}frontier=next}return Infinity}
 let maxAuthorityDepth=0;for(const d of authoritative){const depth=await depthFromStart(d.path);if(depth!==Infinity)maxAuthorityDepth=Math.max(maxAuthorityDepth,depth);check(depth<=2,`authority not reachable <=2 links: ${d.path}`)}
 const product=docs.find(d=>d.authorityTopic==='product_intent'),repositoryAtlas=docs.find(d=>d.authorityTopic==='repository_self_description'),prompt=docs.find(d=>d.path==='docs/00_PROMPT_CLARIFICATION.md'),retired34=docs.find(d=>d.path==='docs/UI_FINE_TUNING_3_4_DOD.md');
