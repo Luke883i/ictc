@@ -18,6 +18,7 @@ with sync_playwright() as pw:
         menu=page.locator('#stableProfileMenu');expect(menu).to_be_visible();expect(menu).to_contain_text('Amministratore');expect(menu).to_contain_text('Ruolo attivo')
     elif PROBE=='footer':
         footer=page.locator('#stableLegalFooter');expect(footer).to_be_visible();footer_effect(page)
+    elif PROBE=='home-guide':
         guide=page.locator('#homeView details[data-home-business-guide]')
         expect(guide).to_be_visible()
         body=guide.locator(':scope > .home-compliance-full-body')
