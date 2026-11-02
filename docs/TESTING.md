@@ -329,3 +329,31 @@ resta non verificato per ciascuno: **0 certificati safe-delete**. Otto
 mutanti di falsa autorizzazione vengono intercettati; nessun file viene
 spostato o cancellato. Il certificato non pretende assenza universale di
 dipendenze e non sostituisce la review umana o legale.
+
+### PR239: simulazione controllata delle decisioni e triangolazione documentale
+
+`node v3/e2e-simulated-decisions-check.mjs` esegue HTTP reali in una SQLite isolata per
+RN-01 (contributo fonte candidata, senza applicabilità automatica), EC-01 (narrativa
+originale e tempo di awareness immutati, privacy cross-user) e AO-01 (creazione e
+review motivate da due attori di test distinti). Il test verifica ricevute hash,
+rifiuto dei tentativi auditor e rifiuto di una review AO senza motivazione. I
+razionali sono fixture proposte da un modello e **non** attribuzioni a esseri umani
+indipendenti o review legale; la ricevuta `artifacts/model-assisted-decision-receipts.json`
+riporta espressamente `independentHumanApproval=false`. Non è prova dei 53 passi
+E2E completi o del funzionamento del deployment.
+
+`node scripts/document-consumer-independent-check.mjs --falsify` ricostruisce
+indipendentemente dai precedenti dossier un grafo indicativo da link Markdown,
+path letterali e menzioni di basename su **tutti** i 149 file fuori manifest;
+include sei fixture sulla risoluzione dei link e otto falsificazioni della
+ricevuta. Le menzioni non provano dipendenze runtime; **nessuna assenza di
+menzione prova cancellabilità**. Le 149 disposizioni restano `HOLD_UNKNOWN`,
+zero cancellazioni e zero attestazioni di consumer esterni assenti. La ricevuta
+è `artifacts/independent-document-consumer-scan.json`.
+
+Il probe browser `v3/browser-shell-admin-demo-probe-2-6.py` conserva tutte le
+asserzioni e, **solo in caso di FAIL**, registra geometria/DOM, errori console,
+traceback e screenshot in `artifacts/browser-probe/`. Il workflow GitHub
+carica tali artefatti senza trasformare il fallimento in successo. In questo
+ambiente Chromium riceve `ERR_BLOCKED_BY_ADMINISTRATOR` prima del caricamento
+della pagina: non si inferisce alcun difetto della UI da quel blocco locale.
