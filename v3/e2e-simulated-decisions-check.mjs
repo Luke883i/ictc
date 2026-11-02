@@ -46,11 +46,13 @@ try{
  record('AO-01 review without rationale rejected',noBasis,400,'model-reviewer','Refuse unsupported decision');
  const reviewed=await h.request('POST',`/api/grc/objects/${id}/review`,{decision:'active',reason:'Model-reviewer checks explicit owner and CMDB reference; simulated decision, not external attestation'},'admin','model-reviewer');
  record('AO-01 reasoned review',reviewed,200,'model-reviewer','Separate test identity and explicit rationale');
- const state=await h.bootstrap('admin','model-reviewer');assert.ok(state.body.grc?.objects?.items?.some(x=>x.id===id)||state.body.grc?.objects?.counts?.active>=1||state.body.work);
+ const readback=await fetch(`${h.base}/api/grc`,{headers:h.identity('admin','model-reviewer')});
+ assert.equal(readback.status,200,'AO-01 readback HTTP must succeed');
+ const grc=await readback.json();assert.equal(grc.objects.counts.active,1,'AO-01 reasoned review must persist an active object');
  const report={schema:'ictc-model-assisted-decision-receipts/v1',classification:'SIMULATION_ONLY',
   modelGeneratedRationales:true,independentHumanApproval:false,externalEvidenceOfAuthority:false,
   processes:['RN-01','EC-01','AO-01'],decisions:evidence,
-  checks:{rnCandidateRecorded:true,rnAuditorDenied:true,ecOriginalAndAwarenessPreserved:true,ecAuditorDenied:true,ecCrossUserPrivacy:true,aoReasonedDistinctActor:true,aoUnreasonedDecisionRejected:true},
+  checks:{rnCandidateRecorded:true,rnAuditorDenied:true,ecOriginalAndAwarenessPreserved:true,ecAuditorDenied:true,ecCrossUserPrivacy:true,aoReasonedDistinctActor:true,aoUnreasonedDecisionRejected:true,aoActiveReadback:true},
   claimBoundary:'Attestable HTTP commands, hash receipts, distinct test actor identifiers, rationale and negative controls. The assistant and local test identities are not real independent human reviewers; no external authorization, regulatory decision, human competence or 53-step closure.'};
  await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/model-assisted-decision-receipts.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({ok:true,processes:report.processes,simulatedDecisions:evidence.length,hashes:evidence.filter(x=>x.receiptHash).length,negativeDenied:evidence.filter(x=>x.http>=400).length}));
