@@ -2,6 +2,8 @@
 
 ## Intent
 
+La navigabilità dei soli documenti canonici entro due link è una **condizione necessaria ma non sufficiente** per ricostruire il software. Un reviewer deve poter collegare `README → START_HERE/Atlas → owner → runtime/test → limitazione` per una modifica reale; il manifest preserva lifecycle e autorità ma non prova che un file privo di link sia eliminabile. [Standard](DOCUMENTATION_STANDARD.md) e [Testing](TESTING.md) contengono i limiti di inferenza e le prove di ritiro.
+
 Rendere il sistema documentale ICTC una superficie operativa verificabile: un contributor deve poter passare da repository a product truth, authority, owner, test e percorso di review senza ricostruire la cronologia delle PR o interpretare la data dei documenti.
 
 Questa slice è materializzata direttamente su `main` dopo Native Semantic Lattice 3.2 e DEMO Suite 2.2; **non** modifica UI, runtime business, C0.1, process registry, persistenza o business write authority.

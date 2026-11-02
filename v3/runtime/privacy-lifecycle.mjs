@@ -3,7 +3,17 @@ const text=(v,max=1000)=>String(v??'').trim().slice(0,max);
 function fail(status,code,message,details=null){throw Object.assign(new Error(message),{status,code,details});}
 export const DEFAULT_PRIVACY_POLICY=Object.freeze({schemaVersion:'1.0.0',enabled:false,retentionDays:365,legalHolds:[]});
 export function normalizePrivacyPolicy(input={},current=DEFAULT_PRIVACY_POLICY){const base={...DEFAULT_PRIVACY_POLICY,...(current||{})};const legalHolds=(Array.isArray(input.legalHolds)?input.legalHolds:base.legalHolds||[]).slice(0,500).map((item,index)=>({id:text(item?.id,160)||`hold-${index+1}`,subjectType:text(item?.subjectType,80),subjectId:text(item?.subjectId,200),reason:text(item?.reason,1000),expiresAt:text(item?.expiresAt,100)||null})).filter(item=>item.subjectType&&item.subjectId);return{schemaVersion:'1.0.0',enabled:input.enabled??base.enabled??false,retentionDays:Math.max(1,Math.min(3650,Number(input.retentionDays??base.retentionDays??365))),legalHolds};}
-export async function ensurePrivacyState(store){const state=store.state;state.settings||={};if(!state.settings.privacy){state.settings.privacy=structuredClone(DEFAULT_PRIVACY_POLICY);await store.persist();}else state.settings.privacy=normalizePrivacyPolicy(state.settings.privacy,state.settings.privacy);state.privacyErasureReceipts||=[];return store;}
+export async function ensurePrivacyState(store){
+  const state=store.state;
+  state.settings||={};
+  let changed=false;
+  const next=state.settings.privacy?normalizePrivacyPolicy(state.settings.privacy,state.settings.privacy):structuredClone(DEFAULT_PRIVACY_POLICY);
+  if(canonicalJson(next)!==canonicalJson(state.settings.privacy??null)){state.settings.privacy=next;changed=true;}
+  if(!Array.isArray(state.privacyErasureReceipts)){state.privacyErasureReceipts=[];changed=true;}
+  // Both defaults must be included in the same persisted binding. Never mutate after persist.
+  if(changed)await store.persist();
+  return store;
+}
 function subjectFrom(state,type,id){if(type==='contribution')return state.contributions?.find(item=>item.id===id)||null;if(type==='incident')return state.incidents?.find(item=>item.id===id)||null;return null;}
 export function activeLegalHold(state,type,id,at=new Date()){const policy=normalizePrivacyPolicy(state.settings?.privacy||{});return policy.legalHolds.find(hold=>hold.subjectType===type&&hold.subjectId===id&&(!hold.expiresAt||new Date(hold.expiresAt).getTime()>at.getTime()))||null;}
 export function assertNoHoldTargetsPendingErasure(state,policy,at=new Date()){for(const hold of policy.legalHolds||[]){if(hold.expiresAt&&new Date(hold.expiresAt).getTime()<=at.getTime())continue;const subject=subjectFrom(state,hold.subjectType,hold.subjectId);if(subject?.privacyState==='erasure-pending')fail(409,'privacy-erasure-in-progress','Legal hold non applicabile: cancellazione già serializzata come erasure-pending',{holdId:hold.id,subjectType:hold.subjectType,subjectId:hold.subjectId});}return policy;}

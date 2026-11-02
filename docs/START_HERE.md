@@ -2,6 +2,8 @@
 
 Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa di routing: non sostituisce le authority sostanziali registrate in `authority-matrix.yaml` e `documentation-manifest.json`.
 
+**Ingresso standard alternativo, senza strumenti AI:** [Repository Atlas · Ingresso standard](REPOSITORY_ATLAS.md), [Product](PRODUCT.md), [Architecture](11_ARCHITECTURE.md), [Development](DEVELOPMENT.md), [Operations](OPERATIONS.md) e [Testing](TESTING.md). La governance AI è una specializzazione opzionale della contribuzione, non il requisito di comprensione del software.
+
 ## Due ingressi, due problemi diversi
 
 - Se devi **capire che tipo di repository stai guardando**, prima leggi [Repository Atlas](REPOSITORY_ATLAS.md): forma del repository, classi di verità, storia/metodo e limiti di inferenza.
@@ -20,6 +22,7 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 | `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node v3/ai-network-policy-check.mjs` | `npm test` |
 | `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
 | `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
+| `retirement` | eliminazione o consolidamento di documenti, software, fixture o asset | [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) + [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md) + owner eseguibile | grafo tipizzato con dynamic-load/external-entry e rimozione in sandbox | prove positive/negative, rollback e CI exact-head |
 | `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node v3/convergence-authority-check.mjs` | `npm test` |
 | `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node v3/as-is-convergence-check.mjs` | `npm test` |
 | `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node v3/security-boundary-check.mjs` | `npm run release:check` |
@@ -48,7 +51,7 @@ la documentazione esistente: non definisce una seconda governance.
 1. [README](../README.md) — identità sintetica, sette processi, stack e runtime corrente.
 2. [Repository Atlas](REPOSITORY_ATLAS.md) — forma del repository, classi di verità, metodo di lettura e inferenza assistita.
 3. [PRODUCT](PRODUCT.md) — scopo e confini di prodotto correnti.
-4. [AGENTS](../AGENTS.md) — invarianti epistemici e vincoli globali di sviluppo.
+4. [AGENTS](../AGENTS.md) — istruzioni per agenti AI, non un prerequisito di lettura, setup o sviluppo umano. I gate di CI e le responsabilità restano comunque vincolanti.
 5. [Authority matrix](authority-matrix.yaml) — owner eseguibili e documentali; path canonico `docs/authority-matrix.yaml`.
 6. [Convergence authority](convergence/convergence-authority.json) — sequenza di sviluppo e binding dell'active workbook; non ridefinisce product/runtime truth o Git facts.
 7. [Architecture](11_ARCHITECTURE.md) — architettura AS-IS e flussi browser → runtime → SQLite; path canonico `docs/11_ARCHITECTURE.md`.

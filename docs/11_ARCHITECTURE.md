@@ -2,6 +2,15 @@
 
 ## Sistema
 
+### Vista di contesto e componenti (C4/arc42, minima)
+
+- **Sistema e attori:** utente autorizzato, amministratore, reviewer/auditor, integrazioni AI e infrastruttura esterna; il browser è un client, non il decisore dei permessi. [Perimetro](PRODUCT.md), [journey](04_USER_JOURNEYS.md).
+- **Container applicativo:** `v3/bootstrap.mjs` risolve profilo e path; `v3/server.mjs` espone HTTP e delega a handler e policy; `v3/public/index.html`, `v3/public/ui/active-experience.js` e gli owner CSS compongono l'esperienza. [OpenAPI](openapi.yaml) descrive l'interfaccia dichiarata, non da solo le chiamate effettivamente collaudate.
+- **Persistenza:** `v3/runtime-store.mjs`, `v3/store.mjs` e `v3/sqlite-state-persistence.mjs` governano stato, versioni e readback. [Storage](DATA_AND_STORAGE.md) contiene i limiti operativi.
+- **Assurance:** i file `v3/*-check.mjs`, i probe browser e `.github/workflows/` sono esecutori di prova, non servizi o autorità business. [Testing](TESTING.md) distingue static, runtime, browser ed evidenza esterna.
+
+La vista si legge dall'alto al basso; non sono nuovi componenti software o registri normativi. I nomi e le dipendenze si verificano nei file eseguibili sulla stessa revisione Git.
+
 ```text
 browser / v3/public
    ↓ HTTP JSON
@@ -34,6 +43,12 @@ L'architettura conserva separazioni, non un unico “status”: observed/propose
 I sette processi condividono registry/policy/adapter/projection context, ma mantengono oggetti e checkpoint nativi. EP-01 osserva storia semantica; non crea autorità business.
 
 ## Persistenza e temporalità
+
+### Scenario runtime da falsificare: riapertura del medesimo stato
+
+Il test di primo bootstrap non prova il riavvio. Il percorso richiesto è `create state → audited write → process shutdown → reopen identical SQLite → GET /api/health → integrity/readback/version consistency`. Nella ricognizione locale del 1/11/2026 questo scenario ha rilevato `state-head-mismatch` dopo `ensurePrivacyState()` su un campo non inizializzato in precedenza: **finding osservato, non attestazione di difetto universale né correzione effettuata**. Conservare baseline/fixture e verificare la correzione sull'owner effettivo prima di promuovere la proprietà a PASS.
+
+Una sessione SQLite pulita e una riapertura della stessa directory sono prove diverse; né la catena audit `chainOk=true` né HTTP 200 bastano a dimostrare il binding dello stato.
 
 `snapshot` è current state mutabile per revisione. `audit` è append-only e hash-linked; `subject_version` è append-only per occurrence semantiche; `epistemic_step` è append-only per la causalità registrata. Queste strutture non trasformano lo snapshot in una projection ricostruita esclusivamente dagli eventi: **ICTC non è oggi un event store completo**.
 
@@ -103,3 +118,7 @@ Default loopback. AI egress, identity bridge e attachment trust hanno policy ded
 ## TO-BE non autoritativo
 
 PostgreSQL, object storage immutabile, OIDC enterprise, KMS/Vault, OpenTelemetry, HA o transaction-time reconstruction possono essere evoluzioni future. Finché non sono implementati e falsificati non sono AS-IS.
+
+## Evidenza di riavvio nel candidato Fase 7
+
+La baseline al tree `7f12c222…` presentava R-01; nel candidato la normalizzazione dei default avviene in `v3/runtime/privacy-lifecycle.mjs` prima del binding persistente. `v3/runtime-enterprise-boundaries-check.mjs` esercita riapertura dello **stesso** SQLite, preservazione di revisione e audit HEAD e rilevamento di una mutazione non auditata. Questa prova locale non modifica il finding storico né certifica tutte le migrazioni/deployment.

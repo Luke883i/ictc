@@ -1,6 +1,30 @@
 import os
 from playwright.sync_api import expect,sync_playwright
 from browser_test_support import ensure_onboarded
+# Failure-only diagnostics; preserves every Playwright assertion and timeout.
+import sys,json,traceback
+from pathlib import Path
+_original_exception_hook=sys.excepthook
+_probe_console=[]
+def _probe_failure_hook(exc_type,exc,tb):
+ try:
+  report={'probe':PROBE,'expectedDemo':DEMO,'base':BASE,'exception':str(exc),
+          'consoleTail':_probe_console[-25:],'traceback':' '.join(traceback.format_exception(exc_type,exc,tb))[-4000:]}
+  page=globals().get('p')
+  if page is not None:
+   try:
+    report['dom']=page.evaluate("""()=>{const hub=document.querySelector('#procedureHub'),root=document.querySelector('#processesView'),items=[...(hub?.querySelectorAll(':scope > [data-process-code]')||[])];return{url:location.pathname,readyState:document.readyState,semanticLattice:document.documentElement.dataset.nativeSemanticLattice,hubCount:hub?.dataset.catalogueItemCount,processDisplay:root?getComputedStyle(root).display:null,fontStatus:document.fonts.status,items:items.map(e=>{const b=e.querySelector(':scope > .procedure-maturity'),r=e.getBoundingClientRect(),q=b?.getBoundingClientRect();return{code:e.dataset.processCode,height:r.height,badgeLeft:q?.left,badgeSvg:!!b?.querySelector('svg.maturity-icon')}})}}""")
+   except Exception as error:report['domError']=str(error)
+   try:
+    Path('artifacts/browser-probe').mkdir(parents=True,exist_ok=True)
+    page.screenshot(path=f'artifacts/browser-probe/{PROBE}-failure.png',full_page=True,timeout=5000)
+   except Exception as error:report['screenshotError']=str(error)
+  Path('artifacts/browser-probe').mkdir(parents=True,exist_ok=True)
+  Path(f'artifacts/browser-probe/{PROBE}-failure.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+  print('ICTC_BROWSER_PROBE_FAILURE_DIAGNOSTIC='+json.dumps(report,ensure_ascii=False),file=sys.stderr,flush=True)
+ except Exception as error:print('ICTC_BROWSER_PROBE_DIAGNOSTIC_ERROR='+str(error),file=sys.stderr,flush=True)
+ _original_exception_hook(exc_type,exc,tb)
+sys.excepthook=_probe_failure_hook
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');DEMO=os.environ.get('ICTC_EXPECT_DEMO','0')=='1';PROBE=os.environ.get('ICTC_BROWSER_PROBE','desktop')
 def load(p):p.goto(BASE,wait_until='networkidle');ensure_onboarded(p,BASE,'admin');p.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'&&!!document.querySelector('#stableProfileMenu')")
 def footer_effect(p):
@@ -23,7 +47,7 @@ def open_policy_disclosure(p):
 with sync_playwright() as pw:
  launch={'headless':True,'args':['--no-sandbox']}
  if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
- browser=pw.chromium.launch(**launch);w,h=(390,844) if PROBE=='mobile' else (1440,950);ctx=browser.new_context(viewport={'width':w,'height':h});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");p=ctx.new_page();p.set_default_timeout(30000);load(p)
+ browser=pw.chromium.launch(**launch);w,h=(390,844) if PROBE=='mobile' else (1440,950);ctx=browser.new_context(viewport={'width':w,'height':h});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");p=ctx.new_page();p.set_default_timeout(30000);p.on('console',lambda msg:_probe_console.append({'kind':msg.type,'text':msg.text[:300]}));p.on('pageerror',lambda error:_probe_console.append({'kind':'pageerror','text':str(error)[:300]}));load(p)
  if PROBE=='desktop':
   expect(p.locator('.service-nav > [data-service]')).to_have_count(3);expect(p.locator('#stableProfileMenu')).to_contain_text('Amministratore');expect(p.locator('#stableProfileMenu')).to_contain_text('Ruolo attivo');f=p.locator('#stableLegalFooter');expect(f).to_be_visible();footer_effect(p)
   if DEMO:

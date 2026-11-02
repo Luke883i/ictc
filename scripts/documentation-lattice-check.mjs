@@ -1,5 +1,5 @@
 import {checkReadiness} from './review-readiness-check.mjs';
-import {readFile,stat} from 'node:fs/promises';
+import {readFile,stat,readdir} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel} from './documentation-lattice-lib.mjs';
@@ -23,7 +23,24 @@ const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContrac
 const semanticOwner=JSON.parse(semanticOwnerText),debt=semanticOwner.repositoryCoherenceDebt||{},debtFindings=Array.isArray(debt.findings)?debt.findings:[],debtById=Object.fromEntries(debtFindings.map(item=>[item.id,item])),uiuxContract=JSON.parse(uiuxContractText),gaps=JSON.parse(gapsText);
 const linkTargets=new Map();
 function localTargets(rel,text){const out=[];for(const m of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){const href=m[1].trim();if(!href||/^(https?:|mailto:|#)/.test(href))continue;out.push(path.normalize(path.join(path.dirname(rel),href.split('#')[0])))}return out}
-for(const d of docs.filter(d=>d.path.endsWith('.md'))){const text=await read(d.path),targets=localTargets(d.path,text);linkTargets.set(d.path,targets);for(const t of targets)check(await exists(t),`broken local link ${d.path} -> ${t}`)}
+// Link integrity is about repository readers, not just document authority.
+// Scan every Markdown file under docs/; registration still exclusively controls
+// authority/lifecycle and START_HERE depth. This protects linked lineage too.
+async function markdownFiles(dir='docs'){
+ const result=[];
+ for(const item of await readdir(path.join(root,dir),{withFileTypes:true})){
+   const rel=path.join(dir,item.name);
+   if(item.isDirectory())result.push(...await markdownFiles(rel));
+   else if(item.isFile()&&rel.endsWith('.md'))result.push(rel);
+ }
+ return result;
+}
+const registeredMarkdown=new Set(docs.filter(d=>d.path.endsWith('.md')).map(d=>d.path));
+for(const rel of (await markdownFiles()).sort()){
+ const targets=localTargets(rel,await read(rel));
+ if(registeredMarkdown.has(rel))linkTargets.set(rel,targets);
+ for(const t of targets)check(await exists(t),`broken local link ${rel} -> ${t}`);
+}
 async function depthFromStart(target){if(target==='docs/START_HERE.md')return 0;let frontier=['docs/START_HERE.md'];const seen=new Set(frontier);for(let depth=1;depth<=2;depth++){const next=[];for(const src of frontier){for(const t of linkTargets.get(src)||[]){if(t===target)return depth;if(!seen.has(t)&&linkTargets.has(t)){seen.add(t);next.push(t)}}}frontier=next}return Infinity}
 let maxAuthorityDepth=0;for(const d of authoritative){const depth=await depthFromStart(d.path);if(depth!==Infinity)maxAuthorityDepth=Math.max(maxAuthorityDepth,depth);check(depth<=2,`authority not reachable <=2 links: ${d.path}`)}
 const product=docs.find(d=>d.authorityTopic==='product_intent'),repositoryAtlas=docs.find(d=>d.authorityTopic==='repository_self_description'),prompt=docs.find(d=>d.path==='docs/00_PROMPT_CLARIFICATION.md'),retired34=docs.find(d=>d.path==='docs/UI_FINE_TUNING_3_4_DOD.md');
@@ -88,6 +105,23 @@ check(authority.includes('workspace-finetuning-3-4.css is retired lineage'),'3.4
 check(designDoc.includes('Candidate')&&designDoc.includes('assente'),'design system must describe Candidate as absent');
 check(designDoc.includes('Non esiste più un final cascade resolver globale'),'design system must describe presentation retirement');
 check(start.includes('uiPresentation = local-owners'),'START_HERE must route current presentation authority');
+// Engineer-first falsifiable entrypoint: normal engineering must be possible
+// without first interpreting the AI programme or following agent prompts.
+const firstH1=readme.indexOf('# ICTC —'),roaHeader=readme.indexOf('roa-programme-header:v1'),threeWays=readme.indexOf('## Da zero: tre percorsi');
+check(firstH1===0,'engineer-first: root must introduce ICTC before programme banners');
+check(threeWays>firstH1&&roaHeader>threeWays,'engineer-first: product/software/repository routes must precede research framing');
+for(const [label,canonical] of [['Prodotto','docs/PRODUCT.md'],['Software','docs/11_ARCHITECTURE.md'],['Repository','docs/START_HERE.md']]){
+ check(new RegExp('\\*\\*'+label+'\\*\\*').test(readme.slice(threeWays,roaHeader))||readme.slice(threeWays,roaHeader).includes('**'+label+':'),`engineer-first: missing ${label} route`);
+ check(readme.slice(threeWays,roaHeader).includes(canonical),`engineer-first: ${label} owner not linked`);
+ check(await exists(canonical),`engineer-first: ${label} canonical path missing`);
+}
+for(const p of ['docs/CONFIGURATION.md','docs/OPERATIONS.md','docs/TESTING.md','docs/authority-matrix.yaml','docs/documentation-manifest.json','docs/openapi.yaml'])
+ check(readme.includes(p)&&await exists(p),`engineer-first: missing executable/authority navigation ${p}`);
+check(/AGENTS\.md[^\n]*non prerequisiti/i.test(readme),'engineer-first: assistants must not be required for ordinary engineering');
+check(/AGENTS\.md[^\n]*opzionale per lo sviluppo umano/i.test(development),'engineer-first: DEVELOPMENT implies AI gate');
+check(/AGENTS[^\n]*non un prerequisito/i.test(start),'engineer-first: START_HERE implies AI gate');
+check(/Primo giorno, percorso standard senza AI/.test(development)&&/npm ci --ignore-scripts/.test(development),'engineer-first: no reproducible human quickstart');
+check(/Maturità:[^\n]*candidate/.test(readme)&&/CI verde[^\n]*non/.test(readme),'engineer-first: release claims or deployment boundary missing');
 check(readme.includes('docs/START_HERE.md'),'README front door missing docs/START_HERE.md');
 check(readme.includes('docs/REPOSITORY_ATLAS.md'),'README front door missing Repository Atlas');
 check(start.includes('REPOSITORY_ATLAS.md'),'START_HERE missing Repository Atlas route');

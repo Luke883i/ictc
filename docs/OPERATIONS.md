@@ -1,5 +1,11 @@
 # Operazioni locali
 
+**Risoluzione directory nel profilo standard:** senza override, `./ictc.sh start` usa `<repository>/.ictc/runtime/state.sqlite` per SQLite e `<repository>/.ictc/run/ictc.pid` / `<repository>/.ictc/logs/ictc.log` per PID e log. Le variabili `ICTC_STATE_DIR` e `ICTC_RUNTIME_DIR` cambiano questi percorsi; la fonte eseguibile è `ictc.sh` insieme a `v3/bootstrap-contract.mjs` (vedi [CONFIGURATION](CONFIGURATION.md)). Non confondere gli esempi storici `./runtime` con il default corrente.
+
+**Verifica riavvio e integrità:** non basta che `/api/health` restituisca HTTP 200. Dopo stop/restart sullo stesso database, ispezionare `integrity.ok`, `chainOk`, `stateBound` e la revision. Un audit locale sulla baseline Git tree `7f12c222…` ha osservato `state-head-mismatch` dopo la riapertura pur con `chainOk=true`; è una controevidenza riproducibile ma circoscritta, non una prova di corruzione dei record. Il percorso `ensurePrivacyState()` è un sospetto causale documentato dalla ricognizione; la chiusura richiede patch e test multi-riavvio, non una correzione cosmetica del documento o un azzeramento del DB.
+
+**Fase 7, candidato non ancora merged:** `ensurePrivacyState()` persiste insieme i default di policy e `privacyErasureReceipts`; `node v3/runtime-enterprise-boundaries-check.mjs` falsifica un riavvio dello stesso SQLite, la stabilità della revisione/HEAD e una mutazione non auditata. La prova specifica passa localmente; il difetto resta attribuito alla baseline fino al merge e ai gate CI exact-head. Per riprodurla da un checkout candidate usare il test citato e `GET /api/health` sul medesimo `ICTC_RUNTIME_DIR` dopo arresto e riavvio.
+
 ## Avvio raccomandato
 
 ```bash
@@ -26,12 +32,12 @@ Il launcher verifica Node.js, npm, `curl`, lockfile, porta, directory runtime e 
 
 Stato operativo corrente in modalità single-tenant:
 
-- `.ictc/run/server.pid`: PID gestito dal launcher;
-- `.ictc/logs/server.log`: log standard output/error;
-- `${ICTC_RUNTIME_DIR:-runtime}/state.sqlite`: database SQLite canonico del runtime;
-- `${ICTC_RUNTIME_DIR:-runtime}/state.sqlite-wal` e `state.sqlite-shm`: file SQLite transitori;
-- `${ICTC_RUNTIME_DIR:-runtime}/quarantine/`: byte appena acquisiti, non servibili finché il trust state non è ammesso;
-- `${ICTC_RUNTIME_DIR:-runtime}/attachments/`: byte promossi dopo un'attestazione scanner valida o altra policy esplicitamente ammessa.
+- `.ictc/run/ictc.pid`: PID gestito dal launcher;
+- `.ictc/logs/ictc.log`: log standard output/error;
+- `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/state.sqlite`: database SQLite canonico del runtime;
+- `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/state.sqlite-wal` e `state.sqlite-shm`: file SQLite transitori;
+- `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/quarantine/`: byte appena acquisiti, non servibili finché il trust state non è ammesso;
+- `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/attachments/`: byte promossi dopo un'attestazione scanner valida o altra policy esplicitamente ammessa.
 
 Con `ICTC_MULTI_TENANT=1`, ogni tenant usa `${ICTC_RUNTIME_DIR}/tenants/<tenant-id>/` con database, quarantine e attachment fisicamente distinti. La membership tenant deriva dalla directory server-side; `x-ictc-tenant` può soltanto selezionare fra membership già autorizzate e non conferisce accesso.
 

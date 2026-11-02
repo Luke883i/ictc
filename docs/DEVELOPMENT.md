@@ -12,9 +12,24 @@ npm ci
 
 Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 
+## Primo giorno, percorso standard senza AI
+
+1. **Leggi e verifica:** [README](../README.md) → [PRODUCT](PRODUCT.md) → [ARCHITECTURE AS-IS](11_ARCHITECTURE.md); le descrizioni devono corrispondere agli owner eseguibili.
+2. **Installa e avvia:** Node >=22.16.0, `nvm use`, `npm ci --ignore-scripts`, `./ictc.sh start --no-open`. La [configurazione](CONFIGURATION.md) identifica il percorso SQLite. Se la registry npm è inaccessibile, il setup è **non verificato**, non un PASS.
+3. **Falsifica:** `npm run check`, `npm run docs:check`, poi il falsificatore specifico in [START_HERE](START_HERE.md); `npm test` non dimostra E3-HUMAN né E4-DEPLOY.
+4. **Proponi:** risolvi l'owner nella [authority matrix](authority-matrix.yaml), confronta contratti e handler, documenta diff, test e rollback nella PR seguendo [CONTRIBUTING](../CONTRIBUTING.md). L'uso di TRAMA o AGENTS non è condizione per comprenderne il comportamento.
+
+Questo è il percorso con strumenti standard del software. Le istruzioni AI possono assisterlo ma non trasferiscono autorità o bypassano i gate.
+
 ## Prima di modificare
 
-1. Parti da `docs/START_HERE.md`, quindi leggi `AGENTS.md` e `docs/authority-matrix.yaml`.
+### Prima di rimuovere file o «semplificare» una documentazione
+
+Leggere la [policy di preservazione](DOCUMENTATION_STANDARD.md) e l'[Atlas](REPOSITORY_ATLAS.md). Verificare i consumer attraverso import, manifest, `package.json`, workflow, caricamenti dinamici, URI HTTP pubbliche, fixture e storia delle PR; registrare il tipo di arco, non soltanto la sua presenza. Le PR possono segnalare co-change o supersessione, ma una PR merged non prova che un file corrente sia inutilizzato. Per il ritiro: prova lossless dei claim, rimozione materiale in checkout isolato, mutation/functional oracles, esito e rollback. In mancanza di qualunque veto verificato, lo stato resta `HOLD_UNKNOWN`, non `DELETE`.
+
+Nessun nuovo registro di file diventa authority: il censimento e i punteggi sono proiezioni derivate dall'albero Git, dall'owner matrix e dalle osservazioni dei test.
+
+1. Parti da `README.md` → `docs/START_HERE.md` e `docs/authority-matrix.yaml`. Se usi un assistente AI consulta anche `AGENTS.md` (opzionale per lo sviluppo umano).
 2. Identifica oggetto governato, authority owner e claim boundary.
 3. Formula il bug come invariante falsificabile, non come desiderio UI.
 4. Cerca la correzione nel proprietario esistente; un nuovo layer richiede prova che nessun owner corrente possa assorbirla.

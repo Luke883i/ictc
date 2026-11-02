@@ -2,7 +2,11 @@
 
 Questa authority chiude il gap tra workbook e runtime senza introdurre una nuova business authority. Dopo il ritiro della presentation 3.4, 3.2.1 possiede anche la presentation locale di Processi di Compliance ed Evidenze ICTC.
 
-## Obiettivi
+## Contratto current e confine della storia
+
+Questa pagina conserva anche i predicati storici dell’accettazione 3.2.1. Le **viste current** si leggono da [PRODUCT](PRODUCT.md): Processi ha sette procedure più due placeholder in row-list, Evidenze è facts-first secondo #234 e il reticolo non si duplica. I vincoli di card-grid/equal-height e dell’ordine epistemic-first riportati sotto sono **lineage di slice** e non descrivono la composizione corrente post-#233/#234/#237. La verifica corrente è [Testing](TESTING.md) sul runtime e sui browser probe degli owner locali.
+
+## Obiettivi storici della slice 3.2.1
 - 7/7 card espongono il catalogueSummary canonico con geometria equal-height desktop e natural-height mobile.
 - Ogni workspace conserva workspacePurpose, valore operativo e boundary prima del lavoro.
 - Semantic Foundation resta annotation-only e non riscrive business copy locale.

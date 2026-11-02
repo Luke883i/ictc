@@ -2,6 +2,8 @@
 
 ## Principio
 
+**Percorso di verifica:** [identità di prodotto](PRODUCT.md) → questa grammatica dei claim → [state/version/audit](11_ARCHITECTURE.md) → [readback e verifiche](TESTING.md). La coerenza di un digest o l'esecuzione di un test è evidenza tecnica relativa al suo oracle, non conoscenza indipendente del fatto esterno. Il contenuto dei documenti lineage conserva l'origine delle decisioni, ma non crea un secondo stato epistemico corrente.
+
 **Registrare non significa concludere.** ICTC conserva l'identità di produttore, base, trasformazione, stato epistemico, limite e decisione invece di comprimerli in un unico status.
 
 ```text

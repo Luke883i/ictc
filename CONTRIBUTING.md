@@ -4,6 +4,8 @@ ICTC is an evidence-first compliance operations project. Contributions are welco
 
 ## Start here
 
+Se la PR elimina file, la motivazione «nessun import rilevato» non basta. Dichiarare tutte le superfici di consumo note (incluse URL pubbliche e loader dinamici), il confronto con la cronologia PR, la prova di rimozione isolata, la conservazione semantica e il rollback. Gli esperimenti di cancellazione restano `HOLD_UNKNOWN` senza witness negative effettive; il [contratto di documentazione](docs/DOCUMENTATION_STANDARD.md) governa la classificazione. Non confondere la reviewer-readiness E2 con approvazione umana indipendente.
+
 Read `docs/START_HERE.md` first. It routes current product, architecture, semantic, testing and governance authorities. `docs/documentation-manifest.json` classifies current, operating, policy, lineage, source-input and roadmap documents; file recency does not create authority.
 
 ## Percorso minimo prima del primo push

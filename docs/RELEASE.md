@@ -10,6 +10,12 @@ ICTC deve meritare un rilascio attraverso una catena attribuibile: **software ve
 
 ## Derivazione retrograda dal rilascio
 
+### Misurare la copertura E2E senza false equivalenze
+
+Il denominatore deve precedere il numeratore: una **operazione OpenAPI**, un **scenario utente**, un **workflow** e una **mutazione** non sono la stessa unità. Un riferimento letterale a un URL in un test è un indice di tracciabilità statica; il rapporto `operazioni con URL citata / operazioni dichiarate` **non** misura la copertura E2E. La vera copertura richiede, per ciascun scenario dichiarato, esecuzione reale della catena `UI/API → autorizzazione → transizione → persistenza/readback → receipt/limitazione` su stato deterministico, con esito e revisione identificabili.
+
+Prima di chiamare una percentuale «E2E runtime verificata», registrare elenco degli scenari, perimetro, ruolo, metodo, risultato, eventuali skip, denominatore e test receipt. Dove ciò non è disponibile, riportare `E2E coverage: not measurable` e mantenere separata l'eventuale proxy statica. [Testing](TESTING.md) è l'owner della tassonomia di verifica.
+
 | Piano | DoD globale | Sottosistema di evidenza | Falsificatore |
 |---|---|---|---|
 | G8 | GO/NO-GO attribuibile e non autocertificato | E3-GOV, E3-HUMAN, E4 | `--require-release` deve fallire senza prove indipendenti |
@@ -92,3 +98,7 @@ node v3/release-readiness-e2-product-mutants.mjs
 All'ultima ricognizione l'AS-IS conserva `releaseStage=candidate`, `enterpriseCandidate=false`, `enterpriseReady=false`. Restano aperti `GAP-007`, `GAP-009`, `GAP-012`, `GAP-014`, `GAP-020`, `GAP-021`, `GAP-022`. Il DoD E2 può essere verde e il rilascio restare correttamente **BLOCKED**. S4-A6-CLOSE, C1/C3/C4 e S5-CANDIDATE-SEAL mantengono authority nella convergenza e non sono chiusi da questa guida.
 
 La release, qualora autorizzata in futuro, richiede SemVer, changelog, tag/asset esatto, attestazione, note di incompatibilità, migrazioni, ricevute post-merge/post-deploy e rollback verificato; il suo contratto non viene soddisfatto dalla sola creazione di una PR.
+
+## Misura E2E parziale — candidato Fase 7
+
+Il test `v3/e2e-coverage-7x3-check.mjs` misura il sottoinsieme HTTP per sette processi e tre ruoli; non può promuovere la copertura E2E complessiva a 100%. Mancano denominatore esaustivo di transizioni business e attestazione di completamento UI/processo. Il gate di release resta vincolato alle prove effettive exact-HEAD e a evidenze indipendenti E3/E4.

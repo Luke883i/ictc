@@ -50,6 +50,12 @@ Il repository separa runtime standard e substrate enterprise C3/PostgreSQL, disc
 
 ## Stratigrafia Git
 
+### Snapshot archeologico (1 novembre 2026; osservazione, non mirror live)
+
+L'interrogazione delle PR **chiuse** ha restituito 234 unità: 219 merged e 15 non merged; le PR non hanno numerazione continua e alcune hanno rami/soluzioni alternative mai integrate. Tutte le 219 merged sono state censite a livello di metadati e descrizione PR; i file modificati sono stati approfonditi per le PR fondative e le slice recenti. Questo **non** prova la review manuale integrale dei 219 diff o di tutte le CI storiche. La provenienza finale di ciascun file corrente richiede la revisione del tree e, dove serve, del commit che lo introduce.
+
+Accoppiamenti recenti utili per il change-impact: #235/#236 condividono 5 file, #233/#237 condividono 7 file, #231/#232 condividono 6 file; la co-variazione non è un import e non equivale a uso runtime. Gli owner attuali di Home, Processi, Evidenze e release si ricostruiscono da [Product](PRODUCT.md), [Architecture](11_ARCHITECTURE.md), [Release](RELEASE.md) e [Atlas](REPOSITORY_ATLAS.md).
+
 La traiettoria ha lasciato molti branch nominati perché le slice sono state sviluppate come candidate state isolate. Visti retrospettivamente, sono **etichette su fotografie t-1, t-2, …, tn**: la fotografia precisa è però lo SHA del commit/PR head, perché un branch è un puntatore mutabile e può avanzare o essere riutilizzato.
 
 La permanenza di un branch non significa che quella slice sia ancora attiva o autorevole. Il numero di branch non misura debito, maturità o parallelismo corrente; branch scratch/tmp/noop possono essere puro residuo di tooling. La storia canonica resta nel commit graph e nelle PR merged, mentre l'AS-IS resta su `main` e negli owner correnti.
