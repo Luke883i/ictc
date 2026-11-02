@@ -71,11 +71,32 @@ with sync_playwright() as pw:
     Math.max(...heights)-Math.min(...heights)<=2&&offsets.every(Number.isFinite)&&
     Math.max(...offsets)-Math.min(...offsets)<=2&&getComputedStyle(root).display!=='none'&&document.fonts.status==='loaded';
    if(!ready){delete window.__ictcProcessAlignmentSample;return false;}
-   const signature=JSON.stringify([heights.map(v=>v.toFixed(2)),offsets.map(v=>v.toFixed(2))]);
-   const previous=window.__ictcProcessAlignmentSample;
-   const frames=previous?.signature===signature?previous.frames+1:1;
-   window.__ictcProcessAlignmentSample={signature,frames};
-   return frames>=3;
+   // A three-frame geometry-only signature can precede late semantic updates.
+   // Stabilize the exact visible content/styles being asserted below; keep the
+   // substantive test predicates unchanged, and reset on every epoch change.
+   const recordSemantics=records.map(e=>[
+    e.dataset.processCode,e.querySelector('[data-maturity]')?.dataset.maturity,
+    e.querySelector('.procedure-purpose')?.textContent?.trim(),
+    e.querySelector('.procedure-unavailable')?.getAttribute('aria-disabled')
+   ]);
+   const badgeSemantics=badges.map(b=>[
+    b.getAttribute('aria-label'),b.querySelector('svg.maturity-icon')?.innerHTML,
+    getComputedStyle(b).backgroundColor
+   ]);
+   const legendSemantics=[...legend.querySelectorAll('[data-maturity]')].map(e=>[
+    e.dataset.maturity,e.getAttribute('aria-label'),e.textContent?.trim(),
+    getComputedStyle(e).backgroundColor,e.querySelector('svg.maturity-icon')?.innerHTML
+   ]);
+   const signature=JSON.stringify([
+    heights.map(v=>v.toFixed(2)),offsets.map(v=>v.toFixed(2)),
+    recordSemantics,badgeSemantics,legendSemantics
+   ]);
+   const previous=window.__ictcProcessAlignmentSample,now=performance.now();
+   const sameEpoch=previous?.signature===signature;
+   const frames=sameEpoch?previous.frames+1:1;
+   const since=sameEpoch?previous.since:now;
+   window.__ictcProcessAlignmentSample={signature,frames,since};
+   return frames>=3&&now-since>=400;
   }""")
   if PROBE in ('procedures','procedures-structure'):
    expect(hub.locator('[data-procedure-id]')).to_have_count(7)
