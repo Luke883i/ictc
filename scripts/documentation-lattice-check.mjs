@@ -17,6 +17,18 @@ for(const d of docs){check(ALLOWED_LIFECYCLES.has(d.lifecycle),`invalid lifecycl
 for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('v3/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
+// Product wording must not drift from the four actual CSS maturity variants.
+const maturityCss=await read('v3/public/semantic-workspace-closure-3-2-1.css');
+const maturityStates=['ready','scaffold-yellow','scaffold-orange','placeholder'];
+const maturityBackgrounds=maturityStates.map(state=>{
+ const rule=new RegExp('\\.procedure-maturity\\[data-maturity="'+state+'"\\]\\s*\\{[^}]*--maturity-bg:\\s*(#[0-9a-fA-F]{6})');
+ const color=maturityCss.match(rule)?.[1];
+ check(Boolean(color),'product maturity state missing from canonical CSS: '+state);
+ return color;
+});
+check(new Set(maturityBackgrounds).size===maturityStates.length,'product maturity styles must remain distinct');
+for(const label of ['verde per «Pronto»','giallo per «Parziale»','arancione per «In costruzione»','grigio per «Segnaposto»'])check(productText.includes(label),'product authority maturity wording drift: '+label);
+check(!productText.includes('un’unica tinta carta da zucchero'),'obsolete monochrome maturity claim');
 const pkg=JSON.parse(await read('package.json'));
 const reviewerReadiness=checkReadiness(root); check(reviewerReadiness.ok,`review-readiness E2 invariants: ${reviewerReadiness.failures.join(',')}`);
 const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContract,runtimeModel,serverText,securityText,gapsText]=await Promise.all([read('v3/semantic-owner-contract.json'),read('docs/openapi.yaml'),read('v3/uiux-converge-0-contract.json'),read('v3/current-gate-registry.mjs'),read('scripts/repository-contract.mjs'),read('v3/runtime/model.mjs'),read('v3/server.mjs'),read('SECURITY.md'),read('v3/gaps.json')]);
