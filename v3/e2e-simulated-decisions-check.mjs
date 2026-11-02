@@ -21,7 +21,13 @@ try{
  assert.ok([200,201].includes(contribution.status),JSON.stringify(contribution.body).slice(0,400));
  const contributionHash=contribution.body.raw?.receipt?.hash;
  assert.match(contributionHash||'',/^[0-9a-f]{64}$/);
- evidence.push({label:'RN-01 source contributed, candidate only',actor:'source-reporter',rationale:'Defer applicability and official verification; no autonomous approval',http:contribution.status,receiptHash:contributionHash,provenance:'simulated user actor'});
+ assert.equal(contribution.body.raw?.result?.state,'recorded');
+ assert.equal(contribution.body.raw?.result?.aiRequested,false);
+ const sourceReadback=await h.bootstrap('user','source-reporter');
+ const sourceId=contribution.body.raw.result.id;
+ assert.equal(sourceReadback.body.contributions.find(x=>x.id===sourceId)?.state,'recorded');
+ assert.equal(sourceReadback.body.catalog.some(x=>(x.observations||[]).some(o=>o.origin?.contributionId===sourceId)),false,'RN must not auto-promote original contribution');
+ evidence.push({label:'RN-01 source contribution recorded, not auto-approved',actor:'source-reporter',rationale:'Defer applicability and official verification; no autonomous approval',http:contribution.status,receiptHash:contributionHash,provenance:'simulated user actor'});
  const policyDeny=await h.request('POST','/api/contributions',
   {links:['https://eur-lex.europa.eu/eli/dir/2022/2555/oj'],text:'Auditor attempt'},'auditor','audit-reader');
  record('RN-01 auditor contribution denied',policyDeny,403,'audit-reader','Least privilege blocks source creation');
@@ -52,7 +58,7 @@ try{
  const report={schema:'ictc-model-assisted-decision-receipts/v1',classification:'SIMULATION_ONLY',
   modelGeneratedRationales:true,independentHumanApproval:false,externalEvidenceOfAuthority:false,
   processes:['RN-01','EC-01','AO-01'],decisions:evidence,
-  checks:{rnCandidateRecorded:true,rnAuditorDenied:true,ecOriginalAndAwarenessPreserved:true,ecAuditorDenied:true,ecCrossUserPrivacy:true,aoReasonedDistinctActor:true,aoUnreasonedDecisionRejected:true,aoActiveReadback:true},
+  checks:{rnContributionRecordedNotPromoted:true,rnAuditorDenied:true,ecOriginalAndAwarenessPreserved:true,ecAuditorDenied:true,ecCrossUserPrivacy:true,aoReasonedDistinctActor:true,aoUnreasonedDecisionRejected:true,aoActiveReadback:true},
   claimBoundary:'Attestable HTTP commands, hash receipts, distinct test actor identifiers, rationale and negative controls. The assistant and local test identities are not real independent human reviewers; no external authorization, regulatory decision, human competence or 53-step closure.'};
  await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/model-assisted-decision-receipts.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({ok:true,processes:report.processes,simulatedDecisions:evidence.length,hashes:evidence.filter(x=>x.receiptHash).length,negativeDenied:evidence.filter(x=>x.http>=400).length}));

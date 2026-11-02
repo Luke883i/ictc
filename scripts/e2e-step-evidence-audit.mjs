@@ -22,7 +22,7 @@ assert.equal(runtime.negative.status,403,'auditor negative control');
 // An operation + hashed receipt + readback is evidence of a machine-executed
 // COMPONENT of one declared step, not of a full human-governed step.
 const simulatedMapping=[
- ['RN-01','Fonte manuale',1,'RN-01 source contributed, candidate only',/inserisce link/,'rnCandidateRecorded'],
+ ['RN-01','Fonte manuale',1,'RN-01 source contribution recorded, not auto-approved',/inserisce link/,'rnContributionRecordedNotPromoted'],
  ['EC-01','Eventi e segnalazioni',1,'EC-01 original narrative and awareness preserved',/registra ciò/,'ecOriginalAndAwarenessPreserved']
 ];
 const mapping=[
