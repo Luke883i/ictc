@@ -6,6 +6,24 @@
 
 ICTC è un repository atipico: codice applicativo, contratti semantici, owner map, falsificatori, regression oracle, documenti di lineage e prove di CI convivono nello stesso albero. Il numero di file, i suffissi di versione e la recenza di un documento non indicano da soli cosa sia corrente.
 
+## Mappa fisica minima e DoD engineer-first (AS-IS)
+
+ICTC mantiene **tre oggetti distinti** nello stesso repository: **prodotto** (valore, sette processi e limiti, posseduti da [PRODUCT](PRODUCT.md)); **software** (interfacce, API, autorizzazioni e dati, posseduti dagli [owner architetturali](11_ARCHITECTURE.md) e dal runtime eseguibile); **repository** (sorgenti, workflow, documentazione, review e provenienza, descritti qui e instradati da [START_HERE](START_HERE.md)). Una CI verde prova il proprio perimetro, non la compliance, una validazione umana o il deployment.
+
+| Collocazione | Lettura standard o peculiarità esplicita | Fonte da consultare |
+| --- | --- | --- |
+| `README.md`, `package.json`, `package-lock.json`, `ictc.sh`, `CHANGELOG.md` | Front door, npm, launcher locale e cronologia release **restano nella root**: sono ingressi pubblici, non scarti. `ictc-v3.sh` inoltra al launcher corrente per compatibilità. | [DEVELOPMENT](DEVELOPMENT.md), [RELEASE](RELEASE.md) |
+| `LICENSE`, `LICENSE.md`, `NOTICE.md`, `GOVERNANCE.md`, `SECURITY.md`, `CONTRIBUTING.md`, `SUPPORT.md`, `CODE_OF_CONDUCT.md` | Metadati e policy convenzionali. `LICENSE` contiene la licenza MIT; `LICENSE.md` è soltanto un puntatore informativo. `CODEOWNERS` nella root rimanda a `.github/CODEOWNERS`, non è un secondo owner. | [Termini](OPEN_SOURCE_TERMS.md), [governance](../GOVERNANCE.md) |
+| `v3/`, `v3/public/`, `v3/runtime/` | Software corrente e molti verificatori/fixture **coesistono** nella directory versionata: il nome `v3` non rende automaticamente legacy il contenuto. | [ARCHITECTURE](11_ARCHITECTURE.md), `v3/README.md` |
+| `scripts/`, `schemas/`, `.github/workflows/`, `.github/CODEOWNERS` | Strumenti, contratti, automazione e regole di review; i controlli applicabili sono legati alla **exact PR HEAD**. | [TESTING](TESTING.md), [START_HERE](START_HERE.md) |
+| `docs/`, `ai/`, `AGENTS.md` | Documentazione corrente e lineage, più assistenza AI facoltativa. I prompt non sono prerequisito dell'onboarding umano né authority di prodotto. | [Documentazione](DOCUMENTATION_STANDARD.md), [START_HERE](START_HERE.md) |
+| `v1/`, `app/`, `lib/`, `runtime/`, `data/`, `audit/`, `dist/` | Substrati misti: compatibilità, prototipi, seed, strumenti, prove e storia; **non** cancellare sulla base del path, del nome o di un grep vuoto. | [Policy di preservazione](DOCUMENTATION_STANDARD.md) |
+| `.devcontainer/`, `.env.example`, `.nvmrc`, `.editorconfig`, `.gitignore` | Ambiente, configurazione esemplificativa e convenzioni di sviluppo; non sono evidenza di un deployment reale. | [CONFIGURATION](CONFIGURATION.md) |
+
+**Reticolo di accettazione, non nuova authority.** Il DoD engineer-first è la congiunzione di: **G-P** identità e limiti del prodotto ricostruibili; **G-S** software avviabile e falsificabile; **G-R** topologia e owner intelligibili; **G-M** modifica minima e rollback dimostrabili; **G-E** verifiche exact-head e governance/human evidence appropriate. Il [percorso operativo](DEVELOPMENT.md) esercita G-S e G-M, [PRODUCT](PRODUCT.md) possiede G-P, questo Atlas e [START_HERE](START_HERE.md) orientano G-R, mentre [TESTING](TESTING.md) e [GOVERNANCE](../GOVERNANCE.md) delimitano G-E. La presenza della mappa **non promuove** alcun DoD a PASS: servono run, ricevute e, dove previsto, test con ingegneri senza preconoscenza.
+
+**Eccezioni/stop condition:** il manifest non elenca necessariamente ogni file tracciato; una PR merged non è una release; il controllo compensativo GOV-01F non impone branch protection server-side; nessun rename o safe-delete è richiesto soltanto per uniformare i nomi. Prima di spostare file, identificare consumer statici, dinamici, URL e rollback. I dettagli di questi obblighi restano negli owner esistenti, non in un nuovo inventario normativo.
+
 ## Reticolo di lettura
 
 | Livello | Domanda | Fonte principale | Regola |

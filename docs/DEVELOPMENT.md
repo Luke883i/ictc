@@ -21,6 +21,19 @@ Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
 
 Questo è il percorso con strumenti standard del software. Le istruzioni AI possono assisterlo ma non trasferiscono autorità o bypassano i gate.
 
+## Cold-start pratico: prova ripetibile senza storia AI
+
+Questa è una **procedura per un ingegnere nuovo**, non un'attestazione di validazione E3-HUMAN. Eseguire in un checkout isolato su una SHA annotata, senza leggere prompt o chat pregresse:
+
+1. Partire da [README](../README.md), identificare **Prodotto / Software / Repository**, quindi trovare i relativi owner con [START_HERE](START_HERE.md) e [Repository Atlas](REPOSITORY_ATLAS.md).
+2. Preparare Node >=22.16.0, eseguire `npm ci --ignore-scripts`, poi `npm run check` e `npm run docs:check`. Se npm o una dipendenza sono irraggiungibili, segnare **BLOCKED**, non PASS.
+3. In un terminale avviare `npm start`; in un secondo interrogare `curl -fsS http://127.0.0.1:4173/api/health` e registrare SHA, profilo, risposta ed exit code. Fermare il processo con Ctrl-C. Non esporre il server su una rete pubblica.
+4. Scegliere una richiesta di manutenzione concreta: trovare l'owner, il test negativo più vicino e il comando di rollback. Non introdurre nuove authority, non cancellare file per assenza di import e non trasformare fixture in attestazioni di prodotto.
+5. Su branch dedicato eseguire `git diff --check`, il falsificatore pertinente, `npm test` e, prima di proporre il rilascio, `npm run release:check`. Registrare la **exact HEAD**, i risultati negativi e gli eventuali skip; non chiamare questi check prova E3/E4.
+6. Restituire una scheda minima: tre oggetti identificati; owner scelto; comando di avvio/health; mutazione/negativo rilevato; prova positiva; rollback; limiti, blocchi e domande residue. Un revisore indipendente deve valutare tempi, errori di interpretazione e assistenza necessaria secondo criteri fissati *prima* della sessione.
+
+**Condizione di chiusura:** documenti e oracoli automatici possono dimostrare la *percorribilità tecnica* entro i test eseguiti; l'assenza di guida durante un cold-start e l'effettiva comprensione devono essere osservate su persone, non dedotte dalla presenza di questa checklist.
+
 ## Prima di modificare
 
 ### Prima di rimuovere file o «semplificare» una documentazione
