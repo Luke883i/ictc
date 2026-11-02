@@ -351,6 +351,8 @@ menzione prova cancellabilità**. Le 149 disposizioni restano `HOLD_UNKNOWN`,
 zero cancellazioni e zero attestazioni di consumer esterni assenti. La ricevuta
 è `artifacts/independent-document-consumer-scan.json`.
 
+Le due ricevute RN-01/EC-01 vengono ricondotte allo stesso `e2e-step-evidence-ledger.json` canonico: ora 11 componenti macchina di 53 passi documentati, **0 passi completi**. Il test del ledger deve essere eseguito dopo il test runtime simulato: il workflow ne conserva esplicitamente l'ordine.
+
 Il probe browser `v3/browser-shell-admin-demo-probe-2-6.py` conserva tutte le
 asserzioni e, **solo in caso di FAIL**, registra geometria/DOM, errori console,
 traceback e screenshot in `artifacts/browser-probe/`. Il workflow GitHub

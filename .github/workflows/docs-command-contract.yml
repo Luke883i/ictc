@@ -36,6 +36,8 @@ jobs:
         run: node scripts/document-retention-review.mjs --falsify
       - name: Prove scoped cross-process writes and receipts under live HTTP
         run: node v3/e2e-cross-process-receipts-check.mjs
+      - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
+        run: node v3/e2e-simulated-decisions-check.mjs
       - name: Enumerate canonical business-journey E2E denominator
         run: npm run e2e:denominator
       - name: Reconcile actual receipts with each of 53 declared journey steps (no full-step inflation)
@@ -46,8 +48,6 @@ jobs:
         run: node scripts/document-retirement-gate-check.mjs --falsify
       - name: Independent document dependency scan and forged-report falsification
         run: node scripts/document-consumer-independent-check.mjs --falsify
-      - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
-        run: node v3/e2e-simulated-decisions-check.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
