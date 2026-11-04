@@ -7,7 +7,7 @@ import {access, readFile, stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-const root=path.resolve(fileURLToPath(new URL('..',import.meta.url)));
+const root=path.resolve(process.argv[2]||fileURLToPath(new URL('..',import.meta.url)));
 const currentPaths=[
   'README.md','AGENTS.md','CONTRIBUTING.md','SECURITY.md','GOVERNANCE.md',
   '.github/CODEOWNERS','.github/PULL_REQUEST_TEMPLATE.md','.github/workflows/ci.yml',
