@@ -24,6 +24,21 @@ ICTC mantiene **tre oggetti distinti** nello stesso repository: **prodotto** (va
 
 **Eccezioni/stop condition:** il manifest non elenca necessariamente ogni file tracciato; una PR merged non è una release; il controllo compensativo GOV-01F non impone branch protection server-side; nessun rename o safe-delete è richiesto soltanto per uniformare i nomi. Prima di spostare file, identificare consumer statici, dinamici, URL e rollback. I dettagli di questi obblighi restano negli owner esistenti, non in un nuovo inventario normativo.
 
+
+## Percorso di lettura in tre minuti
+
+Il lettore non deve ricostruire la cronologia delle PR per sapere dove intervenire. Si procede in ordine: **prodotto** (`PRODUCT.md`) → **software** (`11_ARCHITECTURE.md`, `v3/bootstrap.mjs`, `v3/server.mjs`) → **repository** (`START_HERE.md`, `authority-matrix.yaml`) → **falsificatore** (`TESTING.md`) → **ricevuta exact-head**.
+
+| Obiettivo operativo | Radice canonica | Prima controprova | Stato da non inferire |
+| --- | --- | --- | --- |
+| Cambiare testo/layout visibile | `v3/public/` + owner C5 | percorso `ui` di `START_HERE.md` | una screenshot non prova usability |
+| Cambiare API o permessi | `v3/server.mjs`, `docs/openapi.yaml` | percorso `api` | OpenAPI non prova invocazione E2E |
+| Cambiare persistenza | `v3/store.mjs`, SQLite | percorso `persistence` e riapertura | HTTP 200 non prova integrita al riavvio |
+| Modificare test o workflow | `tests/`, `v3/*-check.mjs`, `.github/workflows/` | `TESTING.md`, CI su SHA esatto | un workflow non e branch protection |
+| Rimuovere un file storico | owner dichiarato e consumer statici/dinamici | rimozione reale in sandbox e rollback | zero import non prova inutilizzo |
+
+Per il **primo task completo**, seguire l'[esercizio di manutenzione](DEVELOPMENT.md) prima di consultare la stratigrafia storica. Questo Atlas descrive la forma: non sostituisce alcun owner.
+
 ## Reticolo di lettura
 
 | Livello | Domanda | Fonte principale | Regola |
