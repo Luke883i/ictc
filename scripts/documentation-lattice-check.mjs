@@ -152,5 +152,49 @@ check(development.includes('curl -fsS http://127.0.0.1:4173/api/health')&&develo
 check(development.includes('E3-HUMAN')&&development.includes('revisore indipendente'),'engineer-first: cold-start must not self-certify human comprehension');
 check(rootLauncher.includes('v3/bootstrap.mjs')&&pkg.scripts?.start==='node v3/bootstrap.mjs','engineer-first: documented standard bootstrap drift');
 
+// Engineer-first source DoD is a projection of the existing documentation owner,
+// not a new repository policy, business authority or external approval witness.
+// Each local predicate has a negative counterpart in the physical mutation lab.
+const firstReadLenses=readme.split('## Navigazione progressiva — cinque prospettive')[1]?.split('## Contesto di programma')[0]||'';
+const originalColdStart=development.split('## Cold-start pratico: prova ripetibile senza storia AI')[1]?.split('## Esercizio O1')[0]||'';
+const originalReadmeRoutes=readme.split('## Da zero: tre percorsi')[1]?.split('## Navigazione progressiva')[0]||'';
+const firstExercise=development.split('## Esercizio O1 — prima modifica reversibile su clone vergine')[1]?.split('## Prima di modificare')[0]||'';
+const engineeringPredicates={
+ 'L-PRODUCT':readme.includes('docs/PRODUCT.md')&&productText.includes('sette processi'),
+ 'L-SOFTWARE':originalReadmeRoutes.includes('v3/bootstrap.mjs')&&firstReadLenses.includes('ingresso `v3/bootstrap.mjs`')&&firstReadLenses.includes('HTTP `v3/server.mjs`')&&pkg.scripts.start==='node v3/bootstrap.mjs',
+ 'L-REPO':readme.includes('docs/START_HERE.md')&&readme.includes('docs/REPOSITORY_ATLAS.md')&&start.includes('## Scegli subito il tuo compito'),
+ 'L-FIVE-LENSES':(() => {const expected=['Prodotto','Software','Repository','Governance','Evidenza e DoD'];const summaries=[...readme.matchAll(/<details>\s*<summary><strong>([^<]+)<\/strong>/g)].map(x=>x[1]);return summaries.length===5&&summaries.every((x,i)=>x===expected[i])&&readme.match(/<\/details>/g)?.length===5;})(),
+ 'L-ROUTING':atlas.includes('## Percorso di lettura in tre minuti')&&start.includes('[DEVELOPMENT](DEVELOPMENT.md)')&&start.includes('[TESTING](TESTING.md)'),
+ 'L-COLD-START':Boolean(firstExercise)&&firstExercise.includes('npm ci --ignore-scripts')&&firstExercise.includes('npm run demo')&&originalColdStart.includes('http://127.0.0.1:4173/api/health`')&&firstExercise.includes('http://127.0.0.1:4173/api/health`'),
+ 'L-NEGATIVE':firstExercise.includes('DOCUMENTO_ONBOARDING_INESISTENTE.md')&&firstExercise.includes('broken local link')&&firstExercise.includes('Se non fallisce, l\'esercizio e NO-GO'),
+ 'L-REVIEW':originalColdStart.includes('git diff --check')&&firstExercise.includes('git diff --check')&&firstExercise.includes('npm test')&&firstExercise.includes('scheda per il reviewer'),
+ 'L-NO-AUTHORITY':readme.includes('non cinque nuove autorita')&&development.includes('BLOCKED_EXTERNAL')&&manifest.entrypoint==='docs/START_HERE.md',
+ 'L-EXTERNAL-BOUNDARY':development.includes('ingegnere che non ha partecipato')&&readme.includes('branch protection')
+};
+for(const [key,ok] of Object.entries(engineeringPredicates))check(ok,'engineer-first DoD: '+key);
+const engineeringEdges={
+ 'I-IDENTITY':['L-PRODUCT','L-SOFTWARE','L-REPO'],
+ 'I-NAVIGATION':['L-FIVE-LENSES','L-ROUTING','L-NO-AUTHORITY'],
+ 'I-MAINTENANCE':['L-COLD-START','L-NEGATIVE','L-REVIEW'],
+ 'I-TRUST':['L-EXTERNAL-BOUNDARY'],
+ 'G-SOURCE':['I-IDENTITY','I-NAVIGATION','I-MAINTENANCE','I-TRUST'],
+ 'G0':['G-SOURCE','E-HUMAN','E-GITHUB','E-CI-EXACT-HEAD']
+};
+const engineeringStates=Object.fromEntries(Object.entries(engineeringPredicates).map(([k,v])=>[k,v?'PASS_SCOPED':'REFUTED']));
+for(const key of ['E-HUMAN','E-GITHUB','E-CI-EXACT-HEAD'])engineeringStates[key]='BLOCKED_EXTERNAL';
+const visiting=new Set(),visited=new Set();
+function visitDoD(id){
+ if(visiting.has(id))throw Error('engineer-first DoD cyclic dependency: '+id);
+ if(visited.has(id))return engineeringStates[id];
+ const deps=engineeringEdges[id];if(!deps){if(!(id in engineeringStates))throw Error('engineer-first DoD missing node: '+id);visited.add(id);return engineeringStates[id];}
+ visiting.add(id);const children=deps.map(visitDoD);visiting.delete(id);visited.add(id);
+ engineeringStates[id]=children.includes('REFUTED')?'REFUTED':children.includes('BLOCKED_EXTERNAL')?'BLOCKED_EXTERNAL':'PASS_SCOPED';
+ return engineeringStates[id];
+}
+visitDoD('G0');
+if(visited.size!==Object.keys(engineeringEdges).length+Object.keys(engineeringPredicates).length+3)check(false,'engineer-first DoD has unreachable node');
+check(engineeringStates['G0']==='BLOCKED_EXTERNAL','engineer-first DoD must not self-approve external gates');
+const engineeringDoD={schema:'ictc-engineer-first-dod/projection-1',authority:'NONE',externalAuthorization:'NONE',states:engineeringStates,dependsOn:engineeringEdges,sourceStatus:engineeringStates['G-SOURCE'],globalStatus:engineeringStates['G0']};
+
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1)}
-console.log(JSON.stringify({ok:true,documents:docs.length,authorityTopics:topics.length,maxAuthorityDepth,versionAxes:manifest.versionAxes,distributedPresentationRegistered,retired34Lineage,externalAcceptance:manifest.externalAcceptance},null,2));
+console.log(JSON.stringify({ok:true,engineerFirstDoD:engineeringDoD,documents:docs.length,authorityTopics:topics.length,maxAuthorityDepth,versionAxes:manifest.versionAxes,distributedPresentationRegistered,retired34Lineage,externalAcceptance:manifest.externalAcceptance},null,2));
