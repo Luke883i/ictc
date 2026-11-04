@@ -26,6 +26,8 @@ jobs:
         run: npm run repo:inventory:falsify
       - name: Seeded retirement semantics and negative controls
         run: npm run repo:retirement:mutations
+      - name: Verify sealed PR8 handoff integrity without source changes
+        run: python3 -B ai/ictc-agent-bundle/tools/verify_integrity.py ai/ictc-agent-bundle
       - name: Qualify each unregistered document with isolated removal counterfactual
         run: npm run docs:causal
       - name: Protect first-party executable document references with physical deletion falsification
