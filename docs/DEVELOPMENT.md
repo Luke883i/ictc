@@ -34,6 +34,22 @@ Questa è una **procedura per un ingegnere nuovo**, non un'attestazione di valid
 
 **Condizione di chiusura:** documenti e oracoli automatici possono dimostrare la *percorribilità tecnica* entro i test eseguiti; l'assenza di guida durante un cold-start e l'effettiva comprensione devono essere osservate su persone, non dedotte dalla presenza di questa checklist.
 
+
+## Esercizio O1 — prima modifica reversibile su clone vergine
+
+**Scopo:** dimostrare che un nuovo contributor sa orientarsi, produrre un controesempio, correggerlo e consegnare un diff senza leggere la genealogia delle PR o istruzioni AI. **Prerequisiti:** una clone di ICTC, Node >=22.16.0, Git e accesso alle dipendenze npm; usare esclusivamente un branch isolato con stato applicativo sintetico. L'esempio e **documentale e non tocca il runtime o dati aziendali**.
+
+1. Segna `git rev-parse HEAD`, verifica `git status --short` vuoto, leggi il README e individua l'authority prodotto (`docs/PRODUCT.md`), software (`docs/11_ARCHITECTURE.md`), repo (`docs/START_HERE.md`).
+2. Crea il branch `docs/onboarding-exercise` e avvia `npm ci --ignore-scripts`; esegui `npm run check` e `npm run docs:check`. Annota exit code o blocco reale, non un PASS inferito.
+3. Esegui `npm run demo` in un terminale e `curl -fsS http://127.0.0.1:4173/api/health` nell'altro; arresta con Ctrl-C. HTTP 200 non attesta persistenza al riavvio.
+4. **Falsificatore fisico:** aggiungi temporaneamente in fondo a `docs/DEVELOPMENT.md` un collegamento Markdown a `DOCUMENTO_ONBOARDING_INESISTENTE.md` (testo del link: "link deliberatamente inesistente"). `npm run docs:check` deve fallire per `broken local link`; conserva l'output. Se non fallisce, l'esercizio e NO-GO.
+5. Rimuovi il link errato. Introduci un piccolo chiarimento vero e circoscritto in `docs/DEVELOPMENT.md`, senza cambiare gli owner; verifica il collegamento all'authority con `docs/START_HERE.md`. Riesegui `npm run docs:check` e `git diff --check`.
+6. **Prima di attribuire test a uno SHA:** rigenera la Bussola dall'owner eseguendo `node --input-type=module -e 'import {repositoryCompass} from "./v3/trama-engineering.mjs"; import {writeFileSync} from "node:fs"; writeFileSync("docs/ENGINEERING_COMPASS.md",repositoryCompass())'`. Poi esegui `git add docs/DEVELOPMENT.md docs/ENGINEERING_COMPASS.md`, `git diff --cached --check`, `git commit -m "docs: first bounded onboarding edit"` e verifica che `git status --porcelain` sia vuoto. La HEAD ora rappresenta i byte realmente candidati, inclusa ogni proiezione generata.
+7. Registra `git rev-parse HEAD`, esegui `npm run docs:check` e `npm test` **dopo il commit sulla stessa HEAD**, registra exit code, eventuali skip e il tree `git rev-parse HEAD^{tree}`. Se i test modificano file tracciati, arrestati: serve una nuova HEAD e ripetere i gate.
+8. Produci la scheda per il reviewer: **intento, owner, preimage, postimage, predicato positivo, mutante respinto, differenza, rollback, evidenza e gap**. Per annullare il commit dell'esercizio usa `git revert <sha-del-commit>` e ricontrolla il tree; `git restore -- docs/DEVELOPMENT.md` si applica soltanto alle modifiche **non committate** e non e un rollback di commit.
+
+**Criterio automatico:** le route e i comandi devono esistere; il mutante deve essere respinto e la correzione accettata. **Criterio umano E3-HUMAN:** un ingegnere che non ha partecipato al progetto deve svolgere il compito senza suggerimenti, con tempi, errori e richieste di aiuto registrati da un osservatore indipendente. Fino a quel momento: `BLOCKED_EXTERNAL`, anche con tutti i controlli automatici verdi.
+
 ## Prima di modificare
 
 ### Prima di rimuovere file o «semplificare» una documentazione

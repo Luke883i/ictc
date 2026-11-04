@@ -4,6 +4,19 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 
 **Ingresso standard alternativo, senza strumenti AI:** [Repository Atlas · Ingresso standard](REPOSITORY_ATLAS.md), [Product](PRODUCT.md), [Architecture](11_ARCHITECTURE.md), [Development](DEVELOPMENT.md), [Operations](OPERATIONS.md) e [Testing](TESTING.md). La governance AI è una specializzazione opzionale della contribuzione, non il requisito di comprensione del software.
 
+
+## Scegli subito il tuo compito
+
+| Vuoi… | Segui questo percorso | Consegna minima |
+| --- | --- | --- |
+| Capire cosa offre ICTC | [PRODUCT](PRODUCT.md) → [user journeys](04_USER_JOURNEYS.md) | capacita e limiti, non conformita presunta |
+| Avviare e diagnosticare | [DEVELOPMENT](DEVELOPMENT.md) → [OPERATIONS](OPERATIONS.md) | HTTP health ed exit code osservati |
+| Fare la prima modifica | [DEVELOPMENT](DEVELOPMENT.md) → [TESTING](TESTING.md) | diff, nearest falsifier, rollback |
+| Ricostruire un componente | [ARCHITECTURE AS-IS](11_ARCHITECTURE.md) → [OpenAPI](openapi.yaml) | owner runtime e dipendenze effettive |
+| Valutare ritiro e compatibilita | [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) → [Atlas](REPOSITORY_ATLAS.md) | consumer, test, decisione HOLD/GO |
+
+L'esercizio di cold-start e **automatizzabile ma non sostituisce** una verifica con un ingegnere indipendente privo di conoscenza pregressa. Nessuna di queste tabelle introduce una nuova autorita.
+
 ## Due ingressi, due problemi diversi
 
 - Se devi **capire che tipo di repository stai guardando**, prima leggi [Repository Atlas](REPOSITORY_ATLAS.md): forma del repository, classi di verità, storia/metodo e limiti di inferenza.
