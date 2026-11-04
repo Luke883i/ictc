@@ -2,6 +2,7 @@ import {checkReadiness} from './review-readiness-check.mjs';
 import {readFile,stat,readdir} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import {spawnSync} from 'node:child_process';
 import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel} from './documentation-lattice-lib.mjs';
 const root=path.resolve(process.argv[2]||process.cwd());
 const read=async p=>readFile(path.join(root,p),'utf8');
@@ -195,6 +196,18 @@ visitDoD('G0');
 if(visited.size!==Object.keys(engineeringEdges).length+Object.keys(engineeringPredicates).length+3)check(false,'engineer-first DoD has unreachable node');
 check(engineeringStates['G0']==='BLOCKED_EXTERNAL','engineer-first DoD must not self-approve external gates');
 const engineeringDoD={schema:'ictc-engineer-first-dod/projection-1',authority:'NONE',externalAuthorization:'NONE',states:engineeringStates,dependsOn:engineeringEdges,sourceStatus:engineeringStates['G-SOURCE'],globalStatus:engineeringStates['G0']};
+
+// Root repository contract is executed against the same checkout as documentation.
+// A static string check alone could incorrectly certify a stale executable tool.
+const rootContractRun=spawnSync(process.execPath,[path.join(root,'scripts/repository-contract.mjs'),root],{cwd:root,encoding:'utf8',timeout:30000});
+let rootContractReceipt=null;
+try{rootContractReceipt=JSON.parse(rootContractRun.stdout||'null')}catch{}
+check(rootContractRun.status===0&&rootContractReceipt?.status==='PASS_SCOPED','root current repository contract failed: '+String(rootContractRun.stderr||rootContractRun.stdout).slice(0,280));
+check(rootContractReceipt?.retirementAuthorized===false&&rootContractReceipt?.legacyDisposition==='HOLD_CONSUMERS','root contract must not authorize legacy deletion');
+const documentationStandard=await read('docs/DOCUMENTATION_STANDARD.md');
+check(/## Valore per le imprese/.test(readme)&&/Rispettare le norme\. Governare rischi e costi\./.test(readme)&&/Non determina da solo/.test(readme),'engineer-first value/claim boundary missing');
+check(/## Razionalizzazione e archiviazione: decisioni basate sui consumer/.test(atlas)&&/HOLD_CONSUMERS/.test(atlas)&&/HOLD_PUBLIC_URL/.test(atlas),'legacy pocket classification/URL hold missing');
+check(/## Reticolo DoD retrogrado per minimalità e standard/.test(documentationStandard)&&/G-MIN = G-UNDERSTAND AND G-CURRENT AND G-LEGACY AND G-ASSURANCE AND G-GOVERNANCE/.test(documentationStandard),'retrograde minimum DoD missing');
 
 if(failures.length){console.error(JSON.stringify({ok:false,failures},null,2));process.exit(1)}
 console.log(JSON.stringify({ok:true,engineerFirstDoD:engineeringDoD,documents:docs.length,authorityTopics:topics.length,maxAuthorityDepth,versionAxes:manifest.versionAxes,distributedPresentationRegistered,retired34Lineage,externalAcceptance:manifest.externalAcceptance},null,2));

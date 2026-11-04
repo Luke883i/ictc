@@ -2,6 +2,15 @@
 
 ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
 
+## Valore per le imprese — cosa ICTC aiuta a governare
+
+**Rispettare le norme. Governare rischi e costi.** ICTC collega fonti, requisiti, rischi, controlli e interventi: aiuta imprese e PMI a **organizzare la risposta agli obblighi applicabili** e a usare con criterio le risorse. Non determina da solo quali norme siano applicabili né certifica la conformità. Le decisioni, le verifiche e le approvazioni rimangono umane.
+
+- **Per chi:** organizzazioni e ruoli che devono ricostruire obblighi, responsabilità e lavoro di compliance; il [perimetro canonico](docs/PRODUCT.md) precisa capacità e limiti.
+- **Cosa offre oggi:** Home per orientare, sette processi di compliance per lavorare, Evidenze ICTC per ricostruire decisioni e provenienza; due voci del catalogo sono solo placeholder informativi.
+- **Come funziona:** [software AS-IS](docs/11_ARCHITECTURE.md) locale Node.js/SQLite e [API](docs/openapi.yaml), con limiti di runtime, fiducia e deployment documentati.
+- **Come si mantiene:** [repository e ownership](docs/START_HERE.md), [test](docs/TESTING.md), [primo cambiamento falsificabile](docs/DEVELOPMENT.md) e governance ordinaria.
+
 ## Da zero: tre percorsi (senza prerequisiti AI)
 
 | Domanda | Punto di ingresso | Verifica sul software |
