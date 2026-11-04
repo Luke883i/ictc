@@ -39,6 +39,21 @@ Il lettore non deve ricostruire la cronologia delle PR per sapere dove interveni
 
 Per il **primo task completo**, seguire l'[esercizio di manutenzione](DEVELOPMENT.md) prima di consultare la stratigrafia storica. Questo Atlas descrive la forma: non sostituisce alcun owner.
 
+## Razionalizzazione e archiviazione: decisioni basate sui consumer
+
+Il principio **storicamente valido + integro + disallineato** è un *trigger di riesame*, non una licenza di eliminazione. Il [Documentation Standard](DOCUMENTATION_STANDARD.md) mantiene la regola fail-closed; il registro resta il manifest esistente, non una seconda lista di verità.
+
+| Superficie da riesaminare | Osservazione sul main del 4 novembre 2026 | Decisione attuale |
+| --- | --- | --- |
+| `ai/ictc-agent-bundle/` | Handoff autonomo PR #8; integrity/selftest locali PASS, doctor contro checkout corrente FAIL per riferimenti obsoleti | **HOLD_CONSUMERS**; distinguere lineage e uso esterno prima del ritiro |
+| `scripts/repository-contract.mjs` | Il contratto originario richiedeva `server.mjs` root, due workflow assenti e npm script storici | Riparazione mirata per verificare i current owner; legacy resta diagnostica |
+| `app/`, `lib/`, `v1/` | Codice di compatibilità e verificatori possono ancora leggerli | **HOLD_CONSUMERS**, niente rename/cancellazione indiscriminata |
+| Fixture DEMO Suite 2.2 | La DEMO 3.0 può ancora leggerle per regressione | **PRESERVE_COMPATIBILITY** |
+| `audit/`, `dist/`, documenti lineage | Evidenze/artefatti storici e possibili link esterni | **PRESERVE_LINEAGE / HOLD_EXTERNAL** fino a mappatura |
+| `v3/public/grc-v2.css` e `grc-workspace.css` | Duplica CSS byte-identici; il secondo ha un import corrente osservato | **HOLD_PUBLIC_URL** per il primo; nessuna delete senza prova URL |
+
+Una classificazione attuale non si propaga per somiglianza: consumer statici, caricamenti dinamici, URL, workflow, test di regressione, provenienza, rollback e review vanno qualificati **per singola sacca**. L'assenza di import non è assenza di consumer esterni. La struttura fisica cambia solo dopo queste prove e senza nuovi owner.
+
 ## Reticolo di lettura
 
 | Livello | Domanda | Fonte principale | Regola |

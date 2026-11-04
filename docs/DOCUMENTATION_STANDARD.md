@@ -88,6 +88,22 @@ Per il software un singolo README per ogni file sarebbe rumore. La tracciabilit�
 
 I metadati storici di una PR suggeriscono accoppiamenti e finalità, ma non provano la sicurezza di una delete. Un punteggio statistico può **ordinare la revisione**; non può sostituire il veto deterministico sulle superfici esposte, sull'autorità e sulle prove di non-uso. Non alterare assieme prodotto e oracolo per creare un falso verde.
 
+## Reticolo DoD retrogrado per minimalità e standard
+
+**G-MIN — repository minimo, standard e manutenibile senza perdere funzioni o verità:** `G-MIN = G-UNDERSTAND AND G-CURRENT AND G-LEGACY AND G-ASSURANCE AND G-GOVERNANCE` (composizione AND, non media). Ciascun requisito si riferisce agli owner preesistenti:
+
+| DoD intermedio | DoD locale / prova | Stato che non si può inferire |
+| --- | --- | --- |
+| `G-UNDERSTAND` | README distingue valore/limiti, prodotto, software e repository; START_HERE instrada a owner, task, test e rollback; docs:check riconosce i legami | Comprensione umana senza test indipendente |
+| `G-CURRENT` | Entrypoint Node, SQLite, API e npm effettivi verificati dal root contract e dalla suite current | Correttezza enterprise o deployment esterno |
+| `G-LEGACY` | Ogni sacca riceve `PRESERVE`, `REPAIR`, `ARCHIVE_LOGICAL`, `RETIRE_PHYSICAL` oppure `HOLD`, con evidenza consumer e retention | `INTEGRO` o `UNREFERENCED` non autorizzano delete |
+| `G-ASSURANCE` | Mutazione fisica di documentazione e root contract respinta; test positivo, Git tree, rollback e CI exact-head | Campioni e trial sintetici non provano equivalenza universale |
+| `G-GOVERNANCE` | Reviewer indipendente, required checks vincolanti su main e onboarding osservato | Un commento, workflow verde o GOV-01F non sostituiscono protezione server-side |
+
+**Catena di dipendenze:** classificazione storica → prova di uso corrente → contrasto con owner → scelta della riparazione minima → controprova negativa → commit reversibile → CI sulla HEAD → decisione governata → eventuale ritiro fisico. Non materializzare il nodo successivo se quello precedente è `UNKNOWN` o `REFUTED`.
+
+Per il bundle AI la prima decisione resta `HOLD`: integrity/selftest non provano adeguatezza dei path o assenza di consumer. Per la root toolchain obsoleta è ammessa una `REPAIR` in place, mantenendo diagnostica legacy; nessun trasferimento fisico è richiesto. Gli audit sono proiezioni, non creano un secondo inventario canonico.
+
 ## Falsificazione
 
 `npm run docs:check` verifica il repository reale. `npm run docs:saturation` falsifica il modello degli invarianti. Il gate deve uccidere almeno: entrypoint mancante, doppia authority, prompt storico promosso a product truth, owner irraggiungibile, link rotto, drift degli assi di versione, security routing pubblico, PR contract incompleto, manifest divergente, stale current rail e package wiring rimosso.
