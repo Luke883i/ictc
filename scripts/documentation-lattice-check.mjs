@@ -167,7 +167,7 @@ const engineeringPredicates={
  'L-ROUTING':atlas.includes('## Percorso di lettura in tre minuti')&&start.includes('[DEVELOPMENT](DEVELOPMENT.md)')&&start.includes('[TESTING](TESTING.md)'),
  'L-COLD-START':Boolean(firstExercise)&&firstExercise.includes('npm ci --ignore-scripts')&&firstExercise.includes('npm run demo')&&originalColdStart.includes('http://127.0.0.1:4173/api/health`')&&firstExercise.includes('http://127.0.0.1:4173/api/health`'),
  'L-NEGATIVE':firstExercise.includes('DOCUMENTO_ONBOARDING_INESISTENTE.md')&&firstExercise.includes('broken local link')&&firstExercise.includes('Se non fallisce, l\'esercizio e NO-GO'),
- 'L-REVIEW':originalColdStart.includes('git diff --check')&&firstExercise.includes('git diff --check')&&firstExercise.includes('npm test')&&firstExercise.includes('scheda per il reviewer'),
+ 'L-REVIEW':originalColdStart.includes('git diff --check')&&firstExercise.includes('git diff --check')&&firstExercise.includes('git add docs/DEVELOPMENT.md docs/ENGINEERING_COMPASS.md')&&firstExercise.includes('git commit -m')&&firstExercise.includes('git status --porcelain')&&firstExercise.includes('npm test')&&firstExercise.includes('git revert <sha-del-commit>')&&firstExercise.includes('scheda per il reviewer'),
  'L-NO-AUTHORITY':readme.includes('non cinque nuove autorita')&&development.includes('BLOCKED_EXTERNAL')&&manifest.entrypoint==='docs/START_HERE.md',
  'L-EXTERNAL-BOUNDARY':development.includes('ingegnere che non ha partecipato')&&readme.includes('branch protection')
 };
