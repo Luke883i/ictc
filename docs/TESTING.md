@@ -359,3 +359,18 @@ traceback e screenshot in `artifacts/browser-probe/`. Il workflow GitHub
 carica tali artefatti senza trasformare il fallimento in successo. In questo
 ambiente Chromium riceve `ERR_BLOCKED_BY_ADMINISTRATOR` prima del caricamento
 della pagina: non si inferisce alcun difetto della UI da quel blocco locale.
+
+
+### C1-3d · Separazione dei verificatori TRAMA e controprove
+
+La prima famiglia spostata è delimitata a sei test eseguibili: il codice vive in `v3/tests/`, i sei entrypoint preesistenti in `v3/` restano import-adapter senza logica duplicata. Nessun import storico, comando di registri o workflow deve cambiare indirizzo per questa slice.
+
+```bash
+node scripts/test-boundary-migration-check.mjs --falsify
+node v3/trama-causal-qualification-check.mjs
+node v3/tests/trama-causal-qualification-check.mjs
+```
+
+L'oracolo usa i byte di `main@dcf90ae2` come preimage immutabile; verifica sei ricollocazioni esatte con **sole correzioni relative di import/URL**, sei adapter, dodici alterazioni fisiche in copie temporanee con ripristino, e due coppie di comandi realmente eseguiti confrontandone exit status e stdout. La campagna di 10 milioni di casi e l'enumerazione di 243 stati sono prove semantiche **del modello a cinque obblighi**, non 10 milioni di riscritture del codice; nessuna assenza di consumer esterno è inferita. La ricevuta `artifacts/c1-3d-test-boundary.json` è derivata, zero-authority ed è caricata dal workflow TRAMA su HEAD esatto.
+
+**Metriche verificabili:** sei implementazioni ricollocate, zero ingressi rimossi, sei adapter, 62.255 byte di corpo di verifica rimossi dal primo livello `v3/` (non dallo storico Git o dal repository totale), zero modifiche runtime. Il totale di file aumenta di sette per i sei nuovi path e il nuovo falsificatore. Non interpretare la migrazione di questo gruppo come chiusura globale della razionalizzazione degli altri 441 candidati o come prova di readiness enterprise.

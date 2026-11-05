@@ -51,6 +51,16 @@ Usa il router task-first in `docs/START_HERE.md`. In sintesi:
 
 `v3/semantic-owner-contract.json` è un contratto E2 di **orientamento/ownership/freshness**: proietta owner già esistenti e non sostituisce le authority sostanziali.
 
+## Confine fisico fra runtime e verificatori (C1-3d, primo gruppo)
+
+I sei verificatori di governance TRAMA ora hanno **un'unica implementazione** sotto `v3/tests/`: `trama-causal-qualification-{check,saturation-1m}.mjs`, `trama-engineering-{check,saturation}.mjs`, `trama-reconcile-{check,saturation}.mjs`. I sei omonimi in `v3/` sono **soli adapter ESM**: conservano invocazioni, argomenti e path storici usati da workflow, registro e consumer non osservati. Non sono due test indipendenti e non possiedono autorità di prodotto.
+
+- Comando esistente: `node v3/trama-causal-qualification-check.mjs`
+- Implementazione diretta: `node v3/tests/trama-causal-qualification-check.mjs`
+- Prova di parità e rollback: `node scripts/test-boundary-migration-check.mjs --falsify` (ricevuta derivata `artifacts/c1-3d-test-boundary.json`).
+
+La migrazione è intenzionalmente circoscritta a sei file (63.079 byte originari). Tutti gli altri verificatori restano nei percorsi correnti: nessuna riorganizzazione generalizzata o certificazione di cancellabilità degli adapter. Il [Documentation Standard](../docs/DOCUMENTATION_STANDARD.md) resta il riferimento per consumer esterni, URL e conservazione.
+
 ## Test
 
 Feedback locale e rail di convergenza per tipo di modifica sono in `docs/TESTING.md`. Il minimo generale resta:
