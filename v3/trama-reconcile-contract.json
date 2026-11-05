@@ -125,6 +125,13 @@
     "unknownClass": "blocking-unclassified",
     "rules": [
       {
+        "pattern": "^v3/tests/legacy/(?:v1|app|lib|data)/",
+        "classification": "compatibility-required",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION",
+        "reason": "historical v1 and v2 tools, fixtures and UI consolidated under test boundary; current business runtime does not consume these paths, but bounded test and external consumers require review before deletion"
+      },
+      {
         "pattern": "^scripts/repository-compatibility-falsification\\.mjs$",
         "classification": "compatibility-required",
         "blocking": false,

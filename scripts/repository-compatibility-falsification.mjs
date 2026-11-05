@@ -41,9 +41,9 @@ const cases=[
  {id:'server-current-http-redirected',file:'v3/server.mjs',bad:s=>s.replace('projected.experience.services=7','projected.experience.services=2'),expect:'legacy service literal vs current HTTP projection drift'},
  {id:'atlas-omits-F7',file:'docs/REPOSITORY_ATLAS.md',bad:s=>s.replace('C1-2 · Legacy tooling / F7','unqualified legacy checkers'),expect:'legacy tooling classification missing'},
  {id:'atlas-promotes-F7',file:'docs/REPOSITORY_ATLAS.md',bad:s=>s.replace('HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS','CURRENT_RUNTIME_CERTIFIED'),expect:'legacy tooling classification missing'},
- {id:'legacy-schema-repointed',file:'scripts/schema-check.mjs',bad:s=>s.replace('../lib/domain.mjs','../v3/domain.mjs'),expect:'historical tooling source signature drift'},
+ {id:'legacy-schema-repointed',file:'scripts/schema-check.mjs',bad:s=>s.replace('../v3/tests/legacy/lib/domain.mjs','../v3/domain.mjs'),expect:'historical tooling source signature drift'},
  {id:'legacy-ui-repointed',file:'scripts/ui-wiring-check.mjs',bad:s=>s.replace("'server.mjs'","'v3/server.mjs'"),expect:'historical tooling source signature drift'},
- {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'v1/release.json'","'v3/release-identity.json'"),expect:'historical tooling source signature drift'},
+ {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'v3/tests/legacy/v1/release.json'","'v3/release-identity.json'"),expect:'historical tooling source signature drift'},
  ...toolFiles.map(name=>({id:'legacy-tool-deleted-'+name,file:'scripts/'+name,bad:()=>null,expect:'historical tooling source signature drift'}))
 ];
 const absentRootMutants=[
@@ -56,9 +56,37 @@ const absentRootMutants=[
  {id:'archived-historical-4-resurrected',file:'audit/CHAIN_MAIN115_README.md',content:'archived-only\n'},
  {id:'archived-historical-5-resurrected',file:'audit/CONVERGENCE_MAIN115_CLAIM_BOUNDARY.md',content:'archived-only\n'},
  {id:'archived-historical-6-resurrected',file:'audit/README_CONVERGENCE_MAIN115.md',content:'archived-only\n'},
- {id:'archived-historical-7-resurrected',file:'audit/convergence-main115-10m.json',content:'{}\n'}
+ {id:'archived-historical-7-resurrected',file:'audit/convergence-main115-10m.json',content:'{}\n'},
+ {id:'former-root-1-resurrected',file:'app/app.js',content:'path-reappearance\n'},
+ {id:'former-root-2-resurrected',file:'app/index.html',content:'path-reappearance\n'},
+ {id:'former-root-3-resurrected',file:'app/styles.css',content:'path-reappearance\n'},
+ {id:'former-root-4-resurrected',file:'data/seed.json',content:'path-reappearance\n'},
+ {id:'former-root-5-resurrected',file:'lib/domain.mjs',content:'path-reappearance\n'},
+ {id:'former-root-6-resurrected',file:'v1/buyer-simulation.mjs',content:'path-reappearance\n'},
+ {id:'former-root-7-resurrected',file:'v1/fixture-audit.mjs',content:'path-reappearance\n'},
+ {id:'former-root-8-resurrected',file:'v1/fixtures/manifest.json',content:'path-reappearance\n'},
+ {id:'former-root-9-resurrected',file:'v1/fixtures/release-evidence.txt',content:'path-reappearance\n'},
+ {id:'former-root-10-resurrected',file:'v1/release.json',content:'path-reappearance\n'},
+ {id:'former-root-11-resurrected',file:'v1/release.mjs',content:'path-reappearance\n'},
+ {id:'former-root-12-resurrected',file:'v1/saturation.mjs',content:'path-reappearance\n'},
+ {id:'former-root-13-resurrected',file:'v1/stability-audit.mjs',content:'path-reappearance\n'}
 ];
-const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+1,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
+const historicalFixturePaths=[
+ 'v3/tests/legacy/app/app.js',
+ 'v3/tests/legacy/app/index.html',
+ 'v3/tests/legacy/app/styles.css',
+ 'v3/tests/legacy/data/seed.json',
+ 'v3/tests/legacy/lib/domain.mjs',
+ 'v3/tests/legacy/v1/buyer-simulation.mjs',
+ 'v3/tests/legacy/v1/fixture-audit.mjs',
+ 'v3/tests/legacy/v1/fixtures/manifest.json',
+ 'v3/tests/legacy/v1/fixtures/release-evidence.txt',
+ 'v3/tests/legacy/v1/release.json',
+ 'v3/tests/legacy/v1/release.mjs',
+ 'v3/tests/legacy/v1/saturation.mjs',
+ 'v3/tests/legacy/v1/stability-audit.mjs',
+];
+const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+historicalFixturePaths.length+1,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
 const invoke=()=>{
  const p=spawnSync(process.execPath,[join(sourceRoot,'scripts/repository-contract.mjs'),candidate],{cwd:candidate,encoding:'utf8',timeout:25000});
  let data=null;try{data=JSON.parse(p.stdout)}catch{}
@@ -84,6 +112,14 @@ try{
   const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+test.file));
   result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.file))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
+ }
+ // For each relocated fixture, physical removal must be caught by the existing owner.
+ for(const rel of historicalFixturePaths){
+  const p=join(candidate,rel),bytes=readFileSync(p);
+  rmSync(p,{force:true});const outcome=invoke();writeFileSync(p,bytes);
+  const killed=outcome.exit===1&&outcome.status==='REFUTED'&&outcome.failures.some(x=>x.includes('missing historical verification fixture: '+rel));
+  result.physical.results.push({id:'relocated-fixture-removal-'+rel,killed,failure:outcome.failures.find(x=>x.includes(rel))||outcome.error});
+  if(killed)result.physical.killed++;else result.physical.survivors.push('relocated-fixture-removal-'+rel);
  }
  // Positive-control inverse: removing the CURRENT supervisor must be rejected.
  const active=join(candidate,'ictc.sh'),originalActive=readFileSync(active);
