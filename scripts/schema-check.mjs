@@ -1,6 +1,6 @@
 import { readFile, readdir, access } from 'node:fs/promises';
 import path from 'node:path';
-import { buildState, readSeed, readLedger, verifyLedger } from '../lib/domain.mjs';
+import { buildState, readSeed, readLedger, verifyLedger } from '../v3/tests/legacy/lib/domain.mjs';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const schemaDir = path.join(root, 'schemas');

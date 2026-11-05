@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
-const ROOT=path.resolve(new URL('..', import.meta.url).pathname);
+const ROOT=path.resolve(new URL('../../../..', import.meta.url).pathname);
 const RUNTIME=path.resolve(process.env.ICTC_RUNTIME_DIR || path.join(ROOT, 'runtime'));
-const SEED=path.join(ROOT, 'data/seed.json');
+const SEED=path.join(ROOT, 'v3/tests/legacy/data/seed.json');
 const LEDGER=path.join(RUNTIME, 'ledger.jsonl');
 export const sha256=v=>crypto.createHash('sha256').update(v).digest('hex');
 export const nowIso=()=>new Date().toISOString();
@@ -28,4 +28,4 @@ export function proposeSourceMetadata(input){const text=JSON.stringify(input).to
 export function createMatter(input){const text=(input.summary||'').toLowerCase(),consulted=['Legal'];if(/dati|privacy|personali/.test(text))consulted.push('DPO');if(/access|cyber|malware|anom/.test(text))consulted.push('Cybersecurity');return{id:`matter-${crypto.randomUUID().slice(0,8)}`,kind:input.kind||'signal',title:input.title||'Nuova segnalazione',originalNarrative:input.summary,reportedAt:nowIso(),workflowState:'facts-to-confirm',severityPerceived:input.severity||'unknown',owner:/cyber|access|anom/.test(text)?'Cybersecurity Incident Manager':'Compliance Intake',raci:{accountable:'Compliance Owner',responsible:'Triage Team',consulted:[...new Set(consulted)],informed:['Process Owner']},nextAction:'Confermare i fatti minimi e l’owner',deadline:null,facts:[{text:input.summary,state:'reported'}]}}
 export function buildCapsule(state,input){const cards=input.objectId?[Object.values(state.views).flat().find?.(x=>x?.id===input.objectId)].filter(Boolean):[state.views.headline,...state.views.findingCards.slice(0,3)];return{id:crypto.randomUUID(),scope:input.scope||'radar',createdAt:nowIso(),writeAuthority:false,items:cards.map(x=>({id:x.id,label:x.label,statement:x.statement,status:x.epistemicStatus,limitations:x.limitations}))}}
 export function answerFromCapsule(capsule,question=''){const q=question.toLowerCase();const answer=/conform/.test(q)?'No: gli esiti disponibili attestano operazioni locali e review, non la conformità dell’organizzazione.':`Nella capsula sono presenti ${capsule.items.length} esiti. Posso spiegarne origine, stato e limiti, ma non ampliare autonomamente il contesto.`;return{answer,epistemicStatus:'ai-proposed',citedItemIds:capsule.items.map(x=>x.id),limitations:['Risposta limitata alla capsula locale evocata dalla UI.','Nessuna scrittura o decisione automatica.']}}
-export async function selfDocumentationManifest(){return['README.md','AGENTS.md','docs/02_EPISTEMIC_CONTRACT.md','docs/10_LOCAL_AI_CONTRACT.md','server.mjs','lib/domain.mjs']}
+export async function selfDocumentationManifest(){return['README.md','AGENTS.md','docs/02_EPISTEMIC_CONTRACT.md','docs/10_LOCAL_AI_CONTRACT.md','server.mjs','v3/tests/legacy/lib/domain.mjs']}

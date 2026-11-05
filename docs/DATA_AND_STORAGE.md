@@ -8,7 +8,7 @@
 
 ## Modello corrente
 
-- `data/seed.json`: dati dimostrativi versionati, non stato runtime;
+- `v3/tests/legacy/data/seed.json`: fixture dimostrativa storica versionata, consumata soltanto dal domain e dai verificatori legacy; **non** è stato runtime, né un seed canonico del software corrente;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/state.sqlite`: autorità persistente locale corrente in single-tenant mode;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/quarantine/`: byte appena acquisiti e non ancora ammessi al serving;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/attachments/`: byte clean/promossi;
