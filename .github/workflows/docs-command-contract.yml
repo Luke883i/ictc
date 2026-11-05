@@ -48,10 +48,10 @@ jobs:
         run: node scripts/e2e-step-evidence-audit.mjs --falsify
       - name: Exhaustively prove bounded 12-axis retirement diagnostic encoding
         run: node scripts/repository-retirement-mutations.mjs --cases=1 --negatives=1 --exhaustive-proof
-      - name: Fail closed on each of 149 document retirement decisions
-        run: node scripts/document-retirement-gate-check.mjs --falsify
-      - name: Independent document dependency scan and forged-report falsification
+      - name: Independently scan all 149 document consumers before the retirement adjudication (C1-3b)
         run: node scripts/document-consumer-independent-check.mjs --falsify
+      - name: Reconcile independent evidence and reject false historical-retirement claims (C1-3b)
+        run: node scripts/document-retirement-gate-check.mjs --falsify
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:
