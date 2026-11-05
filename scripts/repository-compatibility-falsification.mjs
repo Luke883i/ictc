@@ -92,7 +92,7 @@ const absentRootMutants=[
  ...legacySchemaNames.map(name=>({id:'former-schema-root-'+name,file:'schemas/'+name,content:'{}\n'}))
 ];
 const historicalFixturePaths=[
- 'docs/archive/ictc-agent-bundle/README.md',
+ 'audit/archive/ictc-agent-bundle/README.md',
  'v3/tests/legacy/app/app.js',
  'v3/tests/legacy/app/index.html',
  'v3/tests/legacy/app/styles.css',

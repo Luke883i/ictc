@@ -31,7 +31,7 @@ jobs:
       - name: Refute legacy-tool promotion and stale current-runtime claims (C1-2 F7)
         run: node scripts/repository-compatibility-falsification.mjs --falsify
       - name: Verify sealed PR8 handoff integrity without source changes
-        run: python3 -B docs/archive/ictc-agent-bundle/tools/verify_integrity.py docs/archive/ictc-agent-bundle
+        run: python3 -B audit/archive/ictc-agent-bundle/tools/verify_integrity.py audit/archive/ictc-agent-bundle
       - name: Qualify each unregistered document with isolated removal counterfactual
         run: npm run docs:causal
       - name: Protect first-party executable document references with physical deletion falsification

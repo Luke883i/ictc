@@ -125,7 +125,7 @@
     "unknownClass": "blocking-unclassified",
     "rules": [
       {
-        "pattern": "^docs/archive/ictc-agent-bundle/",
+        "pattern": "^audit/archive/ictc-agent-bundle/",
         "classification": "compatibility-required",
         "blocking": true,
         "target": "C1-COMPAT-CONTRACTION",

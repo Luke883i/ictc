@@ -29,9 +29,9 @@ const legacyPaths=[
 // C1 compatibility contraction: inspect the sealed PR #8 handoff as lineage.
 // Never mutate the bundle, substitute its historical contract for today's
 // package/architecture owners, or infer that an absent consumer makes deletion safe.
-const historicalBundleContract='docs/archive/ictc-agent-bundle/config/repository_contract.json';
-const historicalBundleProfile='docs/archive/ictc-agent-bundle/bundle_profile.json';
-const historicalBundleCatalog='docs/archive/ictc-agent-bundle/config/test_catalog.json';
+const historicalBundleContract='audit/archive/ictc-agent-bundle/config/repository_contract.json';
+const historicalBundleProfile='audit/archive/ictc-agent-bundle/bundle_profile.json';
+const historicalBundleCatalog='audit/archive/ictc-agent-bundle/config/test_catalog.json';
 const failures=[];
 // The historic agent handoff is preserved under docs/archive, never restored as a root sibling.
 if(await exists('ai'))failures.push('retired repository path reintroduced: ai/');
@@ -72,7 +72,7 @@ const legacySchemaNames=[
   "visual-attestation.schema.json",
 ];
 const historicalFixturePaths=[
-  'docs/archive/ictc-agent-bundle/README.md',
+  'audit/archive/ictc-agent-bundle/README.md',
  'v3/tests/legacy/app/app.js',
  'v3/tests/legacy/app/index.html',
  'v3/tests/legacy/app/styles.css',
@@ -180,7 +180,7 @@ if(!bundleGuide.includes('Historical PR #8')||!bundleGuide.includes('docs/START_
 if(legacyCheckers.some(item=>item.exposedAsCurrent))failures.push('historical legacy checker exposed as current npm script');
 const compatibility={
   classification:'HISTORICAL_LINEAGE_HOLD_CONSUMERS',authority:'NONE',source:historicalBundleContract,
-  contractPreservedByThisCheck:false,integrityVerifier:'docs/archive/ictc-agent-bundle/tools/verify_integrity.py',
+  contractPreservedByThisCheck:false,integrityVerifier:'audit/archive/ictc-agent-bundle/tools/verify_integrity.py',
   requiredPaths:historicalRequiredPaths,precommitScriptAvailability:legacyScriptStatus,
   legacyCheckerPaths:legacyCheckers,legacyTooling:historicalToolingLedger,serviceProjection:{historicalModelServices:legacyServiceLiteral?2:null,currentHttpSourceProjectsSeven:httpProjectionSeven,proofScope:'SOURCE_ONLY: server HTTP projection assignment; no generic direct-model or deployed-response equivalence'},upToDateDoctorCertified:false,
   currentEntrypoint:'docs/START_HERE.md',currentTestEntry:'npm test',currentDocsEntry:'npm run docs:check',
