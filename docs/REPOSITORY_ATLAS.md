@@ -45,7 +45,7 @@ Il principio **storicamente valido + integro + disallineato** è un *trigger di 
 
 | Superficie da riesaminare | Osservazione sul main del 4 novembre 2026 | Decisione attuale |
 | --- | --- | --- |
-| `ai/ictc-agent-bundle/` | Handoff autonomo PR #8; integrity/selftest locali PASS, doctor contro checkout corrente FAIL per riferimenti obsoleti | **HOLD_CONSUMERS**; distinguere lineage e uso esterno prima del ritiro |
+| `ai/ictc-agent-bundle/` | Handoff sigillato PR #8; integrity/selftest sono prove storiche, doctor usa riferimenti obsoleti; il contratto corrente produce una diagnosi separata | **HOLD_CONSUMERS**; [guida storica e comandi correnti](AI_AGENT_BUNDLE.md); preservare sorgente sigillato e verificare consumer prima del ritiro |
 | `scripts/repository-contract.mjs` | Il contratto originario richiedeva `server.mjs` root, due workflow assenti e npm script storici | Riparazione mirata per verificare i current owner; legacy resta diagnostica |
 | `app/`, `lib/`, `v1/` | Codice di compatibilità e verificatori possono ancora leggerli | **HOLD_CONSUMERS**, niente rename/cancellazione indiscriminata |
 | Fixture DEMO Suite 2.2 | La DEMO 3.0 può ancora leggerle per regressione | **PRESERVE_COMPATIBILITY** |
