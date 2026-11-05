@@ -125,6 +125,13 @@
     "unknownClass": "blocking-unclassified",
     "rules": [
       {
+        "pattern": "^scripts/repository-compatibility-falsification\\.mjs$",
+        "classification": "compatibility-required",
+        "blocking": false,
+        "target": "C1-COMPAT-CONTRACTION",
+        "reason": "live C1-2 falsification oracle invoked by the existing docs-command workflow, not a business runtime or new authority"
+      },
+      {
         "pattern": "^docs/(?:17_SATURATION_V2|23_VALIDATION_REPORT_V2|24_BLUEPRINT_V2_ITALIANO|V2_|UIUX_ONTO_EPISTEMIC_FINETUNING|UI_FINE_TUNING_3_4)",
         "classification": "lineage-only",
         "blocking": false

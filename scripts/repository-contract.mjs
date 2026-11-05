@@ -3,7 +3,7 @@
  * Historical paths remain observable as compatibility debt; they are not
  * prerequisites for the current bootstrap. Do not interpret PASS as safe delete.
  */
-import {access, readFile, stat} from 'node:fs/promises';
+import {access, readFile, readdir, stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -67,6 +67,35 @@ const legacyCheckerPaths=['scripts/schema-check.mjs','scripts/ui-wiring-check.mj
 const routedScripts=new Set(Object.values(pkg.scripts||{}).join(' ').match(/scripts\/[\w-]+\.mjs/g)||[]);
 const legacyCheckers=legacyCheckerPaths.map(path=>({path,exists:false,exposedAsCurrent:routedScripts.has(path)}));
 for(const item of legacyCheckers)item.exists=await exists(item.path);
+// C1-2 / F7: a scoped source-level consumer ledger, not an ES module or
+// external-consumer absence proof. A historical checker must not quietly become
+// a current npm entrypoint, a CI command, or a rewritten current-runtime claim.
+const historicalTooling=[
+  {path:'scripts/schema-check.mjs',tokens:["../lib/domain.mjs",'data', 'seed'],reason:'v1-era schema/seed and legacy domain fixture; a passing invocation is not current runtime assurance'},
+  {path:'scripts/ui-wiring-check.mjs',tokens:["'app/index.html'","'app/app.js'","'server.mjs'"],reason:'checks historical app/ paths and missing root server.mjs; not v3/UI wiring'},
+  {path:'scripts/verify.mjs',tokens:["'v1/release.json'","../lib/domain.mjs"],reason:'checks historical release/domain identity; not current package or runtime release certification'}
+];
+const workflowNames=(await readdir(path.join(root,'.github/workflows'))).filter(name=>/\.ya?ml$/.test(name)).sort();
+const workflowSources=await Promise.all(workflowNames.map(async name=>({name,text:await readFile(path.join(root,'.github/workflows',name),'utf8')})));
+const historicalToolingLedger=[];
+for(const tool of historicalTooling){
+  const present=await exists(tool.path),source=present?await readFile(path.join(root,tool.path),'utf8'):'';
+  const sourceSignaturePreserved=present&&tool.tokens.every(token=>source.includes(token));
+  const npmConsumers=Object.entries(pkg.scripts||{}).filter(([,value])=>new RegExp(`(?:^|[^\\w])(?:node\\s+)?${tool.path.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}(?=\\s|$|[;&])`).test(value)).map(([name])=>name);
+  // This is an *exact command* census, not a text mention/grep absence proof.
+  const ciConsumers=workflowSources.filter(({text})=>text.split(/\r?\n/).some(line=>!/^\s*#/.test(line)&&new RegExp(`\\bnode\\s+${tool.path.replace(/\./g,'\\.')}(?=\\s|$|[;&])`).test(line))).map(({name})=>name);
+  if(!sourceSignaturePreserved)failures.push('historical tooling source signature drift: '+tool.path);
+  if(npmConsumers.length||ciConsumers.length)failures.push('legacy historical checker promoted to current route: '+tool.path);
+  historicalToolingLedger.push({path:tool.path,classification:'HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS',present,sourceSignaturePreserved,npmConsumers,ciConsumers,reason:tool.reason,mayBeCurrentRuntimeProof:false,retirementAuthorized:false});
+}
+const runtimeModelText=await readFile(path.join(root,'v3/runtime/model.mjs'),'utf8');
+const runtimeServerText=await readFile(path.join(root,'v3/server.mjs'),'utf8');
+const legacyServiceLiteral=runtimeModelText.includes('experience:{services:2');
+const httpProjectionSeven=runtimeServerText.includes('projected.experience.services=7');
+if(!legacyServiceLiteral||!httpProjectionSeven)failures.push('legacy service literal vs current HTTP projection drift: F7 requires review');
+const atlasText=await readFile(path.join(root,'docs/REPOSITORY_ATLAS.md'),'utf8');
+if(!atlasText.includes('C1-2 · Legacy tooling / F7')||!atlasText.includes('HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS'))failures.push('legacy tooling classification missing from repository Atlas');
+
 if(bundleProfile.canonical_sot!==false||!(bundleProfile.immutable_in_place||[]).includes('config/repository_contract.json'))failures.push('PR8 historical bundle immutable/non-authoritative boundary drift');
 if(!bundleGuide.includes('Historical PR #8')||!bundleGuide.includes('docs/START_HERE.md')||!bundleGuide.includes('npm run docs:check')||!bundleGuide.includes('immutable in place')||!bundleGuide.includes('HOLD_CONSUMERS'))failures.push('AI bundle guide misroutes historical handoff as current');
 if(legacyCheckers.some(item=>item.exposedAsCurrent))failures.push('historical legacy checker exposed as current npm script');
@@ -74,7 +103,7 @@ const compatibility={
   classification:'HISTORICAL_LINEAGE_HOLD_CONSUMERS',authority:'NONE',source:historicalBundleContract,
   contractPreservedByThisCheck:false,integrityVerifier:'ai/ictc-agent-bundle/tools/verify_integrity.py',
   requiredPaths:historicalRequiredPaths,precommitScriptAvailability:legacyScriptStatus,
-  legacyCheckerPaths:legacyCheckers,upToDateDoctorCertified:false,
+  legacyCheckerPaths:legacyCheckers,legacyTooling:historicalToolingLedger,serviceProjection:{historicalModelServices:legacyServiceLiteral?2:null,currentHttpSourceProjectsSeven:httpProjectionSeven,proofScope:'SOURCE_ONLY: server HTTP projection assignment; no generic direct-model or deployed-response equivalence'},upToDateDoctorCertified:false,
   currentEntrypoint:'docs/START_HERE.md',currentTestEntry:'npm test',currentDocsEntry:'npm run docs:check',
   retirementAuthorized:false,limitation:'No external-consumer absence, historical doctor freshness or safe deletion is proved.'
 };
