@@ -125,6 +125,13 @@
     "unknownClass": "blocking-unclassified",
     "rules": [
       {
+        "pattern": "^docs/archive/ictc-agent-bundle/",
+        "classification": "compatibility-required",
+        "blocking": true,
+        "target": "C1-COMPAT-CONTRACTION",
+        "reason": "PR8 sealed AI handoff retained byte-identically under the document archive; offline integrity and historic CI consumers remain, external original-path consumers unverified"
+      },
+      {
         "pattern": "^v3/tests/legacy/(?:v1|app|lib|data|schemas)/",
         "classification": "compatibility-required",
         "blocking": true,

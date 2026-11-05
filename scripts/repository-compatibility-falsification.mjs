@@ -35,6 +35,7 @@ const candidate=join(sandbox,'repo');
 const excluded=new Set(['.git','node_modules']);
 const toolFiles=['schema-check.mjs','ui-wiring-check.mjs','verify.mjs'];
 const cases=[
+ {id:'bundle-guide-promoted-to-current',file:'docs/AI_AGENT_BUNDLE.md',bad:s=>s.replace('Historical PR #8','CURRENT_PRODUCT_AUTHORITY'),expect:'AI bundle guide misroutes historical handoff as current'},
  ...toolFiles.map(name=>({id:'npm-promotes-'+name,file:'package.json',bad:s=>{const j=JSON.parse(s);j.scripts['current-legacy']='node scripts/'+name;return JSON.stringify(j)},expect:'legacy historical checker promoted to current route'})),
  ...toolFiles.map(name=>({id:'ci-promotes-'+name,file:'.github/workflows/docs-command-contract.yml',bad:s=>s.replace('      - name: Validate documented commands',`      - name: Accidental legacy current job\n        run: node scripts/${name}\n      - name: Validate documented commands`),expect:'legacy historical checker promoted to current route'})),
  {id:'model-old-literal-promoted',file:'v3/runtime/model.mjs',bad:s=>s.replace('experience:{services:2','experience:{services:7'),expect:'legacy service literal vs current HTTP projection drift'},
@@ -64,6 +65,7 @@ const legacySchemaNames=[
   "visual-attestation.schema.json",
 ];
 const absentRootMutants=[
+ {id:'historical-ai-root-resurrected',file:'ai/ictc-agent-bundle/README.md',content:'old public path should stay retired\n',expectPath:'ai/',cleanupDirectory:'ai'},
  {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
  {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
  {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''},
@@ -90,6 +92,7 @@ const absentRootMutants=[
  ...legacySchemaNames.map(name=>({id:'former-schema-root-'+name,file:'schemas/'+name,content:'{}\n'}))
 ];
 const historicalFixturePaths=[
+ 'docs/archive/ictc-agent-bundle/README.md',
  'v3/tests/legacy/app/app.js',
  'v3/tests/legacy/app/index.html',
  'v3/tests/legacy/app/styles.css',
@@ -141,8 +144,10 @@ try{
  for(const test of absentRootMutants){
   const p=join(candidate,test.file);mkdirSync(join(p,'..'),{recursive:true});writeFileSync(p,test.content);
   const actual=invoke();rmSync(p,{force:true});
-  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+test.file));
-  result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.file))||actual.error});
+  if(test.cleanupDirectory)rmSync(join(candidate,test.cleanupDirectory),{recursive:true,force:true});
+  const rejectedPath=test.expectPath||test.file;
+  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+rejectedPath));
+  result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(rejectedPath))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
  }
  // Kill two real executable path-binding mutations, not merely string diffs.

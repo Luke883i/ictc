@@ -29,10 +29,12 @@ const legacyPaths=[
 // C1 compatibility contraction: inspect the sealed PR #8 handoff as lineage.
 // Never mutate the bundle, substitute its historical contract for today's
 // package/architecture owners, or infer that an absent consumer makes deletion safe.
-const historicalBundleContract='ai/ictc-agent-bundle/config/repository_contract.json';
-const historicalBundleProfile='ai/ictc-agent-bundle/bundle_profile.json';
-const historicalBundleCatalog='ai/ictc-agent-bundle/config/test_catalog.json';
+const historicalBundleContract='docs/archive/ictc-agent-bundle/config/repository_contract.json';
+const historicalBundleProfile='docs/archive/ictc-agent-bundle/bundle_profile.json';
+const historicalBundleCatalog='docs/archive/ictc-agent-bundle/config/test_catalog.json';
 const failures=[];
+// The historic agent handoff is preserved under docs/archive, never restored as a root sibling.
+if(await exists('ai'))failures.push('retired repository path reintroduced: ai/');
 async function exists(rel){try{await access(path.join(root,rel));return true}catch{return false}}
 for(const rel of currentPaths){
  if(!await exists(rel)){failures.push('missing current path: '+rel);continue}
@@ -70,6 +72,7 @@ const legacySchemaNames=[
   "visual-attestation.schema.json",
 ];
 const historicalFixturePaths=[
+  'docs/archive/ictc-agent-bundle/README.md',
  'v3/tests/legacy/app/app.js',
  'v3/tests/legacy/app/index.html',
  'v3/tests/legacy/app/styles.css',
@@ -173,11 +176,11 @@ const atlasText=await readFile(path.join(root,'docs/REPOSITORY_ATLAS.md'),'utf8'
 if(!atlasText.includes('C1-2 · Legacy tooling / F7')||!atlasText.includes('HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS'))failures.push('legacy tooling classification missing from repository Atlas');
 
 if(bundleProfile.canonical_sot!==false||!(bundleProfile.immutable_in_place||[]).includes('config/repository_contract.json'))failures.push('PR8 historical bundle immutable/non-authoritative boundary drift');
-if(!bundleGuide.includes('Historical PR #8')||!bundleGuide.includes('docs/START_HERE.md')||!bundleGuide.includes('npm run docs:check')||!bundleGuide.includes('immutable in place')||!bundleGuide.includes('HOLD_CONSUMERS'))failures.push('AI bundle guide misroutes historical handoff as current');
+if(!bundleGuide.includes('Historical PR #8')||!bundleGuide.includes('docs/START_HERE.md')||!bundleGuide.includes('npm run docs:check')||!bundleGuide.includes('byte-immutable in the archive')||!bundleGuide.includes('HOLD_CONSUMERS'))failures.push('AI bundle guide misroutes historical handoff as current');
 if(legacyCheckers.some(item=>item.exposedAsCurrent))failures.push('historical legacy checker exposed as current npm script');
 const compatibility={
   classification:'HISTORICAL_LINEAGE_HOLD_CONSUMERS',authority:'NONE',source:historicalBundleContract,
-  contractPreservedByThisCheck:false,integrityVerifier:'ai/ictc-agent-bundle/tools/verify_integrity.py',
+  contractPreservedByThisCheck:false,integrityVerifier:'docs/archive/ictc-agent-bundle/tools/verify_integrity.py',
   requiredPaths:historicalRequiredPaths,precommitScriptAvailability:legacyScriptStatus,
   legacyCheckerPaths:legacyCheckers,legacyTooling:historicalToolingLedger,serviceProjection:{historicalModelServices:legacyServiceLiteral?2:null,currentHttpSourceProjectsSeven:httpProjectionSeven,proofScope:'SOURCE_ONLY: server HTTP projection assignment; no generic direct-model or deployed-response equivalence'},upToDateDoctorCertified:false,
   currentEntrypoint:'docs/START_HERE.md',currentTestEntry:'npm test',currentDocsEntry:'npm run docs:check',

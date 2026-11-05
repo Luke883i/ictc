@@ -102,7 +102,7 @@ I metadati storici di una PR suggeriscono accoppiamenti e finalità, ma non prov
 
 **Catena di dipendenze:** classificazione storica → prova di uso corrente → contrasto con owner → scelta della riparazione minima → controprova negativa → commit reversibile → CI sulla HEAD → decisione governata → eventuale ritiro fisico. Non materializzare il nodo successivo se quello precedente è `UNKNOWN` o `REFUTED`.
 
-Per il bundle AI la prima decisione resta `HOLD`: integrity/selftest non provano adeguatezza dei path o assenza di consumer. Per la root toolchain obsoleta è ammessa una `REPAIR` in place, mantenendo diagnostica legacy; nessun trasferimento fisico è richiesto. Gli audit sono proiezioni, non creano un secondo inventario canonico.
+Per il bundle AI PR #8 la disposizione è `PRESERVE` nell'archivio fisico `docs/archive/ictc-agent-bundle/`: i 33 blob Git restano identici e la verifica d'integrità rimane eseguibile; la compatibilità con il precedente URL resta `HOLD_CONSUMERS`, senza attestare l'assenza di consumer esterni o autorizzare delete. Per la root toolchain obsoleta è ammessa una `REPAIR` in place, mantenendo diagnostica legacy. Gli audit sono proiezioni, non creano un secondo inventario canonico.
 
 ## Falsificazione
 
