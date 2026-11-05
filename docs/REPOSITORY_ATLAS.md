@@ -74,6 +74,11 @@ La prima migrazione **di implementazioni** riguarda sei verificatori e **non** i
 
 **DoD locale = separazione reale AND compatibilità dei comandi AND identità semantica del sorgente AND falsificazione fisica AND reversibilità AND CI exact-head.** Questa migrazione può chiudere il solo gruppo TRAMA; non chiude l'intera C1-3d né autorizza l'eliminazione degli adapter. La componente CI del lavoro rimane nel perimetro C1-3e. Documento normativo: [Documentation Standard](DOCUMENTATION_STANDARD.md); istruzioni operative: [v3/README](../v3/README.md) e [Testing](TESTING.md).
 
+
+### C1-3d · Tranche post-#256 — quattro famiglie ulteriori
+
+Il successivo gruppo **non estende il runtime**: sette verificatori `gov-intent-assurance-*`, cinque `public-demo-*`, due `epistemic-lattice-*` e due `demo-suite-3-0-*` sono ricollocati in `v3/tests/`; gli originali in `v3/` restano adapter ESM stabili. La provenienza originale dei sedici file è `main@14d39211e51a`; i sei TRAMA precedenti restano vincolati alla distinta preimage `dcf90ae2`. Oltre alle correzioni degli import relativi, quattro controlli GOV richiedono l'adeguamento deterministico della root calcolata da `import.meta.url`. L'identità del sorgente trasformato, 44 alterazioni fisiche temporanee e sei confronti esecutivi old/new sono obblighi del **verificatore esistente**, non attestazioni automatiche di passaggio. Lavoro di runtime prodotto, decisioni, autorizzazioni, retention e consumer esterni sono esclusi dalla migrazione. Nessuna rimozione di adapter è autorizzata. Il DoD C1-3d globale e la contrazione CI C1-3e restano **OPEN**, così come le altre famiglie ancora non qualificate.
+
 ## Reticolo di lettura
 
 | Livello | Domanda | Fonte principale | Regola |
