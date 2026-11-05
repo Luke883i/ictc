@@ -26,6 +26,29 @@ export function classifyFile(file,registered){
   return {category:'repository:other',evidence:'path-only',disposition:'HOLD_REVIEW'};
 }
 
+/** Directory projection over the existing committed file census. It never assigns authority.
+ * Directory names, byte totals, subtree and direct-file counts are reproducible
+ * from the same tracked file list. They do not confer permission to move/delete.
+ */
+export function directoryCensus(entries){
+ const dirs=new Map();
+ for(const entry of entries){
+   const parts=entry.path.split('/');
+   for(let depth=1;depth<parts.length;depth++){
+     const path=parts.slice(0,depth).join('/');
+     let row=dirs.get(path);
+     if(!row){row={path,depth,directFiles:0,subtreeFiles:0,subtreeBytes:0,dynamicRiskFiles:0,explicitHistoricalOrMigrationFiles:0,referencedFiles:0,retirementCandidates:0,moveOrDeleteAuthorized:false};dirs.set(path,row);}
+     row.subtreeFiles++;
+     row.subtreeBytes+=entry.bytes;
+     if(depth===parts.length-1)row.directFiles++;
+     if(entry.purposeDynamicRisk)row.dynamicRiskFiles++;
+     if(['lineage-only','deprecated-test','migration-only'].includes(entry.purposeState))row.explicitHistoricalOrMigrationFiles++;
+     if(entry.purposeInbound>0)row.referencedFiles++;
+     if(entry.purposeState==='retirement-candidate')row.retirementCandidates++;
+   }
+ }
+ return [...dirs.values()].sort((a,b)=>a.path.localeCompare(b.path,'en'));
+}
 export function census(){
  const tracked=listTracked(),registered=new Map(declaredManifest().documents.map(d=>[d.path,d]));
  const canonical=repositoryPurposeCensus(root),purposeByPath=new Map(canonical.rows.map(x=>[x.path,x]));
@@ -47,17 +70,27 @@ export function census(){
    observedRetirementCandidates:canonical.retirementCandidates.map(x=>x.path),
    declaredSafeDeletes:0,automaticQuarantines:0,
   claimBoundary:'Path and manifest classifications are inventory evidence, NOT complete runtime reachability, absence of external consumers, or authorization to deprecate, quarantine, or delete.'};
- return {status,entries};
+ const directories=directoryCensus(entries);
+ status.directoryCount=directories.length;
+ status.rootDirectFiles=tracked.filter(p=>!p.includes('/')).length;
+ status.directoryDisposition='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF';
+ return {status,entries,directories};
 }
 export function verifyInventory(data,validatedBaseline=null){
-  const e=data.entries,s=data.status;
+  const e=data.entries,s=data.status,dirs=data.directories;
   if(!e.length||e.length!==s.total||s.classified!==s.total||s.missingManifest.length||new Set(e.map(x=>x.path)).size!==e.length)throw new Error('inventory completeness/manifest mismatch');
+  const expectedDirs=directoryCensus(e);
+  if(!Array.isArray(dirs)||JSON.stringify(dirs)!==JSON.stringify(expectedDirs)||s.directoryCount!==expectedDirs.length||
+     s.rootDirectFiles!==e.filter(x=>!x.path.includes('/')).length||s.directoryDisposition!=='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF')
+    throw new Error('directory projection or retirement authorization drift');
+
   if(e.some(x=>!x.disposition.startsWith('HOLD_')&&!['PROTECT_AUTHORITY','PRESERVE_REGISTERED'].includes(x.disposition)))throw new Error('unproved disposition');
   if(s.declaredSafeDeletes!==0||s.automaticQuarantines!==0)throw new Error('unauthorized removal promotion');
   // A validated baseline is supplied only by the bounded mutation test: one full
   // disk/authority verification, then deterministic in-memory receipt perturbations.
   if(validatedBaseline){
     if(JSON.stringify(s)!==JSON.stringify(validatedBaseline.status))throw new Error('summary altered against validated baseline');
+    if(JSON.stringify(dirs)!==JSON.stringify(validatedBaseline.directories))throw new Error('directory projection altered against validated baseline');
     for(let i=0;i<e.length;i++)if(JSON.stringify(e[i])!==JSON.stringify(validatedBaseline.entries[i]))throw new Error('receipt altered against validated baseline');
     return true;
   }

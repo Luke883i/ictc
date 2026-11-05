@@ -18,6 +18,16 @@ const mutations=[
  ['fake-total',d=>{d.status.total++;}],
  ['false-quarantine',d=>{d.status.automaticQuarantines++;}],
  ['forged-purpose-state',d=>{d.entries.find(x=>x.path==='LICENSE.md').purposeState='retirement-candidate';}],
+ ['omitted-directory',d=>{d.directories.pop();}],
+ ['forged-directory-subtree',d=>{d.directories[0].subtreeFiles++;}],
+ ['forged-directory-bytes',d=>{d.directories[0].subtreeBytes++;}],
+ ['false-directory-removal-authority',d=>{d.directories[0].moveOrDeleteAuthorized=true;}],
+ ['forged-dynamic-risk',d=>{d.directories.find(x=>x.path==='v3').dynamicRiskFiles++;}],
+ ['forged-legacy-class',d=>{d.directories.find(x=>x.path==='docs').explicitHistoricalOrMigrationFiles++;}],
+ ['forged-allowed-retirement',d=>{d.directories.find(x=>x.path==='docs').retirementCandidates=1;}],
+ ['false-root-direct-file-count',d=>{d.status.rootDirectFiles++;}],
+ ['false-directory-count',d=>{d.status.directoryCount++;}],
+ ['directory-authorization-laundering',d=>{d.status.directoryDisposition='AUTO_DELETE';}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
