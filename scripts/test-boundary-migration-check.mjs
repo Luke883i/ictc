@@ -1,4 +1,4 @@
-/** C1-3d: derived, zero-authority relocation witness for six existing TRAMA
+/** C1-3d: derived, zero-authority relocation witness for TRAMA and qualified adjacent
  * command oracles. Never certifies physical deletion of compatibility paths. */
 import assert from 'node:assert/strict';
 import {execFileSync,spawnSync} from 'node:child_process';
@@ -10,7 +10,8 @@ import {fileURLToPath} from 'node:url';
 
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const BASE='dcf90ae2a2610bcdefb98b6846b9758e7fae4c1d';
-const files=Object.freeze([
+const BASE_POST='14d39211e51a3d2360f2ed006d3488701451e373';
+const tramaFiles=Object.freeze([
  'trama-causal-qualification-check.mjs',
  'trama-causal-qualification-saturation-1m.mjs',
  'trama-engineering-check.mjs',
@@ -18,15 +19,35 @@ const files=Object.freeze([
  'trama-reconcile-check.mjs',
  'trama-reconcile-saturation.mjs'
 ]);
+const followupFiles=Object.freeze([
+ 'gov-intent-assurance-a-check.mjs',
+ 'gov-intent-assurance-a-saturation-1m.mjs',
+ 'gov-intent-assurance-aggregate-check.mjs',
+ 'gov-intent-assurance-b-check.mjs',
+ 'gov-intent-assurance-b-saturation-1m.mjs',
+ 'gov-intent-assurance-c-check.mjs',
+ 'gov-intent-assurance-c-saturation-1m.mjs',
+ 'public-demo-boundary-check.mjs',
+ 'public-demo-deployment-matrix-check.mjs',
+ 'public-demo-fault-mutation-check.mjs',
+ 'public-demo-mutation-1m.mjs',
+ 'public-demo-runtime-check.mjs',
+ 'epistemic-lattice-check.mjs',
+ 'epistemic-lattice-saturation.mjs',
+ 'demo-suite-3-0-lattice-check.mjs',
+ 'demo-suite-3-0-module-check.mjs'
+]);
+const files=Object.freeze([...tramaFiles,...followupFiles]);
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
  return source.replace(/(\bfrom\s*['"])\.\//g,'$1../')
   .replace(/(\bimport\s*['"])\.\//g,'$1../')
-  .replace(/new URL\((['"])(\.\.\/|\.\/)/g,(_,q,path)=>`new URL(${q}${path==='../'?'../../':'../'}`);
+  .replace(/new URL\((['"])(\.\.\/|\.\/)/g,(_,q,path)=>`new URL(${q}${path==='../'?'../../':'../'}`)
+  .replaceAll("path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..')","path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..')");
 }
 function baseline(name){
- return execFileSync('git',['show',BASE+':v3/'+name],{cwd:root,maxBuffer:2*1024*1024});
+ return execFileSync('git',['show',(tramaFiles.includes(name)?BASE:BASE_POST)+':v3/'+name],{cwd:root,maxBuffer:2*1024*1024});
 }
 function verify(at=root){
  const cards=[];
@@ -84,7 +105,11 @@ if(process.argv.includes('--falsify')){
  const child=(path,args=[])=>spawnSync(process.execPath,[path,...args],{cwd:root,encoding:'utf8',timeout:120000});
  const runs=[
   ['trama-causal-qualification-check.mjs',[]],
-  ['trama-causal-qualification-saturation-1m.mjs',['--trials','100000','--tail','10000','--seed','7000000000000104730']]
+  ['trama-causal-qualification-saturation-1m.mjs',['--trials','100000','--tail','10000','--seed','7000000000000104730']],
+  ['gov-intent-assurance-aggregate-check.mjs',[]],
+  ['public-demo-boundary-check.mjs',[]],
+  ['epistemic-lattice-check.mjs',[]],
+  ['demo-suite-3-0-module-check.mjs',[]]
  ].map(([name,args])=>{
   const old=child('v3/'+name,args),next=child('v3/tests/'+name,args);
   assert.equal(old.status,0,'old command failed '+name+' '+old.stderr);
@@ -122,18 +147,18 @@ if(process.argv.includes('--falsify')){
    finiteProfiles:finite,finiteErrors,indispensable,
    minimumFixedWidthDiagnosticBits:Math.ceil(Math.log2(finite)),
    noNoveltyRelativeToFiniteFiveAxisFamily:true,
-   claimBoundary:'Only seeded in-memory five-axis scenarios. Twelve real disposable file mutations and two command comparisons are separate observations; no full-repository 10M source edits or external-URL evidence.'};
+   claimBoundary:'Only seeded in-memory five-axis scenarios. Physical disposable file mutations and six command comparisons are separate observations; no full-repository 10M source edits or external-URL evidence.'};
 }
-const result={schema:'ictc-c1-3d-test-relocation/v1',authorityEffect:'NONE',baseline:BASE,
+const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',baseline:{trama:BASE,followup:BASE_POST},
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
    totalV3VerificationLikeCandidatesBefore:447,
-   selectedVerificationModules:6,remainingVerificationLikeCandidates:441,
+   selectedVerificationModules:files.length,remainingVerificationLikeCandidates:447-files.length,
    externalAndDynamicConsumers:'UNKNOWN',compatibilityRemoval:'BLOCKED'},
- claimBoundary:'Six real TRAMA verifier implementations have moved to v3/tests/ with stable old paths. Repository-wide verifier separation, external consumer review, and adapter deletion remain OPEN. Neither model saturation nor a CI run closes C1 or C1-3d globally.'};
+ claimBoundary:'Six TRAMA verifiers plus sixteen subsequently qualified GOV/public-demo/epistemic/DEMO verifiers have moved to v3/tests/ while stable old paths remain. Runtime import/path assumptions have explicit bounded rewrites. All other verifier families, external consumers, and adapter retirement remain OPEN. Neither model saturation nor CI alone closes global C1-3d.'};
 mkdirSync(join(root,'artifacts'),{recursive:true});
 writeFileSync(join(root,'artifacts/c1-3d-test-boundary.json'),JSON.stringify(result,null,2)+'\n');
-console.log(JSON.stringify({ok:true,selected:6,movedBytes:recorded.flatImplementationBytesRelocated,
+console.log(JSON.stringify({ok:true,selected:files.length,movedBytes:recorded.flatImplementationBytesRelocated,
  physicalMutantsKilled:negative?.physicalMutantsKilled||0,realCommandComparisons:negative?.realCommandEquivalence.length||0,
  modelTrials:model?.trials||0,safeToDeleteAdapters:false,fullC13dClosed:false}));
