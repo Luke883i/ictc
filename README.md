@@ -49,7 +49,7 @@ Node.js ESM, frontend vanilla e SQLite: ingresso `v3/bootstrap.mjs`, HTTP `v3/se
 <details>
 <summary><strong>Governance</strong> — PR, sicurezza, responsabilita</summary>
 
-[CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md) e [SECURITY](SECURITY.md). `CODEOWNERS` e CI locale non costituiscono approvazione indipendente, branch protection o deployment assurance.
+[CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md) e [SECURITY](SECURITY.md). `.github/CODEOWNERS` e CI locale non costituiscono approvazione indipendente, branch protection o deployment assurance.
 </details>
 
 <details>

@@ -37,8 +37,8 @@ export function validateContributorRuntimeModel({contract,policy,projection}){
   check(dod.enterpriseRuntime?.compatibilityPath==='v3/runtime-store.mjs','compatibility-owner');
   check(dod.enterpriseRuntime?.mustRemainDistinct===true,'runtime-mode-collapse');
   check(dod.codeowners?.canonical==='.github/CODEOWNERS','canonical-codeowners');
-  check(dod.codeowners?.root==='CODEOWNERS','root-codeowners');
-  check(dod.codeowners?.rootMode==='pointer-only','root-codeowners-mode');
+  check(dod.codeowners?.root===null,'root-codeowners-must-be-absent');
+  check(dod.codeowners?.rootMode==='canonical-only','root-codeowners-mode');
   const failureRoutes=dod.ciFailureRouting||[];
   check(JSON.stringify(failureRoutes.map(item=>item.id))===JSON.stringify(REQUIRED_FAILURE_ROUTE_IDS),'failure-route-identity');
   check(failureRoutes.every(item=>routeIds.includes(item.routeId)&&item.localReproducer),'failure-route-binding');
@@ -47,7 +47,7 @@ export function validateContributorRuntimeModel({contract,policy,projection}){
     check(projection.branchPolicyVisible===true,'branch-policy-doc-visibility');
     check(projection.enterpriseRouteVisible===true,'enterprise-route-doc-visibility');
     check(projection.failureRoutingVisible===true,'failure-routing-doc-visibility');
-    check(projection.rootCodeownersPointer===true,'root-codeowners-pointer');
+    check(projection.rootCodeownersAbsent===true,'root-codeowners-must-be-absent');
     check(projection.canonicalCodeownersHasRules===true,'canonical-codeowners-rules');
     check(projection.enterpriseOwnerMatches===true,'enterprise-owner-source-drift');
     check(projection.durableOwnerMatches===true,'durable-owner-source-drift');

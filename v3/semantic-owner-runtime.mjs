@@ -39,7 +39,7 @@ export function validateSemanticOwnerContract(contract){
   check(contributor.enterpriseRuntime?.mustRemainDistinct===true,'contributor-runtime-mode-collapse');
   check(contributor.enterpriseRuntime?.enterpriseOwner==='v3/runtime/enterprise-runtime-kernel.mjs','contributor-enterprise-owner');
   check(contributor.enterpriseRuntime?.durableOwner==='v3/runtime/postgres-enterprise-authority.mjs','contributor-durable-owner');
-  check(contributor.codeowners?.canonical==='.github/CODEOWNERS'&&contributor.codeowners?.rootMode==='pointer-only','contributor-codeowners');
+  check(contributor.codeowners?.canonical==='.github/CODEOWNERS'&&contributor.codeowners?.rootMode==='canonical-only'&&contributor.codeowners?.root===null,'contributor-codeowners');
   check(contributor.externalHumanValidation==='E3-HUMAN','contributor-human-boundary');
   const freshness=contract?.freshness||{};
   check(Array.isArray(freshness.inputs)&&freshness.inputs.length>=8,'freshness-inputs');
