@@ -46,6 +46,23 @@ const cases=[
  {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'v3/tests/legacy/v1/release.json'","'v3/release-identity.json'"),expect:'historical tooling source signature drift'},
  ...toolFiles.map(name=>({id:'legacy-tool-deleted-'+name,file:'scripts/'+name,bad:()=>null,expect:'historical tooling source signature drift'}))
 ];
+const legacySchemaNames=[
+  "action-frame.schema.json",
+  "action-wiring.schema.json",
+  "audit-event.schema.json",
+  "core-ui.schema.json",
+  "core-workspaces.schema.json",
+  "finding.schema.json",
+  "gap-registry.schema.json",
+  "matter.schema.json",
+  "outcome-envelope.schema.json",
+  "receipt.schema.json",
+  "scout-job.schema.json",
+  "source-record.schema.json",
+  "trace-view.schema.json",
+  "ui-wiring-manifest.schema.json",
+  "visual-attestation.schema.json",
+];
 const absentRootMutants=[
  {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
  {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
@@ -69,7 +86,8 @@ const absentRootMutants=[
  {id:'former-root-10-resurrected',file:'v1/release.json',content:'path-reappearance\n'},
  {id:'former-root-11-resurrected',file:'v1/release.mjs',content:'path-reappearance\n'},
  {id:'former-root-12-resurrected',file:'v1/saturation.mjs',content:'path-reappearance\n'},
- {id:'former-root-13-resurrected',file:'v1/stability-audit.mjs',content:'path-reappearance\n'}
+ {id:'former-root-13-resurrected',file:'v1/stability-audit.mjs',content:'path-reappearance\n'},
+ ...legacySchemaNames.map(name=>({id:'former-schema-root-'+name,file:'schemas/'+name,content:'{}\n'}))
 ];
 const historicalFixturePaths=[
  'v3/tests/legacy/app/app.js',
@@ -85,6 +103,7 @@ const historicalFixturePaths=[
  'v3/tests/legacy/v1/release.mjs',
  'v3/tests/legacy/v1/saturation.mjs',
  'v3/tests/legacy/v1/stability-audit.mjs',
+ ...legacySchemaNames.map(name=>'v3/tests/legacy/schemas/'+name),
 ];
 const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+historicalFixturePaths.length+3,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
 // Runtime path-boundary oracle: unlike source-only checks, this actually loads

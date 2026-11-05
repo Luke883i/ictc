@@ -19,6 +19,8 @@ Il launcher `./ictc.sh` resta un supervisor locale; l'entrypoint applicativo can
 
 ## Flusso runtime
 
+I 15 JSON Schema storici sono conservati sotto `v3/tests/legacy/schemas/`: sono fixture di lineage, non schemi runtime o una seconda autorità API. Il loro `$id` storico resta invariato.
+
 ### Rischi di falsa eliminabilità nel runtime
 
 `v3/public/` è servita anche attraverso URI HTTP: un asset non importato nel grafo JavaScript può avere consumer esterni non osservati. Altre dipendenze nascono da stringhe costruite a runtime, workflow, caricamento di fixture e input di configurazione. Prima del ritiro seguire la [policy di conservazione](../docs/DOCUMENTATION_STANDARD.md) e il [metodo di testing](../docs/TESTING.md); gli import ESM sono un sottoinsieme delle relazioni rilevanti.

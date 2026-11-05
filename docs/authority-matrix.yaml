@@ -114,7 +114,7 @@ surfaces:
   api:
     authority: docs/openapi.yaml
   schemas:
-    authority: schemas/
+    authority: v3/tests/legacy/schemas/
     classification: legacy-lineage-debt
     current_replacement: api+runtime_handlers
     may_define_current_runtime: false

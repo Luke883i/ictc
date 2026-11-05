@@ -52,6 +52,23 @@ for(const rel of ['ictc-v3.sh','CODEOWNERS','runtime/blobs/.gitkeep',
  'audit/convergence-main115-10m.json']){
  if(await exists(rel))failures.push('retired repository path reintroduced: '+rel);
 }
+const legacySchemaNames=[
+  "action-frame.schema.json",
+  "action-wiring.schema.json",
+  "audit-event.schema.json",
+  "core-ui.schema.json",
+  "core-workspaces.schema.json",
+  "finding.schema.json",
+  "gap-registry.schema.json",
+  "matter.schema.json",
+  "outcome-envelope.schema.json",
+  "receipt.schema.json",
+  "scout-job.schema.json",
+  "source-record.schema.json",
+  "trace-view.schema.json",
+  "ui-wiring-manifest.schema.json",
+  "visual-attestation.schema.json",
+];
 const historicalFixturePaths=[
  'v3/tests/legacy/app/app.js',
  'v3/tests/legacy/app/index.html',
@@ -69,6 +86,13 @@ const historicalFixturePaths=[
 ];
 for(const rel of historicalFixturePaths){
  if(!await exists(rel))failures.push('missing historical verification fixture: '+rel);
+}
+// Preserve the legacy schema bytes within the existing verification boundary;
+// reject restoration of the former root paths, without inferring external URL safety.
+for(const name of legacySchemaNames){
+ const original='schemas/'+name,relocated='v3/tests/legacy/schemas/'+name;
+ if(await exists(original))failures.push('retired repository path reintroduced: '+original);
+ if(!await exists(relocated))failures.push('missing historical verification fixture: '+relocated);
 }
 // Current root must not silently restore the four older parallel app trees.
 for(const rel of [

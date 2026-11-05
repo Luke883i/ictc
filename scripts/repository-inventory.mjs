@@ -22,7 +22,6 @@ export function classifyFile(file,registered){
   if(file.startsWith('artifacts/')||file.startsWith('dist/'))return {category:'artifact:tracked',evidence:'directory heuristic only',disposition:'HOLD_REVIEW'};
   if(file.startsWith('ai/')||file==='AGENTS.md'||file.endsWith('/AGENTS.md'))return {category:'ai:development-context',evidence:'directory/name heuristic only',disposition:'HOLD_REVIEW'};
   if(file.startsWith('v3/')||file.startsWith('app/')||file.startsWith('runtime/')||file.startsWith('lib/'))return {category:'software:candidate',evidence:'directory heuristic only',disposition:'HOLD_CONSUMERS'};
-  if(file.startsWith('schemas/'))return {category:'contract:candidate',evidence:'schema directory',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('v1/'))return {category:'legacy:candidate',evidence:'directory only; compatibility unknown',disposition:'HOLD_REVIEW'};
   return {category:'repository:other',evidence:'path-only',disposition:'HOLD_REVIEW'};
 }
