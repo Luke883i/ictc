@@ -18,7 +18,9 @@ For historical forensic checks **only**, the bundle remains byte-preserved and v
 ```bash
 python3 ai/ictc-agent-bundle/tools/verify_integrity.py ai/ictc-agent-bundle
 python3 ai/ictc-agent-bundle/tools/selftest.py ai/ictc-agent-bundle
-python3 ai/ictc-agent-bundle/tools/build_bundle.py ai/ictc-agent-bundle --zip dist/ICTC_AI_HANDOFF_BUNDLE_V1.zip
+python3 ai/ictc-agent-bundle/tools/build_bundle.py ai/ictc-agent-bundle --zip artifacts/ICTC_AI_HANDOFF_BUNDLE_V1.zip
 ```
 
 The sealed bundle and its contract are **immutable in place**. Do not edit its source to pretend that PR #8 described the present architecture. If a new handoff is justified, create an explicitly versioned successor with provenance and consumer review; no successor is created by this document. `scripts/repository-contract.mjs` diagnoses current-vs-historical paths and commands without changing current owners. `HOLD_CONSUMERS` is *not* permission to remove, rename, redirect, overwrite, or deprecate a public path; unknown external consumers remain unproven. The inherited standalone `START.py --repo` / `doctor.py` should be expected to report historical contract drift, **not** current checkout health.
+
+**C1 · generated-artifact contraction.** The previous tracked `dist/README.md` and `dist/ICTC_AI_HANDOFF_BUNDLE_V1.zip.sha256` were historical build instructions and a historical checksum, **not** the ZIP itself. Their original bytes remain available in the immutable Git preimage [`26ac705e`](https://github.com/Luke883i/ictc/tree/26ac705e331511fe1d8f1db93b8167ad795e506a/dist). To regenerate the sealed source without writing new files into the tracked root, write the generated ZIP to the already ignored `artifacts/` directory. Original PR8 source bytes, manifest and integrity verification are unchanged. This operation does **not** prove that external consumers of historical `dist/` URLs are absent.

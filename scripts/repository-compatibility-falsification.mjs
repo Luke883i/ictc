@@ -49,7 +49,14 @@ const cases=[
 const absentRootMutants=[
  {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
  {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
- {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''}
+ {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''},
+ {id:'archived-historical-1-resurrected',file:'dist/README.md',content:'archived-only\n'},
+ {id:'archived-historical-2-resurrected',file:'dist/ICTC_AI_HANDOFF_BUNDLE_V1.zip.sha256',content:'archived-only\n'},
+ {id:'archived-historical-3-resurrected',file:'audit/CHAIN_MAIN115.json',content:'{}\n'},
+ {id:'archived-historical-4-resurrected',file:'audit/CHAIN_MAIN115_README.md',content:'archived-only\n'},
+ {id:'archived-historical-5-resurrected',file:'audit/CONVERGENCE_MAIN115_CLAIM_BOUNDARY.md',content:'archived-only\n'},
+ {id:'archived-historical-6-resurrected',file:'audit/README_CONVERGENCE_MAIN115.md',content:'archived-only\n'},
+ {id:'archived-historical-7-resurrected',file:'audit/convergence-main115-10m.json',content:'{}\n'}
 ];
 const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+1,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
 const invoke=()=>{
@@ -74,7 +81,7 @@ try{
  for(const test of absentRootMutants){
   const p=join(candidate,test.file);mkdirSync(join(p,'..'),{recursive:true});writeFileSync(p,test.content);
   const actual=invoke();rmSync(p,{force:true});
-  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('noncanonical root alias reintroduced: '+test.file));
+  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+test.file));
   result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.file))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
  }

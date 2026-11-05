@@ -40,8 +40,17 @@ for(const rel of currentPaths){
 }
 // C1 root contraction: these former aliases/placeholders must not silently re-enter.
 // The active supervisor ictc.sh and canonical .github/CODEOWNERS remain protected above.
-for(const rel of ['ictc-v3.sh','CODEOWNERS','runtime/blobs/.gitkeep']){
- if(await exists(rel))failures.push('noncanonical root alias reintroduced: '+rel);
+// Keep the active checkout free of relocated historic receipts and generated handoff records.
+// This is a path-removal regression guard, not external-consumer clearance.
+for(const rel of ['ictc-v3.sh','CODEOWNERS','runtime/blobs/.gitkeep',
+ 'dist/README.md',
+ 'dist/ICTC_AI_HANDOFF_BUNDLE_V1.zip.sha256',
+ 'audit/CHAIN_MAIN115.json',
+ 'audit/CHAIN_MAIN115_README.md',
+ 'audit/CONVERGENCE_MAIN115_CLAIM_BOUNDARY.md',
+ 'audit/README_CONVERGENCE_MAIN115.md',
+ 'audit/convergence-main115-10m.json']){
+ if(await exists(rel))failures.push('retired repository path reintroduced: '+rel);
 }
 const devBootstrap=await readFile(path.join(root,'.devcontainer/post-create.sh'),'utf8');
 if(devBootstrap.includes('ictc-v3.sh')||!devBootstrap.includes('chmod +x ictc.sh'))failures.push('devcontainer launcher compatibility drift');
