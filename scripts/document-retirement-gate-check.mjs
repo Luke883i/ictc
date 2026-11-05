@@ -2,9 +2,11 @@
  * A missing consumer is never proof of absence, and this script never authorizes deletion.
  */
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync} from 'node:fs';
+import {execFileSync,spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
-import {join} from 'node:path';
+import {join,dirname} from 'node:path';
 import {root} from './repository-inventory.mjs';
 const dir=join(root,'artifacts');
 const read=name=>JSON.parse(readFileSync(join(dir,name),'utf8'));
@@ -68,30 +70,56 @@ const cards=review.entries.map(entry=>{
      scope:'isolated documentation lattice only; not full runtime/CI/deployment/human retention'},
    obligations:statuses,decision:'HOLD_UNKNOWN',safeDelete:false,blocked};
 });
-// Fixed review sample of six pre-existing, explicitly historical V2 documents.
- // A bounded pilot selection is NOT a new lifecycle registry or a declaration of no consumers.
-const historicalPilotPaths=Object.freeze([
- 'docs/17_SATURATION_V2.md',
- 'docs/23_VALIDATION_REPORT_V2.md',
- 'docs/24_BLUEPRINT_V2_ITALIANO.md',
- 'docs/V2_0_EPISTEMIC_LATTICE_CONVERGENCE.md',
- 'docs/V2_GRC_CONVERGENCE.md',
- 'docs/V2_GRC_DOD.md'
-]);
+/** C1-3c: bounded historical witnesses, not a lifecycle registry or a
+ * safe-delete list. PR associations are immutable GitHub observations; only
+ * local Git ancestry, historical blobs and exact file bytes are asserted here.
+ * Original paths and public URLs remain unchanged.
+ */
+const historicalPilotOrigins=Object.freeze({
+ 'docs/17_SATURATION_V2.md':{commit:'c210b79218f648ac3bc0f8ea25da003082f3e75e',observedPr:2},
+ 'docs/23_VALIDATION_REPORT_V2.md':{commit:'e7829443ad9f9b5087fb6d35f3fe387ddaae3d7e',observedPr:1},
+ 'docs/24_BLUEPRINT_V2_ITALIANO.md':{commit:'e7829443ad9f9b5087fb6d35f3fe387ddaae3d7e',observedPr:1},
+ 'docs/V2_0_EPISTEMIC_LATTICE_CONVERGENCE.md':{commit:'84d7b64566dbf75c8e6fef909057c10e41bf086d',observedPr:59},
+ 'docs/V2_GRC_CONVERGENCE.md':{commit:'a4fc60a9b0b11e25c511307e90c5e03724552cc4',observedPr:46},
+ 'docs/V2_GRC_DOD.md':{commit:'b43506d66c8fa660ececb0f3ff9de7052bb93bec',observedPr:46}
+});
+function historicalWitness(path,origin,bytesRoot=root){
+ assert.match(origin.commit,/^[a-f0-9]{40}$/);
+ const ancestor=spawnSync('git',['merge-base','--is-ancestor',origin.commit,'HEAD'],{cwd:root,encoding:'utf8'});
+ assert.equal(ancestor.status,0,'origin commit not an ancestor of candidate: '+path);
+ const opts={cwd:root,encoding:'utf8'};
+ const originBlob=execFileSync('git',['rev-parse',origin.commit+':'+path],opts).trim();
+ const candidateBlob=execFileSync('git',['rev-parse','HEAD:'+path],opts).trim();
+ assert.match(originBlob,/^[a-f0-9]{40}$/);
+ assert.equal(candidateBlob,originBlob,'Git tree blob drift: '+path);
+ const oldBytes=execFileSync('git',['show',origin.commit+':'+path],{cwd:root,maxBuffer:2*1024*1024});
+ const currentBytes=readFileSync(join(bytesRoot,path));
+ assert.equal(digest(currentBytes),digest(oldBytes),'historical content drift: '+path);
+ return {originCommit:origin.commit,originPrObservation:origin.observedPr,
+   originBlob,candidateBlob,exactBytesPreserved:true,ancestorVerified:true,
+   githubPrAssociationVerifiedByCi:false};
+}
+const historicalPilotPaths=Object.keys(historicalPilotOrigins);
 const cardsByPath=new Map(cards.map(x=>[x.path,x]));
 const lineagePilot=historicalPilotPaths.map(path=>{
- const card=cardsByPath.get(path),tracked=inventoryByPath.get(path);
+ const card=cardsByPath.get(path),tracked=inventoryByPath.get(path),origin=historicalPilotOrigins[path];
  assert.ok(card&&tracked,'historical sample path missing from existing owner census: '+path);
+ assert.equal(tracked.category,'document:unregistered','historical sample unexpectedly entered current manifest: '+path);
  assert.equal(tracked.sha256,card.sha256);
  assert.equal(card.testedRemoval.restored,true);
  assert.equal(card.safeDelete,false);
+ const history=historicalWitness(path,origin);
+ const logicalHandling=tracked.purposeState==='lineage-only'?'ARCHIVE_LOGICAL':'PRESERVE_EXISTING_REFERENCES';
  return {path,sha256:card.sha256,canonicalPurpose:tracked.purposeState,canonicalReason:tracked.purposeReason,
-   observedConsumerSources:card.knownConsumers,independentOnlyReaders:card.reconciliation.independentOnlyReaders,
+   historicalWitness:history,logicalHandling,
+   disposition:'HOLD_REVIEW',observedConsumerSources:card.knownConsumers,
+   independentOnlyReaders:card.reconciliation.independentOnlyReaders,
    unresolvedBasenameMentions:card.reconciliation.unresolvedBasenameMentions,
    isolatedDocsGateDetected:card.testedRemoval.docsCheckDetected,isolatedRestorationVerified:card.testedRemoval.restored,
+   claimPreservation:'ORIGINAL_BYTES_AND_PUBLIC_PATH_UNCHANGED',
    unproven:{humanRetention:'UNKNOWN',externalAndPublicUrls:'UNKNOWN',dynamicConsumers:'UNKNOWN',
      fullRuntimeAndCiRemoval:'UNKNOWN',prHistoryAndSemanticUniqueness:'UNKNOWN'},
-   disposition:'HOLD_REVIEW',physicalMoveAuthorized:false,physicalDeleteAuthorized:false};
+   physicalMoveAuthorized:false,physicalDeleteAuthorized:false};
 });
 const crossOracle={
  independentlyQualified:independentByPath.size,
@@ -114,6 +142,12 @@ function verify(r){
  assert.equal(r.lineagePilot.length,6);
  assert.equal(new Set(r.lineagePilot.map(x=>x.path)).size,6);
  assert.ok(r.lineagePilot.every(x=>x.disposition==='HOLD_REVIEW'&&!x.physicalMoveAuthorized&&!x.physicalDeleteAuthorized));
+ assert.ok(r.lineagePilot.every(x=>x.claimPreservation==='ORIGINAL_BYTES_AND_PUBLIC_PATH_UNCHANGED'&&
+   x.historicalWitness.exactBytesPreserved&&x.historicalWitness.ancestorVerified&&
+   x.historicalWitness.originBlob===x.historicalWitness.candidateBlob&&
+   x.historicalWitness.githubPrAssociationVerifiedByCi===false));
+ assert.ok(r.lineagePilot.every(x=>['ARCHIVE_LOGICAL','PRESERVE_EXISTING_REFERENCES'].includes(x.logicalHandling)));
+ assert.ok(r.lineagePilot.every(x=>Object.values(x.unproven).every(y=>y==='UNKNOWN')));
  assert.ok(r.cards.every(x=>x.reconciliation.absentReferenceIsProof===false));
  assert.deepEqual(r,buildExpected());return true;
 }
@@ -137,10 +171,31 @@ if(process.argv.includes('--falsify')){
   x=>x.lineagePilot[0].physicalMoveAuthorized=true,
   x=>x.lineagePilot[0].physicalDeleteAuthorized=true,
   x=>x.lineagePilot[0].unproven.humanRetention='VERIFIED',
-  x=>x.lineagePilot[0].sha256='0'.repeat(64)
+  x=>x.lineagePilot[0].sha256='0'.repeat(64),
+  x=>x.lineagePilot[0].historicalWitness.originBlob='0'.repeat(40),
+  x=>x.lineagePilot[0].historicalWitness.ancestorVerified=false,
+  x=>x.lineagePilot[0].historicalWitness.githubPrAssociationVerifiedByCi=true,
+  x=>x.lineagePilot[0].claimPreservation='ORIGINAL_REPLACED',
+  x=>x.lineagePilot[0].logicalHandling='RETIRE_PHYSICAL'
  ];
  let killed=0;for(const mutate of attackers){const candidate=structuredClone(result);mutate(candidate);try{verify(candidate);}catch{killed++;}}
- assert.equal(killed,attackers.length,'retirement falsification escaped');result.negativeMutants={killed,total:attackers.length};
+ assert.equal(killed,attackers.length,'retirement falsification escaped');
+ // Six real, disposable on-disk byte edits: every altered historical source must
+ // be rejected by the same origin witness, with the Git checkout untouched.
+ const scratch=mkdtempSync(join(tmpdir(),'ictc-c1-3c-lineage-'));
+ let physicalKilled=0;
+ try{
+   for(const [path,origin] of Object.entries(historicalPilotOrigins)){
+     const target=join(scratch,path);
+     mkdirSync(dirname(target),{recursive:true});
+     writeFileSync(target,Buffer.concat([readFileSync(join(root,path)),Buffer.from('\\n# FALSE HISTORICAL CLAIM\\n')]));
+     try{historicalWitness(path,origin,scratch);}
+     catch(error){if(/historical content drift/.test(String(error.message)))physicalKilled++;else throw error;}
+   }
+ }finally{rmSync(scratch,{recursive:true,force:true});}
+ assert.equal(physicalKilled,historicalPilotPaths.length,'historical source mutation escaped');
+ result.negativeMutants={killed,total:attackers.length,physicalBytesMutatedAndRejected:physicalKilled};
+
 }
 mkdirSync(dir,{recursive:true});writeFileSync(join(dir,'document-retirement-gate.json'),JSON.stringify(result,null,2)+'\n');
-console.log(JSON.stringify({ok:true,documentCards:result.qualified,pilotDocuments:result.lineagePilot.length,independentlyQualified:result.crossOracle.independentlyQualified,sourceHashesBound:result.crossOracle.hashBoundToCanonicalInventory,independentOnlyPositiveDocuments:result.crossOracle.independentExclusivePositiveDocuments,positiveEdges:result.positiveConsumerEdges,noObservedEdges:result.noObservedConsumerEdges,safeDeletes:0,negative:result.negativeMutants||null}));
+console.log(JSON.stringify({ok:true,documentCards:result.qualified,pilotDocuments:result.lineagePilot.length,independentlyQualified:result.crossOracle.independentlyQualified,sourceHashesBound:result.crossOracle.hashBoundToCanonicalInventory,independentOnlyPositiveDocuments:result.crossOracle.independentExclusivePositiveDocuments,positiveEdges:result.positiveConsumerEdges,noObservedEdges:result.noObservedConsumerEdges,historySourceBytesPreserved:result.lineagePilot.filter(x=>x.historicalWitness.exactBytesPreserved).length,logicalArchives:result.lineagePilot.filter(x=>x.logicalHandling==='ARCHIVE_LOGICAL').length,physicalArchives:0,safeDeletes:0,negative:result.negativeMutants||null}));
