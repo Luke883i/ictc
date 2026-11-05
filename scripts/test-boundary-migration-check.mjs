@@ -19,9 +19,7 @@ const files=Object.freeze([
  'trama-reconcile-saturation.mjs'
 ]);
 const digest=b=>createHash('sha256').update(b).digest('hex');
-const wrapper=name=>`/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */
-import './tests/${name}';
-`;
+const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
  return source.replace(/(\bfrom\s*['"])\.\//g,'$1../')
   .replace(/(\bimport\s*['"])\.\//g,'$1../')
