@@ -52,6 +52,66 @@ for(const rel of ['ictc-v3.sh','CODEOWNERS','runtime/blobs/.gitkeep',
  'audit/convergence-main115-10m.json']){
  if(await exists(rel))failures.push('retired repository path reintroduced: '+rel);
 }
+const legacySchemaNames=[
+  "action-frame.schema.json",
+  "action-wiring.schema.json",
+  "audit-event.schema.json",
+  "core-ui.schema.json",
+  "core-workspaces.schema.json",
+  "finding.schema.json",
+  "gap-registry.schema.json",
+  "matter.schema.json",
+  "outcome-envelope.schema.json",
+  "receipt.schema.json",
+  "scout-job.schema.json",
+  "source-record.schema.json",
+  "trace-view.schema.json",
+  "ui-wiring-manifest.schema.json",
+  "visual-attestation.schema.json",
+];
+const historicalFixturePaths=[
+ 'v3/tests/legacy/app/app.js',
+ 'v3/tests/legacy/app/index.html',
+ 'v3/tests/legacy/app/styles.css',
+ 'v3/tests/legacy/data/seed.json',
+ 'v3/tests/legacy/lib/domain.mjs',
+ 'v3/tests/legacy/v1/buyer-simulation.mjs',
+ 'v3/tests/legacy/v1/fixture-audit.mjs',
+ 'v3/tests/legacy/v1/fixtures/manifest.json',
+ 'v3/tests/legacy/v1/fixtures/release-evidence.txt',
+ 'v3/tests/legacy/v1/release.json',
+ 'v3/tests/legacy/v1/release.mjs',
+ 'v3/tests/legacy/v1/saturation.mjs',
+ 'v3/tests/legacy/v1/stability-audit.mjs',
+];
+for(const rel of historicalFixturePaths){
+ if(!await exists(rel))failures.push('missing historical verification fixture: '+rel);
+}
+// Preserve the legacy schema bytes within the existing verification boundary;
+// reject restoration of the former root paths, without inferring external URL safety.
+for(const name of legacySchemaNames){
+ const original='schemas/'+name,relocated='v3/tests/legacy/schemas/'+name;
+ if(await exists(original))failures.push('retired repository path reintroduced: '+original);
+ if(!await exists(relocated))failures.push('missing historical verification fixture: '+relocated);
+}
+// Current root must not silently restore the four older parallel app trees.
+for(const rel of [
+ 'app/app.js',
+ 'app/index.html',
+ 'app/styles.css',
+ 'data/seed.json',
+ 'lib/domain.mjs',
+ 'v1/buyer-simulation.mjs',
+ 'v1/fixture-audit.mjs',
+ 'v1/fixtures/manifest.json',
+ 'v1/fixtures/release-evidence.txt',
+ 'v1/release.json',
+ 'v1/release.mjs',
+ 'v1/saturation.mjs',
+ 'v1/stability-audit.mjs',
+]){
+ if(await exists(rel))failures.push('retired repository path reintroduced: '+rel);
+}
 const devBootstrap=await readFile(path.join(root,'.devcontainer/post-create.sh'),'utf8');
 if(devBootstrap.includes('ictc-v3.sh')||!devBootstrap.includes('chmod +x ictc.sh'))failures.push('devcontainer launcher compatibility drift');
 const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -87,9 +147,9 @@ for(const item of legacyCheckers)item.exists=await exists(item.path);
 // external-consumer absence proof. A historical checker must not quietly become
 // a current npm entrypoint, a CI command, or a rewritten current-runtime claim.
 const historicalTooling=[
-  {path:'scripts/schema-check.mjs',tokens:["../lib/domain.mjs",'data', 'seed'],reason:'v1-era schema/seed and legacy domain fixture; a passing invocation is not current runtime assurance'},
-  {path:'scripts/ui-wiring-check.mjs',tokens:["'app/index.html'","'app/app.js'","'server.mjs'"],reason:'checks historical app/ paths and missing root server.mjs; not v3/UI wiring'},
-  {path:'scripts/verify.mjs',tokens:["'v1/release.json'","../lib/domain.mjs"],reason:'checks historical release/domain identity; not current package or runtime release certification'}
+  {path:'scripts/schema-check.mjs',tokens:["../v3/tests/legacy/lib/domain.mjs",'data', 'seed'],reason:'v1-era schema/seed and legacy domain fixture; a passing invocation is not current runtime assurance'},
+  {path:'scripts/ui-wiring-check.mjs',tokens:["'v3/tests/legacy/app/index.html'","'v3/tests/legacy/app/app.js'","'server.mjs'"],reason:'checks historical app/ paths and missing root server.mjs; not v3/UI wiring'},
+  {path:'scripts/verify.mjs',tokens:["'v3/tests/legacy/v1/release.json'","../v3/tests/legacy/lib/domain.mjs"],reason:'checks historical release/domain identity; not current package or runtime release certification'}
 ];
 const workflowNames=(await readdir(path.join(root,'.github/workflows'))).filter(name=>/\.ya?ml$/.test(name)).sort();
 const workflowSources=await Promise.all(workflowNames.map(async name=>({name,text:await readFile(path.join(root,'.github/workflows',name),'utf8')})));

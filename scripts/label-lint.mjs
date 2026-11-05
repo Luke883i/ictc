@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
-const targets = ['app/index.html','app/app.js','data/seed.json'];
+const targets = ['v3/tests/legacy/app/index.html','v3/tests/legacy/app/app.js','v3/tests/legacy/data/seed.json'];
 const forbidden = [
   /presidio solido/i,
   /compliance score/i,

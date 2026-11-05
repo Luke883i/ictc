@@ -2,8 +2,8 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 
-const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
-export const RELEASE_PATH = path.join(ROOT, 'v1', 'release.json');
+const ROOT = path.resolve(new URL('../../../..', import.meta.url).pathname);
+export const RELEASE_PATH = path.join(ROOT, 'v3', 'tests', 'legacy', 'v1', 'release.json');
 const LOOPBACKS = new Set(['127.0.0.1', 'localhost', '::1']);
 export const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 export async function readReleaseManifest() { return JSON.parse(await readFile(RELEASE_PATH, 'utf8')); }

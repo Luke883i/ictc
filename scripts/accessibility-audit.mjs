@@ -3,9 +3,9 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
-const html = await readFile(path.join(root, 'app/index.html'), 'utf8');
-const css = await readFile(path.join(root, 'app/styles.css'), 'utf8');
-const js = await readFile(path.join(root, 'app/app.js'), 'utf8');
+const html = await readFile(path.join(root, 'v3/tests/legacy/app/index.html'), 'utf8');
+const css = await readFile(path.join(root, 'v3/tests/legacy/app/styles.css'), 'utf8');
+const js = await readFile(path.join(root, 'v3/tests/legacy/app/app.js'), 'utf8');
 const artifactDir = path.join(root, 'artifacts');
 await mkdir(artifactDir, { recursive: true });
 

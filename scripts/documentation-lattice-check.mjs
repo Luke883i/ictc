@@ -146,7 +146,7 @@ check(mitLicense.startsWith('MIT License'),'engineer-first: controlling LICENSE 
 check(/MIT License/.test(legalTerms)&&/repository `LICENSE` file/.test(legalTerms),'engineer-first: legal terms must point to controlling LICENSE');
 check(/\[MIT License\]\(LICENSE\)/.test(licensePointer)&&!/Proprietary evaluation bundle/.test(licensePointer),'engineer-first: LICENSE.md may not contradict LICENSE');
 check(/^## Mappa fisica minima e DoD engineer-first \(AS-IS\)/m.test(atlas),'engineer-first: repository topology orientation missing');
-for(const token of ['v3/','scripts/','schemas/','.github/workflows/','ictc.sh','CHANGELOG.md','G-P','G-S','G-R','G-M','G-E'])
+for(const token of ['v3/','scripts/','v3/tests/legacy/schemas/','.github/workflows/','ictc.sh','CHANGELOG.md','G-P','G-S','G-R','G-M','G-E'])
  check(atlas.includes(token),'engineer-first: topology / DoD owner missing '+token);
 check(/^## Cold-start pratico: prova ripetibile senza storia AI/m.test(development),'engineer-first: cold-start exercise missing');
 check(development.includes('curl -fsS http://127.0.0.1:4173/api/health')&&development.includes('git diff --check'),'engineer-first: cold-start must exercise real health and change checks');

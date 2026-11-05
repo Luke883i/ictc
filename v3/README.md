@@ -19,6 +19,8 @@ Il launcher `./ictc.sh` resta un supervisor locale; l'entrypoint applicativo can
 
 ## Flusso runtime
 
+I 15 JSON Schema storici sono conservati sotto `v3/tests/legacy/schemas/`: sono fixture di lineage, non schemi runtime o una seconda autorità API. Il loro `$id` storico resta invariato.
+
 ### Rischi di falsa eliminabilità nel runtime
 
 `v3/public/` è servita anche attraverso URI HTTP: un asset non importato nel grafo JavaScript può avere consumer esterni non osservati. Altre dipendenze nascono da stringhe costruite a runtime, workflow, caricamento di fixture e input di configurazione. Prima del ritiro seguire la [policy di conservazione](../docs/DOCUMENTATION_STANDARD.md) e il [metodo di testing](../docs/TESTING.md); gli import ESM sono un sottoinsieme delle relazioni rilevanti.
@@ -83,6 +85,10 @@ node v3/c5-needs-audit-saturation.mjs
 ## Claim boundary
 
 Repository/runtime green non equivale a deployment assurance, autenticità esterna, legal compliance, rappresentatività dell'usabilità o enterprise readiness. E3-HUMAN, E3-GOV ed E4-DEPLOY restano rail esterne.
+
+### Legacy island root-first (verificatori storici, non runtime)
+
+La precedente isola root `v1/`, `app/`, `lib/`, `data/` è ricollocata senza adapter in `v3/tests/legacy/{v1,app,lib,data}/`: 13 file storici, nove immutati byte-per-byte e quattro con sola correzione di path relativi e seed. I vecchi strumenti sotto `scripts/` sono riconnessi alla nuova collocazione senza diventare gate di runtime corrente. Il prodotto attivo continua ad avviarsi tramite `v3/bootstrap.mjs` e a usare `v3/public/`, `v3/domain.mjs` e SQLite. L'intero gruppo resta HOLD_CONSUMERS, non autorizzato alla rimozione.
 
 ### Post-#256 · Seconda tranche di verificatori isolati
 

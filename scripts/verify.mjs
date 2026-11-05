@@ -1,12 +1,12 @@
 import { strict as assert } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { buildState, buildCapsule, answerFromCapsule, proposeSourceMetadata, createMatter, verifyLedger, sha256 } from '../lib/domain.mjs';
+import { buildState, buildCapsule, answerFromCapsule, proposeSourceMetadata, createMatter, verifyLedger, sha256 } from '../v3/tests/legacy/lib/domain.mjs';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
-const releaseManifest = JSON.parse(await readFile(path.join(root, 'v1/release.json'), 'utf8'));
-const seed = JSON.parse(await readFile(path.join(root, 'data/seed.json'), 'utf8'));
+const releaseManifest = JSON.parse(await readFile(path.join(root, 'v3/tests/legacy/v1/release.json'), 'utf8'));
+const seed = JSON.parse(await readFile(path.join(root, 'v3/tests/legacy/data/seed.json'), 'utf8'));
 const state = await buildState();
 
 assert.equal(packageJson.version, releaseManifest.productVersion);
