@@ -3,7 +3,7 @@
  * Each edit is isolated under OS tmpdir and rolled back. Old checks are NOT
  * executed as current runtime/CI requirements, and no delete is authorized.
  */
-import {cpSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
+import {cpSync,mkdirSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,relative,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -46,7 +46,12 @@ const cases=[
  {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'v1/release.json'","'v3/release-identity.json'"),expect:'historical tooling source signature drift'},
  ...toolFiles.map(name=>({id:'legacy-tool-deleted-'+name,file:'scripts/'+name,bad:()=>null,expect:'historical tooling source signature drift'}))
 ];
-const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
+const absentRootMutants=[
+ {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
+ {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
+ {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''}
+];
+const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+1,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
 const invoke=()=>{
  const p=spawnSync(process.execPath,[join(sourceRoot,'scripts/repository-contract.mjs'),candidate],{cwd:candidate,encoding:'utf8',timeout:25000});
  let data=null;try{data=JSON.parse(p.stdout)}catch{}
@@ -64,6 +69,21 @@ try{
   result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.expect))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
  }
+ // C1 root-debt counterfactuals: physically reintroduce each removed path and
+ // prove the existing root contract rejects it (then restore byte-for-byte).
+ for(const test of absentRootMutants){
+  const p=join(candidate,test.file);mkdirSync(join(p,'..'),{recursive:true});writeFileSync(p,test.content);
+  const actual=invoke();rmSync(p,{force:true});
+  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('noncanonical root alias reintroduced: '+test.file));
+  result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.file))||actual.error});
+  if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
+ }
+ // Positive-control inverse: removing the CURRENT supervisor must be rejected.
+ const active=join(candidate,'ictc.sh'),originalActive=readFileSync(active);
+ rmSync(active);const missingActive=invoke();writeFileSync(active,originalActive);
+ const activeKilled=missingActive.exit===1&&missingActive.status==='REFUTED'&&missingActive.failures.some(x=>x.includes('missing current path: ictc.sh'));
+ result.physical.results.push({id:'active-supervisor-removal-rejected',killed:activeKilled,failure:missingActive.failures.find(x=>x.includes('ictc.sh'))||missingActive.error});
+ if(activeKilled)result.physical.killed++;else result.physical.survivors.push('active-supervisor-removal-rejected');
  // False-positive control: a comment mentioning a command is not a live CI invocation.
  const workflow=join(candidate,'.github/workflows/docs-command-contract.yml'),original=readFileSync(workflow,'utf8');
  writeFileSync(workflow,original+'\n# node scripts/schema-check.mjs is an historical reference only\n');
