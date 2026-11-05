@@ -83,3 +83,19 @@ node v3/c5-needs-audit-saturation.mjs
 ## Claim boundary
 
 Repository/runtime green non equivale a deployment assurance, autenticità esterna, legal compliance, rappresentatività dell'usabilità o enterprise readiness. E3-HUMAN, E3-GOV ed E4-DEPLOY restano rail esterne.
+
+### Post-#256 · Seconda tranche di verificatori isolati
+
+Sedici ulteriori check/saturation/fault oracle — sette GOV intent, cinque DEMO pubblica, due epistemic-lattice, due DEMO Suite 3.0 — si trovano in `v3/tests/` con percorsi `v3/*.mjs` ancora invocabili come adapter. La prova di continuità è estesa nel **medesimo** `scripts/test-boundary-migration-check.mjs`; non nasce un secondo test registry né una seconda authority.
+
+Il primo feedback riproducibile per la tranche è:
+
+```bash
+node scripts/test-boundary-migration-check.mjs --falsify
+node v3/gov-intent-assurance-a-check.mjs
+node v3/tests/gov-intent-assurance-a-check.mjs
+node v3/public-demo-boundary-check.mjs
+node v3/tests/public-demo-boundary-check.mjs
+```
+
+Il doppio ingresso è intenzionale e temporaneamente necessario: **due comandi, una sola implementazione**. Un output coincidente per queste coppie non prova l'equivalenza di tutti i journey; il witness conserva le altre controprove e i check CI devono essere osservati sulla stessa HEAD. La migrazione non comprende gli altri test a risoluzione dinamica da qualificare singolarmente. Il vecchio percorso rimane un'interfaccia compatibile: non rimuoverlo senza prova su workflow, import, URL esterni e retention.
