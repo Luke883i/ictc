@@ -204,6 +204,8 @@ L'**utente-agente orchestra esternamente** questo ciclo: legge Git/GitHub, propo
 
 Questo è un **repository execution loop**, non il runtime applicativo ICTC. “Same-SHA” significa che le evidenze usate per accettare una PR devono riferirsi alla stessa HEAD candidata. Un nuovo commit crea un nuovo SHA e riapre l'accettazione; il merge commit su `main` è un altro SHA e viene osservato separatamente.
 
+**Controprova: due PR con la stessa HEAD non sono due acceptance isolate.** La descrizione e i metadati della PR non fanno parte del Git blob/commit SHA: se una prima PR fallisce per un contratto sul body e una seconda PR riusa identici byte, i check storici restano associati alla stessa SHA. `ictc/actions-census` osserva tutti i check-run pertinenti alla SHA, perciò 41 workflow verdi filtrati per branch non bastano a dichiarare verde l'aggregato se rimangono check falliti della prima PR. Riqualificare il body nella stessa PR quando possibile; quando serve una nuova acceptance, associare alla correzione una modifica semantica tracciabile e una nuova HEAD, rieseguire i gate su quella HEAD e verificare sia i leaf sia lo **stato combinato `ictc/actions-census`**. Non disabilitare i gate né mascherare i fallimenti precedenti.
+
 ## Perché restano molti branch
 
 Un branch Git è un **puntatore nominato e mutabile** a un commit. La fotografia immutabile è lo SHA; il branch è l'etichetta accanto alla fotografia.
