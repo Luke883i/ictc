@@ -66,6 +66,14 @@ Il reticolo di accettazione è **origine Git + ruolo e autorità + conservazione
 
 Una classificazione attuale non si propaga per somiglianza: consumer statici, caricamenti dinamici, URL, workflow, test di regressione, provenienza, rollback e review vanno qualificati **per singola sacca**. L'assenza di import non è assenza di consumer esterni. La struttura fisica cambia solo dopo queste prove e senza nuovi owner.
 
+### C1-3d · Separazione fisica verificabile: primo gruppo TRAMA
+
+La prima migrazione **di implementazioni** riguarda sei verificatori e **non** il runtime di produzione: i byte applicativi di controllo escono dal primo livello di `v3/` e sono concentrati in `v3/tests/`; i vecchi path restano adapter `import` di una riga, senza una seconda logica. `scripts/test-boundary-migration-check.mjs --falsify` vincola le sei implementazioni ai blob sorgenti di `preimage commit dcf90ae2 (non current-main authority)`, ammettendo soltanto modifiche di profondità nei riferimenti relativi. La workflow TRAMA exact-head esercita i vecchi ingressi e produce `artifacts/c1-3d-test-boundary.json`; il rollback è il revert dei commit di migrazione.
+
+**Denominatore e metriche al preimage:** 1.419 file Git, 1.044 in `v3/`, 678 al suo primo livello; 447 nomi compatibili con una possibile funzione di test/verifica, **non** 447 file già qualificati spostabili. I sei originali totalizzano 63.079 byte, gli adapter circa 824 byte: la riduzione prevista del *payload di implementazione direttamente in `v3/`* è 62.255 byte, mentre i 678 path di primo livello restano disponibili. La nuova directory aggiunge sei file tracciati e il verificatore ne aggiunge uno: **il numero totale di file aumenta**, non diminuisce. I 441 candidati rimanenti necessitano qualificazione individuale, test rappresentativi e riesame degli entrypoint esterni.
+
+**DoD locale = separazione reale AND compatibilità dei comandi AND identità semantica del sorgente AND falsificazione fisica AND reversibilità AND CI exact-head.** Questa migrazione può chiudere il solo gruppo TRAMA; non chiude l'intera C1-3d né autorizza l'eliminazione degli adapter. La componente CI del lavoro rimane nel perimetro C1-3e. Documento normativo: [Documentation Standard](DOCUMENTATION_STANDARD.md); istruzioni operative: [v3/README](../v3/README.md) e [Testing](TESTING.md).
+
 ## Reticolo di lettura
 
 | Livello | Domanda | Fonte principale | Regola |
