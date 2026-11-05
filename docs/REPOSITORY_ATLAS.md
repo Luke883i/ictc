@@ -53,6 +53,17 @@ Il principio **storicamente valido + integro + disallineato** è un *trigger di 
 | `audit/`, `dist/`, documenti lineage | Evidenze/artefatti storici e possibili link esterni | **PRESERVE_LINEAGE / HOLD_EXTERNAL** fino a mappatura |
 | `v3/public/grc-v2.css` e `grc-workspace.css` | Duplica CSS byte-identici; il secondo ha un import corrente osservato | **HOLD_PUBLIC_URL** per il primo; nessuna delete senza prova URL |
 
+**C1-3c · Archeologia V2 verificabile, senza ritiro fisico.** I sei documenti campionati sono rimasti nei loro **percorsi pubblici originali**, con byte identici ai blob Git della rispettiva commit storica; il gate di ritiro già esistente ripete il confronto su tutta la cronologia locale. Le associazioni commit/PR sono osservazioni storiche di GitHub, non una nuova fonte di autorità né certificazioni CI delle relazioni PR. Perché questi file esistono:
+
+| Provenienza storica osservata | Documenti originali preservati | Ruolo, da non promuovere a AS-IS |
+| --- | --- | --- |
+| PR [#1](https://github.com/Luke883i/ictc/pull/1) | [Validation report v2](23_VALIDATION_REPORT_V2.md), [Blueprint v2](24_BLUEPRINT_V2_ITALIANO.md) | Evidenza della foundation/beta e del progetto originario; non sostituisce [architettura corrente](11_ARCHITECTURE.md). |
+| PR [#2](https://github.com/Luke883i/ictc/pull/2) | [Saturazione v2](17_SATURATION_V2.md) | Perimetro e limiti del primo ciclo; non certifica saturazione attuale. |
+| PR [#46](https://github.com/Luke883i/ictc/pull/46) | [Convergenza GRC V2](V2_GRC_CONVERGENCE.md), [DoD GRC V2](V2_GRC_DOD.md) | Disegno e acceptance storica del layer GRC; le checkbox storiche non provano il prodotto corrente. |
+| PR [#59](https://github.com/Luke883i/ictc/pull/59) | [Reticolo epistemico V2.0](V2_0_EPISTEMIC_LATTICE_CONVERGENCE.md) | Decisioni di progettazione EP-01; la vista attuale è definita dai [current owner](PRODUCT.md). |
+
+Il reticolo di accettazione è **origine Git + ruolo e autorità + conservazione integrale + consumer + rollback + falsificazione + governance** (AND, non media). Il classificatore concede al massimo una **archiviazione logica presso lo stesso path** quando la lineage risulta verificata; mantiene `HOLD_REVIEW` per ogni decisione fisica, con URL esterne, consumo dinamico, retention e owner umani non dimostrati. `scripts/document-retirement-gate-check.mjs --falsify` emette le ricevute e rifiuta origine alterata, falsi permessi di cancellazione e modifiche fisiche in copie temporanee; il [Documentation Standard](DOCUMENTATION_STANDARD.md) conserva la regola normativa. Nessun file viene rinominato, spostato o cancellato da questa slice.
+
 Una classificazione attuale non si propaga per somiglianza: consumer statici, caricamenti dinamici, URL, workflow, test di regressione, provenienza, rollback e review vanno qualificati **per singola sacca**. L'assenza di import non è assenza di consumer esterni. La struttura fisica cambia solo dopo queste prove e senza nuovi owner.
 
 ## Reticolo di lettura
