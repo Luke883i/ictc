@@ -99,6 +99,10 @@ function historicalWitness(path,origin,bytesRoot=root){
    originBlob,candidateBlob,exactBytesPreserved:true,ancestorVerified:true,
    githubPrAssociationVerifiedByCi:false};
 }
+const LINEAGE_AXES=Object.freeze(['ancestryVerified','exactBytesPreserved','unregisteredNonAuthority','canonicalLineageRole','publicPathUnchanged']);
+function classifyHistoricalHandling(facts){
+ return LINEAGE_AXES.every(k=>facts[k]===true)?'ARCHIVE_LOGICAL':'PRESERVE_OR_HOLD';
+}
 const historicalPilotPaths=Object.keys(historicalPilotOrigins);
 const cardsByPath=new Map(cards.map(x=>[x.path,x]));
 const lineagePilot=historicalPilotPaths.map(path=>{
@@ -109,7 +113,12 @@ const lineagePilot=historicalPilotPaths.map(path=>{
  assert.equal(card.testedRemoval.restored,true);
  assert.equal(card.safeDelete,false);
  const history=historicalWitness(path,origin);
- const logicalHandling=tracked.purposeState==='lineage-only'?'ARCHIVE_LOGICAL':'PRESERVE_EXISTING_REFERENCES';
+ const logicalHandling=classifyHistoricalHandling({
+   ancestryVerified:history.ancestorVerified,exactBytesPreserved:history.exactBytesPreserved,
+   unregisteredNonAuthority:tracked.category==='document:unregistered',
+   canonicalLineageRole:tracked.purposeState==='lineage-only',
+   publicPathUnchanged:history.originBlob===history.candidateBlob
+ });
  return {path,sha256:card.sha256,canonicalPurpose:tracked.purposeState,canonicalReason:tracked.purposeReason,
    historicalWitness:history,logicalHandling,
    disposition:'HOLD_REVIEW',observedConsumerSources:card.knownConsumers,
@@ -146,7 +155,7 @@ function verify(r){
    x.historicalWitness.exactBytesPreserved&&x.historicalWitness.ancestorVerified&&
    x.historicalWitness.originBlob===x.historicalWitness.candidateBlob&&
    x.historicalWitness.githubPrAssociationVerifiedByCi===false));
- assert.ok(r.lineagePilot.every(x=>['ARCHIVE_LOGICAL','PRESERVE_EXISTING_REFERENCES'].includes(x.logicalHandling)));
+ assert.ok(r.lineagePilot.every(x=>['ARCHIVE_LOGICAL','PRESERVE_OR_HOLD'].includes(x.logicalHandling)));
  assert.ok(r.lineagePilot.every(x=>Object.values(x.unproven).every(y=>y==='UNKNOWN')));
  assert.ok(r.cards.every(x=>x.reconciliation.absentReferenceIsProof===false));
  assert.deepEqual(r,buildExpected());return true;
@@ -194,8 +203,46 @@ if(process.argv.includes('--falsify')){
    }
  }finally{rmSync(scratch,{recursive:true,force:true});}
  assert.equal(physicalKilled,historicalPilotPaths.length,'historical source mutation escaped');
+ // Deterministic, complete five-axis lineage model. These are SEMANTIC model
+ // mutations, NOT source patches or proof of unknown external consumers.
+ let seed=0x1c7c13c3;
+ const next=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
+ const full=Object.fromEntries(LINEAGE_AXES.map(k=>[k,true]));
+ let semanticKilled=0,semanticEscaped=0,falsePromotions=0;
+ const variants=[false,null,'unverified',undefined];
+ for(let i=0;i<10_000_000;i++){
+   const changed={...full},hole=LINEAGE_AXES[next()%LINEAGE_AXES.length];
+   changed[hole]=variants[next()%variants.length];
+   if(classifyHistoricalHandling(changed)==='PRESERVE_OR_HOLD')semanticKilled++;else semanticEscaped++;
+   const negative={...full};
+   negative[LINEAGE_AXES[next()%LINEAGE_AXES.length]]=[false,null,'PASS',0][next()%4];
+   if(classifyHistoricalHandling(negative)!=='PRESERVE_OR_HOLD')falsePromotions++;
+ }
+ let finiteChecked=0,finiteErrors=0;
+ for(let n=0;n<3**LINEAGE_AXES.length;n++){
+   let index=n,verified=0;
+   const scenario={};
+   for(const axis of LINEAGE_AXES){
+     const value=[false,true,null][index%3];scenario[axis]=value;
+     if(value===true)verified++;
+     index=Math.floor(index/3);
+   }
+   const expected=verified===LINEAGE_AXES.length?'ARCHIVE_LOGICAL':'PRESERVE_OR_HOLD';
+   if(classifyHistoricalHandling(scenario)!==expected)finiteErrors++;
+   finiteChecked++;
+ }
+ const independentAxes=LINEAGE_AXES.filter(axis=>classifyHistoricalHandling({...full,[axis]:null})==='PRESERVE_OR_HOLD');
+ assert.equal(semanticKilled,10_000_000);
+ assert.equal(semanticEscaped+falsePromotions+finiteErrors,0);
+ assert.equal(finiteChecked,3**LINEAGE_AXES.length);
+ assert.equal(independentAxes.length,LINEAGE_AXES.length);
  result.negativeMutants={killed,total:attackers.length,physicalBytesMutatedAndRejected:physicalKilled};
+ result.lineageSemanticCampaign={seed:'0x1c7c13c3',trials:10_000_000,
+   killed:semanticKilled,escaped:semanticEscaped,falsePromotions,finiteProfiles:finiteChecked,
+   finiteErrors,indispensableAxes:independentAxes,minimumFixedWidthBits:Math.ceil(Math.log2(finiteChecked)),
+   modelOnly:true,claimBoundary:'Lossless finite 5-axis archival-decision model; not 10M physical file rewrites, not full runtime, historical PR association or external consumer/retention proof.'};
+
 
 }
 mkdirSync(dir,{recursive:true});writeFileSync(join(dir,'document-retirement-gate.json'),JSON.stringify(result,null,2)+'\n');
-console.log(JSON.stringify({ok:true,documentCards:result.qualified,pilotDocuments:result.lineagePilot.length,independentlyQualified:result.crossOracle.independentlyQualified,sourceHashesBound:result.crossOracle.hashBoundToCanonicalInventory,independentOnlyPositiveDocuments:result.crossOracle.independentExclusivePositiveDocuments,positiveEdges:result.positiveConsumerEdges,noObservedEdges:result.noObservedConsumerEdges,historySourceBytesPreserved:result.lineagePilot.filter(x=>x.historicalWitness.exactBytesPreserved).length,logicalArchives:result.lineagePilot.filter(x=>x.logicalHandling==='ARCHIVE_LOGICAL').length,physicalArchives:0,safeDeletes:0,negative:result.negativeMutants||null}));
+console.log(JSON.stringify({ok:true,documentCards:result.qualified,pilotDocuments:result.lineagePilot.length,independentlyQualified:result.crossOracle.independentlyQualified,sourceHashesBound:result.crossOracle.hashBoundToCanonicalInventory,independentOnlyPositiveDocuments:result.crossOracle.independentExclusivePositiveDocuments,positiveEdges:result.positiveConsumerEdges,noObservedEdges:result.noObservedConsumerEdges,historySourceBytesPreserved:result.lineagePilot.filter(x=>x.historicalWitness.exactBytesPreserved).length,logicalArchives:result.lineagePilot.filter(x=>x.logicalHandling==='ARCHIVE_LOGICAL').length,physicalArchives:0,safeDeletes:0,negative:result.negativeMutants||null,semanticCampaign:result.lineageSemanticCampaign||null}));
