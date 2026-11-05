@@ -38,6 +38,13 @@ for(const rel of currentPaths){
  if(!await exists(rel)){failures.push('missing current path: '+rel);continue}
  if((await stat(path.join(root,rel))).size===0)failures.push('empty current path: '+rel);
 }
+// C1 root contraction: these former aliases/placeholders must not silently re-enter.
+// The active supervisor ictc.sh and canonical .github/CODEOWNERS remain protected above.
+for(const rel of ['ictc-v3.sh','CODEOWNERS','runtime/blobs/.gitkeep']){
+ if(await exists(rel))failures.push('noncanonical root alias reintroduced: '+rel);
+}
+const devBootstrap=await readFile(path.join(root,'.devcontainer/post-create.sh'),'utf8');
+if(devBootstrap.includes('ictc-v3.sh')||!devBootstrap.includes('chmod +x ictc.sh'))failures.push('devcontainer launcher compatibility drift');
 const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
 const expectedScripts={start:'node v3/bootstrap.mjs',demo:'node v3/bootstrap.mjs demo',check:'node scripts/syntax-check.mjs',test:'npm run test:current', 'docs:check':'node scripts/documentation-lattice-check.mjs', 'repo:inventory':'node scripts/repository-inventory.mjs'};
 for(const [script,entry] of Object.entries(expectedScripts)){

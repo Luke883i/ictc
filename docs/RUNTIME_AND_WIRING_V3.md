@@ -1,5 +1,7 @@
 # Runtime e wiring v3
 
+> **Lineage storica.** Questa pagina descrive un'iterazione v3 precedente; il software corrente e i suoi limiti sono definiti in [ARCHITECTURE](11_ARCHITECTURE.md). I comandi sotto sono stati instradati al launcher ancora supportato `ictc.sh`; i claim funzionali del testo non costituiscono DoD corrente.
+
 ## Catena comune
 
 ```text
@@ -40,8 +42,8 @@ La capsula contiene l’oggetto selezionato e i vicini deterministici del retico
 ## Avvio e verifica
 
 ```bash
-./ictc-v3.sh start
-./ictc-v3.sh audit
+./ictc.sh start
+./ictc.sh audit
 node v3/saturation.mjs
 ```
 

@@ -1,5 +1,7 @@
 # Simulazioni end-user v3
 
+> **Lineage storica.** Le simulazioni originarie appartengono a una precedente iterazione. I comandi documentati usano ora il launcher `ictc.sh`; per copertura e claim E2E correnti prevalgono [TESTING](TESTING.md) e [RELEASE](RELEASE.md).
+
 ## Profili simulati
 
 Dipendente che segnala, process owner, compliance specialist, Legal, DPO, CISO, incident manager, auditor, direzione, amministratore, utente mobile e utente con riduzione del movimento o sola tastiera.
@@ -26,7 +28,7 @@ API indisponibile, hash-chain incoerente, file oltre limite, URL non valido, tra
 ## Gate
 
 ```bash
-./ictc-v3.sh audit
+./ictc.sh audit
 node v3/saturation.mjs
 ```
 
