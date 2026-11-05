@@ -7,7 +7,7 @@ import {cpSync,mkdirSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'no
 import {tmpdir} from 'node:os';
 import {join,relative,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 const sourceRoot=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const args=process.argv.slice(2);
 if(!args.includes('--falsify'))throw Error('Use --falsify (source mutation is performed only in an isolated disposable copy)');
@@ -86,7 +86,20 @@ const historicalFixturePaths=[
  'v3/tests/legacy/v1/saturation.mjs',
  'v3/tests/legacy/v1/stability-audit.mjs',
 ];
-const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+historicalFixturePaths.length+1,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
+const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+historicalFixturePaths.length+3,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
+// Runtime path-boundary oracle: unlike source-only checks, this actually loads
+// the historical domain/release from the disposable checkout. It does not
+// certify the historical product as a current runtime or grant deletion rights.
+const historicalPathProbes=[
+ {id:'legacy-seed-runtime-root',file:'v3/tests/legacy/lib/domain.mjs',method:'readSeed',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"},
+ {id:'legacy-release-runtime-root',file:'v3/tests/legacy/v1/release.mjs',method:'readReleaseManifest',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"}
+];
+const invokePathProbe=probe=>{
+ const url=pathToFileURL(join(candidate,probe.file)).href;
+ const script='import {'+probe.method+'} from '+JSON.stringify(url)+'; const value=await '+probe.method+'(); if(!value||typeof value!=="object")process.exit(23);';
+ const p=spawnSync(process.execPath,['--input-type=module','--eval',script],{cwd:candidate,encoding:'utf8',timeout:16000});
+ return {exit:p.status,signal:p.signal||null,stderr:String(p.stderr||p.error?.message||'').slice(0,280)};
+};
 const invoke=()=>{
  const p=spawnSync(process.execPath,[join(sourceRoot,'scripts/repository-contract.mjs'),candidate],{cwd:candidate,encoding:'utf8',timeout:25000});
  let data=null;try{data=JSON.parse(p.stdout)}catch{}
@@ -112,6 +125,20 @@ try{
   const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+test.file));
   result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(test.file))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
+ }
+ // Kill two real executable path-binding mutations, not merely string diffs.
+ result.pathBindingProbes=[];
+ for(const probe of historicalPathProbes){
+  const baseline=invokePathProbe(probe);
+  if(baseline.exit!==0||baseline.signal)throw Error('historical baseline path probe failed: '+probe.id+': '+JSON.stringify(baseline));
+  const file=join(candidate,probe.file),before=readFileSync(file,'utf8');
+  if(!before.includes(probe.from))throw Error('historical mutation anchor absent: '+probe.id);
+  writeFileSync(file,before.replace(probe.from,probe.to));
+  const mutated=invokePathProbe(probe);writeFileSync(file,before);
+  const killed=mutated.exit!==0&&!mutated.signal&&/ENOENT/.test(mutated.stderr);
+  result.physical.results.push({id:probe.id,killed,baseline,mutant:mutated});
+  result.pathBindingProbes.push({id:probe.id,baselinePassed:true,mutantKilled:killed});
+  if(killed)result.physical.killed++;else result.physical.survivors.push(probe.id);
  }
  // For each relocated fixture, physical removal must be caught by the existing owner.
  for(const rel of historicalFixturePaths){
