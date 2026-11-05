@@ -17,6 +17,7 @@ export function classifyFile(file,registered){
   if(file.startsWith('docs/')&&/\.(md|rst|txt)$/.test(file))return {category:'document:unregistered',evidence:'path-only',disposition:'HOLD_REVIEW'};
   if(/^\.github\/workflows\/.*\.ya?ml$/.test(file))return {category:'ci:workflow',evidence:'GitHub workflow path',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('.github/'))return {category:'repository:configuration',evidence:'GitHub configuration path',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('v3/tests/legacy/'))return {category:'legacy:candidate',evidence:'explicit verification-only migrated island; no business authority',disposition:'HOLD_CONSUMERS'};
   if(/(^|\/)(?:[^/]*-check|[^/]*-test|[^/]*-saturation|[^/]*-probe|[^/]*-stress|[^/]*-audit|e2e[^/]*)\.(?:mjs|js|py)$/.test(file))return {category:'verification:candidate',evidence:'filename heuristic only',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('artifacts/')||file.startsWith('dist/'))return {category:'artifact:tracked',evidence:'directory heuristic only',disposition:'HOLD_REVIEW'};
   if(file.startsWith('ai/')||file==='AGENTS.md'||file.endsWith('/AGENTS.md'))return {category:'ai:development-context',evidence:'directory/name heuristic only',disposition:'HOLD_REVIEW'};

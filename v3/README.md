@@ -84,6 +84,10 @@ node v3/c5-needs-audit-saturation.mjs
 
 Repository/runtime green non equivale a deployment assurance, autenticità esterna, legal compliance, rappresentatività dell'usabilità o enterprise readiness. E3-HUMAN, E3-GOV ed E4-DEPLOY restano rail esterne.
 
+### Legacy island root-first (verificatori storici, non runtime)
+
+La precedente isola root `v1/`, `app/`, `lib/`, `data/` è ricollocata senza adapter in `v3/tests/legacy/{v1,app,lib,data}/`: 13 file storici, nove immutati byte-per-byte e quattro con sola correzione di path relativi e seed. I vecchi strumenti sotto `scripts/` sono riconnessi alla nuova collocazione senza diventare gate di runtime corrente. Il prodotto attivo continua ad avviarsi tramite `v3/bootstrap.mjs` e a usare `v3/public/`, `v3/domain.mjs` e SQLite. L'intero gruppo resta HOLD_CONSUMERS, non autorizzato alla rimozione.
+
 ### Post-#256 · Seconda tranche di verificatori isolati
 
 Sedici ulteriori check/saturation/fault oracle — sette GOV intent, cinque DEMO pubblica, due epistemic-lattice, due DEMO Suite 3.0 — si trovano in `v3/tests/` con percorsi `v3/*.mjs` ancora invocabili come adapter. La prova di continuità è estesa nel **medesimo** `scripts/test-boundary-migration-check.mjs`; non nasce un secondo test registry né una seconda authority.

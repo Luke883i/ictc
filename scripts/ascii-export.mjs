@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { buildState } from '../lib/domain.mjs';
+import { buildState } from '../v3/tests/legacy/lib/domain.mjs';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const outDir = path.join(root, 'artifacts', 'ascii');
