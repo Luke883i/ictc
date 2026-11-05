@@ -23,7 +23,7 @@ La documentazione non auto-certifica branch protection, required review o status
 
 ## Ruoli
 
-Il repository mantiene deliberatamente una governance minima: maintainer/reviewer e contributor. L'ownership tecnica è path/topic based, non conferita dal titolo personale. Se il numero di maintainer cresce, `CODEOWNERS` e questa pagina devono essere aggiornati prima di assumere review segregation non esistente.
+Il repository mantiene deliberatamente una governance minima: maintainer/reviewer e contributor. L'ownership tecnica è path/topic based, non conferita dal titolo personale. Se il numero di maintainer cresce, `.github/CODEOWNERS` e questa pagina devono essere aggiornati prima di assumere review segregation non esistente.
 
 ## Sicurezza e condotta
 

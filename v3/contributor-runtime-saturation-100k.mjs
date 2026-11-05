@@ -4,7 +4,7 @@ import { validateContributorRuntimeModel } from './contributor-runtime.mjs';
 const clone=value=>structuredClone(value);
 const contract=JSON.parse(await readFile(new URL('./semantic-owner-contract.json',import.meta.url),'utf8'));
 const policy=JSON.parse(await readFile(new URL('../.github/gov-01f-policy.json',import.meta.url),'utf8'));
-const projection={branchPolicyVisible:true,enterpriseRouteVisible:true,failureRoutingVisible:true,rootCodeownersPointer:true,canonicalCodeownersHasRules:true,enterpriseOwnerMatches:true,durableOwnerMatches:true};
+const projection={branchPolicyVisible:true,enterpriseRouteVisible:true,failureRoutingVisible:true,rootCodeownersAbsent:true,canonicalCodeownersHasRules:true,enterpriseOwnerMatches:true,durableOwnerMatches:true};
 const baseline=validateContributorRuntimeModel({contract,policy,projection});assert.equal(baseline.ok,true,baseline.failures.join('\n'));
 let x=0xC017B100;const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296};const pick=a=>a[Math.floor(rnd()*a.length)];
 const mutations=[
@@ -28,8 +28,8 @@ const mutations=[
 ['enterprise-owner',m=>m.contract.contributorDoD.enterpriseRuntime.enterpriseOwner='v3/server.mjs'],
 ['durable-owner',m=>m.contract.contributorDoD.enterpriseRuntime.durableOwner='v3/sqlite-state-persistence.mjs'],
 ['mode-collapse',m=>m.contract.contributorDoD.enterpriseRuntime.mustRemainDistinct=false],
-['root-codeowners-mode',m=>m.contract.contributorDoD.codeowners.rootMode='authoritative'],
-['root-codeowners-source',m=>m.projection.rootCodeownersPointer=false],
+['root-codeowners-mode',m=>m.contract.contributorDoD.codeowners.rootMode='pointer-only'],
+['root-codeowners-source',m=>m.projection.rootCodeownersAbsent=false],
 ['canonical-codeowners-empty',m=>m.projection.canonicalCodeownersHasRules=false],
 ['failure-route-loss',m=>m.contract.contributorDoD.ciFailureRouting.pop()],
 ['failure-route-bind',m=>m.contract.contributorDoD.ciFailureRouting[0].routeId='missing'],
