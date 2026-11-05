@@ -2,8 +2,8 @@ node_modules/
 runtime/state.json
 runtime/ledger.jsonl
 runtime/blobs/*
-!runtime/blobs/.gitkeep
 artifacts/
+dist/
 .DS_Store
 .env
 .env.*
