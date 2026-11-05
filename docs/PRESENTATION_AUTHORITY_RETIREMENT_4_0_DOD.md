@@ -29,7 +29,7 @@ This is P1 of the minimal internal convergence chain. P2 adds the 7/7 Procedure 
 
 ## Tests and falsification
 
-Repository acceptance requires current semantic/runtime/browser CI on the exact PR HEAD. The chain was selected using the recorded 10M E2 modeled campaign in `audit/convergence-main115-10m.json`; its trial volume is not browser, independent code-mutation, human, security-assessment or deployment evidence.
+Repository acceptance requires current semantic/runtime/browser CI on the exact PR HEAD. The chain was selected using the [immutable Git preimage of the 10M E2 modeled campaign](https://github.com/Luke883i/ictc/blob/26ac705e331511fe1d8f1db93b8167ad795e506a/audit/convergence-main115-10m.json) (formerly `audit/convergence-main115-10m.json`, retired from the active tree); its trial volume is not browser, independent code-mutation, human, security-assessment or deployment evidence.
 
 ## Claim boundary
 
