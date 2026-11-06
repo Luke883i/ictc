@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -38,6 +38,42 @@ const followupFiles=Object.freeze([
  'demo-suite-3-0-module-check.mjs'
 ]);
 const files=Object.freeze([...tramaFiles,...followupFiles]);
+// Bounded R3/R4 single-owner moves from merged #266; not a complete v3 cutover.
+// Reuse this executable historical-preimage verifier rather than opening a
+// new source-of-truth, migration manifest, workflow or compatibility adapter.
+const CANARY_BASE='3f2cce9c9ad2603288e11f541d280317961e5121';
+const canaryMoves=Object.freeze([
+ {previous:'v3/test-helpers/active-experience-install.mjs',
+  current:'tests/helpers/active-experience-install.mjs',
+  formerImport:"'./test-helpers/active-experience-install.mjs'",
+  currentImport:"'../tests/helpers/active-experience-install.mjs'",
+  consumers:['v3/epistemic-inference-ui-check.mjs','v3/cross-procedure-create-ui-check.mjs',
+             'v3/v1-9-experience-check.mjs','v3/epistemic-lattice-ui-check.mjs']},
+ {previous:'v3/runtime/abuse-budget.mjs',current:'src/runtime/abuse-budget.mjs',
+  formerImport:"'./runtime/abuse-budget.mjs'",
+  currentImport:"'../src/runtime/abuse-budget.mjs'",
+  consumers:['v3/server.mjs','v3/runtime-enterprise-boundaries-saturation.mjs',
+             'v3/security-attack-saturation.mjs','v3/runtime-enterprise-boundaries-check.mjs']}
+]);
+function verifyCanaryMoves(at=root){
+ const cards=[];
+ for(const row of canaryMoves){
+  const before=execFileSync('git',['show',CANARY_BASE+':'+row.previous],{cwd:root,maxBuffer:4*1024*1024});
+  const current=readFileSync(join(at,row.current));
+  assert.deepEqual(current,before,'R3/R4 relocated implementation bytes drift: '+row.current);
+  assert.equal(existsSync(join(at,row.previous)),false,'R3/R4 retired path resurrected: '+row.previous);
+  for(const rel of row.consumers){
+   const body=readFileSync(join(at,rel),'utf8');
+   assert.ok(body.includes(row.currentImport),'R3/R4 consumer not bound: '+rel);
+   assert.equal(body.includes(row.formerImport),false,'R3/R4 consumer still points to retired path: '+rel);
+  }
+  cards.push({from:row.previous,to:row.current,blobEquality:'exact-git-preimage',consumers:row.consumers.length,
+              noCompatibilityShim:true,externalConsumerAbsence:'UNKNOWN'});
+ }
+ return cards;
+}
+const canaryEvidence=verifyCanaryMoves();
+
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
@@ -77,7 +113,27 @@ let negative=null,model=null;
 if(process.argv.includes('--falsify')){
  const scratch=mkdtempSync(join(tmpdir(),'ictc-c1-3d-'));
  let killed=0,restored=0;
+ let canaryMutantsKilled=0;
  try{
+  const mirror=join(scratch,'canary');
+  for(const row of canaryMoves){
+   for(const rel of [row.current,...row.consumers]){
+    const source=join(root,rel),dest=join(mirror,rel);
+    mkdirSync(dirname(dest),{recursive:true});
+    writeFileSync(dest,readFileSync(source));
+   }
+  }
+  assert.equal(verifyCanaryMoves(mirror).length,canaryMoves.length);
+  for(const row of canaryMoves){
+   const dest=join(mirror,row.current),before=readFileSync(dest);
+   writeFileSync(dest,Buffer.concat([before,Buffer.from('\\n// real mutated implementation\\n')]));
+   try{verifyCanaryMoves(mirror);assert.fail('R3/R4 physical code corruption survived: '+row.current);}
+   catch(e){if(!String(e.message).includes('relocated implementation bytes drift'))throw e;canaryMutantsKilled++;}
+   finally{writeFileSync(dest,before);}
+   assert.equal(verifyCanaryMoves(mirror).length,canaryMoves.length);
+  }
+  assert.equal(canaryMutantsKilled,canaryMoves.length,'R3/R4 actual file mutations survived');
+
   for(const card of cards){
    for(const kind of ['wrapper','implementation']){
     const dest=join(scratch,'v3',kind==='wrapper'?card.name:'tests/'+card.name);
@@ -117,7 +173,8 @@ if(process.argv.includes('--falsify')){
   assert.equal(old.stdout,next.stdout,'command output changed: '+name);
   return {name,oldExit:old.status,newExit:next.status,stdoutSha256:digest(old.stdout)};
  });
- negative={physicalMutantsKilled:killed,physicallyRestored:restored,realCommandEquivalence:runs};
+ negative={physicalMutantsKilled:killed,physicallyRestored:restored,realCommandEquivalence:runs,
+  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedCanaryBlobParity:canaryEvidence};
  const AXES=['logicBytes','stableEntrypoint','relativeResolution','singleAuthority','reversible'];
  const full=Object.fromEntries(AXES.map(x=>[x,true]));
  const decision=f=>AXES.every(k=>f[k]===true)?'RELOCATABLE_WITH_COMPAT':'HOLD';
@@ -151,6 +208,7 @@ if(process.argv.includes('--falsify')){
 }
 const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',baseline:{trama:BASE,followup:BASE_POST},
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
+ migratedPhysicalCanaries:canaryEvidence,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
    totalV3VerificationLikeCandidatesBefore:447,
