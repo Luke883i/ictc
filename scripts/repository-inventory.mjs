@@ -5,6 +5,7 @@ import {join,resolve,dirname,normalize} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {repositoryPurposeCensus} from '../v3/trama-reconcile.mjs';
+import {deriveMigrationFrontier} from './repository-migration-frontier.mjs';
 
 export const root=resolve(new URL('..',import.meta.url).pathname);
 const digest=v=>createHash('sha256').update(v).digest('hex');
@@ -108,12 +109,23 @@ export function v3DependencyTopology(entries,scanRoot=root){
    }
   }
  }
+ // Source-bound HTTP mount, only candidate URL edges (not runtime/consumer proof).
+ const server='v3/server.mjs';
+ const body=files.has(server)?readFileSync(join(scanRoot,server),'utf8'):'';
+ const httpStaticRootObserved=body.includes("const publicRoot=path.join(here,'public')")&&
+  body.includes('serveStatic(response,url.pathname,publicRoot,mime)');
+ let httpStaticCandidateCount=0;
+ if(httpStaticRootObserved)for(const e of entries)if(e.path.startsWith('v3/public/')){
+  edges.push({from:server,to:e.path,kind:'http-static-route-candidate'});
+  httpStaticCandidateCount++;
+ }
  const byKind={};for(const edge of edges)byKind[edge.kind]=(byKind[edge.kind]||0)+1;
  const v3Targets=edges.filter(e=>e.to.startsWith('v3/')),v3Files=entries.filter(e=>e.path.startsWith('v3/'));
  const covered=new Set(v3Targets.map(e=>e.to));
  return {schema:'ictc-derived-v3-dependency-topology/v1',source:'tracked-file literal scan; no new owner',
   totalTracked:entries.length,totalV3:v3Files.length,
   scannedTextFiles:entries.filter(e=>extension.test(e.path)).length-excluded.length,
+  httpStaticRootObserved,httpStaticCandidateCount,
   excluded,edgeCount:edges.length,unresolvedLiteralCount:unresolved.length,
   v3InboundLiterals:v3Targets.length,v3TargetsWithObservedLiterals:covered.size,
   v3TargetsWithoutObservedLiterals:v3Files.length-covered.size,
@@ -174,11 +186,20 @@ export function census(){
  status.rootDirectFiles=tracked.filter(p=>!p.includes('/')).length;
  status.directoryDisposition='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF';
  const dependencyTopology=v3DependencyTopology(entries);
- status.dependencyTopology={schema:dependencyTopology.schema,edgeCount:dependencyTopology.edgeCount,unresolvedLiteralCount:dependencyTopology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:dependencyTopology.v3TargetsWithObservedLiterals,dynamicSelectorSources:dependencyTopology.dynamicSelectorSources,independentConsumerProof:false,automaticMoveAuthorized:false};
- return {status,entries,directories,dependencyTopology};
+ const migrationFrontier=deriveMigrationFrontier(entries,dependencyTopology);
+ status.dependencyTopology={schema:dependencyTopology.schema,edgeCount:dependencyTopology.edgeCount,unresolvedLiteralCount:dependencyTopology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:dependencyTopology.v3TargetsWithObservedLiterals,dynamicSelectorSources:dependencyTopology.dynamicSelectorSources,httpStaticCandidateCount:dependencyTopology.httpStaticCandidateCount,independentConsumerProof:false,automaticMoveAuthorized:false};
+ status.migrationFrontier=migrationFrontier.summary;
+ return {status,entries,directories,dependencyTopology,migrationFrontier};
 }
 export function verifyInventory(data,validatedBaseline=null){
   const e=data.entries,s=data.status,dirs=data.directories;
+  const frontier=deriveMigrationFrontier(e,data.dependencyTopology);
+  if(JSON.stringify(data.migrationFrontier)!==JSON.stringify(frontier)||
+     JSON.stringify(s.migrationFrontier)!==JSON.stringify(frontier.summary)||
+     frontier.summary.mappedV3!==s.v3Structural.files||frontier.decision!=='HOLD_ALL'||
+     frontier.summary.automaticMoveAuthorized!==false||frontier.summary.automaticDeleteAuthorized!==false||
+     frontier.nodes.some(x=>x.decision!=='HOLD'||!x.blockers.includes('EXTERNAL_CONSUMER_UNPROVEN')))
+    throw new Error('K0 frontier coverage or fabricated migration clearance');
   if(!e.length||e.length!==s.total||s.classified!==s.total||s.missingManifest.length||new Set(e.map(x=>x.path)).size!==e.length)throw new Error('inventory completeness/manifest mismatch');
   const expectedV3=v3StructuralCensus(e);
   if(JSON.stringify(s.v3Structural)!==JSON.stringify(expectedV3)||
@@ -190,7 +211,7 @@ export function verifyInventory(data,validatedBaseline=null){
   if(!validatedBaseline){
   const topology=v3DependencyTopology(e);
   if(JSON.stringify(data.dependencyTopology)!==JSON.stringify(topology)||
-     JSON.stringify(s.dependencyTopology)!==JSON.stringify({schema:topology.schema,edgeCount:topology.edgeCount,unresolvedLiteralCount:topology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:topology.v3TargetsWithObservedLiterals,dynamicSelectorSources:topology.dynamicSelectorSources,independentConsumerProof:false,automaticMoveAuthorized:false})||
+     JSON.stringify(s.dependencyTopology)!==JSON.stringify({schema:topology.schema,edgeCount:topology.edgeCount,unresolvedLiteralCount:topology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:topology.v3TargetsWithObservedLiterals,dynamicSelectorSources:topology.dynamicSelectorSources,httpStaticCandidateCount:topology.httpStaticCandidateCount,independentConsumerProof:false,automaticMoveAuthorized:false})||
      topology.totalV3!==s.v3Structural.files||topology.automaticMoveAuthorized!==false||
      topology.automaticDeleteAuthorized!==false)
    throw new Error('derived dependency topology or unauthorized consumer clearance drift');
@@ -208,6 +229,7 @@ export function verifyInventory(data,validatedBaseline=null){
     if(JSON.stringify(s)!==JSON.stringify(validatedBaseline.status))throw new Error('summary altered against validated baseline');
     if(JSON.stringify(dirs)!==JSON.stringify(validatedBaseline.directories))throw new Error('directory projection altered against validated baseline');
     if(JSON.stringify(data.dependencyTopology)!==JSON.stringify(validatedBaseline.dependencyTopology))throw new Error('dependency topology altered against validated baseline');
+    if(JSON.stringify(data.migrationFrontier)!==JSON.stringify(validatedBaseline.migrationFrontier))throw new Error('K0 frontier altered against validated baseline');
     for(let i=0;i<e.length;i++)if(JSON.stringify(e[i])!==JSON.stringify(validatedBaseline.entries[i]))throw new Error('receipt altered against validated baseline');
     return true;
   }
