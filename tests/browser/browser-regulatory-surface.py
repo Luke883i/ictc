@@ -1,7 +1,7 @@
 import json,os,pathlib
 from playwright.sync_api import sync_playwright,expect
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/')
-ART=pathlib.Path(__file__).resolve().parents[1]/'artifacts';ART.mkdir(exist_ok=True)
+ART=pathlib.Path(__file__).resolve().parents[2]/'artifacts';ART.mkdir(exist_ok=True)
 def no_overflow(p,label):
  m=p.evaluate("()=>({v:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})");assert max(m['h'],m['b'])<=m['v']+2,(label,m)
 def ensure_onboarding(page):
