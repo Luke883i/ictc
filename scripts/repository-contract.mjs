@@ -33,6 +33,13 @@ const historicalBundleContract='audit/archive/ictc-agent-bundle/config/repositor
 const historicalBundleProfile='audit/archive/ictc-agent-bundle/bundle_profile.json';
 const historicalBundleCatalog='audit/archive/ictc-agent-bundle/config/test_catalog.json';
 const failures=[];
+// R4 negative invariant: a partial src/bootstrap or src/server cannot quietly
+// become a parallel executable authority while v3 still owns the current path.
+// This does NOT authorize migration; both entrypoint contracts must co-migrate.
+for(const entry of ['bootstrap.mjs','server.mjs']){
+ if(await exists('src/'+entry)&&await exists('v3/'+entry))
+  failures.push('parallel current runtime roots: src/'+entry+' and v3/'+entry);
+}
 // The historic agent handoff is preserved under docs/archive, never restored as a root sibling.
 if(await exists('ai'))failures.push('retired repository path reintroduced: ai/');
 async function exists(rel){try{await access(path.join(root,rel));return true}catch{return false}}

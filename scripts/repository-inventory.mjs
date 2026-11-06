@@ -37,7 +37,7 @@ export function v3StructuralRole(file){
  if(file.startsWith('v3/runtime/'))return 'runtime-candidate';
  if(file.startsWith('v3/standards/'))return 'standards-candidate';
  if(file.endsWith('.py'))return 'browser-verification-candidate';
- if(/(?:check|test|audit|probe|stress|saturation|mutation|falsification|e2e)\\.(?:mjs|js)$/.test(file))return 'verification-candidate';
+ if(/(?:check|test|audit|probe|stress|saturation|mutation|falsification|e2e)\.(?:mjs|js)$/.test(file))return 'verification-candidate';
  if(file.endsWith('.json'))return 'contract-or-data-candidate';
  if(file.endsWith('.md'))return 'documentation-candidate';
  return 'source-or-tool-candidate';

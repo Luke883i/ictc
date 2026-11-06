@@ -66,6 +66,8 @@ const legacySchemaNames=[
 ];
 const absentRootMutants=[
  {id:'historical-ai-root-resurrected',file:'ai/ictc-agent-bundle/README.md',content:'old public path should stay retired\n',expectPath:'ai/',cleanupDirectory:'ai'},
+ {id:'parallel-bootstrap-source-authority',file:'src/bootstrap.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/bootstrap.mjs and v3/bootstrap.mjs',cleanupDirectory:'src'},
+ {id:'parallel-server-source-authority',file:'src/server.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/server.mjs and v3/server.mjs',cleanupDirectory:'src'},
  {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
  {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
  {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''},
@@ -146,7 +148,8 @@ try{
   const actual=invoke();rmSync(p,{force:true});
   if(test.cleanupDirectory)rmSync(join(candidate,test.cleanupDirectory),{recursive:true,force:true});
   const rejectedPath=test.expectPath||test.file;
-  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes('retired repository path reintroduced: '+rejectedPath));
+  const expectedFailure=test.expectedFailure||'retired repository path reintroduced: '+rejectedPath;
+  const killed=actual.exit===1&&actual.status==='REFUTED'&&actual.failures.some(x=>x.includes(expectedFailure));
   result.physical.results.push({id:test.id,killed,failure:actual.failures.find(x=>x.includes(rejectedPath))||actual.error});
   if(killed)result.physical.killed++;else result.physical.survivors.push(test.id);
  }
