@@ -135,7 +135,9 @@ try{
  const before=graph();
  if(!before.edges.some(e=>e.from===originals[0]&&e.to===originals[1])||
     !before.edges.some(e=>e.from===originals[2]&&e.to===originals[3])||
-    !before.dynamic.includes(originals[4])||before.httpStaticCandidateCount!==1)
+    !before.dynamic.includes(originals[4])||
+    !before.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')||
+    before.httpStaticCandidateCount!==3)
   throw new Error('K0 physical-preimage witness absent');
  for(let cycle=0;cycle<10;cycle++)for(const mutation of mutations){
   const original=records.find(r=>r.path===mutation.path).body;
