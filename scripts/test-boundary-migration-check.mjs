@@ -115,7 +115,8 @@ const enterpriseBrowserMoves=Object.freeze([
  {name:'browser-stable-1-4-check.py',readers:['v3/stable-1-4-check.mjs']},
  {name:'browser-standard-proof-check.py',readers:['v3/standard-proof-1-6-contract.json']},
  {name:'browser-v4-1-language-check.py',readers:['.github/workflows/v4-1-dod.yml']},
- {name:'browser-v4-enterprise-nexus-check.py',readers:['.github/workflows/v4-dod.yml']}
+ {name:'browser-v4-enterprise-nexus-check.py',readers:['.github/workflows/v4-dod.yml']},
+ {name:'browser-regulatory-surface.py',readers:['.github/workflows/s4-a6-ux4-semantic-surface.yml']}
 ]);
 const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
 const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
