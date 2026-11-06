@@ -47,8 +47,8 @@ const canaryMoves=Object.freeze([
   current:'tests/helpers/active-experience-install.mjs',
   formerImport:"'./test-helpers/active-experience-install.mjs'",
   currentImport:"'../tests/helpers/active-experience-install.mjs'",
-  consumers:['v3/epistemic-inference-ui-check.mjs','v3/cross-procedure-create-ui-check.mjs',
-             'v3/v1-9-experience-check.mjs','v3/epistemic-lattice-ui-check.mjs']},
+  consumers:['tests/ui/epistemic-inference-ui-check.mjs','tests/ui/cross-procedure-create-ui-check.mjs',
+             'v3/v1-9-experience-check.mjs','tests/ui/epistemic-lattice-ui-check.mjs']},
  {previous:'v3/runtime/abuse-budget.mjs',current:'src/runtime/abuse-budget.mjs',
   formerImport:"'./runtime/abuse-budget.mjs'",
   currentImport:"'../src/runtime/abuse-budget.mjs'",
@@ -64,7 +64,9 @@ function verifyCanaryMoves(at=root){
   assert.equal(existsSync(join(at,row.previous)),false,'R3/R4 retired path resurrected: '+row.previous);
   for(const rel of row.consumers){
    const body=readFileSync(join(at,rel),'utf8');
-   assert.ok(body.includes(row.currentImport),'R3/R4 consumer not bound: '+rel);
+   const expectedImport=row.previous.startsWith('v3/test-helpers/')&&rel.startsWith('tests/ui/')
+    ? "'../helpers/active-experience-install.mjs'" : row.currentImport;
+   assert.ok(body.includes(expectedImport),'R3/R4 consumer not bound: '+rel);
    assert.equal(body.includes(row.formerImport),false,'R3/R4 consumer still points to retired path: '+rel);
   }
   cards.push({from:row.previous,to:row.current,blobEquality:'exact-git-preimage',consumers:row.consumers.length,
