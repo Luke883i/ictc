@@ -62,6 +62,9 @@ export function v3DependencyTopology(entries){
  const edges=[],unresolved=[],dynamic=[],excluded=[];
  const extension=/\.(?:mjs|js|py|json|ya?ml|html|css|md|txt|sh)$/i;
  const literal=/(?<![A-Za-z0-9_])(?:\.\.?\/|v3\/|tests\/|src\/|scripts\/|docs\/|audit\/|\.github\/)[A-Za-z0-9_./@-]+\.(?:mjs|js|py|json|ya?ml|html|css|md|svg|png|sh)/g;
+ // Local Python references are observed candidates, never proof of runtime resolution.
+ const pythonSibling=/(?:pathlib\.)?Path\(\s*__file__\s*\)(?:\.resolve\(\))?\.with_name\(\s*(['"])([A-Za-z0-9_.@-]+\.py)\1\s*\)/g;
+ const pythonModule=/(?:^|\n)\s*(?:from\s+([A-Za-z_][A-Za-z0-9_]*)\s+import\b|import\s+([A-Za-z_][A-Za-z0-9_]*)\b)/g;
  const classify=(source)=>{
   if(source.startsWith('.github/workflows/'))return 'workflow-command-or-literal';
   if(source==='package.json'||source==='ictc.sh')return 'launch-or-script-literal';
@@ -75,7 +78,7 @@ export function v3DependencyTopology(entries){
   const bytes=readFileSync(join(root,row.path));
   if(bytes.includes(0)){excluded.push({path:row.path,reason:'binary/NUL'});continue;}
   const source=row.path,body=bytes.toString('utf8'),kind=classify(source),seen=new Set();
-  if(/(?:readdir|glob|walk|recursive|import\s*\(|require\s*\(|eval\s*\()/i.test(body))
+  if(/(?:readdir|glob|walk|recursive|import\s*\(|require\s*\(|eval\s*\(|runpy\s*\.\s*run_path\s*\(|new\s+URL\s*\(\s*`)/i.test(body))
    dynamic.push(source);
   for(const m of body.matchAll(literal)){
    const raw=m[0],target=raw.startsWith('./')||raw.startsWith('../')
@@ -87,6 +90,22 @@ export function v3DependencyTopology(entries){
    const edge={from:source,to:target,kind};
    if(files.has(target))edges.push(edge);
    else unresolved.push({...edge,claimBoundary:'unresolved literal, not necessarily executable dependency'});
+  }
+  if(source.endsWith('.py')){
+   const addPython=(target,edgeKind)=>{
+    if(target===source)return;
+    const id=source+'\u0000'+target+'\u0000'+edgeKind;
+    if(seen.has(id))return;seen.add(id);
+    const edge={from:source,to:target,kind:edgeKind};
+    if(files.has(target))edges.push(edge);
+    else unresolved.push({...edge,claimBoundary:'unresolved local Python reference, not executable reachability proof'});
+   };
+   for(const m of body.matchAll(pythonSibling))
+    addPython(normalize(join(dirname(source),m[2])).replaceAll('\\','/'),'python-sibling-literal-candidate');
+   for(const m of body.matchAll(pythonModule)){
+    const candidate=normalize(join(dirname(source),(m[1]||m[2])+'.py')).replaceAll('\\','/');
+    if(files.has(candidate))addPython(candidate,'python-local-import-candidate');
+   }
   }
  }
  const byKind={};for(const edge of edges)byKind[edge.kind]=(byKind[edge.kind]||0)+1;
