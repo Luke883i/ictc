@@ -4,7 +4,7 @@ import pathlib
 import threading
 import traceback
 from playwright.sync_api import sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True); BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='initialization'; WATCHDOG=None
+ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True); BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='initialization'; WATCHDOG=None
 def annotation_escape(value): return str(value).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
 def write_failure(error_type,message,trace=''):
     (ART/'browser-stable-1-4-error.json').write_text(json.dumps({'ok':False,'phase':PHASE,'type':error_type,'message':message,'traceback':trace},indent=2),encoding='utf8'); print(f'::error title=browser-stable-1-4::{annotation_escape(f"{PHASE}: {error_type}: {message}")}',flush=True)

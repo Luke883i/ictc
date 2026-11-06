@@ -15,7 +15,7 @@ const css = `${await read('./public/enterprise-2-compliance-flow.css')}\n${await
 const app = await read('./public/app.js');
 const styles = await read('./public/styles.css');
 const docs = await read('../docs/ENTERPRISE_2_COMPLIANCE_FLOW.md');
-const browser = await read('./browser-enterprise-2-compliance-flow-check.py');
+const browser = await read('../tests/browser/browser-enterprise-2-compliance-flow-check.py');
 const verified = [];
 
 function verify(name, assertion) {
