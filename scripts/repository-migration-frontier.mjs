@@ -71,6 +71,15 @@ export function deriveMigrationFrontier(entries, topology) {
   }
   for(const p of [...graph.keys()].sort())if(!order.has(p))visit(p);
   cyclic.sort((a,b)=>b.length-a.length||(a[0]<b[0]?-1:a[0]>b[0]?1:0));
+  const observedUseProjection=deriveObservedUse(rows,topology);
+  const useByPath=new Map(observedUseProjection.nodes.map(row=>[row.path,row]));
+  for(const node of nodes){
+    const observed=useByPath.get(node.path);
+    if(!observed)throw new Error('missing bounded use qualification: '+node.path);
+    node.observedUse=observed.observedUse;
+    node.useEvidence=observed.evidence;
+    node.safeDeleteAuthorized=false;
+  }
   const byCohort={},byBlocker={};
   for(const row of nodes){byCohort[row.cohort]=(byCohort[row.cohort]||0)+1;
     for(const b of row.blockers)byBlocker[b]=(byBlocker[b]||0)+1;}
@@ -80,9 +89,87 @@ export function deriveMigrationFrontier(entries, topology) {
     observedInboundFiles:nodes.filter(n=>n.observedInbound>0).length,
     observedDynamicSources:nodes.filter(n=>n.observedDynamicSource).length,
     observedHttpCandidates:nodes.filter(n=>n.observedHttpMount).length,
-    sccCount:componentCount,nontrivialScc:cyclic.length,byCohort,byBlocker,
+    sccCount:componentCount,nontrivialScc:cyclic.length,byCohort,byBlocker,useQualification:observedUseProjection.summary,
     automaticMoveAuthorized:false,automaticDeleteAuthorized:false};
   return {schema:'ictc-derived-migration-frontier/v1',source:'repository-inventory observed edges only',
     summary,nodes,observedCyclicCohorts:cyclic,decision:'HOLD_ALL',
     claimBoundary:'Complete Git-path coverage is not complete runtime reachability; unqualified dynamic, HTTP and external callers veto cutover.'};
+}
+
+/** Evidence-bounded current use qualification, derived from the existing K0 graph.
+ * No observation here proves runtime execution, nonuse, safe removal or external reachability. */
+export const USE_CLASSES=Object.freeze([
+ 'DECLARED_RUNTIME_ROOT','RUNTIME_LITERAL_REACHABLE_CANDIDATE',
+ 'HTTP_SERVABLE_ASSET_CANDIDATE','CI_OR_PACKAGE_PATH_CANDIDATE',
+ 'SOURCE_CONSUMER_ONLY_CANDIDATE','HISTORICAL_NO_RUNTIME_WITNESS',
+ 'UNRESOLVED_NO_CURRENT_WITNESS'
+]);
+export function qualifyObservedUse(facts){
+ if(facts.runtimeRoot)return USE_CLASSES[0];
+ if(facts.runtimePath)return USE_CLASSES[1];
+ if(facts.httpMounted)return USE_CLASSES[2];
+ if(facts.ciPath)return USE_CLASSES[3];
+ if(facts.sourceConsumer)return USE_CLASSES[4];
+ if(facts.historicalPurpose)return USE_CLASSES[5];
+ return USE_CLASSES[6];
+}
+export function deriveObservedUse(rows,topology){
+ const paths=new Set(rows.map(x=>x.path));
+ const codeKinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal']);
+ const byFrom=new Map(),byTo=new Map();
+ for(const edge of topology.edges){
+  if(paths.has(edge.to)){const es=byTo.get(edge.to)||[];es.push(edge);byTo.set(edge.to,es);}
+  if(!codeKinds.has(edge.kind)||!paths.has(edge.from)||!paths.has(edge.to)||
+     !/\.(?:mjs|js|py)$/.test(edge.from))continue;
+  const es=byFrom.get(edge.from)||[];es.push(edge);byFrom.set(edge.from,es);
+ }
+ const walk=seeds=>{
+  const seen=new Map(),queue=[];
+  for(const p of [...new Set(seeds)].sort())if(paths.has(p)){
+   seen.set(p,{root:p,depth:0,via:null});queue.push(p);
+  }
+  for(let i=0;i<queue.length;i++){
+   const src=queue[i],prior=seen.get(src);
+   for(const edge of byFrom.get(src)||[]){
+    if(seen.has(edge.to))continue;
+    seen.set(edge.to,{root:prior.root,depth:prior.depth+1,via:src,kind:edge.kind});queue.push(edge.to);
+   }
+  }
+  return seen;
+ };
+ // Authority-declared current roots, not an inferred exhaustive executable entrypoint list.
+ const roots=['v3/bootstrap.mjs','v3/server.mjs'];
+ const runtime=walk(roots);
+ const ciSeeds=topology.edges.filter(e=>e.kind==='workflow-command-or-literal'||e.kind==='launch-or-script-literal')
+  .map(e=>e.to).filter(p=>paths.has(p));
+ const ci=walk(ciSeeds);
+ const http=new Set(topology.edges.filter(e=>e.kind==='http-static-route-candidate'&&e.from==='v3/server.mjs').map(e=>e.to));
+ const historical=new Set(['lineage-only','deprecated-test','migration-only','retirement-candidate']);
+ const dynamic=new Set(topology.dynamic);
+ const counter={};
+ const nodes=rows.map(row=>{
+  const p=row.path,ins=byTo.get(p)||[];
+  const facts={runtimeRoot:roots.includes(p),runtimePath:runtime.has(p),httpMounted:http.has(p),ciPath:ci.has(p),
+   sourceConsumer:ins.some(e=>e.kind!=='http-static-route-candidate'&&e.kind!=='documentation-mention'),
+   historicalPurpose:historical.has(row.purposeState)};
+  const observedUse=qualifyObservedUse(facts);
+  counter[observedUse]=(counter[observedUse]||0)+1;
+  const runtimeWitness=runtime.get(p),ciWitness=ci.get(p);
+  const evidence={runtimeRoot:facts.runtimeRoot,runtimeLiteralPath:!!runtimeWitness,
+   runtimePathRoot:runtimeWitness?.root||null,runtimePathHops:runtimeWitness?.depth??null,
+   runtimePredecessor:runtimeWitness?.via||null,httpStaticMount:facts.httpMounted,
+   ciOrPackagePath:!!ciWitness,ciOrPackageRoot:ciWitness?.root||null,
+   ciOrPackagePathHops:ciWitness?.depth??null,
+   otherSourceConsumers:ins.filter(e=>e.kind!=='documentation-mention'&&e.kind!=='http-static-route-candidate').length,
+   historicalPurpose:row.purposeState||null,dynamicSource:dynamic.has(p)||Boolean(row.purposeDynamicRisk),
+   externalConsumers:'UNKNOWN',runtimeNonContributionProven:false};
+  return {path:p,observedUse,evidence,decision:'HOLD',safeDeleteAuthorized:false};
+ });
+ for(const use of USE_CLASSES)counter[use]??=0;
+ const summary={mappedV3:nodes.length,byObservedUse:counter,
+  currentProductOrHttpCandidates:counter.DECLARED_RUNTIME_ROOT+counter.RUNTIME_LITERAL_REACHABLE_CANDIDATE+counter.HTTP_SERVABLE_ASSET_CANDIDATE,
+  verificationOrPackageCandidates:counter.CI_OR_PACKAGE_PATH_CANDIDATE,
+  nonRuntimeUnprovenCandidates:counter.SOURCE_CONSUMER_ONLY_CANDIDATE+counter.HISTORICAL_NO_RUNTIME_WITNESS+counter.UNRESOLVED_NO_CURRENT_WITNESS,
+  runtimeNonContributionCertified:0,automaticallyRetirable:0};
+ return {summary,nodes,claimBoundary:'Source-path witnesses and purpose states never prove that a file executed, was unused, or can safely be removed.'};
 }
