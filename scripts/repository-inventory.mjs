@@ -26,6 +26,33 @@ export function classifyFile(file,registered){
   return {category:'repository:other',evidence:'path-only',disposition:'HOLD_REVIEW'};
 }
 
+// R2: source-bound structural candidates; NEVER an owner assignment or move licence.
+// The existing repositoryPurposeCensus remains the canonical per-file purpose oracle.
+export function v3StructuralRole(file){
+ if(!file.startsWith('v3/'))return null;
+ if(file.startsWith('v3/tests/legacy/'))return 'historical-verification-fixture';
+ if(file.startsWith('v3/tests/')||file.startsWith('v3/test-helpers/'))return 'verification';
+ if(file.startsWith('v3/public/'))return 'public-url-asset';
+ if(file.startsWith('v3/demo/')||file.startsWith('v3/blob-fixtures/'))return 'fixture-candidate';
+ if(file.startsWith('v3/runtime/'))return 'runtime-candidate';
+ if(file.startsWith('v3/standards/'))return 'standards-candidate';
+ if(file.endsWith('.py'))return 'browser-verification-candidate';
+ if(/(?:check|test|audit|probe|stress|saturation|mutation|falsification|e2e)\.(?:mjs|js)$/.test(file))return 'verification-candidate';
+ if(file.endsWith('.json'))return 'contract-or-data-candidate';
+ if(file.endsWith('.md'))return 'documentation-candidate';
+ return 'source-or-tool-candidate';
+}
+export function v3StructuralCensus(entries){
+ const rows=entries.filter(e=>e.path.startsWith('v3/'));
+ const byRole={};
+ for(const e of rows)byRole[e.v3StructuralRole]=(byRole[e.v3StructuralRole]||0)+1;
+ return {files:rows.length,topLevelFiles:rows.filter(e=>e.path.split('/').length===2).length,
+  classifiedByPath:rows.filter(e=>typeof e.v3StructuralRole==='string').length,byRole,
+  independentConsumerProof:false,ownerQualified:false,moveOrRenameAuthorized:false,
+  externalConsumerBoundary:'UNKNOWN',targetName:'src/ (proposal only)',
+  claimBoundary:'Path-derived classification, not verified static/dynamic/HTTP/CI reachability, ownership, lossless rename or safe deletion.'};
+}
+
 /** Directory projection over the existing committed file census. It never assigns authority.
  * Directory names, byte totals, subtree and direct-file counts are reproducible
  * from the same tracked file list. They do not confer permission to move/delete.
@@ -59,7 +86,8 @@ export function census(){
    return {path:file,sha256:digest(bytes),bytes:bytes.length,...meta,
      purposeState:purpose.state,purposeKind:purpose.kind,purposeReason:purpose.reason,
      purposeInbound:purpose.inboundCount,purposeOutbound:purpose.outboundCount,
-     purposeDynamicRisk:purpose.dynamicRisk,purposeQualificationCoverage:purpose.qualificationCoverage};
+     purposeDynamicRisk:purpose.dynamicRisk,purposeQualificationCoverage:purpose.qualificationCoverage,
+     v3StructuralRole:v3StructuralRole(file)};
  });
  const counts={};for(const item of entries)counts[item.category]=(counts[item.category]||0)+1;
  const unregisteredDocs=entries.filter(e=>e.category==='document:unregistered').map(e=>e.path);
@@ -71,6 +99,7 @@ export function census(){
    declaredSafeDeletes:0,automaticQuarantines:0,
   claimBoundary:'Path and manifest classifications are inventory evidence, NOT complete runtime reachability, absence of external consumers, or authorization to deprecate, quarantine, or delete.'};
  const directories=directoryCensus(entries);
+ status.v3Structural=v3StructuralCensus(entries);
  status.directoryCount=directories.length;
  status.rootDirectFiles=tracked.filter(p=>!p.includes('/')).length;
  status.directoryDisposition='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF';
@@ -79,6 +108,13 @@ export function census(){
 export function verifyInventory(data,validatedBaseline=null){
   const e=data.entries,s=data.status,dirs=data.directories;
   if(!e.length||e.length!==s.total||s.classified!==s.total||s.missingManifest.length||new Set(e.map(x=>x.path)).size!==e.length)throw new Error('inventory completeness/manifest mismatch');
+  const expectedV3=v3StructuralCensus(e);
+  if(JSON.stringify(s.v3Structural)!==JSON.stringify(expectedV3)||
+     e.some(item=>item.v3StructuralRole!==v3StructuralRole(item.path))||
+     s.v3Structural.moveOrRenameAuthorized!==false||
+     s.v3Structural.ownerQualified!==false||
+     s.v3Structural.independentConsumerProof!==false)
+    throw new Error('v3 structural role / rename authorization drift');
   const expectedDirs=directoryCensus(e);
   if(!Array.isArray(dirs)||JSON.stringify(dirs)!==JSON.stringify(expectedDirs)||s.directoryCount!==expectedDirs.length||
      s.rootDirectFiles!==e.filter(x=>!x.path.includes('/')).length||s.directoryDisposition!=='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF')
@@ -105,6 +141,7 @@ export function verifyInventory(data,validatedBaseline=null){
     if(file!==observed.path)throw new Error(`missing/extra/reordered path at ${i}`);
     const bytes=readFileSync(join(root,file)),expected=classifyFile(file,registered);
     if(digest(bytes)!==observed.sha256||bytes.length!==observed.bytes)throw new Error(`bytes/digest mismatch ${file}`);
+    if(observed.v3StructuralRole!==v3StructuralRole(file))throw new Error('v3 structural classification mismatch: '+file);
     for(const key of ['category','evidence','disposition'])if(observed[key]!==expected[key])throw new Error(`unsound ${key}: ${file}`);
     const purpose=byPath.get(file);if(!purpose)throw new Error('missing canonical purpose row: '+file);
     const bindings={purposeState:purpose.state,purposeKind:purpose.kind,purposeReason:purpose.reason,

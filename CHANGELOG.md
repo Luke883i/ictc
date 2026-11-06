@@ -1,5 +1,18 @@
 # Changelog
 
+Current identity: `v3/release-identity.json` (`1.8.0`, candidate). `Unreleased` lists intentions, not deployed capabilities.
+
+## [Unreleased]
+
+### Planned (not current software or release commitment)
+
+- autenticazione OIDC e autorizzazione server-side;
+- persistenza PostgreSQL e object storage compatibile S3;
+- adapter LLM configurabile;
+- scheduler persistente per lo scouting;
+- osservabilità OpenTelemetry;
+- deployment containerizzato.
+
 ## [1.8.0] - 2026-08-06
 
 ### Enterprise workbench
@@ -102,17 +115,6 @@ La v1 non include OIDC/RBAC, multi-tenancy, malware scanning, scouting remoto re
 - rafforzati path traversal check, header e limiti upload.
 
 Le modifiche rilevanti sono documentate secondo Keep a Changelog. Il progetto usa versionamento semantico quando viene pubblicata una release.
-
-## [Unreleased]
-
-### Planned
-
-- autenticazione OIDC e autorizzazione server-side;
-- persistenza PostgreSQL e object storage compatibile S3;
-- adapter LLM configurabile;
-- scheduler persistente per lo scouting;
-- osservabilità OpenTelemetry;
-- deployment containerizzato.
 
 ## [2.0.0-beta.2] - 2026-07-31
 

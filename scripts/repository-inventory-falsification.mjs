@@ -28,6 +28,13 @@ const mutations=[
  ['false-root-direct-file-count',d=>{d.status.rootDirectFiles++;}],
  ['false-directory-count',d=>{d.status.directoryCount++;}],
  ['directory-authorization-laundering',d=>{d.status.directoryDisposition='AUTO_DELETE';}],
+ ['v3-source-disguised-as-test',d=>{d.entries.find(x=>x.path==='v3/server.mjs').v3StructuralRole='verification';}],
+ ['v3-public-url-disguised-as-fixture',d=>{d.entries.find(x=>x.path==='v3/public/index.html').v3StructuralRole='fixture-candidate';}],
+ ['v3-fabricated-owner-qualification',d=>{d.status.v3Structural.ownerQualified=true;}],
+ ['v3-rename-without-consumer-proof',d=>{d.status.v3Structural.moveOrRenameAuthorized=true;}],
+ ['v3-fabricated-consumer-proof',d=>{d.status.v3Structural.independentConsumerProof=true;}],
+ ['v3-fabricated-completeness',d=>{d.status.v3Structural.classifiedByPath++;}],
+ ['v3-count-drift',d=>{d.status.v3Structural.topLevelFiles++;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
