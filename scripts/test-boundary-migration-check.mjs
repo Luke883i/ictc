@@ -107,7 +107,10 @@ const enterpriseBrowserMoves=Object.freeze([
  {name:'browser-enterprise-1-7-check.py',readers:['v3/enterprise-1-7-check.mjs']},
  {name:'browser-enterprise-1-8-check.py',readers:['v3/enterprise-1-8-check.mjs','v3/enterprise-claims.json','v3/enterprise-2-historical-contract-alignment-check.mjs']},
  {name:'browser-enterprise-2-check.py',readers:['v3/enterprise-2-check.mjs','v3/enterprise-2-process-check.mjs','v3/enterprise-2-editorial-check.mjs','v3/enterprise-2-design-system-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']}
+ {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-admin-check.py',readers:['v3/enterprise-claims.json']},
+ {name:'browser-product-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-auditor-check.py',readers:['v3/reborn-3-check.mjs']}
 ]);
 const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
 const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
