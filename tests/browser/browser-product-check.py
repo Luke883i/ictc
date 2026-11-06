@@ -1,6 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');MOCK=os.environ.get('ICTC_MOCK_URL','http://127.0.0.1:4899').rstrip('/');PHASE='initialization'
+ROOT=pathlib.Path(__file__).resolve().parents[2];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');MOCK=os.environ.get('ICTC_MOCK_URL','http://127.0.0.1:4899').rstrip('/');PHASE='initialization'
 def fail(error):
     payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()};(ART/'browser-product-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-product-check::{PHASE}: {type(error).__name__}: {error}',flush=True)
 def headers(role): return {'x-ictc-role':role,'x-ictc-actor-id':f'local-{role}'}

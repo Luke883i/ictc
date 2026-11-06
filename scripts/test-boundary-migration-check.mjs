@@ -102,6 +102,61 @@ function verifyRelocatedUi(at=root){
 }
 const uiRelocationEvidence=verifyRelocatedUi();
 
+const ENTERPRISE_BROWSER_BASE='02236f4304adb4f817d4ed1e1e8e9eeaf4159c3a';
+const enterpriseBrowserMoves=Object.freeze([
+ {name:'browser-enterprise-1-7-check.py',readers:['v3/enterprise-1-7-check.mjs']},
+ {name:'browser-enterprise-1-8-check.py',readers:['v3/enterprise-1-8-check.mjs','v3/enterprise-claims.json','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-check.py',readers:['v3/enterprise-2-check.mjs','v3/enterprise-2-process-check.mjs','v3/enterprise-2-editorial-check.mjs','v3/enterprise-2-design-system-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-admin-check.py',readers:['v3/enterprise-claims.json']},
+ {name:'browser-product-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-auditor-check.py',readers:['v3/reborn-3-check.mjs']}
+]);
+const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
+const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
+const enterpriseBrowserToken=(reader,name)=>reader.endsWith('.json')
+ ? {old:'v3/'+name,current:'tests/browser/'+name}
+ : {old:'./'+name,current:'../tests/browser/'+name};
+function verifyEnterpriseBrowserMoves(at=root){
+ const result=[];
+ for(const row of enterpriseBrowserMoves){
+  const former='v3/'+row.name,current='tests/browser/'+row.name;
+  const original=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':'+former],{cwd:root,maxBuffer:2*1024*1024}).toString('utf8');
+  assert.equal(original.split(oldBrowserRoot).length,2,'R3 source root preimage not unique: '+former);
+  const expected=original.replace(oldBrowserRoot,newBrowserRoot);
+  assert.equal(readFileSync(join(at,current),'utf8'),expected,'R3 enterprise browser source/root drift: '+current);
+  assert.equal(existsSync(join(at,former)),false,'R3 enterprise browser former path resurrected: '+former);
+  for(const reader of row.readers){
+   const body=readFileSync(join(at,reader),'utf8'),token=enterpriseBrowserToken(reader,row.name);
+   assert.ok(body.includes(token.current),'R3 enterprise browser consumer not rebound: '+reader+' -> '+row.name);
+   assert.equal(body.includes(token.old),false,'R3 enterprise browser old consumer path survives: '+reader+' -> '+row.name);
+  }
+  result.push({previous:former,current,readers:row.readers.length,sourceTransform:'single-ancestor-path-rebind',externalConsumerAbsence:'UNKNOWN'});
+ }
+ return result;
+}
+const enterpriseBrowserEvidence=verifyEnterpriseBrowserMoves();
+
+function gitV3TopLevelAt(revision){
+ const paths=execFileSync('git',['ls-tree','-r','--name-only',revision,'--','v3/'],{cwd:root,maxBuffer:4*1024*1024}).toString('utf8');
+ return new Set(paths.split(/\r?\n/).filter(rel=>/^v3\/[^/]+$/.test(rel)));
+}
+function verifyEnterpriseBrowserTreeDelta(){
+ const before=gitV3TopLevelAt(ENTERPRISE_BROWSER_BASE);
+ const after=gitV3TopLevelAt('HEAD');
+ const retired=[...before].filter(rel=>!after.has(rel)).sort();
+ const introduced=[...after].filter(rel=>!before.has(rel)).sort();
+ const expected=enterpriseBrowserMoves.map(row=>'v3/'+row.name).sort();
+ assert.deepEqual(retired,expected,'R3 enterprise browser Git-tree retirement delta drift');
+ assert.deepEqual(introduced,[],'R3 enterprise browser Git-tree introduced unexpected v3 root path');
+ assert.equal(before.size-after.size,enterpriseBrowserMoves.length,'R3 enterprise browser top-level contraction mismatch');
+ return Object.freeze({baseSha:ENTERPRISE_BROWSER_BASE,oldTopLevel:before.size,newTopLevel:after.size,
+   retiredPaths:retired,unexpectedIntroductions:introduced,externalConsumerAbsence:'UNKNOWN'});
+}
+const enterpriseBrowserGitCensus=verifyEnterpriseBrowserTreeDelta();
+
+
+
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
@@ -142,7 +197,7 @@ let negative=null,model=null;
 if(process.argv.includes('--falsify')){
  const scratch=mkdtempSync(join(tmpdir(),'ictc-c1-3d-'));
  let killed=0,restored=0;
- let canaryMutantsKilled=0;
+ let canaryMutantsKilled=0,enterpriseBrowserMutantsKilled=0;
  try{
   const mirror=join(scratch,'canary');
   for(const row of canaryMoves){
@@ -179,6 +234,38 @@ if(process.argv.includes('--falsify')){
    assert.equal(verifyRelocatedUi(mirror).length,movedUiNames.length);
   }
   assert.equal(canaryMutantsKilled,canaryMoves.length+movedUiNames.length,'R3/R4 actual source modifications escaped');
+
+  const enterpriseMirrorFiles=new Set(enterpriseBrowserMoves.flatMap(row=>['tests/browser/'+row.name,...row.readers]));
+  for(const rel of enterpriseMirrorFiles){
+   const dest=join(mirror,rel);mkdirSync(dirname(dest),{recursive:true});
+   writeFileSync(dest,readFileSync(join(root,rel)));
+  }
+  assert.equal(verifyEnterpriseBrowserMoves(mirror).length,enterpriseBrowserMoves.length);
+  for(const row of enterpriseBrowserMoves){
+   const rel='tests/browser/'+row.name,dest=join(mirror,rel),original=readFileSync(dest);
+   writeFileSync(dest,Buffer.concat([original,Buffer.from('\n# source mutant\n')]));
+   try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise browser mutant survived: '+rel);}
+   catch(e){if(!String(e.message).includes('R3 enterprise browser source/root drift'))throw e;enterpriseBrowserMutantsKilled++;}
+   finally{writeFileSync(dest,original);}
+   const restoredLegacy=join(mirror,'v3',row.name);
+   mkdirSync(dirname(restoredLegacy),{recursive:true});
+   writeFileSync(restoredLegacy,original);
+   try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise old-path resurrection survived: '+row.name);}
+   catch(e){if(!String(e.message).includes('R3 enterprise browser former path resurrected'))throw e;enterpriseBrowserMutantsKilled++;}
+   finally{rmSync(restoredLegacy,{force:true});}
+   for(const reader of row.readers){
+    const token=enterpriseBrowserToken(reader,row.name),source=join(mirror,reader);
+    const before=readFileSync(source,'utf8');
+    assert.ok(before.includes(token.current),'R3 enterprise browser test precondition: '+reader);
+    writeFileSync(source,before.replace(token.current,token.old));
+    try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise reader mutant survived: '+reader);}
+    catch(e){if(!String(e.message).includes('R3 enterprise browser'))throw e;enterpriseBrowserMutantsKilled++;}
+    finally{writeFileSync(source,before);}
+   }
+  }
+  assert.equal(verifyEnterpriseBrowserMoves(mirror).length,enterpriseBrowserMoves.length);
+  assert.equal(enterpriseBrowserMutantsKilled,enterpriseBrowserMoves.length*2+enterpriseBrowserMoves.reduce((n,row)=>n+row.readers.length,0),'R3 enterprise browser mutants survived');
+
 
 
   for(const card of cards){
@@ -227,7 +314,7 @@ if(process.argv.includes('--falsify')){
           sourceByteParityAndReadRerootChecked:true};
  });
  negative={physicalMutantsKilled:killed,physicallyRestored:restored,realCommandEquivalence:runs,
-  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedCanaryBlobParity:canaryEvidence,
+  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedEnterpriseBrowserPhysicalMutantsKilled:enterpriseBrowserMutantsKilled,relocatedCanaryBlobParity:canaryEvidence,
   relocatedUiExecutableRuns:uiExecutions};
  const AXES=['logicBytes','stableEntrypoint','relativeResolution','singleAuthority','reversible'];
  const full=Object.fromEntries(AXES.map(x=>[x,true]));
@@ -263,8 +350,10 @@ if(process.argv.includes('--falsify')){
 const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',baseline:{trama:BASE,followup:BASE_POST},
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
+ migratedEnterpriseBrowserCanaries:enterpriseBrowserEvidence,
+ enterpriseBrowserGitCensus,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
- remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
+ remaining:{topLevelV3FilesBefore:enterpriseBrowserGitCensus.oldTopLevel,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
    totalV3VerificationLikeCandidatesBefore:447,
    selectedVerificationModules:files.length,remainingVerificationLikeCandidates:447-files.length,
    externalAndDynamicConsumers:'UNKNOWN',compatibilityRemoval:'BLOCKED'},
@@ -272,5 +361,6 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
 mkdirSync(join(root,'artifacts'),{recursive:true});
 writeFileSync(join(root,'artifacts/c1-3d-test-boundary.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({ok:true,selected:files.length,movedBytes:recorded.flatImplementationBytesRelocated,
+ enterpriseBrowserPathsRetired:enterpriseBrowserGitCensus.retiredPaths.length,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
  physicalMutantsKilled:negative?.physicalMutantsKilled||0,realCommandComparisons:negative?.realCommandEquivalence.length||0,
  modelTrials:model?.trials||0,safeToDeleteAdapters:false,fullC13dClosed:false}));
