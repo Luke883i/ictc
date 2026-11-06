@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { isForbiddenAddress } from './network-policy.mjs';
 import { resolveRequestTenant } from './runtime/tenant-authority.mjs';
-import { createAbuseBudget } from './runtime/abuse-budget.mjs';
+import { createAbuseBudget } from '../src/runtime/abuse-budget.mjs';
 import { routeMatch } from './runtime/http.mjs';
 import { csvCell } from './runtime/exports.mjs';
 import { signScannerAttestation, verifyScannerAttestation } from './runtime/attachment-scanner.mjs';

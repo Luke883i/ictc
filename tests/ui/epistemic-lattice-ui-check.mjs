@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
+import { assertActiveInstallers } from '../helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
-const [ui,router,tools,proofWorkspace,active,styles,baseCss,journeyCss]=await Promise.all([read('./public/ui/epistemic-lattice.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/proof-workspace-3-2.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/epistemic-lattice.css'),read('./public/procedure-journey-2-1.css')]);
+const [ui,router,tools,proofWorkspace,active,styles,baseCss,journeyCss]=await Promise.all([read('../../v3/public/ui/epistemic-lattice.js'),read('../../v3/public/ui/surface-router.js'),read('../../v3/public/ui/global-tools.js'),read('../../v3/public/ui/proof-workspace-3-2.js'),read('../../v3/public/ui/active-experience.js'),read('../../v3/public/styles.css'),read('../../v3/public/epistemic-lattice.css'),read('../../v3/public/procedure-journey-2-1.css')]);
 for(const token of ['EP-01','Reticolo epistemico','Esplora','Flat / raw','Proto-grafo','data-epistemic-mode','projectionSha256'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);
 for(const level of ['overview','groups','relations','atom'])assert.ok(ui.includes(`${level}:`)||ui.includes(`'${level}'`),`EP-01 exploration level missing ${level}`);
 for(const token of ['Quadro','Gruppi','Relazioni','Atomo','Letture proposte','data-epistemic-basis','basisAtomIds'])assert.ok(ui.includes(token),`EP-01 progressive exploration missing ${token}`);

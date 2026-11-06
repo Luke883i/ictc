@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
+import { assertActiveInstallers } from '../tests/helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [index,styles,frame,router,tools,shell,active,css,market,copy,refined,composition,native]=await Promise.all([read('./public/index.html'),read('./public/styles.css'),read('./public/ui/procedure-frame.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/stable-shell.js'),read('./public/ui/active-experience.js'),read('./public/experience-1-9.css'),read('./public/ui/procedure-market-ux.js'),read('./public/ui/product-copy.js'),read('./public/ui/refined-product.js'),read('./public/ui/semantic-composition-runtime.js'),read('./public/ui/native-semantic-lattice-3-2.js')]);
 assert.match(index,/data-ictc-edition="1\.2-market-candidate"/,'semantic edition remains 1.2');assert.match(shell,/ictcExperienceEdition=EXPERIENCE_EDITION/);assert.match(shell,/EXPERIENCE_EDITION='1\.9-experience-candidate'/);assert.doesNotMatch(shell,/dataset\.ictcEdition\s*=/,'experience layer must not rewrite semantic edition');assert.match(copy,/home:'Home'/);assert.match(copy,/processes:'Processi di Compliance'/);assert.match(copy,/proof:'Evidenze ICTC'/);assert.match(shell,/SURFACE_LABELS\.home/);assert.match(shell,/SURFACE_LABELS\.proof/);assert.match(tools,/SURFACE_LABELS\.proof/);

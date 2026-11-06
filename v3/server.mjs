@@ -46,7 +46,7 @@ import { aiPolicyProjection, assertAiPolicy, deploymentEvidencePosture, normaliz
 import { createTenantAuthority } from './runtime/tenant-authority.mjs';
 import { ensurePrivacyState, privacyLifecycleProjection } from './runtime/privacy-lifecycle.mjs';
 import { createOperationalObservability } from './runtime/operational-observability.mjs';
-import { createAbuseBudget } from './runtime/abuse-budget.mjs';
+import { createAbuseBudget } from '../src/runtime/abuse-budget.mjs';
 import { authenticatedRateLimitKey, edgeRateLimitKey } from './runtime/security-boundaries.mjs';
 import { evaluateRuntimeSlo } from './runtime/reliability-slo.mjs';
 
