@@ -102,6 +102,39 @@ function verifyRelocatedUi(at=root){
 }
 const uiRelocationEvidence=verifyRelocatedUi();
 
+const ENTERPRISE_BROWSER_BASE='02236f4304adb4f817d4ed1e1e8e9eeaf4159c3a';
+const enterpriseBrowserMoves=Object.freeze([
+ {name:'browser-enterprise-1-7-check.py',readers:['v3/enterprise-1-7-check.mjs']},
+ {name:'browser-enterprise-1-8-check.py',readers:['v3/enterprise-1-8-check.mjs','v3/enterprise-claims.json','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-check.py',readers:['v3/enterprise-2-check.mjs','v3/enterprise-2-process-check.mjs','v3/enterprise-2-editorial-check.mjs','v3/enterprise-2-design-system-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']}
+]);
+const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
+const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
+const enterpriseBrowserToken=(reader,name)=>reader.endsWith('.json')
+ ? {old:'v3/'+name,current:'tests/browser/'+name}
+ : {old:'./'+name,current:'../tests/browser/'+name};
+function verifyEnterpriseBrowserMoves(at=root){
+ const result=[];
+ for(const row of enterpriseBrowserMoves){
+  const former='v3/'+row.name,current='tests/browser/'+row.name;
+  const original=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':'+former],{cwd:root,maxBuffer:2*1024*1024}).toString('utf8');
+  assert.equal(original.split(oldBrowserRoot).length,2,'R3 source root preimage not unique: '+former);
+  const expected=original.replace(oldBrowserRoot,newBrowserRoot);
+  assert.equal(readFileSync(join(at,current),'utf8'),expected,'R3 enterprise browser source/root drift: '+current);
+  assert.equal(existsSync(join(at,former)),false,'R3 enterprise browser former path resurrected: '+former);
+  for(const reader of row.readers){
+   const body=readFileSync(join(at,reader),'utf8'),token=enterpriseBrowserToken(reader,row.name);
+   assert.ok(body.includes(token.current),'R3 enterprise browser consumer not rebound: '+reader+' -> '+row.name);
+   assert.equal(body.includes(token.old),false,'R3 enterprise browser old consumer path survives: '+reader+' -> '+row.name);
+  }
+  result.push({previous:former,current,readers:row.readers.length,sourceTransform:'single-ancestor-path-rebind',externalConsumerAbsence:'UNKNOWN'});
+ }
+ return result;
+}
+const enterpriseBrowserEvidence=verifyEnterpriseBrowserMoves();
+
+
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
@@ -142,7 +175,7 @@ let negative=null,model=null;
 if(process.argv.includes('--falsify')){
  const scratch=mkdtempSync(join(tmpdir(),'ictc-c1-3d-'));
  let killed=0,restored=0;
- let canaryMutantsKilled=0;
+ let canaryMutantsKilled=0,enterpriseBrowserMutantsKilled=0;
  try{
   const mirror=join(scratch,'canary');
   for(const row of canaryMoves){
@@ -179,6 +212,32 @@ if(process.argv.includes('--falsify')){
    assert.equal(verifyRelocatedUi(mirror).length,movedUiNames.length);
   }
   assert.equal(canaryMutantsKilled,canaryMoves.length+movedUiNames.length,'R3/R4 actual source modifications escaped');
+
+  const enterpriseMirrorFiles=new Set(enterpriseBrowserMoves.flatMap(row=>['tests/browser/'+row.name,...row.readers]));
+  for(const rel of enterpriseMirrorFiles){
+   const dest=join(mirror,rel);mkdirSync(dirname(dest),{recursive:true});
+   writeFileSync(dest,readFileSync(join(root,rel)));
+  }
+  assert.equal(verifyEnterpriseBrowserMoves(mirror).length,enterpriseBrowserMoves.length);
+  for(const row of enterpriseBrowserMoves){
+   const rel='tests/browser/'+row.name,dest=join(mirror,rel),original=readFileSync(dest);
+   writeFileSync(dest,Buffer.concat([original,Buffer.from('\n# source mutant\n')]));
+   try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise browser mutant survived: '+rel);}
+   catch(e){if(!String(e.message).includes('R3 enterprise browser source/root drift'))throw e;enterpriseBrowserMutantsKilled++;}
+   finally{writeFileSync(dest,original);}
+   for(const reader of row.readers){
+    const token=enterpriseBrowserToken(reader,row.name),source=join(mirror,reader);
+    const before=readFileSync(source,'utf8');
+    assert.ok(before.includes(token.current),'R3 enterprise browser test precondition: '+reader);
+    writeFileSync(source,before.replace(token.current,token.old));
+    try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise reader mutant survived: '+reader);}
+    catch(e){if(!String(e.message).includes('R3 enterprise browser'))throw e;enterpriseBrowserMutantsKilled++;}
+    finally{writeFileSync(source,before);}
+   }
+  }
+  assert.equal(verifyEnterpriseBrowserMoves(mirror).length,enterpriseBrowserMoves.length);
+  assert.equal(enterpriseBrowserMutantsKilled,enterpriseBrowserMoves.length+enterpriseBrowserMoves.reduce((n,row)=>n+row.readers.length,0),'R3 enterprise browser mutants survived');
+
 
 
   for(const card of cards){
@@ -227,7 +286,7 @@ if(process.argv.includes('--falsify')){
           sourceByteParityAndReadRerootChecked:true};
  });
  negative={physicalMutantsKilled:killed,physicallyRestored:restored,realCommandEquivalence:runs,
-  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedCanaryBlobParity:canaryEvidence,
+  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedEnterpriseBrowserPhysicalMutantsKilled:enterpriseBrowserMutantsKilled,relocatedCanaryBlobParity:canaryEvidence,
   relocatedUiExecutableRuns:uiExecutions};
  const AXES=['logicBytes','stableEntrypoint','relativeResolution','singleAuthority','reversible'];
  const full=Object.fromEntries(AXES.map(x=>[x,true]));
@@ -263,6 +322,7 @@ if(process.argv.includes('--falsify')){
 const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',baseline:{trama:BASE,followup:BASE_POST},
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
+ migratedEnterpriseBrowserCanaries:enterpriseBrowserEvidence,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
    totalV3VerificationLikeCandidatesBefore:447,
