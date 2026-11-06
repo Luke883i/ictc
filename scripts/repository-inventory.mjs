@@ -5,6 +5,7 @@ import {join,resolve,dirname,normalize} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {repositoryPurposeCensus} from '../v3/trama-reconcile.mjs';
+import {deriveMigrationFrontier} from './repository-migration-frontier.mjs';
 
 export const root=resolve(new URL('..',import.meta.url).pathname);
 const digest=v=>createHash('sha256').update(v).digest('hex');
@@ -57,11 +58,14 @@ export function v3StructuralCensus(entries){
  * This is not an independent dependency authority or a safe-to-move decision.
  * Dynamic resolution, HTTP routing, runtime-generated strings and external
  * callers remain unqualified. Every tracked path remains HOLD without proof. */
-export function v3DependencyTopology(entries){
+export function v3DependencyTopology(entries,scanRoot=root){
  const files=new Set(entries.map(e=>e.path));
  const edges=[],unresolved=[],dynamic=[],excluded=[];
  const extension=/\.(?:mjs|js|py|json|ya?ml|html|css|md|txt|sh)$/i;
  const literal=/(?<![A-Za-z0-9_])(?:\.\.?\/|v3\/|tests\/|src\/|scripts\/|docs\/|audit\/|\.github\/)[A-Za-z0-9_./@-]+\.(?:mjs|js|py|json|ya?ml|html|css|md|svg|png|sh)/g;
+ // Local Python references are observed candidates, never proof of runtime resolution.
+ const pythonSibling=/(?:pathlib\.)?Path\(\s*__file__\s*\)(?:\.resolve\(\))?\.with_name\(\s*(['"])([A-Za-z0-9_.@-]+\.py)\1\s*\)/g;
+ const pythonModule=/(?:^|\n)\s*(?:from\s+([A-Za-z_][A-Za-z0-9_]*)\s+import\b|import\s+([A-Za-z_][A-Za-z0-9_]*)\b)/g;
  const classify=(source)=>{
   if(source.startsWith('.github/workflows/'))return 'workflow-command-or-literal';
   if(source==='package.json'||source==='ictc.sh')return 'launch-or-script-literal';
@@ -72,10 +76,10 @@ export function v3DependencyTopology(entries){
  for(const row of entries){
   if(!extension.test(row.path))continue;
   if(row.bytes>2*1024*1024){excluded.push({path:row.path,reason:'oversize text scan'});continue;}
-  const bytes=readFileSync(join(root,row.path));
+  const bytes=readFileSync(join(scanRoot,row.path));
   if(bytes.includes(0)){excluded.push({path:row.path,reason:'binary/NUL'});continue;}
   const source=row.path,body=bytes.toString('utf8'),kind=classify(source),seen=new Set();
-  if(/(?:readdir|glob|walk|recursive|import\s*\(|require\s*\(|eval\s*\()/i.test(body))
+  if(/(?:readdir|glob|walk|recursive|import\s*\(|require\s*\(|eval\s*\(|runpy\s*\.\s*run_path\s*\(|new\s+URL\s*\(\s*`)/i.test(body))
    dynamic.push(source);
   for(const m of body.matchAll(literal)){
    const raw=m[0],target=raw.startsWith('./')||raw.startsWith('../')
@@ -88,6 +92,32 @@ export function v3DependencyTopology(entries){
    if(files.has(target))edges.push(edge);
    else unresolved.push({...edge,claimBoundary:'unresolved literal, not necessarily executable dependency'});
   }
+  if(source.endsWith('.py')){
+   const addPython=(target,edgeKind)=>{
+    if(target===source)return;
+    const id=source+'\u0000'+target+'\u0000'+edgeKind;
+    if(seen.has(id))return;seen.add(id);
+    const edge={from:source,to:target,kind:edgeKind};
+    if(files.has(target))edges.push(edge);
+    else unresolved.push({...edge,claimBoundary:'unresolved local Python reference, not executable reachability proof'});
+   };
+   for(const m of body.matchAll(pythonSibling))
+    addPython(normalize(join(dirname(source),m[2])).replaceAll('\\','/'),'python-sibling-literal-candidate');
+   for(const m of body.matchAll(pythonModule)){
+    const candidate=normalize(join(dirname(source),(m[1]||m[2])+'.py')).replaceAll('\\','/');
+    if(files.has(candidate))addPython(candidate,'python-local-import-candidate');
+   }
+  }
+ }
+ // Source-bound HTTP mount, only candidate URL edges (not runtime/consumer proof).
+ const server='v3/server.mjs';
+ const body=files.has(server)?readFileSync(join(scanRoot,server),'utf8'):'';
+ const httpStaticRootObserved=body.includes("const publicRoot=path.join(here,'public')")&&
+  body.includes('serveStatic(response,url.pathname,publicRoot,mime)');
+ let httpStaticCandidateCount=0;
+ if(httpStaticRootObserved)for(const e of entries)if(e.path.startsWith('v3/public/')){
+  edges.push({from:server,to:e.path,kind:'http-static-route-candidate'});
+  httpStaticCandidateCount++;
  }
  const byKind={};for(const edge of edges)byKind[edge.kind]=(byKind[edge.kind]||0)+1;
  const v3Targets=edges.filter(e=>e.to.startsWith('v3/')),v3Files=entries.filter(e=>e.path.startsWith('v3/'));
@@ -95,6 +125,7 @@ export function v3DependencyTopology(entries){
  return {schema:'ictc-derived-v3-dependency-topology/v1',source:'tracked-file literal scan; no new owner',
   totalTracked:entries.length,totalV3:v3Files.length,
   scannedTextFiles:entries.filter(e=>extension.test(e.path)).length-excluded.length,
+  httpStaticRootObserved,httpStaticCandidateCount,
   excluded,edgeCount:edges.length,unresolvedLiteralCount:unresolved.length,
   v3InboundLiterals:v3Targets.length,v3TargetsWithObservedLiterals:covered.size,
   v3TargetsWithoutObservedLiterals:v3Files.length-covered.size,
@@ -155,11 +186,20 @@ export function census(){
  status.rootDirectFiles=tracked.filter(p=>!p.includes('/')).length;
  status.directoryDisposition='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF';
  const dependencyTopology=v3DependencyTopology(entries);
- status.dependencyTopology={schema:dependencyTopology.schema,edgeCount:dependencyTopology.edgeCount,unresolvedLiteralCount:dependencyTopology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:dependencyTopology.v3TargetsWithObservedLiterals,dynamicSelectorSources:dependencyTopology.dynamicSelectorSources,independentConsumerProof:false,automaticMoveAuthorized:false};
- return {status,entries,directories,dependencyTopology};
+ const migrationFrontier=deriveMigrationFrontier(entries,dependencyTopology);
+ status.dependencyTopology={schema:dependencyTopology.schema,edgeCount:dependencyTopology.edgeCount,unresolvedLiteralCount:dependencyTopology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:dependencyTopology.v3TargetsWithObservedLiterals,dynamicSelectorSources:dependencyTopology.dynamicSelectorSources,httpStaticCandidateCount:dependencyTopology.httpStaticCandidateCount,independentConsumerProof:false,automaticMoveAuthorized:false};
+ status.migrationFrontier=migrationFrontier.summary;
+ return {status,entries,directories,dependencyTopology,migrationFrontier};
 }
 export function verifyInventory(data,validatedBaseline=null){
   const e=data.entries,s=data.status,dirs=data.directories;
+  const frontier=deriveMigrationFrontier(e,data.dependencyTopology);
+  if(JSON.stringify(data.migrationFrontier)!==JSON.stringify(frontier)||
+     JSON.stringify(s.migrationFrontier)!==JSON.stringify(frontier.summary)||
+     frontier.summary.mappedV3!==s.v3Structural.files||frontier.decision!=='HOLD_ALL'||
+     frontier.summary.automaticMoveAuthorized!==false||frontier.summary.automaticDeleteAuthorized!==false||
+     frontier.nodes.some(x=>x.decision!=='HOLD'||!x.blockers.includes('EXTERNAL_CONSUMER_UNPROVEN')))
+    throw new Error('K0 frontier coverage or fabricated migration clearance');
   if(!e.length||e.length!==s.total||s.classified!==s.total||s.missingManifest.length||new Set(e.map(x=>x.path)).size!==e.length)throw new Error('inventory completeness/manifest mismatch');
   const expectedV3=v3StructuralCensus(e);
   if(JSON.stringify(s.v3Structural)!==JSON.stringify(expectedV3)||
@@ -171,7 +211,7 @@ export function verifyInventory(data,validatedBaseline=null){
   if(!validatedBaseline){
   const topology=v3DependencyTopology(e);
   if(JSON.stringify(data.dependencyTopology)!==JSON.stringify(topology)||
-     JSON.stringify(s.dependencyTopology)!==JSON.stringify({schema:topology.schema,edgeCount:topology.edgeCount,unresolvedLiteralCount:topology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:topology.v3TargetsWithObservedLiterals,dynamicSelectorSources:topology.dynamicSelectorSources,independentConsumerProof:false,automaticMoveAuthorized:false})||
+     JSON.stringify(s.dependencyTopology)!==JSON.stringify({schema:topology.schema,edgeCount:topology.edgeCount,unresolvedLiteralCount:topology.unresolvedLiteralCount,v3TargetsWithObservedLiterals:topology.v3TargetsWithObservedLiterals,dynamicSelectorSources:topology.dynamicSelectorSources,httpStaticCandidateCount:topology.httpStaticCandidateCount,independentConsumerProof:false,automaticMoveAuthorized:false})||
      topology.totalV3!==s.v3Structural.files||topology.automaticMoveAuthorized!==false||
      topology.automaticDeleteAuthorized!==false)
    throw new Error('derived dependency topology or unauthorized consumer clearance drift');
@@ -189,6 +229,7 @@ export function verifyInventory(data,validatedBaseline=null){
     if(JSON.stringify(s)!==JSON.stringify(validatedBaseline.status))throw new Error('summary altered against validated baseline');
     if(JSON.stringify(dirs)!==JSON.stringify(validatedBaseline.directories))throw new Error('directory projection altered against validated baseline');
     if(JSON.stringify(data.dependencyTopology)!==JSON.stringify(validatedBaseline.dependencyTopology))throw new Error('dependency topology altered against validated baseline');
+    if(JSON.stringify(data.migrationFrontier)!==JSON.stringify(validatedBaseline.migrationFrontier))throw new Error('K0 frontier altered against validated baseline');
     for(let i=0;i<e.length;i++)if(JSON.stringify(e[i])!==JSON.stringify(validatedBaseline.entries[i]))throw new Error('receipt altered against validated baseline');
     return true;
   }
