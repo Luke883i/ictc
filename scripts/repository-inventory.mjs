@@ -108,6 +108,21 @@ export function v3DependencyTopology(entries,scanRoot=root){
     if(files.has(candidate))addPython(candidate,'python-local-import-candidate');
    }
   }
+  // Literal absolute browser URL candidates are NOT implied by JS imports.
+  // Keep this a source-bound consumer edge, not a claim of executed/mounted code.
+  if(source.startsWith('v3/public/')&&/\.(?:mjs|js|html|css)$/.test(source)){
+   const absolute=/(['"])\/([A-Za-z0-9_./@-]+\.(?:mjs|js|css|html|svg|png|json|ico|webp))\1/g;
+   for(const m of body.matchAll(absolute)){
+    const target=normalize(join('v3/public',m[2])).replaceAll('\\','/');
+    if(target===source)continue;
+    const id=source+'\u0000'+target+'\u0000browser-absolute-url-candidate';
+    if(seen.has(id))continue;
+    seen.add(id);
+    const edge={from:source,to:target,kind:'browser-absolute-url-candidate'};
+    if(files.has(target))edges.push(edge);
+    else unresolved.push({...edge,claimBoundary:'unresolved literal browser URL, external requests and runtime execution not established'});
+   }
+  }
  }
  // Source-bound HTTP mount, only candidate URL edges (not runtime/consumer proof).
  const server='v3/server.mjs';

@@ -54,7 +54,7 @@ export function deriveMigrationFrontier(entries, topology) {
     for(const node of cohort)node.blockers.push('TARGET_CANDIDATE_COLLISION');
   // SCCs use only observed code/Python edges; unobserved dynamic reachability stays unproved.
   const graph=new Map(rows.map(x=>[x.path,new Set()]));
-  const kinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal']);
+  const kinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate']);
   for(const e of topology.edges)if(kinds.has(e.kind)&&graph.has(e.from)&&graph.has(e.to))graph.get(e.from).add(e.to);
   const order=new Map(),low=new Map(),stack=[],active=new Set(),cyclic=[];let clock=0,componentCount=0;
   function visit(v){
@@ -115,7 +115,7 @@ export function qualifyObservedUse(facts){
 }
 export function deriveObservedUse(rows,topology){
  const paths=new Set(rows.map(x=>x.path));
- const codeKinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal']);
+ const codeKinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate']);
  const byFrom=new Map(),byTo=new Map();
  for(const edge of topology.edges){
   if(paths.has(edge.to)){const es=byTo.get(edge.to)||[];es.push(edge);byTo.set(edge.to,es);}

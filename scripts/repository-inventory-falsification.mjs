@@ -15,6 +15,9 @@ if(sample.nodes.length!==1||sample.nodes[0].destinationCandidate!=='src/runtime/
 const sibling=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-v2-grc-check.py'&&e.to==='v3/browser-v3-all-service.py'&&e.kind==='python-sibling-literal-candidate');
 const helper=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-ao-activation.py'&&e.to==='v3/browser_test_support.py'&&e.kind==='python-local-import-candidate');
 if(!sibling||!helper)throw new Error('K0 source-bound Python sibling/local-import edges not observed');
+const absoluteCss=base.dependencyTopology.edges.find(e=>e.from==='v3/public/ui/procedure-finetuning-2-3.js'&&
+ e.to==='v3/public/procedure-finetuning-2-3.css'&&e.kind==='browser-absolute-url-candidate');
+if(!absoluteCss)throw new Error('K0 source-bound absolute browser URL reference not observed');
 for(const name of ['v3/browser-v2-grc-check.py','v3/runtime/demo-suite-2-2-fixture.mjs'])
  if(!base.dependencyTopology.dynamic.includes(name))
   throw new Error('K0 dynamic consumer risk not observed: '+name);
@@ -87,6 +90,7 @@ const mutations=[
  ['liveness-historical-count-forged',d=>{d.migrationFrontier.summary.useQualification.byObservedUse.HISTORICAL_NO_RUNTIME_WITNESS++;}],
  ['liveness-source-evidence-erased',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').useEvidence.runtimeRoot=false;}],
  ['liveness-false-runtime-noncontribution',d=>{d.migrationFrontier.summary.useQualification.runtimeNonContributionCertified++;}],
+ ['browser-css-absolute-url-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===absoluteCss.from&&e.to===absoluteCss.to&&e.kind===absoluteCss.kind);if(i<0)throw Error('browser CSS preimage absent');d.dependencyTopology.edges.splice(i,1);}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
@@ -99,7 +103,9 @@ const originals=[
  'v3/browser_test_support.py',
  'v3/runtime/demo-suite-2-2-fixture.mjs',
  'v3/server.mjs',
- 'v3/public/index.html'
+ 'v3/public/index.html',
+ 'v3/public/ui/procedure-finetuning-2-3.js',
+ 'v3/public/procedure-finetuning-2-3.css'
 ];
 const scratch=mkdtempSync(join(tmpdir(),'ictc-k0-physical-'));
 const physical=[];
@@ -119,6 +125,9 @@ try{
   {name:'template-fixture-dynamic-selector-erasure',path:originals[4],search:'new URL(`../demo/demo-suite-2-2-fixture-${part}.b64`,import.meta.url)',
    replace:"new URL('../demo/demo-suite-2-2-fixture-01.b64',import.meta.url)",
    killed:g=>!g.dynamic.includes(originals[4])},
+  {name:'browser-absolute-css-link-corruption',path:originals[7],search:"link.href='/procedure-finetuning-2-3.css';",replace:"link.href='/missing-procedure-style.css';",
+   killed:g=>!g.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')&&
+    g.unresolved.some(e=>e.from===originals[7]&&e.kind==='browser-absolute-url-candidate')},
   {name:'http-static-root-rebound',path:originals[5],search:"const publicRoot=path.join(here,'public');",
    replace:"const publicRoot=path.join(here,'public-assets');",
    killed:g=>g.httpStaticCandidateCount===0&&!g.edges.some(e=>e.kind==='http-static-route-candidate')}
