@@ -35,6 +35,12 @@ const mutations=[
  ['v3-fabricated-consumer-proof',d=>{d.status.v3Structural.independentConsumerProof=true;}],
  ['v3-fabricated-completeness',d=>{d.status.v3Structural.classifiedByPath++;}],
  ['v3-count-drift',d=>{d.status.v3Structural.topLevelFiles++;}],
+ ['dependency-edge-omitted',d=>{d.dependencyTopology.edges.pop();}],
+ ['dependency-invented-edge',d=>{d.dependencyTopology.edges.push({from:'v3/server.mjs',to:'v3/not-real.mjs',kind:'code-or-contract-literal'});}],
+ ['dependency-fake-clearance',d=>{d.dependencyTopology.externalConsumersCleared=true;}],
+ ['dependency-fake-move-authority',d=>{d.dependencyTopology.automaticMoveAuthorized=true;}],
+ ['dependency-dynamic-risk-erased',d=>{d.dependencyTopology.dynamicSelectorSources=0;}],
+ ['dependency-fake-covered-target',d=>{d.status.dependencyTopology.v3TargetsWithObservedLiterals++;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
