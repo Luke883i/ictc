@@ -29,7 +29,7 @@ const docs = await read('../docs/ENTERPRISE_2_UI_STANDARD.md');
 const convergenceDocs = await read('../docs/ENTERPRISE_2_UI_STANDARD_RUNTIME_CONVERGENCE.md');
 const browser = await read('../tests/browser/browser-enterprise-2-ui-standard-check.py');
 const kernelBrowser = await read('./browser-convergent-kernel.py');
-const productBrowser = await read('./browser-product-check.py');
+const productBrowser = await read('../tests/browser/browser-product-check.py');
 const verified = [];
 
 function verify(name, assertion) { assertion(); verified.push(name); }

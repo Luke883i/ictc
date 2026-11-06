@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const model = JSON.parse(await read('./enterprise-2-historical-contract-alignment.json'));
 const designCheck = await read('./enterprise-2-design-system-check.mjs');
-const browser = await read('./browser-product-check.py');
+const browser = await read('../tests/browser/browser-product-check.py');
 const enterprise18Browser = await read('../tests/browser/browser-enterprise-1-8-check.py');
 const enterprise2Browser = await read('../tests/browser/browser-enterprise-2-check.py');
 const standardBrowser = await read('../tests/browser/browser-enterprise-2-ui-standard-check.py');
