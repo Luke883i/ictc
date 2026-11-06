@@ -73,6 +73,33 @@ function verifyCanaryMoves(at=root){
  return cards;
 }
 const canaryEvidence=verifyCanaryMoves();
+const movedUiNames=Object.freeze([
+ 'epistemic-inference-ui-check.mjs',
+ 'epistemic-lattice-ui-check.mjs',
+ 'cross-procedure-create-ui-check.mjs'
+]);
+function migrateUiSource(source){
+ return source.replace("'./test-helpers/active-experience-install.mjs'","'../helpers/active-experience-install.mjs'")
+  .replaceAll("read('./public/","read('../../v3/public/");
+}
+function verifyRelocatedUi(at=root){
+ const suite=readFileSync(join(at,'v3/current-release-suite.mjs'),'utf8');
+ const cards=[];
+ for(const name of movedUiNames){
+  const former='v3/'+name,current='tests/ui/'+name;
+  const before=execFileSync('git',['show',CANARY_BASE+':'+former],{cwd:root,maxBuffer:4*1024*1024}).toString('utf8');
+  const actual=readFileSync(join(at,current),'utf8');
+  assert.equal(actual,migrateUiSource(before),'R3 test source/path transform drift: '+current);
+  assert.equal(existsSync(join(at,former)),false,'R3 retired check path resurrected: '+former);
+  assert.ok(suite.includes("'"+current+"'"),'R3 current semantic test command missing: '+current);
+  assert.equal(suite.includes("'"+former+"'"),false,'R3 old current suite path survives: '+former);
+  cards.push({from:former,to:current,commandOwner:'v3/current-release-suite.mjs',
+    importMetaUrlReroot:true,noShim:true,externalConsumerAbsence:'UNKNOWN'});
+ }
+ return cards;
+}
+const uiRelocationEvidence=verifyRelocatedUi();
+
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
@@ -133,6 +160,24 @@ if(process.argv.includes('--falsify')){
    assert.equal(verifyCanaryMoves(mirror).length,canaryMoves.length);
   }
   assert.equal(canaryMutantsKilled,canaryMoves.length,'R3/R4 actual file mutations survived');
+  // Three additional executable UI-check migrations: actual source bytes are
+  // corrupted in the disposable checkout, then restored and re-verified.
+  for(const rel of ['v3/current-release-suite.mjs',...movedUiNames.map(n=>'tests/ui/'+n)]){
+   const dest=join(mirror,rel);
+   mkdirSync(dirname(dest),{recursive:true});
+   writeFileSync(dest,readFileSync(join(root,rel)));
+  }
+  assert.equal(verifyRelocatedUi(mirror).length,movedUiNames.length);
+  for(const name of movedUiNames){
+   const dest=join(mirror,'tests/ui',name),before=readFileSync(dest);
+   writeFileSync(dest,Buffer.concat([before,Buffer.from('\\n// adversarial UI-check source mutation\\n')]));
+   try{verifyRelocatedUi(mirror);assert.fail('R3 UI-check source corruption survived: '+name);}
+   catch(e){if(!String(e.message).includes('R3 test source/path transform drift'))throw e;canaryMutantsKilled++;}
+   finally{writeFileSync(dest,before);}
+   assert.equal(verifyRelocatedUi(mirror).length,movedUiNames.length);
+  }
+  assert.equal(canaryMutantsKilled,canaryMoves.length+movedUiNames.length,'R3/R4 actual source modifications escaped');
+
 
   for(const card of cards){
    for(const kind of ['wrapper','implementation']){
@@ -208,7 +253,7 @@ if(process.argv.includes('--falsify')){
 }
 const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',baseline:{trama:BASE,followup:BASE_POST},
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
- migratedPhysicalCanaries:canaryEvidence,
+ migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
    totalV3VerificationLikeCandidatesBefore:447,
