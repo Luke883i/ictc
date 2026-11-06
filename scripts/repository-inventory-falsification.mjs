@@ -22,6 +22,13 @@ for(const path of ['.env.example','LICENSE.md','NOTICE.md']){
   const entry=base.entries.find(x=>x.path===path);
   if(!entry||entry.purposeState!=='active-root')throw new Error('protected configuration/legal root misclassified: '+path);
 }
+if(base.migrationFrontier.summary.useQualification?.mappedV3!==base.status.v3Structural.files||
+   base.migrationFrontier.nodes.some(x=>!x.observedUse||x.safeDeleteAuthorized!==false||
+     x.useEvidence?.externalConsumers!=='UNKNOWN'||x.useEvidence?.runtimeNonContributionProven!==false))
+ throw new Error('K0 use qualification fails closed');
+if(base.migrationFrontier.nodes.find(x=>x.path==='v3/bootstrap.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT'||
+   base.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT')
+ throw new Error('K0 canonical runtime roots absent');
 const clone=()=>structuredClone(base);
 const mutations=[
  ['omitted-file',d=>{d.entries.pop();d.status.total--;d.status.classified--;}],
@@ -72,6 +79,14 @@ const mutations=[
  ['frontier-forged-target-collision',d=>{d.migrationFrontier.nodes[0].blockers.push('TARGET_PATH_OCCUPIED');}],
  ['frontier-http-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(x=>x.kind==='http-static-route-candidate');if(i<0)throw Error('source HTTP preimage absent');d.dependencyTopology.edges.splice(i,1);}],
  ['frontier-http-mount-count-forged',d=>{d.dependencyTopology.httpStaticCandidateCount=0;}],
+ ['liveness-forged-production-root',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/store.mjs').observedUse='DECLARED_RUNTIME_ROOT';}],
+ ['liveness-fabricated-nonruntime-proof',d=>{d.migrationFrontier.nodes[0].useEvidence.runtimeNonContributionProven=true;}],
+ ['liveness-fabricated-external-clearance',d=>{d.migrationFrontier.nodes[0].useEvidence.externalConsumers='CLEARED';}],
+ ['liveness-false-deletion',d=>{d.migrationFrontier.nodes[0].safeDeleteAuthorized=true;}],
+ ['liveness-summary-forged',d=>{d.migrationFrontier.summary.useQualification.automaticallyRetirable++;}],
+ ['liveness-historical-count-forged',d=>{d.migrationFrontier.summary.useQualification.byObservedUse.HISTORICAL_NO_RUNTIME_WITNESS++;}],
+ ['liveness-source-evidence-erased',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').useEvidence.runtimeRoot=false;}],
+ ['liveness-false-runtime-noncontribution',d=>{d.migrationFrontier.summary.useQualification.runtimeNonContributionCertified++;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}

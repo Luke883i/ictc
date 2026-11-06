@@ -1,7 +1,8 @@
 /** Seeded adversarial model for file-retirement proof obligations; not source-code mutations. */
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
-import {root} from './repository-inventory.mjs';
+import {root,census} from './repository-inventory.mjs';
+import {qualifyObservedUse,USE_CLASSES} from './repository-migration-frontier.mjs';
 
 const OBLIGATIONS=Object.freeze(['manifestLifecycle','ownerApproval','staticImports','dynamicImports','publicUrls','configsAndCi','fixturesAndTests','runtimeReachability','prHistoryUniqueness','externalConsumerReview','semanticPreservation','isolatedRemovalRollback']);
 export const deletionDecision=(facts)=>OBLIGATIONS.every(k=>facts[k]===true)?'REVIEWABLE_REMOVE_CANDIDATE':'HOLD_UNKNOWN';
@@ -34,6 +35,81 @@ if(!process.argv.includes('--exhaustive-proof')){
  console.log(JSON.stringify(output));
 }
 if(escaped||incorrectPromotion)process.exit(1);
+
+
+// Optional source-bound liveness attack campaign, retaining the existing retirement gates.
+// Each trial mutates a compact profile sampled from the actual observed v3 inventory.
+// Results are semantic model attacks, NOT physical changes to ten million source files.
+const livenessCasesArg=process.argv.find(x=>x.startsWith('--liveness-cases='));
+if(livenessCasesArg){
+ const livenessCases=Number(livenessCasesArg.split('=')[1]);
+ if(!Number.isSafeInteger(livenessCases)||livenessCases<1||livenessCases>10_000_000)
+  throw new Error('liveness-cases must be 1..10M');
+ const source=census().migrationFrontier;
+ const hist=new Set(['lineage-only','deprecated-test','migration-only','retirement-candidate']);
+ const profiles=source.nodes.map(x=>({
+  runtimeRoot:x.useEvidence.runtimeRoot,runtimePath:x.useEvidence.runtimeLiteralPath,
+  httpMounted:x.useEvidence.httpStaticMount,ciPath:x.useEvidence.ciOrPackagePath,
+  sourceConsumer:x.useEvidence.otherSourceConsumers>0,
+  historicalPurpose:hist.has(x.useEvidence.historicalPurpose)
+ }));
+ if(!profiles.length||source.nodes.some((row,i)=>qualifyObservedUse(profiles[i])!==row.observedUse))
+  throw new Error('observed file liveness model not reproducible');
+ let semanticSeed=0x1c7c2026;
+ const step=()=>{semanticSeed^=semanticSeed<<13;semanticSeed^=semanticSeed>>>17;semanticSeed^=semanticSeed<<5;return semanticSeed>>>0;};
+ const axes=['runtimeRoot','runtimePath','httpMounted','ciPath','sourceConsumer','historicalPurpose'];
+ const attacks=['strip-runtime-root','forge-runtime-root','erase-static-import','forge-static-import',
+  'reroute-http-static','forge-http-static','erase-ci-consumer','forge-ci-consumer',
+  'erase-code-reader','forge-code-reader','historical-laundering','purpose-stale',
+  'replace-all-witnesses','false-runtime-revival','mixed-evidence-drift','independent-channel-loss'];
+ const totals=Object.fromEntries(attacks.map(x=>[x,0]));
+ const observedSignatures=new Set();let lastNovel=-1,detectable=0,masked=0,oracleErrors=0,illegal=0;
+ // Independent bitmask oracle for all 2^6 profiles, with explicit precedence.
+ const oracle=f=>{
+  const bits=(f.runtimeRoot?1:0)|(f.runtimePath?2:0)|(f.httpMounted?4:0)|
+   (f.ciPath?8:0)|(f.sourceConsumer?16:0)|(f.historicalPurpose?32:0);
+  return bits===0?USE_CLASSES[6]:USE_CLASSES[Math.log2(bits&-bits)];
+ };
+ for(let i=0;i<livenessCases;i++){
+  const base=profiles[step()%profiles.length],facts={...base},attack=step()%attacks.length;
+  switch(attack){
+   case 0:facts.runtimeRoot=false;break;
+   case 1:facts.runtimeRoot=true;break;
+   case 2:facts.runtimePath=false;break;
+   case 3:facts.runtimePath=true;break;
+   case 4:facts.httpMounted=false;break;
+   case 5:facts.httpMounted=true;break;
+   case 6:facts.ciPath=false;break;
+   case 7:facts.ciPath=true;break;
+   case 8:facts.sourceConsumer=false;break;
+   case 9:facts.sourceConsumer=true;break;
+   case 10:facts.historicalPurpose=false;break;
+   case 11:facts.historicalPurpose=true;break;
+   case 12:for(const k of axes)facts[k]=false;break;
+   case 13:facts.runtimeRoot=true;facts.historicalPurpose=false;break;
+   case 14:{const mask=step();for(let j=0;j<axes.length;j++)if((mask>>>j)&1)facts[axes[j]]=!facts[axes[j]];break;}
+   case 15:facts.runtimePath=false;facts.ciPath=false;facts.httpMounted=false;break;
+  }
+  const actual=qualifyObservedUse(facts),expected=oracle(facts);
+  totals[attacks[attack]]++;
+  if(actual!==expected)oracleErrors++;
+  if(actual!==qualifyObservedUse(base))detectable++;else masked++;
+  if(actual==='SAFE_DELETE'||actual==='REVIEWABLE_REMOVE_CANDIDATE')illegal++;
+  const signature=attack+'|'+actual+'|'+expected;
+  if(!observedSignatures.has(signature)){observedSignatures.add(signature);lastNovel=i;}
+ }
+ const model={schema:'ictc-v3-liveness-attack-model/v1',seed:'0x1c7c2026',
+  gitTrackedV3:profiles.length,cases:livenessCases,attackFamilies:attacks.length,
+  detectedSemanticClassChanges:detectable,maskedByHigherPriorityEvidence:masked,oracleErrors,illegalClearances:illegal,
+  observedSignatures:observedSignatures.size,lastNovelIndex:lastNovel,
+  finalNoNoveltyWindow:livenessCases-lastNovel-1,
+  attackDistribution:totals,modelOnly:true,sourceMutantsPhysicallyExecuted:0,
+  claimBoundary:'Actual Git-derived v3 source profiles under 16 seeded evidence mutations; no claim of 10M physical edits, runtime executions, independent consumer closure or safe retirement.'};
+ if(oracleErrors||illegal||!detectable||!masked)throw new Error('liveness adversarial evidence check failed: '+JSON.stringify(model));
+ mkdirSync(join(root,'artifacts'),{recursive:true});
+ writeFileSync(join(root,'artifacts/repository-liveness-mutations.json'),JSON.stringify(model,null,2)+'\n');
+ console.log(JSON.stringify({liveness:model}));
+}
 
 // Exhaustive, finite certificate. Only this fixed 12-axis three-state domain
 // can be saturated. A 20-bit base-3 index is information-theoretically minimal
