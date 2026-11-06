@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
+import { assertActiveInstallers } from '../tests/helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,router,tools,proofWorkspace,active,styles,baseCss,journeyCss]=await Promise.all([read('./public/ui/epistemic-lattice.js'),read('./public/ui/surface-router.js'),read('./public/ui/global-tools.js'),read('./public/ui/proof-workspace-3-2.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/epistemic-lattice.css'),read('./public/procedure-journey-2-1.css')]);
 for(const token of ['EP-01','Reticolo epistemico','Esplora','Flat / raw','Proto-grafo','data-epistemic-mode','projectionSha256'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);

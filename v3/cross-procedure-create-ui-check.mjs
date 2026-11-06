@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { assertActiveInstallers } from './test-helpers/active-experience-install.mjs';
+import { assertActiveInstallers } from '../tests/helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,active,styles,crossCss,primitiveCss]=await Promise.all([read('./public/ui/cross-procedure-create.js'),read('./public/ui/active-experience.js'),read('./public/styles.css'),read('./public/cross-procedure.css'),read('./public/surface-primitives.css')]);
 for(const token of ['Crea bozza collegata','data-cross-create','data-cross-submit','/api/cross-procedure/create?sourceProcedureId=','source:{procedureId:currentProcedure,type,id}','targetProcedureId','nativePayload','procedure-cross-tools','targetOptions(allowed.targets||[])','syncSubmitAvailability','loading:true','Caricamento destinazioni'])assert.ok(ui.includes(token),`cross-create UI missing ${token}`);
