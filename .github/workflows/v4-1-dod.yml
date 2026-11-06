@@ -32,7 +32,7 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
-      - run: python -m py_compile v3/browser-v4-1-language-check.py
+      - run: python -m py_compile tests/browser/browser-v4-1-language-check.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -49,4 +49,4 @@ jobs:
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-1-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-1-runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-v4-1-language-check.py
+          python -u tests/browser/browser-v4-1-language-check.py
