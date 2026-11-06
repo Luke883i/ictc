@@ -24,13 +24,39 @@ Per esercire: [OPERATIONS](docs/OPERATIONS.md). `AGENTS.md` e TRAMA sono special
 **Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
 
-## Orientamento: prodotto, software, repository, governance, prove
+## Navigazione progressiva — cinque prospettive
 
-- **Prodotto:** [PRODUCT](docs/PRODUCT.md) possiede identita, sette procedure e limiti; [user journeys](docs/04_USER_JOURNEYS.md) descrive i percorsi operativi.
-- **Software:** [ARCHITETTURA AS-IS](docs/11_ARCHITECTURE.md) e [API](docs/openapi.yaml) descrivono runtime, persistenza, autorizzazioni e readback; [CONFIGURATION](docs/CONFIGURATION.md) per l'avvio.
-- **Repository:** [START_HERE](docs/START_HERE.md) instrada le modifiche; [Repository Atlas](docs/REPOSITORY_ATLAS.md) distingue `v3/` corrente, `v3/tests/legacy/` storico, strumenti, test e archivio. [DEVELOPMENT](docs/DEVELOPMENT.md) esercita un cambiamento.
-- **Governance:** [CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md), [SECURITY](SECURITY.md) definiscono contributi e responsabilita; CI e CODEOWNERS non sono approvazione indipendente.
-- **Prove:** [TESTING](docs/TESTING.md), [GAP_REGISTER](docs/GAP_REGISTER.md) e ricevute exact-head. Test statici, runtime e browser non attestano E3-HUMAN, E3-GOV o E4-DEPLOY.
+Prima lettura: **capisci il valore**, avvia la DEMO, individua l'owner e verifica una modifica. Queste sono scorciatoie verso le fonti canoniche, non cinque nuove autorita. Per l'esercizio pratico usa [DEVELOPMENT](docs/DEVELOPMENT.md).
+
+<details>
+<summary><strong>Prodotto</strong> — destinatari, processi, limiti</summary>
+
+[PRODUCT](docs/PRODUCT.md) governa le sette procedure e i due placeholder. Nessuna certificazione legale automatica; [user journeys](docs/04_USER_JOURNEYS.md).
+</details>
+
+<details>
+<summary><strong>Software</strong> — runtime, dati, superfici</summary>
+
+Node.js ESM, UI vanilla e SQLite: ingresso `v3/bootstrap.mjs`, HTTP `v3/server.mjs`, store `v3/store.mjs`. [Architettura AS-IS](docs/11_ARCHITECTURE.md), [OpenAPI](docs/openapi.yaml), [configurazione](docs/CONFIGURATION.md).
+</details>
+
+<details>
+<summary><strong>Repository</strong> — ownership e primo cambiamento</summary>
+
+[START_HERE](docs/START_HERE.md) instrada il task; [Atlas](docs/REPOSITORY_ATLAS.md) distingue `v3/` corrente, `v3/tests/legacy/` storico e `scripts/`. [DEVELOPMENT](docs/DEVELOPMENT.md) esercita modifica e rollback.
+</details>
+
+<details>
+<summary><strong>Governance</strong> — PR, sicurezza, responsabilita</summary>
+
+[CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md), [SECURITY](SECURITY.md). CODEOWNERS e CI non equivalgono a review indipendente o branch protection.
+</details>
+
+<details>
+<summary><strong>Evidenza e DoD</strong> — prove e lacune</summary>
+
+[TESTING](docs/TESTING.md) definisce gli oracle; [GAP_REGISTER](docs/GAP_REGISTER.md) separa debiti interni da E3/E4. Nessuna receipt autorizza eliminazioni o decisioni umane.
+</details>
 
 ## Contesto di programma (non autorità di prodotto)
 
