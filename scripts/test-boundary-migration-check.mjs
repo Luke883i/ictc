@@ -220,8 +220,15 @@ if(process.argv.includes('--falsify')){
   assert.equal(old.stdout,next.stdout,'command output changed: '+name);
   return {name,oldExit:old.status,newExit:next.status,stdoutSha256:digest(old.stdout)};
  });
+ const uiExecutions=movedUiNames.map(name=>{
+  const command='tests/ui/'+name,actual=child(command);
+  assert.equal(actual.status,0,'relocated R3 executable UI oracle failed: '+name+' '+String(actual.stderr||actual.error||'').slice(-600));
+  return {name,command,exit:actual.status,stdoutSha256:digest(actual.stdout),
+          sourceByteParityAndReadRerootChecked:true};
+ });
  negative={physicalMutantsKilled:killed,physicallyRestored:restored,realCommandEquivalence:runs,
-  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedCanaryBlobParity:canaryEvidence};
+  relocatedCanaryPhysicalMutantsKilled:canaryMutantsKilled,relocatedCanaryBlobParity:canaryEvidence,
+  relocatedUiExecutableRuns:uiExecutions};
  const AXES=['logicBytes','stableEntrypoint','relativeResolution','singleAuthority','reversible'];
  const full=Object.fromEntries(AXES.map(x=>[x,true]));
  const decision=f=>AXES.every(k=>f[k]===true)?'RELOCATABLE_WITH_COMPAT':'HOLD';
