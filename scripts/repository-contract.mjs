@@ -36,7 +36,7 @@ const failures=[];
 // R4 negative invariant: a partial src/bootstrap or src/server cannot quietly
 // become a parallel executable authority while v3 still owns the current path.
 // This does NOT authorize migration; both entrypoint contracts must co-migrate.
-for(const entry of ['bootstrap.mjs','server.mjs']){
+for(const entry of ['bootstrap.mjs','server.mjs','runtime-store.mjs','store.mjs','sqlite-state-persistence.mjs']){
  if(await exists('src/'+entry)&&await exists('v3/'+entry))
   failures.push('parallel current runtime roots: src/'+entry+' and v3/'+entry);
 }
