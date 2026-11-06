@@ -66,6 +66,8 @@ const legacySchemaNames=[
 ];
 const absentRootMutants=[
  {id:'historical-ai-root-resurrected',file:'ai/ictc-agent-bundle/README.md',content:'old public path should stay retired\n',expectPath:'ai/',cleanupDirectory:'ai'},
+ {id:'former-test-helper-reintroduced',file:'v3/test-helpers/active-experience-install.mjs',content:'export const falseOwner=true;\n',expectedFailure:'retired migrated path reintroduced: v3/test-helpers/active-experience-install.mjs',cleanupDirectory:'v3/test-helpers'},
+ {id:'former-abuse-budget-reintroduced',file:'v3/runtime/abuse-budget.mjs',content:'export const falseOwner=true;\n',expectedFailure:'retired migrated path reintroduced: v3/runtime/abuse-budget.mjs'},
  {id:'parallel-bootstrap-source-authority',file:'src/bootstrap.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/bootstrap.mjs and v3/bootstrap.mjs',cleanupDirectory:'src'},
  {id:'parallel-server-source-authority',file:'src/server.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/server.mjs and v3/server.mjs',cleanupDirectory:'src'},
  {id:'parallel-runtime-store-source-authority',file:'src/runtime-store.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/runtime-store.mjs and v3/runtime-store.mjs',cleanupDirectory:'src'},

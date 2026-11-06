@@ -33,6 +33,15 @@ const historicalBundleContract='audit/archive/ictc-agent-bundle/config/repositor
 const historicalBundleProfile='audit/archive/ictc-agent-bundle/bundle_profile.json';
 const historicalBundleCatalog='audit/archive/ictc-agent-bundle/config/test_catalog.json';
 const failures=[];
+// R3/R4 canary: one physical owner and no silent path resurrection. This is
+// a bounded migration witness, NOT evidence that all v3/ consumers are clear.
+for(const [former,current] of [
+ ['v3/test-helpers/active-experience-install.mjs','tests/helpers/active-experience-install.mjs'],
+ ['v3/runtime/abuse-budget.mjs','src/runtime/abuse-budget.mjs']
+]){
+ if(await exists(former))failures.push('retired migrated path reintroduced: '+former);
+ if(!await exists(current))failures.push('missing migrated canonical file: '+current);
+}
 // R4 negative invariant: a partial src/bootstrap or src/server cannot quietly
 // become a parallel executable authority while v3 still owns the current path.
 // This does NOT authorize migration; both entrypoint contracts must co-migrate.

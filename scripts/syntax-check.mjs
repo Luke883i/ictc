@@ -2,7 +2,7 @@ import { readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const roots = ['v3', 'scripts'];
+const roots = ['v3', 'scripts', 'src', 'tests'];
 const files = [];
 function walk(root) {
   for (const name of readdirSync(root)) {
