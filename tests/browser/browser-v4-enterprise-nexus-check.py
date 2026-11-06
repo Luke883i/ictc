@@ -1,6 +1,6 @@
 import json,os,pathlib,traceback
 from playwright.sync_api import expect,sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');PHASE='init'
+ROOT=pathlib.Path(__file__).resolve().parents[2];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');PHASE='init'
 def hdr(role='admin'):return{'content-type':'application/json','x-ictc-role':role,'x-ictc-actor-id':f'local-{role}'}
 def fail(e):
  p={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()};(ART/'browser-v4-enterprise-nexus-error.json').write_text(json.dumps(p,indent=2),encoding='utf8');print(f'::error title=browser-v4-enterprise-nexus::{PHASE}: {type(e).__name__}: {e}',flush=True)

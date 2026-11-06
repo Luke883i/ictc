@@ -110,11 +110,16 @@ const enterpriseBrowserMoves=Object.freeze([
  {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
  {name:'browser-admin-check.py',readers:['v3/enterprise-claims.json']},
  {name:'browser-product-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-auditor-check.py',readers:['v3/reborn-3-check.mjs']}
+ {name:'browser-auditor-check.py',readers:['v3/reborn-3-check.mjs']},
+ {name:'browser-enterprise-2-compliance-flow-check.py',readers:['v3/enterprise-2-compliance-flow-check.mjs']},
+ {name:'browser-stable-1-4-check.py',readers:['v3/stable-1-4-check.mjs']},
+ {name:'browser-standard-proof-check.py',readers:['v3/standard-proof-1-6-contract.json']},
+ {name:'browser-v4-1-language-check.py',readers:['.github/workflows/v4-1-dod.yml']},
+ {name:'browser-v4-enterprise-nexus-check.py',readers:['.github/workflows/v4-dod.yml']}
 ]);
 const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
 const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
-const enterpriseBrowserToken=(reader,name)=>reader.endsWith('.json')
+const enterpriseBrowserToken=(reader,name)=>(reader.endsWith('.json')||reader.startsWith('.github/workflows/'))
  ? {old:'v3/'+name,current:'tests/browser/'+name}
  : {old:'./'+name,current:'../tests/browser/'+name};
 function verifyEnterpriseBrowserMoves(at=root){
@@ -122,8 +127,9 @@ function verifyEnterpriseBrowserMoves(at=root){
  for(const row of enterpriseBrowserMoves){
   const former='v3/'+row.name,current='tests/browser/'+row.name;
   const original=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':'+former],{cwd:root,maxBuffer:2*1024*1024}).toString('utf8');
-  assert.equal(original.split(oldBrowserRoot).length,2,'R3 source root preimage not unique: '+former);
-  const expected=original.replace(oldBrowserRoot,newBrowserRoot);
+  const oldRoot=row.oldRoot||oldBrowserRoot,newRoot=row.newRoot||newBrowserRoot;
+  assert.equal(original.split(oldRoot).length,2,'R3 source root preimage not unique: '+former);
+  const expected=original.replace(oldRoot,newRoot);
   assert.equal(readFileSync(join(at,current),'utf8'),expected,'R3 enterprise browser source/root drift: '+current);
   assert.equal(existsSync(join(at,former)),false,'R3 enterprise browser former path resurrected: '+former);
   for(const reader of row.readers){
