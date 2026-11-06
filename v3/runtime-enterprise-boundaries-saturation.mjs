@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { resolveRequestTenant } from './runtime/tenant-authority.mjs';
-import { createAbuseBudget } from './runtime/abuse-budget.mjs';
+import { createAbuseBudget } from '../src/runtime/abuse-budget.mjs';
 import { signScannerAttestation, verifyScannerAttestation } from './runtime/attachment-scanner.mjs';
 import { activeLegalHold } from './runtime/privacy-lifecycle.mjs';
 

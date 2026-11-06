@@ -5,7 +5,7 @@ import path from 'node:path';
 import { RuntimeStore } from './runtime-store.mjs';
 import { sha256 } from './domain.mjs';
 import { createTenantAuthority } from './runtime/tenant-authority.mjs';
-import { createAbuseBudget } from './runtime/abuse-budget.mjs';
+import { createAbuseBudget } from '../src/runtime/abuse-budget.mjs';
 import { createOperationalObservability } from './runtime/operational-observability.mjs';
 import { signScannerAttestation, verifyScannerAttestation } from './runtime/attachment-scanner.mjs';
 import { ensurePrivacyState, erasePrivacySubject, normalizePrivacyPolicy } from './runtime/privacy-lifecycle.mjs';
