@@ -98,14 +98,39 @@ if(livenessCasesArg){
   const signature=attack+'|'+actual+'|'+expected;
   if(!observedSignatures.has(signature)){observedSignatures.add(signature);lastNovel=i;}
  }
+ // Exhaustive bounded proof of the six-source-signal decision vocabulary.
+ // All 2^6 profiles remain distinct diagnostics; class-only compression would discard witnesses.
+ const finiteProfiles=2**axes.length,finiteUses=new Set();
+ let finiteErrors=0;
+ for(let mask=0;mask<finiteProfiles;mask++){
+  const facts=Object.fromEntries(axes.map((key,i)=>[key,Boolean(mask&(1<<i))]));
+  const result=qualifyObservedUse(facts);
+  finiteUses.add(result);
+  if(result!==oracle(facts))finiteErrors++;
+ }
+ const allFalse=Object.fromEntries(axes.map(key=>[key,false]));
+ const axisCounterexamples=axes.map(axis=>{
+  const changed={...allFalse,[axis]:true};
+  return {axis,changesUseClass:qualifyObservedUse(allFalse)!==qualifyObservedUse(changed)};
+ });
+ const fixedWidthDiagnosticBits=Math.ceil(Math.log2(finiteProfiles));
+ const fixedWidthClassBits=Math.ceil(Math.log2(finiteUses.size));
+ const axisMinimal=axisCounterexamples.every(x=>x.changesUseClass)&&
+  fixedWidthDiagnosticBits===6&&fixedWidthClassBits===3;
  const model={schema:'ictc-v3-liveness-attack-model/v1',seed:'0x1c7c2026',
   gitTrackedV3:profiles.length,cases:livenessCases,attackFamilies:attacks.length,
   detectedSemanticClassChanges:detectable,maskedByHigherPriorityEvidence:masked,oracleErrors,illegalClearances:illegal,
   observedSignatures:observedSignatures.size,lastNovelIndex:lastNovel,
   finalNoNoveltyWindow:livenessCases-lastNovel-1,
-  attackDistribution:totals,modelOnly:true,sourceMutantsPhysicallyExecuted:0,
+  attackDistribution:totals,
+  finiteMinimality:{profiles:finiteProfiles,allClassifications:finiteUses.size,errors:finiteErrors,
+   diagnosticBits:fixedWidthDiagnosticBits,classOnlyBits:fixedWidthClassBits,
+   axisCounterexamples,claimBoundary:'6-bit bound is only for a 6-boolean diagnostic profile; class-only output loses evidence.'},
+  modelOnly:true,sourceMutantsPhysicallyExecuted:0,
   claimBoundary:'Actual Git-derived v3 source profiles under 16 seeded evidence mutations; no claim of 10M physical edits, runtime executions, independent consumer closure or safe retirement.'};
- if(oracleErrors||illegal||!detectable||!masked)throw new Error('liveness adversarial evidence check failed: '+JSON.stringify(model));
+ if(oracleErrors||illegal||!detectable||!masked||finiteErrors||!axisMinimal||
+    (livenessCases>=1_000_000 && model.finalNoNoveltyWindow<1_000_000))
+  throw new Error('liveness adversarial evidence / bounded saturation check failed: '+JSON.stringify(model));
  mkdirSync(join(root,'artifacts'),{recursive:true});
  writeFileSync(join(root,'artifacts/repository-liveness-mutations.json'),JSON.stringify(model,null,2)+'\n');
  console.log(JSON.stringify({liveness:model}));
