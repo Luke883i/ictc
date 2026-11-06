@@ -37,7 +37,10 @@ const failures=[];
 // a bounded migration witness, NOT evidence that all v3/ consumers are clear.
 for(const [former,current] of [
  ['v3/test-helpers/active-experience-install.mjs','tests/helpers/active-experience-install.mjs'],
- ['v3/runtime/abuse-budget.mjs','src/runtime/abuse-budget.mjs']
+ ['v3/runtime/abuse-budget.mjs','src/runtime/abuse-budget.mjs'],
+ ['v3/epistemic-inference-ui-check.mjs','tests/ui/epistemic-inference-ui-check.mjs'],
+ ['v3/epistemic-lattice-ui-check.mjs','tests/ui/epistemic-lattice-ui-check.mjs'],
+ ['v3/cross-procedure-create-ui-check.mjs','tests/ui/cross-procedure-create-ui-check.mjs']
 ]){
  if(await exists(former))failures.push('retired migrated path reintroduced: '+former);
  if(!await exists(current))failures.push('missing migrated canonical file: '+current);
