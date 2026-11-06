@@ -42,6 +42,16 @@ export function deriveMigrationFrontier(entries, topology) {
       decision:'HOLD',observedInbound:ins.length,observedOutbound:outs.length,observedExternalInbound:external.length,
       observedHttpMount:ins.some(e=>e.kind==='http-static-route-candidate'),observedDynamicSource:dynamic.has(path),blockers};
   });
+  // An already-tracked destination or competing destination candidate is never free.
+  const trackedPaths=new Set(entries.map(x=>x.path)),claimed=new Map();
+  for(const node of nodes){
+    const to=node.destinationCandidate;
+    if(to===null)continue;
+    if(trackedPaths.has(to))node.blockers.push('TARGET_PATH_OCCUPIED');
+    const cohort=claimed.get(to)||[];cohort.push(node);claimed.set(to,cohort);
+  }
+  for(const cohort of claimed.values())if(cohort.length>1)
+    for(const node of cohort)node.blockers.push('TARGET_CANDIDATE_COLLISION');
   // SCCs use only observed code/Python edges; unobserved dynamic reachability stays unproved.
   const graph=new Map(rows.map(x=>[x.path,new Set()]));
   const kinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal']);

@@ -1,9 +1,17 @@
 import {census,verifyInventory,v3DependencyTopology} from './repository-inventory.mjs';
+import {deriveMigrationFrontier} from './repository-migration-frontier.mjs';
 import {writeFileSync,mkdirSync,readFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {root} from './repository-inventory.mjs';
 const base=census();verifyInventory(base);
+const sample=deriveMigrationFrontier([
+ {path:'v3/runtime/k0-destination-probe.mjs',sha256:'a',bytes:1,v3StructuralRole:'runtime-candidate'},
+ {path:'src/runtime/k0-destination-probe.mjs',sha256:'b',bytes:1,v3StructuralRole:null}
+],{edges:[],dynamic:[]});
+if(sample.nodes.length!==1||sample.nodes[0].destinationCandidate!=='src/runtime/k0-destination-probe.mjs'||
+   !sample.nodes[0].blockers.includes('TARGET_PATH_OCCUPIED')||sample.nodes[0].decision!=='HOLD')
+ throw new Error('K0 occupied candidate target did not veto migration');
 const sibling=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-v2-grc-check.py'&&e.to==='v3/browser-v3-all-service.py'&&e.kind==='python-sibling-literal-candidate');
 const helper=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-ao-activation.py'&&e.to==='v3/browser_test_support.py'&&e.kind==='python-local-import-candidate');
 if(!sibling||!helper)throw new Error('K0 source-bound Python sibling/local-import edges not observed');
@@ -61,6 +69,7 @@ const mutations=[
  ['frontier-forged-external-count',d=>{d.migrationFrontier.nodes[0].observedExternalInbound++;}],
  ['frontier-forged-summary',d=>{d.status.migrationFrontier.mappedV3++;}],
  ['frontier-false-move-authority',d=>{d.migrationFrontier.summary.automaticMoveAuthorized=true;}],
+ ['frontier-forged-target-collision',d=>{d.migrationFrontier.nodes[0].blockers.push('TARGET_PATH_OCCUPIED');}],
  ['frontier-http-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(x=>x.kind==='http-static-route-candidate');if(i<0)throw Error('source HTTP preimage absent');d.dependencyTopology.edges.splice(i,1);}],
  ['frontier-http-mount-count-forged',d=>{d.dependencyTopology.httpStaticCandidateCount=0;}],
 ];
