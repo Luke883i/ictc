@@ -137,6 +137,25 @@ function verifyEnterpriseBrowserMoves(at=root){
 }
 const enterpriseBrowserEvidence=verifyEnterpriseBrowserMoves();
 
+function gitV3TopLevelAt(revision){
+ const paths=execFileSync('git',['ls-tree','-r','--name-only',revision,'--','v3/'],{cwd:root,maxBuffer:4*1024*1024}).toString('utf8');
+ return new Set(paths.split(/\r?\n/).filter(rel=>/^v3\/[^/]+$/.test(rel)));
+}
+function verifyEnterpriseBrowserTreeDelta(){
+ const before=gitV3TopLevelAt(ENTERPRISE_BROWSER_BASE);
+ const after=gitV3TopLevelAt('HEAD');
+ const retired=[...before].filter(rel=>!after.has(rel)).sort();
+ const introduced=[...after].filter(rel=>!before.has(rel)).sort();
+ const expected=enterpriseBrowserMoves.map(row=>'v3/'+row.name).sort();
+ assert.deepEqual(retired,expected,'R3 enterprise browser Git-tree retirement delta drift');
+ assert.deepEqual(introduced,[],'R3 enterprise browser Git-tree introduced unexpected v3 root path');
+ assert.equal(before.size-after.size,enterpriseBrowserMoves.length,'R3 enterprise browser top-level contraction mismatch');
+ return Object.freeze({baseSha:ENTERPRISE_BROWSER_BASE,oldTopLevel:before.size,newTopLevel:after.size,
+   retiredPaths:retired,unexpectedIntroductions:introduced,externalConsumerAbsence:'UNKNOWN'});
+}
+const enterpriseBrowserGitCensus=verifyEnterpriseBrowserTreeDelta();
+
+
 
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
@@ -332,8 +351,9 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
  migratedEnterpriseBrowserCanaries:enterpriseBrowserEvidence,
+ enterpriseBrowserGitCensus,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
- remaining:{topLevelV3FilesBefore:678,topLevelV3FilesAfter:678,
+ remaining:{topLevelV3FilesBefore:enterpriseBrowserGitCensus.oldTopLevel,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
    totalV3VerificationLikeCandidatesBefore:447,
    selectedVerificationModules:files.length,remainingVerificationLikeCandidates:447-files.length,
    externalAndDynamicConsumers:'UNKNOWN',compatibilityRemoval:'BLOCKED'},
@@ -341,5 +361,6 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
 mkdirSync(join(root,'artifacts'),{recursive:true});
 writeFileSync(join(root,'artifacts/c1-3d-test-boundary.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({ok:true,selected:files.length,movedBytes:recorded.flatImplementationBytesRelocated,
+ enterpriseBrowserPathsRetired:enterpriseBrowserGitCensus.retiredPaths.length,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
  physicalMutantsKilled:negative?.physicalMutantsKilled||0,realCommandComparisons:negative?.realCommandEquivalence.length||0,
  modelTrials:model?.trials||0,safeToDeleteAdapters:false,fullC13dClosed:false}));
