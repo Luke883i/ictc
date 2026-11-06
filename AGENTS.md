@@ -23,7 +23,7 @@ For a new contributor, **start with `docs/START_HERE.md`**. It is a routing page
 
 Read additional documents by responsibility instead of treating the whole `docs/` directory as mandatory:
 
-- Product changes: `docs/PRODUCT.md` (current product authority); epistemic effects: `docs/02_EPISTEMIC_CONTRACT.md`. `docs/00_PROMPT_CLARIFICATION.md` and `docs/01_TO_BE_IDEA.md` are historical inputs, not current product authority.
+- Product: `docs/PRODUCT.md`; epistemic effects: `docs/02_EPISTEMIC_CONTRACT.md`. `docs/00_PROMPT_CLARIFICATION.md` and `docs/01_TO_BE_IDEA.md` are historical, non-authoritative inputs.
 - UI/language changes: `docs/03_ENDUSER_LANGUAGE.md`, `docs/05_UI_OBJECT_MODEL.md`, `docs/06_INFORMATION_ARCHITECTURE.md`.
 - Architecture/persistence: `docs/11_ARCHITECTURE.md`, `docs/authority-matrix.yaml`.
 - AI: `docs/10_LOCAL_AI_CONTRACT.md`.

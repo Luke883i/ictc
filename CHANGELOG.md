@@ -1,6 +1,6 @@
 # Changelog
 
-The current package is `1.8.0` with release stage `candidate` as declared by `v3/release-identity.json`. Chronological entries describe source history, not authenticated production releases or deployment assurance. Future items below are intentions, not AS-IS capabilities.
+Current identity: `v3/release-identity.json` (`1.8.0`, candidate). `Unreleased` lists intentions, not deployed capabilities.
 
 ## [Unreleased]
 
