@@ -24,39 +24,13 @@ Per esercire: [OPERATIONS](docs/OPERATIONS.md). `AGENTS.md` e TRAMA sono special
 **Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
 
-## Navigazione progressiva — cinque prospettive
+## Orientamento: prodotto, software, repository, governance, prove
 
-Prima lettura: **capisci il valore**, avvia la DEMO, individua l'owner e verifica una modifica. Le sezioni seguenti sono scorciatoie verso fonti *gia canoniche*, non cinque nuove autorita. Per una procedura operativa completa usa [DEVELOPMENT](docs/DEVELOPMENT.md).
-
-<details>
-<summary><strong>Prodotto</strong> — destinatari, processi, limiti</summary>
-
-Le sette procedure RN/EC/AO/MC/AP/RC/AR e i due placeholder informativi sono definiti da [PRODUCT](docs/PRODUCT.md). ICTC non determina conformita legale, efficacia dei controlli o autenticita esterna. [User journeys](docs/04_USER_JOURNEYS.md).
-</details>
-
-<details>
-<summary><strong>Software</strong> — runtime, stato, superfici</summary>
-
-Node.js ESM, frontend vanilla e SQLite: ingresso `v3/bootstrap.mjs`, HTTP `v3/server.mjs`, persistenza `v3/store.mjs` e `v3/sqlite-state-persistence.mjs`. [Architecture AS-IS](docs/11_ARCHITECTURE.md), [API](docs/openapi.yaml), [configurazione](docs/CONFIGURATION.md).
-</details>
-
-<details>
-<summary><strong>Repository</strong> — topologia, owner, primo cambiamento</summary>
-
-[START_HERE](docs/START_HERE.md) instrada la richiesta all'owner esistente; l'[Atlas](docs/REPOSITORY_ATLAS.md) spiega `v3/`, `v1/`, `scripts/`, test e storia. [DEVELOPMENT](docs/DEVELOPMENT.md) contiene un esercizio pratico di modifica e rollback.
-</details>
-
-<details>
-<summary><strong>Governance</strong> — PR, sicurezza, responsabilita</summary>
-
-[CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md) e [SECURITY](SECURITY.md). `.github/CODEOWNERS` e CI locale non costituiscono approvazione indipendente, branch protection o deployment assurance.
-</details>
-
-<details>
-<summary><strong>Evidenza e DoD</strong> — prove, lacune, non-autorizzazioni</summary>
-
-[TESTING](docs/TESTING.md) definisce i comandi; [GAP_REGISTER](docs/GAP_REGISTER.md) distingue debito interno ed evidenze E3/E4. Verifiche statiche, `npm test`, saturazioni finite e receipt non autorizzano eliminazioni, merge o decisioni umane.
-</details>
+- **Prodotto:** [PRODUCT](docs/PRODUCT.md) possiede identita, sette procedure e limiti; [user journeys](docs/04_USER_JOURNEYS.md) descrive i percorsi operativi.
+- **Software:** [ARCHITETTURA AS-IS](docs/11_ARCHITECTURE.md) e [API](docs/openapi.yaml) descrivono runtime, persistenza, autorizzazioni e readback; [CONFIGURATION](docs/CONFIGURATION.md) per l'avvio.
+- **Repository:** [START_HERE](docs/START_HERE.md) instrada le modifiche; [Repository Atlas](docs/REPOSITORY_ATLAS.md) distingue `v3/` corrente, `v3/tests/legacy/` storico, strumenti, test e archivio. [DEVELOPMENT](docs/DEVELOPMENT.md) esercita un cambiamento.
+- **Governance:** [CONTRIBUTING](CONTRIBUTING.md), [GOVERNANCE](GOVERNANCE.md), [SECURITY](SECURITY.md) definiscono contributi e responsabilita; CI e CODEOWNERS non sono approvazione indipendente.
+- **Prove:** [TESTING](docs/TESTING.md), [GAP_REGISTER](docs/GAP_REGISTER.md) e ricevute exact-head. Test statici, runtime e browser non attestano E3-HUMAN, E3-GOV o E4-DEPLOY.
 
 ## Contesto di programma (non autorità di prodotto)
 
