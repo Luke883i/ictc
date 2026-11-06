@@ -48,4 +48,4 @@ jobs:
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-stable-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-stable-runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u tests/browser/browser-v4-stable-check.py
+          python -u v3/browser-v4-stable-check.py
