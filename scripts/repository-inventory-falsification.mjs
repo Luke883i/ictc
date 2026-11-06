@@ -3,6 +3,12 @@ import {writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {root} from './repository-inventory.mjs';
 const base=census();verifyInventory(base);
+const sibling=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-v2-grc-check.py'&&e.to==='v3/browser-v3-all-service.py'&&e.kind==='python-sibling-literal-candidate');
+const helper=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-ao-activation.py'&&e.to==='v3/browser_test_support.py'&&e.kind==='python-local-import-candidate');
+if(!sibling||!helper)throw new Error('K0 source-bound Python sibling/local-import edges not observed');
+for(const name of ['v3/browser-v2-grc-check.py','v3/runtime/demo-suite-2-2-fixture.mjs'])
+ if(!base.dependencyTopology.dynamic.includes(name))
+  throw new Error('K0 dynamic consumer risk not observed: '+name);
 for(const path of ['.env.example','LICENSE.md','NOTICE.md']){
   const entry=base.entries.find(x=>x.path===path);
   if(!entry||entry.purposeState!=='active-root')throw new Error('protected configuration/legal root misclassified: '+path);
@@ -41,6 +47,10 @@ const mutations=[
  ['dependency-fake-move-authority',d=>{d.dependencyTopology.automaticMoveAuthorized=true;}],
  ['dependency-dynamic-risk-erased',d=>{d.dependencyTopology.dynamicSelectorSources=0;}],
  ['dependency-fake-covered-target',d=>{d.status.dependencyTopology.v3TargetsWithObservedLiterals++;}],
+ ['python-sibling-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===sibling.from&&e.to===sibling.to&&e.kind===sibling.kind);if(i<0)throw new Error('missing sibling preimage');d.dependencyTopology.edges.splice(i,1);}],
+ ['python-local-import-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===helper.from&&e.to===helper.to&&e.kind===helper.kind);if(i<0)throw new Error('missing helper preimage');d.dependencyTopology.edges.splice(i,1);}],
+ ['python-runpy-risk-erased',d=>{d.dependencyTopology.dynamic=d.dependencyTopology.dynamic.filter(x=>x!=='v3/browser-v2-grc-check.py');d.dependencyTopology.dynamicSelectorSources--;}],
+ ['js-dynamic-fixture-risk-erased',d=>{d.dependencyTopology.dynamic=d.dependencyTopology.dynamic.filter(x=>x!=='v3/runtime/demo-suite-2-2-fixture.mjs');d.dependencyTopology.dynamicSelectorSources--;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
