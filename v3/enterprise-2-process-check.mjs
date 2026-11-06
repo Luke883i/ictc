@@ -5,7 +5,7 @@ import { runtimeOntologyProjection } from './runtime/ontology.mjs';
 const ontology = runtimeOntologyProjection();
 const processUi = await readFile(new URL('./public/ui/enterprise-2-processes.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('./public/app.js', import.meta.url), 'utf8');
-const browser = await readFile(new URL('./browser-enterprise-2-check.py', import.meta.url), 'utf8');
+const browser = await readFile(new URL('../tests/browser/browser-enterprise-2-check.py', import.meta.url), 'utf8');
 const check = await readFile(new URL('./enterprise-2-check.mjs', import.meta.url), 'utf8');
 const docs = await readFile(new URL('../docs/ENTERPRISE_2_PROCESS_CATALOG.md', import.meta.url), 'utf8');
 
