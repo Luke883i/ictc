@@ -57,7 +57,7 @@ export function v3StructuralCensus(entries){
  * This is not an independent dependency authority or a safe-to-move decision.
  * Dynamic resolution, HTTP routing, runtime-generated strings and external
  * callers remain unqualified. Every tracked path remains HOLD without proof. */
-export function v3DependencyTopology(entries){
+export function v3DependencyTopology(entries,scanRoot=root){
  const files=new Set(entries.map(e=>e.path));
  const edges=[],unresolved=[],dynamic=[],excluded=[];
  const extension=/\.(?:mjs|js|py|json|ya?ml|html|css|md|txt|sh)$/i;
@@ -75,7 +75,7 @@ export function v3DependencyTopology(entries){
  for(const row of entries){
   if(!extension.test(row.path))continue;
   if(row.bytes>2*1024*1024){excluded.push({path:row.path,reason:'oversize text scan'});continue;}
-  const bytes=readFileSync(join(root,row.path));
+  const bytes=readFileSync(join(scanRoot,row.path));
   if(bytes.includes(0)){excluded.push({path:row.path,reason:'binary/NUL'});continue;}
   const source=row.path,body=bytes.toString('utf8'),kind=classify(source),seen=new Set();
   if(/(?:readdir|glob|walk|recursive|import\s*\(|require\s*\(|eval\s*\(|runpy\s*\.\s*run_path\s*\(|new\s+URL\s*\(\s*`)/i.test(body))
