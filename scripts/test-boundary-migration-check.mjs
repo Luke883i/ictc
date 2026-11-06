@@ -228,6 +228,12 @@ if(process.argv.includes('--falsify')){
    try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise browser mutant survived: '+rel);}
    catch(e){if(!String(e.message).includes('R3 enterprise browser source/root drift'))throw e;enterpriseBrowserMutantsKilled++;}
    finally{writeFileSync(dest,original);}
+   const restoredLegacy=join(mirror,'v3',row.name);
+   mkdirSync(dirname(restoredLegacy),{recursive:true});
+   writeFileSync(restoredLegacy,original);
+   try{verifyEnterpriseBrowserMoves(mirror);assert.fail('R3 enterprise old-path resurrection survived: '+row.name);}
+   catch(e){if(!String(e.message).includes('R3 enterprise browser former path resurrected'))throw e;enterpriseBrowserMutantsKilled++;}
+   finally{rmSync(restoredLegacy,{force:true});}
    for(const reader of row.readers){
     const token=enterpriseBrowserToken(reader,row.name),source=join(mirror,reader);
     const before=readFileSync(source,'utf8');
@@ -239,7 +245,7 @@ if(process.argv.includes('--falsify')){
    }
   }
   assert.equal(verifyEnterpriseBrowserMoves(mirror).length,enterpriseBrowserMoves.length);
-  assert.equal(enterpriseBrowserMutantsKilled,enterpriseBrowserMoves.length+enterpriseBrowserMoves.reduce((n,row)=>n+row.readers.length,0),'R3 enterprise browser mutants survived');
+  assert.equal(enterpriseBrowserMutantsKilled,enterpriseBrowserMoves.length*2+enterpriseBrowserMoves.reduce((n,row)=>n+row.readers.length,0),'R3 enterprise browser mutants survived');
 
 
 
