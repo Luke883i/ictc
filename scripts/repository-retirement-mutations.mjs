@@ -2,7 +2,7 @@
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {root,census} from './repository-inventory.mjs';
-import {qualifyObservedUse,USE_CLASSES} from './repository-migration-frontier.mjs';
+import {qualifyObservedUse,USE_CLASSES,assessMigrationGateVector,MIGRATION_CLOSURE_GATES} from './repository-migration-frontier.mjs';
 
 const OBLIGATIONS=Object.freeze(['manifestLifecycle','ownerApproval','staticImports','dynamicImports','publicUrls','configsAndCi','fixturesAndTests','runtimeReachability','prHistoryUniqueness','externalConsumerReview','semanticPreservation','isolatedRemovalRollback']);
 export const deletionDecision=(facts)=>OBLIGATIONS.every(k=>facts[k]===true)?'REVIEWABLE_REMOVE_CANDIDATE':'HOLD_UNKNOWN';
@@ -134,6 +134,68 @@ if(livenessCasesArg){
  mkdirSync(join(root,'artifacts'),{recursive:true});
  writeFileSync(join(root,'artifacts/repository-liveness-mutations.json'),JSON.stringify(model,null,2)+'\n');
  console.log(JSON.stringify({liveness:model}));
+}
+
+
+const closureArg=process.argv.find(x=>x.startsWith('--closure-cases='));
+if(closureArg){
+ const cases=Number(closureArg.split('=')[1]),gateCount=MIGRATION_CLOSURE_GATES.length;
+ if(!Number.isSafeInteger(cases)||cases<1||cases>10_000_000||gateCount!==12)throw Error('cutover model bounds');
+ const actual=census().migrationFrontier;
+ if(actual.nodes.length!==actual.closureReticulum.trackedV3||
+  actual.closureReticulum.directedDependencies.length!==19||
+  actual.closureReticulum.automaticDeleteAuthorized!==false)throw Error('source K0 closure projection inconsistent');
+ const families=['git-denominator','duplicate-owner','dynamic-target','workflow-reader','static-url',
+  'scc-leak','rbac-escalation','sqlite-readback','browser-boot','external-caller','ci-mutant-rollback',
+  'v3-resurrection','http-browser-cascade','sqlite-rbac-cascade','ci-external-cascade','owner-dynamic-cascade'];
+ let seed=0x1c7c2026;
+ const rand=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0};
+ const baseline=Array(12).fill(1);
+ if(!assessMigrationGateVector(baseline).candidate)throw Error('satisfiable counterfactual should be reviewable');
+ let killed=0,escaped=0,lastNovel=-1,withUnknown=0;
+ const byFamily=Array(16).fill(0),signatures=new Set();
+ for(let i=0;i<cases;i++){
+  const family=rand()%16,vector=baseline.slice(),gate=family<12?family:[4,7,10,1][family-12];
+  vector[gate]=(rand()&1)?0:2;
+  if(family>=12){vector[[8,6,9,2][family-12]]=(rand()&1)?0:2;}
+  else if((rand()&7)===0){vector[rand()%12]=(rand()&1)?0:2;}
+  const result=assessMigrationGateVector(vector),oracle=vector.every(x=>x===1);
+  if(result.candidate===oracle&&!result.automaticDeleteAuthorized&&!oracle)killed++;else escaped++;
+  if(vector.includes(2))withUnknown++;
+  byFamily[family]++;
+  const signature=family+'|'+vector.join('');
+  if(!signatures.has(signature)){signatures.add(signature);lastNovel=i;}
+ }
+ const total=3**12;let exhaustiveErrors=0,candidates=0;
+ for(let idx=0;idx<total;idx++){
+  let n=idx;const v=Array(12);
+  for(let k=0;k<12;k++){v[k]=n%3;n=Math.floor(n/3);}
+  const result=assessMigrationGateVector(v);
+  if(result.candidate!==v.every(x=>x===1)||result.automaticMoveAuthorized||
+   result.automaticDeleteAuthorized)exhaustiveErrors++;
+  if(result.candidate)candidates++;
+ }
+ const axisCounterexamples=MIGRATION_CLOSURE_GATES.map((g,i)=>{
+  const v=baseline.slice();v[i]=2;
+  const r=assessMigrationGateVector(v);
+  if(r.candidate||r.blocking.length!==1||r.blocking[0]!==g.id)exhaustiveErrors++;
+  return {gate:g.id,missingGateVeto:!r.candidate};
+ });
+ const bits=Math.ceil(Math.log2(total)),noNoveltyWindow=cases-lastNovel-1;
+ const report={schema:'ictc-cutover-closure-adversarial/v1',source:'K0 real tracked path census',
+  seed:'0x1c7c2026',cases,trackedV3:actual.nodes.length,families,
+  familyRuns:byFamily,mutantsKilled:killed,mutantsEscaped:escaped,
+  withUnknownGate:withUnknown,distinctProfileSignatures:signatures.size,lastNovelIndex:lastNovel,noNoveltyWindow,
+  exhaustive:{completeThreeStateProfiles:total,checked:total,errors:exhaustiveErrors,
+   reviewableHypotheticals:candidates,necessaryGateCounterexamples:axisCounterexamples,
+   lowerBoundFixedWidthBits:bits,losslessFiniteMinimum:total>2**(bits-1)&&total<=2**bits},
+  runtimeEquivalenceAttested:false,physicalSourceMutationCount:0,tenLocalCiCyclesAttested:false,
+  claimBoundary:'10M source-anchored semantic EVIDENCE mutations, not 10M physical repository rewrites. 3^12 gate-proof saturation is closed-world only; source profile cannot prove runtime, external callers or merge authorization.'};
+ if(killed!==cases||escaped||exhaustiveErrors||candidates!==1||bits!==20||
+  (cases>=1_000_000&&noNoveltyWindow<1_000_000))throw Error('cutover reticulum counterexample '+JSON.stringify(report));
+ mkdirSync(join(root,'artifacts'),{recursive:true});
+ writeFileSync(join(root,'artifacts/repository-migration-closure-falsification.json'),JSON.stringify(report,null,2)+'\n');
+ console.log(JSON.stringify({cutoverClosure:report}));
 }
 
 // Exhaustive, finite certificate. Only this fixed 12-axis three-state domain
