@@ -55,6 +55,9 @@ export function validateCapabilityTruth({truth,releaseIdentity,documentationMani
  const caps=truth?.repositoryCapabilities||[];
  check(caps.length===21,'repository capability census must be exactly 21 at TRUTH-0');
  check(new Set(caps.map(x=>x.id)).size===caps.length,'duplicate repository capability id');
+ const adminTruth=caps.find(c=>c.id==='s4-a4-admin-fail-partial-truth');
+ check(adminTruth?.evidencePaths?.includes('tests/browser/browser-s4-a4-admin-truth-closure.py'),'S4-A4 browser canonical evidence path missing');
+ check(!adminTruth?.evidencePaths?.includes('v3/browser-s4-a4-admin-truth-closure.py'),'S4-A4 removed browser alias still authoritative');
  for(const c of caps){
    check(c.status==='repository-proven',`${c.id}: capability status drift`);
    check(Array.isArray(c.evidencePaths)&&c.evidencePaths.length>=2,`${c.id}: insufficient evidence paths`);
