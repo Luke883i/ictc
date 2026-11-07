@@ -123,6 +123,24 @@ export function v3DependencyTopology(entries,scanRoot=root){
     else unresolved.push({...edge,claimBoundary:'unresolved literal browser URL, external requests and runtime execution not established'});
    }
   }
+  // The current HTML entry is a browser composition root, not just a static URL.
+  // Relative script/link literals must be resolved against their real source dir.
+  if(source.startsWith('v3/public/')&&source.endsWith('.html')){
+   const htmlAsset=/<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*(['"])([^'"]+)\1/gi;
+   for(const m of body.matchAll(htmlAsset)){
+    const raw=m[2].split(/[?#]/,1)[0];
+    if(!raw||/^(?:https?:|data:|\/\/|#)/i.test(raw))continue;
+    const target=(raw.startsWith('/')?normalize(join('v3/public',raw.slice(1))):
+      normalize(join(dirname(source),raw))).replaceAll('\\','/');
+    if(!target.startsWith('v3/public/')||target===source)continue;
+    const edgeKind=/\.(?:mjs|js)$/i.test(target)?'browser-html-entry-candidate':'browser-html-asset-candidate';
+    const id=source+'\u0000'+target+'\u0000'+edgeKind;
+    if(seen.has(id))continue;seen.add(id);
+    const edge={from:source,to:target,kind:edgeKind};
+    if(files.has(target))edges.push(edge);
+    else unresolved.push({...edge,claimBoundary:'unresolved browser HTML asset URL, not proof of executed UI or absent external caller'});
+   }
+  }
  }
  // Source-bound HTTP mount, only candidate URL edges (not runtime/consumer proof).
  const server='v3/server.mjs';

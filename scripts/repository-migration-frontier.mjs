@@ -54,7 +54,7 @@ export function deriveMigrationFrontier(entries, topology) {
     for(const node of cohort)node.blockers.push('TARGET_CANDIDATE_COLLISION');
   // SCCs use only observed code/Python edges; unobserved dynamic reachability stays unproved.
   const graph=new Map(rows.map(x=>[x.path,new Set()]));
-  const kinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate']);
+  const kinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate','browser-html-entry-candidate','browser-html-asset-candidate']);
   for(const e of topology.edges)if(kinds.has(e.kind)&&graph.has(e.from)&&graph.has(e.to))graph.get(e.from).add(e.to);
   const order=new Map(),low=new Map(),stack=[],active=new Set(),cyclic=[];let clock=0,componentCount=0;
   function visit(v){
@@ -142,27 +142,28 @@ export function deriveMigrationFrontier(entries, topology) {
  * No observation here proves runtime execution, nonuse, safe removal or external reachability. */
 export const USE_CLASSES=Object.freeze([
  'DECLARED_RUNTIME_ROOT','RUNTIME_LITERAL_REACHABLE_CANDIDATE',
- 'HTTP_SERVABLE_ASSET_CANDIDATE','CI_OR_PACKAGE_PATH_CANDIDATE',
+ 'BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE','HTTP_SERVABLE_ASSET_CANDIDATE','CI_OR_PACKAGE_PATH_CANDIDATE',
  'SOURCE_CONSUMER_ONLY_CANDIDATE','HISTORICAL_NO_RUNTIME_WITNESS',
  'UNRESOLVED_NO_CURRENT_WITNESS'
 ]);
 export function qualifyObservedUse(facts){
  if(facts.runtimeRoot)return USE_CLASSES[0];
  if(facts.runtimePath)return USE_CLASSES[1];
- if(facts.httpMounted)return USE_CLASSES[2];
- if(facts.ciPath)return USE_CLASSES[3];
- if(facts.sourceConsumer)return USE_CLASSES[4];
- if(facts.historicalPurpose)return USE_CLASSES[5];
- return USE_CLASSES[6];
+ if(facts.browserPath)return USE_CLASSES[2];
+ if(facts.httpMounted)return USE_CLASSES[3];
+ if(facts.ciPath)return USE_CLASSES[4];
+ if(facts.sourceConsumer)return USE_CLASSES[5];
+ if(facts.historicalPurpose)return USE_CLASSES[6];
+ return USE_CLASSES[7];
 }
 export function deriveObservedUse(rows,topology){
  const paths=new Set(rows.map(x=>x.path));
- const codeKinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate']);
+ const codeKinds=new Set(['code-or-contract-literal','python-sibling-literal-candidate','python-local-import-candidate','browser-asset-or-literal','browser-absolute-url-candidate','browser-html-entry-candidate','browser-html-asset-candidate']);
  const byFrom=new Map(),byTo=new Map();
  for(const edge of topology.edges){
   if(paths.has(edge.to)){const es=byTo.get(edge.to)||[];es.push(edge);byTo.set(edge.to,es);}
   if(!codeKinds.has(edge.kind)||!paths.has(edge.from)||!paths.has(edge.to)||
-     !/\.(?:mjs|js|py)$/.test(edge.from))continue;
+     !/\.(?:mjs|js|py|html)$/.test(edge.from))continue;
   const es=byFrom.get(edge.from)||[];es.push(edge);byFrom.set(edge.from,es);
  }
  const walk=seeds=>{
@@ -182,6 +183,7 @@ export function deriveObservedUse(rows,topology){
  // Authority-declared current roots, not an inferred exhaustive executable entrypoint list.
  const roots=['v3/bootstrap.mjs','v3/server.mjs'];
  const runtime=walk(roots);
+ const browser=walk(['v3/public/index.html']);
  const ciSeeds=topology.edges.filter(e=>e.kind==='workflow-command-or-literal'||e.kind==='launch-or-script-literal')
   .map(e=>e.to).filter(p=>paths.has(p));
  const ci=walk(ciSeeds);
@@ -191,15 +193,17 @@ export function deriveObservedUse(rows,topology){
  const counter={};
  const nodes=rows.map(row=>{
   const p=row.path,ins=byTo.get(p)||[];
-  const facts={runtimeRoot:roots.includes(p),runtimePath:runtime.has(p),httpMounted:http.has(p),ciPath:ci.has(p),
+  const facts={runtimeRoot:roots.includes(p),runtimePath:runtime.has(p),browserPath:browser.has(p),httpMounted:http.has(p),ciPath:ci.has(p),
    sourceConsumer:ins.some(e=>e.kind!=='http-static-route-candidate'&&e.kind!=='documentation-mention'),
    historicalPurpose:historical.has(row.purposeState)};
   const observedUse=qualifyObservedUse(facts);
   counter[observedUse]=(counter[observedUse]||0)+1;
-  const runtimeWitness=runtime.get(p),ciWitness=ci.get(p);
+  const runtimeWitness=runtime.get(p),browserWitness=browser.get(p),ciWitness=ci.get(p);
   const evidence={runtimeRoot:facts.runtimeRoot,runtimeLiteralPath:!!runtimeWitness,
    runtimePathRoot:runtimeWitness?.root||null,runtimePathHops:runtimeWitness?.depth??null,
-   runtimePredecessor:runtimeWitness?.via||null,httpStaticMount:facts.httpMounted,
+   runtimePredecessor:runtimeWitness?.via||null,browserEntryLiteralPath:!!browserWitness,
+   browserEntryRoot:browserWitness?.root||null,browserEntryHops:browserWitness?.depth??null,
+   browserEntryPredecessor:browserWitness?.via||null,httpStaticMount:facts.httpMounted,
    ciOrPackagePath:!!ciWitness,ciOrPackageRoot:ciWitness?.root||null,
    ciOrPackagePathHops:ciWitness?.depth??null,
    otherSourceConsumers:ins.filter(e=>e.kind!=='documentation-mention'&&e.kind!=='http-static-route-candidate').length,
@@ -209,7 +213,7 @@ export function deriveObservedUse(rows,topology){
  });
  for(const use of USE_CLASSES)counter[use]??=0;
  const summary={mappedV3:nodes.length,byObservedUse:counter,
-  currentProductOrHttpCandidates:counter.DECLARED_RUNTIME_ROOT+counter.RUNTIME_LITERAL_REACHABLE_CANDIDATE+counter.HTTP_SERVABLE_ASSET_CANDIDATE,
+  currentProductOrHttpCandidates:counter.DECLARED_RUNTIME_ROOT+counter.RUNTIME_LITERAL_REACHABLE_CANDIDATE+counter.BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE+counter.HTTP_SERVABLE_ASSET_CANDIDATE,
   verificationOrPackageCandidates:counter.CI_OR_PACKAGE_PATH_CANDIDATE,
   nonRuntimeUnprovenCandidates:counter.SOURCE_CONSUMER_ONLY_CANDIDATE+counter.HISTORICAL_NO_RUNTIME_WITNESS+counter.UNRESOLVED_NO_CURRENT_WITNESS,
   runtimeNonContributionCertified:0,automaticallyRetirable:0};
