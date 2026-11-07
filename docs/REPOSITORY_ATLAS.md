@@ -134,6 +134,25 @@ L'inventario già canonico `npm run repo:inventory` produce per **ogni file trac
 
 **Falsificazione:** `npm run repo:inventory:falsify` controlla falsi root, clearance esterne, osservazioni e conteggi inventati. `node scripts/repository-retirement-mutations.mjs --cases=1000 --negatives=1000 --liveness-cases=10000000` esercita attacchi deterministici su profili derivati dal Git tree; i dieci milioni sono valutazioni **in memoria**, non dieci milioni di edit sorgente o cicli runtime. I nuovi esiti vivono negli artefatti derivati già previsti sotto `artifacts/`. Saturazione su questo vocabolario finito non prova no-novelty generale, equivalenza runtime o inesistenza di consumer esterni.
 
+### K0–K5 · Reticolo semantico minimo di uscita da v3
+
+Il percorso di chiusura è rappresentato **senza nuova authority** da `migrationFrontier.closureReticulum` dentro l'inventario Git già esistente, con 12 gate congiuntivi e 19 archi di prerequisito. `migrationFrontier.cutsets` separa ogni file in cinque gruppi candidati: K1 verificatori, K2 contratti/asset/fixture, K3 runtime e SCC, K4 bootstrap/server/store/persistenza a cutover atomico, K5 residuali non qualificati. La suddivisione è osservativa e la prova di assenza di consumer non deriva da un import statico mancante. Le SCC miste fra gruppi vietano il trasferimento indipendente.
+
+| Ordine logico | Gate necessari | Prova di uscita che resta indispensabile |
+| --- | --- | --- |
+| K0 | G00 denominatore Git | File, SHA-256, bytes, classificazione, grafo fonte e confini dell'osservazione coerenti su esatta HEAD |
+| K1 | G03 comandi, CI ed entrypoint | Ogni invocazione/reader nota riconciliata; preimage e test negativi per ogni rename, senza doppio verificatore |
+| K2 | G02 consumer statici/dinamici; G04 asset/URL | Lookup dinamici e fixture, static route e URL pubblici confrontati con preimage; chiamanti non osservati rimangono UNKNOWN |
+| K3 | G01 autorità unica; G05 SCC atomiche | Nessun secondo owner o writer e nessuna SCC distribuita senza cutover coordinato |
+| K4 | G06 API/RBAC/checkpoint umano-AI; G07 SQLite write/reopen/readback; G08 browser | Stesse proprietà con percorsi, revisioni, receipt, contenuti, diritti e asset preservati dopo il cambio di root |
+| K5 | G09 consumer esterni/review; G10 exact-head CI/mutanti/rollback; G11 zero file v3 senza shadow | Verifica indipendente, storico recuperabile, nessun `v3/` corrente né alias occulto; mantenere la differenza tra CI locale, hosted e deployment |
+
+La dipendenza non è una sequenza ingenua: K1 e K2 alimentano K3; K4 richiede G05; l'accettazione K5 richiede simultaneamente tutte le prove precedenti. Non è possibile chiudere un gate compensandolo con altri PASS. Il modello controlla esaustivamente tutti i 531.441 profili tri-stato dei 12 gate, e un controesempio per ciascun gate dimostra la necessità del relativo predicato. La rappresentazione pienamente diagnostica a lunghezza fissa richiede almeno 20 bit **solo in questo dominio finito**, non in tutte le semantiche di ICTC. Anche il profilo ipotetico con tutti i gate `VERIFIED` viene definito `REVIEWABLE_PROTOCOL_CANDIDATE`: la funzione non autentica receipt, non produce licenze di cancellazione e non sostituisce review o governance GitHub.
+
+La campagna deterministica `node scripts/repository-retirement-mutations.mjs --cases=1000 --negatives=1000 --closure-cases=10000000` esamina sedici famiglie di falsificazione del reticolo su 10 milioni di **profili di evidenza**. La campagna non equivale a dieci milioni di riscritture sorgente fisiche; non afferma equivalenza runtime. Il falsificatore preesistente `node scripts/repository-inventory-falsification.mjs` verifica contro-esempi di receipt e alcuni sorgenti temporanei. I test realmente eseguiti e la loro provenienza devono restare attestati separatamente. Nessuna classificazione `HISTORICAL_NO_RUNTIME_WITNESS` o `UNRESOLVED_NO_CURRENT_WITNESS` implica uso impossibile, cancellabilità o chiusura dei chiamanti esterni.
+
+Per l'audit di vitalità, cinque asset classificati `retirement-candidate` nel contratto TRAMA sono candidati all'istruttoria e **non all'eliminazione automatica**: `v3/public/grc-v2.css`, `v3/public/procedure-finetuning-1-4.css`, `v3/public/procedure-finetuning-2-3.css`, `v3/public/ui/procedure-finetuning-1-4.js`, `v3/public/ui/procedure-finetuning-2-3.js`. L'ultimo JS contiene un riferimento a URL assoluta verso lo stylesheet 2.3: i due file formano almeno una relazione di consumer sorgente osservata. `v3/runtime/grc-runtime-legacy.mjs` è invece importato da `v3/runtime/grc-runtime.mjs`, quindi il nome legacy non autorizza la sua rimozione. Il server espone `v3/public/` come radice statica: assenza di mount UI e assenza di URL pubblico sono due predicati diversi.
+
 ## Audit ex novo: bias e controprove del primo ingresso
 
 Il percorso standard è **Product → Software → Repository**. Le fonti sono owner e verificatori esistenti, non conversazioni AI. Questa è una verifica di leggibilità del repository, non una valutazione E3-HUMAN con ingegneri rappresentativi.
