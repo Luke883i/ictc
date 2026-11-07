@@ -30,7 +30,7 @@ jobs:
           node --check v3/s4-a4-admin-truth-closure-check.mjs
           node --check v3/s4-a4-admin-coordinator-check.mjs
           node --check v3/s4-a4-admin-truth-saturation-1m.mjs
-          python -m py_compile v3/browser-s4-a4-admin-truth-closure.py
+          python -m py_compile tests/browser/browser-s4-a4-admin-truth-closure.py
       - name: A4 source contract
         run: node v3/s4-a4-admin-truth-closure-check.mjs
       - name: A4 coordinator contract
@@ -72,10 +72,10 @@ jobs:
         run: |
           set -Eeuo pipefail
           status=0
-          python -u v3/browser-s4-a4-admin-truth-closure.py || status=$?
+          python -u tests/browser/browser-s4-a4-admin-truth-closure.py || status=$?
           cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-s4-a4-server.log || true
           if [[ "$status" -ne 0 ]]; then
-            FAILED_BROWSER_SCRIPT='v3/browser-s4-a4-admin-truth-closure.py' node scripts/browser-failure-provenance.mjs || true
+            FAILED_BROWSER_SCRIPT='tests/browser/browser-s4-a4-admin-truth-closure.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
       - name: Publish A4 browser provenance
@@ -95,7 +95,7 @@ jobs:
             description="failure ${phase}: ${message}"
           elif [[ -f "$report" ]]; then phase=complete; state=success; description='Admin failure isolation and retry green';
           else phase=no-artifact; state=error; description='browser evidence artifact missing'; fi
-          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a4-admin-truth-closure.py?phase=${phase}"
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-s4-a4-admin-truth-closure.py?phase=${phase}"
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a4-browser' -f description="${description:0:140}" -f target_url="$target" >/dev/null || true
       - name: Stop DEMO runtime
         if: always()

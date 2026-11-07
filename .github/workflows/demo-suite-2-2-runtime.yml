@@ -7,7 +7,7 @@ on:
       - 'v3/server.mjs'
       - 'v3/public/ui/stable-shell.js'
       - 'v3/browser-epistemic-professional-demo.py'
-      - 'v3/demo/demo-suite-2-2-fixture-*.b64'
+      - 'tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-*.b64'
       - 'v3/runtime/demo-suite-2-2*.mjs'
       - 'v3/demo-suite-2-2-module-load-check.mjs'
       - 'v3/demo-suite-2-2-runtime-semantic-check.mjs'

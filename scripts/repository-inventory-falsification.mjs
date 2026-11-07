@@ -15,12 +15,55 @@ if(sample.nodes.length!==1||sample.nodes[0].destinationCandidate!=='src/runtime/
 const sibling=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-v2-grc-check.py'&&e.to==='v3/browser-v3-all-service.py'&&e.kind==='python-sibling-literal-candidate');
 const helper=base.dependencyTopology.edges.find(e=>e.from==='v3/browser-ao-activation.py'&&e.to==='v3/browser_test_support.py'&&e.kind==='python-local-import-candidate');
 if(!sibling||!helper)throw new Error('K0 source-bound Python sibling/local-import edges not observed');
+const absoluteCss=base.dependencyTopology.edges.find(e=>e.from==='v3/public/ui/procedure-finetuning-2-3.js'&&
+ e.to==='v3/public/procedure-finetuning-2-3.css'&&e.kind==='browser-absolute-url-candidate');
+if(!absoluteCss)throw new Error('K0 source-bound absolute browser URL reference not observed');
+const htmlEntrypoint=base.dependencyTopology.edges.find(e=>e.from==='v3/public/index.html'&&
+ e.to==='v3/public/app.js'&&e.kind==='browser-html-entry-candidate');
+const browserFinetuning=base.migrationFrontier.nodes.find(x=>x.path==='v3/public/ui/procedure-finetuning-2-3.js');
+const browserCss=base.migrationFrontier.nodes.find(x=>x.path==='v3/public/procedure-finetuning-2-3.css');
+if(!htmlEntrypoint||browserFinetuning?.observedUse!=='BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE'||
+   browserFinetuning.useEvidence?.browserEntryHops!==3||
+   browserCss?.observedUse!=='BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE'||
+   browserCss.useEvidence?.browserEntryHops!==4)
+ throw new Error('K0 active browser chain index > app > active > finetuning > CSS absent');
+const activeBrowserSource=readFileSync(join(root,'v3/public/ui/active-experience.js'),'utf8');
+if(!activeBrowserSource.includes("from './procedure-finetuning-2-3.js'")||
+   !activeBrowserSource.includes('installProcedureFinetuning23,installBindings')||
+   !activeBrowserSource.includes('for(const install of INSTALL_ORDER)install();'))
+ throw new Error('current browser installer chain witness absent');
 for(const name of ['v3/browser-v2-grc-check.py','v3/runtime/demo-suite-2-2-fixture.mjs'])
  if(!base.dependencyTopology.dynamic.includes(name))
   throw new Error('K0 dynamic consumer risk not observed: '+name);
 for(const path of ['.env.example','LICENSE.md','NOTICE.md']){
   const entry=base.entries.find(x=>x.path===path);
   if(!entry||entry.purposeState!=='active-root')throw new Error('protected configuration/legal root misclassified: '+path);
+}
+if(base.migrationFrontier.summary.useQualification?.mappedV3!==base.status.v3Structural.files||
+   base.migrationFrontier.nodes.some(x=>!x.observedUse||x.safeDeleteAuthorized!==false||
+     x.useEvidence?.externalConsumers!=='UNKNOWN'||x.useEvidence?.runtimeNonContributionProven!==false))
+ throw new Error('K0 use qualification fails closed');
+if(base.migrationFrontier.nodes.find(x=>x.path==='v3/bootstrap.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT'||
+   base.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT')
+ throw new Error('K0 canonical runtime roots absent');
+const cutsets=base.migrationFrontier.cutsets;
+const closed=base.migrationFrontier.closureReticulum;
+if(Object.values(cutsets.counts).reduce((a,b)=>a+b,0)!==base.status.v3Structural.files||
+   cutsets.automaticCohortMoveAuthorized!==false||
+   cutsets.phaseDecisions.K4_ATOMIC_ENTRY_STATE!=='HOLD'||
+   closed.minimalConjunctiveGateCount!==12||
+   closed.directedDependencies.length!==19||
+   closed.trackedV3!==base.status.v3Structural.files||
+   closed.externallyCertified!==false||
+   closed.automaticDeleteAuthorized!==false)
+ throw new Error('reticular K0-K5 structural source-bound proof invalid');
+for(const [path,phase] of [
+ ['v3/server.mjs','K4_ATOMIC_ENTRY_STATE'],
+ ['v3/runtime/grc-runtime-legacy.mjs','K3_RUNTIME_SCC'],
+ ['v3/public/ui/procedure-finetuning-2-3.js','K2_CONTRACT_ASSET_FIXTURE'],
+ ['v3/browser-v2-grc-check.py','K1_VERIFICATION']]){
+ if(base.migrationFrontier.nodes.find(x=>x.path===path)?.phaseCandidate!==phase)
+  throw new Error('reticular K1-K5 phase routing inconsistent: '+path);
 }
 const clone=()=>structuredClone(base);
 const mutations=[
@@ -72,6 +115,26 @@ const mutations=[
  ['frontier-forged-target-collision',d=>{d.migrationFrontier.nodes[0].blockers.push('TARGET_PATH_OCCUPIED');}],
  ['frontier-http-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(x=>x.kind==='http-static-route-candidate');if(i<0)throw Error('source HTTP preimage absent');d.dependencyTopology.edges.splice(i,1);}],
  ['frontier-http-mount-count-forged',d=>{d.dependencyTopology.httpStaticCandidateCount=0;}],
+ ['liveness-forged-production-root',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/store.mjs').observedUse='DECLARED_RUNTIME_ROOT';}],
+ ['liveness-fabricated-nonruntime-proof',d=>{d.migrationFrontier.nodes[0].useEvidence.runtimeNonContributionProven=true;}],
+ ['liveness-fabricated-external-clearance',d=>{d.migrationFrontier.nodes[0].useEvidence.externalConsumers='CLEARED';}],
+ ['liveness-false-deletion',d=>{d.migrationFrontier.nodes[0].safeDeleteAuthorized=true;}],
+ ['liveness-summary-forged',d=>{d.migrationFrontier.summary.useQualification.automaticallyRetirable++;}],
+ ['liveness-historical-count-forged',d=>{d.migrationFrontier.summary.useQualification.byObservedUse.HISTORICAL_NO_RUNTIME_WITNESS++;}],
+ ['liveness-source-evidence-erased',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').useEvidence.runtimeRoot=false;}],
+ ['liveness-false-runtime-noncontribution',d=>{d.migrationFrontier.summary.useQualification.runtimeNonContributionCertified++;}],
+ ['browser-css-absolute-url-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===absoluteCss.from&&e.to===absoluteCss.to&&e.kind===absoluteCss.kind);if(i<0)throw Error('browser CSS preimage absent');d.dependencyTopology.edges.splice(i,1);}],
+ ['cutset-forged-phase',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').phaseCandidate='K1_VERIFICATION';}],
+ ['cutset-forged-count',d=>{d.migrationFrontier.cutsets.counts.K4_ATOMIC_ENTRY_STATE++;}],
+ ['cutset-false-authority',d=>{d.migrationFrontier.cutsets.automaticCohortMoveAuthorized=true;}],
+ ['cutset-erased-cross-edges',d=>{d.migrationFrontier.cutsets.crossPhaseEdgeCounts={};}],
+ ['closure-all-verified-forged',d=>{d.migrationFrontier.closureReticulum.gates.forEach(x=>{x.status='VERIFIED';});}],
+ ['closure-false-auto-delete',d=>{d.migrationFrontier.closureReticulum.automaticDeleteAuthorized=true;}],
+ ['closure-gate-omission',d=>{d.migrationFrontier.closureReticulum.gates.pop();}],
+ ['closure-false-empty-v3',d=>{d.migrationFrontier.closureReticulum.trackedV3=0;}],
+ ['browser-html-entry-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===htmlEntrypoint.from&&e.to===htmlEntrypoint.to&&e.kind===htmlEntrypoint.kind);if(i<0)throw Error('HTML entry preimage missing');d.dependencyTopology.edges.splice(i,1);}],
+ ['browser-finetuning-false-unloaded',d=>{d.migrationFrontier.nodes.find(x=>x.path===browserFinetuning.path).observedUse='HTTP_SERVABLE_ASSET_CANDIDATE';}],
+ ['browser-css-false-unloaded',d=>{d.migrationFrontier.nodes.find(x=>x.path===browserCss.path).useEvidence.browserEntryLiteralPath=false;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
@@ -84,7 +147,12 @@ const originals=[
  'v3/browser_test_support.py',
  'v3/runtime/demo-suite-2-2-fixture.mjs',
  'v3/server.mjs',
- 'v3/public/index.html'
+ 'v3/public/index.html',
+ 'v3/public/ui/procedure-finetuning-2-3.js',
+ 'v3/public/procedure-finetuning-2-3.css',
+ 'v3/public/app.js',
+ 'v3/public/styles.css',
+ 'v3/public/ui/active-experience.js'
 ];
 const scratch=mkdtempSync(join(tmpdir(),'ictc-k0-physical-'));
 const physical=[];
@@ -101,9 +169,19 @@ try{
    killed:g=>!g.edges.some(e=>e.from===originals[0]&&e.to===originals[1])&&g.unresolved.some(e=>e.from===originals[0]&&e.kind==='python-sibling-literal-candidate')},
   {name:'python-helper-import-corruption',path:originals[2],search:'from browser_test_support import ensure_onboarded',replace:'import json',
    killed:g=>!g.edges.some(e=>e.from===originals[2]&&e.to===originals[3]&&e.kind==='python-local-import-candidate')},
-  {name:'template-fixture-dynamic-selector-erasure',path:originals[4],search:'new URL(`../demo/demo-suite-2-2-fixture-${part}.b64`,import.meta.url)',
-   replace:"new URL('../demo/demo-suite-2-2-fixture-01.b64',import.meta.url)",
+  {name:'template-fixture-dynamic-selector-erasure',path:originals[4],search:'new URL(`../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-${part}.b64`,import.meta.url)',
+   replace:"new URL('../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-01.b64',import.meta.url)",
    killed:g=>!g.dynamic.includes(originals[4])},
+  {name:'browser-absolute-css-link-corruption',path:originals[7],search:"link.href='/procedure-finetuning-2-3.css';",replace:"link.href='/missing-procedure-style.css';",
+   killed:g=>!g.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')&&
+    g.unresolved.some(e=>e.from===originals[7]&&e.kind==='browser-absolute-url-candidate')},
+  {name:'html-entry-script-target-drift',path:originals[6],search:'src="app.js"',replace:'src="missing-app.js"',
+   killed:g=>!g.edges.some(e=>e.from===originals[6]&&e.to===originals[9]&&e.kind==='browser-html-entry-candidate')&&
+    g.unresolved.some(e=>e.from===originals[6]&&e.kind==='browser-html-entry-candidate')},
+  {name:'active-finetuning-import-erased',path:originals[11],search:"'./procedure-finetuning-2-3.js'",
+   replace:"'./missing-procedure-finetuning.js'",
+   killed:g=>!g.edges.some(e=>e.from===originals[11]&&e.to===originals[7]&&e.kind==='browser-asset-or-literal')&&
+    g.unresolved.some(e=>e.from===originals[11]&&e.kind==='browser-asset-or-literal')},
   {name:'http-static-root-rebound',path:originals[5],search:"const publicRoot=path.join(here,'public');",
    replace:"const publicRoot=path.join(here,'public-assets');",
    killed:g=>g.httpStaticCandidateCount===0&&!g.edges.some(e=>e.kind==='http-static-route-candidate')}
@@ -111,7 +189,12 @@ try{
  const before=graph();
  if(!before.edges.some(e=>e.from===originals[0]&&e.to===originals[1])||
     !before.edges.some(e=>e.from===originals[2]&&e.to===originals[3])||
-    !before.dynamic.includes(originals[4])||before.httpStaticCandidateCount!==1)
+    !before.dynamic.includes(originals[4])||
+    !before.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')||
+    !before.edges.some(e=>e.from===originals[6]&&e.to===originals[9]&&e.kind==='browser-html-entry-candidate')||
+    !before.edges.some(e=>e.from===originals[9]&&e.to===originals[11]&&e.kind==='browser-asset-or-literal')||
+    !before.edges.some(e=>e.from===originals[11]&&e.to===originals[7]&&e.kind==='browser-asset-or-literal')||
+    before.httpStaticCandidateCount!==6)
   throw new Error('K0 physical-preimage witness absent');
  for(let cycle=0;cycle<10;cycle++)for(const mutation of mutations){
   const original=records.find(r=>r.path===mutation.path).body;
