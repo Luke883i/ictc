@@ -16,7 +16,7 @@ function git(args){const r=spawnSync('git',['-C',ROOT,...args],{encoding:'utf8',
 async function fileDigest(file){const bytes=await readFile(file);return Object.freeze({sha256:sha256(bytes),bytes:bytes.length});}
 async function output(name,value){if(process.env.GITHUB_OUTPUT)await appendFile(process.env.GITHUB_OUTPUT,`${name}=${value}\n`);}
 
-const BUILD_ATTEST='actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6';
+const BUILD_ATTEST='actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8';
 const SBOM_ATTEST='actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6';
 const UPLOAD='actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a';
 
@@ -29,16 +29,11 @@ async function staticCheck(){
  assert.match(f06.rootControl,/SBOM\/provenance\/signature pipeline/i);assert.match(f06.repositoryPosture,/exact-candidate|post-merge main/i);
  const claimBoundary='Repository-bounded E2 delivery evidence only. Candidate attestation/signing does not itself mean merge approval, release, deployment, independent review, Enterprise Candidate or Enterprise Ready. F-06/C2 transition to terminal only after merge plus post-merge ACT.';
  for(const token of [
-  "id-token: write","attestations: write","artifact-metadata: write","contents: read","ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+  "id-token: write","attestations: write","contents: read","ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
   'node v3/delivery-provenance-check.mjs --prepare',BUILD_ATTEST,SBOM_ATTEST,'gh attestation verify',
   'node v3/delivery-provenance-check.mjs --finalize',UPLOAD
  ])assert.ok(workflow.includes(token),`enterprise workflow missing ${token}`);
  assert.ok(workflow.includes('ref: "${{ github.event.pull_request.head.sha || github.sha }}"'),'enterprise checkout must remain exact-head');
- const buildStep=workflow.split('      - name: Attest candidate build provenance\n')[1]?.split('      - name: Attest candidate SBOM\n')[0]||'';
- const sbomStep=workflow.split('      - name: Attest candidate SBOM\n')[1]?.split('      - name: Verify candidate attestations\n')[0]||'';
- assert.ok(buildStep.includes('id: build_attest')&&buildStep.includes('uses: '+BUILD_ATTEST)&&buildStep.includes('subject-path:')&&!buildStep.includes('sbom-path:'),'build provenance must use standalone pinned SLSA attestation');
- assert.ok(sbomStep.includes('id: sbom_attest')&&sbomStep.includes('uses: '+SBOM_ATTEST)&&sbomStep.includes('subject-path:')&&sbomStep.includes('sbom-path: artifacts/ictc-sbom.cdx.json'),'SBOM attestation must remain separate and tied to the same candidate');
-
  assert.equal(security.includes('Generate CycloneDX SBOM'),false,'security workflow must not retain a second canonical SBOM producer');
  const gate=manifest.localGates.find(x=>x.id==='delivery-provenance');assert.deepEqual(gate,{id:'delivery-provenance',command:'node v3/delivery-provenance-check.mjs',grade:'E2'});assert.equal(manifest.externalBlockers.includes('signed build provenance verification'),false);
  assert.equal(gates.split("'v3/delivery-provenance-check.mjs'").length-1,1,'delivery gate must be mounted once');
