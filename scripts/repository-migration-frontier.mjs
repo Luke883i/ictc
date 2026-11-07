@@ -91,9 +91,10 @@ export function deriveMigrationFrontier(entries, topology) {
     observedHttpCandidates:nodes.filter(n=>n.observedHttpMount).length,
     sccCount:componentCount,nontrivialScc:cyclic.length,byCohort,byBlocker,useQualification:observedUseProjection.summary,
     automaticMoveAuthorized:false,automaticDeleteAuthorized:false};
-  return {schema:'ictc-derived-migration-frontier/v1',source:'repository-inventory observed edges only',
+  const projection={schema:'ictc-derived-migration-frontier/v1',source:'repository-inventory observed edges only',
     summary,nodes,observedCyclicCohorts:cyclic,decision:'HOLD_ALL',
     claimBoundary:'Complete Git-path coverage is not complete runtime reachability; unqualified dynamic, HTTP and external callers veto cutover.'};
+  return {...projection,closureReticulum:deriveMigrationClosureReticulum(projection)};
 }
 
 /** Evidence-bounded current use qualification, derived from the existing K0 graph.
@@ -172,4 +173,59 @@ export function deriveObservedUse(rows,topology){
   nonRuntimeUnprovenCandidates:counter.SOURCE_CONSUMER_ONLY_CANDIDATE+counter.HISTORICAL_NO_RUNTIME_WITNESS+counter.UNRESOLVED_NO_CURRENT_WITNESS,
   runtimeNonContributionCertified:0,automaticallyRetirable:0};
  return {summary,nodes,claimBoundary:'Source-path witnesses and purpose states never prove that a file executed, was unused, or can safely be removed.'};
+}
+
+
+/** K0-K5 minimum conjunctive proof network. Gates express obligations only:
+ * status=VERIFIED on an arbitrary user-supplied profile is never authenticated evidence.
+ * Source scan can verify denominator only; host/runtime/independent receipts remain UNKNOWN. */
+export const MIGRATION_CLOSURE_GATES=Object.freeze([
+ {id:'G00_GIT_DENOMINATOR',slice:'K0',deps:[],owner:'scripts/repository-inventory.mjs'},
+ {id:'G01_SINGLE_AUTHORITY',slice:'K3',deps:['G00_GIT_DENOMINATOR'],owner:'docs/authority-matrix.yaml'},
+ {id:'G02_STATIC_DYNAMIC_CONSUMERS',slice:'K2',deps:['G00_GIT_DENOMINATOR'],owner:'scripts/repository-inventory.mjs'},
+ {id:'G03_CI_AND_ENTRYPOINTS',slice:'K1',deps:['G00_GIT_DENOMINATOR'],owner:'scripts/test-boundary-migration-check.mjs'},
+ {id:'G04_HTTP_ASSET_PARITY',slice:'K2',deps:['G00_GIT_DENOMINATOR'],owner:'v3/server.mjs'},
+ {id:'G05_ATOMIC_SCC_COHORTS',slice:'K3',deps:['G01_SINGLE_AUTHORITY','G02_STATIC_DYNAMIC_CONSUMERS','G03_CI_AND_ENTRYPOINTS','G04_HTTP_ASSET_PARITY'],owner:'scripts/repository-migration-frontier.mjs'},
+ {id:'G06_API_RBAC_HUMAN_AI',slice:'K4',deps:['G05_ATOMIC_SCC_COHORTS'],owner:'docs/PRODUCT.md'},
+ {id:'G07_SQLITE_WRITE_REOPEN',slice:'K4',deps:['G05_ATOMIC_SCC_COHORTS'],owner:'v3/sqlite-state-persistence.mjs'},
+ {id:'G08_BROWSER_EXPERIENCE',slice:'K4',deps:['G05_ATOMIC_SCC_COHORTS'],owner:'v3/public/ui/active-experience.js'},
+ {id:'G09_EXTERNAL_CONSUMERS_REVIEW',slice:'K5',deps:['G02_STATIC_DYNAMIC_CONSUMERS','G03_CI_AND_ENTRYPOINTS','G04_HTTP_ASSET_PARITY'],owner:'GOVERNANCE.md'},
+ {id:'G10_EXACT_HEAD_CI_MUTANTS_ROLLBACK',slice:'K5',deps:['G06_API_RBAC_HUMAN_AI','G07_SQLITE_WRITE_REOPEN','G08_BROWSER_EXPERIENCE','G09_EXTERNAL_CONSUMERS_REVIEW'],owner:'.github/workflows/ci.yml'},
+ {id:'G11_ZERO_V3_AND_NO_SHADOW',slice:'K5',deps:['G10_EXACT_HEAD_CI_MUTANTS_ROLLBACK'],owner:'scripts/repository-contract.mjs'}
+]);
+export const GATE_STATUS=Object.freeze({FAILED:0,VERIFIED:1,UNKNOWN:2});
+export function assessMigrationGateVector(vector){
+ if(!Array.isArray(vector)||vector.length!==MIGRATION_CLOSURE_GATES.length||
+   vector.some(x=>!Number.isInteger(x)||x<0||x>2))throw new Error('invalid closure gate vector');
+ const map=new Map(MIGRATION_CLOSURE_GATES.map((g,i)=>[g.id,vector[i]]));
+ for(const g of MIGRATION_CLOSURE_GATES)
+  if(g.deps.some(id=>!map.has(id)||MIGRATION_CLOSURE_GATES.findIndex(x=>x.id===id)>=MIGRATION_CLOSURE_GATES.findIndex(x=>x.id===g.id)))
+   throw new Error('non-topological migration gate reticulum: '+g.id);
+ const open=MIGRATION_CLOSURE_GATES.filter((g,i)=>vector[i]!==GATE_STATUS.VERIFIED);
+ const next=MIGRATION_CLOSURE_GATES.filter((g,i)=>vector[i]!==GATE_STATUS.VERIFIED&&
+  g.deps.every(dep=>map.get(dep)===GATE_STATUS.VERIFIED));
+ return {candidate:open.length===0,decision:open.length===0?'REVIEWABLE_PROTOCOL_CANDIDATE':'HOLD',
+  blocking:open.map(g=>g.id),nextEligible:next.map(g=>g.id),
+  automaticMoveAuthorized:false,automaticDeleteAuthorized:false,
+  claimBoundary:'Finite logical proof prerequisites only; even all VERIFIED flags cannot authenticate receipts, independent review or deletion authority.'};
+}
+export function deriveMigrationClosureReticulum(frontier){
+ const rows=frontier?.nodes||[],summary=frontier?.summary||{};
+ const complete=summary.trackedV3===rows.length&&summary.mappedV3===rows.length&&
+  rows.every(x=>x.path?.startsWith('v3/')&&x.decision==='HOLD'&&x.safeDeleteAuthorized===false&&
+  x.useEvidence?.externalConsumers==='UNKNOWN'&&x.useEvidence?.runtimeNonContributionProven===false);
+ const statuses=MIGRATION_CLOSURE_GATES.map(g=>g.id==='G00_GIT_DENOMINATOR'
+  ?(complete?GATE_STATUS.VERIFIED:GATE_STATUS.FAILED)
+  :g.id==='G11_ZERO_V3_AND_NO_SHADOW'
+   ?(rows.length===0?GATE_STATUS.UNKNOWN:GATE_STATUS.FAILED)
+   :GATE_STATUS.UNKNOWN);
+ const logical=assessMigrationGateVector(statuses);
+ return {schema:'ictc-derived-migration-closure-reticulum/v1',
+  source:'K0 structural frontier and declared owners; no external attestation',
+  gates:MIGRATION_CLOSURE_GATES.map((g,i)=>({...g,status:['FAILED','VERIFIED','UNKNOWN'][statuses[i]]})),
+  directedDependencies:MIGRATION_CLOSURE_GATES.flatMap(g=>g.deps.map(from=>({from,to:g.id}))),
+  minimalConjunctiveGateCount:statuses.length,denominatorVerified:complete,trackedV3:rows.length,
+  sourceBoundedClosed:false,externallyCertified:false,automaticMoveAuthorized:false,automaticDeleteAuthorized:false,
+  presentBlockers:logical.blocking,nextEligible:logical.nextEligible,
+  claimBoundary:'This graph mathematically enumerates minimum independent obligations. K4/K5 never close from source counters, model mutants or declared PASS flags.'};
 }
