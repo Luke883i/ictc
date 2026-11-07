@@ -168,6 +168,66 @@ const enterpriseBrowserGitCensus=verifyEnterpriseBrowserTreeDelta();
 
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
+
+/** K2: actual retained synthetic fixture bytes at their new, single test owner.
+ * All proofs are grounded in immutable Git preimages, not a second manifest authority. */
+const K2_BLOB_FIXTURE_NAMES=Object.freeze(['README.md','manifest.json','source-note.txt']);
+function verifyK2BlobFixtureBoundary(at=root){
+ const origin='v3/blob-fixtures',destination='tests/fixtures/blobs';
+ const evidence=[];
+ for(const name of K2_BLOB_FIXTURE_NAMES){
+  const oldPath=origin+'/'+name,newPath=destination+'/'+name;
+  const historical=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':'+oldPath],{cwd:root,maxBuffer:1024*1024});
+  const current=readFileSync(join(at,newPath));
+  assert.deepEqual(current,historical,'K2 synthetic blob fixture drift: '+newPath);
+  assert.equal(existsSync(join(at,oldPath)),false,'K2 obsolete fixture path resurrected: '+oldPath);
+  evidence.push({oldPath,newPath,sha256:digest(current),bytes:current.length,sourceByteParity:true});
+ }
+ const historicalAudit=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':v3/blob-audit.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
+ const oldToken="'v3/blob-fixtures'",newToken="'tests/fixtures/blobs'";
+ assert.equal(historicalAudit.split(oldToken).length,2,'K2 blob-audit preimage path not unique');
+ assert.equal(readFileSync(join(at,'v3/blob-audit.mjs'),'utf8'),historicalAudit.replace(oldToken,newToken),
+  'K2 blob-audit consumer or behavior drift');
+ const manifest=JSON.parse(readFileSync(join(at,destination,'manifest.json'),'utf8'));
+ assert.equal(manifest.file,'source-note.txt','K2 fixture source file identity drift');
+ const source=readFileSync(join(at,destination,manifest.file));
+ assert.equal(digest(source),manifest.sha256,'K2 fixture declared content digest drift');
+ assert.equal(source.length,manifest.bytes,'K2 fixture declared size drift');
+ return evidence;
+}
+const k2BlobFixtures=verifyK2BlobFixtureBoundary();
+function falsifyK2BlobFixtures(){
+ const scratch=mkdtempSync(join(tmpdir(),'ictc-k2-blob-'));
+ let killed=0;
+ try{
+  for(const name of K2_BLOB_FIXTURE_NAMES){
+   const p=join(scratch,'tests/fixtures/blobs',name);
+   mkdirSync(dirname(p),{recursive:true});
+   writeFileSync(p,readFileSync(join(root,'tests/fixtures/blobs',name)));
+  }
+  mkdirSync(join(scratch,'v3'),{recursive:true});
+  writeFileSync(join(scratch,'v3/blob-audit.mjs'),readFileSync(join(root,'v3/blob-audit.mjs')));
+  assert.equal(verifyK2BlobFixtureBoundary(scratch).length,3,'K2 temporary preimage baseline failed');
+  const corruptedSource=join(scratch,'tests/fixtures/blobs/source-note.txt');
+  const good=readFileSync(corruptedSource);
+  writeFileSync(corruptedSource,Buffer.concat([good,Buffer.from('\ncorrupted\n')]));
+  try{verifyK2BlobFixtureBoundary(scratch);}catch(error){if(/fixture drift/.test(String(error.message)))killed++;else throw error;}
+  writeFileSync(corruptedSource,good);
+  const corruptedAudit=join(scratch,'v3/blob-audit.mjs');
+  const goodAudit=readFileSync(corruptedAudit);
+  writeFileSync(corruptedAudit,Buffer.concat([goodAudit,Buffer.from('\n// unauthorized path change\n')]));
+  try{verifyK2BlobFixtureBoundary(scratch);}catch(error){if(/consumer or behavior drift/.test(String(error.message)))killed++;else throw error;}
+  writeFileSync(corruptedAudit,goodAudit);
+  const resurrected=join(scratch,'v3/blob-fixtures/README.md');
+  mkdirSync(dirname(resurrected),{recursive:true});
+  writeFileSync(resurrected,readFileSync(join(root,'tests/fixtures/blobs/README.md')));
+  try{verifyK2BlobFixtureBoundary(scratch);}catch(error){if(/obsolete fixture path resurrected/.test(String(error.message)))killed++;else throw error;}
+ }finally{rmSync(scratch,{recursive:true,force:true});}
+ assert.equal(killed,3,'K2 physical negative mutants escaped');
+ return killed;
+}
+const k2BlobPhysicalMutantsKilled=falsifyK2BlobFixtures();
+
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
  return source.replace(/(\bfrom\s*['"])\.\//g,'$1../')
@@ -360,7 +420,7 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
  migratedEnterpriseBrowserCanaries:enterpriseBrowserEvidence,
- enterpriseBrowserGitCensus,
+ enterpriseBrowserGitCensus,k2BlobFixtures,k2BlobPhysicalMutantsKilled,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:enterpriseBrowserGitCensus.oldTopLevel,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
    totalV3VerificationLikeCandidatesBefore:447,
