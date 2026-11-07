@@ -169,8 +169,8 @@ try{
    killed:g=>!g.edges.some(e=>e.from===originals[0]&&e.to===originals[1])&&g.unresolved.some(e=>e.from===originals[0]&&e.kind==='python-sibling-literal-candidate')},
   {name:'python-helper-import-corruption',path:originals[2],search:'from browser_test_support import ensure_onboarded',replace:'import json',
    killed:g=>!g.edges.some(e=>e.from===originals[2]&&e.to===originals[3]&&e.kind==='python-local-import-candidate')},
-  {name:'template-fixture-dynamic-selector-erasure',path:originals[4],search:'new URL(`../demo/demo-suite-2-2-fixture-${part}.b64`,import.meta.url)',
-   replace:"new URL('../demo/demo-suite-2-2-fixture-01.b64',import.meta.url)",
+  {name:'template-fixture-dynamic-selector-erasure',path:originals[4],search:'new URL(`../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-${part}.b64`,import.meta.url)',
+   replace:"new URL('../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-01.b64',import.meta.url)",
    killed:g=>!g.dynamic.includes(originals[4])},
   {name:'browser-absolute-css-link-corruption',path:originals[7],search:"link.href='/procedure-finetuning-2-3.css';",replace:"link.href='/missing-procedure-style.css';",
    killed:g=>!g.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')&&

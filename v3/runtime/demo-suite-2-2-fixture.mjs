@@ -9,7 +9,7 @@ export const DEMO_SUITE_22_FIXTURE_INTEGRITY=Object.freeze({parts:12,encodedByte
 const PARTS=Array.from({length:DEMO_SUITE_22_FIXTURE_INTEGRITY.parts},(_,index)=>String(index+1).padStart(2,'0'));
 const sha=value=>createHash('sha256').update(value).digest('hex');
 const fail=(code,message,details)=>{throw Object.assign(new Error(message),{code,details});};
-const encoded=(await Promise.all(PARTS.map(part=>readFile(new URL(`../demo/demo-suite-2-2-fixture-${part}.b64`,import.meta.url),'utf8')))).join('').replace(/\s+/g,'');
+const encoded=(await Promise.all(PARTS.map(part=>readFile(new URL(`../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-${part}.b64`,import.meta.url),'utf8')))).join('').replace(/\s+/g,'');
 if(Buffer.byteLength(encoded)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedBytes||sha(encoded)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedSha256)fail('demo-suite-2-2-fixture-encoded-integrity','Fixture DEMO 2.2 base64 incompleta o alterata',{actualBytes:Buffer.byteLength(encoded),expectedBytes:DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedBytes,actualSha256:sha(encoded),expectedSha256:DEMO_SUITE_22_FIXTURE_INTEGRITY.encodedSha256});
 const compressed=Buffer.from(encoded,'base64');
 if(compressed.length!==DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipBytes||sha(compressed)!==DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipSha256)fail('demo-suite-2-2-fixture-gzip-integrity','Fixture DEMO 2.2 compressa non coincide con il blob verificato',{actualBytes:compressed.length,expectedBytes:DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipBytes,actualSha256:sha(compressed),expectedSha256:DEMO_SUITE_22_FIXTURE_INTEGRITY.gzipSha256});
