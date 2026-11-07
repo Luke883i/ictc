@@ -194,18 +194,41 @@ export const MIGRATION_CLOSURE_GATES=Object.freeze([
  {id:'G11_ZERO_V3_AND_NO_SHADOW',slice:'K5',deps:['G10_EXACT_HEAD_CI_MUTANTS_ROLLBACK'],owner:'scripts/repository-contract.mjs'}
 ]);
 export const GATE_STATUS=Object.freeze({FAILED:0,VERIFIED:1,UNKNOWN:2});
+const gateIndexById=new Map(MIGRATION_CLOSURE_GATES.map((g,i)=>[g.id,i]));
+const gatePrerequisites=MIGRATION_CLOSURE_GATES.map((g,i)=>g.deps.map(id=>{
+ const j=gateIndexById.get(id);
+ if(j===undefined||j>=i)throw new Error('non-topological migration gate reticulum '+g.id+' depends on '+id);
+ return j;
+}));
+/** This optimized YES/NO predicate is ONLY for hypothetical gate profiles;
+ * exhaustive 3^12 equivalence to the explanatory evaluator is mandatory. */
+export function migrationGateProfileCandidate(vector){
+ if(!Array.isArray(vector)||vector.length!==12)throw Error('invalid compact profile');
+ let verifiedMask=0;
+ for(let i=0;i<12;i++){
+  const x=vector[i];
+  if(x!==0&&x!==1&&x!==2)throw Error('invalid compact gate state');
+  if(x===1)verifiedMask|=(1<<i);
+ }
+ return verifiedMask===0xfff;
+}
 export function assessMigrationGateVector(vector){
  if(!Array.isArray(vector)||vector.length!==MIGRATION_CLOSURE_GATES.length||
    vector.some(x=>!Number.isInteger(x)||x<0||x>2))throw new Error('invalid closure gate vector');
- const map=new Map(MIGRATION_CLOSURE_GATES.map((g,i)=>[g.id,vector[i]]));
- for(const g of MIGRATION_CLOSURE_GATES)
-  if(g.deps.some(id=>!map.has(id)||MIGRATION_CLOSURE_GATES.findIndex(x=>x.id===id)>=MIGRATION_CLOSURE_GATES.findIndex(x=>x.id===g.id)))
-   throw new Error('non-topological migration gate reticulum: '+g.id);
- const open=MIGRATION_CLOSURE_GATES.filter((g,i)=>vector[i]!==GATE_STATUS.VERIFIED);
- const next=MIGRATION_CLOSURE_GATES.filter((g,i)=>vector[i]!==GATE_STATUS.VERIFIED&&
-  g.deps.every(dep=>map.get(dep)===GATE_STATUS.VERIFIED));
- return {candidate:open.length===0,decision:open.length===0?'REVIEWABLE_PROTOCOL_CANDIDATE':'HOLD',
-  blocking:open.map(g=>g.id),nextEligible:next.map(g=>g.id),
+ const open=[],next=[],stale=[];
+ const invalid=Array(MIGRATION_CLOSURE_GATES.length).fill(false);
+ for(let i=0;i<MIGRATION_CLOSURE_GATES.length;i++){
+  const g=MIGRATION_CLOSURE_GATES[i],deps=gatePrerequisites[i];
+  const upstreamInvalid=deps.some(j=>vector[j]!==GATE_STATUS.VERIFIED||invalid[j]);
+  invalid[i]=upstreamInvalid;
+  if(vector[i]!==GATE_STATUS.VERIFIED){
+   open.push(g.id);
+   if(!upstreamInvalid)next.push(g.id);
+  }else if(upstreamInvalid)stale.push(g.id);
+ }
+ return {candidate:open.length===0&&stale.length===0,
+  decision:open.length===0&&stale.length===0?'REVIEWABLE_PROTOCOL_CANDIDATE':'HOLD',
+  blocking:open,nextEligible:next,staleDependentEvidence:stale,
   automaticMoveAuthorized:false,automaticDeleteAuthorized:false,
   claimBoundary:'Finite logical proof prerequisites only; even all VERIFIED flags cannot authenticate receipts, independent review or deletion authority.'};
 }
