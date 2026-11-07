@@ -276,8 +276,12 @@ export function assessMigrationGateVector(vector){
 export function deriveMigrationClosureReticulum(frontier){
  const rows=frontier?.nodes||[],summary=frontier?.summary||{};
  const complete=summary.trackedV3===rows.length&&summary.mappedV3===rows.length&&
+  new Set(rows.map(x=>x.path)).size===rows.length&&
   rows.every(x=>x.path?.startsWith('v3/')&&x.decision==='HOLD'&&x.safeDeleteAuthorized===false&&
-  x.useEvidence?.externalConsumers==='UNKNOWN'&&x.useEvidence?.runtimeNonContributionProven===false);
+   typeof x.sha256==='string'&&/^[a-f0-9]{64}$/.test(x.sha256)&&
+   Number.isSafeInteger(x.bytes)&&x.bytes>=0&&
+   typeof x.phaseCandidate==='string'&&x.phaseCandidate.startsWith('K')&&
+   x.useEvidence?.externalConsumers==='UNKNOWN'&&x.useEvidence?.runtimeNonContributionProven===false);
  const statuses=MIGRATION_CLOSURE_GATES.map(g=>g.id==='G00_GIT_DENOMINATOR'
   ?(complete?GATE_STATUS.VERIFIED:GATE_STATUS.FAILED)
   :g.id==='G11_ZERO_V3_AND_NO_SHADOW'
