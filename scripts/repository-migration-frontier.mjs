@@ -80,6 +80,47 @@ export function deriveMigrationFrontier(entries, topology) {
     node.useEvidence=observed.evidence;
     node.safeDeleteAuthorized=false;
   }
+  // Candidate migration cutsets are a projection of the same observed graph.
+  // They never grant a move/retirement licence. Cross-phase cycles must travel together.
+  const classifyPhase=node=>{
+    if(['v3/bootstrap.mjs','v3/server.mjs','v3/store.mjs','v3/runtime-store.mjs',
+      'v3/sqlite-state-persistence.mjs'].includes(node.path))return 'K4_ATOMIC_ENTRY_STATE';
+    if(['runtime','runtime-core','application-library'].includes(node.cohort))return 'K3_RUNTIME_SCC';
+    if(['http-assets','historical-fixture','fixture-or-lineage','dynamic-demo-fixture',
+      'standards-data','contract-or-data-unresolved','documentation-unresolved'].includes(node.cohort))return 'K2_CONTRACT_ASSET_FIXTURE';
+    if(['verification','browser-helper','browser-verification','verification-candidate',
+      'compatibility-adapter'].includes(node.cohort))return 'K1_VERIFICATION';
+    return 'K5_RESIDUAL_UNQUALIFIED';
+  };
+  const byPath=new Map(nodes.map(n=>[n.path,n]));
+  const phases=['K1_VERIFICATION','K2_CONTRACT_ASSET_FIXTURE','K3_RUNTIME_SCC',
+    'K4_ATOMIC_ENTRY_STATE','K5_RESIDUAL_UNQUALIFIED'];
+  const phaseCount=Object.fromEntries(phases.map(x=>[x,0]));
+  for(const node of nodes){node.phaseCandidate=classifyPhase(node);phaseCount[node.phaseCandidate]++;}
+  const crossPhaseCounts={},externalByKind={};
+  for(const e of topology.edges){
+    const target=byPath.get(e.to);
+    if(!target)continue;
+    const source=byPath.get(e.from);
+    const srcPhase=source?.phaseCandidate||'OUTSIDE_V3',dstPhase=target.phaseCandidate;
+    if(srcPhase!==dstPhase){
+      const key=srcPhase+' > '+dstPhase+' :: '+e.kind;
+      crossPhaseCounts[key]=(crossPhaseCounts[key]||0)+1;
+      target.observedCrossPhaseInbound=(target.observedCrossPhaseInbound||0)+1;
+      if(!source)externalByKind[e.kind]=(externalByKind[e.kind]||0)+1;
+    }
+  }
+  const mixedStageCycles=cyclic.filter(group=>new Set(group.map(p=>byPath.get(p)?.phaseCandidate)).size>1);
+  const unresolvedNoWitness=nodes.filter(n=>n.observedUse==='UNRESOLVED_NO_CURRENT_WITNESS')
+   .map(n=>n.path);
+  const cutsets={schema:'ictc-derived-v3-migration-cutsets/v1',source:'existing K0 observed edges only',
+   counts:phaseCount,crossPhaseEdgeCounts:crossPhaseCounts,observedOutsideConsumerKinds:externalByKind,
+   mixedStageSccCount:mixedStageCycles.length,mixedStageSccSamples:mixedStageCycles.slice(0,12),
+   unresolvedNoWitnessCount:unresolvedNoWitness.length,
+   unresolvedNoWitnessSamples:unresolvedNoWitness.slice(0,20),
+   phaseDecisions:Object.fromEntries(phases.map(x=>[x,'HOLD'])),
+   automaticCohortMoveAuthorized:false,claimBoundary:'A source-graph partition, not executable reachability, complete consumer closure, a min-cut theorem, or a safe-move decision.'};
+
   const byCohort={},byBlocker={};
   for(const row of nodes){byCohort[row.cohort]=(byCohort[row.cohort]||0)+1;
     for(const b of row.blockers)byBlocker[b]=(byBlocker[b]||0)+1;}
@@ -89,10 +130,10 @@ export function deriveMigrationFrontier(entries, topology) {
     observedInboundFiles:nodes.filter(n=>n.observedInbound>0).length,
     observedDynamicSources:nodes.filter(n=>n.observedDynamicSource).length,
     observedHttpCandidates:nodes.filter(n=>n.observedHttpMount).length,
-    sccCount:componentCount,nontrivialScc:cyclic.length,byCohort,byBlocker,useQualification:observedUseProjection.summary,
+    sccCount:componentCount,nontrivialScc:cyclic.length,byCohort,byBlocker,useQualification:observedUseProjection.summary,cutsets:cutsets.counts,
     automaticMoveAuthorized:false,automaticDeleteAuthorized:false};
   const projection={schema:'ictc-derived-migration-frontier/v1',source:'repository-inventory observed edges only',
-    summary,nodes,observedCyclicCohorts:cyclic,decision:'HOLD_ALL',
+    summary,nodes,observedCyclicCohorts:cyclic,cutsets,decision:'HOLD_ALL',
     claimBoundary:'Complete Git-path coverage is not complete runtime reachability; unqualified dynamic, HTTP and external callers veto cutover.'};
   return {...projection,closureReticulum:deriveMigrationClosureReticulum(projection)};
 }
