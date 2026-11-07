@@ -24,6 +24,11 @@ assert.equal(expected.evidence.c3Evidence,true);
 const legacy=legacyCensus();
 assert.equal(legacy.censusSource,'git-ls-tree-head');
 assert.equal(legacy.unknown.length,0,'all detected legacy/versioned candidates must be classified');
+const k2DemoParts=legacy.pathRows.filter(x=>/^tests\/fixtures\/demo-suite-2-2\/demo-suite-2-2-fixture-\d{2}\.b64$/.test(x.path));
+assert.equal(k2DemoParts.length,12,'all relocated DEMO 2.2 fixture chunks must be classified by the existing legacy authority');
+assert.ok(k2DemoParts.every(x=>x.classification==='migration-only'&&x.blocking===false),'K2 relocated fixture classification/retention drift');
+assert.ok(!legacy.pathRows.some(x=>x.path.startsWith('v3/demo/demo-suite-2-2-fixture-')),'old DEMO 2.2 path resurrected');
+
 assert.equal(legacy.contentMissing.length,0,'explicit content-level legacy sites drifted');
 assert.ok(legacy.blocking.length>0,'C1 must remain evidence-backed open while blocking legacy residue exists');
 for(const cls of ['compatibility-required','migration-only','lineage-only','deprecated-test','retirement-candidate','blocking-unclassified'])assert.ok(Object.hasOwn(legacy.counts,cls),cls);
