@@ -36,7 +36,7 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
-      - run: python -m py_compile v3/browser-business-surface-convergence-2-7.py
+      - run: python -m py_compile tests/browser/browser-business-surface-convergence-2-7.py
       - name: Resolve Chromium
         shell: bash
         run: |
@@ -58,7 +58,7 @@ jobs:
           export ICTC_NO_OPEN=1 ICTC_BASE_URL="http://127.0.0.1:${ICTC_PORT}" ICTC_STATE_DIR="$RUNNER_TEMP/ictc-business-${{ matrix.mode }}-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-business-${{ matrix.mode }}-runtime" ICTC_SCHEDULER_TICK_MS=100000 ICTC_DEMO_STARTUP_ATTEMPTS=900
           if [[ "${ICTC_EXPECT_DEMO}" == '1' ]]; then ./ictc.sh demo --profile current --no-open; else ./ictc.sh start --profile current --no-open; fi
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-business-surface-convergence-2-7.py
+          python -u tests/browser/browser-business-surface-convergence-2-7.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
