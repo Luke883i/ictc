@@ -29,7 +29,7 @@ async function staticCheck(){
  assert.match(f06.rootControl,/SBOM\/provenance\/signature pipeline/i);assert.match(f06.repositoryPosture,/exact-candidate|post-merge main/i);
  const claimBoundary='Repository-bounded E2 delivery evidence only. Candidate attestation/signing does not itself mean merge approval, release, deployment, independent review, Enterprise Candidate or Enterprise Ready. F-06/C2 transition to terminal only after merge plus post-merge ACT.';
  for(const token of [
-  "id-token: write","attestations: write","contents: read","ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+  "id-token: write","attestations: write","artifact-metadata: write","contents: read","ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
   'node v3/delivery-provenance-check.mjs --prepare',BUILD_ATTEST,SBOM_ATTEST,'gh attestation verify',
   'node v3/delivery-provenance-check.mjs --finalize',UPLOAD
  ])assert.ok(workflow.includes(token),`enterprise workflow missing ${token}`);
