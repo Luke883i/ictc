@@ -32,6 +32,25 @@ if(base.migrationFrontier.summary.useQualification?.mappedV3!==base.status.v3Str
 if(base.migrationFrontier.nodes.find(x=>x.path==='v3/bootstrap.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT'||
    base.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs')?.observedUse!=='DECLARED_RUNTIME_ROOT')
  throw new Error('K0 canonical runtime roots absent');
+const cutsets=base.migrationFrontier.cutsets;
+const closed=base.migrationFrontier.closureReticulum;
+if(Object.values(cutsets.counts).reduce((a,b)=>a+b,0)!==base.status.v3Structural.files||
+   cutsets.automaticCohortMoveAuthorized!==false||
+   cutsets.phaseDecisions.K4_ATOMIC_ENTRY_STATE!=='HOLD'||
+   closed.minimalConjunctiveGateCount!==12||
+   closed.directedDependencies.length!==19||
+   closed.trackedV3!==base.status.v3Structural.files||
+   closed.externallyCertified!==false||
+   closed.automaticDeleteAuthorized!==false)
+ throw new Error('reticular K0-K5 structural source-bound proof invalid');
+for(const [path,phase] of [
+ ['v3/server.mjs','K4_ATOMIC_ENTRY_STATE'],
+ ['v3/runtime/grc-runtime-legacy.mjs','K3_RUNTIME_SCC'],
+ ['v3/public/ui/procedure-finetuning-2-3.js','K2_CONTRACT_ASSET_FIXTURE'],
+ ['v3/browser-v2-grc-check.py','K1_VERIFICATION']]){
+ if(base.migrationFrontier.nodes.find(x=>x.path===path)?.phaseCandidate!==phase)
+  throw new Error('reticular K1-K5 phase routing inconsistent: '+path);
+}
 const clone=()=>structuredClone(base);
 const mutations=[
  ['omitted-file',d=>{d.entries.pop();d.status.total--;d.status.classified--;}],
@@ -91,6 +110,14 @@ const mutations=[
  ['liveness-source-evidence-erased',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').useEvidence.runtimeRoot=false;}],
  ['liveness-false-runtime-noncontribution',d=>{d.migrationFrontier.summary.useQualification.runtimeNonContributionCertified++;}],
  ['browser-css-absolute-url-edge-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===absoluteCss.from&&e.to===absoluteCss.to&&e.kind===absoluteCss.kind);if(i<0)throw Error('browser CSS preimage absent');d.dependencyTopology.edges.splice(i,1);}],
+ ['cutset-forged-phase',d=>{d.migrationFrontier.nodes.find(x=>x.path==='v3/server.mjs').phaseCandidate='K1_VERIFICATION';}],
+ ['cutset-forged-count',d=>{d.migrationFrontier.cutsets.counts.K4_ATOMIC_ENTRY_STATE++;}],
+ ['cutset-false-authority',d=>{d.migrationFrontier.cutsets.automaticCohortMoveAuthorized=true;}],
+ ['cutset-erased-cross-edges',d=>{d.migrationFrontier.cutsets.crossPhaseEdgeCounts={};}],
+ ['closure-all-verified-forged',d=>{d.migrationFrontier.closureReticulum.gates.forEach(x=>{x.status='VERIFIED';});}],
+ ['closure-false-auto-delete',d=>{d.migrationFrontier.closureReticulum.automaticDeleteAuthorized=true;}],
+ ['closure-gate-omission',d=>{d.migrationFrontier.closureReticulum.gates.pop();}],
+ ['closure-false-empty-v3',d=>{d.migrationFrontier.closureReticulum.trackedV3=0;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
