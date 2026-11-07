@@ -18,6 +18,20 @@ if(!sibling||!helper)throw new Error('K0 source-bound Python sibling/local-impor
 const absoluteCss=base.dependencyTopology.edges.find(e=>e.from==='v3/public/ui/procedure-finetuning-2-3.js'&&
  e.to==='v3/public/procedure-finetuning-2-3.css'&&e.kind==='browser-absolute-url-candidate');
 if(!absoluteCss)throw new Error('K0 source-bound absolute browser URL reference not observed');
+const htmlEntrypoint=base.dependencyTopology.edges.find(e=>e.from==='v3/public/index.html'&&
+ e.to==='v3/public/app.js'&&e.kind==='browser-html-entry-candidate');
+const browserFinetuning=base.migrationFrontier.nodes.find(x=>x.path==='v3/public/ui/procedure-finetuning-2-3.js');
+const browserCss=base.migrationFrontier.nodes.find(x=>x.path==='v3/public/procedure-finetuning-2-3.css');
+if(!htmlEntrypoint||browserFinetuning?.observedUse!=='BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE'||
+   browserFinetuning.useEvidence?.browserEntryHops!==3||
+   browserCss?.observedUse!=='BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE'||
+   browserCss.useEvidence?.browserEntryHops!==4)
+ throw new Error('K0 active browser chain index > app > active > finetuning > CSS absent');
+const activeBrowserSource=readFileSync(join(root,'v3/public/ui/active-experience.js'),'utf8');
+if(!activeBrowserSource.includes("from './procedure-finetuning-2-3.js'")||
+   !activeBrowserSource.includes('installProcedureFinetuning23,installBindings')||
+   !activeBrowserSource.includes('for(const install of INSTALL_ORDER)install();'))
+ throw new Error('current browser installer chain witness absent');
 for(const name of ['v3/browser-v2-grc-check.py','v3/runtime/demo-suite-2-2-fixture.mjs'])
  if(!base.dependencyTopology.dynamic.includes(name))
   throw new Error('K0 dynamic consumer risk not observed: '+name);
@@ -118,6 +132,9 @@ const mutations=[
  ['closure-false-auto-delete',d=>{d.migrationFrontier.closureReticulum.automaticDeleteAuthorized=true;}],
  ['closure-gate-omission',d=>{d.migrationFrontier.closureReticulum.gates.pop();}],
  ['closure-false-empty-v3',d=>{d.migrationFrontier.closureReticulum.trackedV3=0;}],
+ ['browser-html-entry-erased',d=>{const i=d.dependencyTopology.edges.findIndex(e=>e.from===htmlEntrypoint.from&&e.to===htmlEntrypoint.to&&e.kind===htmlEntrypoint.kind);if(i<0)throw Error('HTML entry preimage missing');d.dependencyTopology.edges.splice(i,1);}],
+ ['browser-finetuning-false-unloaded',d=>{d.migrationFrontier.nodes.find(x=>x.path===browserFinetuning.path).observedUse='HTTP_SERVABLE_ASSET_CANDIDATE';}],
+ ['browser-css-false-unloaded',d=>{d.migrationFrontier.nodes.find(x=>x.path===browserCss.path).useEvidence.browserEntryLiteralPath=false;}],
 ];
 const results=[];
 for(const [name,mutate] of mutations){const copy=clone();mutate(copy);try{verifyInventory(copy,base);results.push({name,killed:false});}catch(error){results.push({name,killed:true,reason:String(error.message).slice(0,140)});}}
@@ -132,7 +149,10 @@ const originals=[
  'v3/server.mjs',
  'v3/public/index.html',
  'v3/public/ui/procedure-finetuning-2-3.js',
- 'v3/public/procedure-finetuning-2-3.css'
+ 'v3/public/procedure-finetuning-2-3.css',
+ 'v3/public/app.js',
+ 'v3/public/styles.css',
+ 'v3/public/ui/active-experience.js'
 ];
 const scratch=mkdtempSync(join(tmpdir(),'ictc-k0-physical-'));
 const physical=[];
@@ -155,6 +175,13 @@ try{
   {name:'browser-absolute-css-link-corruption',path:originals[7],search:"link.href='/procedure-finetuning-2-3.css';",replace:"link.href='/missing-procedure-style.css';",
    killed:g=>!g.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')&&
     g.unresolved.some(e=>e.from===originals[7]&&e.kind==='browser-absolute-url-candidate')},
+  {name:'html-entry-script-target-drift',path:originals[6],search:'src="app.js"',replace:'src="missing-app.js"',
+   killed:g=>!g.edges.some(e=>e.from===originals[6]&&e.to===originals[9]&&e.kind==='browser-html-entry-candidate')&&
+    g.unresolved.some(e=>e.from===originals[6]&&e.kind==='browser-html-entry-candidate')},
+  {name:'active-finetuning-import-erased',path:originals[11],search:"'./procedure-finetuning-2-3.js'",
+   replace:"'./missing-procedure-finetuning.js'",
+   killed:g=>!g.edges.some(e=>e.from===originals[11]&&e.to===originals[7]&&e.kind==='browser-asset-or-literal')&&
+    g.unresolved.some(e=>e.from===originals[11]&&e.kind==='browser-asset-or-literal')},
   {name:'http-static-root-rebound',path:originals[5],search:"const publicRoot=path.join(here,'public');",
    replace:"const publicRoot=path.join(here,'public-assets');",
    killed:g=>g.httpStaticCandidateCount===0&&!g.edges.some(e=>e.kind==='http-static-route-candidate')}
@@ -164,7 +191,10 @@ try{
     !before.edges.some(e=>e.from===originals[2]&&e.to===originals[3])||
     !before.dynamic.includes(originals[4])||
     !before.edges.some(e=>e.from===originals[7]&&e.to===originals[8]&&e.kind==='browser-absolute-url-candidate')||
-    before.httpStaticCandidateCount!==3)
+    !before.edges.some(e=>e.from===originals[6]&&e.to===originals[9]&&e.kind==='browser-html-entry-candidate')||
+    !before.edges.some(e=>e.from===originals[9]&&e.to===originals[11]&&e.kind==='browser-asset-or-literal')||
+    !before.edges.some(e=>e.from===originals[11]&&e.to===originals[7]&&e.kind==='browser-asset-or-literal')||
+    before.httpStaticCandidateCount!==6)
   throw new Error('K0 physical-preimage witness absent');
  for(let cycle=0;cycle<10;cycle++)for(const mutation of mutations){
   const original=records.find(r=>r.path===mutation.path).body;
