@@ -42,7 +42,7 @@ jobs:
           node --check v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
           python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
           python -m py_compile v3/browser-s4-a1-worklist-authority.py
-          python -m py_compile v3/browser-regulatory-surface.py
+          python -m py_compile tests/browser/browser-regulatory-surface.py
           node --check v3/regulatory-surface-contract-check.mjs
           node --check v3/regulatory-surface-saturation-10m.mjs
       - name: A6-UX4 semantic source contract
@@ -181,7 +181,7 @@ jobs:
         shell: bash
         run: |
           rm -f artifacts/browser-regulatory-surface.json
-          python -u v3/browser-regulatory-surface.py
+          python -u tests/browser/browser-regulatory-surface.py
       - name: Publish regulatory audit browser success
         if: steps.regulatory_browser.outcome == 'success'
         shell: bash
@@ -192,7 +192,7 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
             -f state=success -f context='ictc/regulatory-audit-browser' \
             -f description='645-unit contract + explicit onboarding + regulatory desktop/mobile green' \
-            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-regulatory-surface.py" >/dev/null || true
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-regulatory-surface.py" >/dev/null || true
       - name: Regulatory audit browser diagnostic
         if: steps.regulatory_browser.outcome == 'failure'
         shell: bash
@@ -203,7 +203,7 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
             -f state=failure -f context='ictc/regulatory-audit-browser' \
             -f description='exact-head onboarding/regulatory browser contract failed' \
-            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-regulatory-surface.py" >/dev/null || true
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-regulatory-surface.py" >/dev/null || true
           cat artifacts/browser-regulatory-surface.json || true
           exit 1
       - name: Parse A6-UX4 browser failure

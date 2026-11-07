@@ -156,7 +156,7 @@
         "blocking": false
       },
       {
-        "pattern": "^v3/demo/demo-suite-2-2-fixture-",
+        "pattern": "^(?:v3/demo/|tests/fixtures/demo-suite-2-2/)demo-suite-2-2-fixture-",
         "classification": "migration-only",
         "blocking": false
       },

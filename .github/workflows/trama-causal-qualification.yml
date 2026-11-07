@@ -25,7 +25,9 @@ jobs:
           node-version: '22.16.0'
       - name: Contract check
         run: node v3/trama-causal-qualification-check.mjs
-      - name: C1-3d multi-preimage verifier relocation, command parity and 44 physical falsifiers
+      - name: K1/K2 source-preimage, Git tree and fixture positive controls
+        run: node scripts/test-boundary-migration-check.mjs
+      - name: C1-3d K1/K2 physical falsification and command equivalence
         run: node scripts/test-boundary-migration-check.mjs --falsify
       - name: Campaign 01 · 100k + 10k no-novelty
         run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000104730
