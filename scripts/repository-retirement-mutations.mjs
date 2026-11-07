@@ -49,7 +49,7 @@ if(livenessCasesArg){
  const hist=new Set(['lineage-only','deprecated-test','migration-only','retirement-candidate']);
  const profiles=source.nodes.map(x=>({
   runtimeRoot:x.useEvidence.runtimeRoot,runtimePath:x.useEvidence.runtimeLiteralPath,
-  httpMounted:x.useEvidence.httpStaticMount,ciPath:x.useEvidence.ciOrPackagePath,
+  browserPath:x.useEvidence.browserEntryLiteralPath,httpMounted:x.useEvidence.httpStaticMount,ciPath:x.useEvidence.ciOrPackagePath,
   sourceConsumer:x.useEvidence.otherSourceConsumers>0,
   historicalPurpose:hist.has(x.useEvidence.historicalPurpose)
  }));
@@ -57,18 +57,19 @@ if(livenessCasesArg){
   throw new Error('observed file liveness model not reproducible');
  let semanticSeed=0x1c7c2026;
  const step=()=>{semanticSeed^=semanticSeed<<13;semanticSeed^=semanticSeed>>>17;semanticSeed^=semanticSeed<<5;return semanticSeed>>>0;};
- const axes=['runtimeRoot','runtimePath','httpMounted','ciPath','sourceConsumer','historicalPurpose'];
- const attacks=['strip-runtime-root','forge-runtime-root','erase-static-import','forge-static-import',
-  'reroute-http-static','forge-http-static','erase-ci-consumer','forge-ci-consumer',
-  'erase-code-reader','forge-code-reader','historical-laundering','purpose-stale',
-  'replace-all-witnesses','false-runtime-revival','mixed-evidence-drift','independent-channel-loss'];
+ const axes=['runtimeRoot','runtimePath','browserPath','httpMounted','ciPath','sourceConsumer','historicalPurpose'];
+ const attacks=['strip-runtime-root','forge-runtime-root','erase-runtime-import','forge-runtime-import',
+  'erase-browser-entry-import','forge-browser-entry-import','reroute-http-static','forge-http-static',
+  'erase-ci-consumer','forge-ci-consumer','erase-code-reader','forge-code-reader',
+  'historical-laundering','purpose-stale','mixed-evidence-drift','independent-channel-loss'];
  const totals=Object.fromEntries(attacks.map(x=>[x,0]));
  const observedSignatures=new Set();let lastNovel=-1,detectable=0,masked=0,oracleErrors=0,illegal=0;
- // Independent bitmask oracle for all 2^6 profiles, with explicit precedence.
+ // Independent bitmask oracle for all 2^7 profiles, with explicit precedence.
  const oracle=f=>{
-  const bits=(f.runtimeRoot?1:0)|(f.runtimePath?2:0)|(f.httpMounted?4:0)|
-   (f.ciPath?8:0)|(f.sourceConsumer?16:0)|(f.historicalPurpose?32:0);
-  return bits===0?USE_CLASSES[6]:USE_CLASSES[Math.log2(bits&-bits)];
+  const bits=(f.runtimeRoot?1:0)|(f.runtimePath?2:0)|(f.browserPath?4:0)|
+   (f.httpMounted?8:0)|(f.ciPath?16:0)|(f.sourceConsumer?32:0)|
+   (f.historicalPurpose?64:0);
+  return bits===0?USE_CLASSES[7]:USE_CLASSES[Math.log2(bits&-bits)];
  };
  for(let i=0;i<livenessCases;i++){
   const base=profiles[step()%profiles.length],facts={...base},attack=step()%attacks.length;
@@ -77,18 +78,18 @@ if(livenessCasesArg){
    case 1:facts.runtimeRoot=true;break;
    case 2:facts.runtimePath=false;break;
    case 3:facts.runtimePath=true;break;
-   case 4:facts.httpMounted=false;break;
-   case 5:facts.httpMounted=true;break;
-   case 6:facts.ciPath=false;break;
-   case 7:facts.ciPath=true;break;
-   case 8:facts.sourceConsumer=false;break;
-   case 9:facts.sourceConsumer=true;break;
-   case 10:facts.historicalPurpose=false;break;
-   case 11:facts.historicalPurpose=true;break;
-   case 12:for(const k of axes)facts[k]=false;break;
-   case 13:facts.runtimeRoot=true;facts.historicalPurpose=false;break;
+   case 4:facts.browserPath=false;break;
+   case 5:facts.browserPath=true;break;
+   case 6:facts.httpMounted=false;break;
+   case 7:facts.httpMounted=true;break;
+   case 8:facts.ciPath=false;break;
+   case 9:facts.ciPath=true;break;
+   case 10:facts.sourceConsumer=false;break;
+   case 11:facts.sourceConsumer=true;break;
+   case 12:facts.historicalPurpose=false;break;
+   case 13:facts.historicalPurpose=true;break;
    case 14:{const mask=step();for(let j=0;j<axes.length;j++)if((mask>>>j)&1)facts[axes[j]]=!facts[axes[j]];break;}
-   case 15:facts.runtimePath=false;facts.ciPath=false;facts.httpMounted=false;break;
+   case 15:facts.browserPath=false;facts.ciPath=false;facts.httpMounted=false;break;
   }
   const actual=qualifyObservedUse(facts),expected=oracle(facts);
   totals[attacks[attack]]++;
@@ -98,8 +99,8 @@ if(livenessCasesArg){
   const signature=attack+'|'+actual+'|'+expected;
   if(!observedSignatures.has(signature)){observedSignatures.add(signature);lastNovel=i;}
  }
- // Exhaustive bounded proof of the six-source-signal decision vocabulary.
- // All 2^6 profiles remain distinct diagnostics; class-only compression would discard witnesses.
+ // Exhaustive bounded proof of the seven-source-signal decision vocabulary.
+ // All 2^7 profiles remain distinct diagnostics; class-only compression would discard witnesses.
  const finiteProfiles=2**axes.length,finiteUses=new Set();
  let finiteErrors=0;
  for(let mask=0;mask<finiteProfiles;mask++){
@@ -116,7 +117,7 @@ if(livenessCasesArg){
  const fixedWidthDiagnosticBits=Math.ceil(Math.log2(finiteProfiles));
  const fixedWidthClassBits=Math.ceil(Math.log2(finiteUses.size));
  const axisMinimal=axisCounterexamples.every(x=>x.changesUseClass)&&
-  fixedWidthDiagnosticBits===6&&fixedWidthClassBits===3;
+  fixedWidthDiagnosticBits===7&&fixedWidthClassBits===3;
  const model={schema:'ictc-v3-liveness-attack-model/v1',seed:'0x1c7c2026',
   gitTrackedV3:profiles.length,cases:livenessCases,attackFamilies:attacks.length,
   detectedSemanticClassChanges:detectable,maskedByHigherPriorityEvidence:masked,oracleErrors,illegalClearances:illegal,
@@ -125,7 +126,7 @@ if(livenessCasesArg){
   attackDistribution:totals,
   finiteMinimality:{profiles:finiteProfiles,allClassifications:finiteUses.size,errors:finiteErrors,
    diagnosticBits:fixedWidthDiagnosticBits,classOnlyBits:fixedWidthClassBits,
-   axisCounterexamples,claimBoundary:'6-bit bound is only for a 6-boolean diagnostic profile; class-only output loses evidence.'},
+   axisCounterexamples,claimBoundary:'7-bit bound is only for a 7-boolean diagnostic profile; class-only output loses evidence.'},
   modelOnly:true,sourceMutantsPhysicallyExecuted:0,
   claimBoundary:'Actual Git-derived v3 source profiles under 16 seeded evidence mutations; no claim of 10M physical edits, runtime executions, independent consumer closure or safe retirement.'};
  if(oracleErrors||illegal||!detectable||!masked||finiteErrors||!axisMinimal||
