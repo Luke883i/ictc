@@ -228,6 +228,74 @@ function falsifyK2BlobFixtures(){
 }
 const k2BlobPhysicalMutantsKilled=falsifyK2BlobFixtures();
 
+/** K2: 12 immutable source chunks loaded by the actual runtime DEMO 2.2 owner. */
+const K2_DEMO_PARTS=Object.freeze(Array.from({length:12},(_,i)=>String(i+1).padStart(2,'0')));
+const K2_DEMO_BASE='v3/demo/',K2_DEMO_TARGET='tests/fixtures/demo-suite-2-2/';
+const K2_DEMO_OLD_SEGMENT='../demo/demo-suite-2-2-fixture-';
+const K2_DEMO_NEW_SEGMENT='../../tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-';
+function verifyK2DemoFixtureBoundary(at=root){
+ const result=[],fragments=[];
+ for(const part of K2_DEMO_PARTS){
+  const name='demo-suite-2-2-fixture-'+part+'.b64',before=K2_DEMO_BASE+name,after=K2_DEMO_TARGET+name;
+  const original=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':'+before],{cwd:root,maxBuffer:1024*1024});
+  const now=readFileSync(join(at,after));
+  assert.deepEqual(now,original,'K2 DEMO chunk drift: '+after);
+  assert.equal(existsSync(join(at,before)),false,'K2 DEMO old fixture path resurrected: '+before);
+  result.push({part,oldPath:before,newPath:after,sha256:digest(now),bytes:now.length,sourceByteParity:true});
+  fragments.push(now.toString('utf8'));
+ }
+ const oldLoader=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':v3/runtime/demo-suite-2-2-fixture.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
+ const oldWorkflow=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':.github/workflows/demo-suite-2-2-runtime.yml'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
+ assert.equal(oldLoader.split(K2_DEMO_OLD_SEGMENT).length,2,'K2 DEMO runtime loader preimage not unique');
+ const oldWorkflowToken='v3/demo/demo-suite-2-2-fixture-*.b64';
+ const newWorkflowToken='tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-*.b64';
+ assert.equal(oldWorkflow.split(oldWorkflowToken).length,2,'K2 DEMO CI preimage not unique');
+ const actualLoader=readFileSync(join(at,'v3/runtime/demo-suite-2-2-fixture.mjs'),'utf8');
+ const actualWorkflow=readFileSync(join(at,'.github/workflows/demo-suite-2-2-runtime.yml'),'utf8');
+ assert.equal(actualLoader,oldLoader.replace(K2_DEMO_OLD_SEGMENT,K2_DEMO_NEW_SEGMENT),'K2 DEMO loader semantic drift');
+ assert.equal(actualWorkflow,oldWorkflow.replace(oldWorkflowToken,newWorkflowToken),'K2 DEMO CI consumer drift');
+ const combined=fragments.join('').replace(/\s+/g,'');
+ const expectedSha=/encodedSha256:'([0-9a-f]{64})'/.exec(actualLoader)?.[1];
+ assert.ok(expectedSha,'K2 DEMO canonical runtime SHA missing');
+ assert.equal(digest(combined),expectedSha,'K2 DEMO combined encoded SHA drift');
+ return result;
+}
+const k2DemoFixtures=verifyK2DemoFixtureBoundary();
+function falsifyK2DemoFixtureBoundary(){
+ const scratch=mkdtempSync(join(tmpdir(),'ictc-k2-demo-'));
+ let killed=0;
+ try{
+  for(const part of K2_DEMO_PARTS){
+   const file='demo-suite-2-2-fixture-'+part+'.b64',rel=K2_DEMO_TARGET+file,p=join(scratch,rel);
+   mkdirSync(dirname(p),{recursive:true});writeFileSync(p,readFileSync(join(root,rel)));
+  }
+  for(const rel of ['v3/runtime/demo-suite-2-2-fixture.mjs','.github/workflows/demo-suite-2-2-runtime.yml']){
+   const p=join(scratch,rel);mkdirSync(dirname(p),{recursive:true});writeFileSync(p,readFileSync(join(root,rel)));
+  }
+  assert.equal(verifyK2DemoFixtureBoundary(scratch).length,12,'K2 DEMO scratch baseline failed');
+  const runtimePath=join(scratch,'v3/runtime/demo-suite-2-2-fixture.mjs');
+  const run=()=>spawnSync(process.execPath,[runtimePath],{cwd:scratch,encoding:'utf8',timeout:15000});
+  const baseline=run();assert.equal(baseline.status,0,'K2 DEMO source-bound loader failed '+baseline.stderr);
+  const source=join(scratch,K2_DEMO_TARGET+'demo-suite-2-2-fixture-01.b64');
+  const original=readFileSync(source),mutant=Buffer.from(original);mutant[0]^=1;writeFileSync(source,mutant);
+  if(run().status!==0)killed++;
+  writeFileSync(source,original);
+  assert.equal(run().status,0,'K2 DEMO loader did not recover after blob restoration');
+  const validLoader=readFileSync(runtimePath,'utf8');
+  writeFileSync(runtimePath,validLoader.replace(K2_DEMO_NEW_SEGMENT,'../../tests/fixtures/demo-suite-2-2/absent-'));
+  if(run().status!==0)killed++;
+  writeFileSync(runtimePath,validLoader);
+  assert.equal(run().status,0,'K2 DEMO loader did not recover after URL restoration');
+  const resurrected=join(scratch,K2_DEMO_BASE+'demo-suite-2-2-fixture-01.b64');
+  mkdirSync(dirname(resurrected),{recursive:true});writeFileSync(resurrected,original);
+  try{verifyK2DemoFixtureBoundary(scratch);}catch(e){if(/old fixture path resurrected/.test(String(e.message)))killed++;else throw e;}
+ }finally{rmSync(scratch,{recursive:true,force:true});}
+ assert.equal(killed,3,'K2 DEMO physically executed mutants escaped');
+ return killed;
+}
+const k2DemoPhysicalMutantsKilled=falsifyK2DemoFixtureBoundary();
+
+
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
  return source.replace(/(\bfrom\s*['"])\.\//g,'$1../')
@@ -420,7 +488,7 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
  evidenceClass:'bounded-source-tree-and-disposable-counterfactual',...recorded,cards,
  migratedPhysicalCanaries:canaryEvidence,migratedUiCheckCanaries:uiRelocationEvidence,
  migratedEnterpriseBrowserCanaries:enterpriseBrowserEvidence,
- enterpriseBrowserGitCensus,k2BlobFixtures,k2BlobPhysicalMutantsKilled,
+ enterpriseBrowserGitCensus,k2BlobFixtures,k2BlobPhysicalMutantsKilled,k2DemoFixtures,k2DemoPhysicalMutantsKilled,
  negative,model,safeToDeleteAdapters:false,fullC13dClosed:false,
  remaining:{topLevelV3FilesBefore:enterpriseBrowserGitCensus.oldTopLevel,topLevelV3FilesAfter:enterpriseBrowserGitCensus.newTopLevel,
    totalV3VerificationLikeCandidatesBefore:447,
