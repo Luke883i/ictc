@@ -163,6 +163,7 @@ function verifyEnterpriseBrowserTreeDelta(){
    retiredPaths:retired,unexpectedIntroductions:introduced,externalConsumerAbsence:'UNKNOWN'});
 }
 const enterpriseBrowserGitCensus=verifyEnterpriseBrowserTreeDelta();
+if(process.argv.includes('--diagnose=browser'))process.exit(0);
 
 
 
@@ -227,6 +228,7 @@ function falsifyK2BlobFixtures(){
  return killed;
 }
 const k2BlobPhysicalMutantsKilled=falsifyK2BlobFixtures();
+if(process.argv.includes('--diagnose=blob'))process.exit(0);
 
 /** K2: 12 immutable source chunks loaded by the actual runtime DEMO 2.2 owner. */
 const K2_DEMO_PARTS=Object.freeze(Array.from({length:12},(_,i)=>String(i+1).padStart(2,'0')));
@@ -294,6 +296,7 @@ function falsifyK2DemoFixtureBoundary(){
  return killed;
 }
 const k2DemoPhysicalMutantsKilled=falsifyK2DemoFixtureBoundary();
+if(process.argv.includes('--diagnose=demo'))process.exit(0);
 
 
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
