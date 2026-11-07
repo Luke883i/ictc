@@ -2,7 +2,7 @@
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {root,census} from './repository-inventory.mjs';
-import {qualifyObservedUse,USE_CLASSES,assessMigrationGateVector,MIGRATION_CLOSURE_GATES} from './repository-migration-frontier.mjs';
+import {qualifyObservedUse,USE_CLASSES,assessMigrationGateVector,migrationGateProfileCandidate,MIGRATION_CLOSURE_GATES} from './repository-migration-frontier.mjs';
 
 const OBLIGATIONS=Object.freeze(['manifestLifecycle','ownerApproval','staticImports','dynamicImports','publicUrls','configsAndCi','fixturesAndTests','runtimeReachability','prHistoryUniqueness','externalConsumerReview','semanticPreservation','isolatedRemovalRollback']);
 export const deletionDecision=(facts)=>OBLIGATIONS.every(k=>facts[k]===true)?'REVIEWABLE_REMOVE_CANDIDATE':'HOLD_UNKNOWN';
@@ -159,8 +159,8 @@ if(closureArg){
   vector[gate]=(rand()&1)?0:2;
   if(family>=12){vector[[8,6,9,2][family-12]]=(rand()&1)?0:2;}
   else if((rand()&7)===0){vector[rand()%12]=(rand()&1)?0:2;}
-  const result=assessMigrationGateVector(vector),oracle=vector.every(x=>x===1);
-  if(result.candidate===oracle&&!result.automaticDeleteAuthorized&&!oracle)killed++;else escaped++;
+  const candidate=migrationGateProfileCandidate(vector),oracle=vector.every(x=>x===1);
+  if(candidate===oracle&&!candidate)killed++;else escaped++;
   if(vector.includes(2))withUnknown++;
   byFamily[family]++;
   const signature=family+'|'+vector.join('');
@@ -171,8 +171,8 @@ if(closureArg){
   let n=idx;const v=Array(12);
   for(let k=0;k<12;k++){v[k]=n%3;n=Math.floor(n/3);}
   const result=assessMigrationGateVector(v);
-  if(result.candidate!==v.every(x=>x===1)||result.automaticMoveAuthorized||
-   result.automaticDeleteAuthorized)exhaustiveErrors++;
+  if(result.candidate!==v.every(x=>x===1)||migrationGateProfileCandidate(v)!==result.candidate||
+   result.automaticMoveAuthorized||result.automaticDeleteAuthorized)exhaustiveErrors++;
   if(result.candidate)candidates++;
  }
  const axisCounterexamples=MIGRATION_CLOSURE_GATES.map((g,i)=>{
