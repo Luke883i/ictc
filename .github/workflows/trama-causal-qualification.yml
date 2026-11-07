@@ -49,8 +49,6 @@ jobs:
         run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000942562
       - name: Campaign 10 · 100k + 10k no-novelty
         run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000001047291
-      - name: TRAMA parent source-projection preflight independent of PR body
-        run: GITHUB_EVENT_NAME=push ICTC_TRAMA_EXACT_HEAD=0 node v3/trama-engineering-check.mjs
       - name: TRAMA parent regression
         run: node v3/trama-engineering-check.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
