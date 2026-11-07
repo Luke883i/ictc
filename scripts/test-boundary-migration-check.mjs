@@ -163,7 +163,7 @@ function verifyEnterpriseBrowserTreeDelta(){
    retiredPaths:retired,unexpectedIntroductions:introduced,externalConsumerAbsence:'UNKNOWN'});
 }
 const enterpriseBrowserGitCensus=verifyEnterpriseBrowserTreeDelta();
-if(process.argv.includes('--diagnose=browser'))process.exit(0);
+
 
 
 
@@ -228,7 +228,7 @@ function falsifyK2BlobFixtures(){
  return killed;
 }
 const k2BlobPhysicalMutantsKilled=falsifyK2BlobFixtures();
-if(process.argv.includes('--diagnose=blob'))process.exit(0);
+
 
 /** K2: 12 immutable source chunks loaded by the actual runtime DEMO 2.2 owner. */
 const K2_DEMO_PARTS=Object.freeze(Array.from({length:12},(_,i)=>String(i+1).padStart(2,'0')));
@@ -263,6 +263,17 @@ function verifyK2DemoFixtureBoundary(at=root){
  return result;
 }
 const k2DemoFixtures=verifyK2DemoFixtureBoundary();
+// The existing TRAMA legacy authority must recognize all relocated chunks.
+// Never edit the formerly migrated immutable v3/tests/trama-reconcile-check.mjs
+// merely to add a new regression: the C1-3d preimage oracle owns its parity.
+const k2Trama=JSON.parse(readFileSync(join(root,'v3/trama-reconcile-contract.json'),'utf8'));
+const k2LegacyRules=k2Trama.legacy.rules.map(row=>({...row,match:new RegExp(row.pattern,'i')}));
+for(const row of k2DemoFixtures){
+ const rule=k2LegacyRules.find(item=>item.match.test(row.newPath));
+ assert.equal(rule?.classification,'migration-only','K2 DEMO TRAMA classification drift: '+row.newPath);
+ assert.equal(rule?.blocking,false,'K2 DEMO incorrectly blocks under TRAMA: '+row.newPath);
+}
+
 function falsifyK2DemoFixtureBoundary(){
  const scratch=mkdtempSync(join(tmpdir(),'ictc-k2-demo-'));
  let killed=0;
@@ -296,7 +307,7 @@ function falsifyK2DemoFixtureBoundary(){
  return killed;
 }
 const k2DemoPhysicalMutantsKilled=falsifyK2DemoFixtureBoundary();
-if(process.argv.includes('--diagnose=demo'))process.exit(0);
+
 
 
 const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');

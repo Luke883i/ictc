@@ -25,12 +25,6 @@ jobs:
           node-version: '22.16.0'
       - name: Contract check
         run: node v3/trama-causal-qualification-check.mjs
-      - name: Diagnostic preimage · K1 browser parity
-        run: node scripts/test-boundary-migration-check.mjs --diagnose=browser
-      - name: Diagnostic preimage · K2 synthetic blob parity
-        run: node scripts/test-boundary-migration-check.mjs --diagnose=blob
-      - name: Diagnostic preimage · K2 DEMO dynamic loader parity
-        run: node scripts/test-boundary-migration-check.mjs --diagnose=demo
       - name: K1/K2 source-preimage, Git tree and fixture positive controls
         run: node scripts/test-boundary-migration-check.mjs
       - name: C1-3d K1/K2 physical falsification and command equivalence
