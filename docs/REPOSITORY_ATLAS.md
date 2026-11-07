@@ -136,7 +136,7 @@ L'inventario già canonico `npm run repo:inventory` produce per **ogni file trac
 
 ### K1 · R3 — tre browser indipendenti (candidate, non DoD CI)
 
-Tre verificatori senza import del helper Python storico (regulatory surface, business-surface 2.7 e admin-truth S4-A4) sono stati trasferiti in `tests/browser/` senza wrapper né alias: i byte restano identici alla preimage Git `02236f4304adb4f817d4ed1e1e8e9eeaf4159c3a` salvo la singola correzione della radice da `parents[1]` a `parents[2]`. I consumer dei tre workflow e il contratto di capacità E2 sono stati aggiornati al nuovo path. Il verificatore esistente `scripts/test-boundary-migration-check.mjs` è esteso a quindici migrati, con veto a source drift, consumer vecchi e resurrezione dei path precedenti. Mancano ancora prova Chromium esatta e dieci cicli CI locali: la coorte resta da accettare, e la migrazione K2/K3/K4 non è implicita.
+Tre verificatori senza import del helper Python storico (regulatory surface, business-surface 2.7 e admin-truth S4-A4) sono stati trasferiti in `tests/browser/` senza wrapper né alias: i byte restano identici alla preimage Git immutabile dichiarata dal verificatore Git-preimage salvo la singola correzione della radice da `parents[1]` a `parents[2]`. I consumer dei tre workflow e il contratto di capacità E2 sono stati aggiornati al nuovo path. Il verificatore esistente `scripts/test-boundary-migration-check.mjs` è esteso a quindici migrati, con veto a source drift, consumer vecchi e resurrezione dei path precedenti. Mancano ancora prova Chromium esatta e dieci cicli CI locali: la coorte resta da accettare, e la migrazione K2/K3/K4 non è implicita.
 
 ### K2 · R3 — fixture sintetiche del blob audit
 
