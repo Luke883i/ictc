@@ -24,7 +24,7 @@ for (const gate of manifest.localGates) {
 }
 assert.ok(manifest.externalBlockers.length >= 5);
 assert.match(manifest.claimBoundary, /never establishes enterprise-ready/i);
-assert.ok(workflow.includes('actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'));
+assert.equal(workflow.split('actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6').length-1,2,'build and SBOM attestation must each bind the canonical pinned action');
 assert.ok(workflow.includes('actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6'));
 assert.ok(workflow.includes('gh attestation verify'));
 console.log(`enterprise-gate-manifest: ok (${manifest.localGates.length} local gates, posture=${manifest.posture})`);
