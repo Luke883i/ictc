@@ -197,3 +197,55 @@ L'ordine cognitivo di prima superficie è `identity -> primary work/decision -> 
 **TRAMA E2E** è il nome canonico semplice del controllo multi-astrazione. Non introduce una nuova authority: riusa gli otto campaign layer di `v3/trama-reconcile-contract.json` da `L0-FERRO` a `L7-ENTERPRISE` e le 24 famiglie metodo di `v3/trama-engineering-contract.json`, compresse nei cluster `UNDERSTAND / EXECUTE / PROTECT / EXPERIENCE / CONTROL / FALSIFY`.
 
 Ogni PR dichiara i layer toccati e un witness di allineamento con i layer adiacenti. Il gate TRAMA gira su **ogni pull request**, lega base/head Git, valida il body concreto, verifica purpose admission dei nuovi file e impedisce `NO_SEMANTIC_DELTA` quando cambia un input semanticamente tracciato. Il repository-purpose census resta globale: si elimina solo ciò che è qualificato per il ritiro e coperto da deletion oracle; non si cancella per età o naming.
+
+
+## LEVEL-ICTC/1 — minimal contract for transferable evidence-driven development
+
+**Status: method-transfer candidate (SOURCE), not an ICTC implementation, CORA
+installation or runtime/product endorsement.** This paragraph consumes the
+existing ICTC owners. No new authority, CI workflow, service, procedure, source
+registry, state machine or decision maker is introduced.
+
+1. **Human intention (A0):** a bounded product requirement specifies actors,
+   object, expected outcome, exclusions, effects and permissions. Its
+   classification cannot change because an AI proposal sounds credible.
+   Use the existing [intent-convergence DoD](PROCEDURE_INTENT_CONVERGENCE_DOD_2026-08-18.md)
+   and [authority matrix](authority-matrix.yaml), not a new owner.
+2. **Backward acceptance graph:** a top-level outcome requires all named
+   leaves: correct owner/classification, authorized state transition,
+   persistence/readback, negative oracle and independent human decision
+   where applicable. Missing leaves remain BLOCKED, never compensated by
+   model coverage or a favorable semantic score.
+3. **One change unit:** observe actual original Git BASE/TREE, enumerate
+   consumers and propose a reversible slice with real source change,
+   tests, rollback and PR. Do not alter a protected workflow merely to
+   obtain a convenient new gate. Reuse existing Node/CI owners.
+4. **Counterexamples:** distinguish `v3/saturation.mjs` (136 finite
+   scenarios / 12 *preassigned* novelty primitives) from
+   `v3/release-readiness-e2-product-mutants.mjs` (real file changes in
+   an isolated copy and a real E2 oracle). A survivor reopens the
+   relevant leaf. The models cannot substitute for runtime results.
+5. **Adaptive continuation:** a coding agent proposes the next unresolved
+   leaf; CORA's existing portable ZIP can carry a read-only source
+   dossier. Total N is unknown until the actual rounds occur. A changed
+   contract requires review; repeated source/evidence-identical rounds
+   call for replanning. A conversational "done" is not an execution receipt.
+6. **Exact-revision delivery:** bind final candidate and test claims to
+   the same real PR HEAD SHA and known build/test environment. New
+   commits invalidate prior final-HEAD conclusions; postmerge requires
+   new-main readback. E3-HUMAN/E4-DEPLOY remain separate.
+
+**Adversarial conditions:** forged `sourceClass`, skipped RN-01
+classification, second owner, forged reviewer, wrong-SHA CI receipt,
+surviving physical mutant or changed protected original must refuse
+its dependent conclusion. Product/review remain `BLOCKED_EXTERNAL`
+without original witnesses.
+
+**Why the separate game demo matters:** CORA's proposed LEVEL experiment
+applies contract→slice→test→evidence→PR to an original web platform game
+in a new repo. ICTC contributes *documented methodological analogies*;
+it does not install CORA, adopt the game or prove shared execution.
+
+[Cross-project method](https://github.com/Luke883i/cora/blob/docs/readme-product-multichannel-pr47/docs/CONTINUOUS_DEVELOPMENT.md)
+is subordinate to [the original ICTC agent contract](../AGENTS.md).
+This is **documentation only**, not a migration, release or product gate.
