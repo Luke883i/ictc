@@ -135,7 +135,7 @@ def desktop(browser):
     page.on('request',track_write)
     PHASE='home-open'; page.goto(BASE+'/?view=home',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE='home-title'; expect(page.locator('#homeTitle')).to_have_text('Cosa richiede una decisione')
-    PHASE='home-single-narrative'; expect(page.locator('#homeComplianceOverview [data-home-case-first]')).to_have_count(1); assert page.locator('#homeComplianceOverview [data-home-case-first]').inner_text().strip()
+    PHASE='home-single-narrative'; expect(page.locator('#homeView .home-intro [data-home-case-first]')).to_have_count(1); assert page.locator('#homeView .home-intro [data-home-case-first]').inner_text().strip()
     PHASE='home-onboarding-first-run'; onboarding=page.locator('.service-nav [data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'; assert page.locator('#stableProfileMenu [data-onboarding-replay]').count()==0,'Replay utility must not coexist with first-run navigation'; onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','first-run-gate')
     for step in range(5):
         PHASE=f'home-onboarding-progress-{step+1}'
