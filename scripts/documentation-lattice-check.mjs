@@ -45,9 +45,12 @@ const currentOwnerDocs=[
  ['ASSURANCE_RISK',await read('docs/ASSURANCE_RISK_CONTAINMENT.md'),['src/lib/assurance-risk-model.mjs','tests/verification/assurance-risk-check.mjs','tests/verification/visual-grace-lexical-epistemic-check.mjs','tests/browser/browser-information-value.py']],
  ['DATA_AND_STORAGE',await read('docs/DATA_AND_STORAGE.md'),['src/lib/bootstrap-contract.mjs','src/store.mjs','src/sqlite-state-persistence.mjs','src/runtime-store.mjs','src/runtime/recovery.mjs']]
 ];
+// These seven guides must resolve real, current path literals, unlike bounded
+// archival narratives in the first five historic-compatible routing checks.
+const exactOperationalGuides=new Set(['ENDUSER_LANGUAGE','USER_JOURNEYS','DESIGN_SYSTEM','CONTRIBUTING','AS_IS_CONVERGENCE','ASSURANCE_RISK','DATA_AND_STORAGE']);
 for(const [owner,body,tokens] of currentOwnerDocs){
  for(const token of tokens){
-  if(!['ENDUSER_LANGUAGE','USER_JOURNEYS','DESIGN_SYSTEM','CONTRIBUTING','AS_IS_CONVERGENCE','ASSURANCE_RISK','DATA_AND_STORAGE'].includes(owner)){
+  if(!exactOperationalGuides.has(owner)){
    check(body.includes(token),'post274 current owner path missing: '+owner+' '+token);continue;
   }
   check(await exists(token),'post274 current route does not exist: '+owner+' '+token);
