@@ -12,7 +12,31 @@ const digest=v=>createHash('sha256').update(v).digest('hex');
 const declaredManifest=()=>JSON.parse(readFileSync(join(root,'docs/documentation-manifest.json'),'utf8'));
 const listTracked=()=>execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean).sort();
 
+// Explicit classification of remaining root and contract files after #275.
+// This is a derived inventory label, never an authority grant or deletion licence.
+export const RESIDUAL_FILE_CLASSES=Object.freeze({
+ '.editorconfig':['repository:editor-policy','repository-standard editor configuration','HOLD_CONSUMERS'],
+ '.env.example':['repository:environment-example','documented environment-variable sample; not a secrets file','HOLD_CONSUMERS'],
+ '.gitignore':['repository:git-exclusion-policy','Git ignore patterns; affects tracked/untracked boundary','HOLD_CONSUMERS'],
+ '.nvmrc':['repository:node-version-pin','Node toolchain compatibility pin','HOLD_CONSUMERS'],
+ 'LICENSE':['repository:license','canonical MIT licensing text, not legacy documentation','HOLD_CONSUMERS'],
+ 'LICENSE.md':['repository:license-pointer','retained human-readable licence pointer','HOLD_CONSUMERS'],
+ 'NOTICE.md':['repository:legal-notice','notices retained without automated deletion authority','HOLD_CONSUMERS'],
+ 'docs/authority-matrix.yaml':['repository:authority-map','existing owner declaration; no new authority','HOLD_CONSUMERS'],
+ 'docs/openapi.yaml':['software:api-contract','published API shape; not an independent runtime implementation','HOLD_CONSUMERS'],
+ 'docs/ui-wiring-manifest.json':['repository:legacy-ui-wiring-lineage','legacy lineage mapping; cannot define current composition','HOLD_REVIEW'],
+ 'ictc.sh':['repository:local-launcher','active shell launcher; direct execution and CLI compatibility','HOLD_CONSUMERS'],
+ 'package-lock.json':['repository:dependency-lock','npm reproducibility and supply-chain constraints','HOLD_CONSUMERS'],
+ 'package.json':['repository:package-entry','npm scripts and package contract; not an application SOT','HOLD_CONSUMERS']
+});
+export function residualFileClass(path){const row=RESIDUAL_FILE_CLASSES[path];
+ return row?{category:row[0],evidence:row[1],disposition:row[2]}:null;
+}
+export function retainedDocumentCohort(manifest=declaredManifest()){
+ return new Set(manifest.documents.filter(d=>d.retentionCohort==='post275-residual'&&d.authoritative===false).map(d=>d.path));
+}
 export function classifyFile(file,registered){
+  const special=residualFileClass(file);if(special)return special;
   const d=registered.get(file);
   if(d)return {category:`document:${d.lifecycle}`,evidence:'documentation-manifest',disposition:d.authoritative?'PROTECT_AUTHORITY':'PRESERVE_REGISTERED'};
   if(file.startsWith('docs/')&&/\.(md|rst|txt)$/.test(file))return {category:'document:unregistered',evidence:'path-only',disposition:'HOLD_REVIEW'};
@@ -222,9 +246,10 @@ export function census(){
  });
  const counts={};for(const item of entries)counts[item.category]=(counts[item.category]||0)+1;
  const unregisteredDocs=entries.filter(e=>e.category==='document:unregistered').map(e=>e.path);
+ const residualOther=entries.filter(e=>e.category==='repository:other').map(e=>e.path);
  const trackedSet=new Set(tracked);
  const missingManifest=[...registered.keys()].filter(p=>!trackedSet.has(p));
- const status={schemaVersion:2,source:'git ls-files + existing repositoryPurposeCensus + manifest + byte hashes',total:entries.length,classified:entries.length,counts,unregisteredDocsCount:unregisteredDocs.length,missingManifest,
+ const status={schemaVersion:2,source:'git ls-files + existing repositoryPurposeCensus + manifest + byte hashes',total:entries.length,classified:entries.length,counts,unregisteredDocsCount:unregisteredDocs.length,unclassifiedRootOrContracts:residualOther,missingManifest,
    canonicalPurposeCoverage:canonical.coverage,canonicalPurposeStates:canonical.byState,
    observedRetirementCandidates:canonical.retirementCandidates.map(x=>x.path),
    declaredSafeDeletes:0,automaticQuarantines:0,
@@ -270,6 +295,7 @@ export function verifyInventory(data,validatedBaseline=null){
      s.rootDirectFiles!==e.filter(x=>!x.path.includes('/')).length||s.directoryDisposition!=='NON_AUTHORITATIVE_HOLD_UNTIL_CONSUMER_AND_OWNER_PROOF')
     throw new Error('directory projection or retirement authorization drift');
 
+  if(s.unclassifiedRootOrContracts.length||s.unregisteredDocsCount)throw new Error('post275 unqualified root/contracts or unregistered documentation');
   if(e.some(x=>!x.disposition.startsWith('HOLD_')&&!['PROTECT_AUTHORITY','PRESERVE_REGISTERED'].includes(x.disposition)))throw new Error('unproved disposition');
   if(s.declaredSafeDeletes!==0||s.automaticQuarantines!==0)throw new Error('unauthorized removal promotion');
   // A validated baseline is supplied only by the bounded mutation test: one full

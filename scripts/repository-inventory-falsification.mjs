@@ -200,7 +200,7 @@ const mutations=[
  ['omitted-file',d=>{d.entries.pop();d.status.total--;d.status.classified--;}],
  ['forged-digest',d=>{d.entries[0].sha256='0'.repeat(64);}],
  ['false-safe-delete',d=>{d.entries[0].disposition='SAFE_DELETE';}],
- ['false-registered-authority',d=>{let e=d.entries.find(x=>x.category==='document:unregistered');e.category='document:current';e.evidence='documentation-manifest';e.disposition='PROTECT_AUTHORITY';}],
+ ['false-registered-authority',d=>{let e=d.entries.find(x=>x.path==='docs/17_SATURATION_V2.md');e.category='document:current';e.evidence='documentation-manifest';e.disposition='PROTECT_AUTHORITY';}],
  ['duplicated-path',d=>{d.entries[1].path=d.entries[0].path;}],
  ['fake-size',d=>{d.entries[0].bytes++;}],
  ['fake-total',d=>{d.status.total++;}],
