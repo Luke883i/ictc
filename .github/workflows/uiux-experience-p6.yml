@@ -23,12 +23,12 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: P6 end-user experience contract
-        run: node v3/uiux-experience-p6-check.mjs
+        run: node tests/verification/uiux-experience-p6-check.mjs
       - name: P6 ten million semantic design mutations
-        run: node v3/uiux-experience-p6-saturation-10m.mjs
+        run: node tests/verification/uiux-experience-p6-saturation-10m.mjs
       - name: Preserve P5 semantic beauty authority
         run: |
-          node v3/uiux-beauty-semantic-p5-check.mjs
-          node v3/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs
+          node tests/verification/uiux-beauty-semantic-p5-check.mjs
+          node tests/verification/uiux-beauty-semantic-p5-new-main-mutation-1m.mjs
       - name: Preserve current UIUX convergence
-        run: node v3/uiux-converge-0-check.mjs
+        run: node tests/verification/uiux-converge-0-check.mjs

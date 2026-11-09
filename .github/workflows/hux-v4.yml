@@ -26,8 +26,8 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - name: HUX V4 lightweight contract
-        run: node v3/hux-v4-check.mjs
+        run: node tests/verification/hux-v4-check.mjs
       - name: HUX V4 human experience 10M
-        run: node v3/hux-v4-human-saturation-10x1m.mjs
+        run: node tests/verification/hux-v4-human-saturation-10x1m.mjs
       - name: HUX V4 future procedures 1M
-        run: node v3/hux-v4-future-procedure-saturation-1m.mjs
+        run: node tests/verification/hux-v4-future-procedure-saturation-1m.mjs

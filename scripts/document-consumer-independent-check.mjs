@@ -31,7 +31,7 @@ for(const doc of documents){
   const stem=src.text.includes(base)&&!exact&&!link;
   if(!link&&!exact&&!stem)continue;
   const mode=link?'resolved-markdown-link':exact?'exact-path-literal':'basename-mention-unresolved';
-  const consumer=src.path.startsWith('v3/')||src.path.startsWith('.github/workflows/');
+  const consumer=['src/','tests/','public/','scripts/','.github/workflows/'].some(prefix=>src.path.startsWith(prefix));
   const confidence=mode==='basename-mention-unresolved'?'LOW':consumer&&exact?'MEDIUM':'MEDIUM';
   readers.push({source:src.path,mode,confidence});
   if(link||exact)edges.push({from:src.path,to:doc,mode});
@@ -43,9 +43,10 @@ for(const doc of documents){
   unresolved:['external references','runtime dynamic paths','retention obligations','PR provenance','human usage and owner sign-off']});
 }
 function verify(report){
- assert.equal(report.qualified,documents.length);assert.equal(report.qualified,149);
- assert.equal(report.safeDeletes,0);assert.equal(report.cases.length,149);
- assert.equal(new Set(report.cases.map(x=>x.path)).size,149);
+ assert.equal(report.qualified,documents.length);
+ assert.equal(report.safeDeletes,0);assert.equal(report.cases.length,documents.length);
+ assert.equal(new Set(report.cases.map(x=>x.path)).size,documents.length);
+ assert.deepEqual(report.cases.map(x=>x.path).sort(),[...documents].sort());
  for(const item of report.cases){
   assert.ok(knownPaths.has(item.path));assert.equal(item.decision,'HOLD_UNKNOWN');assert.equal(item.deletionAuthorized,false);
   assert.equal(item.sha256,digest(readFileSync(join(root,item.path))));
@@ -56,7 +57,7 @@ const report={schema:'ictc-independent-doc-consumer-scan/v1',qualified:cases.len
  documentsWithObservations:cases.filter(x=>x.readers.length).length,
  withoutObservations:cases.filter(x=>!x.readers.length).length,
  safeDeletes:0,comparisonNote:'Independently parsed Markdown links and literal paths; unresolved basename matches are never treated as reachability. The former derived graph is NOT used as an input.',
- claimBoundary:'Repository text scan cannot observe external consumer, dynamic runtime reachability or retention. ZERO safe deletion claims. All 149 remain HOLD.',cases};
+ claimBoundary:'Repository text scan cannot observe external consumer, dynamic runtime reachability or retention. ZERO safe deletion claims. All tracked unregistered documents remain HOLD.',cases};
 verify(report);
 if(process.argv.includes('--falsify')){
  const fixtures=[

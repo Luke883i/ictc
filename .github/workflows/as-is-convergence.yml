@@ -3,15 +3,15 @@ name: AS-IS convergence
 on:
   pull_request:
     paths:
-      - 'v3/as-is-convergence-*'
-      - 'v3/trama-engineering*'
-      - 'v3/trama-compass-governance.json'
-      - 'v3/trama-enterprise-dod.json'
-      - 'v3/gaps.json'
+      - 'src/lib/as-is-convergence*'
+      - 'src/lib/trama-engineering*'
+      - 'tests/contracts/trama-compass-governance.json'
+      - 'tests/contracts/trama-enterprise-dod.json'
+      - 'tests/contracts/gaps.json'
       - 'audit/remediation-registry.json'
       - 'docs/**'
       - 'AGENTS.md'
-      - 'v3/public/**'
+      - 'public/**'
       - '.github/workflows/as-is-convergence.yml'
   workflow_dispatch:
 
@@ -30,10 +30,10 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22.16.0'
-      - run: node v3/as-is-convergence-check.mjs
+      - run: node tests/verification/as-is-convergence-check.mjs
       - name: Strategic 100k
-        run: node v3/as-is-convergence-saturation.mjs --trials 100000 --tail 10000
+        run: node tests/verification/as-is-convergence-saturation.mjs --trials 100000 --tail 10000
       - name: Strategic 1M
-        run: node v3/as-is-convergence-saturation.mjs --trials 1000000 --tail 10000
+        run: node tests/verification/as-is-convergence-saturation.mjs --trials 1000000 --tail 10000
       - name: Strategic 10M
-        run: node v3/as-is-convergence-saturation.mjs --trials 10000000 --tail 10000
+        run: node tests/verification/as-is-convergence-saturation.mjs --trials 10000000 --tail 10000

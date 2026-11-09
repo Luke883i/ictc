@@ -26,7 +26,7 @@ export function assessReviewReadiness(source, {manifest, release, owners, gaps}=
   test('D05','documentation',has(start,'Review readiness senza nuova authority')&&has(start,'CONTRIBUTING.md'));
   test('D06','documentation',has(contract,'Un concetto current ha un solo owner canonico')&&has(contract,'lifecycle'));
   test('A01','architecture',has(readme,'SQLite')&&has(readme,'PostgreSQL')&&has(readme,'non una prova sostitutiva'));
-  test('A02','architecture',has(readme,'v3/runtime-store.mjs')&&has(readme,'v3/store.mjs'));
+  test('A02','architecture',has(readme,'src/runtime-store.mjs')&&has(readme,'src/store.mjs'));
   test('A03','architecture',has(readme,'PDF, XML, Markdown e ZIP'));
   test('A04','architecture',has(readme,'npm ci --ignore-scripts')&&has(readme,'npm start')&&has(readme,'127.0.0.1:4173'));
   test('A05','architecture',['ICTC_PUBLIC_DEMO=1','ICTC_HOST=0.0.0.0','ICTC_ALLOW_NETWORK_BIND=1','demo-runtime-3-0','ICTC_TRUSTED_PROXY_SECRET'].every(v=>has(readme,v)));

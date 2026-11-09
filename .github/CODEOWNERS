@@ -1,6 +1,8 @@
 * @Luke883i
 /docs/ @Luke883i
-/v3/ @Luke883i
+/src/ @Luke883i
+/tests/ @Luke883i
+/public/ @Luke883i
 /scripts/ @Luke883i
 /.github/ @Luke883i
 /SECURITY.md @Luke883i

@@ -36,4 +36,4 @@ jobs:
           export ICTC_NO_OPEN=1 ICTC_BASE_URL=http://127.0.0.1:4838 ICTC_STATE_DIR="$RUNNER_TEMP/ictc-desktop-${{ matrix.probe }}-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-desktop-${{ matrix.probe }}-runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-shell-desktop-probe-2-6.py
+          python -u tests/browser/browser-shell-desktop-probe-2-6.py

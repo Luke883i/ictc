@@ -22,7 +22,7 @@ function incoming(path){const list=[];for(const source of sources){if(source.pat
    if(links.some(x=>posix.normalize(posix.join(posix.dirname(source.path),x))===path))mode='resolved-markdown-link';
   }
  }
- if(mode)list.push({path:source.path,evidence:mode,kind:source.path.startsWith('docs/')?'document':source.path.startsWith('v3/')?'software-or-test':'repository'});
+ if(mode)list.push({path:source.path,evidence:mode,kind:source.path.startsWith('docs/')?'document':(['src/','tests/','public/'].some(prefix=>source.path.startsWith(prefix)))?'software-or-test':'repository'});
 }return list;}
 function classOf(path,body,links){const first=(body.match(/^#\s+(.+)$/m)||[])[1]||null;
  let topic='design-or-study';if(path.startsWith('docs/decisions/'))topic='architecture-decision';
@@ -50,7 +50,7 @@ let cases=[];try{
  const undetectedLinked=cases.filter(c=>c.incoming.some(x=>x.evidence==='resolved-markdown-link')&&!c.counterfactual.detectedByExistingDocsCheck);
  if(undetectedLinked.length)throw new Error('documentation checker missed linked files: '+undetectedLinked.map(c=>c.path).join(', '));
  const byOutcome={};for(const c of cases)byOutcome[c.topic]=(byOutcome[c.topic]||0)+1;
- const result={schema:'ictc-doc-causal-qualification/v1',baseSource:'tracked Git files + documentation manifest + full-text/relative-link references + real isolated file removal',total:candidates.length,qualified:cases.length,missing:candidates.filter(p=>!cases.some(c=>c.path===p)),summary:byOutcome,physicallyRemovedFiles:0,safeDeleteDecisions:0,linkRemovalsDetected:cases.filter(c=>c.counterfactual.detectedByExistingDocsCheck).length,linkRegressionsEscaped:undetectedLinked.length,claimBoundary:'Per-file causal counterfactual ONLY for existing docs check; a passing deletion probe exposes a gate gap, NEVER certifies safe deletion. All 149 kept HOLD_REVIEW; external and dynamic consumers not proven absent.',cases};
+ const result={schema:'ictc-doc-causal-qualification/v1',baseSource:'tracked Git files + documentation manifest + full-text/relative-link references + real isolated file removal',total:candidates.length,qualified:cases.length,missing:candidates.filter(p=>!cases.some(c=>c.path===p)),summary:byOutcome,physicallyRemovedFiles:0,safeDeleteDecisions:0,linkRemovalsDetected:cases.filter(c=>c.counterfactual.detectedByExistingDocsCheck).length,linkRegressionsEscaped:undetectedLinked.length,claimBoundary:'Per-file causal counterfactual ONLY for existing docs check; a passing deletion probe exposes a gate gap, NEVER certifies safe deletion. All enumerated documents kept HOLD_REVIEW; external and dynamic consumers not proven absent.',cases};
  verifyQualification(result,candidates);
  mkdirSync(join(root,'artifacts'),{recursive:true});writeFileSync(join(root,'artifacts/document-causal-qualification.json'),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify({ok:true,total:result.total,qualified:result.qualified,summary:result.summary,removalDetected:cases.filter(c=>c.counterfactual.detectedByExistingDocsCheck).length,safeDeleteDecisions:0}));

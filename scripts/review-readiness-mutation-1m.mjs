@@ -9,7 +9,7 @@ const root=path.resolve(fileURLToPath(new URL('../',import.meta.url)));
 const files=['README.md','CONTRIBUTING.md','docs/START_HERE.md','GOVERNANCE.md','docs/ENGINEERING_GOVERNANCE.md','.github/PULL_REQUEST_TEMPLATE.md','docs/DOCUMENTATION_STANDARD.md'];
 const baseline=Object.fromEntries(files.map(p=>[p,readFileSync(path.join(root,p),'utf8')]));
 const j=p=>JSON.parse(readFileSync(path.join(root,p),'utf8'));
-const constants={manifest:j('docs/documentation-manifest.json'),release:j('v3/release-identity.json'),owners:j('v3/semantic-owner-contract.json'),gaps:j('v3/gaps.json')};
+const constants={manifest:j('docs/documentation-manifest.json'),release:j('src/contracts/release-identity.json'),owners:j('tests/contracts/semantic-owner-contract.json'),gaps:j('tests/contracts/gaps.json')};
 const evaluation=(src=baseline,c=constants)=>assessReviewReadiness(src,c);
 if(!evaluation().ok)throw Error('review-readiness baseline is not valid: '+evaluation().failures.join(','));
 // Mutation operators are different from the validation implementation. Every
@@ -29,7 +29,7 @@ const F=[
  json('D04','manifest',o=>{let a=o.documents.filter(x=>x.authoritative);a[1].authorityTopic=a[0].authorityTopic}),
  txt('D05','docs/START_HERE.md','Review readiness senza nuova authority'),
  txt('D06','docs/DOCUMENTATION_STANDARD.md','Un concetto current ha un solo owner canonico'),
- txt('A01','README.md','PostgreSQL'),txt('A02','README.md','v3/runtime-store.mjs'),
+ txt('A01','README.md','PostgreSQL'),txt('A02','README.md','src/runtime-store.mjs'),
  txt('A03','README.md','PDF, XML, Markdown e ZIP'),txt('A04','README.md','npm ci --ignore-scripts'),
  txt('A05','README.md','ICTC_PUBLIC_DEMO=1'),
  txt('R01','CONTRIBUTING.md','## Human review handoff (repository E2 vs GitHub E3)'),

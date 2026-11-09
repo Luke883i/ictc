@@ -10,7 +10,7 @@ Never turn an observation, extraction, score, AI proposal, mapping, receipt or c
 2. Statements preserve claim class, epistemic status, producer, inputs, timestamp, limitations and receipt reference where the contract requires them.
 3. AI output is always `proposed`; only an authorized human action can produce human-reviewed or human-decided state.
 4. No autonomous assistant write. Scheduled AI work may append proposals and machine receipts only within the declared policy.
-5. Current local persistence is SQLite through `v3/sqlite-state-persistence.mjs`: mutable current `snapshot`, append-only `audit`, content-addressed `subject_payload`, append-only `subject_version` and `epistemic_step`. A legacy `state.json` may be imported and archived; it is not the current persistence authority. Do not describe ICTC as a fully event-sourced/reconstructible store unless executable proof establishes that stronger property.
+5. Current local persistence is SQLite through `src/sqlite-state-persistence.mjs`: mutable current `snapshot`, append-only `audit`, content-addressed `subject_payload`, append-only `subject_version` and `epistemic_step`. A legacy `state.json` may be imported and archived; it is not the current persistence authority. Do not describe ICTC as a fully event-sourced/reconstructible store unless executable proof establishes that stronger property.
 6. UI write success requires the write contract's persistence/readback/receipt verification. Do not infer success from optimistic presentation alone.
 7. Do not use compliance percentages, certainty scores or green/red legal verdicts as conclusions.
 8. Generated files under `docs/generated/` and `artifacts/release-manifest.json` are not hand-edited.
@@ -48,15 +48,15 @@ Historical/candidate documents are useful for design lineage but do not override
 
 ## Runtime authority
 
-19. Before changing runtime authority, read `docs/authority-matrix.yaml` and run `node v3/authority-contract-check.mjs`.
-20. Executable runtime authority remains under `v3/`; do not create a parallel root/lib runtime owner without explicit migration decision and falsifier.
+19. Before changing runtime authority, read `docs/authority-matrix.yaml` and run `node tests/verification/authority-contract-check.mjs`.
+20. Executable runtime authority remains under `src/`; do not create a parallel root/lib runtime owner without explicit migration decision and falsifier.
 21. Seven business procedures remain seven. EP-01 is cross-cutting supervision, not an eighth business process.
 22. Cross-procedure creation must authorize the source, target permission and target procedure policy, and must normalize the new object through the target's native initial-state contract.
 23. Evidence formats are same-as-read and derive from the canonical evidence graph/dossier owner; no format may widen visibility or silently drop claim boundaries.
 
 ## TRAMA — adaptive engineering intake
 
-24. Per ogni interazione che può cambiare prodotto, runtime, governance o traiettoria, esegui `node v3/trama-engineering.mjs --intent "<human intent>" --phase PLAN`. TRAMA è una proiezione derivata a authority zero: non sostituisce product truth, runtime truth, Git facts o convergence authority.
+24. Per ogni interazione che può cambiare prodotto, runtime, governance o traiettoria, esegui `node src/lib/trama-engineering.mjs --intent "<human intent>" --phase PLAN`. TRAMA è una proiezione derivata a authority zero: non sostituisce product truth, runtime truth, Git facts o convergence authority.
 25. Compila l'intento umano in un IntentCard derivato; non chiedere alla persona di scegliere nodo tecnico, framework o cardinalità di mutation. Seleziona il minimo tier sufficiente tra 1k / 100k / 1M e scala solo su survivor o novelty.
 26. Ricalcola ad ogni interazione il vicinato semantico: hard dependency closure, un hop inbound/outbound, owner/writer, oracle/evidence, human impact, deployment impact, derived artifact ed evidence invalidation. La roadmap precedente e una slice già iniziata restano ipotesi falsificabili.
 27. Enterprise Candidate è un asintoto non auto-attestabile: TRAMA può esporre distanza e blocker, ma E3-HUMAN, E3-GOV ed E4-DEPLOY non si chiudono con CI o semantic mutation e `s5Seal` resta dell'authority canonica.
@@ -69,7 +69,7 @@ Historical/candidate documents are useful for design lineage but do not override
 31. Ogni slice deve convergere su una sola prossima azione o STOP/BLOCKED, riusando/estendendo owner esistenti prima di crearne altri, con nearest falsifier, rollback e stop condition.
 32. Ogni mutazione semantica richiede una **documentation delta** selettiva e rigenera la **Bussola** `docs/ENGINEERING_COMPASS.md`; la Bussola è generated e non autoritativa.
 33. Dopo tool fact, failure/verde PR e merge esegui ACT: invalida evidence stale, ricalcola traiettoria e non equiparare merge, release, Enterprise Candidate o E3/E4.
-34. Orientamento operativo: `node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN`; l'ACT usa lo stesso intento e gli owner correnti.
+34. Orientamento operativo: `node src/lib/trama-engineering.mjs --intent "<intento umano>" --phase PLAN`; l'ACT usa lo stesso intento e gli owner correnti.
 
 ## GOV-TRAMA-RECONCILE-1 — stato osservato e GLOBAL_ACT
 
@@ -89,7 +89,7 @@ Historical/candidate documents are useful for design lineage but do not override
 
 ## AI-INFORMATION-EGRESS-1 — information eligibility before transport
 
-43. Prima di ogni provider transport, la capsula AI canonica deve attraversare l'owner `v3/runtime/ai-information-egress.mjs`; network reachability non equivale a information eligibility.
+43. Prima di ogni provider transport, la capsula AI canonica deve attraversare l'owner `src/runtime/ai-information-egress.mjs`; network reachability non equivale a information eligibility.
 44. Unknown/default converge almeno a `LOCAL_CONFIDENTIAL`. Egress esterno richiede `PUBLIC|DERIVED_EXPORTABLE` e `governance.aiExternalEgressAllowed=true`; `SECRET` non e idoneo al model compute corrente.
 45. Il membrane e authority-zero e side-effect-free: non sceglie provider, non apre rete, non risolve secret, non persiste business state e non altera l'autorita proposal-only dell'AI.
 
@@ -100,7 +100,7 @@ Historical/candidate documents are useful for design lineage but do not override
 47. Una chiusura AS-IS già stabilita è un regression baseline. Se riappare, fallisci chiuso con `BLOCKED_REOPEN_WITH_EVIDENCE`; non degradare o riaprire silenziosamente un debt storico per far avanzare la roadmap.
 48. Le campagne strategiche cross-abstraction usano il minimo tier sufficiente tra 100k / 1M / 10M senza sostituire i tier generici TRAMA. A saturazione, `M+10k` deve aggiungere zero nuove failure family e `N+10k` deve trovare zero compressioni lossless ulteriori; survivor/novelty impongono remodelling, non più seed.
 49. Monitora l'entropia come firma del reticolo di debt/stato, non come maturity score. Ogni debt attivo deve conservare source ID/path, owner, evidence class, target, dipendenze, related debt, falsifier e claim boundary.
-50. Enterprise Candidate va letto dal ferro all'esperienza umana tramite `v3/trama-enterprise-dod.json#experienceLattice`; nessuna astrazione superiore può sintetizzare E3-HUMAN, E3-GOV o E4-DEPLOY mancanti.
+50. Enterprise Candidate va letto dal ferro all'esperienza umana tramite `tests/contracts/trama-enterprise-dod.json#experienceLattice`; nessuna astrazione superiore può sintetizzare E3-HUMAN, E3-GOV o E4-DEPLOY mancanti.
 51. Le landing canoniche rispettano l'ordine `identity -> primary work/decision -> bounded list -> context/evidence -> technical detail`. Home mostra la decisione prima della worklist max-3; Processi resta row-list 7/7; Evidenze è decision/evidence-first con dettaglio progressivo. Vietati card-wall, first-plane list non bounded e visual order che contraddice il DOM semantico.
 
 ## GOV-REPOSITORY-PURPOSE-1 — file purpose, admission and retirement
@@ -113,7 +113,7 @@ Historical/candidate documents are useful for design lineage but do not override
 
 ## GOV-LOSSLESS-SEMANTICS-0.11 — deterministic intent-to-proof channel
 
-56. La semantica consolidata v0.11 resta nel profilo esistente `v3/trama-compass-governance.json#losslessSemantics`: authority-zero, nessuna nuova SOT/cursore/workflow/gate; la sequenza canonica resta posseduta da `docs/convergence/convergence-authority.json`. Ogni PR materiale conserva gli esiti `UPDATED | NO_SEMANTIC_DELTA`; il secondo è ammesso solo con fingerprint semantico invariato.
+56. La semantica consolidata v0.11 resta nel profilo esistente `tests/contracts/trama-compass-governance.json#losslessSemantics`: authority-zero, nessuna nuova SOT/cursore/workflow/gate; la sequenza canonica resta posseduta da `docs/convergence/convergence-authority.json`. Ogni PR materiale conserva gli esiti `UPDATED | NO_SEMANTIC_DELTA`; il secondo è ammesso solo con fingerprint semantico invariato.
 57. Ogni richiesta materiale, anche espressa da un utente non tecnico, viene compilata deterministicamente come `INTENT → OBSERVE → QUALIFY → SLICE → MATERIALIZE → WITNESS → CLOSE → ACT`. L'umano fornisce intento e accettazione materiale; file, framework, owner, test, mutation budget e percorso tecnico sono responsabilità dell'agente.
 58. Prima di dichiarare chiusa una slice, l'agente deve legare i required bindings `intentDigest, exactPreimage, semanticNeighborhood, ownerSet, targetPredicates, negativePredicates, runtimeDelta, witnessReceipt, closureVerdict, exactPostimage`. Binding mancante, owner ignoto, più next action o closure inferita sono fail-closed.
 59. Un intento runtime non si chiude con marker, CSS hiding o sola copy quando il difetto è di interazione/composizione: serve delta materiale e witness claim-matched. Per UI/UX visibile `ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND`; Q1/Q2 restano evidence projection generated senza write authority.
@@ -123,8 +123,8 @@ Historical/candidate documents are useful for design lineage but do not override
 
 ## GOV-TRAMA-E2E-1 — ferro → utente, allineamento continuo
 
-62. Il nome canonico semplice dell'analisi multi-astrazione è **TRAMA E2E**. Gli strati restano posseduti da `v3/trama-reconcile-contract.json#campaigns` nell'ordine `L0-FERRO → L1-PERSISTENCE → L2-RUNTIME → L3-SEMANTIC → L4-GOVERNANCE → L5-PRODUCT → L6-EXPERIENCE → L7-ENTERPRISE`; TRAMA E2E non crea un nuovo owner.
-63. Le 24 famiglie metodo restano possedute da `v3/trama-engineering-contract.json#methodSaturation.families` e vengono lette tramite sei cluster: `UNDERSTAND, EXECUTE, PROTECT, EXPERIENCE, CONTROL, FALSIFY`. I cluster sono una compressione di orientamento, non nuove metodologie concorrenti.
+62. Il nome canonico semplice dell'analisi multi-astrazione è **TRAMA E2E**. Gli strati restano posseduti da `tests/contracts/trama-reconcile-contract.json#campaigns` nell'ordine `L0-FERRO → L1-PERSISTENCE → L2-RUNTIME → L3-SEMANTIC → L4-GOVERNANCE → L5-PRODUCT → L6-EXPERIENCE → L7-ENTERPRISE`; TRAMA E2E non crea un nuovo owner.
+63. Le 24 famiglie metodo restano possedute da `tests/contracts/trama-engineering-contract.json#methodSaturation.families` e vengono lette tramite sei cluster: `UNDERSTAND, EXECUTE, PROTECT, EXPERIENCE, CONTROL, FALSIFY`. I cluster sono una compressione di orientamento, non nuove metodologie concorrenti.
 64. **Ogni PR** è sottoposta al contratto TRAMA, non solo quelle che toccano file TRAMA. La PR dichiara layer E2E, cluster metodo, witness di allineamento adiacente e hygiene delta; CI valida body, exact base/head, purpose admission dei nuovi file e disposizione `UPDATED|NO_SEMANTIC_DELTA`.
 65. Ogni nuovo file deve avere purpose deterministico nel repository-purpose census. Ogni rimozione deve partire da `retirement-candidate` o da duplicazione dimostrata, preservare owner correnti ed essere coperta da deletion oracle; età, nome o assenza apparente di uso non bastano.
 66. L'agente deve mantenere coerenza verticale: una modifica a uno strato non può dichiararsi chiusa se rompe il contratto con lo strato immediatamente inferiore/superiore, se usa evidence di SHA diverso, se introduce authority parallela o se sostituisce un delta runtime richiesto con documentazione/governance soltanto.

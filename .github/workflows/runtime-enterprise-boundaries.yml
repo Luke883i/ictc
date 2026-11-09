@@ -26,19 +26,19 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Enterprise boundary DoD contract
-        run: node v3/runtime-enterprise-dod-check.mjs
+        run: node tests/verification/runtime-enterprise-dod-check.mjs
       - name: Security hardening DoD contract
-        run: node v3/security-enterprise-dod-check.mjs
+        run: node tests/verification/security-enterprise-dod-check.mjs
       - name: Tenant identity coherence
-        run: node v3/tenant-identity-coherence-check.mjs
+        run: node tests/verification/tenant-identity-coherence-check.mjs
       - name: Tenant-bound scanner trust
-        run: node v3/attachment-scanner-tenant-check.mjs
+        run: node tests/verification/attachment-scanner-tenant-check.mjs
       - name: CSV export injection boundary
-        run: node v3/csv-export-security-check.mjs
+        run: node tests/verification/csv-export-security-check.mjs
       - name: AI network policy boundary
-        run: node v3/ai-network-policy-check.mjs
+        run: node tests/verification/ai-network-policy-check.mjs
       - name: Enterprise boundary runtime falsifier
-        run: node v3/runtime-enterprise-boundaries-ci.mjs
+        run: node scripts/runtime-enterprise-boundaries-ci.mjs
   hostile-saturation:
     runs-on: ubuntu-24.04
     outputs:
@@ -54,9 +54,9 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Existing one-million tenant security and lifecycle scenarios
-        run: node v3/runtime-enterprise-boundaries-saturation.mjs
+        run: node tests/verification/runtime-enterprise-boundaries-saturation.mjs
       - name: M plus 10000 attack saturation and holdout mutations
-        run: node v3/security-attack-saturation.mjs
+        run: node tests/verification/security-attack-saturation.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         with:
           name: security-attack-saturation
@@ -69,7 +69,7 @@ jobs:
         run: npm run test:current:semantic
       - name: Evidence runtime diagnostic
         if: steps.current_semantic.outcome == 'success'
-        run: node v3/evidence-runtime-diagnostic.mjs
+        run: node scripts/evidence-runtime-diagnostic.mjs
       - name: Existing current runtime suite
         if: steps.current_semantic.outcome == 'success'
         run: npm run test:current:runtime

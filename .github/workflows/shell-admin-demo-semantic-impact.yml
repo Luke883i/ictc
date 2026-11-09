@@ -13,18 +13,18 @@ jobs:
       matrix:
         include:
           - {name: syntax, cmd: 'node scripts/syntax-check.mjs'}
-          - {name: contract-2-6, cmd: 'node v3/shell-admin-demo-check-2-6.mjs'}
-          - {name: saturation-2-6, cmd: 'node v3/shell-admin-demo-saturation-2-6.mjs'}
-          - {name: demo-suite-2-2, cmd: 'node v3/demo-suite-2-2-runtime-semantic-check.mjs'}
-          - {name: native-shell, cmd: 'node v3/native-shell-check.mjs'}
-          - {name: v1-9-experience, cmd: 'node v3/v1-9-experience-check.mjs'}
-          - {name: refined-product, cmd: 'node v3/refined-product-check.mjs'}
-          - {name: active-experience, cmd: 'node v3/ui-active-experience-audit.mjs'}
-          - {name: constitution, cmd: 'node v3/experience-constitution-check.mjs'}
-          - {name: procedure-contracts, cmd: 'node v3/procedure-contracts-check.mjs'}
-          - {name: ux-language, cmd: 'node v3/ux-language-polish-check.mjs'}
-          - {name: visual-grace, cmd: 'node v3/visual-grace-lexical-epistemic-check.mjs'}
-          - {name: visual-runtime, cmd: 'node v3/visual-epistemic-runtime-check.mjs'}
+          - {name: contract-2-6, cmd: 'node tests/verification/shell-admin-demo-check-2-6.mjs'}
+          - {name: saturation-2-6, cmd: 'node tests/verification/shell-admin-demo-saturation-2-6.mjs'}
+          - {name: demo-suite-2-2, cmd: 'node tests/verification/demo-suite-2-2-runtime-semantic-check.mjs'}
+          - {name: native-shell, cmd: 'node tests/verification/native-shell-check.mjs'}
+          - {name: v1-9-experience, cmd: 'node tests/verification/v1-9-experience-check.mjs'}
+          - {name: refined-product, cmd: 'node tests/verification/refined-product-check.mjs'}
+          - {name: active-experience, cmd: 'node tests/verification/ui-active-experience-audit.mjs'}
+          - {name: constitution, cmd: 'node tests/verification/experience-constitution-check.mjs'}
+          - {name: procedure-contracts, cmd: 'node tests/verification/procedure-contracts-check.mjs'}
+          - {name: ux-language, cmd: 'node tests/verification/ux-language-polish-check.mjs'}
+          - {name: visual-grace, cmd: 'node tests/verification/visual-grace-lexical-epistemic-check.mjs'}
+          - {name: visual-runtime, cmd: 'node tests/verification/visual-epistemic-runtime-check.mjs'}
     name: semantic-impact-${{ matrix.name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1

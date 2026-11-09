@@ -26,51 +26,51 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: A6-UX4 syntax
         run: |
-          node --check v3/public/ui/semantic-surface-a6-ux4.js
-          node --check v3/public/ui/standard-browser.js
-          node --check v3/s4-a6-ux4-semantic-surface-model.mjs
-          node --check v3/s4-a6-ux4-uiux-mount-model.mjs
-          node --check v3/s4-a6-ux4-ontology-uiux-model.mjs
-          node --check v3/s4-a6-ux4-semantic-surface-check.mjs
-          node --check v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
-          node --check v3/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
-          node --check v3/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
-          node --check v3/s4-a6-ux3-operational-surface-model.mjs
-          node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
-          node --check v3/current-gate-registry.mjs
-          node --check v3/uiux-ontoepistemic-convergence-3-check.mjs
-          node --check v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
-          python -m py_compile v3/browser-s4-a6-ux4-semantic-surface.py
-          python -m py_compile v3/browser-s4-a1-worklist-authority.py
+          node --check public/ui/semantic-surface-a6-ux4.js
+          node --check public/ui/standard-browser.js
+          node --check src/lib/s4-a6-ux4-semantic-surface-model.mjs
+          node --check src/lib/s4-a6-ux4-uiux-mount-model.mjs
+          node --check src/lib/s4-a6-ux4-ontology-uiux-model.mjs
+          node --check tests/verification/s4-a6-ux4-semantic-surface-check.mjs
+          node --check tests/verification/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
+          node --check tests/verification/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
+          node --check tests/verification/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
+          node --check src/lib/s4-a6-ux3-operational-surface-model.mjs
+          node --check tests/verification/s4-a6-ux3-operational-surface-saturation.mjs
+          node --check scripts/current-gate-registry.mjs
+          node --check tests/verification/uiux-ontoepistemic-convergence-3-check.mjs
+          node --check tests/verification/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
+          python -m py_compile tests/browser/browser-s4-a6-ux4-semantic-surface.py
+          python -m py_compile tests/browser/browser-s4-a1-worklist-authority.py
           python -m py_compile tests/browser/browser-regulatory-surface.py
-          node --check v3/regulatory-surface-contract-check.mjs
-          node --check v3/regulatory-surface-saturation-10m.mjs
+          node --check tests/verification/regulatory-surface-contract-check.mjs
+          node --check tests/verification/regulatory-surface-saturation-10m.mjs
       - name: A6-UX4 semantic source contract
-        run: node v3/s4-a6-ux4-semantic-surface-check.mjs
+        run: node tests/verification/s4-a6-ux4-semantic-surface-check.mjs
       - name: Compliance ontology runtime source contract
-        run: node v3/compliance-ontology-runtime-check.mjs
+        run: node tests/verification/compliance-ontology-runtime-check.mjs
       - name: Compliance ontology runtime falsification 10,000,000
-        run: node v3/compliance-ontology-runtime-saturation-10m.mjs
+        run: node tests/verification/compliance-ontology-runtime-saturation-10m.mjs
       - name: Regulatory audit closure source contract · 645/645
-        run: node v3/regulatory-surface-contract-check.mjs
+        run: node tests/verification/regulatory-surface-contract-check.mjs
       - name: Regulatory audit closure falsification · 10,000,000
-        run: node v3/regulatory-surface-saturation-10m.mjs
+        run: node tests/verification/regulatory-surface-saturation-10m.mjs
       - name: UIUX onto-epistemic convergence 3 source contract
-        run: node v3/uiux-ontoepistemic-convergence-3-check.mjs
+        run: node tests/verification/uiux-ontoepistemic-convergence-3-check.mjs
       - name: UIUX onto-epistemic convergence 3 falsification 10,000,000
-        run: node v3/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
+        run: node tests/verification/uiux-ontoepistemic-convergence-3-saturation-10m.mjs
       - name: A6-UX4 deterministic falsification 10,000 cases
-        run: node v3/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
+        run: node tests/verification/s4-a6-ux4-semantic-surface-fuzz-10k.mjs
       - name: A6-UX4 screenshot-derived UIUX mount falsification 100,000 cases
-        run: node v3/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
+        run: node tests/verification/s4-a6-ux4-uiux-mount-fuzz-100k.mjs
       - name: A6-UX4 editorial semantic visual ontological falsification 100,000 cases
-        run: node v3/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
+        run: node tests/verification/s4-a6-ux4-ontology-uiux-fuzz-100k.mjs
       - name: A6-UX3 successor-lineage compatibility
         run: |
-          node v3/s4-a6-ux3-operational-surface-check.mjs
-          node v3/s4-a6-ux3-operational-surface-saturation.mjs
+          node tests/verification/s4-a6-ux3-operational-surface-check.mjs
+          node tests/verification/s4-a6-ux3-operational-surface-saturation.mjs
       - name: Convergence workbook binding
-        run: node v3/convergence-authority-check.mjs
+        run: node tests/verification/convergence-authority-check.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Resolve system browser
         shell: bash
@@ -102,7 +102,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python -u v3/browser-s4-a6-ux4-semantic-surface.py
+          python -u tests/browser/browser-s4-a6-ux4-semantic-surface.py
           rc=$?
           phase=pass
           if [ "$rc" -ne 0 ] && [ -f artifacts/browser-s4-a6-ux4-semantic-surface-error.json ]; then
@@ -124,7 +124,7 @@ jobs:
               ICTC_COMPLIANCE_MODE=returning \
               ICTC_COMPLIANCE_VIEWPORT="$viewport" \
               ICTC_COMPLIANCE_SURFACE="$surface" \
-              python -u v3/browser-compliance-ontology-runtime.py
+              python -u tests/browser/browser-compliance-ontology-runtime.py
               rc=$?
               if [ "$rc" -ne 0 ]; then
                 error="artifacts/compliance-ontology-runtime/returning__${viewport}__${surface}-error.json"
@@ -161,7 +161,7 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
             -f state=failure -f context='ictc/lpe-v2-browser' \
             -f description="${description:0:140}" \
-            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-compliance-ontology-runtime.py" >/dev/null || true
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-compliance-ontology-runtime.py" >/dev/null || true
           cat "$error" || true
           exit 1
       - name: Publish LPE browser success provenance
@@ -174,7 +174,7 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
             -f state=success -f context='ictc/lpe-v2-browser' \
             -f description='14 LPE equivalents x 3 viewport classes green' \
-            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-compliance-ontology-runtime.py" >/dev/null || true
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-compliance-ontology-runtime.py" >/dev/null || true
       - name: Regulatory audit exact-head browser · onboarding + desktop/mobile
         id: regulatory_browser
         continue-on-error: true

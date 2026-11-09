@@ -44,7 +44,7 @@ Questa è una **procedura per un ingegnere nuovo**, non un'attestazione di valid
 3. Esegui `npm run demo` in un terminale e `curl -fsS http://127.0.0.1:4173/api/health` nell'altro; arresta con Ctrl-C. HTTP 200 non attesta persistenza al riavvio.
 4. **Falsificatore fisico:** aggiungi temporaneamente in fondo a `docs/DEVELOPMENT.md` un collegamento Markdown a `DOCUMENTO_ONBOARDING_INESISTENTE.md` (testo del link: "link deliberatamente inesistente"). `npm run docs:check` deve fallire per `broken local link`; conserva l'output. Se non fallisce, l'esercizio e NO-GO.
 5. Rimuovi il link errato. Introduci un piccolo chiarimento vero e circoscritto in `docs/DEVELOPMENT.md`, senza cambiare gli owner; verifica il collegamento all'authority con `docs/START_HERE.md`. Riesegui `npm run docs:check` e `git diff --check`.
-6. **Prima di attribuire test a uno SHA:** rigenera la Bussola dall'owner eseguendo `node --input-type=module -e 'import {repositoryCompass} from "./v3/trama-engineering.mjs"; import {writeFileSync} from "node:fs"; writeFileSync("docs/ENGINEERING_COMPASS.md",repositoryCompass())'`. Poi esegui `git add docs/DEVELOPMENT.md docs/ENGINEERING_COMPASS.md`, `git diff --cached --check`, `git commit -m "docs: first bounded onboarding edit"` e verifica che `git status --porcelain` sia vuoto. La HEAD ora rappresenta i byte realmente candidati, inclusa ogni proiezione generata.
+6. **Prima di attribuire test a uno SHA:** rigenera la Bussola dall'owner eseguendo `node --input-type=module -e 'import {repositoryCompass} from "./src/lib/trama-engineering.mjs"; import {writeFileSync} from "node:fs"; writeFileSync("docs/ENGINEERING_COMPASS.md",repositoryCompass())'`. Poi esegui `git add docs/DEVELOPMENT.md docs/ENGINEERING_COMPASS.md`, `git diff --cached --check`, `git commit -m "docs: first bounded onboarding edit"` e verifica che `git status --porcelain` sia vuoto. La HEAD ora rappresenta i byte realmente candidati, inclusa ogni proiezione generata.
 7. Registra `git rev-parse HEAD`, esegui `npm run docs:check` e `npm test` **dopo il commit sulla stessa HEAD**, registra exit code, eventuali skip e il tree `git rev-parse HEAD^{tree}`. Se i test modificano file tracciati, arrestati: serve una nuova HEAD e ripetere i gate.
 8. Produci la scheda per il reviewer: **intento, owner, preimage, postimage, predicato positivo, mutante respinto, differenza, rollback, evidenza e gap**. Per annullare il commit dell'esercizio usa `git revert <sha-del-commit>` e ricontrolla il tree; `git restore -- docs/DEVELOPMENT.md` si applica soltanto alle modifiche **non committate** e non e un rollback di commit.
 
@@ -74,7 +74,7 @@ Nessun nuovo registro di file diventa authority: il censimento e i punteggi sono
 Prima di fissare una nuova slice, compila l'intento con:
 
 ```bash
-node v3/trama-engineering.mjs --intent "<intento umano>" --phase PLAN
+node src/lib/trama-engineering.mjs --intent "<intento umano>" --phase PLAN
 ```
 
 TRAMA applica **PLAN → DO → CHECK → ACT** sopra gli owner già canonici. PLAN ricalcola vicinato, dipendenze, owner/writer, evidence/oracle, impatto umano/deployment e distanza dall'Enterprise Candidate; DO modifica il minimo reticolo coerente; CHECK usa invarianti, mutation tier adattivo (1k/100k/1M), deletion oracle ed exact-head evidence; ACT ricalcola la traiettoria dopo ogni risultato PR e merge. La roadmap precedente è un'ipotesi, non un vincolo: se i fatti correnti la falsificano, si rifattorizza la slice invece di forzare il piano.
@@ -129,9 +129,9 @@ Per PR trajectory-sensitive vale un controllo ulteriore: se il body dichiara `pl
 ```bash
 npm run check
 npm run docs:check
-node v3/authority-contract-check.mjs
-node v3/docs-command-contract-check.mjs
-node v3/documentation-authority-check.mjs
+node tests/verification/authority-contract-check.mjs
+node tests/verification/docs-command-contract-check.mjs
+node tests/verification/documentation-authority-check.mjs
 npm test
 npm run release:check
 ```
@@ -185,7 +185,7 @@ Lo stato `in-progress` è intenzionale: evita di collassare “capacità sostanz
 
 ## GOV-ASIS-CONVERGENCE-1 — chiusura AS-IS e strategic entropy
 
-Prima di una modifica cross-cutting, `node v3/as-is-convergence.mjs` compila una projection authority-zero di gap, remediation finding, conditional/serial slice, rail esterni, drift documentale e disordine cognitivo UI. Gli owner originali restano autoritativi; la projection serve a non perdere debito, non a chiuderlo.
+Prima di una modifica cross-cutting, `node src/lib/as-is-convergence.mjs` compila una projection authority-zero di gap, remediation finding, conditional/serial slice, rail esterni, drift documentale e disordine cognitivo UI. Gli owner originali restano autoritativi; la projection serve a non perdere debito, non a chiuderlo.
 
 Le closure già registrate sono un **ratchet**: una ricomparsa silenziosa produce `BLOCKED_REOPEN_WITH_EVIDENCE`. Per campagne strategiche cross-abstraction il tier è 100k / 1M / 10M; i tier TRAMA generici 1k / 100k / 1M restano invariati. Al ceiling, nuova failure family o survivor richiedono remodelling. Saturazione semantica = `M+10k` senza novità; saturazione di compressione = `N+10k` senza ulteriore compressione lossless.
 
@@ -194,6 +194,58 @@ L'ordine cognitivo di prima superficie è `identity -> primary work/decision -> 
 
 ## TRAMA E2E — ferro → utente
 
-**TRAMA E2E** è il nome canonico semplice del controllo multi-astrazione. Non introduce una nuova authority: riusa gli otto campaign layer di `v3/trama-reconcile-contract.json` da `L0-FERRO` a `L7-ENTERPRISE` e le 24 famiglie metodo di `v3/trama-engineering-contract.json`, compresse nei cluster `UNDERSTAND / EXECUTE / PROTECT / EXPERIENCE / CONTROL / FALSIFY`.
+**TRAMA E2E** è il nome canonico semplice del controllo multi-astrazione. Non introduce una nuova authority: riusa gli otto campaign layer di `tests/contracts/trama-reconcile-contract.json` da `L0-FERRO` a `L7-ENTERPRISE` e le 24 famiglie metodo di `tests/contracts/trama-engineering-contract.json`, compresse nei cluster `UNDERSTAND / EXECUTE / PROTECT / EXPERIENCE / CONTROL / FALSIFY`.
 
 Ogni PR dichiara i layer toccati e un witness di allineamento con i layer adiacenti. Il gate TRAMA gira su **ogni pull request**, lega base/head Git, valida il body concreto, verifica purpose admission dei nuovi file e impedisce `NO_SEMANTIC_DELTA` quando cambia un input semanticamente tracciato. Il repository-purpose census resta globale: si elimina solo ciò che è qualificato per il ritiro e coperto da deletion oracle; non si cancella per età o naming.
+
+
+## LEVEL-ICTC/1 — minimal contract for transferable evidence-driven development
+
+**Status: method-transfer candidate (SOURCE), not an ICTC implementation, CORA
+installation or runtime/product endorsement.** This paragraph consumes the
+existing ICTC owners. No new authority, CI workflow, service, procedure, source
+registry, state machine or decision maker is introduced.
+
+1. **Human intention (A0):** a bounded product requirement specifies actors,
+   object, expected outcome, exclusions, effects and permissions. Its
+   classification cannot change because an AI proposal sounds credible.
+   Use the existing [intent-convergence DoD](PROCEDURE_INTENT_CONVERGENCE_DOD_2026-08-18.md)
+   and [authority matrix](authority-matrix.yaml), not a new owner.
+2. **Backward acceptance graph:** a top-level outcome requires all named
+   leaves: correct owner/classification, authorized state transition,
+   persistence/readback, negative oracle and independent human decision
+   where applicable. Missing leaves remain BLOCKED, never compensated by
+   model coverage or a favorable semantic score.
+3. **One change unit:** observe actual original Git BASE/TREE, enumerate
+   consumers and propose a reversible slice with real source change,
+   tests, rollback and PR. Do not alter a protected workflow merely to
+   obtain a convenient new gate. Reuse existing Node/CI owners.
+4. **Counterexamples:** distinguish `tests/verification/saturation.mjs` (136 finite
+   scenarios / 12 *preassigned* novelty primitives) from
+   `tests/verification/release-readiness-e2-product-mutants.mjs` (real file changes in
+   an isolated copy and a real E2 oracle). A survivor reopens the
+   relevant leaf. The models cannot substitute for runtime results.
+5. **Adaptive continuation:** a coding agent proposes the next unresolved
+   leaf; CORA's existing portable ZIP can carry a read-only source
+   dossier. Total N is unknown until the actual rounds occur. A changed
+   contract requires review; repeated source/evidence-identical rounds
+   call for replanning. A conversational "done" is not an execution receipt.
+6. **Exact-revision delivery:** bind final candidate and test claims to
+   the same real PR HEAD SHA and known build/test environment. New
+   commits invalidate prior final-HEAD conclusions; postmerge requires
+   new-main readback. E3-HUMAN/E4-DEPLOY remain separate.
+
+**Adversarial conditions:** forged `sourceClass`, skipped RN-01
+classification, second owner, forged reviewer, wrong-SHA CI receipt,
+surviving physical mutant or changed protected original must refuse
+its dependent conclusion. Product/review remain `BLOCKED_EXTERNAL`
+without original witnesses.
+
+**Why the separate game demo matters:** CORA's proposed LEVEL experiment
+applies contract→slice→test→evidence→PR to an original web platform game
+in a new repo. ICTC contributes *documented methodological analogies*;
+it does not install CORA, adopt the game or prove shared execution.
+
+[Cross-project method](https://github.com/Luke883i/cora/blob/docs/readme-product-multichannel-pr47/docs/CONTINUOUS_DEVELOPMENT.md)
+is subordinate to [the original ICTC agent contract](../AGENTS.md).
+This is **documentation only**, not a migration, release or product gate.

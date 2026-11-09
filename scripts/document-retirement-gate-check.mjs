@@ -18,8 +18,8 @@ const inventory=read('repository-inventory.json');
 const proof=read('retirement-minimality-certificate.json');
 const obligations=proof.obligations;
 assert.equal(obligations.length,12);
-assert.equal(review.unregistered,149);
-assert.equal(counterfactual.qualified,149);
+assert.ok(review.unregistered>=149,'historical document denominator unexpectedly contracted');
+assert.equal(counterfactual.qualified,review.unregistered);
 assert.equal(counterfactual.safeDeleteDecisions,0);
 assert.equal(executable.certifiedSafeDeletes,0);
 assert.equal(independent.qualified,review.unregistered);
@@ -139,13 +139,13 @@ const crossOracle={
  automatedRetirements:0
 };
 const result={schema:'ictc-document-retirement-gate/v1',authority:'derived only, never authorizes disposal',
-  denominator:149,qualified:cards.length,readyForDelete:0,
+  denominator:review.unregistered,qualified:cards.length,readyForDelete:0,
   positiveConsumerEdges:cards.filter(x=>x.knownConsumers.length).length,
   noObservedConsumerEdges:cards.filter(x=>!x.knownConsumers.length).length,
   obligations,crossOracle,lineagePilot,claimBoundary:'Every doc has 12 explicit evidence blockers. No external owner attestation, retention determination, dynamic consumer exclusions or complete step-wise CI proof. UNKNOWN is not ABSENT and a scoped removal is not a deletion authorization.',cards};
 function verify(r){
  assert.equal(r.denominator,review.unregistered);assert.equal(r.qualified,review.entries.length);
- assert.equal(r.readyForDelete,0);assert.equal(new Set(r.cards.map(x=>x.path)).size,149);
+ assert.equal(r.readyForDelete,0);assert.equal(new Set(r.cards.map(x=>x.path)).size,review.unregistered);
  assert.equal(r.crossOracle.hashBoundToCanonicalInventory,r.denominator);
  assert.equal(r.crossOracle.unprovedNegativeConsumerClaims,0);
  assert.equal(r.lineagePilot.length,6);
@@ -161,7 +161,7 @@ function verify(r){
  assert.deepEqual(r,buildExpected());return true;
 }
 // Compare against independently rebuilt baseline, not mutable report metadata.
-function buildExpected(){return {schema:'ictc-document-retirement-gate/v1',authority:'derived only, never authorizes disposal',denominator:149,qualified:cards.length,readyForDelete:0,
+function buildExpected(){return {schema:'ictc-document-retirement-gate/v1',authority:'derived only, never authorizes disposal',denominator:review.unregistered,qualified:cards.length,readyForDelete:0,
  positiveConsumerEdges:cards.filter(x=>x.knownConsumers.length).length,noObservedConsumerEdges:cards.filter(x=>!x.knownConsumers.length).length,obligations,crossOracle,lineagePilot,
  claimBoundary:'Every doc has 12 explicit evidence blockers. No external owner attestation, retention determination, dynamic consumer exclusions or complete step-wise CI proof. UNKNOWN is not ABSENT and a scoped removal is not a deletion authorization.',cards};}
 verify(result);

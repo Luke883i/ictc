@@ -30,19 +30,19 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 
 | Route | Se stai cambiando… | Parti da | Feedback più vicino | Prima della PR |
 |---|---|---|---|---|
-| `ui` | layout, label, componenti, responsive, interazioni locali | owner della surface in `v3/semantic-owner-contract.json` + `authority-matrix.yaml` | `node v3/uiux-converge-0-check.mjs` | `npm test` |
-| `api` | route HTTP, request/response, permessi | `docs/openapi.yaml` + handler runtime | `node v3/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
-| `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node v3/ai-network-policy-check.mjs` | `npm test` |
-| `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
+| `ui` | layout, label, componenti, responsive, interazioni locali | owner della surface in `v3/semantic-owner-contract.json` + `authority-matrix.yaml` | `node tests/verification/uiux-converge-0-check.mjs` | `npm test` |
+| `api` | route HTTP, request/response, permessi | `docs/openapi.yaml` + handler runtime | `node tests/verification/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
+| `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node tests/verification/ai-network-policy-check.mjs` | `npm test` |
+| `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node tests/verification/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
 | `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
 | `retirement` | eliminazione o consolidamento di documenti, software, fixture o asset | [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) + [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md) + owner eseguibile | grafo tipizzato con dynamic-load/external-entry e rimozione in sandbox | prove positive/negative, rollback e CI exact-head |
-| `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node v3/convergence-authority-check.mjs` | `npm test` |
-| `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node v3/as-is-convergence-check.mjs` | `npm test` |
-| `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node v3/security-boundary-check.mjs` | `npm run release:check` |
-| `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node v3/evidence-check.mjs` | `npm run test:current:runtime` |
+| `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node tests/verification/convergence-authority-check.mjs` | `npm test` |
+| `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node tests/verification/as-is-convergence-check.mjs` | `npm test` |
+| `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node tests/verification/security-boundary-check.mjs` | `npm run release:check` |
+| `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node tests/verification/evidence-check.mjs` | `npm run test:current:runtime` |
 | `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
-| `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `v3/c3-enterprise-runtime-closure.json` + `v3/runtime/enterprise-runtime-kernel.mjs` | `node v3/c3-enterprise-bench-dod-check.mjs` | `npm test` |
-| `release` | release-readiness V.1 Experimental, confini enterprise e GO/NO-GO umano | `v3/release-identity.json` + `docs/RELEASE.md` (guida E2 non autoritativa) | `node v3/release-readiness-e2-gate.mjs` | `npm run release:check` + evidenze E3/E4 distinte |
+| `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `tests/contracts/c3-enterprise-runtime-closure.json` + `src/runtime/enterprise-runtime-kernel.mjs` | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` |
+| `release` | release-readiness V.1 Experimental, confini enterprise e GO/NO-GO umano | `v3/release-identity.json` + `docs/RELEASE.md` (guida E2 non autoritativa) | `node tests/verification/release-readiness-e2-gate.mjs` | `npm run release:check` + evidenze E3/E4 distinte |
 
 Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/gov-01f-policy.json` (`agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `research/`, `dependabot/`; `dependabot/` è riservato agli aggiornamenti automatici). Il routing distingue `runtime` locale/compatibility da `enterprise-runtime`: il secondo parte dal contratto C3 e non usa SQLite/RuntimeStore come prova del runtime orizzontale.
 
@@ -113,7 +113,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 | API | `docs/openapi.yaml` + handler runtime | endpoint UI-only paralleli |
 | documentazione | `DOCUMENTATION_STANDARD.md` + manifest | authority implicita per data/nome file |
 | test/release | current release suite + CI | un gate PR alternativo |
-| runtime enterprise orizzontale | `v3/c3-enterprise-runtime-closure.json` + `v3/runtime/enterprise-runtime-kernel.mjs` + `v3/runtime/postgres-enterprise-authority.mjs` | collassare il percorso enterprise nel `RuntimeStore`/SQLite compatibility path |
+| runtime enterprise orizzontale | `tests/contracts/c3-enterprise-runtime-closure.json` + `src/runtime/enterprise-runtime-kernel.mjs` + `src/runtime/postgres-enterprise-authority.mjs` | collassare il percorso enterprise nel `RuntimeStore`/SQLite compatibility path |
 
 ## Native Semantic Lattice 3.2
 
@@ -147,28 +147,28 @@ I documenti storici classificati come lineage non sono autorità corrente. `00_P
 npm run docs:check
 npm test
 npm run release:check
-node v3/convergence-authority-check.mjs
+node tests/verification/convergence-authority-check.mjs
 ```
 
 Per lavoro specifico sulla composizione/presentation corrente:
 
 ```bash
-node v3/current-semantic-3-2.mjs
-node v3/native-semantic-lattice-3-2-check.mjs
-node v3/native-semantic-lattice-3-2-ui-check.mjs
-node v3/workspace-chrome-3-3-saturation.mjs
-node v3/ui-finetuning-3-4-check.mjs
-node v3/ui-finetuning-3-4-saturation.mjs
-node v3/native-semantic-lattice-3-2-saturation.mjs
-node v3/native-semantic-lattice-3-2-stress.mjs
+node scripts/current-semantic-3-2.mjs
+node tests/verification/native-semantic-lattice-3-2-check.mjs
+node tests/verification/native-semantic-lattice-3-2-ui-check.mjs
+node tests/verification/workspace-chrome-3-3-saturation.mjs
+node tests/verification/ui-finetuning-3-4-check.mjs
+node tests/verification/ui-finetuning-3-4-saturation.mjs
+node tests/verification/native-semantic-lattice-3-2-saturation.mjs
+node tests/verification/native-semantic-lattice-3-2-stress.mjs
 ```
 
 Per il contratto C5 di owner/freshness:
 
 ```bash
-node v3/c5-semantic-owner-check.mjs
-node v3/c5-semantic-owner-saturation.mjs
-node v3/c5-needs-audit-saturation.mjs
+node tests/verification/c5-semantic-owner-check.mjs
+node tests/verification/c5-semantic-owner-saturation.mjs
+node tests/verification/c5-needs-audit-saturation.mjs
 ```
 
 I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il **ritiro** della 3.4 e la relocation degli invarianti negli owner correnti. `npm run docs:saturation` falsifica il modello documentale. Trial modellati, source-string mutation executions, CI e browser runtime sono classi di evidenza diverse. Private vulnerability reporting, branch protection/ruleset e deployment controls richiedono osservazione esterna e non possono essere auto-certificati da questi file.
@@ -187,7 +187,7 @@ Il nome breve della verifica completa dal substrato tecnico all'esperienza final
 
 ## Se chiedi “ora che si fa?”
 
-Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `v3/trama-reconcile-contract.json` e restituire una sola prossima slice con:
+Per un utente non tecnico, `ora`, `prosegui`, `continua` o `what next` sono un comando di governance, non una richiesta di scegliere file o test. L'assistente deve eseguire **GLOBAL_ACT**, leggere `docs/ENGINEERING_COMPASS.md`, verificare lo stato reale contro `tests/contracts/trama-reconcile-contract.json` e restituire una sola prossima slice con:
 
 - stato **locale**, **intermedio** e **globale**;
 - DoD ancora mancanti;

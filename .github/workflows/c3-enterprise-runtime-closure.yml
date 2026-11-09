@@ -14,17 +14,17 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: Enterprise runtime closure contract
-        run: node v3/c3-enterprise-runtime-closure-check.mjs
+        run: node tests/verification/c3-enterprise-runtime-closure-check.mjs
       - name: Three-million semantic mutations per original runtime gap
-        run: node v3/c3-enterprise-runtime-gap-mutation-45m.mjs
+        run: node tests/verification/c3-enterprise-runtime-gap-mutation-45m.mjs
       - name: One-million original cross-gap collapse mutations
-        run: node v3/c3-enterprise-runtime-collapse-1m.mjs
+        run: node scripts/c3-enterprise-runtime-collapse-1m.mjs
       - name: Enterprise benchmark DoD contract
-        run: node v3/c3-enterprise-bench-dod-check.mjs
+        run: node tests/verification/c3-enterprise-bench-dod-check.mjs
       - name: One-million semantic mutations for each benchmark aspect
-        run: node v3/c3-enterprise-bench-aspect-mutation-18m.mjs
+        run: node tests/verification/c3-enterprise-bench-aspect-mutation-18m.mjs
       - name: One-million benchmark edge and stress mutations
-        run: node v3/c3-enterprise-bench-edge-stress-1m.mjs
+        run: node tests/verification/c3-enterprise-bench-edge-stress-1m.mjs
 
   postgres-bench:
     runs-on: ubuntu-24.04
@@ -54,40 +54,40 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: PostgreSQL schema and application-role setup
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs setup
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs setup
       - name: Enterprise runtime factory profile
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs factory
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs factory
       - name: PostgreSQL RLS and NOBYPASSRLS application connection
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs rls
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs rls
       - name: PostgreSQL transaction-local tenant context
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs tenant-tx
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs tenant-tx
       - name: PostgreSQL advisory subject lock
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs advisory
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs advisory
       - name: PostgreSQL subject current and version write
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs subject-write
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs subject-write
       - name: PostgreSQL tenant ledger write
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs ledger-write
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs ledger-write
       - name: PostgreSQL first enterprise subject commit
-        run: node v3/c3-enterprise-bench-postgres-smoke.mjs commit
+        run: node scripts/c3-enterprise-bench-postgres-smoke.mjs commit
       - name: Real PostgreSQL two-replica semantic integration
-        run: node v3/c3-enterprise-bench-integration-check.mjs
+        run: node tests/verification/c3-enterprise-bench-integration-check.mjs
       - name: HTTP replica health boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs health
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs health
       - name: HTTP 1000-client zero-error boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-status
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs fleet-status
       - name: HTTP 1000-client latency boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet-latency
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs fleet-latency
       - name: HTTP 1000-client fleet write boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs fleet
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs fleet
       - name: HTTP hot-tenant 200-write boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs hot
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs hot
       - name: HTTP same-subject contention boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs contention
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs contention
       - name: HTTP concurrent replay boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs replay
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs replay
       - name: HTTP cross-replica blob boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs blob
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs blob
       - name: HTTP accepted-write node-death boundary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs death
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs death
       - name: Two-process HTTP 1000-client concurrency canary
-        run: node v3/c3-enterprise-bench-http-1000-check.mjs all
+        run: node tests/verification/c3-enterprise-bench-http-1000-check.mjs all

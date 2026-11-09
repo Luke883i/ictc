@@ -13,7 +13,7 @@ const journeys=headings.map((h,i)=>{
  return {id:h[1],scenario:h[2].trim().replace(/^·\s*/,''),source,steps};
 });
 const total=journeys.reduce((n,j)=>n+j.steps.length,0);
-const result={schema:'ictc-journey-e2e-denominator/v1',source,journeys:journeys.length,processes:new Set(journeys.map(j=>j.id)).size,declaredStepDenominator:total,fullStepRuntimeAttestations:0,fullStepCoveragePercentage:0,scopedReadbackWitness:{test:'v3/e2e-coverage-7x3-check.mjs',cells:21,semantics:'process x role projection only; deliberately not mapped to workflow steps'},globalProductE2ECoverage:null,
+const result={schema:'ictc-journey-e2e-denominator/v1',source,journeys:journeys.length,processes:new Set(journeys.map(j=>j.id)).size,declaredStepDenominator:total,fullStepRuntimeAttestations:0,fullStepCoveragePercentage:0,scopedReadbackWitness:{test:'tests/verification/e2e-coverage-7x3-check.mjs',cells:21,semantics:'process x role projection only; deliberately not mapped to workflow steps'},globalProductE2ECoverage:null,
  status:'OPEN_NOT_GLOBALLY_PROVEN',claimBoundary:'Counts numbered steps for nine documented journey variants (7 processes); not exhaustive of all UI, roles, branches, APIs, deployments or negative outcomes. The 0 attested here is an evidence-mapping deficit, NOT an assertion that no separate test exercises these steps. Require independent exact-head step-level runtime receipts for numerator.',details:journeys};
 mkdirSync(join(root,'artifacts'),{recursive:true});writeFileSync(join(root,'artifacts/e2e-journey-denominator.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({status:result.status,processes:result.processes,journeys:result.journeys,steps:total,fullStepAttestations:0,globalProductE2ECoverage:null}));

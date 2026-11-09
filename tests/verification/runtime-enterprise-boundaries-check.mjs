@@ -1,0 +1,69 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { RuntimeStore } from '../../src/runtime-store.mjs';
+import { sha256 } from '../../src/domain.mjs';
+import { createTenantAuthority } from '../../src/runtime/tenant-authority.mjs';
+import { createAbuseBudget } from '../../src/runtime/abuse-budget.mjs';
+import { createOperationalObservability } from '../../src/runtime/operational-observability.mjs';
+import { signScannerAttestation, verifyScannerAttestation } from '../../src/runtime/attachment-scanner.mjs';
+import { ensurePrivacyState, erasePrivacySubject, normalizePrivacyPolicy } from '../../src/runtime/privacy-lifecycle.mjs';
+import { createEncryptedRecoveryPoint, restoreEncryptedRecoveryPoint } from '../../src/runtime/recovery.mjs';
+
+const root=await mkdtemp(path.join(os.tmpdir(),'ictc-enterprise-boundaries-'));
+const actor={id:'tester',role:'admin',permissions:[]};
+try{
+  const tenantRoot=path.join(root,'tenant-runtime'),tenantEnv={ICTC_MULTI_TENANT:'1',ICTC_TENANT_DIRECTORY_JSON:JSON.stringify({defaultTenantId:'alpha',tenants:[{id:'alpha',subjects:['alice'],groups:['alpha']},{id:'beta',subjects:['bob'],groups:['beta']}]})};
+  const authority=await createTenantAuthority({runtimeRoot:tenantRoot,env:tenantEnv,maxOpenStores:2,createStore:async p=>new RuntimeStore(p),initializeStore:store=>store.init()});
+  await authority.runTenant('alpha',async()=>{authority.store.state.settings.organization.name='Alpha';await authority.store.persist();});
+  await authority.runTenant('beta',async()=>{assert.notEqual(authority.store.state.settings.organization.name,'Alpha');authority.store.state.settings.organization.name='Beta';await authority.store.persist();});
+  await authority.runTenant('alpha',async()=>assert.equal(authority.store.state.settings.organization.name,'Alpha'));
+  assert.equal(authority.projection().isolation,'sqlite-per-tenant');await authority.closeAll();
+
+  // R-01: bootstrap and reopen the *same* SQLite root, preserving the original bound head.
+  const privacyRoot=path.join(root,'privacy-restart');
+  const firstPrivacy=await new RuntimeStore(privacyRoot).init();
+  await ensurePrivacyState(firstPrivacy);
+  assert.equal(firstPrivacy.verifyChain().ok,true);
+  assert.ok(Array.isArray(firstPrivacy.snapshot().privacyErasureReceipts));
+  const baselineRevision=firstPrivacy.snapshot().revision,baselineHead=firstPrivacy.verifyChain().head;
+  await ensurePrivacyState(firstPrivacy);
+  assert.equal(firstPrivacy.snapshot().revision,baselineRevision,'repeated privacy bootstrap must not mint a new event');
+  firstPrivacy.close();
+  const reopenedPrivacy=await new RuntimeStore(privacyRoot).init();
+  await ensurePrivacyState(reopenedPrivacy);
+  assert.equal(reopenedPrivacy.verifyChain().ok,true,'privacy reopen must preserve state-to-head integrity');
+  assert.equal(reopenedPrivacy.verifyChain().stateBound,true);
+  assert.equal(reopenedPrivacy.verifyChain().head,baselineHead,'reopen must preserve audit HEAD');
+  assert.equal(reopenedPrivacy.snapshot().revision,baselineRevision,'reopen must not mint an audit event');
+  await reopenedPrivacy.mutate(actor,'privacy.receipt-test',{type:'test-fixture',id:'privacy-restart'}, {}, draft=>{draft.privacyErasureReceipts.push({id:'retained-receipt'});return{retained:true};});
+  const receiptHead=reopenedPrivacy.verifyChain().head;
+  await ensurePrivacyState(reopenedPrivacy);
+  assert.equal(reopenedPrivacy.snapshot().privacyErasureReceipts[0]?.id,'retained-receipt','bootstrap must not erase pre-existing privacy receipts');
+  assert.equal(reopenedPrivacy.verifyChain().head,receiptHead,'non-empty privacy receipt list must not trigger a redundant binding');
+  reopenedPrivacy.state.privacyErasureReceipts.push({id:'unbound-test'});
+  assert.equal(reopenedPrivacy.verifyChain().ok,false,'silent unbound mutation must remain detectable');
+  reopenedPrivacy.close();
+
+  const dataRoot=path.join(root,'data'),store=await new RuntimeStore(dataRoot).init();await ensurePrivacyState(store);
+  const [file]=await store.saveAttachments([{name:'proof.txt',mime:'text/plain',dataBase64:Buffer.from('malware boundary proof').toString('base64')}]);
+  const contributionId='contribution-boundary';await store.mutate(actor,'contribution.recorded',{type:'contribution',id:contributionId},{sha256:file.sha256},draft=>{draft.contributions.push({id:contributionId,links:[],text:'personal payload',note:'sensitive note',attachments:[file],state:'recorded',createdAt:new Date().toISOString(),createdBy:actor.id,enrichedAt:null,aiTrace:null,aiError:null,enrichmentAttempts:0});return draft.contributions.at(-1);});
+  await assert.rejects(()=>store.attachment(file.id),error=>error.code==='attachment-quarantined');assert.equal((await readFile(path.join(store.quarantinePath,file.id),'utf8')),'malware boundary proof');
+  const scanEnv={ICTC_ATTACHMENT_SCANNER_MODE:'external-attested',ICTC_ATTACHMENT_SCANNER_ID:'scanner-test',ICTC_ATTACHMENT_SCANNER_SECRET:'x'.repeat(64)},observedAt=new Date().toISOString(),scanInput={verdict:'clean',scannerId:'scanner-test',scannerVersion:'1.2.3',signatureDbVersion:'db-42',observedAt};scanInput.signature=signScannerAttestation(file,scanInput,scanEnv);const trust=verifyScannerAttestation(file,scanInput,scanEnv);assert.equal(trust.state,'scan-clean');await store.promoteAttachment(file.id);await store.mutate(actor,'attachment.scan.attested',{type:'contribution',id:contributionId},{scanDigest:trust.scanDigest},draft=>{const target=draft.contributions.find(item=>item.id===contributionId).attachments[0];target.trust=trust;target.storage={schemaVersion:'1.0.0',state:'clean',namespace:'attachments-v1'};return target;});assert.equal((await store.attachment(file.id)).buffer.toString(),'malware boundary proof');
+  const cleanFile=path.join(store.cleanAttachmentsPath,file.id),quarantineFile=path.join(store.quarantinePath,file.id);await writeFile(cleanFile,Buffer.from('tampered boundary bytes'));await assert.rejects(()=>store.attachment(file.id),error=>error.code==='attachment-content-mismatch');await writeFile(cleanFile,Buffer.from('malware boundary proof'));await rename(cleanFile,quarantineFile);await assert.rejects(()=>store.attachment(file.id),error=>error.code==='attachment-storage-mismatch');const negativeRecoveryRoot=path.join(root,'recovery-negative'),keyProvider=async()=>({key:Buffer.alloc(32,7),keyId:'test-key',source:'test'});await assert.rejects(()=>createEncryptedRecoveryPoint({store,tenantId:'alpha',destinationRoot:negativeRecoveryRoot,keyProvider}),error=>error.code==='recovery-attachment-namespace-mismatch');await rename(quarantineFile,cleanFile);assert.equal((await store.attachment(file.id)).buffer.toString(),'malware boundary proof');
+
+  store.state.settings.privacy=normalizePrivacyPolicy({enabled:true,retentionDays:30,legalHolds:[{id:'hold-1',subjectType:'contribution',subjectId:contributionId,reason:'litigation'}]});await store.persist();await assert.rejects(()=>erasePrivacySubject({store,actor,type:'contribution',id:contributionId,command:{id:'erase-held'}}),error=>error.code==='privacy-legal-hold');
+  store.state.settings.privacy=normalizePrivacyPolicy({enabled:true,retentionDays:30,legalHolds:[]},store.state.settings.privacy);await store.persist();const beforeDigests=store.persistence.subjectPayloadDigests({type:'contribution',id:contributionId});assert.ok(beforeDigests.length>=2);const erased=await erasePrivacySubject({store,actor,type:'contribution',id:contributionId,command:{id:'erase-free'}});assert.equal(erased.result.state,'erased');assert.equal(store.snapshot().contributions.find(item=>item.id===contributionId).text,'');assert.ok(store.persistence.findSubjectVersion(beforeDigests[0]).payloadErased);
+
+  const sharedPayload={shared:'personal-but-logically-referenced-by-two-subjects'},sharedDigest=sha256(sharedPayload),sharedAt=new Date().toISOString(),baseVersion={revision:null,procedureId:null,predecessorId:null,payloadSha256:sharedDigest,digestBindings:[],payload:sharedPayload,createdAt:sharedAt,createdBy:'tester',action:'synthetic.shared-payload',sourceAuthority:null,semanticSchemaVersion:'test-1.0.0',canonicalizationVersion:'test-v1'};store.persistence._insertVersion({...baseVersion,id:'sv-synthetic-a',subject:{type:'synthetic',id:'synthetic-a'}});store.persistence._insertVersion({...baseVersion,id:'sv-synthetic-b',subject:{type:'synthetic',id:'synthetic-b'}});assert.equal(store.persistence.findSubjectVersion('sv-synthetic-a').payloadSha256,sharedDigest);assert.equal(store.persistence.findSubjectVersion('sv-synthetic-b').payloadSha256,sharedDigest);const erasedSynthetic=store.persistence.eraseSubjectPayloads({type:'synthetic',id:'synthetic-a',receiptSha256:sha256('synthetic-erasure-receipt')});assert.equal(erasedSynthetic,1);assert.equal(store.persistence.findSubjectVersion('sv-synthetic-a').payloadErased,true);const survivingShared=store.persistence.findSubjectVersion(sharedDigest);assert.equal(survivingShared.payloadErased,false);assert.deepEqual(survivingShared.payload,sharedPayload);assert.equal(survivingShared.subject.id,'synthetic-b');
+
+  let clock=0;const limiter=createAbuseBudget({capacity:2,refillPerSecond:1,clock:()=>clock});assert.equal(limiter.consume('tenant|ip').allowed,true);assert.equal(limiter.consume('tenant|ip').allowed,true);assert.equal(limiter.consume('tenant|ip').allowed,false);clock=1000;assert.equal(limiter.consume('tenant|ip').allowed,true);
+  const logs=[];const telemetry=createOperationalObservability({sink:line=>logs.push(line),clock:()=>clock});const trace=telemetry.start({method:'POST',pathname:'/api/contributions/secret-id',tenantId:'alpha'});clock+=17;trace.finish({status:503,code:'test-error'});assert.equal(telemetry.snapshot().counters.errorsTotal,1);assert.ok(!logs.join('\n').includes('payload'));
+
+  const month=new Date().toISOString().slice(0,7);store.persistence.reserveAiBudget({id:'r1',month,budgetUsd:1,reservedUsd:.75,observedUsageUsd:0});assert.throws(()=>store.persistence.reserveAiBudget({id:'r2',month,budgetUsd:1,reservedUsd:.5,observedUsageUsd:0}),error=>error.code==='ai-budget-reservation-exceeded');store.persistence.releaseAiBudget({id:'r1'});store.persistence.reserveAiBudget({id:'r2',month,budgetUsd:1,reservedUsd:.5,observedUsageUsd:0});store.persistence.settleAiBudget({id:'r2',actualUsd:.2});
+
+  await writeFile(path.join(store.quarantinePath,'orphan-uncommitted'),Buffer.from('must-not-enter-recovery'));
+  const recoveryRoot=path.join(root,'recovery'),backup=await createEncryptedRecoveryPoint({store,tenantId:'alpha',destinationRoot:recoveryRoot,keyProvider}),manifest=JSON.parse(await readFile(path.join(backup.path,'manifest.json'),'utf8')),restoreTarget=path.join(root,'restored');assert.ok(backup.files>=1);assert.equal(manifest.keyDerivation,'hmac-sha256-v1');assert.equal(manifest.entries.some(entry=>entry.logicalPath.includes('orphan-uncommitted')),false);assert.equal(manifest.attachmentInventoryCount,0);const restoredEvidence=await restoreEncryptedRecoveryPoint({sourceDir:backup.path,targetRuntimeDir:restoreTarget,keyProvider});assert.equal(restoredEvidence.verified,true);const restored=await new RuntimeStore(restoreTarget).init();assert.equal(restored.snapshot().contributions.find(item=>item.id===contributionId).state,'erased');assert.equal(restored.persistence.findSubjectVersion('sv-synthetic-a').payloadErased,true);assert.equal(restored.persistence.findSubjectVersion(sharedDigest).subject.id,'synthetic-b');assert.equal(restored.verifyChain().ok,true);restored.close();store.close();
+  console.log('runtime-enterprise-boundaries-check: ok (tenant isolation + attachment namespace/digest + privacy shared-digest safety + key-separated recovery + abuse/observability + atomic AI budget)');
+}finally{await rm(root,{recursive:true,force:true});}

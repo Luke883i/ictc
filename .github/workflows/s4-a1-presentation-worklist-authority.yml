@@ -27,19 +27,19 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          node --check v3/runtime/procedure-worklist-presentation.mjs
-          node --check v3/public/ui/procedure-worklist.js
-          node --check v3/public/ui/procedure-sequential-rn-ec.js
-          node --check v3/public/ui/grc-workspace-3-2.js
-          node --check v3/s4-a1-worklist-presentation-check.mjs
-          node --check v3/s4-a1-convergence-saturation-1m.mjs
+          node --check src/runtime/procedure-worklist-presentation.mjs
+          node --check public/ui/procedure-worklist.js
+          node --check public/ui/procedure-sequential-rn-ec.js
+          node --check public/ui/grc-workspace-3-2.js
+          node --check tests/verification/s4-a1-worklist-presentation-check.mjs
+          node --check tests/verification/s4-a1-convergence-saturation-1m.mjs
       - name: A1 presentation contract
-        run: node v3/s4-a1-worklist-presentation-check.mjs
+        run: node tests/verification/s4-a1-worklist-presentation-check.mjs
       - name: A1 product-CI convergence mutation saturation 1M
-        run: node v3/s4-a1-convergence-saturation-1m.mjs
+        run: node tests/verification/s4-a1-convergence-saturation-1m.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Browser check syntax
-        run: python -m py_compile v3/browser-s4-a1-worklist-authority.py
+        run: python -m py_compile tests/browser/browser-s4-a1-worklist-authority.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -76,10 +76,10 @@ jobs:
           set -Eeuo pipefail
           export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=4821 PORT=4821 ICTC_SCHEDULER_TICK_MS=100000
           status=0
-          python -u v3/browser-s4-a1-worklist-authority.py || status=$?
+          python -u tests/browser/browser-s4-a1-worklist-authority.py || status=$?
           cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-s4-a1-server.log || true
           if [[ "$status" -ne 0 ]]; then
-            FAILED_BROWSER_SCRIPT='v3/browser-s4-a1-worklist-authority.py' node scripts/browser-failure-provenance.mjs || true
+            FAILED_BROWSER_SCRIPT='tests/browser/browser-s4-a1-worklist-authority.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
       - name: Publish machine-readable A1 browser provenance
@@ -107,7 +107,7 @@ jobs:
             state=error
           fi
           description="${description:0:140}"
-          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a1-worklist-authority.py?phase=${phase}"
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-s4-a1-worklist-authority.py?phase=${phase}"
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a1-browser' -f description="$description" -f target_url="$target" >/dev/null || true
           echo "ICTC_S4_A1_BROWSER_PHASE=$phase"
       - name: Stop DEMO runtime

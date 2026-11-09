@@ -32,15 +32,15 @@ Nessuna scelta tecnica richiesta. Esprimi solo intento di prodotto o accettazion
 - **Preimage / next:** UNBOUND · C1-COMPAT-CONTRACTION.
 
 ## TRAMA E2E — FERRO → UTENTE
-- **Canone:** TRAMA E2E · layer owner v3/trama-reconcile-contract.json#campaigns.
+- **Canone:** TRAMA E2E · layer owner tests/contracts/trama-reconcile-contract.json#campaigns.
 - **Strati:** L0-FERRO → L1-PERSISTENCE → L2-RUNTIME → L3-SEMANTIC → L4-GOVERNANCE → L5-PRODUCT → L6-EXPERIENCE → L7-ENTERPRISE.
 - **Cluster metodi:** UNDERSTAND · EXECUTE · PROTECT · EXPERIENCE · CONTROL · FALSIFY; 24 famiglie coperte una volta sola.
 - **Allineamento:** ogni PR è valutata; layer + witness adiacente + exact-head + purpose admission + retirement oracle + ACT post-merge.
 
 ## LOSSLESS SEMANTICS 0.11
 - **Profilo:** ICTC-LOSSLESS-SEMANTICS-0.11 · authority-zero · global N non raggiunta.
-- **Fingerprint input semantici:** 1e43cc1cf433fa96 su 59 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
-- **Semantic core 0.11:** 1007e81096d76272 · revision 0.11.4 · self-sufficient e fail-closed.
+- **Fingerprint input semantici:** 2486118a68308740 su 59 owner/input derivati. Se cambia, questa Bussola deve essere rigenerata; altrimenti la PR dichiara NO_SEMANTIC_DELTA.
+- **Semantic core 0.11:** 675e1b62cbf856a8 · revision 0.11.5 · self-sufficient e fail-closed.
 - **Sequenza canonica combinata:** C1-COMPAT-CONTRACTION -> C3-CAPACITY-CONTRACT -> C4-AI-EVAL-DRIFT · owner: docs/convergence/convergence-authority.json#planningState. 0.11 non possiede il cursore.
 - **Visible cutover:** ADJUSTED = DELTA_material && TARGET && !LEGACY && EPOCH_BOUND && WITNESS_BOUND; R1-R5 restano responsabilità di falsificazione, compresse negli owner esistenti.
 - **Closure:** Q1/Q2 sono evidenza generata; implementation absorption 656/656 resta distinta dalla forensic atomic closure bloccata finché manca provenance atomica.
