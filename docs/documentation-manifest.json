@@ -315,6 +315,1516 @@
       "mode": "reference",
       "authorityTopic": null,
       "authoritative": false
+    },
+    {
+      "id": "post275-001",
+      "path": "docs/05_UI_OBJECT_MODEL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-002",
+      "path": "docs/06_INFORMATION_ARCHITECTURE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-003",
+      "path": "docs/07_SOURCE_ENRICHMENT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-004",
+      "path": "docs/08_SCHEDULED_SCOUTING.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-005",
+      "path": "docs/09_INCIDENT_JOURNEYS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-006",
+      "path": "docs/10_LOCAL_AI_CONTRACT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-007",
+      "path": "docs/12_HARDENING_COMPRESSION_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-008",
+      "path": "docs/12_SECURITY_AND_STANDARDS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-009",
+      "path": "docs/13_DEVOPS_AND_CI_CD.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-010",
+      "path": "docs/14_ITERATION_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-011",
+      "path": "docs/16_VALIDATION_STRATEGY.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-012",
+      "path": "docs/17_SATURATION_V2.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-013",
+      "path": "docs/19_DELIVERY_REPORT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-014",
+      "path": "docs/22_ASCII_RUNTIME_POC.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-015",
+      "path": "docs/23_VALIDATION_REPORT_V2.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-016",
+      "path": "docs/24_BLUEPRINT_V2_ITALIANO.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-017",
+      "path": "docs/25_ACTIONABLE_PROMPT_POST_MERGE.md",
+      "lifecycle": "source-input",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source material or historical agent prompt; no executable or decision authority."
+    },
+    {
+      "id": "post275-018",
+      "path": "docs/A6_UX4_UIUX_LANDING_CONTRACT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-019",
+      "path": "docs/ACCESSIBILITY.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-020",
+      "path": "docs/AI_AGENT_BUNDLE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-021",
+      "path": "docs/ASSURANCE_RISK_CONTAINMENT.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-022",
+      "path": "docs/BENCHMARK_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-023",
+      "path": "docs/BUSINESS_SURFACE_CONVERGENCE_2026-08-20.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-024",
+      "path": "docs/CAPABILITY_CLOSURE_E2.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-025",
+      "path": "docs/CODESPACES.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-026",
+      "path": "docs/CONFIGURATION.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-027",
+      "path": "docs/CONVERGENT_KERNEL_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-028",
+      "path": "docs/CORE_UI_COPY_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-029",
+      "path": "docs/CORE_UI_DESIGN.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-030",
+      "path": "docs/CORE_UI_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-031",
+      "path": "docs/DATA_AND_STORAGE.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-032",
+      "path": "docs/DECIDE_0_DECISION_LATTICE.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-033",
+      "path": "docs/DECISION_RECORDS.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-034",
+      "path": "docs/DEMO_EVIDENCE_LATTICE_3_0.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-035",
+      "path": "docs/DEMO_EVIDENCE_LATTICE_3_0_COMPLETENESS.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-036",
+      "path": "docs/DEMO_OUTCOME_AUDIT_DOD_2026-08-11.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-037",
+      "path": "docs/DEMO_SEED_PMI_AUDIT_2026-08-11.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-038",
+      "path": "docs/DEMO_SUITE_2_2_RUNTIME_SEMANTIC.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-039",
+      "path": "docs/DEMO_SUITE_3_0_CUTOVER.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-040",
+      "path": "docs/DESIGN_SYSTEM_V3.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-041",
+      "path": "docs/DOD.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-042",
+      "path": "docs/ENDUSER_SIMULATIONS_V3.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-043",
+      "path": "docs/ENTERPRISE_1_7_VISUAL_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-044",
+      "path": "docs/ENTERPRISE_1_8_WORKBENCH_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-045",
+      "path": "docs/ENTERPRISE_2_ADMIN_NAVIGATION_FIX.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-046",
+      "path": "docs/ENTERPRISE_2_CANDIDATE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-047",
+      "path": "docs/ENTERPRISE_2_COMPLIANCE_FLOW.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-048",
+      "path": "docs/ENTERPRISE_2_DESIGN_SYSTEM.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-049",
+      "path": "docs/ENTERPRISE_2_EDITORIAL_REVIEW.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-050",
+      "path": "docs/ENTERPRISE_2_PROCESS_CATALOG.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-051",
+      "path": "docs/ENTERPRISE_2_UI_STANDARD.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-052",
+      "path": "docs/ENTERPRISE_2_UI_STANDARD_RUNTIME_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-053",
+      "path": "docs/ENTERPRISE_CONVERGENCE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-054",
+      "path": "docs/ENTERPRISE_RUNTIME_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-055",
+      "path": "docs/ENTERPRISE_T_ASSURANCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-056",
+      "path": "docs/EPISTEMIC_LATTICE_PROFESSIONAL_SATURATION_2026-08-11.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-057",
+      "path": "docs/FINAL_VIEW_COMPRESSION_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-058",
+      "path": "docs/GAP_REGISTER.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-059",
+      "path": "docs/GOV_01F_FREE_PRIVATE_GOVERNANCE.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-060",
+      "path": "docs/HONEST_ENTERPRISE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-061",
+      "path": "docs/HUMAN_USER_TEST_PROTOCOL.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-062",
+      "path": "docs/MINING_REFERENCES.md",
+      "lifecycle": "source-input",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source material or historical agent prompt; no executable or decision authority."
+    },
+    {
+      "id": "post275-063",
+      "path": "docs/MULTI_CLIENT_READINESS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-064",
+      "path": "docs/OBJECT_FOCUSED_ACTION_MODEL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-065",
+      "path": "docs/ONTO_COMPLIANCE_HORIZON_V1.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-066",
+      "path": "docs/ONTO_EPISTEMIC_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-067",
+      "path": "docs/ONTO_EPISTEMIC_CLARITY_V3.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-068",
+      "path": "docs/OPEN_SOURCE_TERMS.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-069",
+      "path": "docs/OPERATIONS.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-070",
+      "path": "docs/OPTIMAL_MULTI_USER_JOURNEY.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-071",
+      "path": "docs/POST_MERGE_AUDIT_PR1_PR3.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-072",
+      "path": "docs/POST_MERGE_HARDENING_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-073",
+      "path": "docs/PR60_GLOBAL_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-074",
+      "path": "docs/PRESENTATION_AUTHORITY_RETIREMENT_4_0_CHAIN.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-075",
+      "path": "docs/PRESENTATION_AUTHORITY_RETIREMENT_4_0_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-076",
+      "path": "docs/PREVIOUS_ANALYSES_RECONCILIATION.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-077",
+      "path": "docs/PROCEDURE_AUTHORITY_CONSTITUTION_C0_2026-08-19.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-078",
+      "path": "docs/PROCEDURE_INTENT_CONVERGENCE_DOD_2026-08-18.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-079",
+      "path": "docs/PROCEDURE_MARKET_CANDIDATE_ROADMAP.md",
+      "lifecycle": "roadmap",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source describes a proposed TO-BE, not currently verified product/runtime truth."
+    },
+    {
+      "id": "post275-080",
+      "path": "docs/PROCEDURE_ONTOLOGY_FINAL_MATURITY.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-081",
+      "path": "docs/PROCEDURE_UI_UX_ONTOEPISTEMIC_AUDIT_2026-08-18.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-082",
+      "path": "docs/README.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-083",
+      "path": "docs/REALITY_0_REHEARSAL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-084",
+      "path": "docs/REBORN_3_EXECUTABLE_PROMPT.md",
+      "lifecycle": "source-input",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source material or historical agent prompt; no executable or decision authority."
+    },
+    {
+      "id": "post275-085",
+      "path": "docs/REFINED_PRODUCT_PRE_CANDIDATE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-086",
+      "path": "docs/RUNTIME_AND_WIRING_V3.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-087",
+      "path": "docs/RUNTIME_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-088",
+      "path": "docs/RUNTIME_AUDIT_SLIDES.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-089",
+      "path": "docs/RUNTIME_HARDENING_GRACE_AUDIT_2026-08-11.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-090",
+      "path": "docs/RUNTIME_STABILIZATION_2_9_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-091",
+      "path": "docs/RUN_PROFILES.md",
+      "lifecycle": "operating",
+      "mode": "how-to",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-092",
+      "path": "docs/S1_UI_SEMANTIC_BASELINE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-093",
+      "path": "docs/S2_SEMANTIC_PROCESS_KERNEL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-094",
+      "path": "docs/S3_LINEAGE_DECISION_BINDING.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-095",
+      "path": "docs/S4_EPISTEMIC_PROJECTION.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-096",
+      "path": "docs/S5_CLAIM_EVIDENCE_EXPORT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-097",
+      "path": "docs/S6_TRANSLATION_PACKS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-098",
+      "path": "docs/S7_MARKET_V1_CUTOVER.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-099",
+      "path": "docs/SATURATION_M_PLUS_100.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-100",
+      "path": "docs/SCOPE_0_OPERATING_MODEL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-101",
+      "path": "docs/SCREENSHOT_INTENT_RUNTIME_SEMANTIC_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-102",
+      "path": "docs/SECURITY_HARDENING.md",
+      "lifecycle": "operating",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Operational guidance or engineering-risk reference; non-exclusive, subordinate to canonical executable/document owners."
+    },
+    {
+      "id": "post275-103",
+      "path": "docs/SEMANTIC_CLOSURE_2_8_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-104",
+      "path": "docs/SEMANTIC_CLOSURE_POST_PR54.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-105",
+      "path": "docs/SEMANTIC_COMPOSITION_3_1_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-106",
+      "path": "docs/SEMANTIC_FOUNDATION_3_0_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-107",
+      "path": "docs/SEMANTIC_INTEGRITY_AUTHORITY_CLOSURE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-108",
+      "path": "docs/SHELL_ADMIN_DEMO_CONVERGENCE_2026-08-20.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-109",
+      "path": "docs/STABLE_1_4_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-110",
+      "path": "docs/STANDARD_PROOF_1_6_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-111",
+      "path": "docs/TO_BE_RUNTIME.md",
+      "lifecycle": "roadmap",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source describes a proposed TO-BE, not currently verified product/runtime truth."
+    },
+    {
+      "id": "post275-112",
+      "path": "docs/UIUX_CONVERGE_0_P1_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-113",
+      "path": "docs/UIUX_ENDUSER_COMPOSITION_P2.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-114",
+      "path": "docs/UIUX_EXPERIENCE_P6_CENSUS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-115",
+      "path": "docs/UIUX_ONTO_EPISTEMIC_FINETUNING_DOD_2026-08-18.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-116",
+      "path": "docs/UIUX_SCOPE_0_STUDY.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-117",
+      "path": "docs/UI_COSMETIC_SURFACE_CENSUS_2026-09-17.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-118",
+      "path": "docs/UI_EPISTEMIC_PROCEDURE_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-119",
+      "path": "docs/USER_JOURNEY_2_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-120",
+      "path": "docs/USER_JOURNEY_3_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-121",
+      "path": "docs/USER_JOURNEY_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-122",
+      "path": "docs/USER_JOURNEY_AUDIT_V4.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-123",
+      "path": "docs/UX_EVIDENCE_TO_BE.md",
+      "lifecycle": "roadmap",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source describes a proposed TO-BE, not currently verified product/runtime truth."
+    },
+    {
+      "id": "post275-124",
+      "path": "docs/UX_TO_BE_V3.md",
+      "lifecycle": "roadmap",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Source describes a proposed TO-BE, not currently verified product/runtime truth."
+    },
+    {
+      "id": "post275-125",
+      "path": "docs/V1_0_STABLE_ARCHITECTURE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-126",
+      "path": "docs/V1_0_STABLE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-127",
+      "path": "docs/V1_1_ENTERPRISE_EXPERIENCE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-128",
+      "path": "docs/V1_9_EXPERIENCE_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-129",
+      "path": "docs/V1_BUYER_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-130",
+      "path": "docs/V1_EXPERIMENTAL_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-131",
+      "path": "docs/V1_STABILITY_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-132",
+      "path": "docs/V2_0_EPISTEMIC_LATTICE_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-133",
+      "path": "docs/V2_1_PROCEDURE_JOURNEY_SEMANTIC_EXPLORATION.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-134",
+      "path": "docs/V2_GRC_CONVERGENCE.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-135",
+      "path": "docs/V2_GRC_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-136",
+      "path": "docs/V3_EXPERIMENTAL_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-137",
+      "path": "docs/V4_1_RELEASE_SEAL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-138",
+      "path": "docs/V4_1_VISUAL_LANGUAGE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-139",
+      "path": "docs/V4_COMPLIANCE_OS_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-140",
+      "path": "docs/V4_ENTERPRISE_NEXUS_RELEASE_SEAL.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-141",
+      "path": "docs/V4_EXPERIMENTAL_STABLE_DOD.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-142",
+      "path": "docs/VISUAL_GRACE_LEXICAL_EPISTEMIC_AUDIT.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-143",
+      "path": "docs/decisions/ADR-001-outcome-envelope-ui.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-144",
+      "path": "docs/decisions/ADR-002-local-session-ai.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-145",
+      "path": "docs/decisions/ADR-003-source-promotion.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-146",
+      "path": "docs/decisions/ADR-004-no-compliance-score.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-147",
+      "path": "docs/decisions/ADR-005-canonical-runtime-profile.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-148",
+      "path": "docs/decisions/ADR-006-local-epistemic-lenses.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-149",
+      "path": "docs/legacy/AGENTS.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-150",
+      "path": "docs/legacy/s4-a6-ux4-uiux-mount-audit.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "post275-151",
+      "path": "docs/security/SECURITY_RUNTIME_CLOSURE_MAIN_2026-09-14.md",
+      "lifecycle": "lineage",
+      "mode": "explanation",
+      "authorityTopic": null,
+      "authoritative": false,
+      "retentionCohort": "post275-residual",
+      "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
     }
   ],
   "communitySurfaces": {

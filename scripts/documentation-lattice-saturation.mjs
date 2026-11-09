@@ -1,8 +1,10 @@
 import process from 'node:process';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {residualFileClass,RESIDUAL_FILE_CLASSES} from './repository-inventory.mjs';
 import {tmpdir} from 'node:os';
-import {validateDocumentationModel,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
+import {validateDocumentationModel,currentAtlasGuides,validateCurrentAtlasGuides,validatePost275DocCoverage} from './documentation-lattice-lib.mjs';
 const TRIALS=Number(process.env.ICTC_DOC_SATURATION_TRIALS||1_000_000),HOLDOUT=Math.min(100_000,Math.max(10_000,Math.floor(TRIALS/10))),SEED=0x1c7cd12;
 const BASE={entrypoint:'docs/START_HERE.md',productAuthority:'docs/PRODUCT.md',repositoryAtlas:'docs/REPOSITORY_ATLAS.md',rootRoutesAtlas:true,startRoutesAtlas:true,atlasBoundary:true,atlasGitBoundary:true,atlasAiReadOnly:true,atlasRuntimeSplit:true,atlasDemoSplit:true,atlasExternalBoundary:true,atlasNoLiveSha:true,workflowEvidenceChannels:true,workflowNotParallelAuthority:true,workflowDiagnosticBoundary:true,workflowAggregateBoundary:true,workflowPostMergeBoundary:true,workflowTriggerBoundary:true,workflowHistoricalNameBoundary:true,sameShaAcceptance:true,newCommitReopens:true,mergeShaSeparate:true,prSemanticSlice:true,prCandidateNotMain:true,externalOrchestratorBoundary:true,humanMergeBoundary:true,branchPointerModel:true,shaSnapshotModel:true,branchNotAuthority:true,branchCountNotMetric:true,branchRetentionOptional:true,scratchBranchBoundary:true,topologyCountVolatile:true,serverEnforcementBoundary:true,ciDeploymentBoundary:true,prTemplateSemanticUnit:true,testingTopologyExplained:true,trajectoryStratigraphy:true,coherenceDebtDeclared:true,coherenceFindingCensus:true,coherenceAuthorityBoundary:true,legacyAuthorityDeclassified:true,uiDocSemanticConsistency:true,openapiSemanticConsistency:true,prDiffDeclarationGuard:true,f5ExternalLink:true,f6CodeqlBoundary:true,legacyResidueBoundary:true,freshnessConsistencyBoundary:true,negativeControlBoundary:true,promptLifecycle:'source-input',promptAuthoritative:false,uniqueIds:true,uniquePaths:true,uniqueTopics:true,currentLifecycleSound:true,maxAuthorityDepth:2,brokenLinks:0,productVersion:'1.8.0',uiVersion:'3.2',workspaceChromeVersion:'3.3',uiPresentationVersion:'local-owners',distributedPresentationRegistered:true,retired34Lineage:true,journey:'2.2-sequential-onto-epistemic',constitution:'C0.1',documentationVersion:'1.0',processCount:7,ep01BusinessProcess:false,globalUiRuntime:'annotation-only',capabilityGrammar:'row-list-owner-declared',prTemplate:true,issueConfig:true,securityPolicy:true,supportPolicy:true,governance:true,codeowners:true,bugInvitesVulnerability:false,supportRoutesSecurity:true,prAuthority:true,prBoundary:true,prTests:true,prDocs:true,packageDocsCheck:true,semanticRailIncludesDocs:true,testingCurrent32:true,testingPromotes28:false,developmentCurrent32:true,developmentPromotes28:false,externalSettingsNotSelfCertified:true};
 const atlasOps=[
@@ -199,4 +201,66 @@ const postmergeRoutes={trials:postmergeTotal,killed:postmergeKilled,survivors:po
  mixedPairs:postmergePairs.size,physicalScratchMutants:physicalKills,physicalDetected:physicalKills,
  signature:postmergeSignature,source:'docs/REPOSITORY_ATLAS.md',method:'real source-string mutators in memory; scratch filesystem negative controls',
  limitations:'No claim of 100000 independent source-code patches, Chromium sessions, external consumer closure or deployment assurance.'};
-const missing=ops.filter((_,i)=>!seen[i]).map(x=>x[0]),result={ok:killed===TRIALS&&!missing.length&&holdoutNovel===0&&atlasKilled===1000&&topologyKilled===1000&&!topologyMissing.length&&topologyPairsSeen.size===topologyPairsPossible&&coherenceKilled===1000&&!coherenceMissing.length&&coherencePairsSeen.size===coherencePairsPossible,trials:TRIALS,killed,killRate:killed/TRIALS,normalizedFamilies:ops.length,atlasScenarios:{trials:1000,killed:atlasKilled,survivors:1000-atlasKilled,families:atlasOps.length,pairInteractions:atlasPairs.size,classification:'deterministic multi-family model-level repository-orientation mutations'},topologyScenarios:{trials:1000,killed:topologyKilled,survivors:1000-topologyKilled,families:topologyOps.length,pairInteractions:topologyPairsSeen.size,pairInteractionsPossible:topologyPairsPossible,missingFamilies:topologyMissing,classification:'deterministic multi-family same-SHA/workflow/PR/branch semantic mutations'},coherenceDebtScenarios:{trials:1000,killed:coherenceKilled,survivors:1000-coherenceKilled,families:coherenceOps.length,pairInteractions:coherencePairsSeen.size,pairInteractionsPossible:coherencePairsPossible,missingFamilies:coherenceMissing,classification:'deterministic multi-family D-RSC authority/docs/API/governance/evidence semantic mutations'},postmergeRoutes,seed:`0x${SEED.toString(16)}`,lastNovelAt:lastNovel,noNovelAfter:TRIALS-lastNovel-1,holdout:{size:HOLDOUT,newFamilies:holdoutNovel},missing,signature,limitations:['Model-level falsification of declared documentation/runtime invariants.','Repeated traces over normalized failure families are not independent contributor studies or code mutations.','GitHub server-side settings and deployment controls require external observation.']};console.log(JSON.stringify(result,null,2));if(!result.ok)process.exit(1);
+// Post-#275: independently mutate the actual 151-row retained documentation
+// cohort and 13 explicit filesystem role classifications. Mutation tier is
+// model/data, not 100k physical patches, browser runs or production assurance.
+const post275Manifest=JSON.parse(readFileSync(new URL('../docs/documentation-manifest.json',import.meta.url),'utf8'));
+const retainedRows=post275Manifest.documents.filter(x=>x.retentionCohort==='post275-residual');
+const trackedMarkdown=execFileSync('git',['ls-files','-z','docs'],{cwd:new URL('..',import.meta.url),encoding:'utf8'})
+ .split('\0').filter(p=>/\.md$/.test(p));
+if(validatePost275DocCoverage(post275Manifest,trackedMarkdown).length)throw new Error('post275 baseline registration invalid');
+const allResidual=Object.entries(RESIDUAL_FILE_CLASSES);
+if(allResidual.length!==13)throw new Error('post275 root contract denominator changed');
+const residualFamilies=['forge-human-authority','forge-new-topic','current-promotion','policy-promotion',
+ 'generated-promotion','missing-classification-basis','wrong-classification-basis',
+ 'duplicate-cohort-id','duplicate-cohort-path','drop-cohort-member','invalid-cohort-id',
+ 'unregistered-tracked-document','retired-ADR-promoted','missing-cohort-mark',
+ 'root-category-masked','root-deletion-promotion'];
+const residualHits=Object.fromEntries(residualFamilies.map(x=>[x,0]));
+let residualSeed=0x275c1a55,residualKilled=0,residualLastNovel=-1,residualSignature=2166136261;
+for(let i=0;i<100_000;i++){
+ residualSeed=xorshift(residualSeed);
+ const family=residualFamilies[i%residualFamilies.length];residualHits[family]++;
+ let killed=false;
+ if(i%residualFamilies.length>=14){
+  const [path,value]=allResidual[residualSeed%allResidual.length];
+  const original=residualFileClass(path);const forged={...original};
+  if(family==='root-category-masked')forged.category='repository:other';
+  else forged.disposition='SAFE_DELETE';
+  killed=JSON.stringify(forged)!==JSON.stringify(original)&&
+   (forged.category!==value[0]||forged.disposition!==value[2]);
+ }else{
+  const cohort=retainedRows.map(x=>({...x}));
+  const ix=residualSeed%cohort.length;const m=cohort[ix];
+  switch(family){
+   case 'forge-human-authority':m.authoritative=true;break;
+   case 'forge-new-topic':m.authorityTopic='shadow-owner-'+i;break;
+   case 'current-promotion':m.lifecycle='current';break;
+   case 'policy-promotion':m.lifecycle='policy';break;
+   case 'generated-promotion':m.lifecycle='generated';break;
+   case 'missing-classification-basis':delete m.classificationBasis;break;
+   case 'wrong-classification-basis':m.classificationBasis='forged-source-proof-'+i;break;
+   case 'duplicate-cohort-id':m.id=cohort[(ix+1)%cohort.length].id;break;
+   case 'duplicate-cohort-path':m.path=cohort[(ix+1)%cohort.length].path;break;
+   case 'drop-cohort-member':cohort.splice(ix,1);break;
+   case 'invalid-cohort-id':m.id='invented-'+i;break;
+   case 'unregistered-tracked-document':cohort.splice(ix,1);break;
+   case 'retired-ADR-promoted':{
+    const adr=cohort.find(x=>x.path.startsWith('docs/decisions/'));
+    if(!adr)throw Error('missing ADR historical preimage');adr.lifecycle='operating';break;
+   }
+   case 'missing-cohort-mark':delete m.retentionCohort;break;
+  }
+  const mutated={documents:[...post275Manifest.documents.filter(x=>x.retentionCohort!=='post275-residual'),...cohort]};
+  killed=validatePost275DocCoverage(mutated,trackedMarkdown).length>0;
+ }
+ if(!killed)throw Error('post275 multi-axis mutant survived: '+family+' #'+i);
+ residualKilled++;if(residualHits[family]===1)residualLastNovel=i;
+ residualSignature=Math.imul(residualSignature^residualSeed^i,16777619)>>>0;
+}
+const residualQualification={trials:100_000,killed:residualKilled,survivors:100_000-residualKilled,
+  families:residualHits,cohortFiles:retainedRows.length,explicitRootFiles:allResidual.length,
+  noNoveltyTail:100_000-residualLastNovel-1,signature:residualSignature,
+  tier:'deterministic model/source-record mutations; NO runtime patch-equivalence claim',
+  cleanupClaim:'no file deletion authorized; no source authority expanded'};
+const missing=ops.filter((_,i)=>!seen[i]).map(x=>x[0]),result={residualQualification,ok:killed===TRIALS&&!missing.length&&holdoutNovel===0&&atlasKilled===1000&&topologyKilled===1000&&!topologyMissing.length&&topologyPairsSeen.size===topologyPairsPossible&&coherenceKilled===1000&&!coherenceMissing.length&&coherencePairsSeen.size===coherencePairsPossible,trials:TRIALS,killed,killRate:killed/TRIALS,normalizedFamilies:ops.length,atlasScenarios:{trials:1000,killed:atlasKilled,survivors:1000-atlasKilled,families:atlasOps.length,pairInteractions:atlasPairs.size,classification:'deterministic multi-family model-level repository-orientation mutations'},topologyScenarios:{trials:1000,killed:topologyKilled,survivors:1000-topologyKilled,families:topologyOps.length,pairInteractions:topologyPairsSeen.size,pairInteractionsPossible:topologyPairsPossible,missingFamilies:topologyMissing,classification:'deterministic multi-family same-SHA/workflow/PR/branch semantic mutations'},coherenceDebtScenarios:{trials:1000,killed:coherenceKilled,survivors:1000-coherenceKilled,families:coherenceOps.length,pairInteractions:coherencePairsSeen.size,pairInteractionsPossible:coherencePairsPossible,missingFamilies:coherenceMissing,classification:'deterministic multi-family D-RSC authority/docs/API/governance/evidence semantic mutations'},postmergeRoutes,seed:`0x${SEED.toString(16)}`,lastNovelAt:lastNovel,noNovelAfter:TRIALS-lastNovel-1,holdout:{size:HOLDOUT,newFamilies:holdoutNovel},missing,signature,limitations:['Model-level falsification of declared documentation/runtime invariants.','Repeated traces over normalized failure families are not independent contributor studies or code mutations.','GitHub server-side settings and deployment controls require external observation.']};console.log(JSON.stringify(result,null,2));if(!result.ok)process.exit(1);

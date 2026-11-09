@@ -10,7 +10,9 @@ const hash=x=>createHash('sha256').update(x).digest('hex');
 const manifest=JSON.parse(readFileSync(join(root,'docs/documentation-manifest.json'),'utf8'));
 const tracked=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean).sort();
 const registered=new Set(manifest.documents.map(d=>d.path));
-const candidates=tracked.filter(p=>p.startsWith('docs/')&&/\.(?:md|rst|txt)$/.test(p)&&!registered.has(p));
+const retained=new Set(manifest.documents.filter(d=>d.retentionCohort==='post275-residual'&&!d.authoritative).map(d=>d.path));
+const candidates=tracked.filter(p=>p.startsWith('docs/')&&/\.(?:md|rst|txt)$/.test(p)&&retained.has(p));
+if(candidates.length!==retained.size)throw new Error('post275 retention cohort drift');
 const sources=tracked.filter(p=>/\.(?:md|mjs|js|json|yaml|yml|html|css|txt|py|sh)$/.test(p)).map(p=>{
  try{return {path:p,text:readFileSync(join(root,p),'utf8')}}catch{return {path:p,text:''}}
 });

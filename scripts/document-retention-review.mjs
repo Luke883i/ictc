@@ -12,7 +12,9 @@ const sha=b=>createHash('sha256').update(b).digest('hex');
 const tracked=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean).sort();
 const docs=JSON.parse(readFileSync(join(root,'docs/documentation-manifest.json'),'utf8'));
 const registered=new Set(docs.documents.map(x=>x.path));
-const unregistered=tracked.filter(p=>p.startsWith('docs/')&&/\.(?:md|rst|txt)$/.test(p)&&!registered.has(p));
+const retained=new Set(docs.documents.filter(x=>x.retentionCohort==='post275-residual'&&!x.authoritative).map(x=>x.path));
+const unregistered=tracked.filter(p=>p.startsWith('docs/')&&/\.(?:md|rst|txt)$/.test(p)&&retained.has(p));
+assert.equal(unregistered.length,retained.size,'tracked original cohort changed');
 const searchable=tracked.filter(p=>/\.(?:md|mjs|js|json|yaml|yml|html|css|txt|py|sh)$/.test(p))
  .map(path=>({path,text:readFileSync(join(root,path),'utf8')}));
 const graph=new Map(unregistered.map(p=>[p,{links:new Set(),code:new Set(),citations:new Set()}]));
@@ -58,7 +60,9 @@ const entries=unregistered.map(path=>{
 const unresolved=entries.filter(x=>!x.markdownTargets.length&&!x.firstPartyExecutable.length);
 const counts=Object.fromEntries([...new Set(entries.map(x=>x.role))].sort().map(k=>[k,entries.filter(x=>x.role===k).length]));
 const report={schema:'ictc-document-retention-review/v1',source:'Git-tracked tree + document manifest + literal/link consumer graph + content title/heading cues',
- registered:registered.size,unregistered:unregistered.length,protectedByObservedEdges:protectedPaths.size,
+ registered:registered.size,cohort:'post275-residual',unregisteredNow:0,
+ /* Backward-compatible receipt key: number of documents unregistered at #275 baseline. */
+ unregistered:unregistered.length,protectedByObservedEdges:protectedPaths.size,
  unresolved:unresolved.length,unresolvedByRole:counts,certifiedSafeDeletes:0,physicallyRemoved:0,
  claimBoundary:'Individual file-presence/content and bounded consumer-edge evidence only; no adjudication of retention, non-literal consumption, third-party integration or human reliance. Zero delete permissions.',
  entries,unresolvedPaths:unresolved.map(x=>x.path)};

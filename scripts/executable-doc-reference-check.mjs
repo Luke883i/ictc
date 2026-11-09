@@ -49,8 +49,9 @@ const baseline=verify(root);
 assert.equal(baseline.missing.length,0,`Dangling first-party reference: ${JSON.stringify(baseline.missing)}`);
 const docs=JSON.parse(readFileSync(join(root,'docs/documentation-manifest.json'),'utf8'));
 const registered=new Set(docs.documents.map(d=>d.path));
+const retained=new Set(docs.documents.filter(d=>d.retentionCohort==='post275-residual'&&!d.authoritative).map(d=>d.path));
 const targets=[...new Set(baseline.edges.map(x=>x.target))].sort();
-const unregistered=targets.filter(x=>!registered.has(x));
+const unregistered=targets.filter(x=>retained.has(x)||!registered.has(x));
 const trials=[];
 if(process.argv.includes('--falsify')){
  const isolated=mkdtempSync(join(tmpdir(),'ictc-doc-exec-ref-'));
