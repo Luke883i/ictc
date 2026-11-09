@@ -23,7 +23,7 @@ export function deriveMigrationFrontier(entries, topology) {
     const scope=scopes.find(s => path.startsWith(s[0]));
     if(scope){ target=scope[1]+path.slice(scope[0].length); cohort=scope[2]; }
     else if(implementations.has(name)){ cohort='compatibility-adapter'; }
-    else if(name==='browser_test_support.py'){ target='tests/helpers/'+name;cohort='browser-helper'; }
+    else if(name==='browser_test_support.py'){ target='tests/browser/'+name;cohort='browser-helper'; }
     else if(path.endsWith('.py')){ target='tests/browser/'+name;cohort='browser-verification'; }
     else if(core.has(name)){ target='src/'+name;cohort='runtime-core'; }
     else if(/(?:check|test|audit|probe|stress|saturation|mutation|falsification|fuzz|e2e)(?:-[a-z0-9]+)*\.mjs$/i.test(name)){

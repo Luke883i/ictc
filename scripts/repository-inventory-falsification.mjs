@@ -19,6 +19,11 @@ function verifyPostCutover(base) {
   'tests/verification/docs-command-contract-check.mjs','tests/contracts/product-contract.json'];
  for(const p of required)if(!entries.has(p))fail('current owner missing: '+p);
  if(entries.has('v3/bootstrap.mjs')||entries.has('v3/server.mjs'))fail('parallel runtime owner');
+ if(!entries.has('tests/browser/browser_test_support.py')||entries.has('tests/helpers/browser_test_support.py'))
+  fail('browser Python import owner not adjacent to browser verification');
+ if(!base.dependencyTopology.edges.some(e=>e.from==='tests/browser/browser-ao-activation.py'&&
+     e.to==='tests/browser/browser_test_support.py'&&e.kind==='python-local-import-candidate'))
+  fail('actual Python helper import edge absent');
  if(base.migrationFrontier.nodes.length!==0||base.migrationFrontier.summary.trackedV3!==0)
   fail('frontier falsely retains a retired v3 owner');
  // A normalised filesystem must have typed physical ownership; generic 'other'
