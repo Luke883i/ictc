@@ -38,7 +38,7 @@ export const COMMON_COMPLIANCE_METHOD=Object.freeze(['Obblighi applicabili','Ris
 
 export const HOMEBOARDING=Object.freeze({
   title:'Impara ICTC gestendo un caso',
-  lead:'Impara prima il modello: perché esistono le regole, quando possono riguardare l’impresa, come diventano obblighi, responsabilità, controlli, evidenze e riesami. Poi applicalo a un caso concreto.',
+  lead:'Parti dal caso: descrivi un fatto, verifica il perimetro, individua chi può decidere e registra il lavoro e le prove. Le lezioni spiegano i concetti durante il percorso, senza anticipare conclusioni di conformità.',
   chain:Object.freeze([
     Object.freeze({id:'capture-fact',step:'1',title:'Registra il fatto senza anticipare la conclusione',text:'Descrivi evento, fonte o cambiamento; separa ciò che sai da ciò che manca o è ancora controverso.'}),
     Object.freeze({id:'qualify-scope',step:'2',title:'Capisci quale perimetro richiede verifica',text:'Collega il fatto a processo, oggetto, requisito o rischio senza trasformare il collegamento in applicabilità o conformità.'}),
