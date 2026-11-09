@@ -112,6 +112,7 @@ def audit_procedure(page,code,pid,root):
         PHASE=f'{code}-record-action-hierarchy'; assert r.locator('.procedure-record-card .primary:visible').count()==0,(code,'record-local filled primary survived')
     if pid=='coverage':
         PHASE='MC-01-use-copy'; expect(r.locator('[data-framework-card="eu-gdpr-2016-679"] .market-scope')).to_have_text('Uso da dichiarare')
+        PHASE='MC-01-scope-object-context'; scope=r.locator('[data-framework-card="eu-gdpr-2016-679"] .market-scope-editor'); expect(scope).to_have_count(1); scope.locator(':scope > summary').click(); expect(scope).to_have_attribute('open',''); expect(scope.locator('.market-scope-context')).to_contain_text('Riferimento:'); expect(scope.locator('.market-scope-context')).to_contain_text('Uso organizzativo dichiarato'); scope.locator(':scope > summary').click(); expect(scope).not_to_have_attribute('open','')
         PHASE='MC-01-standard-browser-open'; r.locator('[data-open-standard-browser]').first.click(); dialog=page.locator('#standardBrowserDialog'); expect(dialog).to_be_visible()
         PHASE='MC-01-standard-dialog-x'; no_local_x_overflow(page,'#standardBrowserDialog','desktop:standard-dialog')
         PHASE='MC-01-standard-master-x'; no_local_x_overflow(page,'#standardBrowserDialog .standard-browser-master-detail','desktop:standard-master-detail')
@@ -134,6 +135,7 @@ def desktop(browser):
     page.on('request',track_write)
     PHASE='home-open'; page.goto(BASE+'/?view=home',wait_until='networkidle'); page.wait_for_function("()=>document.documentElement.dataset.a6Ux4Semantic==='a6-ux4'")
     PHASE='home-title'; expect(page.locator('#homeTitle')).to_have_text('Cosa richiede una decisione')
+    PHASE='home-single-narrative'; expect(page.locator('#homeComplianceOverview [data-home-case-first]')).to_have_count(1); assert page.locator('#homeComplianceOverview [data-home-case-first]').inner_text().strip()
     PHASE='home-onboarding-first-run'; onboarding=page.locator('.service-nav [data-onboarding-open]'); expect(onboarding).to_be_visible(); assert onboarding.evaluate("b=>b.nextElementSibling?.dataset?.service==='home'"),'Onboarding must be immediately before Home'; assert page.locator('#stableProfileMenu [data-onboarding-replay]').count()==0,'Replay utility must not coexist with first-run navigation'; onboarding_dialog=page.locator('#ictcOnboardingDialog'); expect(onboarding_dialog).to_be_visible(); expect(onboarding_dialog).to_have_attribute('data-onboarding-mode','first-run-gate')
     for step in range(5):
         PHASE=f'home-onboarding-progress-{step+1}'
@@ -153,6 +155,7 @@ def desktop(browser):
     PHASE='proof-open'; page.locator('.service-nav [data-service="proof"]').click(); page.wait_for_function("()=>document.querySelector('#proofView')?.offsetParent!==null")
     PHASE='proof-claim-scope'; expect(page.locator('#proofView')).to_have_attribute('data-a6-ux4-claim-scope','repository-observation')
     PHASE='proof-integrity-copy'; page.wait_for_function("()=>{const e=document.querySelector('#proofIntegrity');return e&&/Coerente tecnicamente|Coerenza tecnica da verificare/.test(e.textContent||'')}")
+    PHASE='proof-revision-technical-boundary'; marker=page.locator('#proofIntegrity'); assert marker.get_attribute('data-technical-revision') is not None; assert 'non equivale a conformità' in (marker.get_attribute('aria-label') or ''); assert 'revisione tecnica, non conformità' in (marker.get_attribute('title') or '')
     PHASE='proof-role-scope-copy'; page.wait_for_function("()=>{const value=document.querySelector('#evidenceActor');return value&&String(value.parentElement?.querySelector('span')?.textContent||'').trim()==='Vista per ruolo'}")
     PHASE='proof-reflow'; no_page_overflow(page,'desktop:proof')
     PHASE='proof-page-errors'; assert not ERRORS,ERRORS

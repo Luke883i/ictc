@@ -112,7 +112,8 @@ function renderProof(data, revision = currentRevision()) {
   integrityNode.textContent=integrity.ok?'Coerente tecnicamente':'Coerenza tecnica da verificare';
   integrityNode.dataset.technicalRevision=String(integrity.revision||0);
   integrityNode.setAttribute('aria-label',`${integrityNode.textContent}. Revisione tecnica r${integrity.revision||0}; non equivale a conformità.`);
-  integrityNode.title=`Coerente tecnicamente · r${integrity.revision||0} · revisione tecnica, non conformità`;
+  const technicalReceipt=integrity.ok?`Coerente tecnicamente · r${integrity.revision||0}`:`Coerenza tecnica da verificare · r${integrity.revision||0}`;
+  integrityNode.title=`${technicalReceipt} · revisione tecnica, non conformità`;
   $('#proofBoundary').textContent = data.claimBoundary || PRODUCT_COPY.proofBoundary;
   $('#proofReadinessLimit').textContent = posture.limitation || 'Un controllo senza evidenza resta non verificato.';
   $('#proofDeploymentGaps').innerHTML = blockerMarkup(deployment.blockers || []);
