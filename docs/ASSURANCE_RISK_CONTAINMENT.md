@@ -76,7 +76,7 @@ All three lenses resolve to the same canonical chain rather than separate copies
 
 ## Reticular multi-abstraction DoD
 
-`ASSURANCE_DOD_LATTICE` is executable data in `v3/assurance-risk-model.mjs`. The assurance checker verifies unique nodes, valid dependencies, acyclicity, reachability from global root `G0`, the five layers `axiom -> model -> test -> closure -> global`, and complete representation of I01–I16.
+`ASSURANCE_DOD_LATTICE` is executable data in `src/lib/assurance-risk-model.mjs`. The assurance checker verifies unique nodes, valid dependencies, acyclicity, reachability from global root `G0`, the five layers `axiom -> model -> test -> closure -> global`, and complete representation of I01–I16.
 
 - **Axioms:** claim boundary; unknown is not positive evidence; controls are non-substitutable; human authority/applicability remain explicit.
 - **Models:** closed assurance input; reviewer+technical-oracle composition; coverage-family contraction; all-surface information-value contract.
@@ -101,11 +101,11 @@ For Monitoring, Incidents and each GRC process, purpose is derived from the cano
 
 ## Executable evidence
 
-`v3/assurance-risk-check.mjs` executes exactly 100,000 deterministic engineering scenarios across 14 assurance dimensions, seven deliberately wrong mutants and exactly 10,000 document-boundary fuzz cases. The generated artifact is `artifacts/assurance-risk-saturation.json`.
+`tests/verification/assurance-risk-check.mjs` executes exactly 100,000 deterministic engineering scenarios across 14 assurance dimensions, seven deliberately wrong mutants and exactly 10,000 document-boundary fuzz cases. The generated artifact is `artifacts/assurance-risk-saturation.json`.
 
-`v3/visual-grace-lexical-epistemic-check.mjs` statically checks the canonical labels, all-surface information-value contract, home manifest, procedure-specific boundaries and visual restraint.
+`tests/verification/visual-grace-lexical-epistemic-check.mjs` statically checks the canonical labels, all-surface information-value contract, home manifest, procedure-specific boundaries and visual restraint.
 
-`v3/browser-information-value.py` exercises the final rendered product across Home, Processi di Compliance, Monitoring, Incidents, all five GRC process views, Postura ICTC, Reticolo epistemico, all three supported runtime roles, Administration, AI configuration and mobile containment. Navigation/read-only inspection must produce zero API writes.
+`tests/browser/browser-information-value.py` exercises the final rendered product across Home, Processi di Compliance, Monitoring, Incidents, all five GRC process views, Postura ICTC, Reticolo epistemico, all three supported runtime roles, Administration, AI configuration and mobile containment. Navigation/read-only inspection must produce zero API writes.
 
 ## Minimality and compression rule
 

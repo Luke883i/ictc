@@ -1,10 +1,10 @@
 # Registro dei gap ICTC
 
-La fonte canonica è `v3/gaps.json`; `v3/public/gap-registry.json` è la sua proiezione esatta dei soli gap `open`. `v3/capability-truth.json` separa capability repository, debito interno e rail E3/E4 esterni.
+La fonte canonica è `tests/contracts/gaps.json`; `public/gap-registry.json` è la sua proiezione esatta dei soli gap `open`. `tests/contracts/capability-truth.json` separa capability repository, debito interno e rail E3/E4 esterni.
 
 ## Baseline e stato corrente
 
-`TRUTH-0` e A6-UX4 restano **lineage storica** dentro `v3/capability-truth.json`; non sono un live pointer del registro gap. Lo stato dei gap è posseduto da `v3/gaps.json`, la projection pubblica contiene esattamente i soli gap `open`, mentre il sequencing corrente appartiene esclusivamente a `docs/convergence/convergence-authority.json`.
+`TRUTH-0` e A6-UX4 restano **lineage storica** dentro `tests/contracts/capability-truth.json`; non sono un live pointer del registro gap. Lo stato dei gap è posseduto da `tests/contracts/gaps.json`, la projection pubblica contiene esattamente i soli gap `open`, mentre il sequencing corrente appartiene esclusivamente a `docs/convergence/convergence-authority.json`.
 
 `GOV-ASIS-CONVERGENCE-1` riconcilia gap, remediation finding, conditional/serial slice e rail E3/E4 in una projection authority-zero. Non chiude né riapre debito e non sostituisce gli owner canonici. Una closure storica che ricompare senza transizione esplicita fallisce chiusa come `BLOCKED_REOPEN_WITH_EVIDENCE`.
 
@@ -30,4 +30,4 @@ Repository simulation, green CI e mutation counts non sostituiscono E3/E4.
 
 ## Regola di chiusura
 
-Un gap repository-internal può chiudere solo con path di modifica/test, evidenza riproducibile e limitazione residua. Un gap E3/E4 resta aperto finché la relativa authority esterna non produce evidence osservabile. Il gate `v3/capability-truth-check.mjs` verifica la parità gap canonico/pubblico, la capability lineage fino ad A6-UX4, il routing E3/E4, i blocker S4/S5 e il divieto di promozione prematura.
+Un gap repository-internal può chiudere solo con path di modifica/test, evidenza riproducibile e limitazione residua. Un gap E3/E4 resta aperto finché la relativa authority esterna non produce evidence osservabile. Il gate `tests/verification/capability-truth-check.mjs` verifica la parità gap canonico/pubblico, la capability lineage fino ad A6-UX4, il routing E3/E4, i blocker S4/S5 e il divieto di promozione prematura.

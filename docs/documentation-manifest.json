@@ -62,7 +62,7 @@
     {
       "id": "v3-readme",
       "path": "docs/legacy/README.md",
-      "lifecycle": "operating",
+      "lifecycle": "lineage",
       "mode": "reference",
       "authorityTopic": null,
       "authoritative": false

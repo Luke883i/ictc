@@ -1,6 +1,6 @@
 # AS-IS convergence and entropy guard
 
-`GOV-ASIS-CONVERGENCE-1` is a **derived, authority-zero regression and planning guard**. It does not replace product truth, runtime owners, `v3/gaps.json`, the remediation registry, convergence authority or Git/GitHub.
+`GOV-ASIS-CONVERGENCE-1` is a **derived, authority-zero regression and planning guard**. It does not replace product truth, runtime owners, `tests/contracts/gaps.json`, the remediation registry, convergence authority or Git/GitHub.
 
 Its job is to make the current state mechanically hard to misread: consolidate known gaps/findings/slices/external rails into one typed projection, freeze already-established closures as regression baselines, expose documentation/UI entropy, and return exactly one next action or STOP.
 
@@ -24,7 +24,7 @@ Every strategic campaign requires zero unsafe survivors and a deletion oracle. S
 
 ## Enterprise Candidate from iron to human experience
 
-The canonical target remains `v3/trama-enterprise-dod.json`. Its experience lattice is deliberately multi-abstraction: host/supply chain, durable data, identity, runtime/API, AI/information boundary, delivery, operations, administration, compliance work, audit/evidence, end-user cognition and independent external assurance.
+The canonical target remains `tests/contracts/trama-enterprise-dod.json`. Its experience lattice is deliberately multi-abstraction: host/supply chain, durable data, identity, runtime/API, AI/information boundary, delivery, operations, administration, compliance work, audit/evidence, end-user cognition and independent external assurance.
 
 Enterprise Candidate therefore means that the same bounded product semantics remain coherent through every layer. It does **not** mean Enterprise Ready and cannot synthesize E3-HUMAN, E3-GOV or E4-DEPLOY.
 

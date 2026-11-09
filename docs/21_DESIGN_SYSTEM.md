@@ -14,7 +14,7 @@ La tipografia canonica è `Inter Variable`, poi `Inter`, quindi la system UI sta
 
 ## Token authority
 
-`v3/public/design-tokens.css` è l'unico owner dei valori cromatici e tipografici condivisi. Il chrome consuma esclusivamente la famiglia `--chrome-*`: header, footer, testo su fondo scuro, control surface, active state, focus e shadow. `v3/public/workspace-chrome-3-3.css` applica quei token, è caricato dal workspace owner dopo la closure 3.2.1 ed è il **solo owner canonico ed effettivo** dell'intero stable chrome corrente.
+`public/design-tokens.css` è l'unico owner dei valori cromatici e tipografici condivisi. Il chrome consuma esclusivamente la famiglia `--chrome-*`: header, footer, testo su fondo scuro, control surface, active state, focus e shadow. `public/workspace-chrome-3-3.css` applica quei token, è caricato dal workspace owner dopo la closure 3.2.1 ed è il **solo owner canonico ed effettivo** dell'intero stable chrome corrente.
 
 Non duplicare literal cromatici del chrome in nuovi fogli. Un nuovo colore richiede prima un token con ruolo dichiarato.
 
@@ -80,6 +80,6 @@ Checklist di review: token prima dei literal; nessun copy business riscritto; ne
 
 ## Falsificazione e claim boundary
 
-`v3/workspace-chrome-3-3-saturation.mjs` esegue **10.000 source-string mutation executions** deterministiche sul contratto statico corrente, distribuite uniformemente su 20 failure family: token header/footer, font fallback, scope/versione, consumo palette header/footer, target size, responsive 900/640, forced-colors, reduced-motion, active state, focus, marker shell, terms authority, sicurezza del link esterno, bootstrap owner, current rail, contratto documentale e bounded scope. Ogni famiglia riceve 500 mutazioni; 10.000/10.000 devono essere rilevate.
+`tests/verification/workspace-chrome-3-3-saturation.mjs` esegue **10.000 source-string mutation executions** deterministiche sul contratto statico corrente, distribuite uniformemente su 20 failure family: token header/footer, font fallback, scope/versione, consumo palette header/footer, target size, responsive 900/640, forced-colors, reduced-motion, active state, focus, marker shell, terms authority, sicurezza del link esterno, bootstrap owner, current rail, contratto documentale e bounded scope. Ogni famiglia riceve 500 mutazioni; 10.000/10.000 devono essere rilevate.
 
 Il kill-rate vale soltanto per questo vocabolario dichiarato. Non equivale a 10.000 browser session, code mutation indipendenti compilati/eseguiti, preferenze di 10.000 utenti, certificazione WCAG, parere legale o assurance del deployment.

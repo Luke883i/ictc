@@ -15,6 +15,9 @@ check(new Set(docs.map(d=>d.path)).size===docs.length,'duplicate document path')
 const authoritative=docs.filter(d=>d.authoritative),topics=authoritative.map(d=>d.authorityTopic).filter(Boolean);
 check(new Set(topics).size===topics.length,'duplicate authority topic');
 for(const d of docs){check(ALLOWED_LIFECYCLES.has(d.lifecycle),`invalid lifecycle ${d.path}`);check(ALLOWED_MODES.has(d.mode),`invalid mode ${d.path}`);check(await exists(d.path),`missing manifest path ${d.path}`);if(['lineage','source-input','roadmap','generated'].includes(d.lifecycle))check(!d.authoritative,`non-current lifecycle is authoritative ${d.path}`)}
+// Archive location is not an operating reference: preserve its bytes, declassify its lifecycle.
+for(const d of docs.filter(d=>d.path.startsWith('docs/legacy/')))
+ check(d.lifecycle==='lineage'&&d.authoritative===false,'docs/legacy must remain non-authoritative lineage: '+d.path);
 for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('tests/verification/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
@@ -32,12 +35,45 @@ const currentOwnerDocs=[
  ['DEVELOPMENT',development,['src/bootstrap.mjs','src/server.mjs','tests/contracts/semantic-owner-contract.json','tests/contracts/trama-enterprise-dod.json']],
  ['CONFIGURATION',configurationText,['src/bootstrap.mjs','src/lib/bootstrap-contract.mjs']],
  ['ARCHITECTURE',architectureCurrent.split('## Modello di autorità')[0],['src/bootstrap.mjs','src/server.mjs','src/store.mjs','public/index.html','tests/verification/*-check.mjs']],
- ['TESTING',testing.split('## Exact-head e freshness')[0],['src/contracts/release-identity.json','tests/contracts/semantic-owner-contract.json','tests/verification/trama-engineering-check.mjs']]
+ ['TESTING',testing.split('## Exact-head e freshness')[0],['src/contracts/release-identity.json','tests/contracts/semantic-owner-contract.json','tests/verification/trama-engineering-check.mjs']],
+ // Typed current owner routes; provenance photographs elsewhere are out of scope.
+ ['ENDUSER_LANGUAGE',await read('docs/03_ENDUSER_LANGUAGE.md'),['public/ui/product-copy.js','public/ui/stable-shell.js','public/ui/semantic-foundation-model.js','public/ui/semantic-foundation-actions.js']],
+ ['USER_JOURNEYS',await read('docs/04_USER_JOURNEYS.md'),['src/runtime/procedure-policy.mjs','src/store.mjs']],
+ ['DESIGN_SYSTEM',await read('docs/21_DESIGN_SYSTEM.md'),['public/design-tokens.css','public/workspace-chrome-3-3.css','tests/verification/workspace-chrome-3-3-saturation.mjs']],
+ ['CONTRIBUTING',await read('CONTRIBUTING.md'),['src/contracts/release-identity.json','tests/contracts/gaps.json']],
+ ['AS_IS_CONVERGENCE',await read('docs/AS_IS_CONVERGENCE.md'),['tests/contracts/gaps.json','tests/contracts/trama-enterprise-dod.json']],
+ ['ASSURANCE_RISK',await read('docs/ASSURANCE_RISK_CONTAINMENT.md'),['src/lib/assurance-risk-model.mjs','tests/verification/assurance-risk-check.mjs','tests/verification/visual-grace-lexical-epistemic-check.mjs','tests/browser/browser-information-value.py']],
+ ['DATA_AND_STORAGE',await read('docs/DATA_AND_STORAGE.md'),['src/lib/bootstrap-contract.mjs','src/store.mjs','src/sqlite-state-persistence.mjs','src/runtime-store.mjs','src/runtime/recovery.mjs']]
 ];
+// These seven guides must resolve real, current path literals, unlike bounded
+// archival narratives in the first five historic-compatible routing checks.
+const exactOperationalGuides=new Set(['ENDUSER_LANGUAGE','USER_JOURNEYS','DESIGN_SYSTEM','CONTRIBUTING','AS_IS_CONVERGENCE','ASSURANCE_RISK','DATA_AND_STORAGE']);
 for(const [owner,body,tokens] of currentOwnerDocs){
- for(const token of tokens)check(body.includes(token),'post274 current owner path missing: '+owner+' '+token);
+ if(exactOperationalGuides.has(owner))
+  check(!/`v3\//.test(body),'post274 current guide reintroduced retired path: '+owner);
+ for(const token of tokens){
+  if(!exactOperationalGuides.has(owner)){
+   check(body.includes(token),'post274 current owner path missing: '+owner+' '+token);continue;
+  }
+  check(await exists(token),'post274 current route does not exist: '+owner+' '+token);
+  check(body.includes('`'+token+'`'),'post274 current owner path missing: '+owner+' '+token);
+ }
  check(!/v3\/(?:server|bootstrap|store|ai|public|runtime|release-identity|semantic-owner|trama)/.test(body),
   'post274 retired owner path leaked into current '+owner+' routing');
+}
+// A registered operational guide must route to CURRENT owners, not the
+// pre-#274 v3 preimage. This is an oracle over existing paths, not a new owner.
+const gapRegister=await read('docs/GAP_REGISTER.md');
+check(!/`v3\//.test(gapRegister),'gap guide: retired v3 path reintroduced');
+for(const [current,retired] of [
+ ['tests/contracts/gaps.json','v3/gaps.json'],
+ ['public/gap-registry.json','v3/public/gap-registry.json'],
+ ['tests/contracts/capability-truth.json','v3/capability-truth.json'],
+ ['tests/verification/capability-truth-check.mjs','v3/capability-truth-check.mjs']
+]){
+ check(await exists(current),'gap guide: current referenced path missing: '+current);
+ check(gapRegister.includes('`'+current+'`'),'gap guide: current owner route missing: '+current);
+ check(!gapRegister.includes('`'+retired+'`'),'gap guide: retired executable route advertised: '+retired);
 }
 for(const p of ['tests/contracts/semantic-owner-contract.json','tests/contracts/as-is-convergence-contract.json',
  'tests/contracts/trama-enterprise-dod.json','src/ai.mjs','src/lib/bootstrap-contract.mjs'])
