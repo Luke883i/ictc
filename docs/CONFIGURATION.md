@@ -11,7 +11,7 @@ Questa guida descrive i default **osservabili nel launcher e nel bootstrap curre
 | `ICTC_NO_OPEN` | `0` nel launcher | `1` impedisce l'apertura automatica del browser |
 | `BROWSER` | non impostato | Preferenza browser in contesti che la supportano |
 
-**Distinzione importante:** `./ictc.sh start` risolve la runtime directory sotto `ICTC_STATE_DIR` e la passa a `v3/bootstrap.mjs`. Il processo server lanciato direttamente senza il bootstrap/launcher usa regole di fallback proprie e non costituisce il profilo di avvio raccomandato. Per isolare stati diversi, usare un percorso assoluto esplicito.
+**Distinzione importante:** `./ictc.sh start` risolve la runtime directory sotto `ICTC_STATE_DIR` e la passa a `src/bootstrap.mjs`. Il processo server lanciato direttamente senza il bootstrap/launcher usa regole di fallback proprie e non costituisce il profilo di avvio raccomandato. Per isolare stati diversi, usare un percorso assoluto esplicito.
 
 ```bash
 npm ci --ignore-scripts
@@ -20,7 +20,7 @@ npm start
 ICTC_RUNTIME_DIR=/tmp/ictc-isolated ./ictc.sh start --no-open
 ```
 
-Con `npm start`, per l'effettivo runtime directory e il profilo risolto usare `v3/bootstrap-contract.mjs`. Il profilo DEMO sintetico (`npm run demo`) risolve una directory separata; non riutilizzare lo stato standard. Per gli endpoint `health`, `runtime/integrity` e recovery vedere [OPERATIONS](OPERATIONS.md).
+Con `npm start`, per l'effettivo runtime directory e il profilo risolto usare `src/lib/bootstrap-contract.mjs`. Il profilo DEMO sintetico (`npm run demo`) risolve una directory separata; non riutilizzare lo stato standard. Per gli endpoint `health`, `runtime/integrity` e recovery vedere [OPERATIONS](OPERATIONS.md).
 
 ## Segreti e bind di rete
 
