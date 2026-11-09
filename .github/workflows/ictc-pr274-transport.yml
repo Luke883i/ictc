@@ -1,0 +1,47 @@
+name: ICTC PR274 one-shot cutover transport
+on:
+  push:
+    branches:
+      - ci/ictc-pr274-transport-20261109
+    paths:
+      - 'transport/**'
+      - '.github/workflows/ictc-pr274-transport.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cutover:
+    if: github.repository == 'Luke883i/ictc' && github.ref == 'refs/heads/ci/ictc-pr274-transport-20261109'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout immutable transport
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Verify source-bound exact-tree migration and fast-forward PR274
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_branch='docs/level-cora-method-interface-v1'
+          expected_head='b415248c7a27885a41b4db02881f66d76bd6e5ab'
+          expected_tree='22d9fb9429336c42be0f61e4710c09ac80642ac1'
+          git fetch --no-tags origin "refs/heads/$source_branch:refs/remotes/origin/$source_branch"
+          observed="$(git rev-parse "refs/remotes/origin/$source_branch")"
+          if [ "$observed" != "$expected_head" ]; then
+            echo "STOP: PR274 head drift: $observed" >&2
+            exit 2
+          fi
+          target="$RUNNER_TEMP/ictc-pr274-target"
+          git worktree add --detach "$target" "$expected_head"
+          ICTC_REPO_ROOT="$target" python3 "$GITHUB_WORKSPACE/transport/migrate_pr274.py"
+          git -C "$target" diff --cached --check
+          test "$(git -C "$target" write-tree)" = "$expected_tree"
+          git -C "$target" config user.name "github-actions[bot]"
+          git -C "$target" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$target" commit -m "refactor(repo): migrate v3 into standard src/public/tests (exact-tree validated)"
+          test "$(git -C "$target" rev-parse 'HEAD^{tree}')" = "$expected_tree"
+          git -C "$target" push --porcelain origin "HEAD:refs/heads/$source_branch"
+          echo "PR274 MIGRATION PUSHED: $(git -C "$target" rev-parse HEAD)"
+          echo "NEXT: observe exact-head PR CI; do not merge on this step alone."
