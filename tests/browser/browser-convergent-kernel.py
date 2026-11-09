@@ -1,7 +1,7 @@
 import json, os, pathlib, re, traceback
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 PROCESS_IDS={'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
 SURFACE={'monitoring':'monitoring','incidents':'incidents','objects':'grc','coverage':'grc','actions':'grc','risks':'grc','assurance':'grc'}

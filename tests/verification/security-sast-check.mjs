@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-const here=new URL('./',import.meta.url);const files={
+const here=new URL('../../',import.meta.url);const files={
   fi01:await readFile(new URL('public/ui/fi01-reference.js',here),'utf8'),
   encoding:await readFile(new URL('public/ui/security-encoding.js',here),'utf8'),
-  network:await readFile(new URL('network-policy.mjs',here),'utf8'),
-  server:await readFile(new URL('server.mjs',here),'utf8'),
-  storage:await readFile(new URL('runtime/attachment-storage.mjs',here),'utf8'),
-  integrity:await readFile(new URL('runtime/attachment-integrity.mjs',here),'utf8'),
-  boundaries:await readFile(new URL('runtime/security-boundaries.mjs',here),'utf8'),
-  workflow:await readFile(new URL('../../.github/workflows/security.yml',here),'utf8')
+  network:await readFile(new URL('src/network-policy.mjs',here),'utf8'),
+  server:await readFile(new URL('src/server.mjs',here),'utf8'),
+  storage:await readFile(new URL('src/runtime/attachment-storage.mjs',here),'utf8'),
+  integrity:await readFile(new URL('src/runtime/attachment-integrity.mjs',here),'utf8'),
+  boundaries:await readFile(new URL('src/runtime/security-boundaries.mjs',here),'utf8'),
+  workflow:await readFile(new URL('.github/workflows/security.yml',here),'utf8')
 };
 const rules=[
   {id:'SAST-01',ok:!files.fi01.includes('${reference.'),evidence:'FI-01 has no direct reference.* template interpolation at the sink.'},

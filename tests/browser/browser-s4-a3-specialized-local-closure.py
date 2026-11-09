@@ -1,6 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4823').rstrip('/'); EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').strip().lower(); PHASE='init'; RESULTS=[]; WRITES=[]; PAGE_ERRORS=[]
 def fail(exc):
  payload={'ok':False,'phase':PHASE,'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc(),'expectedBuildSha':EXPECTED_SHA or None,'results':RESULTS,'writes':WRITES,'pageErrors':PAGE_ERRORS};(ART/'browser-s4-a3-specialized-local-closure-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8');print(f'::error title=browser-s4-a3-specialized-local-closure::{PHASE}: {type(exc).__name__}: {exc}',flush=True)

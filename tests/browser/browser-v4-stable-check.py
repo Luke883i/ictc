@@ -2,7 +2,7 @@ import json, os, re, traceback, urllib.request, urllib.error
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173')
-ART=Path(__file__).resolve().parent.parent/'artifacts';ART.mkdir(exist_ok=True)
+ART=Path(__file__).resolve().parents[2]/'artifacts';ART.mkdir(exist_ok=True)
 stage='init';context={}
 def request(path,method='GET',body=None,revision=None,role='admin'):
     data=None if body is None else json.dumps(body).encode()

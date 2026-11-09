@@ -1,7 +1,7 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import sync_playwright, expect
 from browser_test_support import ensure_onboarded
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'/'compliance-ontology-runtime'; ART.mkdir(parents=True,exist_ok=True)
+ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'/'compliance-ontology-runtime'; ART.mkdir(parents=True,exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); MODE=os.environ.get('ICTC_COMPLIANCE_MODE','standard'); EXPECTED=os.environ.get('ICTC_EXPECT_BUILD_SHA','').strip(); TARGET=os.environ.get('ICTC_COMPLIANCE_SURFACE','').strip(); VIEWPORT=os.environ.get('ICTC_COMPLIANCE_VIEWPORT','1440x950')
 VW,VH=[int(x) for x in VIEWPORT.lower().split('x',1)]; VTAG=f'{VW}x{VH}'; TTAG=TARGET or 'all'
 SURFACES=[('home','home','#homeView'),('processes','processes','#processesView'),('monitoring','monitoring','#monitoringView'),('incidents','incidents','#incidentsView'),('grc_objects','objects','#grcView'),('grc_coverage','coverage','#grcView'),('grc_actions','actions','#grcView'),('grc_risks','risks','#grcView'),('grc_assurance','assurance','#grcView'),('proof','proof','#proofView'),('epistemic','epistemic','#epistemicView')]

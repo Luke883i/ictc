@@ -1,7 +1,7 @@
 import json, os, pathlib, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
-ROOT=pathlib.Path(__file__).resolve().parents[1]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 P={'RN-01':'monitoring','EC-01':'incidents','AO-01':'grc','MC-01':'grc','AP-01':'grc','RC-01':'grc','AR-01':'grc'}
 BUTTON_LABELS={'RN-01':'Sorveglia fonti','EC-01':'Gestisci eventi','AO-01':'Verifica inventario','MC-01':'Valuta perimetro e controlli','AP-01':'Gestisci remediation','RC-01':'Valuta rischi','AR-01':'Gestisci questionari'}

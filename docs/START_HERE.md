@@ -41,7 +41,7 @@ Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il 
 | `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node tests/verification/security-boundary-check.mjs` | `npm run release:check` |
 | `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node tests/verification/evidence-check.mjs` | `npm run test:current:runtime` |
 | `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
-| `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `v3/c3-enterprise-runtime-closure.json` + `v3/runtime/enterprise-runtime-kernel.mjs` | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` |
+| `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `tests/contracts/c3-enterprise-runtime-closure.json` + `src/runtime/enterprise-runtime-kernel.mjs` | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` |
 | `release` | release-readiness V.1 Experimental, confini enterprise e GO/NO-GO umano | `v3/release-identity.json` + `docs/RELEASE.md` (guida E2 non autoritativa) | `node tests/verification/release-readiness-e2-gate.mjs` | `npm run release:check` + evidenze E3/E4 distinte |
 
 Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/gov-01f-policy.json` (`agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `research/`, `dependabot/`; `dependabot/` è riservato agli aggiornamenti automatici). Il routing distingue `runtime` locale/compatibility da `enterprise-runtime`: il secondo parte dal contratto C3 e non usa SQLite/RuntimeStore come prova del runtime orizzontale.
@@ -113,7 +113,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 | API | `docs/openapi.yaml` + handler runtime | endpoint UI-only paralleli |
 | documentazione | `DOCUMENTATION_STANDARD.md` + manifest | authority implicita per data/nome file |
 | test/release | current release suite + CI | un gate PR alternativo |
-| runtime enterprise orizzontale | `v3/c3-enterprise-runtime-closure.json` + `v3/runtime/enterprise-runtime-kernel.mjs` + `v3/runtime/postgres-enterprise-authority.mjs` | collassare il percorso enterprise nel `RuntimeStore`/SQLite compatibility path |
+| runtime enterprise orizzontale | `tests/contracts/c3-enterprise-runtime-closure.json` + `src/runtime/enterprise-runtime-kernel.mjs` + `src/runtime/postgres-enterprise-authority.mjs` | collassare il percorso enterprise nel `RuntimeStore`/SQLite compatibility path |
 
 ## Native Semantic Lattice 3.2
 

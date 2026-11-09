@@ -1,7 +1,7 @@
 import json, os, pathlib, shutil, subprocess, tempfile, time, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 PHASE = 'init'

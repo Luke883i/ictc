@@ -25,10 +25,24 @@ jobs:
           node-version: '22.16.0'
       - name: Contract check
         run: node tests/verification/trama-causal-qualification-check.mjs
-      - name: K1/K2 source-preimage, Git tree and fixture positive controls
-        run: node scripts/test-boundary-migration-check.mjs
-      - name: C1-3d K1/K2 physical falsification and command equivalence
-        run: node scripts/test-boundary-migration-check.mjs --falsify
+      # The K1/K2 verifier asserts the pre-cutover v3 tree. Keep the original
+      # source oracle, but exercise it on its immutable historical preimage.
+      # On the current HEAD, the post-cutover inventory enforces v3/ = 0.
+      - name: K1/K2 historical Git preimage and positive controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$RUNNER_TEMP/ictc-k12-precutover" e641526114a508e24f86e8554c027d8cd6bbe715
+          (cd "$RUNNER_TEMP/ictc-k12-precutover" && node scripts/test-boundary-migration-check.mjs)
+          mkdir -p artifacts
+          cp "$RUNNER_TEMP/ictc-k12-precutover/artifacts/c1-3d-test-boundary.json" artifacts/c1-3d-test-boundary.json
+      - name: K1/K2 historical physical counterexamples and current inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/ictc-k12-precutover" && node scripts/test-boundary-migration-check.mjs --falsify)
+          node scripts/repository-inventory-falsification.mjs
+          test "$(git ls-files 'v3/**' | wc -l)" -eq 0
       - name: Campaign 01 · 100k + 10k no-novelty
         run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000104730
       - name: Campaign 02 · 100k + 10k no-novelty

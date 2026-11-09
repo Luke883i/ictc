@@ -2,7 +2,7 @@ import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 
-ROOT=pathlib.Path(__file__).resolve().parents[1]
+ROOT=pathlib.Path(__file__).resolve().parents[2]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4811').rstrip('/')
 VIEWPORTS=[('mobile',390,844),('tablet',768,1024),('desktop',1280,900),('wide',1600,1000)]

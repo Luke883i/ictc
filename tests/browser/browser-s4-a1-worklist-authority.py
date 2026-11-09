@@ -1,6 +1,6 @@
 import json, os, pathlib, traceback, urllib.parse
 from playwright.sync_api import expect, sync_playwright
-ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
+ROOT=pathlib.Path(__file__).resolve().parents[2];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4807').rstrip('/');EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').strip().lower();PHASE='init';RESULTS=[];NETWORK=[];FAILURES=[];PAGE_ERRORS=[]
 PROCEDURES=[('RN-01','monitoring'),('EC-01','incidents'),('AO-01','objects'),('MC-01','coverage'),('AP-01','actions'),('RC-01','risks'),('AR-01','assurance')]
 OWNER={'monitoring':'procedure-sequential-rn-ec.js','incidents':'procedure-sequential-rn-ec.js','objects':'grc-workspace-3-2.js','coverage':'grc-workspace-3-2.js','actions':'grc-workspace-3-2.js','risks':'grc-workspace-3-2.js','assurance':'grc-workspace-3-2.js'}

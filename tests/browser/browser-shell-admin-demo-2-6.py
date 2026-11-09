@@ -1,7 +1,7 @@
 import json,os,pathlib,traceback
 from playwright.sync_api import expect,sync_playwright
 from browser_test_support import ensure_onboarded
-ROOT=pathlib.Path(__file__).resolve().parents[1];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');DEMO=os.environ.get('ICTC_EXPECT_DEMO','0')=='1';MODE='demo' if DEMO else 'standard';PHASE='init'
+ROOT=pathlib.Path(__file__).resolve().parents[2];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True);BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/');DEMO=os.environ.get('ICTC_EXPECT_DEMO','0')=='1';MODE='demo' if DEMO else 'standard';PHASE='init'
 def no_overflow(p,label):
  m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,(label,m)
 def footer_effect(p):

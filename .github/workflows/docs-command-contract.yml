@@ -28,8 +28,16 @@ jobs:
         run: npm run repo:inventory:falsify
       - name: Seeded retirement semantics and negative controls
         run: npm run repo:retirement:mutations
-      - name: Refute legacy-tool promotion and stale current-runtime claims (C1-2 F7)
-        run: node scripts/repository-compatibility-falsification.mjs --falsify
+      # The historical F7 seed-path oracle is preserved without claiming
+      # that legacy source paths are active in the post-cutover runtime.
+      - name: Historical F7 legacy-tool negative controls on immutable preimage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$RUNNER_TEMP/ictc-f7-precutover" e641526114a508e24f86e8554c027d8cd6bbe715
+          (cd "$RUNNER_TEMP/ictc-f7-precutover" && node scripts/repository-compatibility-falsification.mjs --falsify)
+          node scripts/repository-inventory-falsification.mjs
+          test "$(git ls-files 'v3/**' | wc -l)" -eq 0
       - name: Verify sealed PR8 handoff integrity without source changes
         run: python3 -B audit/archive/ictc-agent-bundle/tools/verify_integrity.py audit/archive/ictc-agent-bundle
       - name: Qualify each unregistered document with isolated removal counterfactual

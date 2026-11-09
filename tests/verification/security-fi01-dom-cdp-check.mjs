@@ -64,7 +64,7 @@ try{
     const target=await newTarget(devtools.port),candidate=connect(target.webSocketDebuggerUrl);
     try{await candidate.ready;await candidate.call('Runtime.enable');return candidate;}catch(error){candidate.close();throw error;}
   },n=>{transportAttempts=n;});
-  const moduleSource=await readFile(new URL('public/ui/security-encoding.js',import.meta.url),'utf8');
+  const moduleSource=await readFile(new URL('../../public/ui/security-encoding.js',import.meta.url),'utf8');
   const payload={masterSystem:'<img src=x onerror=alert(1)>',masterId:'"><svg/onload=alert(1)>',masterVersion:"' onclick='x",contentSha256:'<script>alert(1)</script>',referenceUrl:'javascript:alert(1)'};
   const expression=`(async()=>{const source=${JSON.stringify(moduleSource)};const moduleUrl='data:text/javascript;base64,'+btoa(unescape(encodeURIComponent(source)));const m=await import(moduleUrl);document.body.innerHTML='<div id="root"></div>';const root=document.querySelector('#root');const payload=${JSON.stringify(payload)};root.innerHTML=m.internalReferencePanelMarkup(payload);const dangerous=[...root.querySelectorAll('img,svg,script,iframe,object,embed,[onerror],[onload],[onclick]')].map(n=>n.outerHTML);const links=[...root.querySelectorAll('a')].map(a=>a.getAttribute('href'));return{dangerous,links,text:root.textContent||'',html:root.innerHTML};})()`;
   semanticAttempts=1;

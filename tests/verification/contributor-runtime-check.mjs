@@ -9,7 +9,7 @@ const [contractText,policyText,contributing,startHere,testing,canonicalCodeowner
 ]);
 const contract=JSON.parse(contractText),policy=JSON.parse(policyText),c3=JSON.parse(c3Text);
 const semantic=validateSemanticOwnerContract(contract);assert.equal(semantic.ok,true,semantic.failures.join('\n'));
-const rootCodeownersAbsent=await read('../CODEOWNERS').then(()=>false,error=>error.code==='ENOENT');
+const rootCodeownersAbsent=await read('../../CODEOWNERS').then(()=>false,error=>error.code==='ENOENT');
 const canonicalRules=canonicalCodeowners.split(/\r?\n/).map(line=>line.trim()).filter(line=>line&&!line.startsWith('#'));
 const projection={
   branchPolicyVisible:contributing.includes('.github/gov-01f-policy.json')&&policy.allowedBranchPrefixes.every(prefix=>contributing.includes(`\`${prefix}\``))&&startHere.includes('.github/gov-01f-policy.json'),
