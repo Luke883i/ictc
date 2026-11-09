@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const repoRoot=path.dirname(here);
-const contract=JSON.parse(readFileSync(path.join(here,'uiux-beauty-p4-contract.json'),'utf8'));
+const repoRoot=path.resolve(here,'../..');
+const contract=JSON.parse(readFileSync(path.join(repoRoot,'tests/contracts/uiux-beauty-p4-contract.json'),'utf8'));
 const TRIALS=1_000_000;
 const fail=(message,detail={})=>{console.error(JSON.stringify({ok:false,message,...detail}));process.exitCode=1;};
 function seed32(text){let h=2166136261>>>0;for(const ch of text){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}return h||0x9e3779b9;}

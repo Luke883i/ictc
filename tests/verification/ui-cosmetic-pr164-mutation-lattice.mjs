@@ -5,8 +5,8 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const repoRoot=path.dirname(here);
-const read=p=>readFileSync(path.join(here,p),'utf8');
+const repoRoot=path.resolve(here,'../..');
+const read=p=>readFileSync(path.join(repoRoot,p.startsWith('browser-')?'tests/browser/'+p:p),'utf8');
 const baseline=Object.freeze({
   wrap:{identitySaturates:true,naturalWrap:true,technicalOverflowOwned:true,mutationSafe:true},
   action:{clusterLocal:true,minTargetPx:44,mobileReflow:true},

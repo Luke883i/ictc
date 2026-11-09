@@ -3,20 +3,20 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { evidenceCheckoutIdentity } from '../src/runtime/evidence-checkout-identity.mjs';
 
 const checkout=evidenceCheckoutIdentity();
-const root=new URL('./',import.meta.url);
+const root=new URL('../',import.meta.url);
 const baseline={
   encoding:await readFile(new URL('public/ui/security-encoding.js',root),'utf8'),
   fi01:await readFile(new URL('public/ui/fi01-reference.js',root),'utf8'),
-  boundaries:await readFile(new URL('runtime/security-boundaries.mjs',root),'utf8'),
-  network:await readFile(new URL('network-policy.mjs',root),'utf8'),
-  server:await readFile(new URL('server.mjs',root),'utf8'),
-  storage:await readFile(new URL('runtime/attachment-storage.mjs',root),'utf8'),
-  integrity:await readFile(new URL('runtime/attachment-integrity.mjs',root),'utf8'),
-  workflow:await readFile(new URL('../.github/workflows/security.yml',root),'utf8'),
-  identity:await readFile(new URL('runtime/evidence-checkout-identity.mjs',root),'utf8'),
-  fi01Dom:await readFile(new URL('security-fi01-dom-cdp-check.mjs',root),'utf8'),
-  mainMutation:await readFile(new URL('security-main-mutation-1m.mjs',root),'utf8'),
-  runtimeDod:await readFile(new URL('security-runtime-dod-check.mjs',root),'utf8')
+  boundaries:await readFile(new URL('src/runtime/security-boundaries.mjs',root),'utf8'),
+  network:await readFile(new URL('src/network-policy.mjs',root),'utf8'),
+  server:await readFile(new URL('src/server.mjs',root),'utf8'),
+  storage:await readFile(new URL('src/runtime/attachment-storage.mjs',root),'utf8'),
+  integrity:await readFile(new URL('src/runtime/attachment-integrity.mjs',root),'utf8'),
+  workflow:await readFile(new URL('.github/workflows/security.yml',root),'utf8'),
+  identity:await readFile(new URL('src/runtime/evidence-checkout-identity.mjs',root),'utf8'),
+  fi01Dom:await readFile(new URL('tests/verification/security-fi01-dom-cdp-check.mjs',root),'utf8'),
+  mainMutation:await readFile(new URL('tests/verification/security-main-mutation-1m.mjs',root),'utf8'),
+  runtimeDod:await readFile(new URL('tests/verification/security-runtime-dod-check.mjs',root),'utf8')
 };
 
 function oracles(files){
@@ -78,4 +78,4 @@ for(const [id,file,mutate] of mutants){
   const killed=killedBy.length>0;rows.push({id,file,killed,killedBy});assert.equal(killed,true,`${id} survived implementation-mutant rail`);
 }
 const report={schemaVersion:'1.1.0',authority:'security-implementation-mutants',checkout,mutantCount:rows.length,killed:rows.filter(x=>x.killed).length,survivors:rows.filter(x=>!x.killed).length,mutants:rows,claimBoundary:'Targeted source-level implementation mutants over the remediated security topology. This establishes oracle sensitivity for named regressions; it is not exhaustive mutation coverage.'};
-await mkdir(new URL('../artifacts/',import.meta.url),{recursive:true});await writeFile(new URL('../artifacts/security-implementation-mutants.json',import.meta.url),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+await mkdir(new URL('artifacts/',root),{recursive:true});await writeFile(new URL('../artifacts/security-implementation-mutants.json',import.meta.url),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
