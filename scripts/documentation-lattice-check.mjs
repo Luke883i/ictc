@@ -3,7 +3,7 @@ import {readFile,stat,readdir} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import {spawnSync} from 'node:child_process';
-import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel} from './documentation-lattice-lib.mjs';
+import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
 const root=path.resolve(process.argv[2]||process.cwd());
 const read=async p=>readFile(path.join(root,p),'utf8');
 const exists=async p=>{try{await stat(path.join(root,p));return true}catch{return false}};
@@ -18,6 +18,30 @@ for(const d of docs){check(ALLOWED_LIFECYCLES.has(d.lifecycle),`invalid lifecycl
 for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('tests/verification/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
+// Post-#274 AS-IS must not route newcomers to retired v3 executable paths.
+// Historical/source-input references remain valid and are intentionally excluded.
+for(const failure of validateCurrentAtlasGuides(currentAtlasGuides(atlas)))check(false,failure);
+for(const p of ['src/bootstrap.mjs','src/server.mjs','src/store.mjs','src/runtime','public','public/ui','tests/verification','audit/archive/ictc-agent-bundle','src/contracts/release-identity.json','tests/contracts/semantic-owner-contract.json'])
+ check(await exists(p),'atlas-current:declared executable/path missing: '+p);
+// Current owner-routing paths must resolve after #274. Do not apply this
+// prohibition to historical Fase 7 or PR239 narratives later in those files.
+const configurationText=await read('docs/CONFIGURATION.md');
+const architectureCurrent=await read('docs/11_ARCHITECTURE.md');
+const currentOwnerDocs=[
+ ['START_HERE',start,['src/server.mjs','src/store.mjs','src/ai.mjs','tests/contracts/semantic-owner-contract.json','src/contracts/release-identity.json','public/ui/active-experience.js']],
+ ['DEVELOPMENT',development,['src/bootstrap.mjs','src/server.mjs','tests/contracts/semantic-owner-contract.json','tests/contracts/trama-enterprise-dod.json']],
+ ['CONFIGURATION',configurationText,['src/bootstrap.mjs','src/lib/bootstrap-contract.mjs']],
+ ['ARCHITECTURE',architectureCurrent.split('## Modello di autorità')[0],['src/bootstrap.mjs','src/server.mjs','src/store.mjs','public/index.html','tests/verification/*-check.mjs']],
+ ['TESTING',testing.split('## Exact-head e freshness')[0],['src/contracts/release-identity.json','tests/contracts/semantic-owner-contract.json','tests/verification/trama-engineering-check.mjs']]
+];
+for(const [owner,body,tokens] of currentOwnerDocs){
+ for(const token of tokens)check(body.includes(token),'post274 current owner path missing: '+owner+' '+token);
+ check(!/v3\/(?:server|bootstrap|store|ai|public|runtime|release-identity|semantic-owner|trama)/.test(body),
+  'post274 retired owner path leaked into current '+owner+' routing');
+}
+for(const p of ['tests/contracts/semantic-owner-contract.json','tests/contracts/as-is-convergence-contract.json',
+ 'tests/contracts/trama-enterprise-dod.json','src/ai.mjs','src/lib/bootstrap-contract.mjs'])
+ check(await exists(p),'post274 declared current owner path missing: '+p);
 // Product wording must not drift from the four actual CSS maturity variants.
 const maturityCss=await read('public/semantic-workspace-closure-3-2-1.css');
 const maturityStates=['ready','scaffold-yellow','scaffold-orange','placeholder'];

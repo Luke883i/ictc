@@ -8,7 +8,7 @@ npm test
 npm run release:check
 ```
 
-`npm test` esegue `test:current`: il documentation lattice check entra nella semantic current rail prima del runtime current. I rail storici restano regressioni/diagnostica e non ridefiniscono `v3/release-identity.json`.
+`npm test` esegue `test:current`: il documentation lattice check entra nella semantic current rail prima del runtime current. I rail storici restano regressioni/diagnostica e non ridefiniscono `src/contracts/release-identity.json`.
 
 ## Prova replicabile di inventario e ritiro conservativo
 
@@ -42,7 +42,7 @@ Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di conver
 | C5 owner/freshness | `node tests/verification/c5-semantic-owner-check.mjs` | `node tests/verification/c5-semantic-owner-saturation.mjs`, `node tests/verification/c5-needs-audit-saturation.mjs`, poi `npm test` |
 | enterprise runtime/PostgreSQL orizzontale | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` + exact-head `c3-enterprise-runtime-closure` |
 
-Se una modifica locale richiede di leggere o cambiare molte authority non correlate, fermati e verifica prima il routing in `docs/START_HERE.md` e `v3/semantic-owner-contract.json`: la soluzione preferita resta nel proprietario esistente.
+Se una modifica locale richiede di leggere o cambiare molte authority non correlate, fermati e verifica prima il routing in `docs/START_HERE.md` e `tests/contracts/semantic-owner-contract.json`: la soluzione preferita resta nel proprietario esistente.
 
 ## Diagnosi dei failure di contribuibilità
 
@@ -115,7 +115,7 @@ Il rail C5 esegue 10.000 mutazioni deterministiche del contratto owner/freshness
 
 ## TRAMA adaptive falsification
 
-`v3/trama-engineering-check.mjs` verifica authority zero, gerarchia/astrazione/composizione di ogni nodo, no-novelty tail N+100, import controllato da iKant/iKant_LE, separazione Enterprise Candidate/E3/E4 e wiring nella rail current. `v3/trama-engineering-saturation.mjs` esegue **1.000.000** casi antagonisti sul kernel, copre le coppie di failure family e applica un deletion oracle. Zero survivor vale solo sul modello dichiarato: non è probabilità di correttezza né evidenza browser, umana, deployment, legale o di minimalità globale.
+`tests/verification/trama-engineering-check.mjs` verifica authority zero, gerarchia/astrazione/composizione di ogni nodo, no-novelty tail N+100, import controllato da iKant/iKant_LE, separazione Enterprise Candidate/E3/E4 e wiring nella rail current. `tests/verification/trama-engineering-saturation.mjs` esegue **1.000.000** casi antagonisti sul kernel, copre le coppie di failure family e applica un deletion oracle. Zero survivor vale solo sul modello dichiarato: non è probabilità di correttezza né evidenza browser, umana, deployment, legale o di minimalità globale.
 
 Se al ceiling 1M emerge una nuova root failure family o novelty, il risultato è `BLOCKED_REMODEL_TAXONOMY`: si amplia il modello prima di proseguire, non il numero di seed per nascondere il finding.
 
@@ -137,7 +137,7 @@ L'orchestrazione utente/agente è esterna: una correzione crea una nuova HEAD e 
 
 C5 freshness e documentation freshness sono controlli di **immutabilità relativa**: rilevano che un input/receipt è cambiato o è rimasto uguale. Non dimostrano, da soli, coerenza semantica cross-owner.
 
-Il debito noto è registrato come `D-RSC` in `v3/semantic-owner-contract.json`. Il documentation runtime esercita ora anche le failure family note: legacy authority classificata come current, UI prose che diverge da Home/Process Hub executable owners, OpenAPI che nomina la Suite DEMO sbagliata, PR governance declaration senza corrispondenza nel diff, laundering di GAP-022/CodeQL/legacy residue e confusione fra freshness e consistency.
+Il debito noto è registrato come `D-RSC` in `tests/contracts/semantic-owner-contract.json`. Il documentation runtime esercita ora anche le failure family note: legacy authority classificata come current, UI prose che diverge da Home/Process Hub executable owners, OpenAPI che nomina la Suite DEMO sbagliata, PR governance declaration senza corrispondenza nel diff, laundering di GAP-022/CodeQL/legacy residue e confusione fra freshness e consistency.
 
 Questo non è un solver globale di equivalenza semantica. Se emerge un nuovo drift, va aggiunto al vocabolario D-RSC e al falsificatore pertinente. Method/path parity di un'API non implica semantic freshness della descrizione.
 
@@ -218,7 +218,7 @@ Un censimento automatico di path API nei test è soltanto una **proxy statica di
 
 `npm run e2e:denominator` legge il documento owner `docs/04_USER_JOURNEYS.md`, estrae nove varianti di journey dichiarate (sette processi, incluse le tre varianti RN-01), e censisce 53 passi numerati. La ricevuta `artifacts/e2e-journey-denominator.json` distingue i 21 readback HTTP processi×ruoli già eseguibili dal **percorso completo** azione→decisione umana→persistenza→readback→receipt. Nessun test parziale è promosso a prova del passo integrale. Il numeratore full-step non è attestato automaticamente e la copertura E2E globale di prodotto rimane `null`; il documento contiene inoltre interazioni UI/negative path/ruoli non necessariamente enumerati nei 53 passi. Questo è un **denominatore di lavoro dichiarato**, non un test globale passato.
 
-La saturazione di `v3/trama-engineering-saturation.mjs` ha una propria superficie e un proprio oracolo di no-novelty. I risultati non si possono estendere per inferenza alla saturazione globale del repository. Analogamente, una campagna di 10M scenari modellistici non è una campagna di 10M patch fisiche eseguite contro gli owner runtime.
+La saturazione di `tests/verification/trama-engineering-saturation.mjs` ha una propria superficie e un proprio oracolo di no-novelty. I risultati non si possono estendere per inferenza alla saturazione globale del repository. Analogamente, una campagna di 10M scenari modellistici non è una campagna di 10M patch fisiche eseguite contro gli owner runtime.
 
 ### Qualificazione documentale di ogni file fuori manifest — limiti dell'oracolo
 

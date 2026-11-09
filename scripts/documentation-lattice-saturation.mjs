@@ -1,5 +1,8 @@
 import process from 'node:process';
-import {validateDocumentationModel} from './documentation-lattice-lib.mjs';
+import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {validateDocumentationModel,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
 const TRIALS=Number(process.env.ICTC_DOC_SATURATION_TRIALS||1_000_000),HOLDOUT=Math.min(100_000,Math.max(10_000,Math.floor(TRIALS/10))),SEED=0x1c7cd12;
 const BASE={entrypoint:'docs/START_HERE.md',productAuthority:'docs/PRODUCT.md',repositoryAtlas:'docs/REPOSITORY_ATLAS.md',rootRoutesAtlas:true,startRoutesAtlas:true,atlasBoundary:true,atlasGitBoundary:true,atlasAiReadOnly:true,atlasRuntimeSplit:true,atlasDemoSplit:true,atlasExternalBoundary:true,atlasNoLiveSha:true,workflowEvidenceChannels:true,workflowNotParallelAuthority:true,workflowDiagnosticBoundary:true,workflowAggregateBoundary:true,workflowPostMergeBoundary:true,workflowTriggerBoundary:true,workflowHistoricalNameBoundary:true,sameShaAcceptance:true,newCommitReopens:true,mergeShaSeparate:true,prSemanticSlice:true,prCandidateNotMain:true,externalOrchestratorBoundary:true,humanMergeBoundary:true,branchPointerModel:true,shaSnapshotModel:true,branchNotAuthority:true,branchCountNotMetric:true,branchRetentionOptional:true,scratchBranchBoundary:true,topologyCountVolatile:true,serverEnforcementBoundary:true,ciDeploymentBoundary:true,prTemplateSemanticUnit:true,testingTopologyExplained:true,trajectoryStratigraphy:true,coherenceDebtDeclared:true,coherenceFindingCensus:true,coherenceAuthorityBoundary:true,legacyAuthorityDeclassified:true,uiDocSemanticConsistency:true,openapiSemanticConsistency:true,prDiffDeclarationGuard:true,f5ExternalLink:true,f6CodeqlBoundary:true,legacyResidueBoundary:true,freshnessConsistencyBoundary:true,negativeControlBoundary:true,promptLifecycle:'source-input',promptAuthoritative:false,uniqueIds:true,uniquePaths:true,uniqueTopics:true,currentLifecycleSound:true,maxAuthorityDepth:2,brokenLinks:0,productVersion:'1.8.0',uiVersion:'3.2',workspaceChromeVersion:'3.3',uiPresentationVersion:'local-owners',distributedPresentationRegistered:true,retired34Lineage:true,journey:'2.2-sequential-onto-epistemic',constitution:'C0.1',documentationVersion:'1.0',processCount:7,ep01BusinessProcess:false,globalUiRuntime:'annotation-only',capabilityGrammar:'row-list-owner-declared',prTemplate:true,issueConfig:true,securityPolicy:true,supportPolicy:true,governance:true,codeowners:true,bugInvitesVulnerability:false,supportRoutesSecurity:true,prAuthority:true,prBoundary:true,prTests:true,prDocs:true,packageDocsCheck:true,semanticRailIncludesDocs:true,testingCurrent32:true,testingPromotes28:false,developmentCurrent32:true,developmentPromotes28:false,externalSettingsNotSelfCertified:true};
 const atlasOps=[
@@ -124,4 +127,76 @@ for(let i=0;i<1000;i++){
  coherenceKilled++;
 }
 const coherenceMissing=coherenceOps.filter((_,i)=>coherenceHits[i]===0).map(x=>x[0]),coherencePairsPossible=coherenceOps.length*(coherenceOps.length-1)/2;
-const missing=ops.filter((_,i)=>!seen[i]).map(x=>x[0]),result={ok:killed===TRIALS&&!missing.length&&holdoutNovel===0&&atlasKilled===1000&&topologyKilled===1000&&!topologyMissing.length&&topologyPairsSeen.size===topologyPairsPossible&&coherenceKilled===1000&&!coherenceMissing.length&&coherencePairsSeen.size===coherencePairsPossible,trials:TRIALS,killed,killRate:killed/TRIALS,normalizedFamilies:ops.length,atlasScenarios:{trials:1000,killed:atlasKilled,survivors:1000-atlasKilled,families:atlasOps.length,pairInteractions:atlasPairs.size,classification:'deterministic multi-family model-level repository-orientation mutations'},topologyScenarios:{trials:1000,killed:topologyKilled,survivors:1000-topologyKilled,families:topologyOps.length,pairInteractions:topologyPairsSeen.size,pairInteractionsPossible:topologyPairsPossible,missingFamilies:topologyMissing,classification:'deterministic multi-family same-SHA/workflow/PR/branch semantic mutations'},coherenceDebtScenarios:{trials:1000,killed:coherenceKilled,survivors:1000-coherenceKilled,families:coherenceOps.length,pairInteractions:coherencePairsSeen.size,pairInteractionsPossible:coherencePairsPossible,missingFamilies:coherenceMissing,classification:'deterministic multi-family D-RSC authority/docs/API/governance/evidence semantic mutations'},seed:`0x${SEED.toString(16)}`,lastNovelAt:lastNovel,noNovelAfter:TRIALS-lastNovel-1,holdout:{size:HOLDOUT,newFamilies:holdoutNovel},missing,signature,limitations:['Model-level falsification of declared documentation/runtime invariants.','Repeated traces over normalized failure families are not independent contributor studies or code mutations.','GitHub server-side settings and deployment controls require external observation.']};console.log(JSON.stringify(result,null,2));if(!result.ok)process.exit(1);
+// Post-merge source-string mutation campaign against the ACTUAL operational Atlas.
+// Non-destructive to repository: 100k distinct in-memory source mutations; 34
+// physical file writes in a scratch directory are checked through the same oracle.
+// It does not represent 100k code patches, runtime/browser executions or humans.
+const atlasSource=readFileSync(new URL('../docs/REPOSITORY_ATLAS.md',import.meta.url),'utf8');
+const currentGuides=currentAtlasGuides(atlasSource);
+if(validateCurrentAtlasGuides(currentGuides).length)throw new Error('postmerge Atlas seed invalid');
+const mutations=[
+ ['source-bootstrap','map','src/bootstrap.mjs',i=>'src/obsolete-bootstrap-'+i+'.mjs'],
+ ['public-asset-owner','map','public/ui/',i=>'retired-public-'+i+'/ui/'],
+ ['verification-owner','map','tests/verification/',i=>'old-verifiers-'+i+'/'],
+ ['candidate-status','map','| `src/`,',i=>'candidato sandbox '+i+' | `src/`,'],
+ ['lineage-promoted','postmerge','lineage',i=>'current-authority-'+i],
+ ['external-hold-erased','postmerge','HOLD',i=>'PASS-'+i],
+ ['false-external-clearance','postmerge','G4',i=>'G4: PASS '+i],
+ ['quick-bootstrap','quick','src/bootstrap.mjs',i=>'v3/bootstrap-'+i+'.mjs'],
+ ['quick-server','quick','src/server.mjs',i=>'v3/server-'+i+'.mjs'],
+ ['quick-store','quick','src/store.mjs',i=>'v3/store-'+i+'.mjs'],
+ ['quick-oracle','quick','tests/verification/',i=>'v3/oracle-'+i+'-check.mjs'],
+ ['layer-runtime','layer','src/runtime/',i=>'v3/runtime/'+i+'/'],
+ ['external-onboarding','onboarding','src/server.mjs',i=>'v3/server-'+i+'.mjs'],
+ ['release-authority','truth','src/contracts/release-identity.json',i=>'v3/release-identity-'+i+'.json'],
+ ['coherence-owner','debt','tests/contracts/semantic-owner-contract.json',i=>'v3/semantic-owner-contract-'+i+'.json'],
+ ['footer-current-server','next','src/server.mjs',i=>'v3/server-'+i+'.mjs'],
+ ['footer-current-release','next','src/contracts/release-identity.json',i=>'v3/release-identity-'+i+'.json']
+];
+const mutateGuides=(source,operator,i)=>{
+ const [name,area,needle,replace]=operator;
+ if(!source[area].includes(needle))throw new Error('mutant preimage missing: '+name);
+ return {...source,[area]:source[area].replaceAll(needle,replace(i))};
+};
+for(let i=0;i<mutations.length;i++){
+ const errors=validateCurrentAtlasGuides(mutateGuides(currentGuides,mutations[i],i));
+ if(!errors.length)throw new Error('single mutation escaped: '+mutations[i][0]);
+}
+let postmergeSeed=0x274a5eed,postmergeKilled=0,postmergeSignature=2166136261;
+const postmergeHits=new Uint32Array(mutations.length),postmergePairs=new Set();
+const postmergeTotal=100_000;
+for(let i=0;i<postmergeTotal;i++){
+ postmergeSeed=xorshift(postmergeSeed);
+ const first=i%mutations.length;
+ // Combining operators over independent scopes tests cross-abstraction collisions.
+ const second=(i%4===0)?((first+1+(postmergeSeed% (mutations.length-1)))%mutations.length):-1;
+ let mutated=mutateGuides(currentGuides,mutations[first],i);postmergeHits[first]++;
+ if(second>=0){
+  mutated=mutateGuides(mutated,mutations[second],i);postmergeHits[second]++;
+  postmergePairs.add([Math.min(first,second),Math.max(first,second)].join(':'));
+ }
+ const errors=validateCurrentAtlasGuides(mutated);
+ if(!errors.length)throw new Error('postmerge source mutation survived '+i+': '+mutations[first][0]);
+ postmergeKilled++;postmergeSignature=Math.imul(postmergeSignature^postmergeSeed^(first<<8)^errors.length,16777619)>>>0;
+}
+// Real filesystem mutation of Atlas markdown copy, with byte preservation of the canonical source.
+const scratch=mkdtempSync(join(tmpdir(),'ictc-atlas-postmerge-'));
+let physicalKills=0;
+try{
+ for(let i=0;i<34;i++){
+  const op=mutations[i%mutations.length],needle=op[2],repl=op[3](i);
+  const guide=currentGuides[op[1]];
+  if(!guide.includes(needle))throw new Error('physical preimage missing');
+  const mutatedSource=atlasSource.replace(guide,guide.replaceAll(needle,repl));
+  const path=join(scratch,'REPOSITORY_ATLAS.md');writeFileSync(path,mutatedSource);
+  const readback=readFileSync(path,'utf8');
+  if(!validateCurrentAtlasGuides(currentAtlasGuides(readback)).length)throw new Error('physical Atlas mutant survived: '+op[0]);
+  physicalKills++;
+ }
+}finally{rmSync(scratch,{recursive:true,force:true});}
+const postmergeRoutes={trials:postmergeTotal,killed:postmergeKilled,survivors:postmergeTotal-postmergeKilled,
+ familyCount:mutations.length,families:Object.fromEntries(mutations.map((x,i)=>[x[0],postmergeHits[i]])),
+ mixedPairs:postmergePairs.size,physicalScratchMutants:physicalKills,physicalDetected:physicalKills,
+ signature:postmergeSignature,source:'docs/REPOSITORY_ATLAS.md',method:'real source-string mutators in memory; scratch filesystem negative controls',
+ limitations:'No claim of 100000 independent source-code patches, Chromium sessions, external consumer closure or deployment assurance.'};
+const missing=ops.filter((_,i)=>!seen[i]).map(x=>x[0]),result={ok:killed===TRIALS&&!missing.length&&holdoutNovel===0&&atlasKilled===1000&&topologyKilled===1000&&!topologyMissing.length&&topologyPairsSeen.size===topologyPairsPossible&&coherenceKilled===1000&&!coherenceMissing.length&&coherencePairsSeen.size===coherencePairsPossible,trials:TRIALS,killed,killRate:killed/TRIALS,normalizedFamilies:ops.length,atlasScenarios:{trials:1000,killed:atlasKilled,survivors:1000-atlasKilled,families:atlasOps.length,pairInteractions:atlasPairs.size,classification:'deterministic multi-family model-level repository-orientation mutations'},topologyScenarios:{trials:1000,killed:topologyKilled,survivors:1000-topologyKilled,families:topologyOps.length,pairInteractions:topologyPairsSeen.size,pairInteractionsPossible:topologyPairsPossible,missingFamilies:topologyMissing,classification:'deterministic multi-family same-SHA/workflow/PR/branch semantic mutations'},coherenceDebtScenarios:{trials:1000,killed:coherenceKilled,survivors:1000-coherenceKilled,families:coherenceOps.length,pairInteractions:coherencePairsSeen.size,pairInteractionsPossible:coherencePairsPossible,missingFamilies:coherenceMissing,classification:'deterministic multi-family D-RSC authority/docs/API/governance/evidence semantic mutations'},postmergeRoutes,seed:`0x${SEED.toString(16)}`,lastNovelAt:lastNovel,noNovelAfter:TRIALS-lastNovel-1,holdout:{size:HOLDOUT,newFamilies:holdoutNovel},missing,signature,limitations:['Model-level falsification of declared documentation/runtime invariants.','Repeated traces over normalized failure families are not independent contributor studies or code mutations.','GitHub server-side settings and deployment controls require external observation.']};console.log(JSON.stringify(result,null,2));if(!result.ok)process.exit(1);

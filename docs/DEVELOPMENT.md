@@ -10,7 +10,7 @@ npm ci
 ./ictc.sh start --no-open
 ```
 
-Node `>=22.16.0`; entrypoint `v3/server.mjs`; launcher `ictc.sh`.
+Node `>=22.16.0`; entrypoint `src/bootstrap.mjs` (HTTP in `src/server.mjs`); launcher `ictc.sh`.
 
 ## Primo giorno, percorso standard senza AI
 
@@ -120,7 +120,7 @@ Il branch è trasporto e segnalibro, non current truth. Può restare dopo il mer
 
 Una receipt fresca dice che i suoi input non sono cambiati; **non** dimostra che README, START_HERE, OpenAPI, authority map ed executable owner dicano la stessa cosa. Per una modifica current confronta quindi la frase/proiezione con il proprietario eseguibile e aggiungi o aggiorna il falsificatore della failure family.
 
-Il debito noto di questo tipo è `D-RSC` nel `repositoryCoherenceDebt` di `v3/semantic-owner-contract.json`. Un finding interno si chiude solo quando causa/proiezione sono riallineate e il relativo falsificatore non riproduce più il drift. Un finding E3/E4 non si chiude con CI repository.
+Il debito noto di questo tipo è `D-RSC` nel `repositoryCoherenceDebt` di `tests/contracts/semantic-owner-contract.json`. Un finding interno si chiude solo quando causa/proiezione sono riallineate e il relativo falsificatore non riproduce più il drift. Un finding E3/E4 non si chiude con CI repository.
 
 Per PR trajectory-sensitive vale un controllo ulteriore: se il body dichiara `planned` / `intentional-deviation` o afferma che convergence authority e workbook “si muovono insieme”, il **diff reale deve contenerli**. Altrimenti va corretta la dichiarazione prima del merge; il testo della PR non è evidenza del file change.
 
@@ -158,7 +158,7 @@ Una slice è done quando: causa chiusa nel proprietario corretto, falsificatore 
 
 ## GOV-TRAMA-COMPASS-1 — sviluppo AI-guidato
 
-TRAMA applica **PLAN → DO → CHECK → ACT** come operating contract. PLAN osserva lo stato corrente, calcola confini locale/intermedio/globale, confronta il target atomico in `v3/trama-enterprise-dod.json` e compila le tre DoD. DO modifica il minimo reticolo causalmente chiuso. CHECK parte dal falsificatore più vicino, poi mutation/current rail/exact-head. ACT ricalcola l'intera traiettoria dopo nuovi fatti, PR e merge.
+TRAMA applica **PLAN → DO → CHECK → ACT** come operating contract. PLAN osserva lo stato corrente, calcola confini locale/intermedio/globale, confronta il target atomico in `tests/contracts/trama-enterprise-dod.json` e compila le tre DoD. DO modifica il minimo reticolo causalmente chiuso. CHECK parte dal falsificatore più vicino, poi mutation/current rail/exact-head. ACT ricalcola l'intera traiettoria dopo nuovi fatti, PR e merge.
 
 La **Bussola** `docs/ENGINEERING_COMPASS.md` è una projection generated per l'utente non tecnico: mostra COSA VUOI, DOVE SIAMO, una sola prossima slice e DOVE STIAMO ANDANDO. Non è SOT e non promuove status.
 

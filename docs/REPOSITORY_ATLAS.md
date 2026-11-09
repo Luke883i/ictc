@@ -14,13 +14,19 @@ ICTC mantiene **tre oggetti distinti** nello stesso repository: **prodotto** (va
 | --- | --- | --- |
 | `README.md`, `package.json`, `package-lock.json`, `ictc.sh`, `CHANGELOG.md` | Front door, npm, launcher locale e cronologia release **restano nella root**: sono ingressi pubblici, non scarti. Il precedente shim `ictc-v3.sh` è stato ritirato dal tree corrente; `ictc.sh` resta il supervisor locale canonico. Il suo eventuale ritiro richiede parità di `start/stop/restart/status/logs/doctor/test/audit` e consumer esterni qualificati. | [DEVELOPMENT](DEVELOPMENT.md), [RELEASE](RELEASE.md) |
 | `LICENSE`, `LICENSE.md`, `NOTICE.md`, `GOVERNANCE.md`, `SECURITY.md`, `CONTRIBUTING.md`, `SUPPORT.md`, `CODE_OF_CONDUCT.md` | Metadati e policy convenzionali. `LICENSE` contiene la licenza MIT; `LICENSE.md` è soltanto un puntatore informativo. `.github/CODEOWNERS` è l'unico file di regole; il puntatore duplicato `CODEOWNERS` in root è stato ritirato. | [Termini](OPEN_SOURCE_TERMS.md), [governance](../GOVERNANCE.md) |
-| `src/`, `public/`, `tests/` (candidato sandbox) | Software, asset pubblici e verificatori hanno nuovi confini fisici; la provenienza `v3/` resta solo genealogia. La sostituzione integrale non è ancora certificata. | [ARCHITECTURE](11_ARCHITECTURE.md), `docs/legacy/README.md` |
-| `tests/helpers/active-experience-install.mjs`, `tests/ui/` (tre check), `src/runtime/abuse-budget.mjs` | **R3/R4 canary fisici:** due moduli ricollocati byte-identici, con consumer espliciti aggiornati e vecchi path ritirati senza shim. `v3/` rimane il bootstrap corrente; questa coesistenza temporanea non prova ancora il cutover globale verso `src/`, ne l'assenza di consumer esterni. | [TESTING](TESTING.md), [ARCHITECTURE](11_ARCHITECTURE.md) |
-| `tests/browser/` (quindici browser enterprise/ruoli/verification) | **R3 post #268, migrazione qualificata:** i sette oracle già merged sono affiancati da otto nuovi trasferimenti (enterprise compliance flow, stable 1.4, standard proof, V4.1 language, V4 enterprise nexus, regulatory surface, business surface 2.7 e admin truth S4-A4). Si conserva una sola implementazione per file; `parents[1]` diventa `parents[2]`. I consumer codice/contratti/CI vengono ribindati senza shim. L'assenza di consumer esterni e il cutover globale rimangono HOLD. | `scripts/test-boundary-migration-check.mjs`, [TESTING](TESTING.md) |
+| `src/`, `src/runtime/`, `src/contracts/`, `src/lib/`, `src/standards/` | Software eseguibile e contratti correnti. `src/bootstrap.mjs` e `src/server.mjs` sono gli entrypoint; `src/store.mjs` governa il percorso di persistenza. Il vecchio prefisso `v3/` non è un entrypoint corrente. | [ARCHITECTURE](11_ARCHITECTURE.md), [authority matrix](authority-matrix.yaml) |
+| `public/`, `public/ui/`, `public/js/`, `public/assets/` | Root HTTP statica corrente e moduli browser. I file sono pubblicamente indirizzabili secondo le route del server: il solo tree Git non prova l'assenza di URL o consumer esterni. | [ARCHITECTURE](11_ARCHITECTURE.md), [TESTING](TESTING.md) |
+| `tests/verification/`, `tests/browser/`, `tests/contracts/`, `tests/fixtures/`, `tests/helpers/`, `tests/ui/`, `tests/legacy/` | Falsificatori, browser oracle, contratti e fixture. Il suffisso storico/versionato di alcuni nomi identifica la failure family o la genealogia, **non** una release o una seconda implementazione corrente. `tests/legacy/` conserva verifiche storiche senza autorità business. | [TESTING](TESTING.md), [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) |
 | `scripts/`, `.github/workflows/`, `.github/CODEOWNERS` | Strumenti, automazione e regole di review; i controlli applicabili sono legati alla **exact PR HEAD**. | [TESTING](TESTING.md), [START_HERE](START_HERE.md) |
 | `docs/`, `AGENTS.md` | Documentazione corrente e lineage, più assistenza AI facoltativa. I prompt non sono prerequisito dell'onboarding umano né authority di prodotto. | [Documentazione](DOCUMENTATION_STANDARD.md), [START_HERE](START_HERE.md) |
-| `tests/legacy/`, `tests/verification/legacy/schemas/` (storicamente `v3/tests/legacy/`), `audit/` (incluso `audit/archive/ictc-agent-bundle/`) | Substrati distinti: la precedente isola root `v1/`, `app/`, `lib/`, `data/` è fisicamente confinata sotto `v3/tests/legacy/` come fixture e verifiche storiche, senza alias; nessun percorso è autorità del prodotto corrente. Restano compatibilità, prototipi, seed, strumenti, prove e storia; **non** cancellare sulla base del path, del nome o di un grep vuoto. La vecchia directory tracciata `runtime/blobs/` conteneva soltanto `.gitkeep`, ora ritirato: il blob store crea la root a runtime e l'archiviazione persistente corrente risiede sotto `.ictc/` (salvo override). | [Policy di preservazione](DOCUMENTATION_STANDARD.md) |
+| `audit/`, `audit/archive/ictc-agent-bundle/`, `tests/legacy/`, `tests/verification/legacy/schemas/` | Prove, archivi sigillati e compatibilità storica, distinti dal runtime. Le vecchie isole root `v1/app/lib/data` sono sotto `tests/legacy/`; gli schemi pregressi sono sotto `tests/verification/legacy/schemas/`. Il path `legacy` non autorizza cancellazioni; retention e consumer esterni rimangono da qualificare. | [Policy di preservazione](DOCUMENTATION_STANDARD.md) |
 | `.devcontainer/`, `.env.example`, `.nvmrc`, `.editorconfig`, `.gitignore` | Ambiente, configurazione esemplificativa e convenzioni di sviluppo; non sono evidenza di un deployment reale. | [CONFIGURATION](CONFIGURATION.md) |
+
+### Dopo il merge #274 — confini di lettura e stato dei nomi
+
+La tabella **AS-IS** sopra e i percorsi operativi sotto rappresentano la struttura corrente. Le sezioni R3–R5, le fotografie pre-#274, i nomi `v3/` nei falsificatori di preimage e le vecchie versioni dei test sono **lineage**, non indicazioni per avviare software da `v3/`. `npm start` risolve `src/bootstrap.mjs`; la root HTTP e `public/`; i verificatori stanno sotto `tests/`. Verificare con `git ls-files`, `package.json`, l'[authority matrix](authority-matrix.yaml) e i test sulla stessa SHA: non assumere che un nome storico provi un owner attuale.
+
+Un repository e **standard nei confini fisici**, non automaticamente privo di debito: la densita dei verificatori in `tests/verification/`, i nomi versionati e i 53 workflow storici sono aspetti da osservare per consumer reali prima di rinominarli. La parola `legacy` identifica una collocazione, non un permesso di eliminazione. Il DoD di post-merge separa **G0 struttura e owner**, **G1 route documentali correnti**, **G2 falsificatori contro path reintrodotti o descrizioni false**, **G3 CI esatta e rollback**, **G4 consumer dinamici/esterni e assurance non dimostrati**. G0–G3 sono verificabili da tree, sorgenti, mutazioni e CI; G4 rimane esplicitamente HOLD quando la sola osservazione repository non basta. Nessun gate E2 chiude da solo E3/E4.
 
 ### R3–R5 · Reticolo retrogrado del DoD di migrazione
 
@@ -49,14 +55,14 @@ ICTC mantiene **tre oggetti distinti** nello stesso repository: **prodotto** (va
 
 ## Percorso di lettura in tre minuti
 
-Il lettore non deve ricostruire la cronologia delle PR per sapere dove intervenire. Si procede in ordine: **prodotto** (`PRODUCT.md`) → **software** (`11_ARCHITECTURE.md`, `v3/bootstrap.mjs`, `v3/server.mjs`) → **repository** (`START_HERE.md`, `authority-matrix.yaml`) → **falsificatore** (`TESTING.md`) → **ricevuta exact-head**.
+Il lettore non deve ricostruire la cronologia delle PR per sapere dove intervenire. Si procede in ordine: **prodotto** (`PRODUCT.md`) → **software** (`11_ARCHITECTURE.md`, `src/bootstrap.mjs`, `src/server.mjs`) → **repository** (`START_HERE.md`, `authority-matrix.yaml`) → **falsificatore** (`TESTING.md`) → **ricevuta exact-head**.
 
 | Obiettivo operativo | Radice canonica | Prima controprova | Stato da non inferire |
 | --- | --- | --- | --- |
-| Cambiare testo/layout visibile | `v3/public/` + owner C5 | percorso `ui` di `START_HERE.md` | una screenshot non prova usability |
-| Cambiare API o permessi | `v3/server.mjs`, `docs/openapi.yaml` | percorso `api` | OpenAPI non prova invocazione E2E |
-| Cambiare persistenza | `v3/store.mjs`, SQLite | percorso `persistence` e riapertura | HTTP 200 non prova integrita al riavvio |
-| Modificare test o workflow | `tests/`, `v3/*-check.mjs`, `.github/workflows/` | `TESTING.md`, CI su SHA esatto | un workflow non e branch protection |
+| Cambiare testo/layout visibile | `public/` + owner C5 | percorso `ui` di `START_HERE.md` | una screenshot non prova usability |
+| Cambiare API o permessi | `src/server.mjs`, `docs/openapi.yaml` | percorso `api` | OpenAPI non prova invocazione E2E |
+| Cambiare persistenza | `src/store.mjs`, SQLite | percorso `persistence` e riapertura | HTTP 200 non prova integrita al riavvio |
+| Modificare test o workflow | `tests/verification/`, `tests/browser/`, `.github/workflows/` | `TESTING.md`, CI su SHA esatto | un workflow non e branch protection |
 | Rimuovere un file storico | owner dichiarato e consumer statici/dinamici | rimozione reale in sandbox e rollback | zero import non prova inutilizzo |
 
 Per il **primo task completo**, seguire l'[esercizio di manutenzione](DEVELOPMENT.md) prima di consultare la stratigrafia storica. Questo Atlas descrive la forma: non sostituisce alcun owner.
@@ -108,7 +114,7 @@ Il successivo gruppo **non estende il runtime**: sette verificatori `gov-intent-
 | L0 · Root | Che cos'è ICTC e quali limiti ha? | `README.md` | massimo orientamento, minimo dettaglio |
 | L1 · Atlas | Che tipo di repository sto guardando e come lo devo leggere? | questo documento | spiega la forma, non sostituisce gli owner |
 | L2 · Authority | Chi possiede questa classe di verità? | `docs/START_HERE.md`, `docs/authority-matrix.yaml`, `docs/documentation-manifest.json` | route-by-question, non route-by-recency |
-| L3 · Executable | Dove viene prodotto davvero l'effetto? | `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/`, `v3/public/`, owner specifici | codice/runtime prevalgono sulle descrizioni storiche |
+| L3 · Executable | Dove viene prodotto davvero l'effetto? | `src/server.mjs`, `src/store.mjs`, `src/runtime/`, `public/`, owner specifici | codice/runtime prevalgono sulle descrizioni storiche |
 | L4 · Evidence & lineage | Perché esiste, come viene falsificato, cosa resta non provato? | `docs/TESTING.md`, `docs/DEVELOPMENT.md`, `docs/PROJECT_TRAJECTORY.md`, PR/CI GitHub | prova e storia non diventano automaticamente authority |
 
 ## Ingresso standard per ingegnere esterno (senza AI)
@@ -116,7 +122,7 @@ Il successivo gruppo **non estende il runtime**: sette verificatori `gov-intent-
 La conoscenza di ICTC **non è subordinata alla governance AI**. Un ingegnere enterprise con risorse illimitate può ricostruire ed esercire il prodotto mediante standard del software engineering, senza leggere prompt, conversazioni AI o workbook di traiettoria:
 
 1. **Prodotto e installazione:** `README.md`, `docs/PRODUCT.md`, `docs/DEVELOPMENT.md`, `docs/CONFIGURATION.md`. Avvio con Node 22, `npm ci`, `./ictc.sh start --no-open`.
-2. **Architettura verificabile:** `docs/11_ARCHITECTURE.md`, `docs/openapi.yaml`, `v3/bootstrap.mjs`, `v3/server.mjs`, `v3/store.mjs`, `v3/runtime/` e `v3/public/`; il PostgreSQL enterprise C3 ha owner distinti. Confrontare descrizioni e codice, senza chiamare reale una capacità soltanto progettata.
+2. **Architettura verificabile:** `docs/11_ARCHITECTURE.md`, `docs/openapi.yaml`, `src/bootstrap.mjs`, `src/server.mjs`, `src/store.mjs`, `src/runtime/` e `public/`; il PostgreSQL enterprise C3 ha owner distinti. Confrontare descrizioni e codice, senza chiamare reale una capacità soltanto progettata.
 3. **Qualità, sicurezza e operatività:** `docs/TESTING.md`, `SECURITY.md`, `docs/OPERATIONS.md`, `docs/DATA_AND_STORAGE.md`, `.github/workflows/` e `.github/CODEOWNERS`; GitHub ruleset e production deployment sono prove esterne.
 4. **Contribuzione:** `CONTRIBUTING.md`, review di diff, test e receipt exact-head. `docs/START_HERE.md` accelera l'orientamento per dominio, ma non sostituisce le interfacce standard sopra.
 5. **Archeologia e deprecazione:** `npm run repo:inventory` genera `artifacts/repository-inventory.json` su tutto il tree Git tracciato; `npm run repo:retirement:mutations` testa la disciplina decisionale. I path senza prova non vengono cancellati o promossi implicitamente.
@@ -128,7 +134,7 @@ La conoscenza di ICTC **non è subordinata alla governance AI**. Un ingegnere en
 
 ### K0 · Qualificazione dell'uso osservato (CORA, non autorità nuova)
 
-L'inventario già canonico `npm run repo:inventory` produce per **ogni file tracciato sotto `v3/`** un `migrationFrontier.nodes[].observedUse` e una `useEvidence` con root, predecessore e profondità del cammino letterale, riferimento CI/package, mount HTTP statico candidato, provenienza storica, rischio dinamico e consumer esterni `UNKNOWN`. Le otto classi sono: `DECLARED_RUNTIME_ROOT`, `RUNTIME_LITERAL_REACHABLE_CANDIDATE`, `BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE`, `HTTP_SERVABLE_ASSET_CANDIDATE`, `CI_OR_PACKAGE_PATH_CANDIDATE`, `SOURCE_CONSUMER_ONLY_CANDIDATE`, `HISTORICAL_NO_RUNTIME_WITNESS`, `UNRESOLVED_NO_CURRENT_WITNESS`. Una reference in documentazione non diventa una prova di esecuzione. Un asset servibile non è provatamente richiesto. Un path storico può essere necessario a verifiche e compatibilità. Esempio concreto: `v3/public/ui/procedure-finetuning-2-3.js` contiene il riferimento dinamico assoluto `/procedure-finetuning-2-3.css`; il censimento rileva l'arco `browser-absolute-url-candidate` e falsifica il target corrotto. La catena osservata `index.html` → `app.js` → `ui/active-experience.js` importa quel modulo; `installActiveExperience()` lo invoca tramite `INSTALL_ORDER` e il modulo chiama `ensureStyle()`. Questo è un witness source-level di utilizzo browser corrente, non un test browser effettivamente eseguito.
+Nella **preimage pre-#274**, l'inventario canonico `npm run repo:inventory` produceva per ogni file tracciato sotto `v3/` un `migrationFrontier.nodes[].observedUse` e una `useEvidence` con root, predecessore e profondità del cammino letterale, riferimento CI/package, mount HTTP statico candidato, provenienza storica, rischio dinamico e consumer esterni `UNKNOWN`. Le otto classi sono: `DECLARED_RUNTIME_ROOT`, `RUNTIME_LITERAL_REACHABLE_CANDIDATE`, `BROWSER_CURRENT_IMPORT_REACHABLE_CANDIDATE`, `HTTP_SERVABLE_ASSET_CANDIDATE`, `CI_OR_PACKAGE_PATH_CANDIDATE`, `SOURCE_CONSUMER_ONLY_CANDIDATE`, `HISTORICAL_NO_RUNTIME_WITNESS`, `UNRESOLVED_NO_CURRENT_WITNESS`. Una reference in documentazione non diventa una prova di esecuzione. Un asset servibile non è provatamente richiesto. Un path storico può essere necessario a verifiche e compatibilità. Esempio concreto nella preimage storica: `v3/public/ui/procedure-finetuning-2-3.js` contiene il riferimento dinamico assoluto `/procedure-finetuning-2-3.css`; il censimento rileva l'arco `browser-absolute-url-candidate` e falsifica il target corrotto. La catena osservata `index.html` → `app.js` → `ui/active-experience.js` importa quel modulo; `installActiveExperience()` lo invoca tramite `INSTALL_ORDER` e il modulo chiama `ensureStyle()`. Questo è un witness source-level di utilizzo browser corrente, non un test browser effettivamente eseguito.
 
 **DoD minimo aggiornato:** K0 osserva tutti i file e qualifica i candidati senza inferire assenza di consumer; K1 deve conservare oracoli e invocazioni CI; K2 deve provare contratti, URL, fixture e loader dinamici; K3 deve delimitare SCC e write owner effettivi; K4 deve confrontare bootstrap/API/SQLite/RBAC/browser su due HEAD equivalenti; K5 richiede eliminazione effettiva di `v3/`, prova di rollback ed exact-head CI. Nessuna categoria di K0 autorizza MOVE/DELETE: `runtimeNonContributionCertified=0`, `automaticallyRetirable=0`, decisione `HOLD` per ogni file.
 
@@ -163,7 +169,7 @@ La dipendenza non è una sequenza ingenua: K1 e K2 alimentano K3; K4 richiede G0
 
 La campagna deterministica `node scripts/repository-retirement-mutations.mjs --cases=1000 --negatives=1000 --closure-cases=10000000` esamina sedici famiglie di falsificazione del reticolo su 10 milioni di **profili di evidenza**. La campagna non equivale a dieci milioni di riscritture sorgente fisiche; non afferma equivalenza runtime. Il falsificatore preesistente `node scripts/repository-inventory-falsification.mjs` verifica contro-esempi di receipt e alcuni sorgenti temporanei. I test realmente eseguiti e la loro provenienza devono restare attestati separatamente. Nessuna classificazione `HISTORICAL_NO_RUNTIME_WITNESS` o `UNRESOLVED_NO_CURRENT_WITNESS` implica uso impossibile, cancellabilità o chiusura dei chiamanti esterni.
 
-Per l'audit di vitalità, cinque asset classificati `retirement-candidate` nel contratto TRAMA sono candidati all'istruttoria e **non all'eliminazione automatica**: `v3/public/grc-v2.css`, `v3/public/procedure-finetuning-1-4.css`, `v3/public/procedure-finetuning-2-3.css`, `v3/public/ui/procedure-finetuning-1-4.js`, `v3/public/ui/procedure-finetuning-2-3.js`. L'ultimo JS è importato dal composition root corrente e il suo installer è incluso nella sequenza invocata: **il file 2.3 JS e lo stylesheet 2.3 hanno un veto positivo di utilizzo browser source-level**. Devono essere declassificati da candidati al ritiro operativo fino a migrazione/assorbimento semanticamente equivalente; il solo catalogo storico TRAMA non prevale sul runtime corrente. `v3/runtime/grc-runtime-legacy.mjs` è invece importato da `v3/runtime/grc-runtime.mjs`, quindi il nome legacy non autorizza la sua rimozione. Il server espone `v3/public/` come radice statica: assenza di mount UI e assenza di URL pubblico sono due predicati diversi.
+Nella fotografia di audit **pre-#274**, cinque asset classificati `retirement-candidate` nel contratto TRAMA sono candidati all'istruttoria e **non all'eliminazione automatica**: `v3/public/grc-v2.css`, `v3/public/procedure-finetuning-1-4.css`, `v3/public/procedure-finetuning-2-3.css`, `v3/public/ui/procedure-finetuning-1-4.js`, `v3/public/ui/procedure-finetuning-2-3.js`. L'ultimo JS è importato dal composition root corrente e il suo installer è incluso nella sequenza invocata: **il file 2.3 JS e lo stylesheet 2.3 hanno un veto positivo di utilizzo browser source-level**. Devono essere declassificati da candidati al ritiro operativo fino a migrazione/assorbimento semanticamente equivalente; il solo catalogo storico TRAMA non prevale sul runtime corrente. `v3/runtime/grc-runtime-legacy.mjs` è invece importato da `v3/runtime/grc-runtime.mjs`, quindi il nome legacy non autorizza la sua rimozione. Il server espone `v3/public/` come radice statica: assenza di mount UI e assenza di URL pubblico sono due predicati diversi.
 
 ## Audit ex novo: bias e controprove del primo ingresso
 
@@ -186,7 +192,7 @@ Il percorso va verificato con un oracolo strutturale falsificabile e con un cold
 | live Git facts | Git/GitHub: branch, HEAD, PR, check correnti | snapshot committato o testo di una PR |
 | product intent | `docs/PRODUCT.md` | README, roadmap o prompt |
 | architecture AS-IS | `docs/11_ARCHITECTURE.md` + runtime eseguibile | TO-BE o benchmark |
-| release identity | `v3/release-identity.json` | package lineage o label UI |
+| release identity | `src/contracts/release-identity.json` | package lineage o label UI |
 | documentation routing | `docs/START_HERE.md` + manifest | data del file |
 | development planning | `docs/convergence/convergence-authority.json` | live merge pointer |
 | history / rationale | `docs/PROJECT_TRAJECTORY.md` + Git/PR history | current runtime truth |
@@ -292,17 +298,17 @@ Tre tracce di co-cambiamento utili per l'analisi d'impatto: #235/#236 condividon
 
 ## Inferenza di raggiungibilità ed eliminabilità
 
-Una mappa di dipendenze utile è un **multigrafo tipizzato**: `IMPORTS`, `CALLS`, `READS`, `DYNAMIC-LOADS`, `WORKFLOW-EXECUTES`, `STATIC-URL`, `EXTERNAL-ENTRY`, `DOCUMENTS`, `PROVES`, `CO-CHANGED`, `RETAINED-FOR-LINEAGE`. Ogni arco deve dichiarare **origine, target, metodo di estrazione, versione/HEAD, confidenza e controprova**. `MENTIONS` e `CO-CHANGED` sono indizi, non prova di raggiungibilità esecutiva. I file sotto `v3/public/` sono anche servibili via HTTP senza import statico: l'assenza di inbound nel grafo ESM è insufficiente.
+Una mappa di dipendenze utile è un **multigrafo tipizzato**: `IMPORTS`, `CALLS`, `READS`, `DYNAMIC-LOADS`, `WORKFLOW-EXECUTES`, `STATIC-URL`, `EXTERNAL-ENTRY`, `DOCUMENTS`, `PROVES`, `CO-CHANGED`, `RETAINED-FOR-LINEAGE`. Ogni arco deve dichiarare **origine, target, metodo di estrazione, versione/HEAD, confidenza e controprova**. `MENTIONS` e `CO-CHANGED` sono indizi, non prova di raggiungibilità esecutiva. I file sotto `public/` sono anche servibili via HTTP senza import statico: l'assenza di inbound nel grafo ESM è insufficiente.
 
-La fixture `v3/runtime/demo-suite-2-2-fixture.mjs` carica dodici file `.b64` con nomi costruiti dinamicamente: un'analisi che vede zero archi statici può sbagliare l'inferenza di eliminabilità. Una rimozione simulata in checkout isolato ha prodotto `ENOENT`. La duplicazione byte-per-byte di due CSS non dimostra identità di contratti URL. Per trasformare un candidato in ritiro applicare il [contratto documentale](DOCUMENTATION_STANDARD.md): verificare ingressi esterni, generazione dinamica, storia/retention, diff semantico e controprove reali, poi la CI exact-head. Uno stato `UNKNOWN` blocca la delete massiva.
+La fixture corrente `src/runtime/demo-suite-2-2-fixture.mjs` carica dodici file `.b64` sotto `tests/fixtures/demo-suite-2-2/` con nomi costruiti dinamicamente: un'analisi che vede zero archi statici può sbagliare l'inferenza di eliminabilità. Una rimozione simulata in checkout isolato ha prodotto `ENOENT`. La duplicazione byte-per-byte di due CSS non dimostra identità di contratti URL. Per trasformare un candidato in ritiro applicare il [contratto documentale](DOCUMENTATION_STANDARD.md): verificare ingressi esterni, generazione dinamica, storia/retention, diff semantico e controprove reali, poi la CI exact-head. Uno stato `UNKNOWN` blocca la delete massiva.
 
 ## Debito di coerenza del repository — D-RSC
 
-Il runtime core può essere più coerente della sua meta-descrizione. ICTC tratta questo scarto come **Repository Semantic Coherence Debt (D-RSC)**: drift o ambiguità fra authority dichiarate, documentazione/API current, governance evidence ed executable owner. La proiezione machine-readable è `v3/semantic-owner-contract.json#repositoryCoherenceDebt`; non è un secondo gap register, una roadmap o una runtime authority.
+Il runtime core può essere più coerente della sua meta-descrizione. ICTC tratta questo scarto come **Repository Semantic Coherence Debt (D-RSC)**: drift o ambiguità fra authority dichiarate, documentazione/API current, governance evidence ed executable owner. La proiezione machine-readable è `tests/contracts/semantic-owner-contract.json#repositoryCoherenceDebt`; non è un secondo gap register, una roadmap o una runtime authority.
 
 | Finding | Stato nella candidate ATLAS-1 | Significato / closure |
 |---|---|---|
-| F1 · authority-map fossilization | resolved-in-candidate | `ui_wiring` e `schemas` sono ora esplicitamente `legacy-lineage-debt`; i current owner restano v3/UI/API runtime |
+| F1 · authority-map fossilization | resolved-in-candidate | `ui_wiring` e `schemas` sono esplicitamente `legacy-lineage-debt`; gli owner correnti sono `public/`, `src/` e gli handler/API dichiarati |
 | F2 · current-doc semantic drift | resolved-in-candidate | README/START_HERE sono riallineati a Home max 3 e Process Hub one-row-per-procedure |
 | F3 · OpenAPI semantic freshness | resolved-in-candidate | `/api/demo/evidence-lattice` descrive Suite 3.0; 2.2 resta deprecated generator lineage |
 | F4 · PR declaration/diff mismatch | mitigated-open | il template richiede coerenza fra dichiarazione di trajectory/workbook e diff reale; il precedente storico non viene riscritto |
@@ -355,13 +361,13 @@ Write access, creazione PR e merge **non sono necessari** per la comprensione de
 ## Dove andare dopo
 
 - Devi **capire il prodotto**: [PRODUCT](PRODUCT.md).
-- Devi **capire il runtime**: [Architecture](11_ARCHITECTURE.md), poi `v3/server.mjs`.
+- Devi **capire il runtime**: [Architecture](11_ARCHITECTURE.md), poi `src/server.mjs`.
 - Devi **modificare qualcosa**: [START_HERE](START_HERE.md).
 - Devi **capire chi possiede una semantica**: [Authority matrix](authority-matrix.yaml).
 - Devi **capire perché il repo è arrivato qui**: [Project trajectory](PROJECT_TRAJECTORY.md).
 - Devi **capire come si sviluppa**: [Development](DEVELOPMENT.md).
 - Devi **capire cosa prova un test**: [Testing](TESTING.md).
-- Devi **capire release e profilo corrente**: `v3/release-identity.json`.
+- Devi **capire release e profilo corrente**: `src/contracts/release-identity.json`.
 - Devi **capire security/deployment boundary**: `SECURITY.md` e gli owner runtime indicati dalla authority matrix.
 
 ## Claim boundary

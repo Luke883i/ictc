@@ -26,23 +26,23 @@ Il Repository Atlas non sostituisce questo router e questo router non replica la
 
 ## Router per tipo di modifica
 
-Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il contratto eseguibile `v3/semantic-owner-contract.json` rende questa proiezione verificabile senza creare una seconda authority.
+Parti dal problema concreto, poi risali all'authority soltanto quanto serve. Il contratto eseguibile `tests/contracts/semantic-owner-contract.json` rende questa proiezione verificabile senza creare una seconda authority.
 
 | Route | Se stai cambiando… | Parti da | Feedback più vicino | Prima della PR |
 |---|---|---|---|---|
-| `ui` | layout, label, componenti, responsive, interazioni locali | owner della surface in `v3/semantic-owner-contract.json` + `authority-matrix.yaml` | `node tests/verification/uiux-converge-0-check.mjs` | `npm test` |
+| `ui` | layout, label, componenti, responsive, interazioni locali | owner della surface in `tests/contracts/semantic-owner-contract.json` + `authority-matrix.yaml` | `node tests/verification/uiux-converge-0-check.mjs` | `npm test` |
 | `api` | route HTTP, request/response, permessi | `docs/openapi.yaml` + handler runtime | `node tests/verification/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
-| `ai` | provider, schema, budget, prompt transport, proposta AI | `v3/ai.mjs` + runtime provider/network policy | `node tests/verification/ai-network-policy-check.mjs` | `npm test` |
-| `persistence` | Store, replay, versioni, receipt, SQLite | `v3/store.mjs` + `v3/sqlite-state-persistence.mjs` | `node tests/verification/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
+| `ai` | provider, schema, budget, prompt transport, proposta AI | `src/ai.mjs` + runtime provider/network policy | `node tests/verification/ai-network-policy-check.mjs` | `npm test` |
+| `persistence` | Store, replay, versioni, receipt, SQLite | `src/store.mjs` + `src/sqlite-state-persistence.mjs` | `node tests/verification/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
 | `docs` | guida current, lifecycle, routing, projection | `docs/START_HERE.md` + manifest | `npm run docs:check` | `npm run docs:saturation` |
 | `retirement` | eliminazione o consolidamento di documenti, software, fixture o asset | [DOCUMENTATION_STANDARD](DOCUMENTATION_STANDARD.md) + [REPOSITORY_ATLAS](REPOSITORY_ATLAS.md) + owner eseguibile | grafo tipizzato con dynamic-load/external-entry e rimozione in sandbox | prove positive/negative, rollback e CI exact-head |
 | `governance` | traiettoria, slice, workbook, convergence | `docs/convergence/convergence-authority.json` | `node tests/verification/convergence-authority-check.mjs` | `npm test` |
-| `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `v3/as-is-convergence-contract.json` | `node tests/verification/as-is-convergence-check.mjs` | `npm test` |
+| `debt/as-is` | gap, finding, debt, entropia, riapertura di closure o ordine cognitivo cross-surface | owner originali + `tests/contracts/as-is-convergence-contract.json` | `node tests/verification/as-is-convergence-check.mjs` | `npm test` |
 | `security` | trust boundary, identity, egress, path, abuse control | owner runtime + `SECURITY.md` | `node tests/verification/security-boundary-check.mjs` | `npm run release:check` |
 | `evidence` | evidenza, reference, digest, export, provenance/claim | `02_EPISTEMIC_CONTRACT.md` + owner runtime | `node tests/verification/evidence-check.mjs` | `npm run test:current:runtime` |
-| `runtime` | server wiring, handler, bootstrap projection | `v3/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
+| `runtime` | server wiring, handler, bootstrap projection | `src/server.mjs` + `11_ARCHITECTURE.md` | `npm run check` | `npm run test:current:runtime` |
 | `enterprise-runtime` | PostgreSQL condiviso, horizontal-scale runtime, replica stateless o benchmark enterprise | `tests/contracts/c3-enterprise-runtime-closure.json` + `src/runtime/enterprise-runtime-kernel.mjs` | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` |
-| `release` | release-readiness V.1 Experimental, confini enterprise e GO/NO-GO umano | `v3/release-identity.json` + `docs/RELEASE.md` (guida E2 non autoritativa) | `node tests/verification/release-readiness-e2-gate.mjs` | `npm run release:check` + evidenze E3/E4 distinte |
+| `release` | release-readiness V.1 Experimental, confini enterprise e GO/NO-GO umano | `src/contracts/release-identity.json` + `docs/RELEASE.md` (guida E2 non autoritativa) | `node tests/verification/release-readiness-e2-gate.mjs` | `npm run release:check` + evidenze E3/E4 distinte |
 
 Prima del primo push usa un branch dedicato con un prefisso ammesso da `.github/gov-01f-policy.json` (`agent/`, `codex/`, `fix/`, `feat/`, `docs/`, `chore/`, `refactor/`, `test/`, `ci/`, `research/`, `dependabot/`; `dependabot/` è riservato agli aggiornamenti automatici). Il routing distingue `runtime` locale/compatibility da `enterprise-runtime`: il secondo parte dal contratto C3 e non usa SQLite/RuntimeStore come prova del runtime orizzontale.
 
@@ -98,7 +98,7 @@ Il registry machine-readable è [documentation-manifest.json](documentation-mani
 |---|---|---|
 | product intent/confini | `docs/PRODUCT.md` | una product truth in prompt/PR/DoD |
 | traiettoria / sequenza PR / workbook | `docs/convergence/convergence-authority.json` + active workbook derivato | roadmap implicite, workbook-only authority o auto-commit CI a `main` |
-| composition root UI | `v3/public/ui/active-experience.js` | una seconda root |
+| composition root UI | `public/ui/active-experience.js` | una seconda root |
 | contratto/copy 3.2 | `native-semantic-lattice-3-2.js` | copy locale divergente |
 | Home presentation | `enterprise-workspace-3-2.css` | un final resolver globale |
 | Processi/Evidence presentation | `semantic-workspace-closure-3-2-1.css` | duplicazione in 3.2 o in un nuovo layer |
@@ -175,7 +175,7 @@ I due file `ui-finetuning-3-4-*` conservano il nome di lineage ma verificano il 
 
 ## Bussola ingegneristica per utente non tecnico
 
-Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs/ENGINEERING_COMPASS.md`: è una projection generated di **TRAMA**, non un'autorità. Il target completo è `v3/trama-enterprise-dod.json`: 16 assi e requisiti atomici di Enterprise Candidate, senza stato corrente auto-certificato.
+Per capire dove sta andando ICTC senza scegliere dettagli tecnici, leggere `docs/ENGINEERING_COMPASS.md`: è una projection generated di **TRAMA**, non un'autorità. Il target completo è `tests/contracts/trama-enterprise-dod.json`: 16 assi e requisiti atomici di Enterprise Candidate, senza stato corrente auto-certificato.
 
 La Bussola separa sempre locale, intermedio e globale e propone una sola prossima slice o STOP/BLOCKED. Gli owner canonici indicati in questa guida restano la fonte sostanziale.
 

@@ -68,3 +68,46 @@ export function validateDocumentationModel(model){
  check(model.externalSettingsNotSelfCertified,'external-acceptance-boundary');
  return e;
 }
+
+
+/** Checks only the AS-IS reading path, not immutable v3 preimages or historical PR narrative.
+ * The docs manifest/authority matrix retain authority; this is a fail-closed oracle. */
+export function currentAtlasGuides(atlas){
+ const between=(start,end)=>{
+  const i=atlas.indexOf(start);if(i<0)return '';
+  const j=atlas.indexOf(end,i+start.length);return j<0?'':atlas.slice(i,j);
+ };
+ return {
+  map:between('## Mappa fisica minima e DoD engineer-first (AS-IS)','### Dopo il merge #274'),
+  postmerge:between('### Dopo il merge #274','### R3–R5'),
+  quick:between('## Percorso di lettura in tre minuti','## Razionalizzazione e archiviazione'),
+  layer:atlas.split('\n').find(x=>x.startsWith('| L3 · Executable |'))||'',
+  onboarding:atlas.split('\n').find(x=>x.startsWith('2. **Architettura verificabile:**'))||'',
+  truth:atlas.split('\n').find(x=>x.startsWith('| release identity |'))||'',
+  debt:atlas.split('\n').find(x=>x.includes('Repository Semantic Coherence Debt (D-RSC)'))||'',
+  next:between('## Dove andare dopo','## Claim boundary')
+ };
+}
+export function validateCurrentAtlasGuides(g){
+ const errors=[];
+ const requireText=(area,token)=>{if(!g[area]?.includes(token))errors.push('atlas-current:'+area+':missing:'+token)};
+ for(const [area,tokens] of Object.entries({
+  map:['src/bootstrap.mjs','src/server.mjs','src/store.mjs','public/ui/','tests/verification/','audit/archive/ictc-agent-bundle/'],
+  postmerge:['lineage','G0','G1','G2','G3','G4','HOLD','consumer'],
+  quick:['src/bootstrap.mjs','src/server.mjs','src/store.mjs','public/','tests/verification/'],
+  layer:['src/server.mjs','src/store.mjs','src/runtime/','public/'],
+  onboarding:['src/bootstrap.mjs','src/server.mjs','src/store.mjs','src/runtime/','public/'],
+  truth:['src/contracts/release-identity.json'],
+  debt:['tests/contracts/semantic-owner-contract.json#repositoryCoherenceDebt'],
+  next:['src/server.mjs','src/contracts/release-identity.json']
+ }))for(const token of tokens)requireText(area,token);
+ if(/candidato sandbox|v3\/ rimane il bootstrap corrente|la sostituzione integrale non e ancora certificata/i.test(g.map))
+  errors.push('atlas-current:map:obsolete-candidate-claim');
+ for(const area of ['quick','layer','onboarding','truth','debt','next']){
+  if(/v3\/(?:bootstrap|server|store|runtime|public|[^\s`|,]*-check)/.test(g[area]||''))
+   errors.push('atlas-current:'+area+':retired-executable-path');
+ }
+ if(/(?:G4\s*(?:=|:)\s*PASS|G4[^.\n]{0,100}closed|legacy[^.\n]{0,40}safe.delete)/i.test(g.postmerge))
+  errors.push('atlas-current:postmerge:unsupported-clearance');
+ return errors;
+}

@@ -7,12 +7,12 @@
 - **Sistema e attori:** utente autorizzato, amministratore, reviewer/auditor, integrazioni AI e infrastruttura esterna; il browser è un client, non il decisore dei permessi. [Perimetro](PRODUCT.md), [journey](04_USER_JOURNEYS.md).
 - **Container applicativo:** `src/bootstrap.mjs` risolve profilo e path; `src/server.mjs` espone HTTP e delega a handler e policy; `public/index.html`, `public/ui/active-experience.js` e gli owner CSS compongono l'esperienza. [OpenAPI](openapi.yaml) descrive l'interfaccia dichiarata, non da solo le chiamate effettivamente collaudate.
 - **Persistenza:** `src/runtime-store.mjs`, `src/store.mjs` e `src/sqlite-state-persistence.mjs` governano stato, versioni e readback. [Storage](DATA_AND_STORAGE.md) contiene i limiti operativi.
-- **Assurance:** i file `v3/*-check.mjs`, i probe browser e `.github/workflows/` sono esecutori di prova, non servizi o autorità business. [Testing](TESTING.md) distingue static, runtime, browser ed evidenza esterna.
+- **Assurance:** i verificatori `tests/verification/*-check.mjs`, i probe browser e `.github/workflows/` sono esecutori di prova, non servizi o autorità business. [Testing](TESTING.md) distingue static, runtime, browser ed evidenza esterna.
 
 La vista si legge dall'alto al basso; non sono nuovi componenti software o registri normativi. I nomi e le dipendenze si verificano nei file eseguibili sulla stessa revisione Git.
 
 ```text
-browser / v3/public
+browser / public
    ↓ HTTP JSON
 src/server.mjs
    ↓
