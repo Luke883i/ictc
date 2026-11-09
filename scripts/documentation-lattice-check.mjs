@@ -49,6 +49,8 @@ const currentOwnerDocs=[
 // archival narratives in the first five historic-compatible routing checks.
 const exactOperationalGuides=new Set(['ENDUSER_LANGUAGE','USER_JOURNEYS','DESIGN_SYSTEM','CONTRIBUTING','AS_IS_CONVERGENCE','ASSURANCE_RISK','DATA_AND_STORAGE']);
 for(const [owner,body,tokens] of currentOwnerDocs){
+ if(exactOperationalGuides.has(owner))
+  check(!/`v3\//.test(body),'post274 current guide reintroduced retired path: '+owner);
  for(const token of tokens){
   if(!exactOperationalGuides.has(owner)){
    check(body.includes(token),'post274 current owner path missing: '+owner+' '+token);continue;
@@ -62,6 +64,7 @@ for(const [owner,body,tokens] of currentOwnerDocs){
 // A registered operational guide must route to CURRENT owners, not the
 // pre-#274 v3 preimage. This is an oracle over existing paths, not a new owner.
 const gapRegister=await read('docs/GAP_REGISTER.md');
+check(!/`v3\//.test(gapRegister),'gap guide: retired v3 path reintroduced');
 for(const [current,retired] of [
  ['tests/contracts/gaps.json','v3/gaps.json'],
  ['public/gap-registry.json','v3/public/gap-registry.json'],
