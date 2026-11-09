@@ -1,6 +1,6 @@
 # Dati e storage
 
-**Risoluzione del path:** nello standard launcher/bootstrap il default è `<repository>/.ictc/runtime/state.sqlite`; `ICTC_RUNTIME_DIR` può sostituirlo e `ICTC_STATE_DIR` cambia la root del launcher. I percorsi qui sotto sono forme descrittive: la fonte effettiva è `ictc.sh` con `v3/bootstrap-contract.mjs`, non un vecchio fallback `./runtime`. Vedi [CONFIGURATION](CONFIGURATION.md) e [OPERATIONS](OPERATIONS.md).
+**Risoluzione del path:** nello standard launcher/bootstrap il default è `<repository>/.ictc/runtime/state.sqlite`; `ICTC_RUNTIME_DIR` può sostituirlo e `ICTC_STATE_DIR` cambia la root del launcher. I percorsi qui sotto sono forme descrittive: la fonte effettiva è `ictc.sh` con `src/lib/bootstrap-contract.mjs`, non un vecchio fallback `./runtime`. Vedi [CONFIGURATION](CONFIGURATION.md) e [OPERATIONS](OPERATIONS.md).
 
 **Limite verificato sulla baseline:** il percorso di riapertura di uno stato SQLite preesistente ha prodotto localmente `state-head-mismatch` con `chainOk=true` dopo inizializzazione privacy. Questo non annulla la catena audit e non autorizza a chiamare `integrity.ok` sempre vero al riavvio. Una nuova versione del runtime deve correggere la transizione e provarla con un test di restart/readback/chain, conservando il database; fino a quel momento trattare il claim come `DEBT-BLOCKED`.
 
@@ -8,7 +8,7 @@
 
 ## Modello corrente
 
-- `v3/tests/legacy/data/seed.json`: fixture dimostrativa storica versionata, consumata soltanto dal domain e dai verificatori legacy; **non** è stato runtime, né un seed canonico del software corrente;
+- `tests/legacy/data/seed.json`: fixture dimostrativa storica versionata, consumata soltanto dal domain e dai verificatori legacy; **non** è stato runtime, né un seed canonico del software corrente;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/state.sqlite`: autorità persistente locale corrente in single-tenant mode;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/quarantine/`: byte appena acquisiti e non ancora ammessi al serving;
 - `${ICTC_RUNTIME_DIR:-<repository>/.ictc/runtime}/attachments/`: byte clean/promossi;
@@ -22,7 +22,7 @@ SQLite usa WAL, `synchronous=FULL` e foreign key. Nel database la responsabilit�
 
 ## Autorità
 
-`v3/store.mjs` resta l'autorità delle mutazioni, receipt e readback. `v3/sqlite-state-persistence.mjs` resta la persistence authority di base; `v3/runtime-store.mjs` è l'adattatore runtime che usa `HardenedSqliteStatePersistence` per le capacità backward-compatible di erasure e atomic AI budget e applica la quarantine fisica. Non esiste una seconda business write authority.
+`src/store.mjs` resta l'autorità delle mutazioni, receipt e readback. `src/sqlite-state-persistence.mjs` resta la persistence authority di base; `src/runtime-store.mjs` è l'adattatore runtime che usa `HardenedSqliteStatePersistence` per le capacità backward-compatible di erasure e atomic AI budget e applica la quarantine fisica. Non esiste una seconda business write authority.
 
 Il database locale non è un event store pienamente ricostruibile e non è storage WORM. Audit, snapshot e verificatore restano nello stesso trust domain dell'host locale salvo controlli di deployment esterni.
 
@@ -52,7 +52,7 @@ Un deployment che ripristina recovery point vecchi deve conservare una policy di
 
 ## Cifratura e recovery
 
-Lo SQLite **attivo** non è cifrato applicativamente da ICTC: un deployment sensibile deve usare cifratura del volume/database attestata. I recovery point creati da `v3/runtime/recovery.mjs` sono invece cifrati per oggetto con AES-256-GCM e manifest autenticato HMAC-SHA256; la recovery key non viene persistita nel recovery point.
+Lo SQLite **attivo** non è cifrato applicativamente da ICTC: un deployment sensibile deve usare cifratura del volume/database attestata. I recovery point creati da `src/runtime/recovery.mjs` sono invece cifrati per oggetto con AES-256-GCM e manifest autenticato HMAC-SHA256; la recovery key non viene persistita nel recovery point.
 
 Il provider env (`ICTC_RECOVERY_KEY_BASE64`, `ICTC_RECOVERY_KEY_ID`) è un adapter locale. Custody, rotation, envelope encryption con KMS/HSM e access-policy della chiave sono responsabilità del deployment e devono produrre evidence esterna.
 
