@@ -47,6 +47,43 @@ Per passare da `HOLD` a proposta di ritiro occorrono prova dei consumer statici/
 
 Le mutazioni di `repo:retirement:mutations` verificano un oracolo di dodici obblighi in memoria: 10M trial e 1M falsificazioni negative non sono 10M patch applicate al repository e non certificano la cancellabilità dei singoli file.
 
+## Residuo post-#275: DoD retrogrado e confini di prova
+
+**G-QUAL**: il repository migrato e verificabile senza etichette di funzione generiche,
+senza documenti invisibili al manifest, senza una nuova authority o eliminazioni inferite dal nome.
+Questa e una **DoD di qualificazione delle informazioni**, non una dichiarazione di
+completezza della sicurezza, del deployment o dell'assenza di consumer esterni.
+
+| Predicato necessario | Witness verificabile | Quando e FAIL |
+| --- | --- | --- |
+| Q1 · Denominatore Git stabile | `git ls-files`, `npm run repo:inventory` | path perso, `v3/` riapparsa, receipt differente |
+| Q2 · Root semantica, 13/13 | `scripts/repository-inventory.mjs` classi esplicite | `repository:other` o `SAFE_DELETE` su contratti, launcher o policy |
+| Q3 · Documenti, 151/151 | `docs/documentation-manifest.json`, `npm run docs:check` | file non registrato, lifecycle assente o authority promossa |
+| Q4 · Retention non equivale a ritiro | gate documentali preesistenti sul cohort `post275-residual` | consumer omesso, blocco trasformato in permesso di cancellazione |
+| Q5 · Mutazioni e falsificatori | `npm run docs:saturation`, `npm run repo:inventory:falsify` | classe falsa accettata, survivor non riportato |
+| Q6 · Software e CI exact-HEAD | `npm test`, workflow GitHub sulla stessa SHA | fallimento, test incompleto o prova da SHA precedente |
+
+**Reticolo**: G-QUAL = Q1 AND Q2 AND Q3 AND Q4 AND Q5 AND Q6.
+Q3 dipende dall'esistenza fisica della fonte, dal lifecycle distinto dalla authority
+umana e dal manifest canonico; Q4 dipende da consumer statici, dinamici, storici
+ed esterni, e continua a rifiutare cancellazioni senza attestazioni.
+La registrazione del cohort rimuove l'ambiguita *unregistered* ma non certifica
+che la sua descrizione sia un fatto runtime corrente. Ogni file del cohort resta
+non-authoritative; la modifica di un lifecycle richiede review contestuale.
+
+Le tredici categorie root distinguono package/lock, launcher, licenze, configurazioni,
+API, authority-map e lineage UI. Sono **ruoli dell'inventario**, non assegnazioni
+di nuovi owner. Le 151 fonti gia non registrate alla baseline #275 sono
+classificate nel manifest preesistente: 127 `lineage`, 17 `operating`,
+4 `roadmap`, 3 `source-input`, sempre `authoritative: false`.
+Il cohorte `post275-residual` conserva i vecchi oracle e le preimage senza
+introdurre un secondo registro o riscrivere gli archivi storici.
+
+**Limiti epistemici:** Q1-Q5 non provano assenza di caller esterni, non convalidano
+l'efficacia dei controlli e non autorizzano rimozione. Le campagne su modelli
+non sono milioni di patch fisiche; `NO_NOVELTY` nel set mutazionale prefissato
+non dimostra saturazione di tutte le possibili failure family.
+
 ## Product truth e lineage
 
 `docs/PRODUCT.md` è l'autorità corrente per identità, scope e confini del prodotto. `docs/00_PROMPT_CLARIFICATION.md` è `source-input`; documenti TO-BE/roadmap restano futuro intenzionale. Quando una decisione di lineage diventa AS-IS, si aggiorna l'owner current e si conserva il documento storico come evidence, senza duplicare l'autorità.
