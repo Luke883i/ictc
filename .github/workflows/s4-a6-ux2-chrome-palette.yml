@@ -22,14 +22,14 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: A6-UX2 syntax
         run: |
-          node --check v3/s4-a6-ux2-chrome-palette-model.mjs
-          node --check v3/s4-a6-ux2-chrome-palette-check.mjs
-          node --check v3/s4-a6-ux2-chrome-palette-saturation.mjs
-          python -m py_compile v3/browser-s4-a6-ux2-chrome-palette.py
+          node --check src/lib/s4-a6-ux2-chrome-palette-model.mjs
+          node --check tests/verification/s4-a6-ux2-chrome-palette-check.mjs
+          node --check tests/verification/s4-a6-ux2-chrome-palette-saturation.mjs
+          python -m py_compile tests/browser/browser-s4-a6-ux2-chrome-palette.py
       - name: A6-UX2 source contract
-        run: node v3/s4-a6-ux2-chrome-palette-check.mjs
+        run: node tests/verification/s4-a6-ux2-chrome-palette-check.mjs
       - name: A6-UX2 100k real source antagonists
-        run: node v3/s4-a6-ux2-chrome-palette-saturation.mjs
+        run: node tests/verification/s4-a6-ux2-chrome-palette-saturation.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Resolve system browser
         shell: bash
@@ -57,7 +57,7 @@ jobs:
           echo "ICTC_STATE_DIR=$ICTC_STATE_DIR" >> "$GITHUB_ENV"
           echo "ICTC_RUNTIME_DIR=$ICTC_RUNTIME_DIR" >> "$GITHUB_ENV"
       - name: A6-UX2 exact-head Chromium palette and UX1 geometry
-        run: python -u v3/browser-s4-a6-ux2-chrome-palette.py
+        run: python -u tests/browser/browser-s4-a6-ux2-chrome-palette.py
       - name: Stop current runtime
         if: always()
         run: ./ictc.sh stop --profile current || true

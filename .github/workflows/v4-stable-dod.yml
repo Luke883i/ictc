@@ -15,12 +15,12 @@ jobs:
       - uses: actions/setup-node@v7
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - run: node v3/v4-stable-real-saturation.mjs
-      - run: node v3/v4-stable-e2e-mutation-check.mjs
-      - run: node v3/v4-stable-governance-check.mjs
-      - run: node v3/v4-stable-persistence-check.mjs
-      - run: node v3/store-durability-check.mjs
-      - run: node v3/v4-stable-global-dod-check.mjs
+      - run: node tests/verification/v4-stable-real-saturation.mjs
+      - run: node tests/verification/v4-stable-e2e-mutation-check.mjs
+      - run: node tests/verification/v4-stable-governance-check.mjs
+      - run: node tests/verification/v4-stable-persistence-check.mjs
+      - run: node tests/verification/store-durability-check.mjs
+      - run: node tests/verification/v4-stable-global-dod-check.mjs
   browser-runtime:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -48,4 +48,4 @@ jobs:
           export ICTC_STATE_DIR="$RUNNER_TEMP/ictc-v4-stable-state" ICTC_RUNTIME_DIR="$RUNNER_TEMP/ictc-v4-stable-runtime" ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-v4-stable-check.py
+          python -u tests/browser/browser-v4-stable-check.py

@@ -4,5 +4,5 @@ cd "$(dirname "$0")/.."
 chmod +x ictc.sh .devcontainer/post-start.sh
 npm ci --ignore-scripts
 ./ictc.sh doctor --profile current
-node v3/gap-audit.mjs
-node v3/ux-audit.mjs
+node tests/verification/gap-audit.mjs
+node tests/verification/ux-audit.mjs

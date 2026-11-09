@@ -48,12 +48,12 @@ const canaryMoves=Object.freeze([
   formerImport:"'./test-helpers/active-experience-install.mjs'",
   currentImport:"'../tests/helpers/active-experience-install.mjs'",
   consumers:['tests/ui/epistemic-inference-ui-check.mjs','tests/ui/cross-procedure-create-ui-check.mjs',
-             'v3/v1-9-experience-check.mjs','tests/ui/epistemic-lattice-ui-check.mjs']},
- {previous:'v3/runtime/abuse-budget.mjs',current:'src/runtime/abuse-budget.mjs',
+             'tests/verification/v1-9-experience-check.mjs','tests/ui/epistemic-lattice-ui-check.mjs']},
+ {previous:'src/runtime/abuse-budget.mjs',current:'src/runtime/abuse-budget.mjs',
   formerImport:"'./runtime/abuse-budget.mjs'",
   currentImport:"'../src/runtime/abuse-budget.mjs'",
-  consumers:['v3/server.mjs','v3/runtime-enterprise-boundaries-saturation.mjs',
-             'v3/security-attack-saturation.mjs','v3/runtime-enterprise-boundaries-check.mjs']}
+  consumers:['src/server.mjs','tests/verification/runtime-enterprise-boundaries-saturation.mjs',
+             'tests/verification/security-attack-saturation.mjs','tests/verification/runtime-enterprise-boundaries-check.mjs']}
 ]);
 function verifyCanaryMoves(at=root){
  const cards=[];
@@ -85,7 +85,7 @@ function migrateUiSource(source){
   .replaceAll("read('./public/","read('../../v3/public/");
 }
 function verifyRelocatedUi(at=root){
- const suite=readFileSync(join(at,'v3/current-release-suite.mjs'),'utf8');
+ const suite=readFileSync(join(at,'scripts/current-release-suite.mjs'),'utf8');
  const cards=[];
  for(const name of movedUiNames){
   const former='v3/'+name,current='tests/ui/'+name;
@@ -95,7 +95,7 @@ function verifyRelocatedUi(at=root){
   assert.equal(existsSync(join(at,former)),false,'R3 retired check path resurrected: '+former);
   assert.ok(suite.includes("'"+current+"'"),'R3 current semantic test command missing: '+current);
   assert.equal(suite.includes("'"+former+"'"),false,'R3 old current suite path survives: '+former);
-  cards.push({from:former,to:current,commandOwner:'v3/current-release-suite.mjs',
+  cards.push({from:former,to:current,commandOwner:'scripts/current-release-suite.mjs',
     importMetaUrlReroot:true,noShim:true,externalConsumerAbsence:'UNKNOWN'});
  }
  return cards;
@@ -104,21 +104,21 @@ const uiRelocationEvidence=verifyRelocatedUi();
 
 const ENTERPRISE_BROWSER_BASE='02236f4304adb4f817d4ed1e1e8e9eeaf4159c3a';
 const enterpriseBrowserMoves=Object.freeze([
- {name:'browser-enterprise-1-7-check.py',readers:['v3/enterprise-1-7-check.mjs']},
- {name:'browser-enterprise-1-8-check.py',readers:['v3/enterprise-1-8-check.mjs','v3/enterprise-claims.json','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-enterprise-2-check.py',readers:['v3/enterprise-2-check.mjs','v3/enterprise-2-process-check.mjs','v3/enterprise-2-editorial-check.mjs','v3/enterprise-2-design-system-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-enterprise-2-ui-standard-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-admin-check.py',readers:['v3/enterprise-claims.json']},
- {name:'browser-product-check.py',readers:['v3/enterprise-2-ui-standard-check.mjs','v3/enterprise-2-historical-contract-alignment-check.mjs']},
- {name:'browser-auditor-check.py',readers:['v3/reborn-3-check.mjs']},
- {name:'browser-enterprise-2-compliance-flow-check.py',readers:['v3/enterprise-2-compliance-flow-check.mjs']},
- {name:'browser-stable-1-4-check.py',readers:['v3/stable-1-4-check.mjs']},
- {name:'browser-standard-proof-check.py',readers:['v3/standard-proof-1-6-contract.json']},
+ {name:'browser-enterprise-1-7-check.py',readers:['tests/verification/enterprise-1-7-check.mjs']},
+ {name:'browser-enterprise-1-8-check.py',readers:['tests/verification/enterprise-1-8-check.mjs','tests/contracts/enterprise-claims.json','tests/verification/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-check.py',readers:['tests/verification/enterprise-2-check.mjs','tests/verification/enterprise-2-process-check.mjs','tests/verification/enterprise-2-editorial-check.mjs','tests/verification/enterprise-2-design-system-check.mjs','tests/verification/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-enterprise-2-ui-standard-check.py',readers:['tests/verification/enterprise-2-ui-standard-check.mjs','tests/verification/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-admin-check.py',readers:['tests/contracts/enterprise-claims.json']},
+ {name:'browser-product-check.py',readers:['tests/verification/enterprise-2-ui-standard-check.mjs','tests/verification/enterprise-2-historical-contract-alignment-check.mjs']},
+ {name:'browser-auditor-check.py',readers:['tests/verification/reborn-3-check.mjs']},
+ {name:'browser-enterprise-2-compliance-flow-check.py',readers:['tests/verification/enterprise-2-compliance-flow-check.mjs']},
+ {name:'browser-stable-1-4-check.py',readers:['tests/verification/stable-1-4-check.mjs']},
+ {name:'browser-standard-proof-check.py',readers:['src/contracts/standard-proof-1-6-contract.json']},
  {name:'browser-v4-1-language-check.py',readers:['.github/workflows/v4-1-dod.yml']},
  {name:'browser-v4-enterprise-nexus-check.py',readers:['.github/workflows/v4-dod.yml']},
  {name:'browser-regulatory-surface.py',readers:['.github/workflows/s4-a6-ux4-semantic-surface.yml']},
  {name:'browser-business-surface-convergence-2-7.py',readers:['.github/workflows/business-surface-convergence-2-7.yml']},
- {name:'browser-s4-a4-admin-truth-closure.py',readers:['.github/workflows/s4-a4-admin-truth-closure.yml','v3/capability-closure-e2-contract.json']}
+ {name:'browser-s4-a4-admin-truth-closure.py',readers:['.github/workflows/s4-a4-admin-truth-closure.yml','tests/contracts/capability-closure-e2-contract.json']}
 ]);
 const oldBrowserRoot='pathlib.Path(__file__).resolve().parents[1]';
 const newBrowserRoot='pathlib.Path(__file__).resolve().parents[2]';
@@ -184,10 +184,10 @@ function verifyK2BlobFixtureBoundary(at=root){
   assert.equal(existsSync(join(at,oldPath)),false,'K2 obsolete fixture path resurrected: '+oldPath);
   evidence.push({oldPath,newPath,sha256:digest(current),bytes:current.length,sourceByteParity:true});
  }
- const historicalAudit=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':v3/blob-audit.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
+ const historicalAudit=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':tests/verification/blob-audit.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
  const oldToken="'v3/blob-fixtures'",newToken="'tests/fixtures/blobs'";
  assert.equal(historicalAudit.split(oldToken).length,2,'K2 blob-audit preimage path not unique');
- assert.equal(readFileSync(join(at,'v3/blob-audit.mjs'),'utf8'),historicalAudit.replace(oldToken,newToken),
+ assert.equal(readFileSync(join(at,'tests/verification/blob-audit.mjs'),'utf8'),historicalAudit.replace(oldToken,newToken),
   'K2 blob-audit consumer or behavior drift');
  const manifest=JSON.parse(readFileSync(join(at,destination,'manifest.json'),'utf8'));
  assert.equal(manifest.file,'source-note.txt','K2 fixture source file identity drift');
@@ -207,14 +207,14 @@ function falsifyK2BlobFixtures(){
    writeFileSync(p,readFileSync(join(root,'tests/fixtures/blobs',name)));
   }
   mkdirSync(join(scratch,'v3'),{recursive:true});
-  writeFileSync(join(scratch,'v3/blob-audit.mjs'),readFileSync(join(root,'v3/blob-audit.mjs')));
+  writeFileSync(join(scratch,'tests/verification/blob-audit.mjs'),readFileSync(join(root,'tests/verification/blob-audit.mjs')));
   assert.equal(verifyK2BlobFixtureBoundary(scratch).length,3,'K2 temporary preimage baseline failed');
   const corruptedSource=join(scratch,'tests/fixtures/blobs/source-note.txt');
   const good=readFileSync(corruptedSource);
   writeFileSync(corruptedSource,Buffer.concat([good,Buffer.from('\ncorrupted\n')]));
   try{verifyK2BlobFixtureBoundary(scratch);}catch(error){if(/fixture drift/.test(String(error.message)))killed++;else throw error;}
   writeFileSync(corruptedSource,good);
-  const corruptedAudit=join(scratch,'v3/blob-audit.mjs');
+  const corruptedAudit=join(scratch,'tests/verification/blob-audit.mjs');
   const goodAudit=readFileSync(corruptedAudit);
   writeFileSync(corruptedAudit,Buffer.concat([goodAudit,Buffer.from('\n// unauthorized path change\n')]));
   try{verifyK2BlobFixtureBoundary(scratch);}catch(error){if(/consumer or behavior drift/.test(String(error.message)))killed++;else throw error;}
@@ -246,13 +246,13 @@ function verifyK2DemoFixtureBoundary(at=root){
   result.push({part,oldPath:before,newPath:after,sha256:digest(now),bytes:now.length,sourceByteParity:true});
   fragments.push(now.toString('utf8'));
  }
- const oldLoader=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':v3/runtime/demo-suite-2-2-fixture.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
+ const oldLoader=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':src/runtime/demo-suite-2-2-fixture.mjs'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
  const oldWorkflow=execFileSync('git',['show',ENTERPRISE_BROWSER_BASE+':.github/workflows/demo-suite-2-2-runtime.yml'],{cwd:root,maxBuffer:1024*1024}).toString('utf8');
  assert.equal(oldLoader.split(K2_DEMO_OLD_SEGMENT).length,2,'K2 DEMO runtime loader preimage not unique');
  const oldWorkflowToken='v3/demo/demo-suite-2-2-fixture-*.b64';
  const newWorkflowToken='tests/fixtures/demo-suite-2-2/demo-suite-2-2-fixture-*.b64';
  assert.equal(oldWorkflow.split(oldWorkflowToken).length,2,'K2 DEMO CI preimage not unique');
- const actualLoader=readFileSync(join(at,'v3/runtime/demo-suite-2-2-fixture.mjs'),'utf8');
+ const actualLoader=readFileSync(join(at,'src/runtime/demo-suite-2-2-fixture.mjs'),'utf8');
  const actualWorkflow=readFileSync(join(at,'.github/workflows/demo-suite-2-2-runtime.yml'),'utf8');
  assert.equal(actualLoader,oldLoader.replace(K2_DEMO_OLD_SEGMENT,K2_DEMO_NEW_SEGMENT),'K2 DEMO loader semantic drift');
  assert.equal(actualWorkflow,oldWorkflow.replace(oldWorkflowToken,newWorkflowToken),'K2 DEMO CI consumer drift');
@@ -264,9 +264,9 @@ function verifyK2DemoFixtureBoundary(at=root){
 }
 const k2DemoFixtures=verifyK2DemoFixtureBoundary();
 // The existing TRAMA legacy authority must recognize all relocated chunks.
-// Never edit the formerly migrated immutable v3/tests/trama-reconcile-check.mjs
+// Never edit the formerly migrated immutable tests/verification/trama-reconcile-check.mjs
 // merely to add a new regression: the C1-3d preimage oracle owns its parity.
-const k2Trama=JSON.parse(readFileSync(join(root,'v3/trama-reconcile-contract.json'),'utf8'));
+const k2Trama=JSON.parse(readFileSync(join(root,'tests/contracts/trama-reconcile-contract.json'),'utf8'));
 const k2LegacyRules=k2Trama.legacy.rules.map(row=>({...row,match:new RegExp(row.pattern,'i')}));
 for(const row of k2DemoFixtures){
  const rule=k2LegacyRules.find(item=>item.match.test(row.newPath));
@@ -282,11 +282,11 @@ function falsifyK2DemoFixtureBoundary(){
    const file='demo-suite-2-2-fixture-'+part+'.b64',rel=K2_DEMO_TARGET+file,p=join(scratch,rel);
    mkdirSync(dirname(p),{recursive:true});writeFileSync(p,readFileSync(join(root,rel)));
   }
-  for(const rel of ['v3/runtime/demo-suite-2-2-fixture.mjs','.github/workflows/demo-suite-2-2-runtime.yml']){
+  for(const rel of ['src/runtime/demo-suite-2-2-fixture.mjs','.github/workflows/demo-suite-2-2-runtime.yml']){
    const p=join(scratch,rel);mkdirSync(dirname(p),{recursive:true});writeFileSync(p,readFileSync(join(root,rel)));
   }
   assert.equal(verifyK2DemoFixtureBoundary(scratch).length,12,'K2 DEMO scratch baseline failed');
-  const runtimePath=join(scratch,'v3/runtime/demo-suite-2-2-fixture.mjs');
+  const runtimePath=join(scratch,'src/runtime/demo-suite-2-2-fixture.mjs');
   const run=()=>spawnSync(process.execPath,[runtimePath],{cwd:scratch,encoding:'utf8',timeout:15000});
   const baseline=run();assert.equal(baseline.status,0,'K2 DEMO source-bound loader failed '+baseline.stderr);
   const source=join(scratch,K2_DEMO_TARGET+'demo-suite-2-2-fixture-01.b64');
@@ -310,7 +310,7 @@ const k2DemoPhysicalMutantsKilled=falsifyK2DemoFixtureBoundary();
 
 
 
-const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under v3/tests/. */',"import './tests/"+name+"';",''].join('\n');
+const wrapper=name=>['/** Stable command compatibility entrypoint; implementation lives under tests/verification/ */',"import './tests/"+name+"';",''].join('\n');
 function relocate(source){
  return source.replace(/(\bfrom\s*['"])\.\//g,'$1../')
   .replace(/(\bimport\s*['"])\.\//g,'$1../')
@@ -324,14 +324,14 @@ function verify(at=root){
  const cards=[];
  for(const name of files){
   const before=baseline(name),actualWrapper=readFileSync(join(at,'v3',name));
-  const target=readFileSync(join(at,'v3/tests',name));
+  const target=readFileSync(join(at,'tests/verification',name));
   assert.equal(actualWrapper.toString('utf8'),wrapper(name),'compatibility entrypoint drift: '+name);
   assert.equal(target.toString('utf8'),relocate(before.toString('utf8')),'logic or relative resolution drift: '+name);
   assert.notEqual(target.toString('utf8'),wrapper(name),'new test cannot be just a forwarder: '+name);
   cards.push({name,preimageSha256:digest(before),implementationSha256:digest(target),
     originalBytes:before.byteLength,compatibilityBytes:actualWrapper.byteLength,
     implementationBytes:target.byteLength,bytesMovedFromFlatRoot:before.byteLength-actualWrapper.byteLength,
-    unchangedPublicEntrypoint:'v3/'+name,newTestPath:'v3/tests/'+name});
+    unchangedPublicEntrypoint:'v3/'+name,newTestPath:'tests/verification/'+name});
  }
  return cards;
 }
@@ -370,7 +370,7 @@ if(process.argv.includes('--falsify')){
   assert.equal(canaryMutantsKilled,canaryMoves.length,'R3/R4 actual file mutations survived');
   // Three additional executable UI-check migrations: actual source bytes are
   // corrupted in the disposable checkout, then restored and re-verified.
-  for(const rel of ['v3/current-release-suite.mjs',...movedUiNames.map(n=>'tests/ui/'+n)]){
+  for(const rel of ['scripts/current-release-suite.mjs',...movedUiNames.map(n=>'tests/ui/'+n)]){
    const dest=join(mirror,rel);
    mkdirSync(dirname(dest),{recursive:true});
    writeFileSync(dest,readFileSync(join(root,rel)));
@@ -425,7 +425,7 @@ if(process.argv.includes('--falsify')){
     mkdirSync(dirname(dest),{recursive:true});
    }
    writeFileSync(join(scratch,'v3',card.name),readFileSync(join(root,'v3',card.name)));
-   writeFileSync(join(scratch,'v3/tests',card.name),readFileSync(join(root,'v3/tests',card.name)));
+   writeFileSync(join(scratch,'tests/verification',card.name),readFileSync(join(root,'tests/verification',card.name)));
   }
   assert.equal(verify(scratch).length,files.length);
   for(const name of files){
@@ -452,7 +452,7 @@ if(process.argv.includes('--falsify')){
   ['epistemic-lattice-check.mjs',[]],
   ['demo-suite-3-0-module-check.mjs',[]]
  ].map(([name,args])=>{
-  const old=child('v3/'+name,args),next=child('v3/tests/'+name,args);
+  const old=child('v3/'+name,args),next=child('tests/verification/'+name,args);
   assert.equal(old.status,0,'old command failed '+name+' '+old.stderr);
   assert.equal(next.status,0,'new direct command failed '+name+' '+next.stderr);
   assert.equal(old.stdout,next.stdout,'command output changed: '+name);
@@ -508,7 +508,7 @@ const result={schema:'ictc-c1-3d-test-relocation/v2',authorityEffect:'NONE',base
    totalV3VerificationLikeCandidatesBefore:447,
    selectedVerificationModules:files.length,remainingVerificationLikeCandidates:447-files.length,
    externalAndDynamicConsumers:'UNKNOWN',compatibilityRemoval:'BLOCKED'},
- claimBoundary:'Six TRAMA verifiers plus sixteen subsequently qualified GOV/public-demo/epistemic/DEMO verifiers have moved to v3/tests/ while stable old paths remain. Runtime import/path assumptions have explicit bounded rewrites. All other verifier families, external consumers, and adapter retirement remain OPEN. Neither model saturation nor CI alone closes global C1-3d.'};
+ claimBoundary:'Six TRAMA verifiers plus sixteen subsequently qualified GOV/public-demo/epistemic/DEMO verifiers have moved to tests/verification/ while stable old paths remain. Runtime import/path assumptions have explicit bounded rewrites. All other verifier families, external consumers, and adapter retirement remain OPEN. Neither model saturation nor CI alone closes global C1-3d.'};
 mkdirSync(join(root,'artifacts'),{recursive:true});
 writeFileSync(join(root,'artifacts/c1-3d-test-boundary.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({ok:true,selected:files.length,movedBytes:recorded.flatImplementationBytesRelocated,

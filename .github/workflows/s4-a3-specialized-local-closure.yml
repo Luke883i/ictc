@@ -25,17 +25,17 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: A3 changed-source syntax
         run: |
-          node --check v3/public/ui/standard-use-language.js
-          node --check v3/public/ui/epistemic-lattice.js
-          node --check v3/public/ui/epistemic-workspace-3-2.js
-          node --check v3/public/ui/proof-workspace-3-2.js
-          node --check v3/s4-a3-specialized-local-closure-check.mjs
-          node --check v3/s4-a3-specialized-local-saturation-1m.mjs
-          python -m py_compile v3/browser-s4-a3-specialized-local-closure.py
+          node --check public/ui/standard-use-language.js
+          node --check public/ui/epistemic-lattice.js
+          node --check public/ui/epistemic-workspace-3-2.js
+          node --check public/ui/proof-workspace-3-2.js
+          node --check tests/verification/s4-a3-specialized-local-closure-check.mjs
+          node --check tests/verification/s4-a3-specialized-local-saturation-1m.mjs
+          python -m py_compile tests/browser/browser-s4-a3-specialized-local-closure.py
       - name: A3 source contract
-        run: node v3/s4-a3-specialized-local-closure-check.mjs
+        run: node tests/verification/s4-a3-specialized-local-closure-check.mjs
       - name: A3 semantic mutation saturation 1M
-        run: node v3/s4-a3-specialized-local-saturation-1m.mjs
+        run: node tests/verification/s4-a3-specialized-local-saturation-1m.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Resolve system browser
         shell: bash
@@ -71,10 +71,10 @@ jobs:
         run: |
           set -Eeuo pipefail
           status=0
-          python -u v3/browser-s4-a3-specialized-local-closure.py || status=$?
+          python -u tests/browser/browser-s4-a3-specialized-local-closure.py || status=$?
           cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-s4-a3-server.log || true
           if [[ "$status" -ne 0 ]]; then
-            FAILED_BROWSER_SCRIPT='v3/browser-s4-a3-specialized-local-closure.py' node scripts/browser-failure-provenance.mjs || true
+            FAILED_BROWSER_SCRIPT='tests/browser/browser-s4-a3-specialized-local-closure.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
       - name: Publish A3 browser provenance
@@ -94,7 +94,7 @@ jobs:
             description="failure ${phase}: ${message}"
           elif [[ -f "$report" ]]; then phase=complete; state=success; description='MC/EP/Proof specialized local closure green';
           else phase=no-artifact; state=error; description='browser evidence artifact missing'; fi
-          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/v3/browser-s4-a3-specialized-local-closure.py?phase=${phase}"
+          target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-s4-a3-specialized-local-closure.py?phase=${phase}"
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='ictc/s4-a3-browser' -f description="${description:0:140}" -f target_url="$target" >/dev/null || true
       - name: Stop DEMO runtime
         if: always()

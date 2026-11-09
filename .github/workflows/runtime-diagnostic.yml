@@ -63,7 +63,7 @@ jobs:
       - name: Run stable semantic rail
         id: stable-suite
         continue-on-error: true
-        run: node v3/stable-release-suite.mjs
+        run: node scripts/stable-release-suite.mjs
       - name: Publish stable exact-head provenance
         if: always()
         env:

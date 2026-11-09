@@ -26,6 +26,6 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - name: Runtime contraction contract
-        run: node v3/uiux-runtime-contraction-check.mjs
+        run: node tests/verification/uiux-runtime-contraction-check.mjs
       - name: Runtime contraction semantic saturation 1M
-        run: node v3/uiux-runtime-contraction-saturation-1m.mjs
+        run: node tests/verification/uiux-runtime-contraction-saturation-1m.mjs

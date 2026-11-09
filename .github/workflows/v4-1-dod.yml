@@ -16,11 +16,11 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: V4.1 lexical contract
-        run: node v3/v4-1-lexical-contract-check.mjs
+        run: node tests/verification/v4-1-lexical-contract-check.mjs
       - name: V4.1 100k end-user language saturation
-        run: node v3/v4-1-language-saturation.mjs
+        run: node tests/verification/v4-1-language-saturation.mjs
       - name: Global V4.1 DoD
-        run: node v3/v4-1-global-dod-check.mjs
+        run: node tests/verification/v4-1-global-dod-check.mjs
   screen-by-screen:
     runs-on: ubuntu-24.04
     timeout-minutes: 12

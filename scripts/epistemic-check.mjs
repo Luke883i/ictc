@@ -1,4 +1,4 @@
-import { buildState } from '../v3/tests/legacy/lib/domain.mjs';
+import { buildState } from '../tests/legacy/lib/domain.mjs';
 
 const state = await buildState();
 const values = state.views;

@@ -28,13 +28,13 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: P4 surface/copy/presentation contract
-        run: node v3/uiux-beauty-p4-check.mjs
+        run: node tests/verification/uiux-beauty-p4-check.mjs
       - name: PR164 local-to-global mutation lattice (1k to 1m)
-        run: node v3/ui-cosmetic-pr164-mutation-lattice.mjs
+        run: node tests/verification/ui-cosmetic-pr164-mutation-lattice.mjs
       - name: Three million deterministic beauty mutations
-        run: node v3/uiux-beauty-p4-mutation-3m.mjs
+        run: node tests/verification/uiux-beauty-p4-mutation-3m.mjs
       - name: Browser rail syntax
-        run: python -m py_compile v3/browser-uiux-beauty-p4.py
+        run: python -m py_compile tests/browser/browser-uiux-beauty-p4.py
       - name: Resolve system Chromium
         shell: bash
         run: |
@@ -59,7 +59,7 @@ jobs:
           export ICTC_SCHEDULER_TICK_MS=100000
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
-          python -u v3/browser-uiux-beauty-p4.py
+          python -u tests/browser/browser-uiux-beauty-p4.py
       - name: Expose browser failure signature
         id: diagnose
         if: always()

@@ -22,7 +22,7 @@ function incoming(path){const list=[];for(const source of sources){if(source.pat
    if(links.some(x=>posix.normalize(posix.join(posix.dirname(source.path),x))===path))mode='resolved-markdown-link';
   }
  }
- if(mode)list.push({path:source.path,evidence:mode,kind:source.path.startsWith('docs/')?'document':source.path.startsWith('v3/')?'software-or-test':'repository'});
+ if(mode)list.push({path:source.path,evidence:mode,kind:source.path.startsWith('docs/')?'document':(['src/','tests/','public/'].some(prefix=>source.path.startsWith(prefix)))?'software-or-test':'repository'});
 }return list;}
 function classOf(path,body,links){const first=(body.match(/^#\s+(.+)$/m)||[])[1]||null;
  let topic='design-or-study';if(path.startsWith('docs/decisions/'))topic='architecture-decision';

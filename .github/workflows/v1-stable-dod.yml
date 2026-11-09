@@ -16,40 +16,40 @@ jobs:
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
       - name: 1.2 market profile
-        run: node v3/v1-2-market-candidate-check.mjs
+        run: node tests/verification/v1-2-market-candidate-check.mjs
       - name: Product contract authority
-        run: node v3/product-contract-check.mjs
+        run: node tests/verification/product-contract-check.mjs
       - name: Semantic API authority
-        run: node v3/semantic-api-contract-check.mjs
+        run: node tests/verification/semantic-api-contract-check.mjs
       - name: Procedure contracts
-        run: node v3/procedure-contracts-check.mjs
+        run: node tests/verification/procedure-contracts-check.mjs
       - name: Procedure feature policy
-        run: node v3/procedure-policy-check.mjs
+        run: node tests/verification/procedure-policy-check.mjs
       - name: Process-specific primitives
         run: |
-          node v3/standard-library-check.mjs
-          node v3/monitoring-access-check.mjs
-          node v3/incident-contract-check.mjs
-          node v3/object-identity-check.mjs
-          node v3/procedure-summary-check.mjs
+          node tests/verification/standard-library-check.mjs
+          node tests/verification/monitoring-access-check.mjs
+          node tests/verification/incident-contract-check.mjs
+          node tests/verification/object-identity-check.mjs
+          node tests/verification/procedure-summary-check.mjs
       - name: Existing lifecycle fidelity
         run: |
-          node v3/v1-stable-process-hardening-check.mjs
-          node v3/reference-contract-check.mjs
-          node v3/reference-integration-check.mjs
-          node v3/ao-reattestation-check.mjs
-          node v3/rn-requirement-identity-check.mjs
-          node v3/dependency-review-check.mjs
+          node tests/verification/v1-stable-process-hardening-check.mjs
+          node tests/verification/reference-contract-check.mjs
+          node tests/verification/reference-integration-check.mjs
+          node tests/verification/ao-reattestation-check.mjs
+          node tests/verification/rn-requirement-identity-check.mjs
+          node tests/verification/dependency-review-check.mjs
       - name: Genuine procedure saturation M plus 1000
         shell: bash
         run: |
           mkdir -p artifacts
-          node v3/procedure-market-saturation.mjs | tee artifacts/procedure-market-saturation.txt
+          node tests/verification/procedure-market-saturation.mjs | tee artifacts/procedure-market-saturation.txt
       - name: Persistence and governance baseline
         run: |
-          node v3/v4-stable-governance-check.mjs
-          node v3/v4-stable-persistence-check.mjs
-          node v3/v4-stable-real-saturation.mjs
+          node tests/verification/v4-stable-governance-check.mjs
+          node tests/verification/v4-stable-persistence-check.mjs
+          node tests/verification/v4-stable-real-saturation.mjs
       - uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
@@ -69,7 +69,7 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
-      - run: python -m py_compile v3/browser-v1-2-market-candidate.py
+      - run: python -m py_compile tests/browser/browser-v1-2-market-candidate.py
       - name: Resolve Chromium
         shell: bash
         run: |
@@ -90,7 +90,7 @@ jobs:
           ./ictc.sh start --profile current --no-open
           echo "ICTC_BASE_URL=$ICTC_BASE_URL" >> "$GITHUB_ENV"
       - name: 1.2 process browser journey
-        run: python -u v3/browser-v1-2-market-candidate.py
+        run: python -u tests/browser/browser-v1-2-market-candidate.py
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true

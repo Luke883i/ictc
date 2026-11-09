@@ -28,19 +28,19 @@ Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di conver
 
 | Modifica | Feedback rapido | Prima della PR |
 |---|---|---|
-| UI/layout/copy locale | `node v3/uiux-converge-0-check.mjs` + gate surface interessato | `npm test` |
-| API/handler | `node v3/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
-| AI/provider/egress | `node v3/ai-network-policy-check.mjs` | `npm test` |
-| persistence/readback/receipt | `node v3/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
-| evidence/provenance | `node v3/evidence-check.mjs` | `npm run test:current:runtime` |
-| security boundary | `node v3/security-boundary-check.mjs` | `npm run release:check` |
+| UI/layout/copy locale | `node tests/verification/uiux-converge-0-check.mjs` + gate surface interessato | `npm test` |
+| API/handler | `node tests/verification/semantic-api-contract-check.mjs` | `npm run test:current:runtime` |
+| AI/provider/egress | `node tests/verification/ai-network-policy-check.mjs` | `npm test` |
+| persistence/readback/receipt | `node tests/verification/s3-runtime-reliability-saturation.mjs` | `npm run test:current:runtime` |
+| evidence/provenance | `node tests/verification/evidence-check.mjs` | `npm run test:current:runtime` |
+| security boundary | `node tests/verification/security-boundary-check.mjs` | `npm run release:check` |
 | docs/routing/authority projection | `npm run docs:check` | `npm run docs:saturation` |
-| convergence/workbook planning | `node v3/convergence-authority-check.mjs` | `node v3/decide-0-saturation.mjs`, `node v3/trajectory-governance-saturation.mjs`, poi `npm test` |
-| adaptive engineering / trajectory intake | `node v3/trama-engineering-check.mjs` | `node v3/trama-engineering-saturation.mjs`, poi `npm test` |
-| TRAMA causal qualification | `node v3/trama-causal-qualification-check.mjs` | `node v3/trama-causal-qualification-saturation-1m.mjs`, poi exact-head CI |
-| AI information egress | `node v3/ai-information-egress-check.mjs` | `node v3/ai-information-egress-saturation-1m.mjs`, poi network/provider regression + exact-head CI |
-| C5 owner/freshness | `node v3/c5-semantic-owner-check.mjs` | `node v3/c5-semantic-owner-saturation.mjs`, `node v3/c5-needs-audit-saturation.mjs`, poi `npm test` |
-| enterprise runtime/PostgreSQL orizzontale | `node v3/c3-enterprise-bench-dod-check.mjs` | `npm test` + exact-head `c3-enterprise-runtime-closure` |
+| convergence/workbook planning | `node tests/verification/convergence-authority-check.mjs` | `node tests/verification/decide-0-saturation.mjs`, `node tests/verification/trajectory-governance-saturation.mjs`, poi `npm test` |
+| adaptive engineering / trajectory intake | `node tests/verification/trama-engineering-check.mjs` | `node tests/verification/trama-engineering-saturation.mjs`, poi `npm test` |
+| TRAMA causal qualification | `node tests/verification/trama-causal-qualification-check.mjs` | `node tests/verification/trama-causal-qualification-saturation-1m.mjs`, poi exact-head CI |
+| AI information egress | `node tests/verification/ai-information-egress-check.mjs` | `node tests/verification/ai-information-egress-saturation-1m.mjs`, poi network/provider regression + exact-head CI |
+| C5 owner/freshness | `node tests/verification/c5-semantic-owner-check.mjs` | `node tests/verification/c5-semantic-owner-saturation.mjs`, `node tests/verification/c5-needs-audit-saturation.mjs`, poi `npm test` |
+| enterprise runtime/PostgreSQL orizzontale | `node tests/verification/c3-enterprise-bench-dod-check.mjs` | `npm test` + exact-head `c3-enterprise-runtime-closure` |
 
 Se una modifica locale richiede di leggere o cambiare molte authority non correlate, fermati e verifica prima il routing in `docs/START_HERE.md` e `v3/semantic-owner-contract.json`: la soluzione preferita resta nel proprietario esistente.
 
@@ -50,9 +50,9 @@ Quando un check rosso è già classificato, riproduci prima il falsificatore loc
 
 | Failure/check | Route | Riproduzione locale |
 |---|---|---|
-| `docs-command-contract` | `docs` | `node v3/docs-command-contract-check.mjs` |
-| `c5-semantic-owner` | `governance` | `node v3/c5-semantic-owner-check.mjs` |
-| `c3-enterprise-runtime` | `enterprise-runtime` | `node v3/c3-enterprise-bench-dod-check.mjs` |
+| `docs-command-contract` | `docs` | `node tests/verification/docs-command-contract-check.mjs` |
+| `c5-semantic-owner` | `governance` | `node tests/verification/c5-semantic-owner-check.mjs` |
+| `c3-enterprise-runtime` | `enterprise-runtime` | `node tests/verification/c3-enterprise-bench-dod-check.mjs` |
 | `enterprise-candidate` | `runtime` | `npm run release:check` |
 
 Il workflow PostgreSQL C3 resta exact-head evidence separata: una riproduzione locale senza PostgreSQL non equivale al canary a due repliche.
@@ -62,19 +62,19 @@ Il workflow PostgreSQL C3 resta exact-head evidence separata: una riproduzione l
 La composizione UI corrente è **Native Semantic Lattice 3.2**:
 
 ```bash
-node v3/current-semantic-3-2.mjs
-node v3/native-semantic-lattice-3-2-check.mjs
-node v3/native-semantic-lattice-3-2-ui-check.mjs
-node v3/native-semantic-lattice-3-2-saturation.mjs
-node v3/native-semantic-lattice-3-2-stress.mjs
+node scripts/current-semantic-3-2.mjs
+node tests/verification/native-semantic-lattice-3-2-check.mjs
+node tests/verification/native-semantic-lattice-3-2-ui-check.mjs
+node tests/verification/native-semantic-lattice-3-2-saturation.mjs
+node tests/verification/native-semantic-lattice-3-2-stress.mjs
 ```
 
 C5 rende owner e freshness osservabili senza sostituire la composition authority:
 
 ```bash
-node v3/c5-semantic-owner-check.mjs
-node v3/c5-semantic-owner-saturation.mjs
-node v3/c5-needs-audit-saturation.mjs
+node tests/verification/c5-semantic-owner-check.mjs
+node tests/verification/c5-semantic-owner-saturation.mjs
+node tests/verification/c5-needs-audit-saturation.mjs
 ```
 
 Il sistema documentale corrente è **Documentation Runtime 1.0**:
@@ -159,7 +159,7 @@ I test verificano identity/version binding, authorization, checksum, XML/PDF/ZIP
 
 ## GOV-TRAMA-COMPASS-1 — governance falsification
 
-`node v3/trama-engineering-check.mjs` verifica target enterprise 16 assi / 64 requisiti, profilo a 8 meccanismi / 56 controlli, Bussola generated e separazione delle authority. `node v3/trama-engineering-saturation.mjs` esegue **1.000.000** mutazioni deterministiche, pair coverage, deletion oracle e un tail no-novelty di almeno **100.000** casi.
+`node tests/verification/trama-engineering-check.mjs` verifica target enterprise 16 assi / 64 requisiti, profilo a 8 meccanismi / 56 controlli, Bussola generated e separazione delle authority. `node tests/verification/trama-engineering-saturation.mjs` esegue **1.000.000** mutazioni deterministiche, pair coverage, deletion oracle e un tail no-novelty di almeno **100.000** casi.
 
 La qualificazione non trasforma mutation in prova fisica, umana, deployment o GitHub server-side. `docs/ENGINEERING_COMPASS.md` deve essere byte-identica alla projection rigenerata dagli owner correnti; qualunque nuovo SHA riapre l'accettazione.
 
@@ -171,8 +171,8 @@ Il convergence gate separa intenzionalmente il falsificatore deterministico dall
 La rail current esegue:
 
 ```bash
-node v3/trama-reconcile-check.mjs
-node v3/trama-reconcile-saturation.mjs
+node tests/verification/trama-reconcile-check.mjs
+node tests/verification/trama-reconcile-saturation.mjs
 ```
 
 Il check confronta authority, owner correnti, remediation registry, legacy census, Compass e critical path. La saturation attraversa 8 campagne L0→L7 (ferro, persistence, runtime, semantic, governance, product, experience, enterprise), **3.000.000** casi, 64 failure family, tutte le 2.016 coppie e una coda no-novelty da **100.000** casi. Questi numeri qualificano il modello semantico: non sono browser session, human study, deployment evidence o prova formale di minimalità globale.
@@ -191,16 +191,16 @@ Il ceiling strategico 10M non autorizza brute force: survivor o nuova failure fa
 
 ### HUMAN-REALITY-RUNTIME-1
 
-`node v3/human-reality-runtime-check.mjs` verifica il value object `decisionContext` come estensione authority-zero dei checkpoint umani esistenti: 20 primitive H01–H20 preservate, 10 assi strutturati, outcome neutrality, binding audit/epistemic, retention nelle projection e assenza di store/writer/SOT paralleli.
+`node tests/verification/human-reality-runtime-check.mjs` verifica il value object `decisionContext` come estensione authority-zero dei checkpoint umani esistenti: 20 primitive H01–H20 preservate, 10 assi strutturati, outcome neutrality, binding audit/epistemic, retention nelle projection e assenza di store/writer/SOT paralleli.
 
-`node v3/human-reality-runtime-saturation-10m.mjs` esercita 32 failure family dalla finalità umana fino al binding runtime/evidence, tutte le 496 coppie, cross-layer compositions, deletion oracle e pairwise no-loss compression dei 10 assi. I trial sono evaluator calls del modello semantico, non browser session, persone, casi legali o mutazioni fisiche del codice. La qualifica usata per questa slice esegue il comando con 10.000.000 trial, 1.000.000 di holdout e seed distinti per ciclo; l'accettazione locale richiede 10 cicli completi con zero survivor/novel family.
+`node tests/verification/human-reality-runtime-saturation-10m.mjs` esercita 32 failure family dalla finalità umana fino al binding runtime/evidence, tutte le 496 coppie, cross-layer compositions, deletion oracle e pairwise no-loss compression dei 10 assi. I trial sono evaluator calls del modello semantico, non browser session, persone, casi legali o mutazioni fisiche del codice. La qualifica usata per questa slice esegue il comando con 10.000.000 trial, 1.000.000 di holdout e seed distinti per ciclo; l'accettazione locale richiede 10 cicli completi con zero survivor/novel family.
 
 
 ### UIUX-656-ABSORB-1
 
-`node v3/uiux-656-absorption-check.mjs` verifica la riconciliazione lossless dei 656 finding screenshot-derived: 656/656 mapping primario, 22/22 superfici, 12/12 root-cause, 10 meccanismi, owner canonici e nessuna nuova composition/write authority.
+`node tests/verification/uiux-656-absorption-check.mjs` verifica la riconciliazione lossless dei 656 finding screenshot-derived: 656/656 mapping primario, 22/22 superfici, 12/12 root-cause, 10 meccanismi, owner canonici e nessuna nuova composition/write authority.
 
-`node v3/uiux-656-absorption-saturation-10m.mjs` esercita 32 failure family da linguaggio business e densità dei record fino a responsive/accessibilità e governance owner, includendo tutte le 496 coppie, cross-layer composition, deletion oracle e no-loss compression dei 10 meccanismi. I trial sono evaluator calls del modello semantico: non sono browser session, human study, deployment evidence o code mutant compilati.
+`node tests/verification/uiux-656-absorption-saturation-10m.mjs` esercita 32 failure family da linguaggio business e densità dei record fino a responsive/accessibilità e governance owner, includendo tutte le 496 coppie, cross-layer composition, deletion oracle e no-loss compression dei 10 meccanismi. I trial sono evaluator calls del modello semantico: non sono browser session, human study, deployment evidence o code mutant compilati.
 
 ## Copertura E2E: unità di misura e limite di inferenza
 
@@ -210,7 +210,7 @@ Un censimento automatico di path API nei test è soltanto una **proxy statica di
 
 ## Ricevuta E2E delimitata della Fase 7
 
-`node v3/e2e-coverage-7x3-check.mjs` scrive `artifacts/e2e-coverage-7x3.json`: 21 casi = 7 processi canonici × 3 ruoli. Ogni caso esegue una richiesta HTTP reale su server e SQLite isolati, verifica identità di ruolo, proiezione per processo, integrità e lettura auditor. La percentuale risultante misura **solo questa matrice di proiezione/readback**, non i lifecycle business, le UI browser o le 121 operazioni OpenAPI. Gli impedimenti a Chromium nell'ambiente di esecuzione sono `BLOCKED`, non PASS.
+`node tests/verification/e2e-coverage-7x3-check.mjs` scrive `artifacts/e2e-coverage-7x3.json`: 21 casi = 7 processi canonici × 3 ruoli. Ogni caso esegue una richiesta HTTP reale su server e SQLite isolati, verifica identità di ruolo, proiezione per processo, integrità e lettura auditor. La percentuale risultante misura **solo questa matrice di proiezione/readback**, non i lifecycle business, le UI browser o le 121 operazioni OpenAPI. Gli impedimenti a Chromium nell'ambiente di esecuzione sono `BLOCKED`, non PASS.
 
 ## PR239: qualificazione controfattuale individuale e denominatore E2E
 
@@ -242,7 +242,7 @@ Dynamic paths, human usage, external references, legal retention and history
 are not excluded by either oracle; a single unrelated test passing does not
 prove the absence of dependencies.
 
-`node v3/e2e-guide-7x3-check.mjs` executes 21 additional live HTTP views
+`node tests/verification/e2e-guide-7x3-check.mjs` executes 21 additional live HTTP views
 (seven existing procedure guides × admin/user/auditor), validating the canonical
 process identifier, source authority, presence of human transition checkpoints,
 and three negative paths for placeholders/unknown procedures. It is a
@@ -252,7 +252,7 @@ documented business journey steps; no global E2E percentage is claimed.
 
 ### PR239: percorso E2E interprocedurale e rischio documentale residuo
 
-`node v3/e2e-cross-process-receipts-check.mjs` esegue davvero HTTP e SQLite
+`node tests/verification/e2e-cross-process-receipts-check.mjs` esegue davvero HTTP e SQLite
 isolata per **AO→MC→AP→RC→AR**: creazione/attivazione dell'oggetto con
 rationale, mapping e decisione di gap, remediation adottata e avanzata,
 rischio collegato e riesaminato, richiesta assurance conservata. Ogni
@@ -287,7 +287,7 @@ procedura deve trasformare il suo PASS in una chiusura globale.
 ### PR239: attestazioni per passo e saturazione *finita* senza inflazione
 
 L'owner delle nove journey rimane [04_USER_JOURNEYS](04_USER_JOURNEYS.md). Dopo i test reali
-`node v3/e2e-cross-process-receipts-check.mjs` e `npm run e2e:denominator`,
+`node tests/verification/e2e-cross-process-receipts-check.mjs` e `npm run e2e:denominator`,
 `node scripts/e2e-step-evidence-audit.mjs --falsify` produce
 `artifacts/e2e-step-evidence-ledger.json`. Le 53 righe hanno un ID composto
 scenario+processo+numero e una prova esplicita o `NO_STEP_WITNESS`.
@@ -332,7 +332,7 @@ dipendenze e non sostituisce la review umana o legale.
 
 ### PR239: simulazione controllata delle decisioni e triangolazione documentale
 
-`node v3/e2e-simulated-decisions-check.mjs` esegue HTTP reali in una SQLite isolata per
+`node tests/verification/e2e-simulated-decisions-check.mjs` esegue HTTP reali in una SQLite isolata per
 RN-01 (contributo fonte candidata, senza applicabilità automatica), EC-01 (narrativa
 originale e tempo di awareness immutati, privacy cross-user) e AO-01 (creazione e
 review motivate da due attori di test distinti). Il test verifica ricevute hash,
@@ -367,8 +367,8 @@ La prima famiglia spostata è delimitata a sei test eseguibili: il codice vive i
 
 ```bash
 node scripts/test-boundary-migration-check.mjs --falsify
-node v3/trama-causal-qualification-check.mjs
-node v3/tests/trama-causal-qualification-check.mjs
+node tests/verification/trama-causal-qualification-check.mjs
+node tests/verification/trama-causal-qualification-check.mjs
 ```
 
 L'oracolo usa i byte di `preimage commit dcf90ae2 (non current-main authority)` come preimage immutabile; verifica sei ricollocazioni esatte con **sole correzioni relative di import/URL**, sei adapter, dodici alterazioni fisiche in copie temporanee con ripristino, e due coppie di comandi realmente eseguiti confrontandone exit status e stdout. La campagna di 10 milioni di casi e l'enumerazione di 243 stati sono prove semantiche **del modello a cinque obblighi**, non 10 milioni di riscritture del codice; nessuna assenza di consumer esterno è inferita. La ricevuta `artifacts/c1-3d-test-boundary.json` è derivata, zero-authority ed è caricata dal workflow TRAMA su HEAD esatto.

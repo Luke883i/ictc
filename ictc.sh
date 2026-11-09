@@ -69,7 +69,7 @@ start(){
   rm -f "$PID"
   (
     cd "$ROOT"
-    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SUITE="$DEMO_SUITE" ICTC_BUILD_SHA="$build_sha" ICTC_BUILD_DIRTY="$build_dirty" nohup node v3/bootstrap.mjs >>"$OUT" 2>&1 &
+    PORT="$PORT" ICTC_HOST="$HOST" ICTC_RUNTIME_DIR="$RUNTIME" ICTC_DEMO_SUITE="$DEMO_SUITE" ICTC_BUILD_SHA="$build_sha" ICTC_BUILD_DIRTY="$build_dirty" nohup node src/bootstrap.mjs >>"$OUT" 2>&1 &
     echo $! >"$PID.tmp"
   )
   mv "$PID.tmp" "$PID"

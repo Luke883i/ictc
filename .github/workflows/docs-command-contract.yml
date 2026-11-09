@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22'}
       - name: Validate documented commands
-        run: node v3/docs-command-contract-check.mjs
+        run: node tests/verification/docs-command-contract-check.mjs
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts
@@ -37,13 +37,13 @@ jobs:
       - name: Protect first-party executable document references with physical deletion falsification
         run: node scripts/executable-doc-reference-check.mjs --falsify
       - name: Run seven-procedure three-role guide HTTP E2E and forbidden placeholders
-        run: node v3/e2e-guide-7x3-check.mjs
+        run: node tests/verification/e2e-guide-7x3-check.mjs
       - name: Qualify remaining document retention exposure individually
         run: node scripts/document-retention-review.mjs --falsify
       - name: Prove scoped cross-process writes and receipts under live HTTP
-        run: node v3/e2e-cross-process-receipts-check.mjs
+        run: node tests/verification/e2e-cross-process-receipts-check.mjs
       - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
-        run: node v3/e2e-simulated-decisions-check.mjs
+        run: node tests/verification/e2e-simulated-decisions-check.mjs
       - name: Enumerate canonical business-journey E2E denominator
         run: npm run e2e:denominator
       - name: Reconcile actual receipts with each of 53 declared journey steps (no full-step inflation)

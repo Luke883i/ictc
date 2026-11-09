@@ -8,6 +8,13 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
+const firstPartySources=['src','tests','scripts','.github/workflows'];
+// Explicit negative-test literals are not live consumers; all other dangling references fail.
+const negativeFixtureLiterals=new Set([
+ 'scripts/review-readiness-mutation-1m.mjs|docs/LEGACY_ROUTER.md',
+ 'scripts/document-consumer-independent-check.mjs|docs/TARGET.md',
+ 'scripts/document-consumer-independent-check.mjs|docs/x/README.md'
+]);
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function files(dir){
  const list=[];
@@ -20,12 +27,13 @@ function files(dir){
 }
 function consumers(base){
  const edges=[];
- for(const directory of ['v3','.github/workflows']){
+ for(const directory of firstPartySources){
   for(const file of files(join(base,directory))){
    const source=relative(base,file).replaceAll('\\','/');
    const content=readFileSync(file,'utf8');
    for(const [literal] of content.matchAll(/(?<![\w/])docs\/[\w./-]+?\.md(?![\w./-])/g)){
-    if(literal.includes('..'))continue;
+    if(literal.includes('..')||negativeFixtureLiterals.has(source+'|'+literal)||
+      (source==='scripts/executable-doc-reference-check.mjs'&&[...negativeFixtureLiterals].some(item=>item.endsWith('|'+literal))))continue;
     edges.push({source,target:literal,kind:'first-party-literal-reference'});
    }
   }
@@ -47,7 +55,7 @@ const trials=[];
 if(process.argv.includes('--falsify')){
  const isolated=mkdtempSync(join(tmpdir(),'ictc-doc-exec-ref-'));
  try{
-  for(const directory of ['v3','.github/workflows','docs'])cpSync(join(root,directory),join(isolated,directory),{recursive:true});
+  for(const directory of [...firstPartySources,'docs'])cpSync(join(root,directory),join(isolated,directory),{recursive:true});
   const original=verify(isolated);assert.deepEqual(original.edges,baseline.edges);
   assert.equal(original.missing.length,0);
   for(const target of unregistered){
@@ -63,7 +71,7 @@ if(process.argv.includes('--falsify')){
   }
  }finally{rmSync(isolated,{recursive:true,force:true});}
 }
-const report={schemaVersion:'ictc-executable-doc-reference/v1',source:'read-only first-party v3/ and .github/workflows/ literal graph',
+const report={schemaVersion:'ictc-executable-doc-reference/v1',source:'read-only first-party src/, tests/, scripts/, and .github/workflows/ literal graph',
  scannedReferenceEdges:baseline.edges.length,directlyReferencedDocs:targets.length,
  unregisteredReferencedDocs:unregistered.length,deletedFiles:0,certifiedSafeDeletes:0,
  falsifiedCount:trials.length,escaped:trials.filter(x=>!x.missingReferenceDetected).length,

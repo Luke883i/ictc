@@ -1,7 +1,7 @@
 import { writeFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
-import { buildState } from '../v3/tests/legacy/lib/domain.mjs';
+import { buildState } from '../tests/legacy/lib/domain.mjs';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const output = process.argv[2] || path.join(root, 'artifacts', 'screenshots', 'trace-v2.png');

@@ -151,7 +151,7 @@
     "observedDirectInstallerCount": 45,
     "constitutionalParticipantCount": 5,
     "prototypeEntryContract": {
-      "path": "v3/uiux-prototype-entry-contract.json",
+      "path": "tests/contracts/uiux-prototype-entry-contract.json",
       "status": "READY-TO-CONVERGE-BOUNDED",
       "createsNewSerialSlice": false,
       "humanEvidenceRail": "E3-HUMAN"
@@ -179,7 +179,7 @@
     }
   },
   "trajectoryAudit": {
-    "modelPath": "v3/trajectory-1-141-model.json",
+    "modelPath": "tests/contracts/trajectory-1-141-model.json",
     "coveredPrRange": [
       1,
       141
@@ -191,7 +191,7 @@
     "mutationDigest": "3a0ba79ac13cf4f6ea84bc5ddd0606d52c4e1ed7a6fbe5f5058185957dbc5969"
   },
   "decideProgram": {
-    "modelPath": "v3/decide-0-model.json",
+    "modelPath": "tests/contracts/decide-0-model.json",
     "mergedPr": 141,
     "mergeSha": "122b18e8bb672774a0380492eb27580c255f9458",
     "candidateHead": "39831b46eb2ee8260ab1f2fccbc92a7d9469f1ab",
@@ -210,12 +210,12 @@
     },
     {
       "id": "SOT-RUNTIME",
-      "authority": "v3/server.mjs + v3/runtime/* + v3/store.mjs",
+      "authority": "src/server.mjs + src/runtime/* + src/store.mjs",
       "rule": "AS-IS runtime business behavior"
     },
     {
       "id": "SOT-CAPABILITY",
-      "authority": "v3/capability-truth.json",
+      "authority": "tests/contracts/capability-truth.json",
       "rule": "repository capability truth, never development sequencing"
     },
     {
@@ -225,7 +225,7 @@
     },
     {
       "id": "SOT-TRAJECTORY",
-      "authority": "v3/trajectory-1-141-model.json",
+      "authority": "tests/contracts/trajectory-1-141-model.json",
       "rule": "derived audit evidence only"
     },
     {

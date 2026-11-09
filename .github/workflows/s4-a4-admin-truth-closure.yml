@@ -25,18 +25,18 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: A4 changed-source syntax
         run: |
-          node --check v3/public/ui/admin-slice-coordinator.js
-          node --check v3/public/ui/admin-center.js
-          node --check v3/s4-a4-admin-truth-closure-check.mjs
-          node --check v3/s4-a4-admin-coordinator-check.mjs
-          node --check v3/s4-a4-admin-truth-saturation-1m.mjs
+          node --check public/ui/admin-slice-coordinator.js
+          node --check public/ui/admin-center.js
+          node --check tests/verification/s4-a4-admin-truth-closure-check.mjs
+          node --check tests/verification/s4-a4-admin-coordinator-check.mjs
+          node --check tests/verification/s4-a4-admin-truth-saturation-1m.mjs
           python -m py_compile tests/browser/browser-s4-a4-admin-truth-closure.py
       - name: A4 source contract
-        run: node v3/s4-a4-admin-truth-closure-check.mjs
+        run: node tests/verification/s4-a4-admin-truth-closure-check.mjs
       - name: A4 coordinator contract
-        run: node v3/s4-a4-admin-coordinator-check.mjs
+        run: node tests/verification/s4-a4-admin-coordinator-check.mjs
       - name: A4 semantic mutation saturation 1M
-        run: node v3/s4-a4-admin-truth-saturation-1m.mjs
+        run: node tests/verification/s4-a4-admin-truth-saturation-1m.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Resolve system browser
         shell: bash

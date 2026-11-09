@@ -1,0 +1,788 @@
+{
+  "schemaVersion": "1.0.0",
+  "sliceId": "GOV-TRAMA-COMPASS-1",
+  "name": "Adaptive AI Development Governance",
+  "classification": "trama-owned-zero-authority-governance-extension",
+  "authorityEffect": "NONE",
+  "createsNewSot": false,
+  "createsNewRoadmapCursor": false,
+  "mergeIsCompletion": false,
+  "releaseIsMerge": false,
+  "human": {
+    "ownsProductIntent": true,
+    "ownsMaterialAcceptance": true,
+    "mustChooseTechnicalNode": false,
+    "mustChooseFramework": false,
+    "mustChooseMutationBudget": false
+  },
+  "assistant": {
+    "ownsEngineeringEntropy": true,
+    "mustObserveBeforePlan": true,
+    "mustRecomputeLocalIntermediateGlobal": true,
+    "mustCompileDodBeforeCode": true,
+    "mustSelectExactlyOneNextSliceOrStop": true,
+    "mustUpdateDocumentationWithSemanticChange": true,
+    "mustRecomputeAfterToolFact": true,
+    "mustRecomputeAfterPrResult": true,
+    "mustRecomputeAfterMerge": true,
+    "cannotSelfPromoteEnterpriseCandidate": true,
+    "mustCompileUnifiedDebtProjection": true,
+    "mustFailClosedOnClosedDebtRegression": true,
+    "mustMonitorStrategicEntropy": true
+  },
+  "mechanisms": [
+    {
+      "id": "OBSERVED_STATE_REDUCER",
+      "role": "derive current state only from source-precedence inputs",
+      "controls": [
+        "exact_head",
+        "source_precedence",
+        "typed_epistemic_state",
+        "stale_detection"
+      ]
+    },
+    {
+      "id": "ENTERPRISE_DOD_TARGET",
+      "role": "define stable enterprise target without current status",
+      "controls": [
+        "sixteen_enterprise_axes",
+        "claim_matched_evidence",
+        "external_rails_separate",
+        "no_self_attestation"
+      ]
+    },
+    {
+      "id": "ONTOLOGY_BOUNDARY_RESOLVER",
+      "role": "derive local/intermediate/global semantic boundaries",
+      "controls": [
+        "local_boundary",
+        "intermediate_boundary",
+        "global_boundary",
+        "owner_writer",
+        "dependency_closure",
+        "oracle_scan",
+        "human_scan",
+        "deployment_scan",
+        "docs_impact_scan",
+        "unknown_fail_closed"
+      ]
+    },
+    {
+      "id": "SLICE_COMPRESSOR",
+      "role": "derive one minimum causally closed semantic slice",
+      "controls": [
+        "causal_closure",
+        "reuse_owner_first",
+        "single_next_slice",
+        "non_goals",
+        "stop_condition",
+        "deletion_oracle"
+      ]
+    },
+    {
+      "id": "PDCA_SESSION_PROTOCOL",
+      "role": "enforce PLAN-DO-CHECK-ACT across interaction PR and merge",
+      "controls": [
+        "rederive_every_dev_interaction",
+        "rederive_after_tool_fact",
+        "rederive_after_pr",
+        "rederive_after_merge",
+        "challenge_prior_plan",
+        "invalidate_evidence"
+      ]
+    },
+    {
+      "id": "DOC_COTRANSITION",
+      "role": "derive selective documentation delta with every semantic state transition",
+      "controls": [
+        "impact_driven_docs",
+        "current_owner_update",
+        "manifest_lifecycle",
+        "docs_delta_required",
+        "no_mass_rewrite",
+        "docs_exact_head_gate"
+      ]
+    },
+    {
+      "id": "DEVOPS_GUARDRAILS",
+      "role": "bind delivery practices to exact-state evidence",
+      "controls": [
+        "short_lived_branch",
+        "semantic_commits",
+        "nearest_falsifier",
+        "same_sha_ci",
+        "immutable_dependencies",
+        "sbom_provenance_signing",
+        "rollback_contract",
+        "release_not_merge",
+        "failure_owner_routing",
+        "post_merge_verification"
+      ]
+    },
+    {
+      "id": "COMPASS_PROJECTION",
+      "role": "project engineering state for a non-technical human",
+      "controls": [
+        "four_block_surface",
+        "plain_language",
+        "local_intermediate_global",
+        "one_next_action",
+        "visible_blockers",
+        "visible_uncertainty",
+        "technical_detail_secondary",
+        "human_no_node_choice",
+        "human_no_budget_choice",
+        "projection_zero_authority"
+      ]
+    }
+  ],
+  "pdca": {
+    "PLAN": [
+      "observe exact current state",
+      "compile intent",
+      "derive ontology boundaries",
+      "compile enterprise gap and three-level DoD",
+      "select one minimum slice or STOP"
+    ],
+    "DO": [
+      "reuse existing owner",
+      "change minimum causally closed reticulum",
+      "pair semantic code change with selective docs delta",
+      "preserve rollback"
+    ],
+    "CHECK": [
+      "nearest falsifier first",
+      "semantic mutations and deletion oracle",
+      "canonical rails",
+      "exact-head evidence",
+      "claim-matched external oracle when required"
+    ],
+    "ACT": [
+      "recompute local intermediate global state",
+      "invalidate stale evidence",
+      "challenge previous trajectory",
+      "regenerate Compass",
+      "select next slice or STOP"
+    ]
+  },
+  "documentationCoTransition": {
+    "semanticChangeRequiresCompanionDelta": true,
+    "generatedCompassPath": "docs/ENGINEERING_COMPASS.md",
+    "manifestPath": "docs/documentation-manifest.json",
+    "massRewriteForbidden": true,
+    "currentOwnerMustChangeWhenPublicMeaningChanges": true,
+    "lineageNeverPromotedByDate": true
+  },
+  "devops": {
+    "branchIsTransportNotTruth": true,
+    "shaIsCandidateState": true,
+    "sameShaAcceptance": true,
+    "nearestFalsifierFirst": true,
+    "testAndProductMayNotBeWeakenedTogether": true,
+    "dependencyImmutabilityRequired": true,
+    "sbomProvenanceSigningTargeted": true,
+    "rollbackRequired": true,
+    "releaseNotMerge": true,
+    "failureOwnerRoutingRequired": true,
+    "postMergeVerificationRequired": true
+  },
+  "compass": {
+    "blocks": [
+      "INTENT",
+      "NOW",
+      "NEXT",
+      "TO_BE"
+    ],
+    "nowHorizons": [
+      "LOCAL",
+      "INTERMEDIATE",
+      "GLOBAL"
+    ],
+    "exactlyOneNextAction": true,
+    "showBlockers": true,
+    "showUncertainty": true,
+    "technicalDetailSecondary": true,
+    "projectionIsSot": false,
+    "projectionIsAuthority": false
+  },
+  "mutationPolicy": {
+    "primaryTrials": 1000000,
+    "noNoveltyTail": 100000,
+    "requiredUnsafeSurvivors": 0,
+    "deletionOracleRequired": true,
+    "newFailureAtCeiling": "BLOCKED_REMODEL_FAULT_TAXONOMY",
+    "semanticMutationIsPhysicalProof": false
+  },
+  "claimBoundary": "Governance/model evidence only. This extension cannot prove product correctness, representative-human usability, deployment effectiveness, GitHub server-side enforcement, legal compliance, production security, enterprise readiness or formal global minimality.",
+  "asIsClosure": {
+    "contract": "tests/contracts/as-is-convergence-contract.json",
+    "runtime": "src/lib/as-is-convergence.mjs",
+    "authorityEffect": "NONE",
+    "projectionIsSot": false,
+    "preservesCanonicalDebtOwners": true,
+    "closedDebtRegression": "BLOCKED_REOPEN_WITH_EVIDENCE",
+    "currentDocumentationMustNotShadowLiveOwners": true,
+    "cognitiveOrderRequired": true
+  },
+  "strategicConvergence": {
+    "scope": "cross-cutting AS-IS closure / enterprise target / authority topology / cross-surface cognition only",
+    "genericTramaTiersUnchanged": true,
+    "tiers": [
+      100000,
+      1000000,
+      10000000
+    ],
+    "semanticNoNoveltyTail": 10000,
+    "compressionNoFurtherLossTail": 10000,
+    "deletionOracleRequired": true,
+    "semanticMutationIsPhysicalProof": false
+  },
+  "losslessSemantics": {
+    "schemaVersion": "0.11",
+    "id": "ICTC-LOSSLESS-SEMANTICS-0.11",
+    "sourceIteration": "11diN",
+    "classification": "trama-derived-zero-authority-enterprise-candidate-convergence-profile",
+    "authorityEffect": "NONE",
+    "createsNewSot": false,
+    "createsNewRoadmapCursor": false,
+    "globalNReached": false,
+    "canonicalSequenceOwner": "docs/convergence/convergence-authority.json#planningState",
+    "enterpriseTargetOwner": "tests/contracts/trama-enterprise-dod.json",
+    "projection": "docs/ENGINEERING_COMPASS.md",
+    "projectionAuthoritative": false,
+    "sourcePreimage": {
+      "visibleCutoverMdSha256": "4a10870e73187979df7ccf1d5bcf05afe32c8f2eaa25589c8acf9d24c4976a3c",
+      "sourceAtoms": 108,
+      "absorbedAtoms": 108,
+      "coverage": 1,
+      "sourceLines": 150,
+      "immutable": true,
+      "baselineMainSha": "b284b308841d4b179b410746614a764c3466db16",
+      "sourceBasis": "semantic bundle v0.10 + controlled UI/UX DOCX + exact-main source contracts"
+    },
+    "visibleCutover": {
+      "adjustedFormula": [
+        "DELTA_material",
+        "TARGET",
+        "!LEGACY",
+        "EPOCH_BOUND",
+        "WITNESS_BOUND"
+      ],
+      "runtimeResponsibilities": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "closureResponsibilities": [
+        "Q1",
+        "Q2"
+      ],
+      "materializationAxes": [
+        "target phenotype contract",
+        "owner-local realization",
+        "differential closure"
+      ],
+      "implementationAbsorption": "656/656 phenotype/property closure with F->UXM and runtime witness coverage",
+      "forensicAtomicClosure": "BLOCKED until original atomic bodies+witness binding or explicit superseding atomic ledger",
+      "closureNotionsMustRemainDistinct": true,
+      "budgets": {
+        "visibleFactsPerRecordMax": 3,
+        "visiblePrimaryActionsPerRecordMax": 1,
+        "initialRegistryPerClusterMax": 6,
+        "mobileSemanticLayersMax": 3,
+        "interactiveTargetPxMin": 44,
+        "pageHorizontalOverflowPxMax": 0
+      },
+      "surfaceTargets": {
+        "Home": "useful decision/work dominates brand/product exposition; next decision + bounded worklist dominate above fold",
+        "Processes": "retain current row-list architecture; compress purpose/action geometry rather than rewrite it",
+        "Procedures": "keep 3-fact/1-primary primitives; remove remaining first-plane support/method/card-wall weight and evidence-action competition",
+        "Onboarding": "replace five explanatory text steps with a guided fact -> scope -> decision -> work -> evidence path using existing business paths",
+        "Admin": "task-first is structural, not only a heading; blocker/impact/fix before provider/IdP/configuration detail",
+        "Proof": "current facts>method>decisions ordering is incompatible; use reconstruction question -> decisions/evidence -> supporting method/technical detail",
+        "EP": "promote what/why/changed/missing reconstruction and results; graph/lattice modes become progressive tools",
+        "Mobile": "contract semantic layers; overflow-x:auto + stacking cannot be primary adaptation"
+      }
+    },
+    "evidence": {
+      "q1Generated": true,
+      "q2Generated": true,
+      "q1Fields": [
+        "preSha",
+        "postSha",
+        "runtimeAssetEpoch",
+        "role",
+        "viewport",
+        "state",
+        "DOM order",
+        "firstActionY",
+        "primaryCTA count",
+        "facts count",
+        "initial registry count",
+        "semantic layer count",
+        "overflow px",
+        "tooltip-critical count",
+        "legacy markers",
+        "visible-text digest",
+        "screenshot sha256"
+      ],
+      "q2Statuses": [
+        "IMPLEMENTED_RUNTIME_PASS",
+        "RETIRED_AS_LEGACY",
+        "EXTERNAL_EVIDENCE",
+        "BLOCKED_ATOMIC_PROVENANCE"
+      ],
+      "sourceCampaignEvidenceClass": "SOURCE-ASSERTED / NOT INDEPENDENTLY REPLAYED",
+      "sourceCampaign": {
+        "trials": 1000000,
+        "operatorFamilies": 26,
+        "feasiblePairs": 302,
+        "materialViolationFamilies": 31,
+        "lastNewMaterialFamilyMutation": 182,
+        "noNoveltyTail": 10000,
+        "unsafeSurvivors": 0,
+        "minimalityR": "5/5",
+        "minimalityRQ": "7/7",
+        "seedHex": "0x9e3779b9",
+        "seedUint32": 2654435769,
+        "mathematicalPairs": 325,
+        "mutuallyExclusivePairs": 23,
+        "mutantsKilled": 1000000,
+        "cleanCandidateScenarios": 100000,
+        "cleanCandidateFailures": 0,
+        "minimalityRSubsets": 31,
+        "minimalityRQSubsets": 127,
+        "additionalRuntimeResponsibilitiesAfterTail": 0,
+        "scopeBoundary": "Deterministic semantic runtime-model evidence; not one million Chromium sessions or representative-human usability evidence."
+      },
+      "absorptionFalsification": {
+        "trials": 10000000,
+        "rootFailureFamilies": 49,
+        "pairwise": 1176,
+        "survivors": 0,
+        "claimBoundary": "model-based semantic-loss/authority-inflation falsification; not CI/browser/human/deployment proof"
+      },
+      "phenotypeClosureGroups": [
+        "G01-G12",
+        "E01-E12"
+      ],
+      "witnessSemantics": {
+        "screenshotRole": "human-readable witness",
+        "semanticVectorRole": "stable oracle",
+        "q2MappingRule": "each F-ID preserves UXM mapping and attaches mechanism-level runtime verdict plus affected witness receipt refs",
+        "missingAtomicResolvedForbidden": true
+      }
+    },
+    "updatePolicy": {
+      "everyMaterialPrMustEvaluate": true,
+      "semanticInputFingerprintRequired": true,
+      "regenerateProjectionOnFingerprintChange": true,
+      "noSemanticDeltaRequiresUnchangedFingerprint": true,
+      "dispositions": [
+        "UPDATED",
+        "NO_SEMANTIC_DELTA"
+      ],
+      "targetOwnerRefsIncluded": true,
+      "generatedProjectionOnly": true,
+      "trackedInputs": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/workflows/security.yml",
+        ".github/workflows/trama-causal-qualification.yml",
+        "AGENTS.md",
+        "docs/START_HERE.md",
+        "docs/authority-matrix.yaml",
+        "docs/convergence/convergence-authority.json",
+        "docs/documentation-manifest.json",
+        "scripts/repository-contract.mjs",
+        "tests/contracts/as-is-convergence-contract.json",
+        "tests/verification/docs-command-contract-check.mjs",
+        "tests/contracts/gaps.json",
+        "public/procedure-record-primitives-2-4.css",
+        "public/semantic-workspace-closure-3-2-1.css",
+        "public/ui/active-experience.js",
+        "public/ui/admin-workspace-3-2.js",
+        "public/ui/epistemic-workspace-3-2.js",
+        "public/ui/experience-constitution.js",
+        "public/ui/experience-lifecycle.js",
+        "public/ui/operational-surface-a6-ux3.js",
+        "public/ui/procedure-executive-harmonization-1-5.js",
+        "public/ui/procedure-sequential-ao-mc.js",
+        "public/ui/procedure-sequential-dom.js",
+        "public/ui/procedure-ui-ux-1-6.js",
+        "public/ui/product-copy.js",
+        "public/ui/proof-workspace-3-2.js",
+        "public/ui/semantic-composition-model.js",
+        "public/ui/stable-shell.js",
+        "public/workspace-chrome-3-3.css",
+        "src/runtime/evidence-checkout-identity.mjs",
+        "tests/verification/security-fi01-dom-cdp-check.mjs",
+        "scripts/security-implementation-mutants.mjs",
+        "tests/verification/security-main-mutation-1m.mjs",
+        "tests/verification/security-runtime-dod-check.mjs",
+        "tests/contracts/semantic-owner-contract.json",
+        "tests/contracts/trama-compass-governance.json",
+        "tests/verification/trama-engineering-check.mjs",
+        "tests/verification/trama-engineering-saturation.mjs",
+        "src/lib/trama-engineering.mjs",
+        "tests/contracts/trama-enterprise-dod.json",
+        "tests/contracts/trama-reconcile-contract.json",
+        "src/lib/trama-reconcile.mjs",
+        "tests/contracts/uiux-656-absorption-contract.json"
+      ]
+    },
+    "stopCondition": "Reopen visible-cutover design on implementation/browser survivor, new surface phenotype, owner/authority conflict, or recovery of the missing atomic source artifact.",
+    "claimBoundary": "Zero-authority derived convergence profile. It cannot replace canonical owners, change the convergence sequence, promote Enterprise Candidate, close E3-HUMAN/E3-GOV/E4-DEPLOY, or turn model mutation into browser/human/deployment evidence.",
+    "semanticCoverage": {
+      "sourceLines": 150,
+      "sourceAtoms": 108,
+      "canonicalNodes": 18,
+      "canonicalNodesReached": 18,
+      "numericInvariants": 28,
+      "q1FieldCount": 17,
+      "q2StatusCount": 4,
+      "surfaceTargetCount": 8,
+      "concreteFileLandings": 18,
+      "profileSelfSufficient": true
+    },
+    "responsibilities": {
+      "R1": {
+        "name": "SURFACE_SEMANTIC_CONTRACT_V2",
+        "obligation": "Extend existing semantic composition/product contract; no new renderer/SOT.",
+        "invariants": [
+          "first-plane role/order",
+          "primary-action budget",
+          "facts budget",
+          "initial-list budget",
+          "critical-inline requirement",
+          "mobile layer budget",
+          "allowed technical depth",
+          "forbidden legacy phenotype"
+        ],
+        "trackLandings": [
+          "public/ui/semantic-composition-model.js",
+          "tests/contracts/product-contract.json",
+          "tests/contracts/uiux-656-absorption-contract.json"
+        ]
+      },
+      "R2": {
+        "name": "LOCAL_FIRST_PLANE_CUTOVER",
+        "obligation": "Existing local owners implement first-plane phenotype; no global post-render rewriter.",
+        "invariants": [
+          "Shell/Home: useful decision/work dominates brand/product exposition",
+          "Process catalogue: seven compare-first rows",
+          "Procedures: work before method/context",
+          "Onboarding: actual scenario/action path, not text manifesto",
+          "Admin: blocker/impact/fix before provider/IdP/configuration detail",
+          "Proof: reconstruction question/decision/evidence before method/taxonomy",
+          "EP: what/why/changed/missing reconstruction before lattice terminology"
+        ],
+        "trackLandings": [
+          "public/ui/stable-shell.js",
+          "public/ui/operational-surface-a6-ux3.js",
+          "public/ui/procedure-executive-harmonization-1-5.js",
+          "public/ui/admin-workspace-3-2.js",
+          "public/ui/proof-workspace-3-2.js",
+          "public/ui/epistemic-workspace-3-2.js",
+          "public/ui/product-copy.js"
+        ]
+      },
+      "R3": {
+        "name": "RUNTIME_WORKSET_BUDGETS",
+        "obligation": "Density semantics live in runtime/DOM, not CSS hiding.",
+        "invariants": [
+          "<=3 visible facts per record",
+          "<=1 visible primary action per record",
+          "evidence/secondary actions progressive",
+          "initial registry <=6 per cluster with explicit reveal",
+          "actionable work may never be hidden by triage"
+        ],
+        "trackLandings": [
+          "public/ui/procedure-ui-ux-1-6.js",
+          "public/ui/procedure-sequential-dom.js",
+          "public/ui/procedure-sequential-ao-mc.js"
+        ]
+      },
+      "R4": {
+        "name": "VIEWPORT_SEMANTIC_CONTRACTION",
+        "obligation": "Mobile is a different semantic budget of the same owner, not a stacked desktop.",
+        "invariants": [
+          "zero page horizontal overflow",
+          "<=3 simultaneous semantic layers",
+          ">=44px interactive targets",
+          "reduced facts/actions/context versus desktop",
+          "no second mobile presentation authority"
+        ],
+        "trackLandings": [
+          "public/workspace-chrome-3-3.css",
+          "public/procedure-record-primitives-2-4.css",
+          "public/semantic-workspace-closure-3-2-1.css"
+        ]
+      },
+      "R5": {
+        "name": "CONVERGENCE_AND_LEGACY_RETIREMENT",
+        "obligation": "Reuse existing experience lifecycle; retire touched legacy only after exact-head witnesses.",
+        "invariants": [
+          "negative browser/static oracles remain",
+          "late rewrite that restores legacy is a hard failure",
+          "prefer no lifecycle code change unless a real late-owner counterexample requires it"
+        ],
+        "trackLandings": [
+          "public/ui/experience-lifecycle.js",
+          "public/ui/active-experience.js"
+        ]
+      },
+      "Q1": {
+        "name": "EXACT_DIFFERENTIAL_WITNESS_RECEIPT",
+        "obligation": "Generated exact pre/post/epoch semantic-vector witness; screenshot is human-readable witness and semantic vector is stable oracle.",
+        "invariants": [
+          "reuse/extend existing browser suites",
+          "bind witness to preimage and postimage SHA"
+        ],
+        "trackLandings": []
+      },
+      "Q2": {
+        "name": "FINDING_CLOSURE_LEDGER",
+        "obligation": "Generated closure projection over existing F->UXM mapping; each F-ID keeps mechanism verdict and witness refs; missing atomic body is never inferred RESOLVED.",
+        "invariants": [
+          "status vocabulary remains typed",
+          "projection has no runtime write authority"
+        ],
+        "trackLandings": []
+      }
+    },
+    "rejectedAlternatives": [
+      "source/marker-only -> fails visible cutover",
+      "CSS-only -> fails interaction/order/dynamic density",
+      "global rewriter/new UI root -> rejected as parallel presentation authority",
+      "local cutover without retirement -> legacy survives",
+      "local cutover without runtime budgets -> dynamic density survives",
+      "local cutover without mobile contraction -> mobile remains stacked/overflow-prone",
+      "complete local-owner lattice -> zero modeled target failure"
+    ],
+    "reflections": [
+      "Evidence boundary: atomic historical proof cannot be fabricated; split implementation absorption from forensic atomic closure.",
+      "Scope compression: visible cutover is P0; regulatory packs and new human workflow semantics are not required in the same slice.",
+      "Authority: use existing local owners; reject a global UI rewriter and new composition root.",
+      "Contract: one existing semantic-composition contract carries order/budgets/viewport/legacy predicates.",
+      "Dynamic work: record and registry density requires runtime windowing, not CSS hiding.",
+      "Specialized surfaces: onboarding/Admin/Proof/EP need interaction/order changes, not copy markers.",
+      "Mobile and retirement: mobile contraction and negative legacy closure are independently falsifiable responsibilities.",
+      "Proof rail: visible delta needs exact epoch + differential witness + closure ledger; CI/source presence alone cannot certify adjustment."
+    ],
+    "immutableSemanticCore": true,
+    "semanticCoreRevision": "0.11.5",
+    "deliveryChannel": {
+      "schema": "ictc-trama-deterministic-delivery-channel/v1",
+      "authorityEffect": "NONE",
+      "createsNewSot": false,
+      "createsNewRoadmapCursor": false,
+      "ownerReuseFirst": true,
+      "humanTechnicalChoicesMax": 0,
+      "stages": [
+        "INTENT",
+        "OBSERVE",
+        "QUALIFY",
+        "SLICE",
+        "MATERIALIZE",
+        "WITNESS",
+        "CLOSE",
+        "ACT"
+      ],
+      "singleNextAction": true,
+      "requiredBindings": [
+        "intentDigest",
+        "exactPreimage",
+        "semanticNeighborhood",
+        "ownerSet",
+        "targetPredicates",
+        "negativePredicates",
+        "runtimeDelta",
+        "witnessReceipt",
+        "closureVerdict",
+        "exactPostimage"
+      ],
+      "runtimeRules": [
+        "material runtime intent requires material runtime delta",
+        "CSS hiding cannot substitute runtime semantics",
+        "copy cannot substitute interaction",
+        "no global post-render presentation authority"
+      ],
+      "failClosed": [
+        "UNKNOWN_OWNER",
+        "PARALLEL_AUTHORITY",
+        "NO_MATERIAL_DELTA",
+        "NO_TARGET_PREDICATE",
+        "LEGACY_SURVIVES",
+        "EPOCH_MISMATCH",
+        "WITNESS_MISSING",
+        "CLOSURE_INFERRED",
+        "MULTIPLE_NEXT_ACTIONS",
+        "HUMAN_TECH_CHOICE_REQUIRED"
+      ],
+      "closureStatuses": [
+        "IMPLEMENTED_RUNTIME_PASS",
+        "RETIRED_AS_LEGACY",
+        "EXTERNAL_EVIDENCE",
+        "BLOCKED_ATOMIC_PROVENANCE"
+      ],
+      "localFalsification": {
+        "strategicObjectLevel": {
+          "seedHex": "0x210011",
+          "trials": 10000,
+          "operatorFamilies": 63,
+          "abstractionLayers": 10,
+          "pairwise": 1953,
+          "survivors": 0
+        },
+        "semanticObjectLevel": {
+          "seedHex": "0x9e3779b9",
+          "trials": 1000000,
+          "operatorFamilies": 63,
+          "abstractionLayers": 10,
+          "pairwise": 1953,
+          "survivors": 0
+        },
+        "deepCompiled": {
+          "seedHex": "0x6a09e667",
+          "trials": 10000000,
+          "operatorFamilies": 63,
+          "abstractionLayers": 10,
+          "survivors": 0
+        },
+        "deletionOracle": {
+          "cases": 44,
+          "killed": 44,
+          "survivors": 0
+        },
+        "noNoveltyTail": {
+          "trials": 10000,
+          "survivors": 0
+        },
+        "localModelCycles": {
+          "cycles": 10,
+          "failed": 0
+        },
+        "boundary": "Independent semantic/model falsification only; not repository CI, browser, representative-human, deployment, legal or GitHub server-side proof."
+      },
+      "closeRule": "No material development is closed until required bindings are exact-head bound; runtime intent additionally requires material delta and claim-matched witness. Visible UI/UX uses ADJUSTED.",
+      "claimBoundary": "Zero-authority orchestration contract inside TRAMA/losslessSemantics; it cannot create owners, infer closure, replace runtime evidence or promote Enterprise Candidate.",
+      "localModelReceiptSha256": "e65de9175f1a27b1fbf3a316ba79a044758b20ab88c39a56fcc29fd8ec7cbb9c"
+    },
+    "e2eAlignment": {
+      "schema": "ictc-trama-e2e-alignment/v1",
+      "canonicalName": "TRAMA E2E",
+      "humanName": "Ferro -> Utente",
+      "authorityEffect": "NONE",
+      "createsNewSot": false,
+      "layerOwner": "tests/contracts/trama-reconcile-contract.json#campaigns",
+      "canonicalLayerIds": [
+        "L0-FERRO",
+        "L1-PERSISTENCE",
+        "L2-RUNTIME",
+        "L3-SEMANTIC",
+        "L4-GOVERNANCE",
+        "L5-PRODUCT",
+        "L6-EXPERIENCE",
+        "L7-ENTERPRISE"
+      ],
+      "methodFamilyOwner": "tests/contracts/trama-engineering-contract.json#methodSaturation.families",
+      "methodClusters": {
+        "UNDERSTAND": [
+          "F01_PRODUCT_SCOPE_VALUE",
+          "F02_REPOSITORY_ARCHAEOLOGY",
+          "F03_ARCHITECTURE_TRADEOFFS",
+          "F04_PRODUCT_QUALITY",
+          "F05_CODE_STATIC_QUALITY"
+        ],
+        "EXECUTE": [
+          "F06_RUNTIME_DYNAMIC",
+          "F11_DATA_GOVERNANCE",
+          "F13_IDENTITY_TRUST",
+          "F15_RELIABILITY_RESILIENCE",
+          "F16_PERFORMANCE_CAPACITY",
+          "F17_OBSERVABILITY_INCIDENT",
+          "F18_DEPLOYMENT_RELEASE"
+        ],
+        "PROTECT": [
+          "F08_THREAT_MODELING",
+          "F09_SECURE_SDLC_APPSEC",
+          "F10_SUPPLY_CHAIN",
+          "F12_AI_GOVERNANCE",
+          "F14_PRIVACY_COMPLIANCE"
+        ],
+        "EXPERIENCE": [
+          "F19_UX_HUMAN_FACTORS",
+          "F20_ACCESSIBILITY",
+          "F21_DOCS_OPERABILITY"
+        ],
+        "CONTROL": [
+          "F22_GOVERNANCE_OWNERSHIP",
+          "F23_RISK_AUDIT_ASSURANCE"
+        ],
+        "FALSIFY": [
+          "F07_TESTING_FALSIFICATION",
+          "F24_FLOW_CONTINUOUS_IMPROVEMENT"
+        ]
+      },
+      "alignmentRules": [
+        "ALL_PR_EVALUATED",
+        "MATERIAL_PR_FIELDS",
+        "E2E_LAYER_DECLARATION",
+        "ADJACENT_ALIGNMENT_WITNESS",
+        "EXACT_HEAD_EVIDENCE",
+        "SEMANTIC_FINGERPRINT_DISPOSITION",
+        "NEW_FILE_PURPOSE_ADMISSION",
+        "RETIREMENT_DELETION_ORACLE",
+        "POST_MERGE_ACT"
+      ],
+      "prFields": [
+        "trajectoryImpact",
+        "convergenceSlice",
+        "intentDigest",
+        "exactPreimage",
+        "semanticNeighborhood",
+        "ownerSet",
+        "targetPredicates",
+        "negativePredicates",
+        "runtimeDelta",
+        "witnessReceipt",
+        "closureVerdict",
+        "exactPostimage",
+        "losslessDisposition",
+        "semanticFingerprint",
+        "nextAction",
+        "e2eLayers",
+        "methodClusters",
+        "alignmentWitness",
+        "hygieneDelta"
+      ],
+      "canonicalTemplate": ".github/PULL_REQUEST_TEMPLATE.md",
+      "purposeCensusOwner": "src/lib/trama-reconcile.mjs#repositoryPurposeCensus",
+      "purposeAdmissionOwner": "src/lib/trama-reconcile.mjs#repositoryPurposeAdmission",
+      "retirementOwner": "src/lib/as-is-convergence.mjs#deriveRetirementFrontier",
+      "localFalsification": {
+        "compiledCampaigns": 4,
+        "trialsPerCampaign": 10000000,
+        "totalTrials": 40000000,
+        "operatorFamilies": 29,
+        "pairwisePerCampaign": 406,
+        "survivors": 0,
+        "deletionOracle": {
+          "cases": 64,
+          "killed": 64,
+          "survivors": 0
+        },
+        "noNoveltyTail": {
+          "trials": 100000,
+          "newFamilies": 0
+        },
+        "receiptSha256": "1213d43b4a263c8ac4e9e7b11bc97290f9b5566ccef69996b97af2287d6bc9b2",
+        "boundary": "Compiled semantic/model falsification only; not repository CI, browser, deployment, representative-human, legal or server-side enforcement proof."
+      },
+      "claimBoundary": "Zero-authority alignment projection over existing TRAMA method families, reconciliation layers and repository-purpose governance. It cannot create a new runtime owner, infer product closure or replace claim-matched evidence."
+    },
+    "semanticCoreFingerprint": "675e1b62cbf856a8"
+  }
+}

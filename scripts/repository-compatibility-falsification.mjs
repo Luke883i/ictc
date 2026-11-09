@@ -38,13 +38,13 @@ const cases=[
  {id:'bundle-guide-promoted-to-current',file:'docs/AI_AGENT_BUNDLE.md',bad:s=>s.replace('Historical PR #8','CURRENT_PRODUCT_AUTHORITY'),expect:'AI bundle guide misroutes historical handoff as current'},
  ...toolFiles.map(name=>({id:'npm-promotes-'+name,file:'package.json',bad:s=>{const j=JSON.parse(s);j.scripts['current-legacy']='node scripts/'+name;return JSON.stringify(j)},expect:'legacy historical checker promoted to current route'})),
  ...toolFiles.map(name=>({id:'ci-promotes-'+name,file:'.github/workflows/docs-command-contract.yml',bad:s=>s.replace('      - name: Validate documented commands',`      - name: Accidental legacy current job\n        run: node scripts/${name}\n      - name: Validate documented commands`),expect:'legacy historical checker promoted to current route'})),
- {id:'model-old-literal-promoted',file:'v3/runtime/model.mjs',bad:s=>s.replace('experience:{services:2','experience:{services:7'),expect:'legacy service literal vs current HTTP projection drift'},
- {id:'server-current-http-redirected',file:'v3/server.mjs',bad:s=>s.replace('projected.experience.services=7','projected.experience.services=2'),expect:'legacy service literal vs current HTTP projection drift'},
+ {id:'model-old-literal-promoted',file:'src/runtime/model.mjs',bad:s=>s.replace('experience:{services:2','experience:{services:7'),expect:'legacy service literal vs current HTTP projection drift'},
+ {id:'server-current-http-redirected',file:'src/server.mjs',bad:s=>s.replace('projected.experience.services=7','projected.experience.services=2'),expect:'legacy service literal vs current HTTP projection drift'},
  {id:'atlas-omits-F7',file:'docs/REPOSITORY_ATLAS.md',bad:s=>s.replace('C1-2 · Legacy tooling / F7','unqualified legacy checkers'),expect:'legacy tooling classification missing'},
  {id:'atlas-promotes-F7',file:'docs/REPOSITORY_ATLAS.md',bad:s=>s.replace('HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS','CURRENT_RUNTIME_CERTIFIED'),expect:'legacy tooling classification missing'},
- {id:'legacy-schema-repointed',file:'scripts/schema-check.mjs',bad:s=>s.replace('../v3/tests/legacy/lib/domain.mjs','../v3/domain.mjs'),expect:'historical tooling source signature drift'},
- {id:'legacy-ui-repointed',file:'scripts/ui-wiring-check.mjs',bad:s=>s.replace("'server.mjs'","'v3/server.mjs'"),expect:'historical tooling source signature drift'},
- {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'v3/tests/legacy/v1/release.json'","'v3/release-identity.json'"),expect:'historical tooling source signature drift'},
+ {id:'legacy-schema-repointed',file:'scripts/schema-check.mjs',bad:s=>s.replace('../tests/legacy/lib/domain.mjs','../src/domain.mjs'),expect:'historical tooling source signature drift'},
+ {id:'legacy-ui-repointed',file:'scripts/ui-wiring-check.mjs',bad:s=>s.replace("'server.mjs'","'src/server.mjs'"),expect:'historical tooling source signature drift'},
+ {id:'legacy-verify-repointed',file:'scripts/verify.mjs',bad:s=>s.replace("'tests/legacy/v1/release.json'","'src/contracts/release-identity.json'"),expect:'historical tooling source signature drift'},
  ...toolFiles.map(name=>({id:'legacy-tool-deleted-'+name,file:'scripts/'+name,bad:()=>null,expect:'historical tooling source signature drift'}))
 ];
 const legacySchemaNames=[
@@ -67,15 +67,15 @@ const legacySchemaNames=[
 const absentRootMutants=[
  {id:'historical-ai-root-resurrected',file:'ai/ictc-agent-bundle/README.md',content:'old public path should stay retired\n',expectPath:'ai/',cleanupDirectory:'ai'},
  {id:'former-test-helper-reintroduced',file:'v3/test-helpers/active-experience-install.mjs',content:'export const falseOwner=true;\n',expectedFailure:'retired migrated path reintroduced: v3/test-helpers/active-experience-install.mjs',cleanupDirectory:'v3/test-helpers'},
- {id:'former-abuse-budget-reintroduced',file:'v3/runtime/abuse-budget.mjs',content:'export const falseOwner=true;\n',expectedFailure:'retired migrated path reintroduced: v3/runtime/abuse-budget.mjs'},
+ {id:'former-abuse-budget-reintroduced',file:'src/runtime/abuse-budget.mjs',content:'export const falseOwner=true;\n',expectedFailure:'retired migrated path reintroduced: src/runtime/abuse-budget.mjs'},
  {id:'former-ui-epistemic-inference-ui-check-reintroduced',file:'v3/epistemic-inference-ui-check.mjs',content:'export const falseOwner=true;\\n',expectedFailure:'retired migrated path reintroduced: v3/epistemic-inference-ui-check.mjs'},
  {id:'former-ui-epistemic-lattice-ui-check-reintroduced',file:'v3/epistemic-lattice-ui-check.mjs',content:'export const falseOwner=true;\\n',expectedFailure:'retired migrated path reintroduced: v3/epistemic-lattice-ui-check.mjs'},
  {id:'former-ui-cross-procedure-create-ui-check-reintroduced',file:'v3/cross-procedure-create-ui-check.mjs',content:'export const falseOwner=true;\\n',expectedFailure:'retired migrated path reintroduced: v3/cross-procedure-create-ui-check.mjs'},
- {id:'parallel-bootstrap-source-authority',file:'src/bootstrap.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/bootstrap.mjs and v3/bootstrap.mjs'},
- {id:'parallel-server-source-authority',file:'src/server.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/server.mjs and v3/server.mjs'},
- {id:'parallel-runtime-store-source-authority',file:'src/runtime-store.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/runtime-store.mjs and v3/runtime-store.mjs'},
- {id:'parallel-store-source-authority',file:'src/store.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/store.mjs and v3/store.mjs'},
- {id:'parallel-sqlite-state-persistence-source-authority',file:'src/sqlite-state-persistence.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/sqlite-state-persistence.mjs and v3/sqlite-state-persistence.mjs'},
+ {id:'parallel-bootstrap-source-authority',file:'src/bootstrap.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/bootstrap.mjs and src/bootstrap.mjs'},
+ {id:'parallel-server-source-authority',file:'src/server.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/server.mjs and src/server.mjs'},
+ {id:'parallel-runtime-store-source-authority',file:'src/runtime-store.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/runtime-store.mjs and src/runtime-store.mjs'},
+ {id:'parallel-store-source-authority',file:'src/store.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/store.mjs and src/store.mjs'},
+ {id:'parallel-sqlite-state-persistence-source-authority',file:'src/sqlite-state-persistence.mjs',content:'export const shadow=true;\n',expectedFailure:'parallel current runtime roots: src/sqlite-state-persistence.mjs and src/sqlite-state-persistence.mjs'},
  {id:'obsolete-launcher-resurrected',file:'ictc-v3.sh',content:'#!/bin/sh\nexit 0\n'},
  {id:'shadow-codeowners-resurrected',file:'CODEOWNERS',content:'# stray second file\n'},
  {id:'legacy-blob-placeholder-resurrected',file:'runtime/blobs/.gitkeep',content:''},
@@ -103,28 +103,28 @@ const absentRootMutants=[
 ];
 const historicalFixturePaths=[
  'audit/archive/ictc-agent-bundle/README.md',
- 'v3/tests/legacy/app/app.js',
- 'v3/tests/legacy/app/index.html',
- 'v3/tests/legacy/app/styles.css',
- 'v3/tests/legacy/data/seed.json',
- 'v3/tests/legacy/lib/domain.mjs',
- 'v3/tests/legacy/v1/buyer-simulation.mjs',
- 'v3/tests/legacy/v1/fixture-audit.mjs',
- 'v3/tests/legacy/v1/fixtures/manifest.json',
- 'v3/tests/legacy/v1/fixtures/release-evidence.txt',
- 'v3/tests/legacy/v1/release.json',
- 'v3/tests/legacy/v1/release.mjs',
- 'v3/tests/legacy/v1/saturation.mjs',
- 'v3/tests/legacy/v1/stability-audit.mjs',
- ...legacySchemaNames.map(name=>'v3/tests/legacy/schemas/'+name),
+ 'tests/legacy/app/app.js',
+ 'tests/legacy/app/index.html',
+ 'tests/legacy/app/styles.css',
+ 'tests/legacy/data/seed.json',
+ 'tests/legacy/lib/domain.mjs',
+ 'tests/legacy/v1/buyer-simulation.mjs',
+ 'tests/legacy/v1/fixture-audit.mjs',
+ 'tests/legacy/v1/fixtures/manifest.json',
+ 'tests/legacy/v1/fixtures/release-evidence.txt',
+ 'tests/legacy/v1/release.json',
+ 'tests/legacy/v1/release.mjs',
+ 'tests/legacy/v1/saturation.mjs',
+ 'tests/legacy/v1/stability-audit.mjs',
+ ...legacySchemaNames.map(name=>'tests/verification/legacy/schemas/'+name),
 ];
 const result={schema:'ictc-c1-2-f7-falsification/v1',sourceTreeOnly:true,authority:'NONE',seedHex:'0xc120f7a5',semanticPolicyModel:{cases:count,observedProfiles:observed,profileSpace:4096,exhaustedProfiles:exhausted,escapes,modelOnly:true},physical:{cases:cases.length+absentRootMutants.length+historicalFixturePaths.length+3,killed:0,survivors:[],results:[]},negativeControls:[],limitations:['No dynamic import or external consumer absence proof','F7 global closure not claimed','10M semantic policy models are not 10M physical file rewrites']};
 // Runtime path-boundary oracle: unlike source-only checks, this actually loads
 // the historical domain/release from the disposable checkout. It does not
 // certify the historical product as a current runtime or grant deletion rights.
 const historicalPathProbes=[
- {id:'legacy-seed-runtime-root',file:'v3/tests/legacy/lib/domain.mjs',method:'readSeed',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"},
- {id:'legacy-release-runtime-root',file:'v3/tests/legacy/v1/release.mjs',method:'readReleaseManifest',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"}
+ {id:'legacy-seed-runtime-root',file:'tests/legacy/lib/domain.mjs',method:'readSeed',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"},
+ {id:'legacy-release-runtime-root',file:'tests/legacy/v1/release.mjs',method:'readReleaseManifest',from:"new URL('../../../..', import.meta.url)",to:"new URL('..', import.meta.url)"}
 ];
 const invokePathProbe=probe=>{
  const url=pathToFileURL(join(candidate,probe.file)).href;

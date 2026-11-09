@@ -15,7 +15,7 @@ const currentPaths=[
   'docs/PRODUCT.md','docs/11_ARCHITECTURE.md','docs/START_HERE.md',
   'docs/REPOSITORY_ATLAS.md','docs/DEVELOPMENT.md','docs/TESTING.md','docs/AI_AGENT_BUNDLE.md',
   'docs/documentation-manifest.json','docs/authority-matrix.yaml',
-  'v3/bootstrap.mjs','v3/server.mjs','v3/store.mjs','v3/sqlite-state-persistence.mjs',
+  'src/bootstrap.mjs','src/server.mjs','src/store.mjs','src/sqlite-state-persistence.mjs',
   'scripts/documentation-lattice-check.mjs','scripts/repository-inventory.mjs'
 ];
 // The previous root contract treated these as required runtime files.
@@ -24,7 +24,7 @@ const legacyPaths=[
   'app/index.html','app/styles.css','app/app.js',
   'server.mjs','lib/domain.mjs',
   '.github/workflows/visual.yml','.github/workflows/core-ui.yml',
-  'v3/lib/api.mjs','v3/lib/store.mjs'
+  'src/lib/api.mjs','src/lib/store.mjs'
 ];
 // C1 compatibility contraction: inspect the sealed PR #8 handoff as lineage.
 // Never mutate the bundle, substitute its historical contract for today's
@@ -59,6 +59,16 @@ for(const rel of currentPaths){
  if(!await exists(rel)){failures.push('missing current path: '+rel);continue}
  if((await stat(path.join(root,rel))).size===0)failures.push('empty current path: '+rel);
 }
+// Release ZIPs can silently erase executable bits even when file bytes remain identical.
+// Assert the four preimage-pinned launch surfaces on POSIX; Git stages mode 100755.
+// Windows file-mode emulation is not used as evidence of the host executable bit.
+const executablePaths=['ictc.sh','.devcontainer/post-create.sh',
+  '.devcontainer/post-start.sh','scripts/visual-check.sh'];
+for(const rel of executablePaths){
+ if(!await exists(rel)){failures.push('missing executable entrypoint: '+rel);continue;}
+ if(process.platform!=='win32'&&((await stat(path.join(root,rel))).mode&0o111)!==0o111)
+  failures.push('executable mode lost from migrated entrypoint: '+rel);
+}
 // C1 root contraction: these former aliases/placeholders must not silently re-enter.
 // The active supervisor ictc.sh and canonical .github/CODEOWNERS remain protected above.
 // Keep the active checkout free of relocated historic receipts and generated handoff records.
@@ -92,19 +102,19 @@ const legacySchemaNames=[
 ];
 const historicalFixturePaths=[
   'audit/archive/ictc-agent-bundle/README.md',
- 'v3/tests/legacy/app/app.js',
- 'v3/tests/legacy/app/index.html',
- 'v3/tests/legacy/app/styles.css',
- 'v3/tests/legacy/data/seed.json',
- 'v3/tests/legacy/lib/domain.mjs',
- 'v3/tests/legacy/v1/buyer-simulation.mjs',
- 'v3/tests/legacy/v1/fixture-audit.mjs',
- 'v3/tests/legacy/v1/fixtures/manifest.json',
- 'v3/tests/legacy/v1/fixtures/release-evidence.txt',
- 'v3/tests/legacy/v1/release.json',
- 'v3/tests/legacy/v1/release.mjs',
- 'v3/tests/legacy/v1/saturation.mjs',
- 'v3/tests/legacy/v1/stability-audit.mjs',
+ 'tests/legacy/app/app.js',
+ 'tests/legacy/app/index.html',
+ 'tests/legacy/app/styles.css',
+ 'tests/legacy/data/seed.json',
+ 'tests/legacy/lib/domain.mjs',
+ 'tests/legacy/v1/buyer-simulation.mjs',
+ 'tests/legacy/v1/fixture-audit.mjs',
+ 'tests/legacy/v1/fixtures/manifest.json',
+ 'tests/legacy/v1/fixtures/release-evidence.txt',
+ 'tests/legacy/v1/release.json',
+ 'tests/legacy/v1/release.mjs',
+ 'tests/legacy/v1/saturation.mjs',
+ 'tests/legacy/v1/stability-audit.mjs',
 ];
 for(const rel of historicalFixturePaths){
  if(!await exists(rel))failures.push('missing historical verification fixture: '+rel);
@@ -112,7 +122,7 @@ for(const rel of historicalFixturePaths){
 // Preserve the legacy schema bytes within the existing verification boundary;
 // reject restoration of the former root paths, without inferring external URL safety.
 for(const name of legacySchemaNames){
- const original='schemas/'+name,relocated='v3/tests/legacy/schemas/'+name;
+ const original='schemas/'+name,relocated='tests/verification/legacy/schemas/'+name;
  if(await exists(original))failures.push('retired repository path reintroduced: '+original);
  if(!await exists(relocated))failures.push('missing historical verification fixture: '+relocated);
 }
@@ -137,7 +147,7 @@ for(const rel of [
 const devBootstrap=await readFile(path.join(root,'.devcontainer/post-create.sh'),'utf8');
 if(devBootstrap.includes('ictc-v3.sh')||!devBootstrap.includes('chmod +x ictc.sh'))failures.push('devcontainer launcher compatibility drift');
 const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
-const expectedScripts={start:'node v3/bootstrap.mjs',demo:'node v3/bootstrap.mjs demo',check:'node scripts/syntax-check.mjs',test:'npm run test:current', 'docs:check':'node scripts/documentation-lattice-check.mjs', 'repo:inventory':'node scripts/repository-inventory.mjs'};
+const expectedScripts={start:'node src/bootstrap.mjs',demo:'node src/bootstrap.mjs demo',check:'node scripts/syntax-check.mjs',test:'npm run test:current', 'docs:check':'node scripts/documentation-lattice-check.mjs', 'repo:inventory':'node scripts/repository-inventory.mjs'};
 for(const [script,entry] of Object.entries(expectedScripts)){
  const value=pkg.scripts?.[script];
  if(!value||!value.includes(entry))failures.push('current npm script drift: '+script);
@@ -150,7 +160,7 @@ const [readme,product,architecture,docRegistry]=await Promise.all([
 ]);
 if(!readme.includes('docs/PRODUCT.md')||!readme.includes('docs/START_HERE.md'))failures.push('README owner routing drift');
 if(!product.includes('RN-01')||!product.includes('AR-01'))failures.push('product process owner drift');
-if(!architecture.includes('v3/server.mjs'))failures.push('software architecture owner drift');
+if(!architecture.includes('src/server.mjs'))failures.push('software architecture owner drift');
 if(JSON.parse(docRegistry).entrypoint!=='docs/START_HERE.md')failures.push('documentation entrypoint drift');
 const historical=await Promise.all(legacyPaths.map(async path=>({path,exists:await exists(path)})));
 const [bundleContract,bundleProfile,bundleCatalog]=await Promise.all([
@@ -169,9 +179,9 @@ for(const item of legacyCheckers)item.exists=await exists(item.path);
 // external-consumer absence proof. A historical checker must not quietly become
 // a current npm entrypoint, a CI command, or a rewritten current-runtime claim.
 const historicalTooling=[
-  {path:'scripts/schema-check.mjs',tokens:["../v3/tests/legacy/lib/domain.mjs",'data', 'seed'],reason:'v1-era schema/seed and legacy domain fixture; a passing invocation is not current runtime assurance'},
-  {path:'scripts/ui-wiring-check.mjs',tokens:["'v3/tests/legacy/app/index.html'","'v3/tests/legacy/app/app.js'","'server.mjs'"],reason:'checks historical app/ paths and missing root server.mjs; not v3/UI wiring'},
-  {path:'scripts/verify.mjs',tokens:["'v3/tests/legacy/v1/release.json'","../v3/tests/legacy/lib/domain.mjs"],reason:'checks historical release/domain identity; not current package or runtime release certification'}
+  {path:'scripts/schema-check.mjs',tokens:["../tests/legacy/lib/domain.mjs",'data', 'seed'],reason:'v1-era schema/seed and legacy domain fixture; a passing invocation is not current runtime assurance'},
+  {path:'scripts/ui-wiring-check.mjs',tokens:["'tests/legacy/app/index.html'","'tests/legacy/app/app.js'","'server.mjs'"],reason:'checks historical app/ paths and missing root server.mjs; not v3/UI wiring'},
+  {path:'scripts/verify.mjs',tokens:["'tests/legacy/v1/release.json'","../tests/legacy/lib/domain.mjs"],reason:'checks historical release/domain identity; not current package or runtime release certification'}
 ];
 const workflowNames=(await readdir(path.join(root,'.github/workflows'))).filter(name=>/\.ya?ml$/.test(name)).sort();
 const workflowSources=await Promise.all(workflowNames.map(async name=>({name,text:await readFile(path.join(root,'.github/workflows',name),'utf8')})));
@@ -186,8 +196,8 @@ for(const tool of historicalTooling){
   if(npmConsumers.length||ciConsumers.length)failures.push('legacy historical checker promoted to current route: '+tool.path);
   historicalToolingLedger.push({path:tool.path,classification:'HISTORICAL_DIAGNOSTIC_HOLD_CONSUMERS',present,sourceSignaturePreserved,npmConsumers,ciConsumers,reason:tool.reason,mayBeCurrentRuntimeProof:false,retirementAuthorized:false});
 }
-const runtimeModelText=await readFile(path.join(root,'v3/runtime/model.mjs'),'utf8');
-const runtimeServerText=await readFile(path.join(root,'v3/server.mjs'),'utf8');
+const runtimeModelText=await readFile(path.join(root,'src/runtime/model.mjs'),'utf8');
+const runtimeServerText=await readFile(path.join(root,'src/server.mjs'),'utf8');
 const legacyServiceLiteral=runtimeModelText.includes('experience:{services:2');
 const httpProjectionSeven=runtimeServerText.includes('projected.experience.services=7');
 if(!legacyServiceLiteral||!httpProjectionSeven)failures.push('legacy service literal vs current HTTP projection drift: F7 requires review');

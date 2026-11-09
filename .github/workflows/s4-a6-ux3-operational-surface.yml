@@ -27,21 +27,21 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: A6-UX3 syntax
         run: |
-          node --check v3/public/ui/operational-surface-a6-ux3.js
-          node --check v3/public/ui/standard-browser.js
-          node --check v3/s4-a6-ux3-operational-surface-model.mjs
-          node --check v3/s4-a6-ux3-operational-surface-check.mjs
-          node --check v3/s4-a6-ux3-operational-surface-saturation.mjs
-          python -m py_compile v3/browser-s4-a6-ux3-operational-surface.py
-          python -m py_compile v3/browser-procedure-finetuning-1-4-base.py
-          python -m py_compile v3/browser-v2-1-procedure-journey.py
-          python -m py_compile v3/browser-shell-admin-demo-2-6.py
-          python -m py_compile v3/browser-shell-admin-demo-probe-2-6.py
-          python -m py_compile v3/browser-shell-desktop-probe-2-6.py
+          node --check public/ui/operational-surface-a6-ux3.js
+          node --check public/ui/standard-browser.js
+          node --check src/lib/s4-a6-ux3-operational-surface-model.mjs
+          node --check tests/verification/s4-a6-ux3-operational-surface-check.mjs
+          node --check tests/verification/s4-a6-ux3-operational-surface-saturation.mjs
+          python -m py_compile tests/browser/browser-s4-a6-ux3-operational-surface.py
+          python -m py_compile tests/browser/browser-procedure-finetuning-1-4-base.py
+          python -m py_compile tests/browser/browser-v2-1-procedure-journey.py
+          python -m py_compile tests/browser/browser-shell-admin-demo-2-6.py
+          python -m py_compile tests/browser/browser-shell-admin-demo-probe-2-6.py
+          python -m py_compile tests/browser/browser-shell-desktop-probe-2-6.py
       - name: A6-UX3 source contract
-        run: node v3/s4-a6-ux3-operational-surface-check.mjs
+        run: node tests/verification/s4-a6-ux3-operational-surface-check.mjs
       - name: A6-UX3 100k source antagonists
-        run: node v3/s4-a6-ux3-operational-surface-saturation.mjs
+        run: node tests/verification/s4-a6-ux3-operational-surface-saturation.mjs
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Resolve system browser
         shell: bash
@@ -71,7 +71,7 @@ jobs:
       - name: A6-UX3 exact-head Chromium operational surface
         id: browser
         continue-on-error: true
-        run: python -u v3/browser-s4-a6-ux3-operational-surface.py
+        run: python -u tests/browser/browser-s4-a6-ux3-operational-surface.py
       - name: Stop current runtime
         if: always()
         run: ./ictc.sh stop --profile current || true

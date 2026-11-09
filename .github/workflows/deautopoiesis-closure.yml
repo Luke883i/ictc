@@ -21,13 +21,13 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Audit remediation registry cannot self-close external gates
-        run: node v3/audit-remediation-closure-check.mjs
+        run: node tests/verification/audit-remediation-closure-check.mjs
       - name: One-million hostile seeded closure simulations
-        run: node v3/deautopoiesis-adversarial-saturation.mjs
+        run: node tests/verification/deautopoiesis-adversarial-saturation.mjs
       - name: Operational storage authority
-        run: node v3/operations-storage-authority-check.mjs
+        run: node tests/verification/operations-storage-authority-check.mjs
       - name: Enterprise readiness evidence-envelope fixture
-        run: node v3/enterprise-readiness-check.mjs
+        run: node tests/verification/enterprise-readiness-check.mjs
 
   runtime-portability:
     strategy:

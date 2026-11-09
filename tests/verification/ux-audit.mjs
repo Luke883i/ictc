@@ -1,0 +1,14 @@
+import { strict as assert } from 'node:assert';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve(new URL('../..',import.meta.url).pathname); const read=file=>readFile(path.join(root,file),'utf8');
+const [contractText,html,common,render,actions,bindings,model,api,store,access]=await Promise.all(['public/core-workspaces.json','public/index.html','public/js/journey-shell-common.js','public/js/journey-shell-render.js','public/js/journey-shell-actions.js','public/js/journey-shell-bindings.js','public/js/journey-model.js','src/lib/api.mjs','src/lib/store.mjs','src/lib/access-context.mjs'].map(read));
+const contract=JSON.parse(contractText); const shell=`${common}\n${render}\n${actions}\n${bindings}`; const checks=[]; const mark=(name,detail)=>checks.push({name,status:'passed',detail});
+assert.deepEqual(contract.workspaces.map(item=>item.id),['monitoring','incidents']); assert.match(contract.primaryQuestion,/attenzione/i); mark('product-boundary','due soli servizi core');
+assert.match(html,/actorSelect/); assert.match(html,/tenantSelect/); assert.doesNotMatch(html,/operatingContext/); mark('single-context-surface','cliente e ruolo scelti una volta nella testata');
+assert.match(access,/permissionsByRole/); assert.match(api,/requirePermission/); assert.match(store,/tenantPaths/); assert.match(store,/actorRole/); mark('multi-client-kernel','membership, RBAC, storage e receipt tenant-aware');
+assert.match(model,/readOnly/); assert.match(render,/task\.readOnly/); assert.match(shell,/async function checkpoint/); assert.match(shell,/await refresh\(\)/); mark('guided-write-cycle','una prossima azione, conferma, write e readback');
+assert.match(render,/Monitora URL/); assert.match(render,/Aggiungi contenuto/); assert.match(render,/>Segnala</); assert.doesNotMatch(render,/Monitoraggi programmati|Collegamenti tra fonti e decisioni/); mark('minimal-copy','label e superfici ridotte');
+assert.match(html,/skip-link/); assert.match(html,/aria-live="polite"/); assert.match(shell,/ArrowLeft|ArrowRight/); mark('accessibility','skip link, live status e tastiera preservati');
+for(const pattern of [/compliance score/i,/pienamente conforme/i,/nessun rischio/i,/certificato automaticamente/i]) assert.doesNotMatch(`${contractText}\n${model}\n${shell}`,pattern); mark('anti-overclaim','nessun verdetto sintetico');
+await mkdir(path.join(root,'artifacts'),{recursive:true}); await writeFile(path.join(root,'artifacts/v3-ux-audit.json'),JSON.stringify({schemaVersion:'3.1.0',generatedAt:new Date().toISOString(),result:'passed',profile:'multi-client-two-core-services',checks},null,2)); console.log(`v3-ux-audit: ok (${checks.length} checks, multi-client-two-core-services)`);

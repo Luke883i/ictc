@@ -26,11 +26,11 @@
       "classification": "canonical-distributed-presentation"
     },
     "journey": {
-      "owner": "v3/release-identity.json",
+      "owner": "src/contracts/release-identity.json",
       "value": "2.2-sequential-onto-epistemic"
     },
     "constitution": {
-      "owner": "v3/release-identity.json",
+      "owner": "src/contracts/release-identity.json",
       "value": "C0.1"
     },
     "documentation": {
@@ -61,7 +61,7 @@
     },
     {
       "id": "v3-readme",
-      "path": "v3/README.md",
+      "path": "docs/legacy/README.md",
       "lifecycle": "operating",
       "mode": "reference",
       "authorityTopic": null,

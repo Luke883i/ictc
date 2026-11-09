@@ -2,8 +2,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const manifest = JSON.parse(await readFile(path.join(root,'docs/ui-wiring-manifest.json'),'utf8'));
-const html = await readFile(path.join(root,'v3/tests/legacy/app/index.html'),'utf8');
-const js = await readFile(path.join(root,'v3/tests/legacy/app/app.js'),'utf8');
+const html = await readFile(path.join(root,'tests/legacy/app/index.html'),'utf8');
+const js = await readFile(path.join(root,'tests/legacy/app/app.js'),'utf8');
 const server = await readFile(path.join(root,'server.mjs'),'utf8');
 const corpus = `${html}\n${js}`;
 for (const control of manifest.controls) {

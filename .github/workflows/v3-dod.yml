@@ -18,17 +18,17 @@ jobs:
       - name: Historical V3 semantic replay
         run: |
           npm run check
-          node v3/v2-grc-convergence-check.mjs
-          node v3/v2-grc-saturation.mjs
-          node v3/work-orchestration-check.mjs
-          node v3/procedure-guide-check.mjs
-          node v3/assist-envelope-check.mjs
-          node v3/review-inbox-check.mjs
-          node v3/insight-projection-check.mjs
-          node v3/procedure-trace-check.mjs
-          node v3/decision-binding-check.mjs
-          node v3/epistemic-projection-check.mjs
-          node v3/evidence-export-check.mjs
+          node tests/verification/v2-grc-convergence-check.mjs
+          node tests/verification/v2-grc-saturation.mjs
+          node tests/verification/work-orchestration-check.mjs
+          node tests/verification/procedure-guide-check.mjs
+          node tests/verification/assist-envelope-check.mjs
+          node tests/verification/review-inbox-check.mjs
+          node tests/verification/insight-projection-check.mjs
+          node tests/verification/procedure-trace-check.mjs
+          node tests/verification/decision-binding-check.mjs
+          node tests/verification/epistemic-projection-check.mjs
+          node tests/verification/evidence-export-check.mjs
   runtime-dod:
     runs-on: ubuntu-24.04
     timeout-minutes: 18
@@ -39,8 +39,8 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Historical V3 runtime replay
         run: |
-          node v3/v2-grc-runtime-check.mjs
-          node v3/work-orchestration-runtime-check.mjs
-          node v3/insight-runtime-check.mjs
-          node v3/evidence-check.mjs
-          node v3/evidence-export-auth-check.mjs
+          node tests/verification/v2-grc-runtime-check.mjs
+          node tests/verification/work-orchestration-runtime-check.mjs
+          node tests/verification/insight-runtime-check.mjs
+          node tests/verification/evidence-check.mjs
+          node tests/verification/evidence-export-auth-check.mjs

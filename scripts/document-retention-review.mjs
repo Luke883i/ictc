@@ -29,7 +29,7 @@ for(const source of searchable){
  for(const [target,counts] of graph){
   if(source.path===target)continue;
   if(links.has(target))counts.links.add(source.path);
-  if((source.path.startsWith('v3/')||source.path.startsWith('.github/workflows/'))&&source.text.includes(target))counts.code.add(source.path);
+  if((['src/','tests/','public/','scripts/','.github/workflows/'].some(prefix=>source.path.startsWith(prefix)))&&source.text.includes(target))counts.code.add(source.path);
   else if(source.text.includes(target))counts.citations.add(source.path);
  }
 }

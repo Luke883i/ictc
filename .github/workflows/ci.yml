@@ -58,16 +58,16 @@ jobs:
       max-parallel: 4
       matrix:
         include:
-          - {id: v1-9-experience, script: v3/browser-v1-9-experience.py}
-          - {id: v2-epistemic, script: v3/browser-v2-epistemic.py}
-          - {id: ui-epistemic-convergence, script: v3/browser-ui-epistemic-convergence.py}
-          - {id: v2-1-procedure-journey, script: v3/browser-v2-1-procedure-journey.py}
-          - {id: pr60-polish, script: v3/browser-pr60-polish.py}
-          - {id: onto-compliance-v1, script: v3/browser-onto-compliance-v1.py}
-          - {id: procedure-finetuning-1-4, script: v3/browser-procedure-finetuning-1-4.py}
-          - {id: procedure-ui-ux-1-6, script: v3/browser-procedure-ui-ux-1-6.py}
-          - {id: risk-drilldown, script: v3/browser-risk-drilldown.py}
-          - {id: ao-activation, script: v3/browser-ao-activation.py}
+          - {id: v1-9-experience, script: tests/browser/browser-v1-9-experience.py}
+          - {id: v2-epistemic, script: tests/browser/browser-v2-epistemic.py}
+          - {id: ui-epistemic-convergence, script: tests/browser/browser-ui-epistemic-convergence.py}
+          - {id: v2-1-procedure-journey, script: tests/browser/browser-v2-1-procedure-journey.py}
+          - {id: pr60-polish, script: tests/browser/browser-pr60-polish.py}
+          - {id: onto-compliance-v1, script: tests/browser/browser-onto-compliance-v1.py}
+          - {id: procedure-finetuning-1-4, script: tests/browser/browser-procedure-finetuning-1-4.py}
+          - {id: procedure-ui-ux-1-6, script: tests/browser/browser-procedure-ui-ux-1-6.py}
+          - {id: risk-drilldown, script: tests/browser/browser-risk-drilldown.py}
+          - {id: ao-activation, script: tests/browser/browser-ao-activation.py}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -1205,7 +1205,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Professional demo browser syntax
-        run: python -m py_compile v3/browser-epistemic-professional-demo.py
+        run: python -m py_compile tests/browser/browser-epistemic-professional-demo.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -1239,10 +1239,10 @@ jobs:
           trap './ictc.sh stop --profile current || true' EXIT
           export PYTHONUNBUFFERED=1 ICTC_NO_OPEN=1 ICTC_PORT=47561 PORT=47561 ICTC_SCHEDULER_TICK_MS=100000
           status=0
-          python -u v3/browser-epistemic-professional-demo.py || status=$?
+          python -u tests/browser/browser-epistemic-professional-demo.py || status=$?
           cp "$ICTC_STATE_DIR/logs/ictc.log" artifacts/browser-epistemic-professional-demo-server.log || true
           if [[ "$status" -ne 0 ]]; then
-            FAILED_BROWSER_SCRIPT='v3/browser-epistemic-professional-demo.py' node scripts/browser-failure-provenance.mjs || true
+            FAILED_BROWSER_SCRIPT='tests/browser/browser-epistemic-professional-demo.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
       - name: Stop DEMO runtime
@@ -1294,7 +1294,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: python -m pip install --disable-pip-version-check playwright==1.57.0
       - name: Information-value syntax
-        run: python -m py_compile v3/browser-information-value.py
+        run: python -m py_compile tests/browser/browser-information-value.py
       - name: Resolve system browser
         shell: bash
         run: |
@@ -1319,9 +1319,9 @@ jobs:
           ./ictc.sh start --profile current --no-open
           trap './ictc.sh stop --profile current || true' EXIT
           status=0
-          python -u v3/browser-information-value.py || status=$?
+          python -u tests/browser/browser-information-value.py || status=$?
           if [[ "$status" -ne 0 ]]; then
-            FAILED_BROWSER_SCRIPT='v3/browser-information-value.py' node scripts/browser-failure-provenance.mjs || true
+            FAILED_BROWSER_SCRIPT='tests/browser/browser-information-value.py' node scripts/browser-failure-provenance.mjs || true
             echo "Information-value remains diagnostic; required UI/product authorities are exercised by semantic, UI/UX, shell and stateful journey gates." >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0

@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { DEMO_SUITE_22_ENV, DEMO_SUITE_22_EXPECTED_DIGEST, DEMO_SUITE_22_ID, DEMO_SUITE_22_SCENARIO, DEMO_SUITE_22_VERSION, buildDemoSuite22State, demoSuite22Projection, demoSuite22Violations } from '../../src/runtime/demo-suite-2-2.mjs';
+const read=p=>readFile(new URL(p,import.meta.url),'utf8');
+const [launcher,server,adapters,dod,shell]=await Promise.all([read('../../ictc.sh'),read('../../src/server.mjs'),read('../../src/runtime/procedure-adapters.mjs'),read('../../src/lib/procedure-dod.mjs'),read('../../public/ui/stable-shell.js')]);
+for(const token of ['demo','--demo-suite','ICTC_DEMO_SUITE','demo-runtime-2-2'])assert.ok(launcher.includes(token),`launcher missing ${token}`);
+assert.ok(launcher.includes('--demo-seed')&&launcher.includes('DEMO_SUITE=2.2'),'legacy launcher aliases must converge to Suite 2.2');
+assert.ok(server.includes("from '../../src/runtime/demo-suite-2-2.mjs'")&&server.includes('ensureDemoSuite22'),'server Suite 2.2 gate missing');
+for(const forbidden of ["from '../../src/runtime/demo-seed.mjs'","from '../../src/runtime/demo-reality-context.mjs'","demoOutcomeAuditProjection"])assert.equal(server.includes(forbidden),false,`legacy projection reachable: ${forbidden}`);
+assert.ok(server.includes('projected.experience.demoMode')&&server.includes('demoPosture(snapshot)'),'server must project explicit Suite 2.2 demo mode');
+for(const token of ['ictcDemoCard','ictcDemoDialog','demo-context-card','Suite 2.2','188','512','DEMO_BOUNDARY','Dimostrazione, non verdetto','demo-suite-2-2'])assert.ok(shell.includes(token),`demo progressive disclosure missing ${token}`);
+assert.ok(shell.includes("legacy=$('#ictcDemoBanner')")&&shell.includes('legacy?.remove()'),'legacy demo rail must remain retired');
+assert.ok(shell.includes("setAttribute('aria-haspopup','dialog')")&&shell.includes('showModal()'),'demo summary must open an internal dialog');
+for(const id of ['monitoring','incidents','objects','coverage','actions','risks','assurance']){assert.ok(adapters.includes(`id:'${id}'`),`adapter missing ${id}`);assert.ok(dod.includes(`${id}:dod(`),`DoD missing ${id}`);}
+assert.equal(DEMO_SUITE_22_ENV,'ICTC_DEMO_SUITE');assert.equal(DEMO_SUITE_22_VERSION,'2.2');assert.equal(DEMO_SUITE_22_ID,'ictc-demo-suite-2-2-candidate');assert.match(DEMO_SUITE_22_EXPECTED_DIGEST,/^[a-f0-9]{64}$/);assert.deepEqual(DEMO_SUITE_22_SCENARIO.expectedCounts,{monitoring:9,incidents:18,objects:63,coverage:36,actions:27,risks:21,assurance:14});assert.equal(DEMO_SUITE_22_SCENARIO.stressRecordCount,512);
+const built=await buildDemoSuite22State();assert.equal(built.stateDigest,DEMO_SUITE_22_EXPECTED_DIGEST);assert.deepEqual(built.counters,{events:612,constructors:188,checkpoints:385});assert.equal(demoSuite22Violations(built.state).length,0);
+const state=structuredClone(built.state);state.settings=state.settings||{};state.settings.demoSuite22={status:'complete',scenarioId:DEMO_SUITE_22_ID,stateDigest:built.stateDigest,positiveRecords:188,counts:structuredClone(DEMO_SUITE_22_SCENARIO.expectedCounts)};const projection=demoSuite22Projection(state);assert.equal(projection.enabled,true);assert.equal(projection.projectionAuthority,'demo-suite-2-2');assert.equal(projection.positiveRecords,188);assert.equal(projection.stressFixtures,512);assert.equal(projection.stressVisible,false);assert.equal(projection.coherent,true);assert.match(projection.claimBoundary,/sintetico|compliance|assurance/i);
+console.log('demo-seed-contract-check: ok (compatibility filename / canonical Suite 2.2 sole runtime+UI projection / 188 positive / 512 stress test-only / bounded authority)');

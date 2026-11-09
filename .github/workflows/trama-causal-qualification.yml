@@ -24,33 +24,33 @@ jobs:
         with:
           node-version: '22.16.0'
       - name: Contract check
-        run: node v3/trama-causal-qualification-check.mjs
+        run: node tests/verification/trama-causal-qualification-check.mjs
       - name: K1/K2 source-preimage, Git tree and fixture positive controls
         run: node scripts/test-boundary-migration-check.mjs
       - name: C1-3d K1/K2 physical falsification and command equivalence
         run: node scripts/test-boundary-migration-check.mjs --falsify
       - name: Campaign 01 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000104730
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000104730
       - name: Campaign 02 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000209459
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000209459
       - name: Campaign 03 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000314188
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000314188
       - name: Campaign 04 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000418917
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000418917
       - name: Campaign 05 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000523646
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000523646
       - name: Campaign 06 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000628375
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000628375
       - name: Campaign 07 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000733104
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000733104
       - name: Campaign 08 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000837833
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000837833
       - name: Campaign 09 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000942562
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000000942562
       - name: Campaign 10 · 100k + 10k no-novelty
-        run: node v3/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000001047291
+        run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000001047291
       - name: TRAMA parent regression
-        run: node v3/trama-engineering-check.mjs
+        run: node tests/verification/trama-engineering-check.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
         if: always()
         with:

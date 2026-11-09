@@ -2,6 +2,14 @@
 
 ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
 
+**Governare la conoscenza** significa rendere ogni affermazione operativa rintracciabile alla sua fonte, alla versione osservata, al contesto e all'owner autorizzato, distinguendo proposta, accertamento, decisione e riesame. In ICTC non e un giudizio automatico di conformita: e un percorso verificabile da *fonte/requisito* a *oggetto, rischio o azione*, fino a *evidenza, decisione umana e successiva revisione*.
+
+- **Prodotto:** le sette procedure e la vista Evidenze ICTC rendono consultabili lavoro, limiti del claim e responsabilita; [PRODUCT](docs/PRODUCT.md) ne governa lo scopo, non il repository.
+- **Software:** `src/bootstrap.mjs` → `src/server.mjs` → handler/policy → store SQLite, con autorizzazioni, versioni, receipt e readback; [ARCHITECTURE AS-IS](docs/11_ARCHITECTURE.md) descrive il comportamento, che va verificato in runtime.
+- **Repository:** `src/`, `public/`, `tests/`, `scripts/`, `docs/` e `.github/workflows/` permettono modifica, falsificazione e rilascio su Git SHA; [START_HERE](docs/START_HERE.md) individua l'owner e [TESTING](docs/TESTING.md) l'oracle.
+
+L'AI puo aiutare a interpretare richieste, localizzare owner, generare proposte e controesempi, ma **non** decide l'applicabilita legale, approva stati business, crea nuove autorita software o attesta che un merge sia sicuro. La sua attivita di manutenzione resta soggetta agli stessi test, review, provenance e controllo umano degli altri contributi.
+
 ## Valore per le imprese — cosa ICTC aiuta a governare
 
 **Rispettare le norme. Governare rischi e costi.** ICTC collega fonti, requisiti, rischi, controlli e interventi: aiuta imprese e PMI a **organizzare la risposta agli obblighi applicabili** e a usare con criterio le risorse. Non determina da solo quali norme siano applicabili né certifica la conformità. Le decisioni, le verifiche e le approvazioni rimangono umane.
@@ -16,12 +24,12 @@ ICTC è un **sistema locale di governance della conoscenza di compliance**. Coll
 | Domanda | Punto di ingresso | Verifica sul software |
 | --- | --- | --- |
 | **Prodotto:** destinatari, capacità e limiti | [PRODUCT](docs/PRODUCT.md) → [user journey](docs/04_USER_JOURNEYS.md) | Sette processi e due placeholder; nessuna applicabilità legale automatica. |
-| **Software:** runtime, API e dati | [ARCHITECTURE AS-IS](docs/11_ARCHITECTURE.md) → [DEVELOPMENT](docs/DEVELOPMENT.md) → [CONFIGURATION](docs/CONFIGURATION.md) | `v3/bootstrap.mjs`, `v3/server.mjs`, SQLite; verificare contro codice e [OpenAPI](docs/openapi.yaml). |
+| **Software:** runtime, API e dati | [ARCHITECTURE AS-IS](docs/11_ARCHITECTURE.md) → [DEVELOPMENT](docs/DEVELOPMENT.md) → [CONFIGURATION](docs/CONFIGURATION.md) | `src/bootstrap.mjs`, `src/server.mjs`, SQLite; verificare contro codice e [OpenAPI](docs/openapi.yaml). |
 | **Repository:** modifiche, test e delivery | [START_HERE](docs/START_HERE.md) → [Atlas](docs/REPOSITORY_ATLAS.md) → [TESTING](docs/TESTING.md) | [Manifest](docs/documentation-manifest.json), [owner matrix](docs/authority-matrix.yaml), [Actions](.github/workflows/), exact HEAD. |
 
 Per esercire: [OPERATIONS](docs/OPERATIONS.md). `AGENTS.md` e TRAMA sono specializzazioni per l'uso di assistenti AI, **non prerequisiti** per comprendere, installare o modificare ICTC. La responsabilità delle decisioni e dei gate rimane agli owner e alla governance ordinaria.
 
-**Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](v3/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
+**Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](src/contracts/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
 
 ## Navigazione progressiva — cinque prospettive
@@ -37,13 +45,13 @@ Prima lettura: **capisci il valore**, avvia la DEMO, individua l'owner e verific
 <details>
 <summary><strong>Software</strong> — runtime, dati, superfici</summary>
 
-Node.js ESM, UI vanilla e SQLite: ingresso `v3/bootstrap.mjs`, HTTP `v3/server.mjs`, store `v3/store.mjs`. [Architettura AS-IS](docs/11_ARCHITECTURE.md), [OpenAPI](docs/openapi.yaml), [configurazione](docs/CONFIGURATION.md).
+Node.js ESM, UI vanilla e SQLite: ingresso `src/bootstrap.mjs`, HTTP `src/server.mjs`, store `src/store.mjs`. [Architettura AS-IS](docs/11_ARCHITECTURE.md), [OpenAPI](docs/openapi.yaml), [configurazione](docs/CONFIGURATION.md).
 </details>
 
 <details>
 <summary><strong>Repository</strong> — ownership e primo cambiamento</summary>
 
-[START_HERE](docs/START_HERE.md) instrada il task; [Atlas](docs/REPOSITORY_ATLAS.md) distingue `v3/` corrente, `v3/tests/legacy/` storico e `scripts/`. [DEVELOPMENT](docs/DEVELOPMENT.md) esercita modifica e rollback.
+[START_HERE](docs/START_HERE.md) instrada il task; [Atlas](docs/REPOSITORY_ATLAS.md) distingue `src/` corrente e `v3/` ritirato, `tests/legacy/` storico e `scripts/`. [DEVELOPMENT](docs/DEVELOPMENT.md) esercita modifica e rollback.
 </details>
 
 <details>
@@ -107,9 +115,9 @@ Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE
 
 ## Architettura e limiti delle evidenze
 
-`v3/public/` (HTML/CSS/JS) -> `v3/server.mjs` (HTTP, identità, permessi, handler) -> `v3/runtime-store.mjs` / `v3/store.mjs` -> persistenza SQLite rafforzata. Le letture usano proiezioni autorizzate; le scritture producono esiti/receipt e richiedono verifica su readback. Il benchmark enterprise PostgreSQL è un substrate distinto, non una prova sostitutiva del runtime SQLite standard.
+`public/` (HTML/CSS/JS) -> `src/server.mjs` (HTTP, identità, permessi, handler) -> `src/runtime-store.mjs` / `src/store.mjs` -> persistenza SQLite rafforzata. Le letture usano proiezioni autorizzate; le scritture producono esiti/receipt e richiedono verifica su readback. Il benchmark enterprise PostgreSQL è un substrate distinto, non una prova sostitutiva del runtime SQLite standard.
 
-**Identità di release:** `v3/release-identity.json` resta l'autorità della release. Il journey corrente è `2.2-sequential-onto-epistemic`, la costituzione è `C0.1`. La UI usa **Native Semantic Lattice 3.2**: `active-experience.js` è il composition root e la proiezione globale `semantic-composition-runtime.js` è **annotation-only**, non un secondo owner business.
+**Identità di release:** `src/contracts/release-identity.json` resta l'autorità della release. Il journey corrente è `2.2-sequential-onto-epistemic`, la costituzione è `C0.1`. La UI usa **Native Semantic Lattice 3.2**: `active-experience.js` è il composition root e la proiezione globale `semantic-composition-runtime.js` è **annotation-only**, non un secondo owner business.
 
 **Evidenze e export:** PDF, XML, Markdown e ZIP sono rappresentazioni dello stesso dossier autorizzato; non estendono le autorizzazioni di lettura o l'assurance.
 

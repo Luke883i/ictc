@@ -4,7 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,resolve,dirname,normalize} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
-import {repositoryPurposeCensus} from '../v3/trama-reconcile.mjs';
+import {repositoryPurposeCensus} from '../src/lib/trama-reconcile.mjs';
 import {deriveMigrationFrontier} from './repository-migration-frontier.mjs';
 
 export const root=resolve(new URL('..',import.meta.url).pathname);
@@ -18,12 +18,21 @@ export function classifyFile(file,registered){
   if(file.startsWith('docs/')&&/\.(md|rst|txt)$/.test(file))return {category:'document:unregistered',evidence:'path-only',disposition:'HOLD_REVIEW'};
   if(/^\.github\/workflows\/.*\.ya?ml$/.test(file))return {category:'ci:workflow',evidence:'GitHub workflow path',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('.github/'))return {category:'repository:configuration',evidence:'GitHub configuration path',disposition:'HOLD_CONSUMERS'};
-  if(file.startsWith('v3/tests/legacy/'))return {category:'legacy:candidate',evidence:'explicit verification-only migrated island; no business authority',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('tests/verification/legacy/'))return {category:'legacy:candidate',evidence:'explicit verification-only migrated island; no business authority',disposition:'HOLD_CONSUMERS'};
   if(/(^|\/)(?:[^/]*-check|[^/]*-test|[^/]*-saturation|[^/]*-probe|[^/]*-stress|[^/]*-audit|e2e[^/]*)\.(?:mjs|js|py)$/.test(file))return {category:'verification:candidate',evidence:'filename heuristic only',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('artifacts/')||file.startsWith('dist/'))return {category:'artifact:tracked',evidence:'directory heuristic only',disposition:'HOLD_REVIEW'};
   if(file.startsWith('ai/')||file==='AGENTS.md'||file.endsWith('/AGENTS.md'))return {category:'ai:development-context',evidence:'directory/name heuristic only',disposition:'HOLD_REVIEW'};
   if(file.startsWith('v3/')||file.startsWith('app/')||file.startsWith('runtime/')||file.startsWith('lib/'))return {category:'software:candidate',evidence:'directory heuristic only',disposition:'HOLD_CONSUMERS'};
   if(file.startsWith('v1/'))return {category:'legacy:candidate',evidence:'directory only; compatibility unknown',disposition:'HOLD_REVIEW'};
+  // After the physical v3 cutover these are conventional repository boundaries.
+  // They qualify physical responsibility, NOT dynamic reachability or deletion.
+  if(file.startsWith('src/'))return {category:'software:source-candidate',evidence:'physical source boundary only; owner/reachability unproven',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('public/'))return {category:'software:public-asset-candidate',evidence:'physical public boundary only; external URLs unproven',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('tests/fixtures/'))return {category:'verification:fixture-candidate',evidence:'physical fixture boundary only; dynamic loaders unproven',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('tests/'))return {category:'verification:other-candidate',evidence:'physical test boundary only; CI/consumer use unproven',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('scripts/'))return {category:'repository:tooling-candidate',evidence:'physical maintenance-tool boundary only; consumers unproven',disposition:'HOLD_CONSUMERS'};
+  if(file.startsWith('audit/'))return {category:'repository:evidence-candidate',evidence:'physical evidence/archive boundary only; retention unproven',disposition:'HOLD_REVIEW'};
+  if(file.startsWith('.devcontainer/'))return {category:'repository:development-configuration',evidence:'physical environment boundary only; external use unproven',disposition:'HOLD_CONSUMERS'};
   return {category:'repository:other',evidence:'path-only',disposition:'HOLD_REVIEW'};
 }
 
@@ -70,7 +79,7 @@ export function v3DependencyTopology(entries,scanRoot=root){
   if(source.startsWith('.github/workflows/'))return 'workflow-command-or-literal';
   if(source==='package.json'||source==='ictc.sh')return 'launch-or-script-literal';
   if(source.startsWith('docs/')||source.endsWith('.md'))return 'documentation-mention';
-  if(source.startsWith('v3/public/'))return 'browser-asset-or-literal';
+  if(source.startsWith('public/'))return 'browser-asset-or-literal';
   return 'code-or-contract-literal';
  };
  for(const row of entries){
@@ -110,10 +119,10 @@ export function v3DependencyTopology(entries,scanRoot=root){
   }
   // Literal absolute browser URL candidates are NOT implied by JS imports.
   // Keep this a source-bound consumer edge, not a claim of executed/mounted code.
-  if(source.startsWith('v3/public/')&&/\.(?:mjs|js|html|css)$/.test(source)){
+  if(source.startsWith('public/')&&/\.(?:mjs|js|html|css)$/.test(source)){
    const absolute=/(['"])\/([A-Za-z0-9_./@-]+\.(?:mjs|js|css|html|svg|png|json|ico|webp))\1/g;
    for(const m of body.matchAll(absolute)){
-    const target=normalize(join('v3/public',m[2])).replaceAll('\\','/');
+    const target=normalize(join('public',m[2])).replaceAll('\\','/');
     if(target===source)continue;
     const id=source+'\u0000'+target+'\u0000browser-absolute-url-candidate';
     if(seen.has(id))continue;
@@ -125,14 +134,14 @@ export function v3DependencyTopology(entries,scanRoot=root){
   }
   // The current HTML entry is a browser composition root, not just a static URL.
   // Relative script/link literals must be resolved against their real source dir.
-  if(source.startsWith('v3/public/')&&source.endsWith('.html')){
+  if(source.startsWith('public/')&&source.endsWith('.html')){
    const htmlAsset=/<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*(['"])([^'"]+)\1/gi;
    for(const m of body.matchAll(htmlAsset)){
     const raw=m[2].split(/[?#]/,1)[0];
     if(!raw||/^(?:https?:|data:|\/\/|#)/i.test(raw))continue;
-    const target=(raw.startsWith('/')?normalize(join('v3/public',raw.slice(1))):
+    const target=(raw.startsWith('/')?normalize(join('public',raw.slice(1))):
       normalize(join(dirname(source),raw))).replaceAll('\\','/');
-    if(!target.startsWith('v3/public/')||target===source)continue;
+    if(!target.startsWith('public/')||target===source)continue;
     const edgeKind=/\.(?:mjs|js)$/i.test(target)?'browser-html-entry-candidate':'browser-html-asset-candidate';
     const id=source+'\u0000'+target+'\u0000'+edgeKind;
     if(seen.has(id))continue;seen.add(id);
@@ -143,12 +152,19 @@ export function v3DependencyTopology(entries,scanRoot=root){
   }
  }
  // Source-bound HTTP mount, only candidate URL edges (not runtime/consumer proof).
- const server='v3/server.mjs';
+ const server='src/server.mjs';
  const body=files.has(server)?readFileSync(join(scanRoot,server),'utf8'):'';
- const httpStaticRootObserved=body.includes("const publicRoot=path.join(here,'public')")&&
+ // Both spellings are source-bound: before cutover the public directory was
+ // colocated with server.mjs, after cutover it is one level above src/.
+ // Require the new projectRoot definition as well as the static mount call;
+ // merely seeing a string literal `public` cannot authorize an HTTP edge.
+ const historicPublicRoot=body.includes("const publicRoot=path.join(here,'public')");
+ const migratedPublicRoot=body.includes("const projectRoot=path.resolve(here,'..');")&&
+  body.includes("const publicRoot=path.join(projectRoot,'public');");
+ const httpStaticRootObserved=(historicPublicRoot||migratedPublicRoot)&&
   body.includes('serveStatic(response,url.pathname,publicRoot,mime)');
  let httpStaticCandidateCount=0;
- if(httpStaticRootObserved)for(const e of entries)if(e.path.startsWith('v3/public/')){
+ if(httpStaticRootObserved)for(const e of entries)if(e.path.startsWith('public/')){
   edges.push({from:server,to:e.path,kind:'http-static-route-candidate'});
   httpStaticCandidateCount++;
  }

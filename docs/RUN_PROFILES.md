@@ -2,7 +2,7 @@
 
 ## Autorità BOOTSTRAP-0
 
-ICTC ha due profili applicativi canonici: `standard` e `demo`. Entrambi eseguono gli stessi byte applicativi tramite `v3/bootstrap.mjs`; cambiano soltanto il runtime state. Il profilo DEMO canonico seleziona `ICTC_DEMO_SUITE=3.0`. La Suite 2.2 è deprecata e resta disponibile soltanto come percorso legacy esplicito di regressione/generazione.
+ICTC ha due profili applicativi canonici: `standard` e `demo`. Entrambi eseguono gli stessi byte applicativi tramite `src/bootstrap.mjs`; cambiano soltanto il runtime state. Il profilo DEMO canonico seleziona `ICTC_DEMO_SUITE=3.0`. La Suite 2.2 è deprecata e resta disponibile soltanto come percorso legacy esplicito di regressione/generazione.
 
 | Profilo | Foreground | Supervisor locale | Stato predefinito |
 |---|---|---|---|
@@ -30,7 +30,7 @@ npm run build
 
 ## Foreground e supervisor
 
-`npm start` è l'ingresso foreground per supervisor, CI e PaaS. `ictc.sh` aggiunge soltanto funzioni locali di supervisione: PID, log, readiness polling, apertura browser, stop/restart/status. Il launcher non avvia `v3/server.mjs` direttamente; converge sullo stesso `v3/bootstrap.mjs` usato da npm.
+`npm start` è l'ingresso foreground per supervisor, CI e PaaS. `ictc.sh` aggiunge soltanto funzioni locali di supervisione: PID, log, readiness polling, apertura browser, stop/restart/status. Il launcher non avvia `src/server.mjs` direttamente; converge sullo stesso `src/bootstrap.mjs` usato da npm.
 
 Il vecchio `./ictc.sh codespace` resta alias compatibile di `./ictc.sh start --no-open`. L'alias `--demo-seed` resta esclusivamente come percorso deprecato Suite 2.2 e non è il comando DEMO canonico.
 
@@ -81,9 +81,9 @@ Il devcontainer è quindi la forma containerizzata locale canonica. Un'immagine 
 ```bash
 npm run bootstrap:check
 npm run bootstrap:saturation
-node v3/demo-suite-3-0-cutover-check.mjs
-node v3/demo-suite-3-0-runtime-e2e-check.mjs
-node v3/demo-suite-3-0-cutover-mutation-1m.mjs
+node tests/verification/demo-suite-3-0-cutover-check.mjs
+node tests/verification/demo-suite-3-0-runtime-e2e-check.mjs
+node tests/verification/demo-suite-3-0-cutover-mutation-1m.mjs
 ```
 
 La saturation BOOTSTRAP-0 e il cutover mutation rail sono source/model-level; il gate E2E avvia invece il runtime reale locale e verifica il profilo DEMO 3.0. Nessuna di queste prove sostituisce una prova di deployment E4 o una conclusione di conformità.

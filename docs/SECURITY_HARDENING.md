@@ -35,14 +35,14 @@ CSV exports preserve same-as-read authorization and neutralize spreadsheet formu
 Run these checks from the repository root with a supported Node runtime:
 
 ```text
-node v3/security-enterprise-dod-check.mjs
-node v3/tenant-identity-coherence-check.mjs
-node v3/attachment-scanner-tenant-check.mjs
-node v3/csv-export-security-check.mjs
-node v3/ai-network-policy-check.mjs
-node v3/runtime-enterprise-boundaries-ci.mjs
-node v3/runtime-enterprise-boundaries-saturation.mjs
-node v3/security-attack-saturation.mjs
+node tests/verification/security-enterprise-dod-check.mjs
+node tests/verification/tenant-identity-coherence-check.mjs
+node tests/verification/attachment-scanner-tenant-check.mjs
+node tests/verification/csv-export-security-check.mjs
+node tests/verification/ai-network-policy-check.mjs
+node scripts/runtime-enterprise-boundaries-ci.mjs
+node tests/verification/runtime-enterprise-boundaries-saturation.mjs
+node tests/verification/security-attack-saturation.mjs
 npm run test:current:semantic
 npm run test:current:runtime
 ```

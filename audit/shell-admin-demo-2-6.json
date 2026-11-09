@@ -5,10 +5,10 @@
   "baseSha": "85468d831f0983f2330430784f9599513b3d1820",
   "authority": {
     "newFinalOwners": 0,
-    "shell": "v3/public/ui/stable-shell.js",
-    "profile": "v3/public/ui/active-experience.js",
-    "procedureHeader": "v3/public/ui/procedure-frame.js",
-    "administration": "v3/public/ui/admin-center.js"
+    "shell": "public/ui/stable-shell.js",
+    "profile": "public/ui/active-experience.js",
+    "procedureHeader": "public/ui/procedure-frame.js",
+    "administration": "public/ui/admin-center.js"
   },
   "targets": {
     "globalNavigationItems": 3,
