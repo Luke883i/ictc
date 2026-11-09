@@ -6,10 +6,8 @@ on:
     paths:
       - 'transport/**'
       - '.github/workflows/ictc-pr274-transport.yml'
-
 permissions:
   contents: write
-
 jobs:
   cutover:
     if: github.repository == 'Luke883i/ictc' && github.ref == 'refs/heads/ci/ictc-pr274-transport-20261109'
@@ -20,28 +18,44 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-      - name: Verify source-bound exact-tree migration and fast-forward PR274
+      - name: Fetch exact PR274 HEAD and reject drift
         shell: bash
         run: |
           set -euo pipefail
-          source_branch='docs/level-cora-method-interface-v1'
-          expected_head='b415248c7a27885a41b4db02881f66d76bd6e5ab'
-          expected_tree='22d9fb9429336c42be0f61e4710c09ac80642ac1'
-          git fetch --no-tags origin "refs/heads/$source_branch:refs/remotes/origin/$source_branch"
-          observed="$(git rev-parse "refs/remotes/origin/$source_branch")"
-          if [ "$observed" != "$expected_head" ]; then
-            echo "STOP: PR274 head drift: $observed" >&2
-            exit 2
-          fi
-          target="$RUNNER_TEMP/ictc-pr274-target"
-          git worktree add --detach "$target" "$expected_head"
-          ICTC_REPO_ROOT="$target" python3 "$GITHUB_WORKSPACE/transport/migrate_pr274.py"
-          git -C "$target" diff --cached --check
-          test "$(git -C "$target" write-tree)" = "$expected_tree"
-          git -C "$target" config user.name "github-actions[bot]"
-          git -C "$target" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C "$target" commit -m "refactor(repo): migrate v3 into standard src/public/tests (exact-tree validated)"
-          test "$(git -C "$target" rev-parse 'HEAD^{tree}')" = "$expected_tree"
-          git -C "$target" push --porcelain origin "HEAD:refs/heads/$source_branch"
-          echo "PR274 MIGRATION PUSHED: $(git -C "$target" rev-parse HEAD)"
-          echo "NEXT: observe exact-head PR CI; do not merge on this step alone."
+          branch=docs/level-cora-method-interface-v1
+          git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"
+          observed="$(git rev-parse "refs/remotes/origin/$branch")"
+          test "$observed" = b415248c7a27885a41b4db02881f66d76bd6e5ab
+          echo "ICTC_TARGET=$RUNNER_TEMP/ictc-pr274-target" >> "$GITHUB_ENV"
+      - name: Create isolated worktree from real PR HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$ICTC_TARGET" b415248c7a27885a41b4db02881f66d76bd6e5ab
+          test "$(git -C "$ICTC_TARGET" rev-parse HEAD)" = b415248c7a27885a41b4db02881f66d76bd6e5ab
+      - name: Reconstruct exact migration from source-bound delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          ICTC_REPO_ROOT="$ICTC_TARGET" python3 "$GITHUB_WORKSPACE/transport/migrate_pr274.py"
+      - name: Verify tree, absence of v3 and whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$ICTC_TARGET" diff --cached --check
+          test "$(git -C "$ICTC_TARGET" write-tree)" = 22d9fb9429336c42be0f61e4710c09ac80642ac1
+          test "$(git -C "$ICTC_TARGET" ls-files | grep -c '^v3/' || true)" = 0
+      - name: Commit atomic runtime cutover to candidate branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$ICTC_TARGET" config user.name "github-actions[bot]"
+          git -C "$ICTC_TARGET" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$ICTC_TARGET" commit -m "refactor(repo): migrate v3 to standard src/public/tests (exact-tree I12)"
+          test "$(git -C "$ICTC_TARGET" rev-parse 'HEAD^{tree}')" = 22d9fb9429336c42be0f61e4710c09ac80642ac1
+      - name: Push fast-forward to PR274 branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$ICTC_TARGET" push --porcelain origin HEAD:refs/heads/docs/level-cora-method-interface-v1
+          echo "PUBLISHED PR274 $(git -C "$ICTC_TARGET" rev-parse HEAD)"
