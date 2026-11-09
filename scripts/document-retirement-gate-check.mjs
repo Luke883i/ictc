@@ -108,14 +108,14 @@ const cardsByPath=new Map(cards.map(x=>[x.path,x]));
 const lineagePilot=historicalPilotPaths.map(path=>{
  const card=cardsByPath.get(path),tracked=inventoryByPath.get(path),origin=historicalPilotOrigins[path];
  assert.ok(card&&tracked,'historical sample path missing from existing owner census: '+path);
- assert.equal(tracked.category,'document:unregistered','historical sample unexpectedly entered current manifest: '+path);
+ assert.equal(tracked.category,'document:lineage','historical source falsely promoted to current lifecycle: '+path);
  assert.equal(tracked.sha256,card.sha256);
  assert.equal(card.testedRemoval.restored,true);
  assert.equal(card.safeDelete,false);
  const history=historicalWitness(path,origin);
  const logicalHandling=classifyHistoricalHandling({
    ancestryVerified:history.ancestorVerified,exactBytesPreserved:history.exactBytesPreserved,
-   unregisteredNonAuthority:tracked.category==='document:unregistered',
+   unregisteredNonAuthority:tracked.category==='document:lineage',
    canonicalLineageRole:tracked.purposeState==='lineage-only',
    publicPathUnchanged:history.originBlob===history.candidateBlob
  });

@@ -111,3 +111,27 @@ export function validateCurrentAtlasGuides(g){
   errors.push('atlas-current:postmerge:unsupported-clearance');
  return errors;
 }
+
+/** #276: classify the previously unregistered corpus in the EXISTING manifest.
+ * No new substantive authority, automatic retirement, or legacy source rewrites. */
+export function validatePost275DocCoverage(manifest,trackedMarkdown){
+ const errors=[];const rows=manifest.documents||[],byPath=new Map(rows.map(x=>[x.path,x]));
+ const seen=new Set();for(const p of trackedMarkdown){if(seen.has(p))errors.push('duplicate-tracked-doc:'+p);seen.add(p);
+  if(!byPath.has(p))errors.push('unregistered-tracked-doc:'+p);
+ }
+ const cohort=rows.filter(x=>x.retentionCohort==='post275-residual');
+ if(cohort.length!==151)errors.push('post275-cohort-count');
+ const ids=new Set();const paths=new Set();
+ const expectedBasis={lineage:'Versioned design',operating:'Operational guidance',roadmap:'Source describes a proposed TO-BE', 'source-input':'Source material'};
+ for(const d of cohort){
+  if(ids.has(d.id)||!/^post275-\d{3}$/.test(d.id))errors.push('post275-cohort-id:'+d.path);
+  if(paths.has(d.path))errors.push('post275-cohort-duplicate:'+d.path);
+  ids.add(d.id);paths.add(d.path);
+  if(!seen.has(d.path))errors.push('post275-cohort-missing-file:'+d.path);
+  if(d.authoritative!==false||d.authorityTopic!==null||d.lifecycle==='current'||d.lifecycle==='policy'||d.lifecycle==='generated')errors.push('post275-cohort-authority-laundering:'+d.path);
+  if(!Object.hasOwn(expectedBasis,d.lifecycle)||!String(d.classificationBasis||'').startsWith(expectedBasis[d.lifecycle]))errors.push('post275-cohort-classification:'+d.path);
+  if(d.path.startsWith('docs/decisions/')&&d.lifecycle!=='lineage')errors.push('post275-ADR-is-not-lineage:'+d.path);
+  if(d.path.startsWith('docs/legacy/')&&d.lifecycle!=='lineage')errors.push('post275-legacy-is-not-lineage:'+d.path);
+ }
+ return errors;
+}

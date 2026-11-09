@@ -3,7 +3,7 @@ import {readFile,stat,readdir} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import {spawnSync} from 'node:child_process';
-import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
+import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel,validatePost275DocCoverage,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
 const root=path.resolve(process.argv[2]||process.cwd());
 const read=async p=>readFile(path.join(root,p),'utf8');
 const exists=async p=>{try{await stat(path.join(root,p));return true}catch{return false}};
@@ -73,7 +73,9 @@ async function markdownFiles(dir='docs'){
  return result;
 }
 const registeredMarkdown=new Set(docs.filter(d=>d.path.endsWith('.md')).map(d=>d.path));
-for(const rel of (await markdownFiles()).sort()){
+const trackedMarkdown=(await markdownFiles()).sort();
+for(const issue of validatePost275DocCoverage(manifest,trackedMarkdown))check(false,'post275 registration: '+issue);
+for(const rel of trackedMarkdown){
  const targets=localTargets(rel,await read(rel));
  if(registeredMarkdown.has(rel))linkTargets.set(rel,targets);
  for(const t of targets)check(await exists(t),`broken local link ${rel} -> ${t}`);
