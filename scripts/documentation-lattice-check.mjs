@@ -39,6 +39,19 @@ for(const [owner,body,tokens] of currentOwnerDocs){
  check(!/v3\/(?:server|bootstrap|store|ai|public|runtime|release-identity|semantic-owner|trama)/.test(body),
   'post274 retired owner path leaked into current '+owner+' routing');
 }
+// A registered operational guide must route to CURRENT owners, not the
+// pre-#274 v3 preimage. This is an oracle over existing paths, not a new owner.
+const gapRegister=await read('docs/GAP_REGISTER.md');
+for(const [current,retired] of [
+ ['tests/contracts/gaps.json','v3/gaps.json'],
+ ['public/gap-registry.json','v3/public/gap-registry.json'],
+ ['tests/contracts/capability-truth.json','v3/capability-truth.json'],
+ ['tests/verification/capability-truth-check.mjs','v3/capability-truth-check.mjs']
+]){
+ check(await exists(current),'gap guide: current referenced path missing: '+current);
+ check(gapRegister.includes('`'+current+'`'),'gap guide: current owner route missing: '+current);
+ check(!gapRegister.includes('`'+retired+'`'),'gap guide: retired executable route advertised: '+retired);
+}
 for(const p of ['tests/contracts/semantic-owner-contract.json','tests/contracts/as-is-convergence-contract.json',
  'tests/contracts/trama-enterprise-dod.json','src/ai.mjs','src/lib/bootstrap-contract.mjs'])
  check(await exists(p),'post274 declared current owner path missing: '+p);
