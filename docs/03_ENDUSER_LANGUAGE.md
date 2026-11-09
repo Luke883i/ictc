@@ -2,7 +2,7 @@
 
 ## Scopo
 
-Per la resa effettiva in UI, confrontare questa grammatica con [Product](PRODUCT.md), [journey](04_USER_JOURNEYS.md) e gli owner locali `v3/public/ui/product-copy.js` / `v3/public/ui/stable-shell.js`. Le etichette storiche dei documenti di design non sono, da sole, etichette correnti. La prova di comprensione richiede utenti rappresentativi e tecnologie assistive: uno snapshot DOM ne prova soltanto la rappresentazione osservata.
+Per la resa effettiva in UI, confrontare questa grammatica con [Product](PRODUCT.md), [journey](04_USER_JOURNEYS.md) e gli owner locali `public/ui/product-copy.js` / `public/ui/stable-shell.js`. Le etichette storiche dei documenti di design non sono, da sole, etichette correnti. La prova di comprensione richiede utenti rappresentativi e tecnologie assistive: uno snapshot DOM ne prova soltanto la rappresentazione osservata.
 
 ICTC usa un linguaggio aziendale di compliance che descrive **fonti, requisiti, perimetri, decisioni, responsabilita, azioni, evidenze e limiti** senza trasformare il software in un interprete autonomo della legge.
 
@@ -26,7 +26,7 @@ La regola primaria resta: **registrare non significa concludere**. Il testo di u
 - **Approvazione interna**: conferma organizzativa di una versione o di un insieme di risposte; non e assurance indipendente o certificazione.
 - **Ricevuta ICTC**: traccia tecnica della mutazione; hash e receipt non equivalgono a firma qualificata, trusted timestamp o verita esterna.
 
-Il vocabolario eseguibile corrispondente e in `v3/public/ui/semantic-foundation-model.js`; le azioni umane materiali e i relativi limiti sono in `v3/public/ui/semantic-foundation-actions.js`. Questi moduli implementano questa policy, non la sostituiscono.
+Il vocabolario eseguibile corrispondente e in `public/ui/semantic-foundation-model.js`; le azioni umane materiali e i relativi limiti sono in `public/ui/semantic-foundation-actions.js`. Questi moduli implementano questa policy, non la sostituiscono.
 
 ## Grammatica proto-giuridica bounded
 

@@ -42,7 +42,7 @@ independently compares the diff with the canonical owner and reproduces critical
 checks; the maintainer controls integration, not the business decision.
 
 `docs/PRODUCT.md` owns product purpose; `docs/11_ARCHITECTURE.md` and the
-executable runtime own AS-IS design; `v3/release-identity.json` owns the release;
+executable runtime own AS-IS design; `src/contracts/release-identity.json` owns the release;
 `docs/documentation-manifest.json` classifies documents; `docs/convergence/`
 plans changes but never rewrites Git's live facts. The deployment operator owns
 operational controls and evidence; authorized business decision makers retain
@@ -54,7 +54,7 @@ branch rules, effective reviewer permissions, required checks and actual human
 approval on the exact head. `GOV-01F` è un controllo compensativo, non branch protection server-side.
 CODEOWNERS, a green CI, AI or a local
 review simulation do not establish `review-enforced` or E4 deployment assurance.
-See `GAP-022` / E3-GOV and `GAP-012` / E3-HUMAN in `v3/gaps.json`.
+See `GAP-022` / E3-GOV and `GAP-012` / E3-HUMAN in `tests/contracts/gaps.json`.
 
 ## Testing
 

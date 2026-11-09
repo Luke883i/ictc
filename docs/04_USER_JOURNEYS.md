@@ -114,7 +114,7 @@ Questo documento è l'owner canonico delle user journey business ICTC. Le sette 
 
 ### Risalire dal percorso alla prova
 
-Per ciascuno dei sette processi la procedura di lettura è: oggetto/decisione nella sezione di questo documento → policy di disponibilità in `v3/runtime/procedure-policy.mjs` → route e handler previsti da [OpenAPI](openapi.yaml) e [architettura](11_ARCHITECTURE.md) → write/readback/versioni in `v3/store.mjs` → nearest test individuato nel [catalogo testing](TESTING.md). Una transizione fra processi deve ripetere i checkpoint del target; la sola presenza della destinazione nel catalogo non prova una transizione E2E.
+Per ciascuno dei sette processi la procedura di lettura è: oggetto/decisione nella sezione di questo documento → policy di disponibilità in `src/runtime/procedure-policy.mjs` → route e handler previsti da [OpenAPI](openapi.yaml) e [architettura](11_ARCHITECTURE.md) → write/readback/versioni in `src/store.mjs` → nearest test individuato nel [catalogo testing](TESTING.md). Una transizione fra processi deve ripetere i checkpoint del target; la sola presenza della destinazione nel catalogo non prova una transizione E2E.
 
 I nove elementi visibili nel catalogo non sono nove processi: OP-01 e OG-01 sono placeholder senza operatività. EP-01 è una vista traversale. La copertura E2E va dichiarata per **scenario e tipo di evidenza**, non calcolata dividendo il numero dei browser script per il numero dei processi.
 
