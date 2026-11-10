@@ -1,13 +1,10 @@
 <!-- programme-header:v2 -->
 > **ROA Research Programme · A-OSP ecosystem** — [Author & programme hub](https://github.com/Luke883i/academics) · [ROA theory](https://github.com/Luke883i/ROA) · [CORA assurance](https://github.com/Luke883i/cora). Every repository is independently readable. Membership does not imply formal derivation, shared runtime, scientific validation, certification, or production readiness. Repository-local code, evidence, and governance remain authoritative.
 
-## Independent entrypoint
-
-**Purpose:** an applied compliance knowledge-governance product connecting obligations, objects, risks, work, evidence and attributable human decisions. It is not an automated legal compliance certification. Local product and architecture documents are authoritative; programme membership is descriptive. **Indicative CORA-Score (provisional):** Dev_CORA **4/5** · Bonifica_CORA **4/5**; [rubric](https://github.com/Luke883i/cora/blob/main/docs/CORA_SCORE.md).
-
----
-
 # ICTC — Integrated Compliance Tower Control
+
+**Purpose:** ICTC manages compliance knowledge, applicable requirements, risk, work, attributable human decisions and evidence, without substituting for legal interpretation or independently certifying compliance. **Provisional, not measured CORA-Score:** Dev_CORA **4/5**, Bonifica_CORA **4/5**; the indicative axes are defined in [CORA's rubric](https://github.com/Luke883i/cora#cora-score--indicative-assurance-bands-not-a-product-certification).
+
 
 ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
 

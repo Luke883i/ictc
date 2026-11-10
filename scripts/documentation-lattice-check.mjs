@@ -182,8 +182,10 @@ check(designDoc.includes('Non esiste più un final cascade resolver globale'),'d
 check(start.includes('uiPresentation = local-owners'),'START_HERE must route current presentation authority');
 // Engineer-first falsifiable entrypoint: normal engineering must be possible
 // without first interpreting the AI programme or following agent prompts.
-const firstH1=readme.indexOf('# ICTC —'),roaHeader=readme.indexOf('roa-programme-header:v1'),threeWays=readme.indexOf('## Da zero: tre percorsi');
-check(firstH1===0,'engineer-first: root must introduce ICTC before programme banners');
+const v2='<!-- programme-header:v2 -->', headerBlock=readme.split('\n\n',1)[0]+'\n\n';
+const firstH1=readme.indexOf('# ICTC —'),roaHeader=readme.indexOf('## Contesto di programma'),threeWays=readme.indexOf('## Da zero: tre percorsi');
+check(readme.startsWith(v2)&&readme.split(v2).length===2&&firstH1===headerBlock.length,'engineer-first: one exact programme v2 header before ICTC title');
+check(['Luke883i/academics','Luke883i/ROA','Luke883i/cora','Repository-local code, evidence, and governance remain authoritative'].every(x=>headerBlock.includes(x)),'programme v2: missing cross-reference or local authority');
 check(threeWays>firstH1&&roaHeader>threeWays,'engineer-first: product/software/repository routes must precede research framing');
 for(const [label,canonical] of [['Prodotto','docs/PRODUCT.md'],['Software','docs/11_ARCHITECTURE.md'],['Repository','docs/START_HERE.md']]){
  check(new RegExp('\\*\\*'+label+'\\*\\*').test(readme.slice(threeWays,roaHeader))||readme.slice(threeWays,roaHeader).includes('**'+label+':'),`engineer-first: missing ${label} route`);
