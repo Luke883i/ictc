@@ -12,6 +12,9 @@ assert.equal(ONBOARDING_CONTRACT_DIGEST.length,64);
 for(const chapter of ONBOARDING_CHAPTERS){assert.equal(chapter.contentDigest.length,64);assert.equal(chapter.lessons.length,3);assert.ok(chapter.heading?.length>=12,'heading');for(const k of ['lead','case','why','do','how','checkpoint'])assert.ok(chapter[k]?.length>30,k);}
 assert.equal(onboardingOwner({users:[{id:'ext@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'ext@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}).onboarding.acceptedAt,at);
 assert.equal(onboardingTrustedJitAllowed({id:'external@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}),true);
+import {readFileSync} from 'node:fs';
+const routeSource=readFileSync(new URL('../../src/server.mjs',import.meta.url),'utf8');
+assert.ok(routeSource.includes('if(current?.onboarding?.acceptedAt)')&&routeSource.includes('const prior=current?.onboarding?.chapterAcknowledgements?.at(-1);'),'JIT identity without user record must survive replay checks');
 assert.equal(onboardingTrustedJitAllowed({id:'local-admin',identityMode:'local',identityStrategy:'local'}),false);
 rejects(()=>onboardingOwner({users:[{id:'local-admin',onboarding:{acceptedAt:at}}]},{id:'local-admin',identityMode:'trusted-header',identityStrategy:'shibboleth'}),'onboarding-identity-collision');
 rejects(()=>onboardingOwner({users:[{id:'external@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'external@example.org',identityMode:'local'}),'onboarding-identity-collision');

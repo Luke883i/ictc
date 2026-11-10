@@ -107,9 +107,9 @@ async function handleApi(request,response,url,actor){
     requirePermission(actor,'read',permissions);
     const current=onboardingOwner(snapshot,actor);
     if(!current&&!onboardingTrustedJitAllowed(actor))throw httpError(409,'Profilo utente non disponibile','onboarding-user-missing');
-    if(current.onboarding?.acceptedAt){json(response,200,{result:onboardingProjectionV2(current.onboarding),receipt:null,replayed:true});return;}
+    if(current?.onboarding?.acceptedAt){json(response,200,{result:onboardingProjectionV2(current.onboarding),receipt:null,replayed:true});return;}
     const input=await bodyJson(request);
-    const prior=current.onboarding?.chapterAcknowledgements?.at(-1);
+    const prior=current?.onboarding?.chapterAcknowledgements?.at(-1);
     if(prior?.chapterId===input.chapterId&&prior.contentDigest===input.contentDigest&&input.explicitAcknowledgement===true){json(response,200,{result:onboardingProjectionV2(current.onboarding),receipt:null,replayed:true});return;}
     const context={actorId:actor.id,tenantId:tenantAuthority.current().tenantId,at:now()};
     const envelope=await store.mutate(actor,'profile.onboarding.updated',{type:'user',id:actor.id},{chapterId:input.chapterId,contentDigest:input.contentDigest,explicitAcknowledgement:input.explicitAcknowledgement},draft=>{
