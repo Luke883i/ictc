@@ -58,6 +58,12 @@ jobs:
           if source.is_file():
               payload=json.loads(source.read_text(encoding='utf-8'))
               phase=re.sub('[^a-zA-Z0-9_-]','-',str(payload.get('phase','unknown')))[:70]
+              message=str(payload.get('message',''))
+              def metric(name):
+                  matched=re.search(r"['\\\"]"+name+r"['\\\"]:\\s*([0-9.]+)",message)
+                  return matched.group(1) if matched else 'x'
+              summary='-o'+metric('overlaps')+'-h'+metric('footerHeight')+'-p'+metric('bodyPaddingBottom')+'-s'+metric('scrollPaddingBottom')
+              phase=(phase+summary)[:105]
               with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase='+phase+'\n')
               pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-{phase}.txt').write_text(
                   'PHASE='+phase+'\\nERROR='+str(payload.get('message','unknown'))[:1500]+'\\n',encoding='utf-8')

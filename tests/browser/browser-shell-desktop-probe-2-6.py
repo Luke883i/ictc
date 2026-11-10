@@ -12,8 +12,9 @@ with sync_playwright() as pw:
     if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
     browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
     page=ctx.new_page();page.set_default_timeout(30000);page.goto(BASE,wait_until='networkidle');page.wait_for_function("()=>document.documentElement.dataset.ictcExperienceEdition==='1.9-experience-candidate'")
-    if PROBE.startswith('home-guide-'):
-        ensure_onboarded(page,BASE,'admin')
+    # Navigation/footer contracts run on an accepted, fully usable first-run fixture.
+    # First-use blocking itself is proved by the dedicated onboarding browser suite.
+    ensure_onboarded(page,BASE,'admin')
     if PROBE=='nav':
         expect(page.locator('.service-nav > [data-service]')).to_have_count(3)
         assert page.locator('.stable-header-inner').bounding_box()['height']<=70
