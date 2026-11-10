@@ -47,9 +47,9 @@ export function acknowledgeOnboardingV2(saved,input,{actorId,tenantId,at}){
 export function onboardingOwner(state,actor){
  const user=(state?.users||[]).find(item=>item.id===actor?.id)||null;
  if(!user)return null;
- const trusted=actor?.identityMode==='trusted-header'&&actor?.identityStrategy==='shibboleth';
- const recordedTrusted=user.identityStrategy==='shibboleth';
- if(trusted!==recordedTrusted)throw Object.assign(new Error('Profilo con identità di origine differente'),{status:409,code:'onboarding-identity-collision'});
+ const trusted=actor?.identityMode==='trusted-header';
+ const recordedTrusted=user.identityMode==='trusted-header';
+ if(trusted!==recordedTrusted||(trusted&&user.identityStrategy!==actor.identityStrategy))throw Object.assign(new Error('Profilo con identità di origine differente'),{status:409,code:'onboarding-identity-collision'});
  return user;
 }
 export function onboardingTrustedJitAllowed(actor){
