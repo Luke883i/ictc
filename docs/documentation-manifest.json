@@ -1825,6 +1825,15 @@
       "authoritative": false,
       "retentionCohort": "post275-residual",
       "classificationBasis": "Versioned design, audit, ADR or bounded engineering evidence; retain exact source bytes, no current authority by recency."
+    },
+    {
+      "id": "uiux-homeboarding-semantic-20261110",
+      "path": "docs/UIUX_ONBOARDING_SEMANTIC_CONVERGENCE_20261110.md",
+      "lifecycle": "lineage",
+      "mode": "reference",
+      "authorityTopic": null,
+      "authoritative": false,
+      "classificationBasis": "Bounded UIUX/homeboarding change evidence and test intent-to-owner mapping; not product, runtime or governance authority."
     }
   ],
   "communitySurfaces": {
