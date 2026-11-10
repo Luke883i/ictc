@@ -5,7 +5,7 @@ import {owners,contractViolations} from './enterprise-ux-slice-check.mjs';
 const baseline=owners(),families=[
  ['index','<h2 id="homeTitle">','<h1 id="homeTitle">'],
  ['shell','workPlane.before(host)','workPlane.after(host)'],
- ['shell','home-examples-disclosure','home-examples-retired'],
+ ['shell','if(!onboardingState()?.accepted)event.preventDefault()','if(false)event.preventDefault()'],
  ['copy',"lead:'Parti dal caso:","lead:'Impara prima il modello:"],
  ['shell','chapter?.lessons||[]','[]'],
  ['shell','close.hidden=!accepted','close.hidden=false'],
