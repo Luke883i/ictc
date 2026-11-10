@@ -1,4 +1,4 @@
-name: uiux-experience-p6
+name: Experience | End-user journey and onboarding (P6)
 on:
   pull_request:
     branches: [main]

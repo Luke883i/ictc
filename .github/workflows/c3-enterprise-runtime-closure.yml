@@ -1,4 +1,4 @@
-name: c3-enterprise-runtime-closure
+name: Runtime | Enterprise readiness boundaries
 on:
   pull_request:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: ictc-ci
+name: CI | Full product regression
 on:
   pull_request:
   push:
@@ -21,7 +21,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Current semantic release suite
         run: npm run test:current:semantic
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-contract-audit
@@ -39,7 +39,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Current runtime release suite
         run: npm run test:current:runtime
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-runtime-evidence
@@ -1183,7 +1183,7 @@ jobs:
           kinds={x.get('kind') for x in json.loads(p.read_text()).get('anomalies',[])}
           sys.exit(1 if {'home-scroll-clipped','top-navigation-language'} & kinds else 0)
           PY
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-browser-${{ matrix.id }}
@@ -1249,7 +1249,7 @@ jobs:
         if: always()
         shell: bash
         run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-epistemic-professional-browser-evidence
@@ -1325,7 +1325,7 @@ jobs:
             echo "Information-value remains diagnostic; required UI/product authorities are exercised by semantic, UI/UX, shell and stateful journey gates." >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-information-value-diagnostic

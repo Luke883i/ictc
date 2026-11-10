@@ -1,4 +1,4 @@
-name: TRAMA causal qualification
+name: Governance | Causal change qualification (TRAMA)
 
 on:
   pull_request:
@@ -65,7 +65,7 @@ jobs:
         run: node tests/verification/trama-causal-qualification-saturation-1m.mjs --trials 100000 --tail 10000 --seed 7000000000001047291
       - name: TRAMA parent regression
         run: node tests/verification/trama-engineering-check.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-c1-3d-test-boundary

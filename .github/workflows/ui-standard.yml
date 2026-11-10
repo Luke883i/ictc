@@ -1,4 +1,4 @@
-name: ictc-ui-standard-diagnostic
+name: Accessibility | UI viewport replay (manual)
 on:
   workflow_dispatch:
 permissions:
@@ -15,6 +15,7 @@ jobs:
       - name: Replay canonical semantic authority
         run: npm run test:current:semantic
   browser:
+    name: UI Standard | Historical browser matrix (manual)
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     steps:
@@ -53,7 +54,7 @@ jobs:
           python -u tests/browser/browser-pr60-polish.py
           python -u tests/browser/browser-onto-compliance-v1.py
           python -u tests/browser/browser-procedure-finetuning-1-4.py
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-ui-standard-diagnostic-browser

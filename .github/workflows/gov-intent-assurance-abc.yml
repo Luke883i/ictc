@@ -1,4 +1,4 @@
-name: GOV intent assurance ABC
+name: Governance | Intent and decision boundaries
 
 on:
   pull_request:

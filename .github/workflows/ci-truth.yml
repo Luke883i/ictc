@@ -1,4 +1,4 @@
-name: ictc-ci-truth
+name: CI Assurance | Check and evidence integrity
 on:
   pull_request:
     branches: [main]
@@ -27,7 +27,7 @@ jobs:
         run: node tests/verification/enterprise-t-saturation.mjs && node scripts/enterprise-invariant-convergence.mjs && node tests/verification/enterprise-t-audit.mjs && node tests/verification/enterprise-t-runtime-stress.mjs
       - name: Enforce non-expanding critical/high debt
         run: node tests/verification/ci-truth-check.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-ci-truth

@@ -1,4 +1,4 @@
-name: Demo Suite 2.2 Runtime Semantic
+name: Demo | Legacy dataset runtime checks
 
 on:
   pull_request:

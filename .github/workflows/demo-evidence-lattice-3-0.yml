@@ -1,4 +1,4 @@
-name: demo-evidence-lattice-3-0
+name: Demo | Evidence consistency
 on:
   pull_request:
     branches: [main]

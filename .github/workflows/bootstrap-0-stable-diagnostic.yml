@@ -1,4 +1,4 @@
-name: bootstrap-0-stable-diagnostic
+name: Diagnostics | Startup and release
 on:
   pull_request:
     branches: [main]

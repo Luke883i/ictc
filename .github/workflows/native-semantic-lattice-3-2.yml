@@ -1,4 +1,4 @@
-name: ictc-native-semantic-lattice-3-2
+name: Semantics | Native lattice consistency
 on:
   pull_request:
   workflow_dispatch:
@@ -61,7 +61,7 @@ jobs:
             FAILED_BROWSER_SCRIPT='tests/browser/browser-epistemic-overflow-probe.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-epistemic-overflow-causal-evidence

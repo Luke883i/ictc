@@ -1,4 +1,4 @@
-name: shell-admin-demo-semantic-impact
+name: Experience | Admin demo semantics
 on: [pull_request, workflow_dispatch]
 permissions: {contents: read}
 concurrency:

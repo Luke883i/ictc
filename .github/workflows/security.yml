@@ -1,4 +1,4 @@
-name: ictc-security
+name: Security | Code and supply-chain checks
 on:
   pull_request:
   push:
@@ -41,7 +41,7 @@ jobs:
       - run: node tests/verification/security-attack-saturation.mjs
       - run: npm run public-demo:check
       - run: npm run public-demo:saturation
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-security-runtime-dod
@@ -63,7 +63,7 @@ jobs:
       - run: node tests/verification/workflow-action-pin-check.mjs
       - run: node tests/verification/security-sast-check.mjs
       - run: node scripts/security-static-analysis-posture.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ictc-security-sast
           path: |
@@ -96,7 +96,7 @@ jobs:
           "$browser" --version
       - run: node --check tests/verification/security-fi01-dom-cdp-check.mjs
       - run: node tests/verification/security-fi01-dom-cdp-check.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-security-fi01-dom

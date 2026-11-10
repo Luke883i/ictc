@@ -1,4 +1,4 @@
-name: ictc-runtime-diagnostic
+name: Diagnostics | Runtime behavior
 on:
   pull_request:
   workflow_dispatch:

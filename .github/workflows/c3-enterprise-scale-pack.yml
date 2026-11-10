@@ -1,4 +1,4 @@
-name: c3-enterprise-scale-pack
+name: Runtime | Scale and capacity controls
 on:
   pull_request:
   workflow_dispatch:
