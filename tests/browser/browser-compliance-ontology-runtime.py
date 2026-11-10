@@ -73,7 +73,8 @@ try:
     hub=page.locator('#procedureHub')
     rows=hub.locator('[data-process-code][data-catalogue-kind="procedure"]')
     assert rows.count()==7,('process-count',rows.count())
-    assert rows.evaluate_all('els=>els.map(e=>e.dataset.processCode)')==['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']
+    # Keep the existing server-derived CATALOGUE_SPEC presentation order, not an invented flow order.
+    assert rows.evaluate_all('els=>els.map(e=>e.dataset.processCode)')==['MC-01','RN-01','AO-01','EC-01','AP-01','RC-01','AR-01']
     assert hub.locator('.process-inline-handoff').count()==7,'seven scope/handoff rows expected'
     assert page.locator('#processesView [data-compliance-process-placement]').count()==0,'old duplicate handoff map'
     assert page.locator('#processesView [data-compliance-overview-host]').count()==0,'old duplicate scope grid'
