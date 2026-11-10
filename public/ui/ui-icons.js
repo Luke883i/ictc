@@ -16,6 +16,9 @@ const ICONS=Object.freeze({
   'list-todo':'<rect x="3" y="4" width="6" height="6" rx="1"/><path d="m4 7 2 2 2-3M13 7h8M3 17h6M13 17h8M3 21h6"/>',
   'shield-alert':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v5M12 17h.01"/>',
   'clipboard-check':'<rect x="5" y="4" width="14" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/>',
+  'book-search':'<path d="M12 6.5c-1.3-1.3-3-2-5-2H3v14h4c2.1 0 3.7.7 5 2v-14Z"/><path d="M12 6.5c1.3-1.3 3-2 5-2h2v7"/><path d="M12 20.5v-5"/><circle cx="18" cy="16" r="2.7"/><path d="m20 18 2 2"/>',
+  'clipboard-search':'<rect x="5" y="4" width="14" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><circle cx="11" cy="14" r="3"/><path d="m13.4 16.4 2.6 2.6"/>',
+  'list-checks':'<path d="M9 6h12M9 12h12M9 18h12"/><path d="m3 6 1.5 1.5L7 4M3 12h4M3 18h4"/>',
   'triangle-alert':'<path d="M10.3 3.8 2.4 18a2 2 0 0 0 1.8 3h15.6a2 2 0 0 0 1.8-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>'
 });
 export function uiIcon(name,className='ui-icon'){
@@ -26,5 +29,5 @@ export function uiIcon(name,className='ui-icon'){
 export const UI_ICON_NAMES=Object.freeze(Object.keys(ICONS));
 
 // Single presentation mapping; process identity and availability remain in procedureRegistry.
-export const PROCESS_ICON_BY_CODE=Object.freeze({'RN-01':'book-open-check','EC-01':'siren','AO-01':'boxes','MC-01':'layers-3','AP-01':'list-todo','RC-01':'shield-alert','AR-01':'clipboard-check'});
+export const PROCESS_ICON_BY_CODE=Object.freeze({'RN-01':'book-search','EC-01':'siren','AO-01':'boxes','MC-01':'list-checks','AP-01':'list-todo','RC-01':'shield-alert','AR-01':'clipboard-search'});
 export const processIcon=code=>PROCESS_ICON_BY_CODE[code]||'info';
