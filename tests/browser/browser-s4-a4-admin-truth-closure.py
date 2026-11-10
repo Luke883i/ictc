@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback, urllib.parse
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
@@ -15,7 +16,7 @@ SLICES={
 INJECTED_STATUS={'readiness':404,'usage':503,'users':500,'identity':502}
 
 def open_admin(page):
-    page.goto(f'{BASE}/?view=home',wait_until='domcontentloaded')
+    page.goto(f'{BASE}/?view=home',wait_until='domcontentloaded'); ensure_onboarded(page,BASE,'admin')
     page.wait_for_function("()=>Number(document.documentElement.dataset.experienceCycle||0)>0")
     menu=page.locator('#stableProfileMenu'); expect(menu.locator(':scope > summary')).to_be_visible()
     if menu.get_attribute('open') is None: menu.locator(':scope > summary').click()

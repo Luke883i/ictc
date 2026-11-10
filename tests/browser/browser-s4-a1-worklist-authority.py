@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback, urllib.parse
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[2];ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4807').rstrip('/');EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').strip().lower();PHASE='init';RESULTS=[];NETWORK=[];FAILURES=[];PAGE_ERRORS=[]
 PROCEDURES=[('RN-01','monitoring'),('EC-01','incidents'),('AO-01','objects'),('MC-01','coverage'),('AP-01','actions'),('RC-01','risks'),('AR-01','assurance')]
@@ -35,7 +36,7 @@ try:
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':950});ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");request=ctx.request;PHASE='runtime-health';health=api_get(request,'/api/health');assert health['status']==200;PHASE='runtime-identity';identity=api_get(request,'/api/admin/identity');assert identity['status']==200;build_identity=(identity['body'] or {}).get('buildIdentity') or {};build=build_identity.get('build') or {};assert build_identity.get('authority')=='runtime-build-identity'
   if EXPECTED_SHA: assert build.get('sha')==EXPECTED_SHA,(EXPECTED_SHA,build);assert build.get('exact') is True;assert build.get('dirty') is False
-  page=ctx.new_page();page.set_default_timeout(30000);page.on('response',lambda res:NETWORK.append({'method':res.request.method,'path':urllib.parse.urlparse(res.url).path,'status':res.status}) if res.url.startswith(BASE+'/api/') else None);page.on('requestfailed',lambda req:FAILURES.append({'method':req.method,'url':req.url,'failure':req.failure}));page.on('pageerror',lambda exc:PAGE_ERRORS.append(str(exc)));PHASE='bootstrap';page.goto(BASE+'/?view=home',wait_until='domcontentloaded')
+  page=ctx.new_page();page.set_default_timeout(30000);page.on('response',lambda res:NETWORK.append({'method':res.request.method,'path':urllib.parse.urlparse(res.url).path,'status':res.status}) if res.url.startswith(BASE+'/api/') else None);page.on('requestfailed',lambda req:FAILURES.append({'method':req.method,'url':req.url,'failure':req.failure}));page.on('pageerror',lambda exc:PAGE_ERRORS.append(str(exc)));PHASE='bootstrap';page.goto(BASE+'/?view=home',wait_until='domcontentloaded');ensure_onboarded(page,BASE,'admin')
   try: page.wait_for_function("()=>Number(document.documentElement.dataset.experienceCycle||0)>0&&document.documentElement.dataset.nativeSemanticLattice==='3.2.0'")
   except BaseException:
    diag=page.evaluate("()=>({cycle:document.documentElement.dataset.experienceCycle||'0',lattice:document.documentElement.dataset.nativeSemanticLattice||'none',composition:document.documentElement.dataset.enduserComposition||'none'})")

@@ -1,5 +1,6 @@
 import json, os, pathlib, traceback
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4823').rstrip('/'); EXPECTED_SHA=(os.environ.get('ICTC_EXPECT_BUILD_SHA') or '').strip().lower(); PHASE='init'; RESULTS=[]; WRITES=[]; PAGE_ERRORS=[]
 def fail(exc):
@@ -32,7 +33,7 @@ try:
   if os.environ.get('ICTC_CHROMIUM'):launch['executable_path']=os.environ['ICTC_CHROMIUM']
   browser=pw.chromium.launch(**launch);ctx=browser.new_context(viewport={'width':1440,'height':1000});ctx.add_init_script("localStorage.setItem('ictc-profile','demo');localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");page=ctx.new_page();page.set_default_timeout(30000)
   page.on('pageerror',lambda e:PAGE_ERRORS.append(str(e)));page.on('request',lambda r:WRITES.append({'method':r.method,'url':r.url}) if '/api/' in r.url and r.method not in ('GET','HEAD','OPTIONS') else None)
-  PHASE='bootstrap';page.goto(BASE+'/?view=processes',wait_until='networkidle');page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'")
+  PHASE='bootstrap';page.goto(BASE+'/?view=processes',wait_until='networkidle');ensure_onboarded(page,BASE,'admin');page.wait_for_function("()=>document.documentElement.dataset.nativeSemanticLattice==='3.2.0'")
   PHASE='identity';identity=ctx.request.get(f'{BASE}/api/admin/identity',headers={'X-ICTC-Role':'admin'}).json();build=(identity.get('buildIdentity') or {}).get('build') or {};assert not EXPECTED_SHA or (build.get('sha')==EXPECTED_SHA and build.get('exact') is True and build.get('dirty') is False),(build,EXPECTED_SHA)
   PHASE='MC-primary-intent';open_process(page,'MC-01');page.wait_for_function("()=>document.querySelectorAll('[data-framework-card]').length>0");cards=page.locator('[data-framework-card]');assert cards.count()>0
   for i in range(cards.count()):
