@@ -45,6 +45,7 @@ jobs:
           trap './ictc.sh stop --profile current || true' EXIT
           python -u tests/browser/browser-shell-admin-demo-2-6.py
       - name: Expose failure phase as a separately named diagnostic artifact
+        id: report_phase
         if: failure()
         shell: bash
         env:
@@ -57,15 +58,17 @@ jobs:
           if source.is_file():
               payload=json.loads(source.read_text(encoding='utf-8'))
               phase=re.sub('[^a-zA-Z0-9_-]','-',str(payload.get('phase','unknown')))[:70]
+              with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase='+phase+'\n')
               pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-{phase}.txt').write_text(
                   'PHASE='+phase+'\\nERROR='+str(payload.get('message','unknown'))[:1500]+'\\n',encoding='utf-8')
           else:
+              with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase=no-report\n')
               pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-no-error-report.txt').write_text('No error JSON generated\\n',encoding='utf-8')
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: failure()
         with:
-          name: shell-admin-demo-failure-phase-${{ matrix.mode }}
+          name: shell-admin-demo-failure-phase-${{ matrix.mode }}-${{ steps.report_phase.outputs.phase }}
           path: artifacts/shell-admin-demo-phase-*.txt
           if-no-files-found: error
           retention-days: 7
