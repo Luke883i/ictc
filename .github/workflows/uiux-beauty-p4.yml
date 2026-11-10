@@ -83,7 +83,9 @@ jobs:
               check = match.group(1) if match else 'unknown-check'
               detail = re.search(r'\"detail\"\s*:\s*\{[^{}]*\"count\"\s*:\s*(\d+)', message)
               count = 'count='+detail.group(1) if detail else 'count=unknown'
-              signature = f'{phase}|{check}|{count}'[:180]
+              owner = re.search(r'\"owner\"\s*:\s*\"([^\"]+)\"', message)
+              when = re.search(r'\"whenCount\"\s*:\s*(\d+)', message)
+              signature = f'{phase}|{check}|{count}|owner={owner.group(1) if owner else "unknown"}|when={when.group(1) if when else "unknown"}'[:180]
               print('signature=' + signature)
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

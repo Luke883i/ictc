@@ -95,7 +95,7 @@ JS_AUDIT = r'''({surface,width}) => {
     const details=[...root.querySelectorAll('#procedureHub .process-inline-detail > summary')];
     check('processes-single-context-present',!!context,{context:!!context});
     check('processes-parallel-grids-absent',!redundant,{redundant:redundant?.outerHTML.slice(0,160)});
-    check('processes-seven-inline-handoffs',handoffs.length===7,{count:handoffs.length});
+    check('processes-seven-inline-handoffs',handoffs.length===7,{count:handoffs.length,whenCount:root.querySelectorAll('#procedureHub .process-inline-when').length,owner:root.querySelector('#procedureHub')?.dataset.procedureHub||'none',codes:cards.map(e=>e.dataset.processCode).join(',')});
     check('processes-seven-progressive-details',details.length===7&&details.every(x=>x.getBoundingClientRect().height>=43.5),{count:details.length,heights:details.map(x=>x.getBoundingClientRect().height)});
     uncapped('processes-lead-no-artificial-cap',root.querySelector('.processes-head p'));
     for(const [i,card] of cards.entries()){
