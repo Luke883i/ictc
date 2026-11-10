@@ -59,9 +59,14 @@ jobs:
               payload=json.loads(source.read_text(encoding='utf-8'))
               phase=re.sub('[^a-zA-Z0-9_-]','-',str(payload.get('phase','unknown')))[:70]
               message=str(payload.get('message',''))
+              try:
+                  import ast
+                  metric_values=ast.literal_eval(message)
+                  if not isinstance(metric_values,dict): metric_values={}
+              except (ValueError, SyntaxError):
+                  metric_values={}
               def metric(name):
-                  matched=re.search(r"['\\\"]"+name+r"['\\\"]:\\s*([0-9.]+)",message)
-                  return matched.group(1) if matched else 'x'
+                  return str(metric_values.get(name,'x'))
               summary='-o'+metric('overlaps')+'-h'+metric('footerHeight')+'-p'+metric('bodyPaddingBottom')+'-s'+metric('scrollPaddingBottom')
               phase=(phase+summary)[:105]
               with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase='+phase+'\n')
