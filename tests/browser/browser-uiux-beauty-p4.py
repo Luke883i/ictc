@@ -95,7 +95,7 @@ JS_AUDIT = r'''({surface,width}) => {
       check('processes-disclosures-equal-height',Math.abs(a.height-b.height)<=2&&a.height>=79.5,{connection:a.height,context:b.height});
       check('processes-disclosures-equal-typography',sa.fontSize===sb.fontSize&&sa.fontWeight===sb.fontWeight&&sa.lineHeight===sb.lineHeight,{font:[sa.fontSize,sb.fontSize],weight:[sa.fontWeight,sb.fontWeight],lineHeight:[sa.lineHeight,sb.lineHeight]});
       check('processes-disclosures-equal-surface',sa.backgroundColor===sb.backgroundColor&&sa.borderRadius===sb.borderRadius&&sa.padding===sb.padding,{background:[sa.backgroundColor,sb.backgroundColor],padding:[sa.padding,sb.padding]});
-      check('processes-disclosure-human-copy',(connection.textContent||'').includes('Come si collegano i processi')&&(connection.textContent||'').includes('Passaggi di lavoro tra fonti, rischi, azioni e verifiche.'),{text:connection.textContent?.trim().slice(0,140)});
+      check('processes-disclosure-human-copy',(connection.textContent||'').includes('Come si collegano i processi')&&(connection.textContent||'').includes('Collegamenti possibili, non ordine obbligatorio.'),{text:connection.textContent?.trim().slice(0,140)});
     }
 
     uncapped('processes-lead-no-artificial-cap',root.querySelector('.processes-head p'));

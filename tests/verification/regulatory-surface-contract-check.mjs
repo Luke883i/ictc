@@ -47,7 +47,7 @@ assert.deepEqual(primitiveCounts,ledger.primitiveCounts);
 for(const u of units){assert.ok(u.observation&&u.title&&u.primitive&&u.runtimeRefs.length,u.id);}
 assert.equal(Object.keys(REGULATORY_PRIMERS).length,5,'five canonical legal primers must remain first-plane');
 assert.equal((index.match(/data-regulatory-open/g)||[]).length,1,'exactly one global regulatory entry required');
-assert.ok(index.includes('Normativa &amp; Compliance'),'global regulatory entry missing');
+assert.ok(index.includes('Esplora normative e fonti')&&index.indexOf('data-regulatory-open')>index.indexOf('id="processesView"'),'regulatory dialog must be reachable inside processes, not a fourth nav item');
 assert.ok(!/data-service="regulatory"/.test(index),'regulatory presentation must not become a fourth service authority');
 assert.equal((index.match(/data-service=/g)||[]).filter(Boolean).length>=3,true);
 assert.ok(surface.includes("from './regulatory-primers.js'")&&surface.includes('state.data?.standards'),'surface must project canonical primers + runtime catalog');

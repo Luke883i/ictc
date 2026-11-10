@@ -31,80 +31,50 @@ for(const item of HOME_COMPLIANCE.examples){
 }
 assert.ok(HOME_COMPLIANCE.examples.find(x=>x.id==='231/2001')?.boundary.includes('non è un adempimento automaticamente obbligatorio'));
 assert.ok(HOME_COMPLIANCE.examples.find(x=>x.id==='NIS2')?.nationalUrl.includes('24G00155'),'NIS2 Italy transposition reference absent');
-const homeNarrativeOracle=(h,sh,style)=>(
-  h.includes('id="homeComplianceOverview"')&&
-  h.indexOf('id="homeComplianceOverview"')<h.indexOf('id="homePriorities"')&&
+/* Post-278: source-level Home-and-Process convergence; presentation before work,
+   no duplicated catalogue and no additional write authority. */
+const currentNarrativeOracle=(h,sh,style,fr=frame,context=contextJs)=>
+  h.indexOf('id="homeComplianceOverview"')>=0&&
+  h.indexOf('id="homeComplianceOverview"')<h.indexOf('class="home-hero"')&&
+  h.includes('<h2 id="homeTitle">Cosa richiede una decisione</h2>')&&
   sh.includes('renderHomePulse();renderHomeCompliance();renderHomeBoarding()')&&
-  sh.includes('catalogue.filter(item=>item.enabled!==false)')&&
-  sh.includes("const placeholder=item.kind==='placeholder'")&&
-  sh.includes("placeholder?'Area prevista, non operativa.")&&
-  sh.includes("esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')")&&
+  sh.includes('workPlane.before(host)')&&
+  sh.includes("homeFirstPlane='value>guide>worklist'")&&
+  sh.includes('guide.open=homeGuideExpanded')&&
+  sh.includes('data-home-case-first')&&
+  sh.includes("<h1>'+esc(ICTC_MANIFEST.title)+'</h1>")&&
+  !sh.includes('data-home-procedure-catalogue')&&
   sh.includes("if(!source)throw new Error('Regulatory example source unavailable: '")&&
-  sh.includes('if(lastHomeComplianceHtml!==html||!host.querySelector')&&
-  sh.includes('data-home-business-guide')&&
+  sh.includes('lastHomeComplianceHtml=html;')&&
   sh.includes('class="home-compliance-route" data-service="proof"')&&
-  style.includes('#homeView .home-compliance-overview')&&
-  style.includes('.home-compliance-detail>summary')&&
-  style.includes('@media(max-width:760px)')&&
-  style.includes('#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}')
-);
-assert.ok(homeNarrativeOracle(index,shell,enterprise),'Home narrative projection / local owner contract broken');
+  fr.includes('processComplianceOverviewHtml(catalogue)')&&
+  fr.includes('overview.after(host)')&&
+  context.includes('processComplianceOverviewHtml(catalogue=[]')&&
+  style.includes('#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}')&&
+  style.includes('#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:none;min-width:0;white-space:normal');
+assert.ok(currentNarrativeOracle(index,shell,enterprise),'Home and Process canonical presentation contract broken');
 const narrativeMutants=[
-  [index,'id="homeComplianceOverview"','id="otherHomeOverview"',null,null],
-  [shell,'renderHomePulse();renderHomeCompliance();renderHomeBoarding()','renderHomePulse();renderHomeBoarding()',null,null],
-  [shell,'catalogue.filter(item=>item.enabled!==false)','catalogue',null,null],
-  [shell,"const placeholder=item.kind==='placeholder'","const placeholder=false",null,null],
-  [shell,"placeholder?'Area prevista, non operativa.","placeholder?'",null,null],
-  [shell,"esc(placeholder?'Contenuto futuro, senza funzione operativa.':item.description||'Descrizione non disponibile.')","item.description||'Descrizione non disponibile.'",null,null],
-  [shell,"if(!source)throw new Error('Regulatory example source unavailable: '","if(false)throw new Error('Regulatory example source unavailable: '",null,null],
-  [shell,'if(lastHomeComplianceHtml!==html||!host.querySelector','if(false||!host.querySelector',null,null],
-  [shell,'class="home-compliance-route" data-service="proof"','class="home-compliance-route" data-service="home"',null,null],
-  [enterprise,'#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}','#otherView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}',null,null]
+ [index,'id="homeComplianceOverview"','id="homeComplianceRetired"'],
+ [index,'<h2 id="homeTitle">','<h1 id="homeTitle">'],
+ [shell,'renderHomePulse();renderHomeCompliance();renderHomeBoarding()','renderHomePulse();renderHomeBoarding()'],
+ [shell,'workPlane.before(host)','workPlane.after(host)'],
+ [shell,"homeFirstPlane='value>guide>worklist'","homeFirstPlane='decision>worklist'"],
+ [shell,'guide.open=homeGuideExpanded','guide.open=false'],
+ [shell,'data-home-case-first','data-home-case-retired'],
+ [shell,"<h1>'+esc(ICTC_MANIFEST.title)+'</h1>","<h2>'+esc(ICTC_MANIFEST.title)+'</h2>"],
+ [shell,"if(!source)throw new Error('Regulatory example source unavailable: '","if(false)throw new Error('Regulatory example source unavailable: '"],
+ [shell,'class="home-compliance-route" data-service="proof"','class="home-compliance-route" data-service="home"'],
+ [frame,'processComplianceOverviewHtml(catalogue)','processComplianceOverviewHtml([])'],
+ [frame,'overview.after(host)','hub.after(host)'],
+ [contextJs,'processComplianceOverviewHtml(catalogue=[]','processComplianceOverviewHtml([]=[]'],
+ [enterprise,'#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:none;min-width:0;white-space:normal','#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:82ch;min-width:0;white-space:normal'],
 ];
-for(const [source,from,to] of narrativeMutants){
-  assert.ok(source.includes(from),'stale Home mutation fixture: '+from);
-  const changed=source.replace(from,to);
-  assert.ok(!homeNarrativeOracle(source===index?changed:index,source===shell?changed:shell,source===enterprise?changed:enterprise),
-    'Home semantic mutant survived: '+from);
-}
-
-/* HOME-ORDER-4: the Home explains the product before presenting the current work.
- * The retired decision card remains an inert compatibility target, never a visible badge.
- * Business targets continue to be owned by the server worklist and existing router.
- */
-const homeOrderOracle=(h,sh,style)=>{
-  const home=h.slice(h.indexOf('id="homeView"'),h.indexOf('id="processesView"'));
-  const intro=home.indexOf('id="homeComplianceOverview"'),work=home.indexOf('class="home-hero"');
-  return intro>=0&&work>intro&&
-    home.includes('data-home-compat-only="true"')&&home.includes('hidden inert aria-hidden="true"')&&
-    sh.includes('Priorità per processo')&&sh.includes("ensureComplianceContext(root,'home',{after:workPlane,compact:true})")&&
-    sh.includes('lastHomeComplianceHtml=html;')&&sh.includes("const host=$('#homeComplianceOverview');if(!host)return;")&&
-    style.includes('height:auto;max-height:none;min-height:0;display:grid;align-content:start;')&&
-    style.includes('grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "priorities"!important')&&
-    style.includes('padding-bottom:var(--a6-ux1-footer-reserve,44px)!important')&&
-    style.includes('#homeView .home-intro{padding:.2rem .35rem!important;gap:.28rem!important}')&&
-    style.includes('#homeView #homeTitle{font-size:clamp(1.35rem,2.2vw,1.8rem)!important')&&
-    style.includes('#homeView details.home-compliance-detail:not([open]) > :not(summary){display:none!important');
-};
-assert.ok(homeOrderOracle(index,shell,enterprise),'Home semantic four-plane order or inert badge retirement broken');
-for(const [preimage,from,to] of [
-  [index,'id="homeComplianceOverview"','id="homeComplianceOld"'],
-  [index,'data-home-compat-only="true"','data-home-compat-only="false"'],
-  [index,'hidden inert aria-hidden="true"','data-visible="true"'],
-  [shell,'Priorità per processo','Priorità generiche'],
-  [shell,'lastHomeComplianceHtml=html;','lastHomeComplianceHtml=null;'],
-  [shell,"const host=$('#homeComplianceOverview');if(!host)return;","const host=$('#homeComplianceOverview');if(!host||!state.data)return;"],
-  [enterprise,'height:auto;max-height:none;min-height:0;display:grid;align-content:start;','height:100vh;max-height:100vh;min-height:0;display:grid;align-content:center;'],
-  [enterprise,'grid-template-areas:"intro" "priorities"!important','grid-template-areas:"intro next" "priorities priorities"!important'],
-  [enterprise,'padding-bottom:var(--a6-ux1-footer-reserve,44px)!important','padding-bottom:0!important'],
-  [enterprise,'#homeView details.home-compliance-detail:not([open]) > :not(summary){display:none!important','#homeView details.home-compliance-detail[open] > :not(summary){display:none!important']
-]){
-  assert.ok(preimage.includes(from),'stale Home-order mutant '+from);
+for(const [preimage,from,to] of narrativeMutants){
+  assert.ok(preimage.includes(from),'stale narrative mutation fixture: '+from);
   const candidate=preimage.replace(from,to);
-  assert.ok(!homeOrderOracle(preimage===index?candidate:index,preimage===shell?candidate:shell,preimage===enterprise?candidate:enterprise),'Home-order mutant survived: '+from);
+  assert.ok(!currentNarrativeOracle(preimage===index?candidate:index,preimage===shell?candidate:shell,preimage===enterprise?candidate:enterprise,preimage===frame?candidate:frame,preimage===contextJs?candidate:contextJs),'semantic mutant survived: '+from);
 }
-
-assert.ok(index.includes('<h1 id="homeTitle">Cosa richiede una decisione</h1>')&&shell.includes("title.textContent='Cosa richiede una decisione'")&&shell.includes("homeFirstPlane='decision>worklist'")&&shell.includes("priorities.dataset.homeWorkQueue='3.2'")&&shell.includes("priorities.dataset.uiuxConverge='P1'"),'Home must be work-first and visible-cutover bounded');
+assert.ok(index.includes('<h2 id="homeTitle">Cosa richiede una decisione</h2>')&&shell.includes("title.textContent='Cosa richiede una decisione'")&&shell.includes("homeFirstPlane='value>guide>worklist'")&&shell.includes("priorities.dataset.homeWorkQueue='3.2'")&&shell.includes("priorities.dataset.uiuxConverge='P1'"),'Home priority work queue must remain bounded below the value narrative');
 assert.ok(shell.includes("uiIcon('arrow-up-right'")&&shell.includes("uiIcon('chevron-right'"),'Home directional actions must use icons');
 assert.ok(frame.includes('data-uiux-layout="row"')&&frame.includes("host.dataset.uiuxLayout='rows'"),'Process Hub row contract missing');
 assert.ok(frame.includes("uiIcon('chevron-left'")&&frame.includes("uiIcon('arrow-up-right'"),'Procedure icon affordances missing');
@@ -142,7 +112,7 @@ function pcOracle(f,c,s){
  if(!f.includes('Maturità dichiarata:')||f.includes('Indicativa: non certifica conformità né disponibilità.'))return false;
  for(const x of ["ready:Object.freeze({label:'Pronto',icon:'badge-check'","'scaffold-yellow':Object.freeze({label:'Parziale',icon:'circle-half'","'scaffold-orange':Object.freeze({label:'In costruzione',icon:'wrench'","placeholder:Object.freeze({label:'Segnaposto',icon:'circle-slash'"])if(!f.includes(x))return false;
  if(!f.includes("placeholder?'Area prevista, non operativa.'")||!f.includes('aria-disabled="true"'))return false;
- if(!c.includes('<summary><span><b>Come si collegano i processi</b><small>Passaggi di lavoro tra fonti, rischi, azioni e verifiche.</small></span><span aria-hidden="true">›</span></summary>'))return false;
+ if(!c.includes('<summary><span><b>Come si collegano i processi</b><small>Collegamenti possibili, non ordine obbligatorio.</small></span><span aria-hidden="true">›</span></summary>')||!f.includes('overview.after(host)')||!c.includes('processComplianceOverviewHtml(catalogue=[]'))return false;
  if(!pcRule(s,'#processesView .processes-head{').includes('max-width:none!important;inline-size:100%;box-sizing:border-box;min-width:0'))return false;
  const badge=pcRule(s,':is(#procedureHub,.procedure-maturity-legend) .procedure-maturity{');
  if(['--maturity-bg','--maturity-border','--maturity-ink'].some(t=>!badge.includes('var('+t)))return false;
@@ -161,7 +131,7 @@ const pcOps=[
  ['false-placeholder',(a,i)=>a[2]=a[2].replace('--maturity-bg:#edf0f3','--maturity-bg:'+pcWrongColor(190+i%10,185+Math.floor(i/10)*2,240+i%10))],
  ['overclaim',(a,i)=>a[0]=a[0].replace("ready:Object.freeze({label:'Pronto',icon:'badge-check'","ready:Object.freeze({label:'Pronto certificato livello "+(i+1)+"',icon:'circle-slash'")],
  ['wrong-count',(a,i)=>a[1]=a[1].replace('Come si collegano i processi</b>','Come si collegano i '+(i+1)+' processi</b>')],
- ['false-description',(a,i)=>a[1]=a[1].replace('Passaggi di lavoro tra fonti, rischi, azioni e verifiche.','Conformità automatica su '+(i+1)+' cicli certificati.')],
+ ['false-description',(a,i)=>a[1]=a[1].replace('Collegamenti possibili, non ordine obbligatorio.','Conformità automatica su '+(i+1)+' cicli certificati.')],
  ['short-summary',(a,i)=>a[2]=a[2].replace('min-height:80px;display:flex;align-items:center;justify-content:space-between','min-height:'+(30+i*.39).toFixed(2)+'px;display:flex;align-items:center;justify-content:space-between')]
 ];
 const pcBaseline=[frame,contextJs,closureCss],pcSeed=0x1c7c2026;assert.ok(pcOracle(...pcBaseline),'Processes landing must meet the source-level DoD');

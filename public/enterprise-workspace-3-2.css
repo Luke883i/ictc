@@ -134,8 +134,8 @@ html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] details
 #homeView .home-compliance-overview h2{font-size:clamp(1.35rem,2.25vw,1.9rem);line-height:1.2;letter-spacing:-.025em;margin:.2rem 0 .38rem}
 #homeView .home-compliance-overview h3{font-size:1.04rem;line-height:1.35;margin-bottom:.42rem}
 #homeView .home-compliance-overview h4{font-size:.92rem}
-#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:82ch}
-#homeView .home-compliance-story p,#homeView .home-compliance-answer p{max-width:90ch;line-height:1.55}
+#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:none;min-width:0;white-space:normal;overflow-wrap:break-word}
+#homeView .home-compliance-story p,#homeView .home-compliance-answer p{max-width:none;min-width:0;white-space:normal;line-height:1.55;overflow-wrap:break-word}
 #homeView .home-compliance-questions ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;list-style:none;margin:0;padding:0}
 #homeView .home-compliance-questions li{min-width:0;padding:.65rem .75rem;background:var(--color-bg);border:1px solid var(--color-border);border-radius:10px}
 #homeView .home-compliance-questions li p{font-size:.88rem;line-height:1.45;color:var(--color-muted);margin-top:.2rem}
@@ -177,3 +177,43 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 
 /* Preserve native closed-details semantics against author display:grid on guide content. */
 #homeView details.home-compliance-detail:not([open]) > :not(summary){display:none!important}
+
+/* Post-278 bounded narrative/cognitive convergence. No global override or second UI owner. */
+#homeView .home-compliance-overview{min-width:0}
+#homeView .home-compliance-heading h1{font-size:clamp(1.65rem,2.8vw,2.5rem);line-height:1.15;letter-spacing:-.025em;margin:.2rem 0 .45rem;text-wrap:pretty}
+#homeView .home-compliance-full[open]>summary{margin-bottom:.5rem}
+#homeView .home-compliance-overview :is(p,small,h1,h2,h3){min-width:0;max-width:100%;overflow-wrap:break-word}
+#processesView .processes-head{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center}
+#processesView .processes-regulatory-button{min-height:44px;padding:.6rem .85rem;white-space:normal}
+#processesView .process-compliance-overview,#processesView .compliance-process-lifecycle{margin:.8rem 0 1.15rem;padding:clamp(.8rem,2vw,1.25rem);border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}
+#processesView .process-compliance-overview header{margin-bottom:.8rem}
+#processesView .process-compliance-overview h2{margin:.2rem 0 .35rem;font-size:clamp(1.15rem,2vw,1.55rem)}
+#processesView .process-scope-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:.7rem;list-style:none;margin:.8rem 0;padding:0}
+#processesView .process-scope-card{display:flex;align-items:flex-start;gap:.6rem;min-width:0;padding:.75rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-bg)}
+#processesView .process-scope-card p{font-size:.85rem;line-height:1.45;margin:.35rem 0 0;overflow-wrap:break-word}
+#processesView .process-scope-icon,#processesView .process-card-icon{display:grid;place-items:center;flex-shrink:0;width:2.2rem;height:2.2rem;border-radius:10px;background:var(--color-surface);border:1px solid var(--color-border)}
+#processesView .process-scope-icon .process-icon,#processesView .process-card-icon .process-icon{width:1.4rem;height:1.4rem}
+#processesView .process-handoff-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,185px),1fr));gap:.5rem;overflow-x:visible;list-style:none;padding:.65rem 0 .8rem;margin:0}
+#processesView .process-handoff-flow li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;column-gap:.4rem;row-gap:.3rem;min-width:0;padding:.65rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);overflow-wrap:anywhere}
+#processesView .process-handoff-flow li small{grid-column:1 / -1;line-height:1.45;overflow-wrap:break-word}
+#processesView .process-handoff-flow li+li::before{content:'↳';font-weight:800;opacity:.65;grid-column:1;grid-row:1}
+#processesView .process-handoff-flow .process-icon{width:1.15rem;height:1.15rem}
+#processesView .procedure-card>header{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:.15rem;min-width:0}
+#processesView .procedure-card .process-card-icon{width:2rem;height:2rem}
+#processesView :is(.process-compliance-overview,.compliance-process-lifecycle) .boundary{font-size:.8rem;line-height:1.5}
+#processesView .processes-regulatory-button:focus-visible,#processesView .process-scope-card:focus-within{outline:3px solid var(--color-focus,currentColor);outline-offset:3px}
+@media(max-width:600px){#processesView .process-handoff-flow{grid-template-columns:1fr}#processesView .process-compliance-overview,#processesView .compliance-process-lifecycle{padding:.75rem}}
+@media(prefers-reduced-motion:reduce){#processesView .process-handoff-flow{scroll-behavior:auto}}
+/* Min-content must not let long process labels push mobile layouts sideways. */
+#processesView [data-compliance-overview-host],#processesView [data-compliance-process-map],#processesView .compliance-process-lifecycle-body,#processesView .process-scope-grid,#processesView .process-scope-card>div{min-width:0;max-width:100%}
+#processesView .process-scope-card :is(p,b,strong,small){overflow-wrap:anywhere}
+#processesView .compliance-process-lifecycle-body{overflow-x:hidden}
+/* Confine del carosello: lo scorrimento dei handoff resta locale, non sulla pagina. */
+#processesView{overflow-x:clip}
+
+/* Keep the responsive Processi surface within the viewport at every width. */
+#processesView{box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;overflow-x:clip;contain:inline-size}
+#processesView :is([data-compliance-overview-host],[data-compliance-process-map],.process-compliance-overview,.compliance-process-lifecycle,.compliance-process-lifecycle-body){box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+#processesView .process-scope-grid,#processesView .process-handoff-flow{min-inline-size:0;max-inline-size:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+#processesView .process-scope-card,#processesView .process-handoff-flow>li{min-inline-size:0;max-inline-size:100%;box-sizing:border-box}
+#processesView .processes-head>*{min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}

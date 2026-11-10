@@ -18,7 +18,7 @@ def ensure_onboarding(page):
 def run(browser,w,h,label):
  c=browser.new_context(viewport={'width':w,'height':h});c.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')");p=c.new_page();p.set_default_timeout(20000);p.goto(BASE,wait_until='networkidle');accepted_now=ensure_onboarding(p)
  # Canonical navigation authority remains exactly three services.
- expect(p.locator('.service-nav [data-service]')).to_have_count(3);expect(p.locator('[data-regulatory-open]')).to_have_count(1)
+ expect(p.locator('.service-nav [data-service]')).to_have_count(3);expect(p.locator('[data-regulatory-open]')).to_have_count(1);p.locator('.service-nav [data-service="processes"]').click()
  p.locator('[data-regulatory-open]').click();d=p.locator('#regulatoryDialog');expect(d).to_be_visible();assert d.get_attribute('data-authority-effect')=='none'
  expect(d.locator('.regulatory-card-law')).to_have_count(5);expect(d.locator('.regulatory-card-reference')).to_have_count(17)
  txt=d.inner_text();

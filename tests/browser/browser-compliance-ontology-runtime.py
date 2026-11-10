@@ -8,7 +8,10 @@ SURFACES=[('home','home','#homeView'),('processes','processes','#processesView')
 CODES={'monitoring':'RN-01','incidents':'EC-01','objects':'AO-01','coverage':'MC-01','actions':'AP-01','risks':'RC-01','assurance':'AR-01'}
 
 def no_overflow(page):
- m=page.evaluate("()=>({inner:innerWidth,html:document.documentElement.scrollWidth,body:document.body.scrollWidth})"); assert max(m['html'],m['body'])<=m['inner']+1,m
+ m=page.evaluate("""()=>{const w=innerWidth,html=document.documentElement.scrollWidth,body=document.body.scrollWidth;
+   const offenders=[...document.querySelectorAll('body *')].map(node=>{const r=node.getBoundingClientRect(),cs=getComputedStyle(node);return{tag:node.tagName.toLowerCase(),id:node.id,cls:typeof node.className==='string'?node.className.slice(0,48):'',right:Math.round(r.right),width:Math.round(r.width),display:cs.display}}).filter(x=>x.right>w+2&&x.display!=='none').sort((a,b)=>b.right-a.right).slice(0,8);
+   return{inner:w,html,body,offenders};}""")
+ assert max(m['html'],m['body'])<=m['inner']+1,('width='+str(m['html'])+'/'+str(m['body'])+'@'+str(m['inner'])+' top='+str(m['offenders'][:2]),m)
 
 def build_identity(page):
  h=page.request.get(BASE+'/api/admin/identity',headers={'X-ICTC-Role':'admin'}).json(); build=((h.get('buildIdentity') or {}).get('build') or {}); sha=(build.get('sha') or ''); assert build.get('exact') is True,build
@@ -66,7 +69,13 @@ try:
    if route in CODES: open_process(page,route)
    else: goto(page,route,root)
    check_context(page,key,root); screenshot(page,key); out['surfaces'].append(key)
-   if key=='processes': assert page.locator('[data-compliance-process-placement] article').count()==7 and page.locator('[data-compliance-process-placement]').get_attribute('open') is None
+   if key=='processes':
+    placement=page.locator('[data-compliance-process-placement]')
+    handoffs=placement.locator('li[data-process-handoff]')
+    assert handoffs.count()==7,('handoff-count',handoffs.count())
+    assert handoffs.evaluate_all('els=>els.map(e=>e.dataset.processHandoff)')==['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']
+    assert placement.get_attribute('open') is not None,'handoff map should start expanded'
+    assert page.evaluate("""()=>{const view=document.querySelector('#processesView'),overview=view?.querySelector('[data-compliance-overview-host]'),map=view?.querySelector('[data-compliance-process-map]'),hub=view?.querySelector('#procedureHub');return !!(overview&&map&&hub&&(overview.compareDocumentPosition(map)&Node.DOCUMENT_POSITION_FOLLOWING)&&(map.compareDocumentPosition(hub)&Node.DOCUMENT_POSITION_FOLLOWING))}"""),'overview -> handoff -> catalogue order'
   if not TARGET or admin_only: out['surfaces'].extend(check_admin(page))
   expected=14 if not TARGET else 3 if admin_only else 1; assert len(out['surfaces'])==expected,out['surfaces']; out['ok']=True; out['count']=len(out['surfaces']); out['claimBoundary']='Rendered exact-build composition evidence only; not legal applicability, compliance, certification, representative-human usability or deployment assurance.'; (ART/f'{MODE}__{VTAG}__{TTAG}.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)); print(json.dumps(out,ensure_ascii=False)); browser.close()
 except BaseException as exc:

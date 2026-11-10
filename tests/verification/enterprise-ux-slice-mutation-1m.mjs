@@ -3,9 +3,9 @@
 import assert from 'node:assert/strict';
 import {owners,contractViolations} from './enterprise-ux-slice-check.mjs';
 const baseline=owners(),families=[
- ['index','<h1 id="homeTitle">','<h2 id="homeTitle">'],
- ['shell','workPlane.after(host)','workPlane.before(host)'],
- ['shell',"example.dataset.homeCaseFirst='true'","example.dataset.homeCaseFirst='false'"],
+ ['index','<h2 id="homeTitle">','<h1 id="homeTitle">'],
+ ['shell','workPlane.before(host)','workPlane.after(host)'],
+ ['shell','data-home-case-first','data-home-case-retired'],
  ['copy',"lead:'Parti dal caso:","lead:'Impara prima il modello:"],
  ['shell','HOMEBOARDING_LESSONS.map','INTRODUCTORY_LESSONS.map'],
  ['shell','close.hidden=!value.accepted','close.hidden=false'],
@@ -19,6 +19,18 @@ const baseline=owners(),families=[
  ['docsLanguage','`public/ui/product-copy.js`','`v3/public/ui/product-copy.js`'],
  ['shell','HOME_COMPLIANCE.examples[0].case','HOME_COMPLIANCE.examples[1].case'],
  ['shell',"renderHomePulse();", "renderHomePulse();fetch('/api/ux-decision',{method:'POST'});"],
+ ['shell','guide.open=homeGuideExpanded','guide.open=false'],
+ ['shell',"<h1>'+esc(ICTC_MANIFEST.title)+'</h1>","<h2>'+esc(ICTC_MANIFEST.title)+'</h2>"],
+ ['frame','overview.after(host)','hub.after(host)'],
+ ['frame','processComplianceOverviewHtml(catalogue)','processComplianceOverviewHtml([])'],
+ ['context','processComplianceOverviewHtml(catalogue=[]','processComplianceOverviewHtml([]=[]'],
+ ['context','Requisiti governabili.','Requisiti certificati.'],
+ ['process','\"code\":\"MC-01\",\"requirementClass\":','\"code\":\"MC-01\",\"nonAuthoritativeClass\":'],
+ ['icons','PROCESS_ICON_BY_CODE=Object.freeze','PROCESS_ICON_BY_CODE_DISABLED=Object.freeze'],
+ ['index','Esplora normative e fonti','Normativa & Compliance'],
+ ['index','fill-rule="evenodd"','fill-rule="nonzero"'],
+ ['css','#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:none','#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:82ch'],
+ ['css','.process-scope-grid{display:grid','.process-scope-grid{display:none'],
 ];
 assert.deepEqual(contractViolations(baseline),[]);
 let count=0,escaped=0,seed=0x1c7c2026;
@@ -41,4 +53,4 @@ for(let i=0;i<1_000_000;i++){
 }
 assert.equal(count,1_000_000);assert.equal(escaped,0,'invariant escape');
 assert.ok(coverage.every(x=>x>0));
-console.log(JSON.stringify({ok:true,cases:count,families:families.length,escaped,classifiedDefects:[...failNames].sort(),sourceFragmentMutants:true,claimBoundary:'1M concrete mutated code fragments (16 defect families) tested against source-contract guards; 56 full-source holdouts. Not a million compilations, runtime executions or usability tests.'}));
+console.log(JSON.stringify({ok:true,cases:count,families:families.length,escaped,classifiedDefects:[...failNames].sort(),sourceFragmentMutants:true,claimBoundary:'1M concrete mutated code fragments (28 defect families) tested against source-contract guards; 56 full-source holdouts. Not a million compilations, runtime executions or usability tests.'}));
