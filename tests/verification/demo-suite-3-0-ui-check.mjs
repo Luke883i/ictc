@@ -33,6 +33,7 @@ const setDemo=(overrides={})=>{
     positiveRecords:188,
     stressFixtures:512,
     legacySourceStatus:'generator-only',
+    learningBasis:{datasetAuthority:'demo-suite-3-0',synthetic:true,processCount:7,metadataDigest:'a'.repeat(64)},
     ...overrides
   }}};
 };
@@ -48,6 +49,8 @@ assert.ok((listeners.get('ictc:surface-changed')||[]).length>0,'Suite 3.0 UI mus
 assert.match(card.innerHTML,/Suite 3\.0 · Suite 3\.0 verificata/);
 assert.match(dialog.innerHTML,/>188 record business 3\.0</);
 assert.match(dialog.innerHTML,/>512 fixture escluse</);
+assert.match(dialog.innerHTML,/7 processi con dati sintetici/);
+assert.match(dialog.innerHTML,/digest metadati a{12}/);
 for(const token of ['Evidence Lattice','read-only derivato','Suite 2.2 deprecata','Dimostrazione, non verdetto'])assert.ok(dialog.innerHTML.includes(token),`Suite 3.0 rendered disclosure missing ${token}`);
 assert.ok(card.getAttribute('aria-label')?.includes('Suite 3.0'),'Suite 3.0 card aria-label missing');
 assert.ok(active.includes("from './demo-suite-3-0-ui.js'"),'Suite 3.0 UI owner not imported by composition root');
@@ -75,11 +78,13 @@ let rng=SEED>>>0;
 const next=()=>{rng^=rng<<13;rng^=rng>>>17;rng^=rng<<5;return rng>>>0;};
 for(let trial=0;trial<TRIALS;trial++){
   const positiveRecords=next()%1_000_000,stressFixtures=next()%100_000,coherent=(next()&1)===0;
-  setDemo({positiveRecords,stressFixtures,coherent,organizationName:`Mutation ${trial}`});
+  const processCount=(next()%7)+1;
+  setDemo({positiveRecords,stressFixtures,coherent,organizationName:`Mutation ${trial}`,learningBasis:{datasetAuthority:'demo-suite-3-0',synthetic:true,processCount,metadataDigest:'b'.repeat(64)}});
   await dispatch(trial&1?'ictc:surface-changed':'ictc:rendered');
   assert.ok(dialog.innerHTML.includes(`>${positiveRecords} record business 3.0</strong>`),`runtime positiveRecords laundering at trial ${trial}`);
   assert.ok(dialog.innerHTML.includes(`>${stressFixtures} fixture escluse</strong>`),`runtime stressFixtures laundering at trial ${trial}`);
   assert.ok(dialog.innerHTML.includes(coherent?'Suite 3.0 verificata':'Suite 3.0 non coerente'),`runtime coherence laundering at trial ${trial}`);
+  assert.ok(dialog.innerHTML.includes(`>${processCount} processi con dati sintetici`),`runtime DEMO learning basis drift at trial ${trial}`);
 }
 
 console.log(JSON.stringify({
