@@ -179,3 +179,12 @@ html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-proces
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary span:first-child{display:grid;gap:2px;min-width:0}
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary small{color:var(--color-muted);font-size:.78rem;font-weight:500;line-height:1.35}
 html[data-native-semantic-lattice="3.2.0"] #processesView :is(.compliance-process-lifecycle,.compliance-context)>summary::-webkit-details-marker{display:none}
+
+/* One canonical Processi row owns its scope and handoffs; do not mount parallel grids. */
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-when{display:block;color:var(--color-text);line-height:1.35}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-handoff{display:block;font-size:var(--type-caption);color:var(--color-muted);line-height:1.3;margin-top:.2rem}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail{margin-top:.25rem;font-size:var(--type-caption);color:var(--color-text)}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail>summary{display:inline-flex;align-items:center;min-height:44px;color:var(--color-brand-strong);cursor:pointer;font-weight:650}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail[open]{max-width:100%;padding:.25rem .3rem;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle)}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail p{margin:.3rem 0;line-height:1.4;overflow-wrap:anywhere}
+html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail>summary:focus-visible{outline:3px solid var(--color-brand);outline-offset:2px}
