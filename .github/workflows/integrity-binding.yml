@@ -1,4 +1,4 @@
-name: ictc-integrity-binding
+name: Evidence | Integrity and attribution
 on:
   pull_request:
     branches: [main]
@@ -20,7 +20,7 @@ jobs:
         with: {node-version: '22'}
       - name: Canonical state to audit-head binding
         run: node tests/verification/integrity-binding-check.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-integrity-binding

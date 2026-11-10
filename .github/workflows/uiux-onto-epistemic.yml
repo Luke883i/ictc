@@ -1,4 +1,4 @@
-name: UIUX onto-epistemic replay (manual)
+name: Experience | Epistemic regression replay (manual)
 on:
   workflow_dispatch:
 permissions:

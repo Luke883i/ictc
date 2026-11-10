@@ -1,4 +1,4 @@
-name: v2-dod
+name: Historical Validation | V2 contract (manual)
 on:
   workflow_dispatch:
 permissions:
@@ -35,7 +35,7 @@ jobs:
         run: node tests/verification/user-journey-audit.mjs && node tests/verification/user-journey-2-check.mjs
       - name: Evidence and decision binding
         run: node tests/verification/decision-binding-check.mjs && node tests/verification/epistemic-projection-check.mjs && node tests/verification/evidence-export-check.mjs && node tests/verification/evidence-export-auth-check.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: v2-dod-evidence

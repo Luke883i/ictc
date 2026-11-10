@@ -1,4 +1,4 @@
-name: deautopoiesis-closure
+name: Architecture | Parallel authority prevention
 on:
   pull_request:
   push:

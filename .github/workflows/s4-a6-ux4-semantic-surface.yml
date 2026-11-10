@@ -1,4 +1,4 @@
-name: s4-a6-ux4-semantic-surface
+name: Experience | Semantic interface and accessibility (UX4)
 on:
   pull_request:
   push:
@@ -240,7 +240,7 @@ jobs:
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: s4-a6-ux4-semantic-surface-evidence-${{ steps.ux4_browser.outputs.phase || 'pre-browser' }}

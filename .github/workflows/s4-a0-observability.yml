@@ -1,4 +1,4 @@
-name: ictc-s4-a0-observability
+name: Operations | Observability and diagnostics
 on:
   pull_request:
   push:
@@ -22,7 +22,7 @@ jobs:
         run: node tests/verification/s4-a0-observability-check.mjs
       - name: S4-A0 identity saturation
         run: node tests/verification/s4-a0-observability-saturation.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-s4-a0-contract
@@ -76,7 +76,7 @@ jobs:
             FAILED_BROWSER_SCRIPT='tests/browser/browser-s4-a0-observability.py' node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-s4-a0-browser-evidence

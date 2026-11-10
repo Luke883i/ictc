@@ -1,4 +1,4 @@
-name: ictc-docs-command-contract
+name: Documentation | Command and contract validation
 on:
   pull_request:
     branches: [main]
@@ -62,7 +62,7 @@ jobs:
         run: node scripts/document-consumer-independent-check.mjs --falsify
       - name: Reconcile independent evidence and reject false historical-retirement claims (C1-3b)
         run: node scripts/document-retirement-gate-check.mjs --falsify
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-docs-command-contract

@@ -1,4 +1,4 @@
-name: AS-IS convergence
+name: Architecture | Current-state convergence
 
 on:
   pull_request:

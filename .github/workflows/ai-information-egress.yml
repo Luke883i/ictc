@@ -1,4 +1,4 @@
-name: AI information egress
+name: AI Security | Information egress controls
 
 on:
   pull_request:

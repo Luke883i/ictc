@@ -1,4 +1,4 @@
-name: s4-a6-ux1-fixed-safe-footer
+name: Experience | Footer and navigation safety (UX1)
 on:
   pull_request:
   push:

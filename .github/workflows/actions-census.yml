@@ -1,4 +1,4 @@
-name: ictc-actions-census
+name: CI Assurance | Exact-head check inventory
 on:
   pull_request:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
         with: {node-version: '22'}
       - name: Observe every exact-head GitHub Actions check
         run: node scripts/actions-census.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: ictc-actions-census

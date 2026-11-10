@@ -1,4 +1,4 @@
-name: shell-desktop-probes-2-6
+name: Experience | Desktop browser probes
 on: [pull_request, workflow_dispatch]
 permissions: {contents: read}
 concurrency:

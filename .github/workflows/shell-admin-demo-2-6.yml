@@ -1,4 +1,4 @@
-name: ictc-shell-admin-demo-2-6
+name: Experience | Admin demo browser journeys
 on: [pull_request, workflow_dispatch]
 permissions: {contents: read}
 concurrency:

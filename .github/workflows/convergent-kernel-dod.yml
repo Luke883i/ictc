@@ -1,4 +1,4 @@
-name: convergent-kernel-dod
+name: Architecture | Core convergence contract
 on:
   pull_request:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
         run: node tests/verification/convergent-kernel-saturation.mjs
       - name: Existing 1.2 process fidelity
         run: node tests/verification/standard-library-check.mjs && node tests/verification/monitoring-access-check.mjs && node tests/verification/incident-contract-check.mjs && node tests/verification/object-identity-check.mjs && node tests/verification/procedure-summary-check.mjs && node tests/verification/procedure-market-saturation.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: convergent-kernel-semantic-evidence
@@ -89,7 +89,7 @@ jobs:
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: convergent-kernel-browser-evidence
