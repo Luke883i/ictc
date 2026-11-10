@@ -5,10 +5,10 @@ import {owners,contractViolations} from './enterprise-ux-slice-check.mjs';
 const baseline=owners(),families=[
  ['index','<h2 id="homeTitle">','<h1 id="homeTitle">'],
  ['shell','workPlane.before(host)','workPlane.after(host)'],
- ['shell','data-home-case-first','data-home-case-retired'],
+ ['shell','data-home-regulatory-cases','data-home-regulatory-retired'],
  ['copy',"lead:'Parti dal caso:","lead:'Impara prima il modello:"],
- ['shell','HOMEBOARDING_LESSONS.map','INTRODUCTORY_LESSONS.map'],
- ['shell','close.hidden=!value.accepted','close.hidden=false'],
+ ['shell','chapter?.lessons||[]','[]'],
+ ['shell','close.hidden=!accepted','close.hidden=false'],
  ['market','Riferimento: <strong>${esc(f.shortName)}</strong>','Riferimento: <strong>${esc(f.id)}</strong>'],
  ['market',"function frameworkCard(f){const decision=standardUse(f.scope?.decision),admin=state.role==='admin'","function frameworkCard(f){const decision=standardUse(f.scope?.decision),admin=state.role!=='auditor'"],
  ['operational',"detail.dataset.a6ScopePopup='native-details-overlay'","detail.dataset.a6ScopePopup='pseudo-modal-v2'"],
@@ -17,12 +17,12 @@ const baseline=owners(),families=[
  ['shell',"${'Dati sintetici · '}","${'Suite 2.2 · '}"] ,
  ['shell','Suite ${esc(demo.suiteVersion','Versione nascosta ${esc(demo.suiteVersion'],
  ['docsLanguage','`public/ui/product-copy.js`','`v3/public/ui/product-copy.js`'],
- ['shell','HOME_COMPLIANCE.examples[0].case','HOME_COMPLIANCE.examples[1].case'],
+ ['shell','HOME_COMPLIANCE.examples.map','HOME_COMPLIANCE.examples.slice(1).map'],
  ['shell',"renderHomePulse();", "renderHomePulse();fetch('/api/ux-decision',{method:'POST'});"],
  ['shell','guide.open=homeGuideExpanded','guide.open=false'],
  ['shell',"<h1>'+esc(ICTC_MANIFEST.title)+'</h1>","<h2>'+esc(ICTC_MANIFEST.title)+'</h2>"],
- ['frame','overview.after(host)','hub.after(host)'],
- ['frame','processComplianceOverviewHtml(catalogue)','processComplianceOverviewHtml([])'],
+ ['frame','process-inline-handoff','process-inline-dead'],
+ ['frame','PROCESS_COMPLIANCE_PLACEMENT[code]','null'],
  ['context','processComplianceOverviewHtml(catalogue=[]','processComplianceOverviewHtml([]=[]'],
  ['context','Requisiti governabili.','Requisiti certificati.'],
  ['process','\"code\":\"MC-01\",\"requirementClass\":','\"code\":\"MC-01\",\"nonAuthoritativeClass\":'],
@@ -30,7 +30,7 @@ const baseline=owners(),families=[
  ['index','Esplora normative e fonti','Normativa & Compliance'],
  ['index','fill-rule="evenodd"','fill-rule="nonzero"'],
  ['css','#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:none','#homeView .home-compliance-lead{font-size:1rem;line-height:1.55;max-width:82ch'],
- ['css','.process-scope-grid{display:grid','.process-scope-grid{display:none'],
+ ['css','.home-examples-disclosure{display:inline-flex','.home-examples-disclosure{display:none'],
 ];
 assert.deepEqual(contractViolations(baseline),[]);
 let count=0,escaped=0,seed=0x1c7c2026;
