@@ -3,7 +3,7 @@
 
 # ICTC — Integrated Compliance Tower Control
 
-**Purpose:** ICTC manages compliance knowledge, applicable requirements, risk, work, attributable human decisions and evidence, without substituting for legal interpretation or independently certifying compliance. **Provisional, not measured CORA-Score:** Dev_CORA **4/5**, Bonifica_CORA **4/5**; the indicative axes are defined in [CORA's rubric](https://github.com/Luke883i/cora#cora-score--indicative-assurance-bands-not-a-product-certification).
+**Purpose:** ICTC manages compliance knowledge, applicable requirements, risk, work, attributable human decisions and evidence, without substituting for legal interpretation or independently certifying compliance.
 
 
 ICTC è un **sistema locale di governance della conoscenza di compliance**. Collega fonti, requisiti, oggetti aziendali, rischi, azioni correttive, richieste di verifica, decisioni umane ed evidenze, preservando provenienza, autorità, versione e limiti delle affermazioni. L'identità e lo scopo canonici sono in [PRODUCT](docs/PRODUCT.md).
