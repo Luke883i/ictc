@@ -24,15 +24,17 @@ try:
         ctx=browser.new_context(viewport={'width':1280,'height':900})
         ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes');localStorage.setItem('ictc-grc-process','objects')")
 
+        # Business writes require the same actor's five chapter acknowledgements.
+        page=ctx.new_page()
+        page.set_default_timeout(20000)
+        ensure_onboarded(page,BASE,'admin')
+
         PHASE='create-incomplete'
         r=ctx.request.fetch(BASE+'/api/grc/objects',method='POST',headers=hdr(),data={'type':'application','name':'AO candidate incomplete browser','criticality':'medium'})
         assert r.ok,(r.status,r.text())
         oid=r.json()['result']['id']
 
         PHASE='open-ao'
-        page=ctx.new_page()
-        page.set_default_timeout(20000)
-        ensure_onboarded(page,BASE,'admin')
         page.goto(BASE+'/',wait_until='networkidle')
         page.locator('.service-nav [data-service="processes"]').click()
         card=page.locator('#procedureHub [data-process-code="AO-01"]')

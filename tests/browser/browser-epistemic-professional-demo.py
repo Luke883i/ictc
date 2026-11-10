@@ -1,5 +1,6 @@
 import json, os, pathlib, shutil, subprocess, tempfile, time, traceback, urllib.request
 from playwright.sync_api import expect, sync_playwright
+from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
@@ -69,8 +70,10 @@ def wait_canonical_evidence_entry(page):
     expect(investigation).to_have_count(1); assert page.locator('#proofView #epistemicMetaCard').count() == 0
     return investigation
 
-def open_epistemic(page, phase_prefix='open-epistemic'):
+def open_epistemic(page, phase_prefix='open-epistemic', role='admin'):
     global PHASE
+    # Preserve the mandatory first-use gate for DEMO/read-only viewers.
+    ensure_onboarded(page, BASE, role)
     PHASE=f'{phase_prefix}-processes';page.goto(BASE+'/?view=processes',wait_until='networkidle');expect(page.locator('#procedureHub .procedure-card')).to_have_count(7);assert page.locator('#epistemicMetaCard').count()==0
     PHASE=f'{phase_prefix}-evidence';page.goto(BASE+'/?view=proof',wait_until='networkidle');expect(page.locator('#proofView')).to_be_visible();investigation=wait_canonical_evidence_entry(page);assert investigation.get_attribute('open') is None
     PHASE=f'{phase_prefix}-entry';investigation.locator(':scope > summary').click();action=investigation.locator('[data-service="epistemic"]');expect(action).to_be_visible();action.click()
@@ -112,7 +115,7 @@ try:
         PHASE='231-boundary';select=page.locator('#epistemicLens');select.select_option('legal-231-reviewer');expect(page.locator('#epistemicLensContext')).to_contain_text('non inferisce reato');assert 'compliance score' not in page.locator('#epistemicLensContext').inner_text().lower();shot(page,'epistemic-use-231-boundary.png')
         PHASE='executive-no-score';select.select_option('executive-sme');txt=page.locator('#epistemicLensContext').inner_text().lower();assert 'non compliance score' in txt or 'non compliance' in txt;shot(page,'epistemic-use-executive-no-score.png')
         PHASE='user-denial';uc=browser.new_context(viewport={'width':1280,'height':850});uc.add_init_script("localStorage.setItem('ictc-role','user');localStorage.setItem('ictc-service','processes')");u=uc.new_page();u.goto(BASE+'/?view=processes',wait_until='networkidle');assert u.locator('#epistemicMetaCard').count()==0;denied=api(u,'/api/epistemic-lattice','user');assert denied['status']==403;shot(u,'epistemic-use-user-rbac-denied.png');uc.close()
-        PHASE='auditor-read-only';ac=browser.new_context(viewport={'width':1280,'height':850});ac.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')");a=ac.new_page();open_epistemic(a,'auditor-read-only');a.locator('#epistemicLens').select_option('internal-auditor');expect(a.locator('#epistemicProfessionalTools')).to_be_visible();shot(a,'epistemic-use-auditor-read-only.png');ac.close()
+        PHASE='auditor-read-only';ac=browser.new_context(viewport={'width':1280,'height':850});ac.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')");a=ac.new_page();open_epistemic(a,'auditor-read-only',role='auditor');a.locator('#epistemicLens').select_option('internal-auditor');expect(a.locator('#epistemicProfessionalTools')).to_be_visible();shot(a,'epistemic-use-auditor-read-only.png');ac.close()
         PHASE='mobile';mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();open_epistemic(m,'mobile');m.locator('#epistemicLens').select_option('security-manager');expect(m.locator('[data-epistemic-mode="graph"]')).to_have_attribute('aria-pressed','true');no_overflow(m);shot(m,'epistemic-use-mobile-390.png');mc.close()
         assert not errors,errors
         out={'ok':True,'profile':'epistemic-professional-demo-suite-3-0+s4-a3+p2','epistemicSchemaVersion':'1.3.0','businessProcedures':7,'professionalLenses':len(LENSES),'businessThreads':lattice['diagnostics']['counts']['businessThreads'],'sameProjectionDigestAcrossLenses':True,'projectionSha256':digest,'demoSuite':'3.0','demoProjectionAuthority':demo['projectionAuthority'],'demoStateDigest':demo['stateDigest'],'rnSemanticAtoms':lattice['projection']['rnSemanticAtoms'],'metaEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'proofSecondaryDefault':'closed','deepToolsProgressive':True,'duplicateProofMetaEntry':False,'screenshots':SHOTS,'screenshotCount':len(SHOTS),'claimBoundary':'Server-backed synthetic Suite 3.0 evidence over the declared professional-use taxonomy; Suite 2.2 is deprecated generator lineage; not independent assurance, legal applicability, compliance, control effectiveness or universal usability.'}

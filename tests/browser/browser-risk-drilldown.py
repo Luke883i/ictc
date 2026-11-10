@@ -41,6 +41,9 @@ try:
         page=ctx.new_page(); page.set_default_timeout(30000)
         errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
 
+        # First-run acknowledgement is a prerequisite, not a post-write repair.
+        ensure_onboarded(page,BASE,'admin')
+
         PHASE='create-human-scenario'
         created=request(ctx,'POST','/api/grc/risks',{'title':'RC-01 drilldown E2E','description':'Scenario creato per verificare la proiezione 5x5 e il drill-down human-rated.','likelihood':4,'impact':5,'rationale':'Proposta iniziale; il rating consolidato resta vuoto fino alla review umana.'})
         risk_id=created['result']['id']
