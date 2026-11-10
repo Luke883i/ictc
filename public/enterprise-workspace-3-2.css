@@ -193,16 +193,16 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #processesView .process-scope-card p{font-size:.85rem;line-height:1.45;margin:.35rem 0 0;overflow-wrap:break-word}
 #processesView .process-scope-icon,#processesView .process-card-icon{display:grid;place-items:center;flex-shrink:0;width:2.2rem;height:2.2rem;border-radius:10px;background:var(--color-surface);border:1px solid var(--color-border)}
 #processesView .process-scope-icon .process-icon,#processesView .process-card-icon .process-icon{width:1.4rem;height:1.4rem}
-#processesView .process-handoff-flow{display:flex;gap:.5rem;overflow-x:auto;list-style:none;padding:.65rem 0 .8rem;margin:0;scrollbar-width:thin}
-#processesView .process-handoff-flow li{display:grid;grid-template-columns:auto auto;align-items:start;column-gap:.4rem;row-gap:.3rem;flex:0 0 clamp(155px,19%,210px);padding:.65rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg)}
+#processesView .process-handoff-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,185px),1fr));gap:.5rem;overflow-x:visible;list-style:none;padding:.65rem 0 .8rem;margin:0}
+#processesView .process-handoff-flow li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;column-gap:.4rem;row-gap:.3rem;min-width:0;padding:.65rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);overflow-wrap:anywhere}
 #processesView .process-handoff-flow li small{grid-column:1 / -1;line-height:1.45;overflow-wrap:break-word}
-#processesView .process-handoff-flow li+li::before{content:'→';position:absolute;margin-left:-.92rem;font-weight:800;opacity:.65}
+#processesView .process-handoff-flow li+li::before{content:'↳';font-weight:800;opacity:.65;grid-column:1;grid-row:1}
 #processesView .process-handoff-flow .process-icon{width:1.15rem;height:1.15rem}
-#processesView .procedure-card>header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+#processesView .procedure-card>header{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:.15rem;min-width:0}
 #processesView .procedure-card .process-card-icon{width:2rem;height:2rem}
 #processesView :is(.process-compliance-overview,.compliance-process-lifecycle) .boundary{font-size:.8rem;line-height:1.5}
 #processesView .processes-regulatory-button:focus-visible,#processesView .process-scope-card:focus-within{outline:3px solid var(--color-focus,currentColor);outline-offset:3px}
-@media(max-width:600px){#processesView .process-handoff-flow li{flex-basis:190px}#processesView .process-compliance-overview,#processesView .compliance-process-lifecycle{padding:.75rem}}
+@media(max-width:600px){#processesView .process-handoff-flow{grid-template-columns:1fr}#processesView .process-compliance-overview,#processesView .compliance-process-lifecycle{padding:.75rem}}
 @media(prefers-reduced-motion:reduce){#processesView .process-handoff-flow{scroll-behavior:auto}}
 /* Min-content must not let long process labels push mobile layouts sideways. */
 #processesView [data-compliance-overview-host],#processesView [data-compliance-process-map],#processesView .compliance-process-lifecycle-body,#processesView .process-scope-grid,#processesView .process-scope-card>div{min-width:0;max-width:100%}
