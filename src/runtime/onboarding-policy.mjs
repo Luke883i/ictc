@@ -43,6 +43,18 @@ export function acknowledgeOnboardingV2(saved,input,{actorId,tenantId,at}){
   acceptedAt:next.length===5?at:null};
  return {state,receipt,recorded:true,kind:state.acceptedAt?'completed':'advanced'};
 }
+// The identity binding prevents a trusted SSO subject from inheriting a local actor's receipt.
+export function onboardingOwner(state,actor){
+ const user=(state?.users||[]).find(item=>item.id===actor?.id)||null;
+ if(!user)return null;
+ const trusted=actor?.identityMode==='trusted-header'&&actor?.identityStrategy==='shibboleth';
+ const recordedTrusted=user.identityStrategy==='shibboleth';
+ if(trusted!==recordedTrusted)throw Object.assign(new Error('Profilo con identità di origine differente'),{status:409,code:'onboarding-identity-collision'});
+ return user;
+}
+export function onboardingTrustedJitAllowed(actor){
+ return actor?.identityMode==='trusted-header'&&actor?.identityStrategy==='shibboleth'&&typeof actor.id==='string'&&actor.id.length>0;
+}
 export function requiresOnboardingForWrite(method,path,user){
  return ['POST','PUT','PATCH','DELETE'].includes(method)&&path!=='/api/profile/onboarding'&&!user?.onboarding?.acceptedAt;
 }

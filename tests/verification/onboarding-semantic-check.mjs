@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { ONBOARDING_CHAPTERS,ONBOARDING_CONTRACT_DIGEST,ONBOARDING_VERSION,onboardingProjectionV2,acknowledgeOnboardingV2,requiresOnboardingForWrite } from '../../src/runtime/onboarding-policy.mjs';
+import { ONBOARDING_CHAPTERS,ONBOARDING_CONTRACT_DIGEST,ONBOARDING_VERSION,onboardingProjectionV2,acknowledgeOnboardingV2,requiresOnboardingForWrite, onboardingOwner, onboardingTrustedJitAllowed } from '../../src/runtime/onboarding-policy.mjs';
 const at='2026-11-10T18:07:00.000Z',actorId='local-admin',tenantId='tenant-1';
 const ctx={actorId,tenantId,at};
 const ack=(state,i,extra={})=>acknowledgeOnboardingV2(state,{chapterId:ONBOARDING_CHAPTERS[i].id,contentDigest:ONBOARDING_CHAPTERS[i].contentDigest,explicitAcknowledgement:true,...extra},ctx);
@@ -10,6 +10,11 @@ assert.equal(new Set(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids)).size,15);
 assert.deepEqual(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids),Array.from({length:15},(_,i)=>'L'+String(i).padStart(2,'0')));
 assert.equal(ONBOARDING_CONTRACT_DIGEST.length,64);
 for(const chapter of ONBOARDING_CHAPTERS){assert.equal(chapter.contentDigest.length,64);assert.equal(chapter.lessons.length,3);assert.ok(chapter.heading?.length>=12,'heading');for(const k of ['lead','case','why','do','how','checkpoint'])assert.ok(chapter[k]?.length>30,k);}
+assert.equal(onboardingOwner({users:[{id:'ext@example.org',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'ext@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}).onboarding.acceptedAt,at);
+assert.equal(onboardingTrustedJitAllowed({id:'external@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}),true);
+assert.equal(onboardingTrustedJitAllowed({id:'local-admin',identityMode:'local',identityStrategy:'local'}),false);
+rejects(()=>onboardingOwner({users:[{id:'local-admin',onboarding:{acceptedAt:at}}]},{id:'local-admin',identityMode:'trusted-header',identityStrategy:'shibboleth'}),'onboarding-identity-collision');
+rejects(()=>onboardingOwner({users:[{id:'external@example.org',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'external@example.org',identityMode:'local'}),'onboarding-identity-collision');
 assert.equal(requiresOnboardingForWrite('POST','/api/incidents',null),true);
 assert.equal(requiresOnboardingForWrite('PATCH','/api/profile/onboarding',null),false);
 assert.equal(requiresOnboardingForWrite('GET','/api/bootstrap',null),false);

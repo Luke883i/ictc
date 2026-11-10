@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RuntimeStore } from './runtime-store.mjs';
-import { onboardingProjectionV2, acknowledgeOnboardingV2, requiresOnboardingForWrite } from './runtime/onboarding-policy.mjs';
+import { onboardingProjectionV2, acknowledgeOnboardingV2, requiresOnboardingForWrite, onboardingOwner, onboardingTrustedJitAllowed } from './runtime/onboarding-policy.mjs';
 import { ROLES, now, publicSettings } from './domain.mjs';
 import { VERSION } from './version.mjs';
 import { accessProfileFor } from './access-profile.mjs';
@@ -105,15 +105,21 @@ async function handleApi(request,response,url,actor){
   }
   if(method==='PATCH'&&pathname==='/api/profile/onboarding'){
     requirePermission(actor,'read',permissions);
-    const current=(snapshot.users||[]).find(item=>item.id===actor.id);
-    if(!current)throw httpError(409,'Profilo utente non disponibile','onboarding-user-missing');
+    const current=onboardingOwner(snapshot,actor);
+    if(!current&&!onboardingTrustedJitAllowed(actor))throw httpError(409,'Profilo utente non disponibile','onboarding-user-missing');
     if(current.onboarding?.acceptedAt){json(response,200,{result:onboardingProjectionV2(current.onboarding),receipt:null,replayed:true});return;}
     const input=await bodyJson(request);
     const prior=current.onboarding?.chapterAcknowledgements?.at(-1);
     if(prior?.chapterId===input.chapterId&&prior.contentDigest===input.contentDigest&&input.explicitAcknowledgement===true){json(response,200,{result:onboardingProjectionV2(current.onboarding),receipt:null,replayed:true});return;}
     const context={actorId:actor.id,tenantId:tenantAuthority.current().tenantId,at:now()};
     const envelope=await store.mutate(actor,'profile.onboarding.updated',{type:'user',id:actor.id},{chapterId:input.chapterId,contentDigest:input.contentDigest,explicitAcknowledgement:input.explicitAcknowledgement},draft=>{
-      const user=(draft.users||[]).find(item=>item.id===actor.id);
+      let user=onboardingOwner(draft,actor);
+      if(!user&&onboardingTrustedJitAllowed(actor)){
+        draft.users||=[];
+        user={id:actor.id,displayName:actor.displayName||actor.id,email:actor.email||'',role:actor.role,
+          status:'active',identityMode:'trusted-header',identityStrategy:'shibboleth',createdAt:now(),createdBy:'trusted-identity-onboarding'};
+        draft.users.push(user);
+      }
       if(!user)throw httpError(409,'Profilo utente non disponibile','onboarding-user-missing');
       const transition=acknowledgeOnboardingV2(user.onboarding,input,context);
       user.onboarding=transition.state;
@@ -130,7 +136,7 @@ async function handleApi(request,response,url,actor){
 const server=http.createServer(async(request,response)=>{
   const url=new URL(request.url||'/',`http://${request.headers.host||'localhost'}`),trace=observability.start({method:request.method||'GET',pathname:url.pathname,tenantId:'unresolved'});response.setHeader('x-request-id',trace.requestId);let errorCode=null,rateLimited=false;
   try{
-    if(url.pathname.startsWith('/api/'))await tenantAuthority.runRequest(request,async resolved=>{assertBrowserWriteBoundary(request);const remoteAddress=request.socket?.remoteAddress,edgeKey=edgeRateLimitKey({tenantId:resolved.tenantId,remoteAddress}),edgeBudget=edgeAbuseBudget.consume(edgeKey);if(!edgeBudget.allowed){rateLimited=true;response.setHeader('retry-after',String(edgeBudget.retryAfterSeconds));throw httpError(429,'Troppe richieste','edge-rate-limited',{retryAfterSeconds:edgeBudget.retryAfterSeconds});}assertPublicDemoRequestBoundary(request,process.env);const state=store.snapshot(),actor=authorizeEnterpriseActor(actorFrom(request,permissions,state.settings.identity),state),key=authenticatedRateLimitKey({tenantId:resolved.tenantId,actor,remoteAddress}),budget=abuseBudget.consume(key);if(!budget.allowed){rateLimited=true;response.setHeader('retry-after',String(budget.retryAfterSeconds));throw httpError(429,'Troppe richieste','rate-limited',{retryAfterSeconds:budget.retryAfterSeconds});}const user=(state.users||[]).find(item=>item.id===actor.id);if(requiresOnboardingForWrite(request.method||'GET',url.pathname,user))throw httpError(428,'Completa la guida iniziale prima di modificare dati aziendali','onboarding-required');await handleApi(request,response,url,actor);});else await serveStatic(response,url.pathname,publicRoot,mime);
+    if(url.pathname.startsWith('/api/'))await tenantAuthority.runRequest(request,async resolved=>{assertBrowserWriteBoundary(request);const remoteAddress=request.socket?.remoteAddress,edgeKey=edgeRateLimitKey({tenantId:resolved.tenantId,remoteAddress}),edgeBudget=edgeAbuseBudget.consume(edgeKey);if(!edgeBudget.allowed){rateLimited=true;response.setHeader('retry-after',String(edgeBudget.retryAfterSeconds));throw httpError(429,'Troppe richieste','edge-rate-limited',{retryAfterSeconds:edgeBudget.retryAfterSeconds});}assertPublicDemoRequestBoundary(request,process.env);const state=store.snapshot(),actor=authorizeEnterpriseActor(actorFrom(request,permissions,state.settings.identity),state),key=authenticatedRateLimitKey({tenantId:resolved.tenantId,actor,remoteAddress}),budget=abuseBudget.consume(key);if(!budget.allowed){rateLimited=true;response.setHeader('retry-after',String(budget.retryAfterSeconds));throw httpError(429,'Troppe richieste','rate-limited',{retryAfterSeconds:budget.retryAfterSeconds});}const user=onboardingOwner(state,actor);if(requiresOnboardingForWrite(request.method||'GET',url.pathname,user))throw httpError(428,'Completa la guida iniziale prima di modificare dati aziendali','onboarding-required');await handleApi(request,response,url,actor);});else await serveStatic(response,url.pathname,publicRoot,mime);
   }catch(error){errorCode=error.code||'internal-error';if(!response.headersSent)json(response,error.status||500,{schemaVersion:'1.0.0',error:error.message||'Errore interno',code:errorCode,details:error.details||null,requestId:trace.requestId});else response.end();}
   finally{trace.finish({status:response.statusCode||500,code:errorCode,rateLimited});}
 });
