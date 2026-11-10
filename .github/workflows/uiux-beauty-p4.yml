@@ -81,7 +81,9 @@ jobs:
               match = re.search(r'"id"\s*:\s*"([^"]+)"', message)
               phase = str(data.get('phase', 'unknown')).replace('\n', ' ').replace('\r', ' ')
               check = match.group(1) if match else 'unknown-check'
-              signature = f'{phase}|{check}'[:180]
+              detail = re.search(r'\"detail\"\s*:\s*\{[^{}]*\"count\"\s*:\s*(\d+)', message)
+              count = 'count='+detail.group(1) if detail else 'count=unknown'
+              signature = f'{phase}|{check}|{count}'[:180]
               print('signature=' + signature)
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
