@@ -7,7 +7,7 @@ assert.equal(validateA6Ux1(baseline).ok,true,'baseline must satisfy A6-UX1 fixed
 const families=[
  ['drop-import',s=>({...s,styles:s.styles.replace("@import url('./a6-ux1-fixed-safe-footer.css');\n",'')})],
  ['desktop-min-zero',s=>({...s,css:s.css.replace('--a6-ux1-footer-min:44px','--a6-ux1-footer-min:0px')})],
- ['mobile-min-zero',s=>({...s,css:s.css.replace('--a6-ux1-footer-min:52px','--a6-ux1-footer-min:0px')})],
+ ['mobile-min-zero',s=>({...s,css:s.css.replace('--a6-ux1-footer-min:78px','--a6-ux1-footer-min:0px')})],
  ['drop-safe-area',s=>({...s,css:s.css.replace('env(safe-area-inset-bottom,0px)','0px')})],
  ['break-reserve',s=>({...s,css:s.css.replace('--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))','--a6-ux1-footer-reserve:0px')})],
  ['drop-scroll-reserve',s=>({...s,css:s.css.replace('scroll-padding-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)','scroll-padding-bottom:0px')})],

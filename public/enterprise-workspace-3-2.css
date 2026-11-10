@@ -162,7 +162,7 @@ html[data-visible-cutover="1"] #adminCenter [data-admin-view="overview"] details
 @media(prefers-reduced-motion:reduce){#homeView .home-compliance-overview *{scroll-behavior:auto}}
 
 /* Keep long educational content progressive, below the operative Home first plane. */
-#homeView .home-compliance-full-body{display:grid;gap:.75rem;padding-top:.6rem}
+#homeView .home-compliance-full-body{display:grid;gap:.45rem;padding-top:.15rem}
 
 /* HOME-ORDER-4 compact density — local bounded Home owner, not global chrome. */
 html[data-native-semantic-lattice="3.2.0"] #homeView{gap:.55rem!important}
@@ -217,3 +217,18 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #processesView .process-scope-grid,#processesView .process-handoff-flow{min-inline-size:0;max-inline-size:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
 #processesView .process-scope-card,#processesView .process-handoff-flow>li{min-inline-size:0;max-inline-size:100%;box-sizing:border-box}
 #processesView .processes-head>*{min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}
+
+/* HOME: one guided narrative, discoverable disclosure, full-width business priorities. */
+#homeView .home-compliance-detail[data-home-regulatory-cases]>summary{display:flex;align-items:center;justify-content:space-between;gap:.7rem;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--chrome-active-bg);color:var(--color-text)}
+#homeView .home-compliance-detail[data-home-regulatory-cases]>summary:hover{background:var(--chrome-control-hover);border-color:var(--color-brand)}
+#homeView .home-examples-disclosure{display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap;font-size:var(--type-caption);color:var(--color-brand-strong)}
+#homeView .home-examples-chevron{display:inline-block;font-size:1.35rem;line-height:1;transition:transform var(--motion-fast)}
+#homeView [data-home-regulatory-cases][open] .home-examples-chevron{transform:rotate(90deg)}
+#homeView .home-hero,#homeView #homePriorities,#homeView #homePriorities .home-priority-table{width:100%;min-width:0;max-width:100%;justify-self:stretch}
+#homeView #homePriorities .home-priority-main{grid-template-columns:4.2rem minmax(11rem,0.85fr) minmax(0,1fr)}
+@media(max-width:760px){#homeView .home-compliance-detail[data-home-regulatory-cases]>summary{flex-wrap:wrap}#homeView .home-examples-disclosure{white-space:normal}#homeView #homePriorities .home-priority-main{grid-template-columns:4rem minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){#homeView .home-examples-chevron{transition:none}}
+
+/* Proof navigation is actionably exposed with the value proposition, not within
+   a lower business disclosure that can intersect the fixed legal footer. */
+#homeView .home-compliance-heading>.home-compliance-route{margin-top:.65rem;min-height:44px}

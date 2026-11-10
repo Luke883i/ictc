@@ -62,7 +62,7 @@ try:
   if browser_path: launch['executable_path']=browser_path
   browser=pw.chromium.launch(**launch); ctx=browser.new_context(viewport={'width':VW,'height':VH},ignore_https_errors=True); ctx.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')"); page=ctx.new_page(); page.set_default_timeout(25000)
   if MODE=='fresh':
-   page.goto(BASE+'/?view=home',wait_until='networkidle'); dlg=page.locator('#ictcOnboardingDialog[open]'); expect(dlg).to_be_visible(); assert dlg.locator('[data-homeboarding-lesson]').count()==15; ensure_onboarded(page,BASE,'admin')
+   page.goto(BASE+'/?view=home',wait_until='networkidle'); dlg=page.locator('#ictcOnboardingDialog[open]'); expect(dlg).to_be_visible(); assert dlg.locator('[data-homeboarding-lesson]').count()==3; ensure_onboarded(page,BASE,'admin')
   else: ensure_onboarded(page,BASE,'admin')
   out['identity']=build_identity(page); admin_only=TARGET=='admin'; selected=[] if admin_only else [row for row in SURFACES if not TARGET or row[0]==TARGET]; assert selected or admin_only,(TARGET,'unknown target')
   for key,route,root in selected:
@@ -70,12 +70,14 @@ try:
    else: goto(page,route,root)
    check_context(page,key,root); screenshot(page,key); out['surfaces'].append(key)
    if key=='processes':
-    placement=page.locator('[data-compliance-process-placement]')
-    handoffs=placement.locator('li[data-process-handoff]')
-    assert handoffs.count()==7,('handoff-count',handoffs.count())
-    assert handoffs.evaluate_all('els=>els.map(e=>e.dataset.processHandoff)')==['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']
-    assert placement.get_attribute('open') is not None,'handoff map should start expanded'
-    assert page.evaluate("""()=>{const view=document.querySelector('#processesView'),overview=view?.querySelector('[data-compliance-overview-host]'),map=view?.querySelector('[data-compliance-process-map]'),hub=view?.querySelector('#procedureHub');return !!(overview&&map&&hub&&(overview.compareDocumentPosition(map)&Node.DOCUMENT_POSITION_FOLLOWING)&&(map.compareDocumentPosition(hub)&Node.DOCUMENT_POSITION_FOLLOWING))}"""),'overview -> handoff -> catalogue order'
+    hub=page.locator('#procedureHub')
+    rows=hub.locator('[data-process-code][data-catalogue-kind="procedure"]')
+    assert rows.count()==7,('process-count',rows.count())
+    # Keep the existing server-derived CATALOGUE_SPEC presentation order, not an invented flow order.
+    assert rows.evaluate_all('els=>els.map(e=>e.dataset.processCode)')==['MC-01','RN-01','AO-01','EC-01','AP-01','RC-01','AR-01']
+    assert hub.locator('.process-inline-handoff').count()==7,'seven scope/handoff rows expected'
+    assert page.locator('#processesView [data-compliance-process-placement]').count()==0,'old duplicate handoff map'
+    assert page.locator('#processesView [data-compliance-overview-host]').count()==0,'old duplicate scope grid'
   if not TARGET or admin_only: out['surfaces'].extend(check_admin(page))
   expected=14 if not TARGET else 3 if admin_only else 1; assert len(out['surfaces'])==expected,out['surfaces']; out['ok']=True; out['count']=len(out['surfaces']); out['claimBoundary']='Rendered exact-build composition evidence only; not legal applicability, compliance, certification, representative-human usability or deployment assurance.'; (ART/f'{MODE}__{VTAG}__{TTAG}.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)); print(json.dumps(out,ensure_ascii=False)); browser.close()
 except BaseException as exc:

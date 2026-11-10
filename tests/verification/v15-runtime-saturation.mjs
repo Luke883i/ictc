@@ -6,7 +6,9 @@ function scan(v,s=new Set()){if(v==null)return s;if(Array.isArray(v)){if(v.lengt
 function observe(label,r,target=known){const p=scan(r.body,new Set([`http:${r.status}`,label]));let novelty=0;for(const x of p)if(!target.has(x)){target.add(x);novelty++;}return novelty;}
 async function step(label,fn){const r=await fn();n++;const novelty=observe(label,r);if(novelty)last=n;ledger.push({scenario:n,label,status:r.status,novelty,total:known.size});return r;}
 try{
-  await step('bootstrap-admin',()=>h.bootstrap()); await step('deny-user-settings',()=>h.request('PUT','/api/admin/settings',{},'user','alice'));
+  await step('bootstrap-admin',()=>h.bootstrap());
+  await h.onboard('admin','test-admin');
+  await h.onboard('user','alice'); await step('deny-user-settings',()=>h.request('PUT','/api/admin/settings',{},'user','alice'));
   let r=await step('raw-mission',()=>h.request('POST','/api/missions/draft',{objective:'Official security sources'}));const m=r.body.mission.id;
   r=await step('raw-contribution',()=>h.request('POST','/api/contributions',{links:['https://eur-lex.europa.eu/eli/dir/2022/2555/oj'],text:'Source material private to contributor',note:'Private note'},'user','alice'));const c=r.body.raw.result.id;
   r=await step('raw-incident',()=>h.request('POST','/api/incidents/intake',{originalNarrative:'Active phishing alert',awarenessAt:new Date().toISOString()},'user','alice'));const i=r.body.incident.id;

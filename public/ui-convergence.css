@@ -90,3 +90,9 @@
 .finetune-compass>div,.finetune-compass>p{max-inline-size:72ch}.epistemic-shell .surface-mode-switch,.epistemic-shell .epistemic-filter-group{gap:.5rem}.epistemic-shell .surface-raw{max-block-size:24rem;overflow:auto}
 @media(max-width:860px){.mission-grid{grid-template-columns:1fr!important}.ux-dialog-actions{justify-content:stretch}.ux-dialog-actions>*{inline-size:100%}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;transition-delay:0s!important}}
+
+/* Semantic action variants; never repaint the topbar, destructives or icon-only controls. */
+:where(.processes-regulatory-button.primary,.home-compliance-route.secondary){box-sizing:border-box;min-height:44px;max-width:100%;width:max-content;padding:.65rem 1rem;border-radius:11px;font-size:var(--type-control);font-weight:650;line-height:1.2;text-align:center;white-space:normal;transition:var(--transition-interactive)}
+:where(.processes-regulatory-button.primary,.home-compliance-route.secondary):hover{transform:translateY(-1px);box-shadow:var(--elevation-focus)}
+:where(.processes-regulatory-button.primary,.home-compliance-route.secondary):focus-visible{outline:3px solid var(--color-brand);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){:where(.processes-regulatory-button.primary,.home-compliance-route.secondary){transition:none;transform:none!important}}

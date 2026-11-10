@@ -57,8 +57,8 @@ assert.ok(surface.includes("data.authorityEffect='none'")||surface.includes("dat
 assert.ok(surface.includes('data-regulatory-go-coverage')&&surface.includes('MC-01'),'MC-01 handoff missing');
 assert.ok(active.includes('installRegulatorySurface'),'surface installer missing');
 assert.ok(shell.includes('onboardingAcceptanceEvidence')&&shell.includes('acceptedAt'),'human acceptance receipt not visible');
-assert.ok(server.includes("pathname==='/api/profile/onboarding'")&&server.includes("profile.onboarding.updated")&&server.includes("if(accept&&nextProgress<100)"),'explicit onboarding acceptance server guard missing');
-assert.ok(model.includes("authority:'user-record'")||model.includes('authority: \'user-record\''),'onboarding receipt must remain user-record authority');
+assert.ok(server.includes("pathname==='/api/profile/onboarding'")&&server.includes("profile.onboarding.updated")&&server.includes('acknowledgeOnboardingV2')&&server.includes('requiresOnboardingForWrite'),'server-owned chapter attestation and write gate missing');
+assert.ok(model.includes('onboardingProjectionV2('),'onboarding projection must be bound to persisted chapter contract');
 assert.ok(browser.includes('Normativa, standard e controlli'),'standard-browser regulatory naming missing');
 assert.ok(grcBase.includes("coverage:['MC-01','Standard e controlli','Perimetro normativo e controlli'"),'MC-01 canonical label must remain separate from presentation title');
 assert.ok(market.includes("head.querySelector('h1').textContent='Perimetro normativo e controlli'"),'MC-01 presentation title missing');

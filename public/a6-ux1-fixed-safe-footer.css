@@ -20,5 +20,5 @@ html[data-ictc-experience="market-1"] .stable-legal-footer{
 }
 html[data-ictc-experience="market-1"] :is(main,.view,[tabindex],button,a,input,select,textarea,summary){scroll-margin-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)}
 @media(max-width:760px){
-  html[data-ictc-experience="market-1"]{--a6-ux1-footer-min:52px}
+  html[data-ictc-experience="market-1"]{--a6-ux1-footer-min:78px}
 }

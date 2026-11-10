@@ -14,6 +14,7 @@ const record=(label,result,expected,actor,rationale)=>{
 };
 try{
  let b=await h.bootstrap('admin','model-reviewer');assert.equal(b.status,200);
+ for(const [role,actor] of [['admin','model-reviewer'],['admin','model-operator'],['user','source-reporter'],['user','case-reporter'],['auditor','audit-reader']])await h.onboard(role,actor);
  // RN-01: contribution is a candidate only; no automatic verification or applicability.
  const contribution=await h.request('POST','/api/contributions',
   {links:['https://eur-lex.europa.eu/eli/dir/2022/2555/oj'],text:'Official public directive candidate',note:'Require human source and relevance assessment'},

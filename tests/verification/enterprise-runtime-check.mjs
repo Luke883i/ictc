@@ -17,6 +17,7 @@ try {
   assert.equal(bootstrap.body.version, VERSION);
   assert.equal(bootstrap.body.experience.roles, ROLES.length);
   mark('bootstrap', `runtime ${VERSION} con ${ROLES.length} ruoli`);
+  await runtime.onboard('admin','local-admin');
 
   const usersBefore = await get('/api/admin/users');
   assert.equal(usersBefore.status, 200);

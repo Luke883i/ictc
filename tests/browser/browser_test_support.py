@@ -26,16 +26,22 @@ def ensure_onboarded(page, base, role='admin'):
     if onboarding.get('accepted') is True:
         _settle_onboarding_dom(page, base)
         return {'prepared': False, 'accepted': True, 'source': 'bootstrap'}
-    response = page.request.patch(
-        base + '/api/profile/onboarding',
-        headers={**headers, 'content-type': 'application/json'},
-        data={'progress': 100, 'elapsedMs': 1, 'accept': True},
-    )
-    if not response.ok:
-        raise AssertionError(f'onboarding prepare failed: {response.status} {response.text()[:300]}')
-    result = ((response.json() or {}).get('result') or {})
+    result = {}
+    for chapter_no in range(5):
+        chapter = onboarding.get('chapter') or {}
+        if chapter.get('id') != f'C{chapter_no+1}':
+            raise AssertionError(f'expected next chapter C{chapter_no+1}, got {chapter}')
+        response = page.request.patch(
+            base + '/api/profile/onboarding',
+            headers={**headers, 'content-type': 'application/json'},
+            data={'chapterId': chapter['id'], 'contentDigest': chapter['contentDigest'], 'explicitAcknowledgement': True},
+        )
+        if not response.ok:
+            raise AssertionError(f'onboarding chapter failed: {response.status} {response.text()[:300]}')
+        result = ((response.json() or {}).get('result') or {})
+        onboarding = result
     if result.get('accepted') is not True or result.get('readOnly') is not True:
-        raise AssertionError(f'onboarding prepare not accepted: {result}')
+        raise AssertionError(f'onboarding acceptance not persisted: {result}')
     if str(page.url).startswith(base):
         page.reload(wait_until='networkidle')
     _settle_onboarding_dom(page, base)

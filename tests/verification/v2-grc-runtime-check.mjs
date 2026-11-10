@@ -94,6 +94,14 @@ try {
   assert.equal(boot0.procedures.find(x => x.id === 'coverage').label, 'Standard e Controlli');
   assert.ok(boot0.standards?.counts?.available >= 21);
 
+  let onboarding = boot0.experience.onboarding;
+  for(let chapter=0;chapter<5;chapter++){
+    const item=onboarding.chapter;
+    assert.equal(item.id,'C'+(chapter+1));
+    const saved=await request('/api/profile/onboarding',{method:'PATCH',body:{chapterId:item.id,contentDigest:item.contentDigest,explicitAcknowledgement:true}});
+    onboarding=saved.result;
+  }
+  assert.equal(onboarding.accepted,true);
   const created = await request('/api/grc/objects', { method: 'POST', body: { type: 'laptop', name: 'Notebook CFO', criticality: 'high', owner: 'Finance', sourceAuthority: 'Intune' } });
   assert.match(created.receipt.hash, /^[a-f0-9]{64}$/);
   const objectId = created.result.id;

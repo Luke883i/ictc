@@ -10,9 +10,12 @@ def ensure_onboarding(page):
  if d.count() and d.is_visible():
   assert d.get_attribute('data-onboarding-mode')=='first-run-gate'
   nxt=d.locator('[data-onboarding-next]')
-  for step in range(4):
-   expect(nxt).to_have_text('Continua');nxt.click()
-  expect(nxt).to_have_text('Accetta e continua');nxt.click();expect(d).not_to_be_visible();accepted_now=True
+  for step in range(5):
+   expect(nxt).to_be_disabled()
+   d.locator('[data-onboarding-ack]').check()
+   expect(nxt).to_be_enabled()
+   nxt.click()
+  expect(d).not_to_be_visible();accepted_now=True
  profile=page.locator('#stableProfileMenu > summary');profile.click();proof=page.locator('#stableProfileMenu .profile-onboarding-proof');expect(proof).to_be_visible();assert 'Onboarding accettato' in proof.inner_text();profile.click()
  return accepted_now
 def run(browser,w,h,label):
@@ -24,8 +27,8 @@ def run(browser,w,h,label):
  txt=d.inner_text();
  for token in ['GDPR','NIS2','DORA','EU AI Act','CRA','ISO/IEC 27001','Riferimento ≠ applicabilità','Mapping ≠ conformità','Evidenza ≠ conclusione']: assert token in txt,(label,token)
  assert d.locator('a.regulatory-source-link').count()>=20
- nis=d.locator('[data-regulatory-reference="NIS2"] details');nis.locator('summary').click();expect(nis).to_have_attribute('open','')
- iso=d.locator('[data-open-standard-browser="iso-iec-27001-2022"]').first;iso.click();expect(p.locator('#standardBrowserDialog')).to_be_visible();p.locator('#standardBrowserDialog button[aria-label="Chiudi"]').click()
+ nis=d.locator('[data-regulatory-reference="NIS2"]');nis.locator(':scope > summary').click();expect(nis).to_have_attribute('open','')
+ iso_row=d.locator('[data-reference-id="iso-iec-27001-2022"]');iso_row.locator(':scope > summary').click();iso=d.locator('[data-open-standard-browser="iso-iec-27001-2022"]').first;iso.click();expect(p.locator('#standardBrowserDialog')).to_be_visible();p.locator('#standardBrowserDialog button[aria-label="Chiudi"]').click()
  if w<=620:
   box=d.bounding_box();assert box and abs(box['width']-w)<=2,(label,box,w)
  no_overflow(p,label);c.close()

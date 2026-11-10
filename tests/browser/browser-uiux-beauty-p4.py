@@ -89,15 +89,14 @@ JS_AUDIT = r'''({surface,width}) => {
     const paletteStates=palette.map(n=>n.dataset.maturity),paletteColors=palette.map(n=>style(n).backgroundColor);
     check('processes-four-maturity-states',paletteStates.join('|')==='ready|scaffold-yellow|scaffold-orange|placeholder',{states:paletteStates});
     check('processes-four-rendered-colors',new Set(paletteColors).size===4,{colors:paletteColors});
-    const connection=root.querySelector('[data-compliance-process-placement] > summary'),context=root.querySelector('[data-compliance-context="processes"] > summary');
-    check('processes-twin-disclosures-mounted',!!connection&&!!context,{connection:!!connection,context:!!context});
-    if(connection&&context){const a=connection.getBoundingClientRect(),b=context.getBoundingClientRect(),sa=style(connection),sb=style(context);
-      check('processes-disclosures-equal-height',Math.abs(a.height-b.height)<=2&&a.height>=79.5,{connection:a.height,context:b.height});
-      check('processes-disclosures-equal-typography',sa.fontSize===sb.fontSize&&sa.fontWeight===sb.fontWeight&&sa.lineHeight===sb.lineHeight,{font:[sa.fontSize,sb.fontSize],weight:[sa.fontWeight,sb.fontWeight],lineHeight:[sa.lineHeight,sb.lineHeight]});
-      check('processes-disclosures-equal-surface',sa.backgroundColor===sb.backgroundColor&&sa.borderRadius===sb.borderRadius&&sa.padding===sb.padding,{background:[sa.backgroundColor,sb.backgroundColor],padding:[sa.padding,sb.padding]});
-      check('processes-disclosure-human-copy',(connection.textContent||'').includes('Come si collegano i processi')&&(connection.textContent||'').includes('Collegamenti possibili, non ordine obbligatorio.'),{text:connection.textContent?.trim().slice(0,140)});
-    }
-
+    const context=root.querySelector('[data-compliance-context="processes"] > summary');
+    const redundant=root.querySelector('[data-compliance-process-placement],[data-compliance-overview-host],[data-compliance-process-map]');
+    const handoffs=[...root.querySelectorAll('#procedureHub .process-inline-handoff')];
+    const details=[...root.querySelectorAll('#procedureHub .process-inline-detail > summary')];
+    check('processes-single-context-present',!!context,{context:!!context});
+    check('processes-parallel-grids-absent',!redundant,{redundant:redundant?.outerHTML.slice(0,160)});
+    check('processes-seven-inline-handoffs',handoffs.length===7,{count:handoffs.length,whenCount:root.querySelectorAll('#procedureHub .process-inline-when').length,owner:root.querySelector('#procedureHub')?.dataset.procedureHub||'none',codes:cards.map(e=>e.dataset.processCode).join(',')});
+    check('processes-seven-progressive-details',details.length===7&&details.every(x=>x.getBoundingClientRect().height>=43.5),{count:details.length,heights:details.map(x=>x.getBoundingClientRect().height)});
     uncapped('processes-lead-no-artificial-cap',root.querySelector('.processes-head p'));
     for(const [i,card] of cards.entries()){
       const title=card.querySelector(':scope > h2'), purpose=card.querySelector(':scope > .procedure-purpose'), c=style(purpose);

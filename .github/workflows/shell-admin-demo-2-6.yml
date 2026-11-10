@@ -44,6 +44,47 @@ jobs:
           if [[ "${ICTC_EXPECT_DEMO}" == '1' ]]; then ./ictc.sh demo --profile current --no-open; else ./ictc.sh start --profile current --no-open; fi
           trap './ictc.sh stop --profile current || true' EXIT
           python -u tests/browser/browser-shell-admin-demo-2-6.py
+      - name: Expose failure phase as a separately named diagnostic artifact
+        id: report_phase
+        if: failure()
+        shell: bash
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re
+          mode = os.environ['MODE']
+          source=pathlib.Path('artifacts') / f'browser-shell-admin-demo-2-6-{mode}-error.json'
+          if source.is_file():
+              payload=json.loads(source.read_text(encoding='utf-8'))
+              phase=re.sub('[^a-zA-Z0-9_-]','-',str(payload.get('phase','unknown')))[:70]
+              message=str(payload.get('message',''))
+              try:
+                  import ast
+                  metric_values=ast.literal_eval(message)
+                  if not isinstance(metric_values,dict): metric_values={}
+              except (ValueError, SyntaxError):
+                  metric_values={}
+              def metric(name):
+                  return str(metric_values.get(name,'x'))
+              summary='-o'+metric('overlaps')+'-h'+metric('footerHeight')+'-p'+metric('bodyPaddingBottom')+'-s'+metric('scrollPaddingBottom')
+              target=re.sub('[^a-zA-Z0-9_-]','-',metric_values.get('target','unknown'))[:48]
+              summary+='-target-'+target
+              phase=(phase+summary)[:105]
+              with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase='+phase+'\n')
+              pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-{phase}.txt').write_text(
+                  'PHASE='+phase+'\\nERROR='+str(payload.get('message','unknown'))[:1500]+'\\n',encoding='utf-8')
+          else:
+              with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase=no-report\n')
+              pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-no-error-report.txt').write_text('No error JSON generated\\n',encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: failure()
+        with:
+          name: shell-admin-demo-failure-phase-${{ matrix.mode }}-${{ steps.report_phase.outputs.phase }}
+          path: artifacts/shell-admin-demo-phase-*.txt
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:

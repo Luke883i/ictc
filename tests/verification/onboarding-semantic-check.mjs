@@ -1,0 +1,54 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import { ONBOARDING_CHAPTERS,ONBOARDING_CONTRACT_DIGEST,ONBOARDING_VERSION,onboardingProjectionV2,acknowledgeOnboardingV2,requiresOnboardingForWrite, onboardingOwner, onboardingTrustedJitAllowed } from '../../src/runtime/onboarding-policy.mjs';
+const at='2026-11-10T18:07:00.000Z',actorId='local-admin',tenantId='tenant-1';
+const ctx={actorId,tenantId,at};
+const ack=(state,i,extra={})=>acknowledgeOnboardingV2(state,{chapterId:ONBOARDING_CHAPTERS[i].id,contentDigest:ONBOARDING_CHAPTERS[i].contentDigest,explicitAcknowledgement:true,...extra},ctx);
+const rejects=(fn,code)=>assert.throws(fn,e=>e.code===code);
+assert.equal(ONBOARDING_VERSION,'2.0.0');
+assert.equal(ONBOARDING_CHAPTERS.length,5);
+assert.equal(new Set(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids)).size,15);
+assert.deepEqual(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids),Array.from({length:15},(_,i)=>'L'+String(i).padStart(2,'0')));
+assert.equal(ONBOARDING_CONTRACT_DIGEST.length,64);
+for(const chapter of ONBOARDING_CHAPTERS){assert.equal(chapter.contentDigest.length,64);assert.equal(chapter.lessons.length,3);assert.ok(chapter.heading?.length>=12,'heading');for(const k of ['lead','case','why','do','how','checkpoint'])assert.ok(chapter[k]?.length>30,k);}
+assert.equal(onboardingOwner({users:[{id:'ext@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'ext@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}).onboarding.acceptedAt,at);
+assert.equal(onboardingTrustedJitAllowed({id:'external@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth'}),true);
+const routeSource=readFileSync(new URL('../../src/server.mjs',import.meta.url),'utf8');
+assert.ok(routeSource.includes('if(current?.onboarding?.acceptedAt)')&&routeSource.includes('const prior=current?.onboarding?.chapterAcknowledgements?.at(-1);'),'JIT identity without user record must survive replay checks');
+assert.equal(onboardingTrustedJitAllowed({id:'local-admin',identityMode:'local',identityStrategy:'local'}),false);
+rejects(()=>onboardingOwner({users:[{id:'local-admin',onboarding:{acceptedAt:at}}]},{id:'local-admin',identityMode:'trusted-header',identityStrategy:'shibboleth'}),'onboarding-identity-collision');
+rejects(()=>onboardingOwner({users:[{id:'external@example.org',identityMode:'trusted-header',identityStrategy:'shibboleth',onboarding:{acceptedAt:at}}]},{id:'external@example.org',identityMode:'local'}),'onboarding-identity-collision');
+assert.equal(requiresOnboardingForWrite('POST','/api/incidents',null),true);
+assert.equal(requiresOnboardingForWrite('PATCH','/api/profile/onboarding',null),false);
+assert.equal(requiresOnboardingForWrite('GET','/api/bootstrap',null),false);
+assert.equal(requiresOnboardingForWrite('PUT','/api/admin/settings',{onboarding:{acceptedAt:at}}),false);
+assert.equal(onboardingProjectionV2(null,true).accepted,false);
+assert.equal(onboardingProjectionV2({acceptedAt:at,schemaVersion:'1.0.0'},false).accepted,true);
+assert.equal(onboardingProjectionV2({acceptedAt:at,schemaVersion:'1.0.0'},true).accepted,false);
+rejects(()=>ack(null,0,{progress:100,accept:true}),'onboarding-client-authority');
+rejects(()=>ack(null,1),'onboarding-chapter-order');
+rejects(()=>ack(null,0,{contentDigest:'0'.repeat(64)}),'onboarding-chapter-digest');
+rejects(()=>ack(null,0,{explicitAcknowledgement:false}),'onboarding-ack-required');
+rejects(()=>ack(null,0,{actorId:'intruder'}),'onboarding-client-authority');
+let current=null;
+for(let i=0;i<5;i++){
+ const transition=ack(current,i);
+ assert.equal(transition.recorded,true);
+ current=transition.state;
+ assert.equal(current.chapterAcknowledgements.length,i+1);
+ assert.equal(current.chapterAcknowledgements.at(-1).actorId,actorId);
+ assert.equal(current.chapterAcknowledgements.at(-1).tenantId,tenantId);
+ assert.equal(current.progress,(i+1)*20);
+ assert.equal(Boolean(current.acceptedAt),i===4);
+ if(i===0){const replay=ack(current,0);assert.equal(replay.recorded,false);assert.deepEqual(replay.state,current);}
+ if(i<4)rejects(()=>ack(current,i+1,{contentDigest:'stale'}),'onboarding-chapter-digest');
+}
+assert.equal(onboardingProjectionV2(current).accepted,true);
+assert.equal(onboardingProjectionV2(current).completedChapters,5);
+assert.equal(ack(current,4).recorded,false);
+assert.equal(current.chapterAcknowledgements[0].meaning,'explicit-self-attestation-not-reading-or-comprehension');
+assert.equal(requiresOnboardingForWrite('POST','/api/incidents',{onboarding:current}),false);
+const legacy={schemaVersion:'1.0.0',acceptedAt:'2026-04-01T00:00:00.000Z',authority:'user-record'};
+assert.deepEqual(ack(legacy,0).state,legacy);
+assert.ok(!ONBOARDING_CHAPTERS.some(c=>c.heading.includes('certifica conformità')));
+console.log(JSON.stringify({ok:true,gate:'onboarding-semantic-v2',chapters:ONBOARDING_CHAPTERS.length,lessons:15,tests:'server-owned digest, sequential acknowledgements, client forgery, synthetic/legacy distinction, explicit human attestation, business write gate',claimBoundary:'source and pure-runtime policy only; not user comprehension, browser, full Store integration or external enterprise certification'}));

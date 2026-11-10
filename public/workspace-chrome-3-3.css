@@ -52,3 +52,10 @@ html[data-uiux-absorption="656"] .topbar .service-nav{overflow-x:auto;overscroll
 html[data-uiux-absorption="656"] .topbar .service-nav button{flex:0 0 auto}
 @media(max-width:760px){html[data-uiux-absorption="656"] .topbar .stable-header-inner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.35rem}html[data-uiux-absorption="656"] .topbar .brand{min-width:0}html[data-uiux-absorption="656"] .topbar .global-command-trigger span{display:none}html[data-uiux-absorption="656"] .topbar .global-command-trigger{width:44px;min-width:44px;padding:0;justify-content:center}html[data-uiux-absorption="656"] .topbar .stable-profile-menu .profile-summary-copy small{display:none}}
 @media(max-width:520px){html[data-uiux-absorption="656"] .topbar .service-nav button{min-height:44px;padding-inline:.55rem;font-size:max(.78rem,12px)}html[data-uiux-absorption="656"] .topbar .demo-context-card{width:44px;min-width:44px;justify-content:center}}
+
+/* Full canonical name, with a two-line non-occluding mobile footer. */
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-footer-product b{white-space:normal;line-height:1.2;overflow-wrap:normal}
+@media(max-width:760px){html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-legal-footer{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;justify-items:start;align-content:center;row-gap:0!important;padding-block:.25rem!important}html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-footer-product{height:auto}html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-footer-links{height:auto;min-width:0;gap:.3rem}html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"] .stable-footer-links a{min-height:28px}}
+
+/* The footer's visible height and its document scroll reserve share ONE owner. */
+html[data-native-semantic-lattice="3.2.0"][data-workspace-chrome="3.3"][data-ictc-experience="market-1"]{--shell-footer-reserve:var(--a6-ux1-footer-reserve)}
