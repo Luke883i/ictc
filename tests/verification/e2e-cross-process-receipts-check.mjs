@@ -20,6 +20,8 @@ const get=async(path,role='admin')=>{
 try{
  const seed=await h.bootstrap('admin','local-admin');
  assert.equal(seed.status,200);
+ await h.onboard('admin','local-admin');
+ await h.onboard('auditor','local-auditor');
  const object=record('AO-01','create',await h.ok('POST','/api/grc/objects',
   {type:'server',name:'E2E ERP application',criticality:'high',owner:'IT',sourceAuthority:'CMDB'},'admin','local-admin'));
  const objectId=object.id;
