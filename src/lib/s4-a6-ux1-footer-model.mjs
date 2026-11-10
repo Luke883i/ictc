@@ -9,7 +9,7 @@ export function validateA6Ux1({css,styles,registry,workflow,browser}){
  const imports=[...String(styles||'').matchAll(/@import\s+url\(['"]?([^)\'"\s]+)['"]?\)/g)].map(m=>m[1]);
  check(imports.at(-1)===A6_UX1_CONTRACT.finalImport,'FINAL_IMPORT',imports.at(-1)||null);
  for(const [token,code] of [
-  ['--a6-ux1-footer-min:44px','DESKTOP_MIN'],['--a6-ux1-footer-min:52px','MOBILE_MIN'],['env(safe-area-inset-bottom,0px)','SAFE_AREA'],
+  ['--a6-ux1-footer-min:44px','DESKTOP_MIN'],['--a6-ux1-footer-min:78px','MOBILE_MIN'],['env(safe-area-inset-bottom,0px)','SAFE_AREA'],
   ['--a6-ux1-footer-reserve:calc(var(--a6-ux1-footer-min) + var(--a6-ux1-footer-safe-bottom))','RESERVE_COUPLING'],
   ['scroll-padding-bottom:calc(var(--a6-ux1-footer-reserve) + 12px)','ROOT_SCROLL_PADDING'],['padding-bottom:var(--a6-ux1-footer-reserve)!important','BODY_RESERVE'],
   ['position:fixed!important','FIXED_POSITION'],['bottom:0!important','BOTTOM_INSET'],['min-height:var(--a6-ux1-footer-reserve)!important','MIN_HEIGHT'],
