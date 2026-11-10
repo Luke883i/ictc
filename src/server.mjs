@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RuntimeStore } from './runtime-store.mjs';
-import { onboardingProjectionV2, acknowledgeOnboardingV2, requiresOnboardingForWrite } from './runtime/onboarding-policy-v2.mjs';
+import { onboardingProjectionV2, acknowledgeOnboardingV2, requiresOnboardingForWrite } from './runtime/onboarding-policy.mjs';
 import { ROLES, now, publicSettings } from './domain.mjs';
 import { VERSION } from './version.mjs';
 import { accessProfileFor } from './access-profile.mjs';

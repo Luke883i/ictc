@@ -1,4 +1,4 @@
-import { onboardingProjectionV2 } from './onboarding-policy-v2.mjs';
+import { onboardingProjectionV2 } from './onboarding-policy.mjs';
 import { CATALOG_STATES, DOCUMENT_TYPES, ROLES, asString, normalizeUrl, now, publicSettings, sha256, uniqueStrings } from '../domain.mjs';
 import { deriveQuestions, submissionReadiness } from '../lib/question-engine.mjs';
 import { httpError } from './http.mjs';

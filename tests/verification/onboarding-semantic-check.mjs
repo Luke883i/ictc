@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { ONBOARDING_CHAPTERS,ONBOARDING_CONTRACT_DIGEST,ONBOARDING_VERSION,onboardingProjectionV2,acknowledgeOnboardingV2,requiresOnboardingForWrite } from '../../src/runtime/onboarding-policy-v2.mjs';
+import { ONBOARDING_CHAPTERS,ONBOARDING_CONTRACT_DIGEST,ONBOARDING_VERSION,onboardingProjectionV2,acknowledgeOnboardingV2,requiresOnboardingForWrite } from '../../src/runtime/onboarding-policy.mjs';
 const at='2026-11-10T18:07:00.000Z',actorId='local-admin',tenantId='tenant-1';
 const ctx={actorId,tenantId,at};
 const ack=(state,i,extra={})=>acknowledgeOnboardingV2(state,{chapterId:ONBOARDING_CHAPTERS[i].id,contentDigest:ONBOARDING_CHAPTERS[i].contentDigest,explicitAcknowledgement:true,...extra},ctx);
