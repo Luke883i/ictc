@@ -68,6 +68,8 @@ jobs:
               def metric(name):
                   return str(metric_values.get(name,'x'))
               summary='-o'+metric('overlaps')+'-h'+metric('footerHeight')+'-p'+metric('bodyPaddingBottom')+'-s'+metric('scrollPaddingBottom')
+              target=re.sub('[^a-zA-Z0-9_-]','-',metric_values.get('target','unknown'))[:48]
+              summary+='-target-'+target
               phase=(phase+summary)[:105]
               with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as output: output.write('phase='+phase+'\n')
               pathlib.Path('artifacts').joinpath(f'shell-admin-demo-phase-{mode}-{phase}.txt').write_text(
