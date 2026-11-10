@@ -16,6 +16,8 @@ verify('procedure-hub-no-read-no-surface',()=>assert.deepEqual(canonicalProcedur
 
 const runtime=await runtimeHarness('ictc-enterprise-18-v2-regression');
 try{
+ await runtime.onboard('admin','test-admin');
+ await runtime.onboard('user','test-user');
  await runtime.ok('PUT','/api/admin/settings',{organization:{name:'Enterprise Test',scope:'Cybersecurity UE',jurisdictions:['Italia','Unione europea']},llm:{endpoint:`http://127.0.0.1:${runtime.aiPort}/v1/chat/completions`,model:'mock-enterprise-18',apiKeyEnv:'ICTC_LLM_API_KEY',temperature:0.1}});
  const created=await runtime.ok('POST','/api/monitoring-jobs/draft',{jobName:'Novelty NIS2 e DORA',objective:'Individuare nuove fonti e modifiche ufficiali relative a NIS2 e DORA',cadenceHours:24,miningMode:'novelty',noveltyBaseline:'last-run',jurisdictions:['Unione europea','Italia'],authorities:['EUR-Lex','ACN'],changeTypes:['new-law','amendment','repeal','guidance','effective-date'],resultLimit:75,sourceHints:['https://eur-lex.europa.eu']});
  const mission=created.body.mission;

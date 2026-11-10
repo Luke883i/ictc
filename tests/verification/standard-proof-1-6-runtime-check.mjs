@@ -39,6 +39,7 @@ try {
       assert.doesNotMatch(serialized, /"standardConclusion":"(?:certified|compliant|conformant)"/i);
     });
   }
+  await runtime.onboard('admin','local-admin');
   const writeAttempt = await runtime.request('POST', '/api/standard-proof', { mutate: true }, 'admin', 'local-admin');
   verify('read-only-route', () => assert.equal(writeAttempt.status, 404));
   const report = { schemaVersion: '1.6.0', activeRelease: '1.8.0', model: 'ictc-standard-proof-1-6-runtime', ok: true, checks, roles: ['admin', 'user', 'auditor'], complianceSemantics: 'selected-practice-evidence-v1', limitation: 'Selected local runtime assurance; standard-wide conformity, certification and deployment controls remain external or not assessed.' };

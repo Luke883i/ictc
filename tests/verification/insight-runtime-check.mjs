@@ -3,6 +3,7 @@ import { runtimeHarness } from './runtime-test-harness.mjs';
 
 const runtime=await runtimeHarness('ictc-v3-insights');
 try{
+  await runtime.onboard('admin','test-admin');
   await runtime.ok('PUT','/api/admin/settings',{organization:{name:'Insight Test',scope:'Compliance',jurisdictions:['Italia']},llm:{endpoint:`http://127.0.0.1:${runtime.aiPort}/v1/chat/completions`,model:'mock-v3',apiKeyEnv:'ICTC_LLM_API_KEY',temperature:0.1}});
   const before=await runtime.bootstrap('admin','test-admin');const digest=before.body.insights.base.basisSha256;const values=before.body.insights.base.metrics.map(x=>[x.id,x.value]);
   const proposed=await runtime.ok('POST','/api/insights/propose',{});assert.equal(proposed.status,201);assert.ok(proposed.body.receipt);assert.equal(proposed.body.result.envelope.authority,'ai-assist-only');assert.equal(proposed.body.result.envelope.adoption,null);assert.equal(proposed.body.result.basisSha256,digest);

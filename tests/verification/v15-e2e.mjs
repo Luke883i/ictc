@@ -4,6 +4,8 @@ import { VERSION } from '../../src/version.mjs';
 const h=await runtimeHarness('ictc-v15-e2e');
 try {
   let b=await h.bootstrap(); assert.equal(b.body.version,VERSION);
+  await h.onboard('admin','test-admin');
+  await h.onboard('user','alice');
   assert.equal((await h.request('PUT','/api/admin/settings',{},'user','alice')).status,403);
   let r=await h.ok('POST','/api/missions/draft',{objective:'Official EU and Italian information-security sources',cadence:168});
   const mission=r.body.mission.id; assert.equal(r.body.mission.state,'needs-plan'); assert.ok(r.body.raw.receipt.hash);
