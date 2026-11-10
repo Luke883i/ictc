@@ -228,3 +228,11 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #homeView #homePriorities .home-priority-main{grid-template-columns:4.2rem minmax(11rem,0.85fr) minmax(0,1fr)}
 @media(max-width:760px){#homeView .home-compliance-detail[data-home-regulatory-cases]>summary{flex-wrap:wrap}#homeView .home-examples-disclosure{white-space:normal}#homeView #homePriorities .home-priority-main{grid-template-columns:4rem minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){#homeView .home-examples-chevron{transition:none}}
+
+/* End-of-guidance action remains in the usable reading plane above the fixed footer.
+   Layout is semantic: boundary text and proof CTA remain peers, without overlay hacks. */
+@media(min-width:761px){
+ #homeView .home-compliance-end{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:.55rem;padding:.45rem .75rem}
+ #homeView .home-compliance-end>.home-compliance-route{align-self:start}
+ #homeView .home-compliance-answer{padding:.65rem .85rem}
+}
