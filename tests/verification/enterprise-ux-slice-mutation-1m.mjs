@@ -5,7 +5,7 @@ import {owners,contractViolations} from './enterprise-ux-slice-check.mjs';
 const baseline=owners(),families=[
  ['index','<h2 id="homeTitle">','<h1 id="homeTitle">'],
  ['shell','workPlane.before(host)','workPlane.after(host)'],
- ['shell','data-home-regulatory-cases','data-home-regulatory-retired'],
+ ['shell','home-examples-disclosure','home-examples-retired'],
  ['copy',"lead:'Parti dal caso:","lead:'Impara prima il modello:"],
  ['shell','chapter?.lessons||[]','[]'],
  ['shell','close.hidden=!accepted','close.hidden=false'],
@@ -23,7 +23,7 @@ const baseline=owners(),families=[
  ['shell',"<h1>'+esc(ICTC_MANIFEST.title)+'</h1>","<h2>'+esc(ICTC_MANIFEST.title)+'</h2>"],
  ['frame','process-inline-handoff','process-inline-dead'],
  ['frame','PROCESS_COMPLIANCE_PLACEMENT[code]','null'],
- ['context','processComplianceOverviewHtml(catalogue=[]','processComplianceOverviewHtml([]=[]'],
+ ['context','processIcon(item.code)','processIcon(dead.code)'],
  ['context','Requisiti governabili.','Requisiti certificati.'],
  ['process','\"code\":\"MC-01\",\"requirementClass\":','\"code\":\"MC-01\",\"nonAuthoritativeClass\":'],
  ['icons','PROCESS_ICON_BY_CODE=Object.freeze','PROCESS_ICON_BY_CODE_DISABLED=Object.freeze'],

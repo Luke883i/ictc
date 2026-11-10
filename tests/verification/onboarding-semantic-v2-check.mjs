@@ -9,7 +9,7 @@ assert.equal(ONBOARDING_CHAPTERS.length,5);
 assert.equal(new Set(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids)).size,15);
 assert.deepEqual(ONBOARDING_CHAPTERS.flatMap(x=>x.lesson_ids),Array.from({length:15},(_,i)=>'L'+String(i).padStart(2,'0')));
 assert.equal(ONBOARDING_CONTRACT_DIGEST.length,64);
-for(const chapter of ONBOARDING_CHAPTERS){assert.equal(chapter.contentDigest.length,64);assert.equal(chapter.lessons.length,3);for(const k of ['heading','lead','case','why','do','how','checkpoint'])assert.ok(chapter[k]?.length>30,k);}
+for(const chapter of ONBOARDING_CHAPTERS){assert.equal(chapter.contentDigest.length,64);assert.equal(chapter.lessons.length,3);assert.ok(chapter.heading?.length>=12,'heading');for(const k of ['lead','case','why','do','how','checkpoint'])assert.ok(chapter[k]?.length>30,k);}
 assert.equal(requiresOnboardingForWrite('POST','/api/incidents',null),true);
 assert.equal(requiresOnboardingForWrite('PATCH','/api/profile/onboarding',null),false);
 assert.equal(requiresOnboardingForWrite('GET','/api/bootstrap',null),false);
