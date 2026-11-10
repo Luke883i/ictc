@@ -108,7 +108,12 @@ function renderProof(data, revision = currentRevision()) {
   $('#proofRelease').textContent = data.release || 'Non disponibile';
   $('#proofActor').textContent = `${data.actor?.label || data.actor?.role || 'Ruolo'} · ${data.actor?.modeLabel || data.actor?.mode || 'modalità non disponibile'}`;
   $('#proofRuntime').textContent = `${runtime.verified || 0} di ${runtime.total || 0} con evidenza`;
-  $('#proofIntegrity').textContent = integrity.ok ? `Coerente tecnicamente · r${integrity.revision || 0}` : 'Coerenza tecnica da verificare';
+  const integrityNode=$('#proofIntegrity');
+  integrityNode.textContent=integrity.ok?'Coerente tecnicamente':'Coerenza tecnica da verificare';
+  integrityNode.dataset.technicalRevision=String(integrity.revision||0);
+  integrityNode.setAttribute('aria-label',`${integrityNode.textContent}. Revisione tecnica r${integrity.revision||0}; non equivale a conformità.`);
+  const technicalReceipt=integrity.ok?`Coerente tecnicamente · r${integrity.revision||0}`:`Coerenza tecnica da verificare · r${integrity.revision||0}`;
+  integrityNode.title=`${technicalReceipt} · revisione tecnica, non conformità`;
   $('#proofBoundary').textContent = data.claimBoundary || PRODUCT_COPY.proofBoundary;
   $('#proofReadinessLimit').textContent = posture.limitation || 'Un controllo senza evidenza resta non verificato.';
   $('#proofDeploymentGaps').innerHTML = blockerMarkup(deployment.blockers || []);
