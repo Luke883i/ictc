@@ -25,15 +25,27 @@ with sync_playwright() as pw:
         guide=page.locator('#homeView details[data-home-business-guide]')
         expect(guide).to_be_visible()
         body=guide.locator(':scope > .home-compliance-full-body')
-        expect(body).to_be_hidden()
-        if PROBE!='home-guide-closed':
+        # Value-first Home defaults to open; test the three distinct user transitions.
+        expect(guide).to_have_attribute('open','')
+        expect(body).to_be_visible()
+        expect(guide.locator('[data-home-regulatory-cases] .home-compliance-cases')).to_be_hidden()
+        if PROBE=='home-guide-closed':
+            guide.locator(':scope > summary').click()
+            expect(guide).not_to_have_attribute('open','')
+            expect(body).to_be_hidden()
+        elif PROBE=='home-guide-open':
+            guide.locator(':scope > summary').click()
+            expect(guide).not_to_have_attribute('open','')
             guide.locator(':scope > summary').click()
             expect(guide).to_have_attribute('open','')
             expect(body).to_be_visible()
-            expect(guide.locator('[data-home-regulatory-cases] .home-compliance-cases')).to_be_hidden()
-            if PROBE=='home-guide-reclose':
-                guide.locator(':scope > summary').click()
-                expect(guide).not_to_have_attribute('open','')
-                expect(body).to_be_hidden()
+        elif PROBE=='home-guide-reclose':
+            guide.locator(':scope > summary').click()
+            expect(guide).not_to_have_attribute('open','')
+            guide.locator(':scope > summary').click()
+            expect(guide).to_have_attribute('open','')
+            guide.locator(':scope > summary').click()
+            expect(guide).not_to_have_attribute('open','')
+            expect(body).to_be_hidden()
     else: raise SystemExit(f'unknown probe {PROBE}')
     print({'ok':True,'probe':PROBE});ctx.close();browser.close()
