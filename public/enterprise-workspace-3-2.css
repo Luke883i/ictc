@@ -210,3 +210,10 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #processesView .compliance-process-lifecycle-body{overflow-x:hidden}
 /* Confine del carosello: lo scorrimento dei handoff resta locale, non sulla pagina. */
 #processesView{overflow-x:clip}
+
+/* Keep the responsive Processi surface within the viewport at every width. */
+#processesView{box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;overflow-x:clip;contain:inline-size}
+#processesView :is([data-compliance-overview-host],[data-compliance-process-map],.process-compliance-overview,.compliance-process-lifecycle,.compliance-process-lifecycle-body){box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+#processesView .process-scope-grid,#processesView .process-handoff-flow{min-inline-size:0;max-inline-size:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+#processesView .process-scope-card,#processesView .process-handoff-flow>li{min-inline-size:0;max-inline-size:100%;box-sizing:border-box}
+#processesView .processes-head>*{min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}
