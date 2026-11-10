@@ -23,7 +23,7 @@ export const PROCEDURE_COMPOSITION=Object.freeze({
 
 export const SURFACE_BLUEPRINTS=Object.freeze({
   home:Object.freeze({root:'#homeView',kind:'work',title:'Attività di compliance',purpose:'Vedi ciò che richiede il tuo intervento e apri direttamente il processo in cui decidere o completare il lavoro.',first:'attention',technicalDefault:false}),
-  processes:Object.freeze({root:'#processesView',kind:'catalogue',title:'Processi di Compliance',purpose:'Scegli il processo in base all’oggetto da governare: fonti, eventi, oggetti, requisiti, azioni, rischi o richieste di verifica.',first:'catalogue',technicalDefault:false}),
+  processes:Object.freeze({root:'#processesView',kind:'catalogue',title:'Processi di compliance e loro gestione',purpose:'Scegli il processo in base all’oggetto da governare: fonti, eventi, oggetti, requisiti, azioni, rischi o richieste di verifica.',first:'catalogue',technicalDefault:false}),
   monitoring:Object.freeze({root:'#monitoringView',kind:'procedure',procedure:'monitoring',first:'work',technicalDefault:false}),
   incidents:Object.freeze({root:'#incidentsView',kind:'procedure',procedure:'incidents',first:'work',technicalDefault:false}),
   objects:Object.freeze({root:'#grcWorkspace',kind:'procedure',procedure:'objects',first:'work',technicalDefault:false}),
