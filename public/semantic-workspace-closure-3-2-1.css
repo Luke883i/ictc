@@ -269,3 +269,32 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>s
 html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section[open]>summary .proof-section-chevron{transform:rotate(90deg)}
 @media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary .proof-section-chevron{transition:none}}
 @media(forced-colors:active){html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section>summary .proof-section-chevron{color:ButtonText}}
+
+/* P4 narrow 320px: keep code/identity, maturity and action in three intrinsic rows;
+   the native secondary disclosure stays in its own fourth row, never nested in the
+   descriptive text. No line clamps, ellipsis, disabled actions or changed DoD. */
+@media(max-width:359px){
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card[data-uiux-layout="row"]{
+    grid-template-columns:5rem minmax(0,1fr)!important;
+    grid-template-areas:"code title" "maturity purpose" "action action"!important;
+    padding:.64rem .7rem!important;
+    row-gap:.15rem!important;
+    column-gap:.48rem!important;
+    align-items:center!important
+  }
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>header{
+    align-self:center;align-content:center;gap:.22rem!important
+  }
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>.procedure-maturity{
+    justify-self:start!important;align-self:start
+  }
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>.procedure-purpose{
+    align-self:start;line-height:1.35!important
+  }
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>footer{
+    justify-self:stretch!important;width:100%!important;min-width:0
+  }
+  html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>[data-process-secondary-detail]{
+    grid-column:1/-1;grid-row:auto;margin-top:0;padding-top:.1rem
+  }
+}
