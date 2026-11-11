@@ -318,6 +318,84 @@ def audit_coverage_overlays(page, viewport, width):
     expect(dialog).not_to_be_visible()
     return results
 
+def v8_native_owner_probe(page, viewport, width, surface):
+    """Independent native ICTC browser proof, never synthetic-fixture evidence."""
+    import hashlib
+    receipts=[]
+    def capture(state, root_selector, metrics):
+        png=page.screenshot(path=str(ART/f'{viewport}-{surface}-v8-{state}.png'),full_page=True)
+        return {
+            'suite':'P4/V8-native-owner', 'surface':surface,'viewport':viewport,
+            'width':width,'state':state,'url':page.url,'source':'ICTC_NATIVE_BROWSER',
+            'synthetic':False,'dom':True,'cssom':True,
+            'screenshotSha256':hashlib.sha256(png).hexdigest(),
+            'metrics':metrics
+        }
+    if surface=='home':
+        guide=page.locator('#homeView details[data-home-business-guide]')
+        assert guide.count()==1, 'V8: missing canonical Home details owner'
+        summary=guide.locator(':scope > summary')
+        for should_open,key,expected in [(True,'expanded','Comprimi guida'),(False,'collapsed','Espandi guida')]:
+            current=guide.get_attribute('open') is not None
+            if current!=should_open:
+                summary.scroll_into_view_if_needed()
+                summary.focus()
+                page.keyboard.press('Enter' if should_open else 'Space')
+            page.wait_for_function(
+                """({open})=>{const d=document.querySelector('#homeView details[data-home-business-guide]');
+                   return !!d && d.open===open}""",{'open':should_open})
+            label=guide.locator('[data-home-guide-action]').inner_text().strip()
+            assert label==expected,('V8 Home disclosure label mismatch',expected,label)
+            metrics=guide.evaluate("""d=>{
+              const s=d.querySelector(':scope > summary'),r=s.getBoundingClientRect(),css=getComputedStyle(s);
+              return {open:d.open,visible:css.display!=='none',height:r.height,
+                label:d.querySelector('[data-home-guide-action]')?.textContent?.trim()||'',
+                rootWidth:document.documentElement.scrollWidth,windowWidth:innerWidth,
+                focusable:s.tabIndex>=0};
+            }""")
+            assert metrics['visible'] and metrics['height']>=44 and metrics['focusable'],('V8 Home access target',metrics)
+            assert metrics['rootWidth']<=width+2,('V8 Home horizontal overflow',metrics)
+            receipts.append(capture(key,'#homeView',metrics))
+    elif surface=='processes':
+        root=page.locator('#processesView')
+        rows=root.locator('#procedureHub .procedure-card')
+        placeholders=root.locator('#procedureHub .catalogue-placeholder')
+        assert rows.count()==7,('V8 process count changed',rows.count())
+        assert placeholders.count()==2,('V8 informational placeholder count changed',placeholders.count())
+        detail=rows.first.locator('.process-inline-detail')
+        summary=detail.locator(':scope > summary')
+        for should_open,key in [(False,'collapsed'),(True,'expanded')]:
+            current=detail.get_attribute('open') is not None
+            if current!=should_open:
+                summary.scroll_into_view_if_needed()
+                summary.focus()
+                page.keyboard.press('Enter')
+            page.wait_for_function(
+                """({open})=>{const d=document.querySelector('#processesView #procedureHub .procedure-card .process-inline-detail');
+                   return !!d && d.open===open}""",{'open':should_open})
+            metrics=root.evaluate("""r=>{
+              const box=r.getBoundingClientRect(),card=r.querySelector('#procedureHub .procedure-card'),
+              title=card?.querySelector('h2'),action=card?.querySelector('.procedure-primary'),
+              dl=card?.querySelector('dl.process-inline-facts'),
+              dd=[...(dl?.querySelectorAll('dd')||[])],
+              cs=dl?getComputedStyle(dl):null;
+              return {left:box.left,right:box.right,width:box.width,windowWidth:innerWidth,
+                titleWidth:title?.getBoundingClientRect().width||0,
+                actionWidth:action?.getBoundingClientRect().width||0,
+                documentWidth:document.documentElement.scrollWidth,
+                cardScrollWidth:card?.scrollWidth||0,cardClientWidth:card?.clientWidth||0,
+                dlCount:dl?.querySelectorAll('dt')?.length||0,ddCount:dd.length,
+                dlDisplay:cs?.display||'',open:!!card?.querySelector('details[open]')};
+            }""")
+            assert metrics['width']<=1122 and metrics['right']<=width+2 and metrics['left']>=-2,('V8 process width',metrics)
+            assert metrics['documentWidth']<=width+2,('V8 process page overflow',metrics)
+            assert metrics['cardScrollWidth']<=metrics['cardClientWidth']+2,('V8 process card overflow',metrics)
+            assert metrics['titleWidth']>0 and metrics['actionWidth']>0,('V8 process action/title occlusion',metrics)
+            if should_open:
+                assert metrics['dlCount']==3 and metrics['ddCount']==3 and metrics['dlDisplay']=='grid',('V8 semantic definition list',metrics)
+            receipts.append(capture(key,'#processesView',metrics))
+    return receipts
+
 def fail(error):
     payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
     (ART/'error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
@@ -344,6 +422,8 @@ try:
                 page.screenshot(path=str(ART/f'{viewport}-{surface}.png'),full_page=True)
                 if failures:
                     raise AssertionError(f'{viewport}/{surface}: '+json.dumps(failures[:6],ensure_ascii=False))
+                if surface in ('home','processes'):
+                    observations.extend(v8_native_owner_probe(page,viewport,width,surface))
                 if surface=='coverage':
                     observations.extend(audit_coverage_overlays(page,viewport,width))
         browser.close()
