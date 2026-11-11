@@ -413,8 +413,17 @@ def v9_native_ux_probe(page, viewport, width, surface):
         cta=page.locator('#homeView [data-onboarding-open][data-onboarding-replay]')
         assert cta.count()==1 and cta.is_visible(),('V9: Home onboarding CTA missing',cta.count())
         assert cta.inner_text().strip()=='Onboarding'
-        profile=page.locator('#stableProfileMenu [data-onboarding-replay]')
-        assert profile.count()==1 and profile.inner_text().strip()=='Onboarding'
+        profile_menu=page.locator('#stableProfileMenu')
+        was_open=profile_menu.get_attribute('open') is not None
+        if not was_open:
+            profile_menu.locator(':scope > summary').click()
+        profile=profile_menu.locator('[data-onboarding-replay]')
+        expect(profile).to_be_visible()
+        assert profile.count()==1 and profile.inner_text().strip()=='Onboarding',json.dumps(
+            [{'id':'v9-profile-visible-onboarding-action',
+              'detail':{'count':profile.count(),'label':profile.inner_text().strip()}}],ensure_ascii=False)
+        if not was_open:
+            profile_menu.locator(':scope > summary').click()
         widths=page.locator('#homeView .home-compliance-answer p').evaluate_all(
             """nodes=>nodes.map(n=>{
                const parent=n.parentElement,pc=getComputedStyle(parent);
