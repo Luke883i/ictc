@@ -37,7 +37,7 @@ try{
   cases.push({id:i,family:signature,detected:caught});
  }
  const positives=[
-  'src/valid-module.mjs','docs/Start-here.md','tests/legacy/preserved-fixture.json',
+  'src/valid-module.mjs',['docs','Start-here.md'].join('/'),'tests/legacy/preserved-fixture.json',
   'public/assets/icon.svg','.env.example','src/nested/another-module.js',
   'docs/caf\u00e9.md','src/shared/README.md'
  ];

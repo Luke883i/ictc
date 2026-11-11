@@ -25,6 +25,7 @@ assert.throws(()=>evaluate({...updated,windows:[{...window,expiresAt:new Date(no
 assert.ok(normalizeGovernance({aiEvaluation:updated},{aiEvaluation:base}).aiEvaluation.mode==='enforce');
 const h=await runtimeHarness('ictc-c4-gate');
 try{
+ await h.onboard('admin','local-admin');
  const cfg={schemaVersion:'1.0.0',policyVersion:2,mode:'enforce',windows:[]};
  const enabled=await h.request('PUT','/api/admin/governance',{aiEvaluation:cfg});assert.equal(enabled.status,200,JSON.stringify(enabled.body));
  const payload={llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1`,model:'mock-c4',apiKeyEnv:''}};

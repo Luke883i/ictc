@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {procedureAdapters} from '../../src/runtime/procedure-adapters.mjs';
 import {runtimeHandlerKeysByProcedure,runtimeHandlerPlan} from '../../src/runtime/runtime-handler-registry.mjs';
 import {deriveObservedConsumerWriterReticulum} from '../../src/lib/write-authority-census-lib.mjs';
-const root=path.resolve(new URL('../..',import.meta.url).pathname);
+const root=path.resolve(fileURLToPath(new URL('../..',import.meta.url)));
 const paths=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
 const sourceByPath={};for(const p of paths)if(((p.startsWith('src/')||p.startsWith('public/'))&&/\.(?:js|mjs|html|css)$/.test(p))||(p.startsWith('.github/workflows/')&&/\.ya?ml$/.test(p)))sourceByPath[p]=readFileSync(path.join(root,p),'utf8');
 // Test witnesses, not a parallel route registry: each must match canonical adapter.
