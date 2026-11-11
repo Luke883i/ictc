@@ -536,6 +536,7 @@ try:
                     raise AssertionError(json.dumps([{'id':'p4-native-mount-diagnostic',
                         'detail':{'surface':surface,'original':str(mount_error)[:220],
                             'page':details,'pageErrors':p4_page_error_kinds[-5:]}}],ensure_ascii=False)) from mount_error
+                PHASE=f'{viewport}:{surface}:js-audit'
                 result=page.evaluate(JS_AUDIT,{'surface':surface,'width':width})
                 failures=[x for x in result['checks'] if not x['pass']]
                 result['viewport']=viewport; result['failures']=failures
@@ -544,8 +545,10 @@ try:
                 if failures:
                     raise AssertionError(f'{viewport}/{surface}: '+json.dumps(failures[:6],ensure_ascii=False))
                 if surface in ('home','processes'):
+                    PHASE=f'{viewport}:{surface}:v8-native'
                     observations.extend(v8_native_owner_probe(page,viewport,width,surface))
                 if surface in ('home','processes','proof'):
+                    PHASE=f'{viewport}:{surface}:v9-native'
                     observations.extend(v9_native_ux_probe(page,viewport,width,surface))
                 if surface=='coverage':
                     observations.extend(audit_coverage_overlays(page,viewport,width))
