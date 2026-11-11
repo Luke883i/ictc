@@ -26,14 +26,16 @@ assert.ok(normalizeGovernance({aiEvaluation:updated},{aiEvaluation:base}).aiEval
 const h=await runtimeHarness('ictc-c4-gate');
 try{
  await h.onboard('admin','local-admin');
+ // Exercise governance under the same canonical actor whose onboarding was completed.
+ const adminRequest=(method,url,body)=>h.request(method,url,body,'admin','local-admin');
  const cfg={schemaVersion:'1.0.0',policyVersion:2,mode:'enforce',windows:[]};
- const enabled=await h.request('PUT','/api/admin/governance',{aiEvaluation:cfg});assert.equal(enabled.status,200,JSON.stringify(enabled.body));
+ const enabled=await adminRequest('PUT','/api/admin/governance',{aiEvaluation:cfg});assert.equal(enabled.status,200,JSON.stringify(enabled.body));
  const payload={llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1`,model:'mock-c4',apiKeyEnv:''}};
- let result=await h.request('POST','/api/admin/ai/test',payload);assert.equal(result.status,409,JSON.stringify(result.body));assert.equal(result.body.code,'ai-eval-proof-missing');
- const config=await h.request('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(config.status,200,JSON.stringify(config.body));
- result=await h.request('POST','/api/admin/ai/test',payload);assert.notEqual(result.body.code,'ai-eval-proof-missing',JSON.stringify(result.body));
- const suspend=await h.request('PUT','/api/admin/governance',{aiEvaluation:{schemaVersion:'1.0.0',policyVersion:4,mode:'suspended',windows:[]}});assert.equal(suspend.status,200);
- result=await h.request('POST','/api/admin/ai/test',payload);assert.equal(result.status,409);assert.equal(result.body.code,'ai-eval-rollback-suspended');
- const replay=await h.request('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(replay.status,409);assert.equal(replay.body.code,'ai-eval-version-replay');
+ let result=await adminRequest('POST','/api/admin/ai/test',payload);assert.equal(result.status,409,JSON.stringify(result.body));assert.equal(result.body.code,'ai-eval-proof-missing');
+ const config=await adminRequest('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(config.status,200,JSON.stringify(config.body));
+ result=await adminRequest('POST','/api/admin/ai/test',payload);assert.notEqual(result.body.code,'ai-eval-proof-missing',JSON.stringify(result.body));
+ const suspend=await adminRequest('PUT','/api/admin/governance',{aiEvaluation:{schemaVersion:'1.0.0',policyVersion:4,mode:'suspended',windows:[]}});assert.equal(suspend.status,200);
+ result=await adminRequest('POST','/api/admin/ai/test',payload);assert.equal(result.status,409);assert.equal(result.body.code,'ai-eval-rollback-suspended');
+ const replay=await adminRequest('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(replay.status,409);assert.equal(replay.body.code,'ai-eval-version-replay');
 }finally{await h.close()}
 console.log('c4-ai-eval-drift-check: PASS versioned admin policy, pre-provider failclose, stale/drift/rollback and monotonic settings');
