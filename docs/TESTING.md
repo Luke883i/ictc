@@ -26,6 +26,21 @@ cat artifacts/repository-retirement-mutations.json
 
 L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. Il falsificatore copre anche un tentativo di attribuire falsamente `retirement-candidate` a `LICENSE.md`. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
 
+## Contratti aggiuntivi di frontiera C3/C4 e chiusura reticolare
+
+I seguenti controlli sono innestati nel workflow `enterprise-candidate.yml` esistente, senza crearne un secondo. Restano prove E2, non promuovono gli stati C1/C3/C4/S4/S5:
+
+```bash
+node tests/verification/c3-trace-pagination-check.mjs
+node tests/verification/c4-ai-eval-drift-check.mjs
+node tests/verification/convergence-reticular-dod-check.mjs --mutations=50000
+node tests/verification/c3-c4-physical-falsification.mjs
+# Test negativo intenzionale: deve uscire con codice 27 se il DoD globale resta aperto.
+node tests/verification/convergence-reticular-dod-check.mjs --require-global
+```
+
+L'ultima invocazione e una **prova NO-GO**, non un gate da aggiungere alla CI verde. La relativa receipt `artifacts/convergence-reticular-dod.json` deriva soltanto dai registri canonici e dal Git tree; non e una nuova autorita di chiusura. Il test di paginazione non dimostra capacity/HA del deployment; il gate AI non misura autonomamente accuratezza, drift o efficacia del provider.
+
 ## Feedback per tipo di modifica
 
 Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di convergenza. La tabella orienta, non crea una seconda authority.

@@ -67,6 +67,14 @@ jobs:
       - run: node tests/verification/convergence-authority-check.mjs
       - name: Contributor runtime contract
         run: node tests/verification/contributor-runtime-check.mjs
+      - name: F-13 role-scoped trace paging and revision-bound cursor
+        run: node tests/verification/c3-trace-pagination-check.mjs
+      - name: F-15 governed AI evaluation and drift rollback suspension
+        run: node tests/verification/c4-ai-eval-drift-check.mjs
+      - name: C1-C5 and S4-S5 non-compensating closure proof
+        run: node tests/verification/convergence-reticular-dod-check.mjs --mutations=50000
+      - name: Physical source falsifiers for F-13 and F-15
+        run: node tests/verification/c3-c4-physical-falsification.mjs
       - name: Contributor runtime adversarial saturation 100k
         run: node tests/verification/contributor-runtime-saturation-100k.mjs
       - name: Release contract
