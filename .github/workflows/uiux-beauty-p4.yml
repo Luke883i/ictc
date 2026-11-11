@@ -83,12 +83,22 @@ jobs:
               match = re.search(r'"id"\s*:\s*"([^"]+)"', message)
               phase = str(data.get('phase', 'unknown')).replace('\n', ' ').replace('\r', ' ')
               check = match.group(1) if match else 'unknown-check'
+              if check == 'unknown-check':
+                  if '#homeView' in message: check='home-visibility'
+                  elif 'enduserComposition' in message: check='composition-epoch'
+                  elif 'Page.goto' in message or 'page.goto' in message: check='navigation'
+                  elif 'networkidle' in message: check='network-idle'
+                  elif 'Timeout' in message: check='timeout'
+              state=data.get('browserState') or {}
+              state_hint=('home'+str(int(state.get('homeVisible',False)))+
+                          '-comp'+str(state.get('composition','unknown'))[:15])
+              error_kind=str(data.get('type','Unknown'))[:26]
               detail = re.search(r'\"detail\"\s*:\s*\{[^{}]*\"count\"\s*:\s*(\d+)', message)
               count = 'count='+detail.group(1) if detail else 'count=unknown'
               owner = re.search(r'\"owner\"\s*:\s*\"([^\"]+)\"', message)
               when = re.search(r'\"whenCount\"\s*:\s*(\d+)', message)
               codes = re.search(r'\"codes\"\s*:\s*\"([^\"]+)\"', message)
-              signature = f'{phase}|{check}|{count}|owner={owner.group(1) if owner else "unknown"}|when={when.group(1) if when else "unknown"}|codes={codes.group(1) if codes else "unknown"}'[:220]
+              signature = f'{phase}|{error_kind}|{check}|{state_hint}|{count}|owner={owner.group(1) if owner else "unknown"}|when={when.group(1) if when else "unknown"}|codes={codes.group(1) if codes else "unknown"}'[:220]
               print('signature=' + signature)
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

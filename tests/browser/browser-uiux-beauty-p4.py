@@ -492,6 +492,18 @@ def v9_native_ux_probe(page, viewport, width, surface):
 
 def fail(error):
     payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
+    try:
+        p=globals().get('page')
+        if p is not None:
+            payload['browserState']=p.evaluate("""()=>({
+                readyState:document.readyState,route:location.pathname,
+                homeVisible:(()=>{const x=document.querySelector('#homeView');return !!x&&getComputedStyle(x).display!=='none'&&x.getClientRects().length>0})(),
+                composition:document.documentElement.dataset.enduserComposition||'unset',
+                nativeLattice:document.documentElement.dataset.nativeSemanticLattice||'unset',
+                onboardingPresent:!!document.querySelector('#ictcOnboardingDialog')
+            })""")
+    except Exception as diagnostic_error:payload['browserDiagnosticError']=type(diagnostic_error).__name__
+    payload['pageErrorKinds']=globals().get('p4_page_error_kinds',[])[-6:]
     (ART/'error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
     print(f'::error title=uiux-beauty-p4::{PHASE}: {type(error).__name__}: {error}',flush=True)
 
@@ -502,6 +514,8 @@ try:
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
         page=browser.new_page()
+        p4_page_error_kinds=[]
+        page.on('pageerror',lambda error:p4_page_error_kinds.append(type(error).__name__))
         page.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
         ensure_onboarded(page,BASE,'admin')
         for viewport,width,height in VIEWPORTS:
