@@ -150,9 +150,9 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-
 html[data-native-semantic-lattice="3.2.0"] .procedure-maturity-legend .maturity-legend-entry{display:inline-flex;align-items:center;gap:.24rem;min-width:0;white-space:nowrap}
 @media(max-width:870px){
   html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
-    grid-template-columns:4.4rem minmax(0,1fr) 2.6rem!important;
-    grid-template-areas:"code title maturity" "code purpose maturity" "code action action"!important;
-    row-gap:.25rem!important;
+    grid-template-columns:4.4rem minmax(0,1fr) 2.6rem 12rem!important;
+    grid-template-areas:"code title maturity action" "code purpose maturity action"!important;
+    row-gap:.18rem!important;
   }
   html[data-native-semantic-lattice="3.2.0"] #procedureHub :is(.procedure-card,.catalogue-placeholder)>footer{justify-self:start!important}
 }
