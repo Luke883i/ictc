@@ -158,6 +158,6 @@ export function runSemanticDODMutations(root,{cases=100000,seed=0x056c0285}={}){
     mutationTranscriptSha256:transcript.digest('hex'),
     scope:'Actual ICTC production source text and owner JSON mutated in memory (1-4 families per case). No mutant was compiled, launched, run through HTTP/SQLite or browser.',
     independentlyVerifiedRuntime:false,externalE3E4Qualified:false,globalDoD:false,
-    compressionBoundary:'17 fault signatures cover 18 noninterchangeable mutation owners; no global semantic-minimality claim.'
+    compressionBoundary:classFirstSeen.size+' observed failure classes cover '+FAMILIES.length+' mutation families across '+Object.keys(PATHS).length+' source files; no global semantic-minimality claim.'
   };
 }
