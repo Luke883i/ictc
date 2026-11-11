@@ -13,7 +13,8 @@ const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const tracked=execFileSync('git',['ls-files','-z'],{cwd:root}).toString('utf8').split('\0').filter(Boolean).sort();
-const forbidden=rel=> /(^|\/)(?:\.git|\.ictc|node_modules|runtime|artifacts)(\/|$)/.test(rel)
+const forbidden=rel=> /^(?:runtime|artifacts)(?:\/|$)/.test(rel)
+  ||/(^|\/)(?:\.git|\.ictc|node_modules)(\/|$)/.test(rel)
   ||/(^|\/)\.env(?!\.example$)(?:$|\.)/.test(rel)
   ||/(^|\/)(?:id_rsa|id_ed25519|private-key|secrets?)(?:\.|$)/i.test(rel);
 const secrets=tracked.filter(forbidden);
