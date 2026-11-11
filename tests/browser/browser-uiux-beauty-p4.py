@@ -343,7 +343,7 @@ def v8_native_owner_probe(page, viewport, width, surface):
                 page.keyboard.press('Enter' if should_open else 'Space')
             page.wait_for_function(
                 """({open})=>{const d=document.querySelector('#homeView details[data-home-business-guide]');
-                   return !!d && d.open===open}""",{'open':should_open})
+                   return !!d && d.open===open}""",arg={'open':should_open})
             label=guide.locator('[data-home-guide-action]').inner_text().strip()
             assert label==expected,('V8 Home disclosure label mismatch',expected,label)
             metrics=guide.evaluate("""d=>{
@@ -372,7 +372,7 @@ def v8_native_owner_probe(page, viewport, width, surface):
                 page.keyboard.press('Enter')
             page.wait_for_function(
                 """({open})=>{const d=document.querySelector('#processesView #procedureHub .procedure-card .process-inline-detail');
-                   return !!d && d.open===open}""",{'open':should_open})
+                   return !!d && d.open===open}""",arg={'open':should_open})
             metrics=root.evaluate("""r=>{
               const box=r.getBoundingClientRect(),card=r.querySelector('#procedureHub .procedure-card'),
               title=card?.querySelector('h2'),action=card?.querySelector('.procedure-primary'),
