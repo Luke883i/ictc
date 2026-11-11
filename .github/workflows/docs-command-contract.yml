@@ -22,6 +22,8 @@ jobs:
         with: {node-version: '22'}
       - name: Validate documented commands
         run: node tests/verification/docs-command-contract-check.mjs
+      - name: Falsify CTO README claims against canonical owner registries
+        run: node tests/verification/cto-docs-falsification.mjs
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts
@@ -68,6 +70,7 @@ jobs:
           name: ictc-docs-command-contract
           path: |
             artifacts/docs-command-contract.json
+            artifacts/cto-docs-falsification.json
             artifacts/repository-inventory.json
             artifacts/repository-retirement-mutations.json
             artifacts/repository-inventory-falsification.json
