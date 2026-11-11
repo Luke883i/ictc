@@ -76,7 +76,22 @@ jobs:
       - name: F-13 role-scoped trace paging and revision-bound cursor
         run: node tests/verification/c3-trace-pagination-check.mjs
       - name: F-15 governed AI evaluation and drift rollback suspension
-        run: node tests/verification/c4-ai-eval-drift-check.mjs
+        id: c4_ai_eval
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          node tests/verification/c4-ai-eval-drift-check.mjs > "$RUNNER_TEMP/ictc-c4.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/ictc-c4.log"
+          node -e "const fs=require('fs');const log=fs.readFileSync(process.env.RUNNER_TEMP+'/ictc-c4.log','utf8');const m=log.match(/c4-ai-eval-drift-check\\.mjs:(\\d+):\\d+/);fs.appendFileSync(process.env.GITHUB_OUTPUT,'phase='+(m?'line-'+m[1]:'unattributed')+'\\n');"
+          exit "$status"
+      - name: "F-15 exact-failure verdict (${{ steps.c4_ai_eval.outputs.phase || 'unattributed' }})"
+        if: always()
+        env:
+          C4_OUTCOME: ${{ steps.c4_ai_eval.outcome }}
+        run: |
+          if [ "$C4_OUTCOME" != success ]; then exit 1; fi
       - name: C1-C5 and S4-S5 non-compensating closure proof
         run: node tests/verification/convergence-reticular-dod-check.mjs --mutations=50000
       - name: Physical source falsifiers for F-13 and F-15
