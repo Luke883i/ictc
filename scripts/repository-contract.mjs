@@ -6,6 +6,7 @@
 import {access, readFile, readdir, stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {inspectRepositoryFilesystem} from './repository-path-portability.mjs';
 
 const root=path.resolve(process.argv[2]||fileURLToPath(new URL('..',import.meta.url)));
 const currentPaths=[
@@ -33,6 +34,9 @@ const historicalBundleContract='audit/archive/ictc-agent-bundle/config/repositor
 const historicalBundleProfile='audit/archive/ictc-agent-bundle/bundle_profile.json';
 const historicalBundleCatalog='audit/archive/ictc-agent-bundle/config/test_catalog.json';
 const failures=[];
+// Filesystem topology is a current checkout property; names alone do not imply usage.
+const filesystem=inspectRepositoryFilesystem(root);
+failures.push(...filesystem.errors);
 // R3/R4 canary: one physical owner and no silent path resurrection. This is
 // a bounded migration witness, NOT evidence that all v3/ consumers are clear.
 for(const [former,current] of [
@@ -215,6 +219,6 @@ const compatibility={
   currentEntrypoint:'docs/START_HERE.md',currentTestEntry:'npm test',currentDocsEntry:'npm run docs:check',
   retirementAuthorized:false,limitation:'No external-consumer absence, historical doctor freshness or safe deletion is proved.'
 };
-const result={schema:'ictc-repository-root-contract/v2',authority:'NONE',currentOwner:'docs/START_HERE.md',status:failures.length?'REFUTED':'PASS_SCOPED',currentPathsChecked:currentPaths.length,legacyDiagnostic:historical,legacyDisposition:'HOLD_CONSUMERS',compatibility,retirementAuthorized:false,failures};
+const result={schema:'ictc-repository-root-contract/v2',authority:'NONE',currentOwner:'docs/START_HERE.md',status:failures.length?'REFUTED':'PASS_SCOPED',currentPathsChecked:currentPaths.length,filesystem,legacyDiagnostic:historical,legacyDisposition:'HOLD_CONSUMERS',compatibility,retirementAuthorized:false,failures};
 console.log(JSON.stringify(result,null,2));
 if(failures.length)process.exitCode=1;

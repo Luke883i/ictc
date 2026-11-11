@@ -4,6 +4,8 @@ import path from 'node:path';
 import process from 'node:process';
 import {spawnSync} from 'node:child_process';
 import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel,validatePost275DocCoverage,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
+import {canonicalProcedureContracts} from '../src/runtime/procedure-contracts.mjs';
+import {procedureAdapters} from '../src/runtime/procedure-adapters.mjs';
 const root=path.resolve(process.argv[2]||process.cwd());
 const read=async p=>readFile(path.join(root,p),'utf8');
 const exists=async p=>{try{await stat(path.join(root,p));return true}catch{return false}};
@@ -124,6 +126,41 @@ check(!productText.includes('un’unica tinta carta da zucchero'),'obsolete mono
 const pkg=JSON.parse(await read('package.json'));
 const reviewerReadiness=checkReadiness(root); check(reviewerReadiness.ok,`review-readiness E2 invariants: ${reviewerReadiness.failures.join(',')}`);
 const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContract,runtimeModel,serverText,securityText,gapsText]=await Promise.all([read('tests/contracts/semantic-owner-contract.json'),read('docs/openapi.yaml'),read('tests/contracts/uiux-converge-0-contract.json'),read('scripts/current-gate-registry.mjs'),read('scripts/repository-contract.mjs'),read('src/runtime/model.mjs'),read('src/server.mjs'),read('SECURITY.md'),read('tests/contracts/gaps.json')]);
+// Cross-check current prose against executable contract and real CSS/browser consumers.
+// This is derived verification, never a new product/document authority.
+const declaredProcedures=canonicalProcedureContracts(),declaredAdapters=procedureAdapters();
+const productRows=[...productText.matchAll(/^\|\s*((?:RN|EC|AO|MC|AP|RC|AR)-01)\s*\|\s*([^|]+)\|/gm)]
+ .map(([,code,label])=>({code,label:label.trim()}));
+const expectedRows=declaredProcedures.map(({code,label})=>({code,label}));
+check(JSON.stringify(productRows)===JSON.stringify(expectedRows),
+ 'semantic-source: PRODUCT process rows disagree with canonical executable procedure contracts');
+check(declaredAdapters.length===declaredProcedures.length&&declaredAdapters.every((a,i)=>a.id===declaredProcedures[i].id),
+ 'semantic-source: business adapter list is not the seven canonical procedures');
+check(!declaredAdapters.some(a=>['OP-01','OG-01','EP-01'].includes(a.id)),
+ 'semantic-source: informational placeholders/view acquired business adapter authority');
+const semanticReleaseIdentity=JSON.parse(await read('src/contracts/release-identity.json'));
+check(semanticReleaseIdentity.productVersion===pkg.version && semanticReleaseIdentity.releaseStage==='candidate' &&
+ readme.includes('`releaseStage=candidate`'),
+ 'semantic-source: CTO release claim disagrees with release identity/package');
+const asisTable=atlas.split('| Superficie da riesaminare |')[1]?.split('**C1-3c')[0]||'';
+check(asisTable.includes('`tests/legacy/`') && !asisTable.includes('`v3/tests/legacy/`') &&
+ asisTable.includes('`public/grc-v2.css`') && asisTable.includes('`public/grc-workspace.css`') &&
+ !asisTable.includes('`v3/public/grc-v2.css`'),
+ 'semantic-source: current Atlas table advertises retired filesystem owner');
+const [grcV2,grcWorkspace,cssImports,uiRoot,finetuningJs,grcRuntime]=await Promise.all([
+ read('public/grc-v2.css'),read('public/grc-workspace.css'),read('public/styles.css'),
+ read('public/ui/active-experience.js'),read('public/ui/procedure-finetuning-2-3.js'),
+ read('src/runtime/grc-runtime.mjs')]);
+check(grcV2===grcWorkspace && cssImports.includes("@import url('./grc-workspace.css')") &&
+ asisTable.includes('I byte coincidono'),
+ 'semantic-source: current CSS duplicate/consumer claims disagree with source bytes');
+check(uiRoot.includes("from './procedure-finetuning-2-3.js'") &&
+ finetuningJs.includes("'/procedure-finetuning-2-3.css'") &&
+ grcRuntime.includes("from './grc-runtime-legacy.mjs'"),
+ 'semantic-source: Atlas legacy/2.3 consumer semantics not supported by executable imports');
+check(runtimeModel.includes('experience:{services:2') && serverText.includes('projected.experience.services=7') &&
+ asisTable.includes('`src/runtime/model.mjs`') && asisTable.includes('`src/server.mjs`'),
+ 'semantic-source: Atlas source-vs-HTTP projection explanation disagrees with runtime');
 const semanticOwner=JSON.parse(semanticOwnerText),debt=semanticOwner.repositoryCoherenceDebt||{},debtFindings=Array.isArray(debt.findings)?debt.findings:[],debtById=Object.fromEntries(debtFindings.map(item=>[item.id,item])),uiuxContract=JSON.parse(uiuxContractText),gaps=JSON.parse(gapsText);
 const linkTargets=new Map();
 function localTargets(rel,text){const out=[];for(const m of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){const href=m[1].trim();if(!href||/^(https?:|mailto:|#)/.test(href))continue;out.push(path.normalize(path.join(path.dirname(rel),href.split('#')[0])))}return out}
@@ -298,6 +335,7 @@ const rootContractRun=spawnSync(process.execPath,[path.join(root,'scripts/reposi
 let rootContractReceipt=null;
 try{rootContractReceipt=JSON.parse(rootContractRun.stdout||'null')}catch{}
 check(rootContractRun.status===0&&rootContractReceipt?.status==='PASS_SCOPED','root current repository contract failed: '+String(rootContractRun.stderr||rootContractRun.stdout).slice(0,280));
+check(rootContractReceipt?.filesystem?.errors?.length===0, 'repository portability guard did not execute on the current tree');
 check(rootContractReceipt?.retirementAuthorized===false&&rootContractReceipt?.legacyDisposition==='HOLD_CONSUMERS','root contract must not authorize legacy deletion');
 const documentationStandard=await read('docs/DOCUMENTATION_STANDARD.md');
 check(/## Valore per le imprese/.test(readme)&&/Rispettare le norme\. Governare rischi e costi\./.test(readme)&&/Non determina da solo/.test(readme),'engineer-first value/claim boundary missing');
