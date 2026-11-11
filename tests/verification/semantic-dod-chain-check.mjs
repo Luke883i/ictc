@@ -96,14 +96,21 @@ for(const x of rows){
 }
 function qualifies(e,kind){
  if(!e||e.exactHead!==true||e.contentVerified!==true||e.claimMatched!==true)return false;
- if(kind.includes('BROWSER')||kind==='E2-CSSOM')return e.kind==='ICTC_NATIVE_BROWSER'&&e.synthetic===false&&e.dom===true&&e.cssom===true&&/^[a-f0-9]{64}$/.test(e.screenshotSha256||'');
- if(kind.startsWith('E3'))return e.kind==='INDEPENDENT_E3'&&e.independent===true&&e.authorized===true;
- if(kind==='E4-DEPLOY')return e.kind==='INDEPENDENT_E4'&&e.independent===true&&e.environmentVerified===true;
+ // This audit has no trusted native-browser observer or independent host attester.
+ // Caller-written flags and screenshot hashes cannot supply those missing trust roots.
+ if(kind.includes('BROWSER')||kind==='E2-CSSOM'||kind.startsWith('E3')||kind==='E4-DEPLOY')return false;
  return e.kind==='ACTUAL_SCOPED_PROOF';
 }
 const synthetic={kind:'SYNTHETIC_FIXTURE',synthetic:true,exactHead:true,contentVerified:true,claimMatched:true,dom:true,cssom:true,screenshotSha256:'a'.repeat(64)};
 for(const x of rows)assert.equal(qualifies(synthetic,x.evidenceClass),false,'fixture falsely proves '+x.id);
 for(const t of ['E3-GOV','E3-HUMAN+GOV','E4-DEPLOY'])assert.equal(qualifies({...synthetic,kind:'ACTUAL_SCOPED_PROOF'},t),false,'external proof substituted '+t);
+const forgedHost={...synthetic,kind:'INDEPENDENT_E3',synthetic:false,independent:true,authorized:true};
+const forgedDeploy={...synthetic,kind:'INDEPENDENT_E4',synthetic:false,independent:true,environmentVerified:true};
+const forgedBrowser={...synthetic,kind:'ICTC_NATIVE_BROWSER',synthetic:false};
+assert.equal(qualifies(forgedHost,'E3-GOV'),false,'self-asserted independent host receipt escaped');
+assert.equal(qualifies(forgedDeploy,'E4-DEPLOY'),false,'self-asserted deployment receipt escaped');
+assert.equal(qualifies(forgedBrowser,'E2-REAL-BROWSER'),false,'caller-provided DOM/CSSOM/hash impersonated native browser');
+
 const blockers={
  C1:find(authority.conditionalSlices,'C1-COMPAT-CONTRACTION'),
  C3:find(authority.conditionalSlices,'C3-CAPACITY-CONTRACT'),
