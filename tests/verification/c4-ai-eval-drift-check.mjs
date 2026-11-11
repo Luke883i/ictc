@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import {assertAiEvaluation,normalizeAiEvaluation,normalizeGovernance} from '../../src/enterprise.mjs';
+import {sha256} from '../../src/domain.mjs';
+import {runtimeHarness} from './runtime-test-harness.mjs';
+const promptSha256=sha256('Sei il test di connettività ICTC. Rispondi esclusivamente con JSON {"ok":true}.\n\nICTC_PURPOSE_RUNTIME:provider-healthcheck');
+const now=Date.now();
+const window={purpose:'provider-healthcheck',model:'mock-c4',promptSha256,datasetSha256:'a'.repeat(64),resultSha256:'b'.repeat(64),samples:25,observedDrift:.01,maxDrift:.05,observedAt:new Date(now-60000).toISOString(),expiresAt:new Date(now+600000).toISOString(),status:'pass'};
+const base={schemaVersion:'1.0.0',policyVersion:1,mode:'observe',windows:[]};
+const updated={schemaVersion:'1.0.0',policyVersion:2,mode:'enforce',windows:[window]};
+assert.deepEqual(normalizeAiEvaluation(null,base),base);
+assert.equal(normalizeAiEvaluation(updated,base).mode,'enforce');
+assert.throws(()=>normalizeAiEvaluation({...updated,policyVersion:1},base),e=>e.code==='ai-eval-version-replay');
+for(const bad of [{samples:19},{maxDrift:1},{observedDrift:1.1},{datasetSha256:'fake'},{expiresAt:'wrong'}])assert.throws(()=>normalizeAiEvaluation({...updated,windows:[{...window,...bad}]},base),e=>e.code==='ai-eval-policy-invalid');
+const state=(policy)=>({settings:{governance:{aiEvaluation:policy}}});
+const evaluate=(policy,props={})=>assertAiEvaluation(state(policy),{purpose:'provider-healthcheck',model:'mock-c4',promptSha256,...props});
+assert.equal(evaluate(base).status,'not-evaluated');
+assert.equal(evaluate(updated).status,'policy-window-passed');
+assert.throws(()=>evaluate(updated,{model:'other'}),e=>e.code==='ai-eval-proof-missing');
+assert.throws(()=>evaluate(updated,{promptSha256:'c'.repeat(64)}),e=>e.code==='ai-eval-proof-missing');
+assert.throws(()=>evaluate({...updated,mode:'suspended'}),e=>e.code==='ai-eval-rollback-suspended');
+assert.throws(()=>evaluate({...updated,windows:[{...window,observedDrift:.2}]}),e=>e.code==='ai-eval-drift-blocked');
+assert.throws(()=>evaluate({...updated,windows:[{...window,status:'fail'}]}),e=>e.code==='ai-eval-drift-blocked');
+assert.throws(()=>evaluate({...updated,windows:[{...window,expiresAt:new Date(now-1).toISOString()}]}),e=>e.code==='ai-eval-stale');
+assert.ok(normalizeGovernance({aiEvaluation:updated},{aiEvaluation:base}).aiEvaluation.mode==='enforce');
+const h=await runtimeHarness('ictc-c4-gate');
+try{
+ const cfg={schemaVersion:'1.0.0',policyVersion:2,mode:'enforce',windows:[]};
+ const enabled=await h.request('PUT','/api/admin/governance',{aiEvaluation:cfg});assert.equal(enabled.status,200,JSON.stringify(enabled.body));
+ const payload={llm:{endpoint:`http://127.0.0.1:${h.aiPort}/v1`,model:'mock-c4',apiKeyEnv:''}};
+ let result=await h.request('POST','/api/admin/ai/test',payload);assert.equal(result.status,409,JSON.stringify(result.body));assert.equal(result.body.code,'ai-eval-proof-missing');
+ const config=await h.request('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(config.status,200,JSON.stringify(config.body));
+ result=await h.request('POST','/api/admin/ai/test',payload);assert.notEqual(result.body.code,'ai-eval-proof-missing',JSON.stringify(result.body));
+ const suspend=await h.request('PUT','/api/admin/governance',{aiEvaluation:{schemaVersion:'1.0.0',policyVersion:4,mode:'suspended',windows:[]}});assert.equal(suspend.status,200);
+ result=await h.request('POST','/api/admin/ai/test',payload);assert.equal(result.status,409);assert.equal(result.body.code,'ai-eval-rollback-suspended');
+ const replay=await h.request('PUT','/api/admin/governance',{aiEvaluation:{...updated,policyVersion:3}});assert.equal(replay.status,409);assert.equal(replay.body.code,'ai-eval-version-replay');
+}finally{await h.close()}
+console.log('c4-ai-eval-drift-check: PASS versioned admin policy, pre-provider failclose, stale/drift/rollback and monotonic settings');
