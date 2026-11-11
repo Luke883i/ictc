@@ -11,23 +11,24 @@ const remediation=json('audit/remediation-registry.json');
 const authority=json('docs/convergence/convergence-authority.json');
 const find=(xs,id)=>xs.find(x=>x.id===id)?.status ?? xs.find(x=>x.id===id)?.state;
 const home=read('public/ui/stable-shell.js');
-const process=read('public/ui/procedure-frame.js');
+const processUi=read('public/ui/procedure-frame.js');
 const homeCss=read('public/enterprise-workspace-3-2.css');
 const procCss=read('public/semantic-workspace-closure-3-2-1.css');
 const source={
  D02:read('README.md').includes('merged con la PR #283') &&
       !read('README.md').includes('in pre-PR (non ancora released)') &&
       read('docs/GAP_REGISTER.md').includes('La PR #283 merged integra') &&
-      !read('docs/PROJECT_TRAJECTORY.md').includes('non sostituisce ' + 'v3/release-identity.json'),
+      read('docs/PROJECT_TRAJECTORY.md').includes('non sostituisce `src/contracts/release-identity.json`') &&
+      !read('docs/PROJECT_TRAJECTORY.md').includes('non sostituisce `v3/release-identity.json`'),
  D04:home.includes('data-home-guide-action>Comprimi guida') &&
       home.includes("guide.open?'Comprimi guida':'Espandi guida'") &&
       home.includes("guide.addEventListener('toggle',syncGuide)") &&
       homeCss.includes('#homeView .home-compliance-full>summary{'),
  D05:homeCss.includes('max-inline-size:min(100%,1120px);margin-inline:auto') &&
-      process.includes('<dl class="process-inline-facts">') &&
-      process.includes('<dt>Traccia prodotta</dt>') &&
-      process.includes('esc(process.requirementClass)') &&
-      process.includes('esc(process.produces)') &&
+      processUi.includes('<dl class="process-inline-facts">') &&
+      processUi.includes('<dt>Traccia prodotta</dt>') &&
+      processUi.includes('esc(process.requirementClass)') &&
+      processUi.includes('esc(process.produces)') &&
       procCss.includes(':has(.process-inline-detail[open])') &&
       procCss.includes('grid-template-columns:3.6rem minmax(0,1fr)!important')
 };
