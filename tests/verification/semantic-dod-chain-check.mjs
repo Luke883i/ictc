@@ -131,12 +131,12 @@ assert.equal(v8Disposition.filter(x=>x.disposition==='ADAPTED_SOURCE_SCOPED').le
 assert.equal(state.D03,'HOLD','all 24 commits are not semantically absorbed on this PR');
 
 const receipt={
- schema:'ictc.semantic-dod-chain.derived.v1',
+ schema:'ictc.semantic-dod-chain.derived.v2',
  authority:'none; receipt only; canonical owners unchanged',
  abstractDoD:'intent AND owner AND scope AND claim-matched witness AND no contradictory evidence AND independent evidence where required',
  scope:'source-only + fail-closed counterfactuals; NOT global ICTC runtime',
  gates:rows.map(x=>({...x,status:state[x.id]})),
- coverage:{obligations:15,qualified:15,dag:true,sourceScoped:Object.values(state).filter(v=>v==='SOURCE_SCOPED').length},
+ coverage:{obligations:15,structurallyValidated:15,independentlyEvidenceQualified:0,dag:true,sourceScoped:Object.values(state).filter(v=>v==='SOURCE_SCOPED').length},
  blockers,global:false,
  v8PrePrLineage:{
   origin:'uploaded immutable V8 pre-PR git-mailbox; historical local base, not post-283 main',
