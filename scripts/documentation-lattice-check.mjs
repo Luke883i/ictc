@@ -26,6 +26,32 @@ for(const d of docs.filter(d=>d.path.startsWith('docs/legacy/')))
 for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('tests/verification/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
+// CTO front-door is a projection of existing owners and current blockers, not a
+// self-declared enterprise-ready badge or a second governance authority.
+const [releaseIdentity,canonicalGaps,remediationRegistry,convergenceState]=await Promise.all([
+ read('src/contracts/release-identity.json'),read('tests/contracts/gaps.json'),
+ read('audit/remediation-registry.json'),read('docs/convergence/convergence-authority.json')
+].map(p=>p.then(JSON.parse)));
+check(releaseIdentity.releaseStage==='candidate','cto: candidate release identity changed, reconcile executive view');
+const openGapIds=new Set(canonicalGaps.gaps.filter(g=>g.status==='open').map(g=>g.id));
+const findingById=new Map(remediationRegistry.findings.map(f=>[f.id,f]));
+const sliceById=new Map(convergenceState.conditionalSlices.map(s=>[s.id,s]));
+for(const id of ['F-13','F-15']){
+ check(findingById.has(id)&&findingById.get(id).status!=='resolved','cto: remediation state changed: '+id);
+ check(readme.includes('`'+id+'`'),'cto: executive view hides open finding '+id);
+}
+for(const id of ['GAP-007','GAP-009','GAP-012','GAP-014','GAP-022']){
+ check(openGapIds.has(id),'cto: gap status changed, executive view requires reconciliation: '+id);
+ check(readme.includes(id),'cto: executive view hides external blocker '+id);
+}
+for(const id of ['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT'])
+ check(sliceById.has(id)&&!['done','not-required'].includes(sliceById.get(id).state),'cto: convergence changed, reconcile '+id);
+const executive=readme.split('## Executive view per CTO — enterprise candidate, non enterprise ready')[1]?.split('## Valore per le imprese')[0]||'';
+for(const required of ['releaseStage=candidate','tests/contracts/gaps.json','audit/remediation-registry.json',
+ 'docs/convergence/convergence-authority.json','.github/workflows/enterprise-candidate.yml',
+ 'npm run release:check','NO-GO','review indipendente','GAP-022','F-13','F-15'])
+ check(executive.includes(required),'cto: missing evidence/limit in README executive view: '+required);
+check(!/enterprise[- ]ready\s*[:=]\s*(?:true|PASS)/i.test(executive),'cto: unsupported enterprise-ready declaration');
 // Post-#274 AS-IS must not route newcomers to retired v3 executable paths.
 // Historical/source-input references remain valid and are intentionally excluded.
 for(const failure of validateCurrentAtlasGuides(currentAtlasGuides(atlas)))check(false,failure);

@@ -2,6 +2,10 @@
 
 La fonte canonica è `tests/contracts/gaps.json`; `public/gap-registry.json` è la sua proiezione esatta dei soli gap `open`. `tests/contracts/capability-truth.json` separa capability repository, debito interno e rail E3/E4 esterni.
 
+## Lettura per CTO (nessuna nuova authority)
+
+La [vista executive](../README.md#executive-view-per-cto--enterprise-candidate-non-enterprise-ready) e la [procedura RELEASE](RELEASE.md) instradano la decisione tecnica, ma **non** possiedono gli stati. Prima del GO/NO-GO leggere `tests/contracts/gaps.json` (gap), `audit/remediation-registry.json` (finding E2/E3/E4), `docs/convergence/convergence-authority.json` (slice) e i fatti live GitHub. `F-13/F-15` sono debiti E2; `GAP-012/022` richiedono E3; `GAP-007/009/014` richiedono E4. Nessun loro valore è calcolato dalla lunghezza di questo documento o dal verde della CI.
+
 ## Baseline e stato corrente
 
 `TRUTH-0` e A6-UX4 restano **lineage storica** dentro `tests/contracts/capability-truth.json`; non sono un live pointer del registro gap. Lo stato dei gap è posseduto da `tests/contracts/gaps.json`, la projection pubblica contiene esattamente i soli gap `open`, mentre il sequencing corrente appartiene esclusivamente a `docs/convergence/convergence-authority.json`.

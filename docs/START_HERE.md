@@ -10,6 +10,7 @@ Questa pagina è l'**entrypoint canonico del sistema documentale**. È una mappa
 | Vuoi… | Segui questo percorso | Consegna minima |
 | --- | --- | --- |
 | Capire cosa offre ICTC | [PRODUCT](PRODUCT.md) → [user journeys](04_USER_JOURNEYS.md) | capacita e limiti, non conformita presunta |
+| Valutare ICTC come CTO | [Executive view](../README.md#executive-view-per-cto--enterprise-candidate-non-enterprise-ready) → [RELEASE](RELEASE.md) → [GAP_REGISTER](GAP_REGISTER.md) | capacità E2 osservabili, blocker E3/E4, GO/NO-GO attribuibile |
 | Avviare e diagnosticare | [DEVELOPMENT](DEVELOPMENT.md) → [OPERATIONS](OPERATIONS.md) | HTTP health ed exit code osservati |
 | Fare la prima modifica | [DEVELOPMENT](DEVELOPMENT.md) → [TESTING](TESTING.md) | diff, nearest falsifier, rollback |
 | Ricostruire un componente | [ARCHITECTURE AS-IS](11_ARCHITECTURE.md) → [OpenAPI](openapi.yaml) | owner runtime e dipendenze effettive |

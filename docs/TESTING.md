@@ -1,5 +1,9 @@
 # Strategia di test, mutation e saturation
 
+## Prova minima per CTO / adopter
+
+Eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test`, `npm run release:check` sulla **stessa** revisione; registrare Git SHA, ambiente, exit code e artifact. Verificare separatamente il workflow [Enterprise Candidate](../.github/workflows/enterprise-candidate.yml), i required check e la review server-side osservati su GitHub, non dedotti dalle policy versionate. I gate repository E2 non chiudono F-13/F-15, GAP-012/022 o i rail E4: vedere [README](../README.md#executive-view-per-cto--enterprise-candidate-non-enterprise-ready) e [GAP_REGISTER](GAP_REGISTER.md). La procedura di release rimane in [RELEASE](RELEASE.md); non serve creare un nuovo release owner.
+
 ## Superficie normativa
 
 ```bash
