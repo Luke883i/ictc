@@ -16,6 +16,7 @@ const evaluate=(policy,props={})=>assertAiEvaluation(state(policy),{purpose:'pro
 assert.equal(evaluate(base).status,'not-evaluated');
 assert.equal(evaluate(updated).status,'policy-window-passed');
 assert.throws(()=>evaluate(updated,{model:'other'}),e=>e.code==='ai-eval-proof-missing');
+assert.throws(()=>evaluate({...updated,windows:[{...window,samples:19}]}),e=>e.code==='ai-eval-proof-missing','mutated persisted policy bypassing normalizer must remain rejected');
 assert.throws(()=>evaluate(updated,{promptSha256:'c'.repeat(64)}),e=>e.code==='ai-eval-proof-missing');
 assert.throws(()=>evaluate({...updated,mode:'suspended'}),e=>e.code==='ai-eval-rollback-suspended');
 assert.throws(()=>evaluate({...updated,windows:[{...window,observedDrift:.2}]}),e=>e.code==='ai-eval-drift-blocked');
