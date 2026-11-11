@@ -212,7 +212,7 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #processesView{overflow-x:clip}
 
 /* Keep the responsive Processi surface within the viewport at every width. */
-#processesView{box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;overflow-x:clip;contain:inline-size}
+#processesView{box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:min(100%,1120px);margin-inline:auto;overflow-x:clip;contain:inline-size}
 #processesView :is([data-compliance-overview-host],[data-compliance-process-map],.process-compliance-overview,.compliance-process-lifecycle,.compliance-process-lifecycle-body){box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
 #processesView .process-scope-grid,#processesView .process-handoff-flow{min-inline-size:0;max-inline-size:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
 #processesView .process-scope-card,#processesView .process-handoff-flow>li{min-inline-size:0;max-inline-size:100%;box-sizing:border-box}
@@ -232,3 +232,35 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 /* Proof navigation is actionably exposed with the value proposition, not within
    a lower business disclosure that can intersect the fixed legal footer. */
 #homeView .home-compliance-heading>.home-compliance-route{margin-top:.65rem;min-height:44px}
+
+/* V8 semantic UX: native disclosure remains the only Home open/closed state. */
+#homeView .home-compliance-full>summary{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;list-style:none;
+  cursor:pointer;min-height:58px;padding:.45rem .35rem;line-height:1.4;
+}
+#homeView .home-compliance-full>summary::-webkit-details-marker{display:none}
+#homeView .home-guide-heading{display:grid;gap:.12rem;min-width:0}
+#homeView .home-guide-heading strong{font-size:clamp(1rem,1.5vw,1.15rem);font-weight:750;color:var(--color-text);text-wrap:pretty}
+#homeView .home-guide-kicker{font-size:.72rem;font-weight:720;letter-spacing:.06em;text-transform:uppercase;color:var(--color-muted)}
+#homeView .home-guide-toggle{
+  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;flex:0 0 auto;
+  padding:.38rem .6rem;border:1px solid var(--chrome-active-border,var(--color-border));
+  border-radius:9px;background:var(--chrome-active-bg);color:var(--color-brand-strong);
+  font-size:.81rem;font-weight:720;white-space:nowrap;
+}
+#homeView .home-guide-toggle .home-guide-chevron{height:1rem;width:1rem;transition:transform var(--motion-fast,.18s ease)}
+#homeView .home-compliance-full[open] .home-guide-chevron{transform:rotate(-90deg)}
+#homeView .home-compliance-full:not([open]) .home-guide-chevron{transform:rotate(90deg)}
+#homeView .home-compliance-full>summary:hover .home-guide-toggle{border-color:var(--color-brand);background:var(--chrome-control-hover)}
+#homeView .home-compliance-questions li{position:relative;padding-left:1.3rem}
+#homeView .home-compliance-questions li::before{content:"";position:absolute;left:.58rem;top:.93rem;width:.35rem;height:.35rem;border-radius:50%;background:var(--color-brand)}
+#homeView .home-compliance-questions h4{font-weight:750;color:var(--color-text)}
+#homeView .home-compliance-questions li p{max-width:64ch}
+#homeView .home-compliance-answer p{max-width:70ch}
+@media(max-width:540px){
+ #homeView .home-compliance-full>summary{align-items:flex-start;flex-wrap:wrap;gap:.55rem}
+ #homeView .home-guide-heading{flex-basis:100%}
+ #homeView .home-guide-toggle{margin:.15rem 0 0 auto;padding:.3rem .5rem;font-size:.78rem}
+}
+@media(forced-colors:active){#homeView .home-guide-toggle{border-color:ButtonText;background:ButtonFace;color:ButtonText}#homeView .home-compliance-questions li::before{background:CanvasText}}
+@media(prefers-reduced-motion:reduce){#homeView .home-guide-toggle .home-guide-chevron{transition:none}}

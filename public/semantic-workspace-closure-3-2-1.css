@@ -188,3 +188,69 @@ html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail>
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail[open]{max-width:100%;padding:.25rem .3rem;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle)}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail p{margin:.3rem 0;line-height:1.4;overflow-wrap:anywhere}
 html[data-native-semantic-lattice="3.2.0"] #procedureHub .process-inline-detail>summary:focus-visible{outline:3px solid var(--color-brand);outline-offset:2px}
+
+/* V8 UX: retain canonical seven rows; promote readable progressive details only. */
+html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head{padding:1rem 1.25rem!important;margin-bottom:.8rem!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head h1{font-weight:770;letter-spacing:-.025em}
+html[data-native-semantic-lattice="3.2.0"] #processesView .processes-head p{max-width:68ch!important;line-height:1.58}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub{gap:.62rem!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+ padding:.86rem .98rem!important;column-gap:.78rem!important;row-gap:.2rem!important;
+ border-radius:13px!important;box-shadow:0 1px 2px rgba(17,34,56,.045)!important
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card>h2{font-size:1.02rem!important;font-weight:760!important;letter-spacing:-.012em;line-height:1.32!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card .process-code{font-size:.75rem;font-weight:760;color:var(--color-brand-strong)}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card .procedure-primary{
+ inline-size:9.25rem!important;min-inline-size:9.25rem!important;border:1px solid var(--chrome-active-border)!important;
+ background:var(--chrome-active-bg)!important;color:var(--color-brand-strong)!important;
+ font-weight:740!important;box-shadow:none!important
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card .procedure-primary:hover{background:var(--chrome-control-hover)!important;border-color:var(--color-brand)!important}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-when{line-height:1.5;font-size:.89rem}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-handoff{line-height:1.45;font-size:.79rem;margin-top:.3rem}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-handoff b{color:var(--color-text);font-weight:720}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail>summary{
+ display:inline-flex;gap:.4rem;align-items:center;font-weight:730;min-height:44px;
+ list-style:none;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:.2rem
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail>summary:hover{text-decoration-color:currentColor}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail>summary::-webkit-details-marker{display:none}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-detail-chevron{width:.95rem;height:.95rem;transition:transform var(--motion-fast,.18s ease)}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail[open] .process-detail-chevron{transform:rotate(90deg)}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]:has(.process-inline-detail[open]){
+ grid-template-areas:"code title maturity action" "purpose purpose purpose purpose"!important
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card:has(.process-inline-detail[open])>.procedure-purpose{
+ box-sizing:border-box;width:100%!important;max-width:100%!important;padding:.75rem 0 .2rem 4.65rem;border-top:1px solid var(--color-border);margin-top:.55rem!important
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail[open]{
+ max-width:min(100%,78ch);margin-top:.45rem;padding:.6rem .8rem;border-radius:11px;border-color:var(--color-border)
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts{display:grid;gap:.05rem;margin:.15rem 0 .55rem}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts>div{
+ display:grid;grid-template-columns:minmax(7.8rem,.27fr) minmax(0,1fr);
+ gap:.4rem .8rem;padding:.55rem .12rem;border-bottom:1px solid var(--color-border);min-width:0
+}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts>div:last-child{border-bottom:0}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts dt{font-weight:750;color:var(--color-text);font-size:.81rem}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts dt::before{content:"•";color:var(--color-brand);margin-right:.35rem}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts dd{margin:0;min-width:0;color:var(--color-muted);font-size:.85rem;line-height:1.55;overflow-wrap:anywhere}
+html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail .boundary{
+ border-left:3px solid #d39a3d;border-radius:4px;padding:.5rem .7rem;
+ background:color-mix(in srgb,#f8e4ad 25%,var(--color-surface));font-size:.81rem;line-height:1.5
+}
+@media(max-width:870px){
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]:has(.process-inline-detail[open]){grid-template-columns:4.4rem minmax(0,1fr) 2.6rem!important;grid-template-areas:"code title maturity" "purpose purpose purpose" "action action action"!important}
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card:has(.process-inline-detail[open])>.procedure-purpose{padding-left:0}
+}
+@media(max-width:719px){
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]:has(.process-inline-detail[open]){grid-template-columns:3.6rem minmax(0,1fr)!important;grid-template-areas:"code maturity" "title title" "purpose purpose" "action action"!important}
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .procedure-card .procedure-primary{inline-size:100%!important;min-inline-size:0!important}
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts>div{grid-template-columns:1fr;gap:.16rem}
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail[open]{max-width:100%}
+}
+@media(forced-colors:active){
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-detail .boundary{background:Canvas;border-color:Highlight}
+ html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-inline-facts dt::before{color:CanvasText}
+}
+@media(prefers-reduced-motion:reduce){html[data-native-semantic-lattice="3.2.0"] #processesView #procedureHub .process-detail-chevron{transition:none}}
