@@ -72,7 +72,7 @@ Il repository matura quando una nuova generazione **riduce l'ambiguità di respo
 
 ## Confine temporale
 
-Questo documento viene aggiornato per epoche e pattern, non a ogni merge. Per HEAD corrente, PR merged/open e check correnti, interrogare Git/GitHub. Questa storia non sostituisce `v3/release-identity.json`, `docs/PRODUCT.md`, `docs/11_ARCHITECTURE.md` o `docs/convergence/convergence-authority.json`.
+Questo documento viene aggiornato per epoche e pattern, non a ogni merge. Per HEAD corrente, PR merged/open e check correnti, interrogare Git/GitHub. Questa storia non sostituisce `src/contracts/release-identity.json`, `docs/PRODUCT.md`, `docs/11_ARCHITECTURE.md` o `docs/convergence/convergence-authority.json`.
 
 
 ### E9 · Adaptive reconciliation / GOV-WB6
