@@ -14,6 +14,18 @@ const home=read('public/ui/stable-shell.js');
 const processUi=read('public/ui/procedure-frame.js');
 const homeCss=read('public/enterprise-workspace-3-2.css');
 const procCss=read('public/semantic-workspace-closure-3-2-1.css');
+const staticFilterMarkup=read('public/index.html');
+const staticFilterLabels=[
+ '<input id="catalogSearch" type="search" aria-label="Cerca fonti per titolo, autorità o identificativo"',
+ '<select id="catalogState" aria-label="Filtra le fonti per stato"'
+];
+const filterNamesPresent=markup=>staticFilterLabels.every(label=>markup.includes(label));
+assert.equal(filterNamesPresent(staticFilterMarkup),true,'RN source filters lack accessible names');
+for(const label of staticFilterLabels){
+ assert.equal(filterNamesPresent(staticFilterMarkup.replace(label,label.replace(/ aria-label="[^"]+"/,''))),false,
+  'one-label deletion mutant escaped');
+}
+
 const source={
  D02:read('README.md').includes('merged con la PR #283') &&
       !read('README.md').includes('in pre-PR (non ancora released)') &&
@@ -102,7 +114,7 @@ if(find(remediation.findings,'F-06')==='resolved')state.D13='E2_REPOSITORY_SCOPE
 const V8_PREPR_COMMIT_SHAS=["d315412b3325f41fa2c89c2e521d2181d0de6da5","716fb98033f03da54d011bb95df85f38b38e326f","62085550e65ec7dbe51585667e49d3514d466efb","90bc11dd8b87be999bcb9b94e449659072b978ac","056cef5352ea02cba3a852f9c058dac5a9dfe85e","9283fe759caad231ccf002e4a9526b34a7af34e1","6fe8a4d6a4316a105e5aebc508c3d67baa1b5400","1627ff590deb8a32f45738c9ad7f4d88981919fc","506cbe19691ae9fe713f3a9ea4658f1ad27d7732","183bb2f202d077ae3265206223f7f78e3eecc328","a1173d183b20210f52c94b7698acbb1a7f2de841","966aa30532d4640162f5ec921350d372e1124a59","61a157671cb9cdc94685e62c682dcbf9486e91b5","b8013b448f8eed3afb1b9c8d3966517ba8ec47a9","55c05d30331abf59b42bf36e338e84153ebf0fa0","bc848c966e425249eb9316e3270c5294117f1125","6f05839b4c435b7d6d6e5d7ca825f88e511560fc","2b5458c79097e3dd38fc697f432a63502033db39","cabf092a606e4b164dbbae840db3b928b4ac8faf","9caaeef371fdef6953bb52b00c03e0aaa06e470f","1823e4e74ebf459a52c09dc1b2f114dbf5c4363c","8e05e7ff4c14afe88106319bbc0be21652d8d917","1468a3006f41c27a844c03abb28e3563596f2759","f86a782e3fccebd5652817c646c23ebdab34974e"];
 const v8Disposition=V8_PREPR_COMMIT_SHAS.map((sha,i)=>{
  const n=i+1;
- const disposition=([1,2,21,22].includes(n)?'ADAPTED_SOURCE_SCOPED':
+ const disposition=([1,2,12,21,22].includes(n)?'ADAPTED_SOURCE_SCOPED':
   n===23?'ADAPTED_BROWSER_SCOPED':
   [8,24].includes(n)?'GENERATED_COMPASS_REPROJECTED':
   'OPEN_DIFF_RECONCILIATION');
@@ -110,7 +122,7 @@ const v8Disposition=V8_PREPR_COMMIT_SHAS.map((sha,i)=>{
 });
 assert.equal(v8Disposition.length,24);
 assert.equal(new Set(v8Disposition.map(x=>x.sourceCommitSha)).size,24);
-assert.equal(v8Disposition.filter(x=>x.disposition==='ADAPTED_SOURCE_SCOPED').length,4);
+assert.equal(v8Disposition.filter(x=>x.disposition==='ADAPTED_SOURCE_SCOPED').length,5);
 // The original local pre-PR replay proves its own tree, never rebasing onto post-283 main.
 assert.equal(state.D03,'HOLD','all 24 commits are not semantically absorbed on this PR');
 
