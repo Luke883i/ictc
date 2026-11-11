@@ -11,6 +11,11 @@ const manifest=JSON.parse(await read('docs/documentation-manifest.json'));
 const docs=manifest.documents||[];const failures=[];const check=(c,m)=>{if(!c)failures.push(m)};
 check(manifest.schemaVersion==='1.2.0','manifest schemaVersion');
 check(new Set(docs.map(d=>d.id)).size===docs.length,'duplicate document id');
+check(docs.every(d=>typeof d.id==='string'&&d.id.trim().length>0),'document id must be non-empty');
+// Root-facing operating/policy documents are registered in the current canonical
+// manifest. Root AGENTS/NOTICE/LICENSE are intentionally outside this cohort.
+for(const file of ['README.md','GOVERNANCE.md','CONTRIBUTING.md','SECURITY.md','SUPPORT.md','CODE_OF_CONDUCT.md','CHANGELOG.md'])
+ check(docs.some(d=>d.path===file),'registered root document missing: '+file);
 check(new Set(docs.map(d=>d.path)).size===docs.length,'duplicate document path');
 const authoritative=docs.filter(d=>d.authoritative),topics=authoritative.map(d=>d.authorityTopic).filter(Boolean);
 check(new Set(topics).size===topics.length,'duplicate authority topic');
