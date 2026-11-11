@@ -30,6 +30,8 @@ jobs:
         run: node tests/verification/semantic-document-source-falsification.mjs
       - name: Verify SLSA OWASP and CTO evidence limitations
         run: node tests/verification/enterprise-standards-evidence-check.mjs
+      - name: Falsify standard evidence mapping on real source and document files
+        run: node tests/verification/enterprise-standards-evidence-mutations.mjs --cases 100000 --seed 20261110 --physical 1
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts
@@ -81,6 +83,8 @@ jobs:
         with:
           name: ictc-docs-command-contract
           path: |
+            artifacts/enterprise-standards-evidence.json
+            artifacts/enterprise-standards-falsification.json
             artifacts/docs-command-contract.json
             artifacts/repository-path-portability-falsification.json
             artifacts/semantic-doc-source-falsification.json

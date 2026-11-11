@@ -25,9 +25,9 @@ const baseline=[
 const validGrade=['E2_HOSTED_PENDING','E3_HOLD','E2_SCOPED','E2_SCOPED','E2_SCOPED','E2_SCOPED','E2_PARTIAL','E3_E4_HOLD'];
 const accepts=(rows)=>rows.length===8 && rows.every((r,i)=>r[0]===baseline[i][0]&&r[1]===validGrade[i]&&r.slice(2,6).every(v=>v===1)&&r[6]===0);
 assert.ok(accepts(baseline));
-const familyCount=16,negatives=new Array(familyCount).fill(0),positives=0;
+const familyCount=16,negatives=new Array(familyCount).fill(0);let positives=0;
 for(let i=0;i<cases;i++){
- const rowId=rand()%8,family=i%familyCount;
+ const rowId=(rand()>>>16)%8,family=i%familyCount;
  if(family===15){const candidate=baseline.map(r=>[...r]);assert.ok(accepts(candidate));positives++;continue;}
  const candidate=baseline.map(r=>[...r]);
  if(family===0)candidate.splice(rowId,1);
@@ -78,7 +78,10 @@ if(physical){
   ];
   for(const [file,before,after] of replacements){
    const target=path.join(work,file),original=await readFile(target,'utf8');assert.ok(original.includes(before),`missing mutation preimage ${file}: ${before}`);
-   await writeFile(target,original.replace(before,after));
+   const targetRow=before==='`E2_HOSTED_PENDING`'?'STD-SLSA-BUILD':before==='`E3_E4_HOLD`'?'STD-NIS2-DORA':null;
+   const mutated=targetRow?original.split('\n').map(line=>line.startsWith(`| ${targetRow} |`)?line.replace(before,after):line).join('\n'):original.replace(before,after);
+   assert.notEqual(mutated,original,`mutation did not change its target: ${file} ${before}`);
+   await writeFile(target,mutated);
    const check=spawnSync(process.execPath,[path.join(root,'tests/verification/enterprise-standards-evidence-check.mjs'),'--root',work,'--no-receipt'],{cwd:work,encoding:'utf8',timeout:12000});
    physicalCases++;if(check.status!==0)physicalKilled++;else throw new Error(`physical survivor: ${file} :: ${before}`);
    await writeFile(target,original);
