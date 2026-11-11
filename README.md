@@ -100,8 +100,6 @@ Node.js ESM, UI vanilla e SQLite: ingresso `src/bootstrap.mjs`, HTTP `src/server
 
 <!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 
-> **Contesto di programma.** ICTC partecipa al [ROA Research Programme](https://github.com/Luke883i/academics), con riferimento teorico a [ROA](https://github.com/Luke883i/ROA). L'appartenenza indica coordinamento, **non** conformità teorica dimostrata, validazione indipendente o readiness produttiva. Le autorità di questo repository restano locali.
-
 ## Che cosa governa
 
 | Codice | Processo business |
