@@ -463,6 +463,13 @@ def v9_native_ux_probe(page, viewport, width, surface):
         dialog.locator('footer [data-onboarding-close]').click()
         expect(dialog).not_to_be_visible()
     elif surface=='processes':
+        # V8 captures the expanded detail first; compactness must measure the closed row.
+        expanded=page.locator('#processesView #procedureHub details[data-process-secondary-detail][open]')
+        prior_expanded=expanded.count()
+        assert prior_expanded<=7,json.dumps([{'id':'v9-process-expand-state-sane','detail':{'count':prior_expanded}}])
+        for _ in range(prior_expanded):
+            expanded.first.locator(':scope > summary').click()
+        assert expanded.count()==0,json.dumps([{'id':'v9-process-reset-closed-state','detail':{'count':expanded.count()}}])
         metric=page.locator('#processesView #procedureHub').evaluate("""hub=>{
           const rows=[...hub.querySelectorAll('.procedure-card')],placeholders=hub.querySelectorAll('.catalogue-placeholder');
           const info=rows.map(row=>{
