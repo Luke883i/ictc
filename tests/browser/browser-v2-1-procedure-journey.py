@@ -1,4 +1,4 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, subprocess
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 
@@ -417,6 +417,7 @@ try:
         (ART/'browser-v2-1-procedure-journey.json').write_text(json.dumps(out, indent=2), encoding='utf8')
         (ART/'browser-consumer-writer-witness.json').write_text(json.dumps({
             'schema':'ictc-browser-consumer-writer-witness/v1','ok':True,
+            'gitHead':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'procedures':browser_writer_witness,'baseRevision':initial,'finalRevision':final_rev,
             'evidenceClass':'E2_NATIVE_PLAYWRIGHT_NETWORK_OBSERVATION',
             'claimBoundary':'Executed browser network responses and observed UI revision advances, not exact internal handler identity, external callers or production deployment.'

@@ -106,6 +106,9 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Verify native browser writer network evidence for seven-process journey
+        if: ${{ matrix.id == 'v2-1-procedure-journey' }}
+        run: node tests/verification/consumer-writer-evidence-gate.mjs --browser-only --require-browser
       - name: Diagnostic causal / base hub RN
         if: ${{ always() && matrix.id == 'procedure-finetuning-1-4' }}
         shell: bash

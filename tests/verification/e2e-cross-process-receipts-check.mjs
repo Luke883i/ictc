@@ -2,18 +2,29 @@
  * Scoped witness over all seven processes, not every journey step or browser.
  */
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {runtimeHarness} from './runtime-test-harness.mjs';
 import {procedureAdapters} from '../../src/runtime/procedure-adapters.mjs';
 
 const h=await runtimeHarness('ictc-e2e-cross-receipts');
 const actions=[];
+const EXPECTED_EVENTS=Object.freeze({
+ 'contribute-source':'contribution.recorded','incident-intake':'incident.intake.recorded',
+ 'create':'grc.object.created','activate-with-human-reason':'grc.object.reviewed',
+ 'map-object-to-requirement':'grc.mapping.created','review-gap-with-reason':'grc.mapping.decided',
+ 'create-remediation':'grc.action.created','adopt-with-reason':'grc.action.adopted',
+ 'progress-with-note':'grc.action.progressed','create-risk-linked-to-action':'grc.risk.created',
+ 'human-risk-review':'grc.risk.reviewed','intake-original-request':'grc.assurance.created'
+});
 const record=(process,operation,r)=>{
  assert.equal(r.status>=200&&r.status<300,true,`${process} ${operation}: ${JSON.stringify(r.body)}`);
  const payload=r.body.raw||r.body;
  assert.match(payload.receipt?.hash||'',/^[0-9a-f]{64}$/,`${process} ${operation} missing hashed receipt`);
  assert.equal(typeof payload.receipt.revision,'number');
- actions.push({process,operation,status:r.status,receiptHash:payload.receipt.hash,revision:payload.receipt.revision,id:payload.result?.id||null});
+ assert.equal(payload.receipt.action,EXPECTED_EVENTS[operation],`wrong semantic event for ${process}:${operation}`);
+ assert.equal(payload.receipt.subject?.id,payload.result?.id||payload.receipt.subject?.id,'receipt must bind subject');
+ actions.push({process,operation,status:r.status,event:payload.receipt.action,receiptHash:payload.receipt.hash,revision:payload.receipt.revision,id:payload.result?.id||null});
  return payload.result;
 };
 const get=async(path,role='admin')=>{
@@ -69,22 +80,37 @@ try{
  assert.equal(evidence.subject.id,objectId);
  const exported=await get('/api/export/current.json');
  assert.ok(exported.rows.some(x=>x.type==='grc-object'&&x.id===objectId));
- const auditor=await h.request('POST','/api/grc/objects',
-  {type:'server',name:'Forbidden auditor write',criticality:'high',owner:'auditor'},'auditor','local-auditor');
- assert.equal(auditor.status,403,`auditor write must be denied: ${JSON.stringify(auditor.body)}`);
+ const revisionBeforeDenials=(await h.bootstrap('admin','local-admin')).body.revision;
+ const forbiddenRoutes=[
+  ['/api/contributions',{text:'Forbidden RN material'}],
+  ['/api/incidents/intake',{eventKind:'incident',originalNarrative:'Forbidden EC event',awarenessAt:'2026-11-10T09:00:00.000Z'}],
+  ['/api/grc/objects',{type:'server',name:'Forbidden AO object',criticality:'high',owner:'auditor'}],
+  ['/api/grc/mappings',{requirementRef:'FORBIDDEN',requirementLabel:'Forbidden MC mapping',targetIds:[objectId]}],
+  ['/api/grc/actions',{title:'Forbidden AP action'}],
+  ['/api/grc/risks',{title:'Forbidden RC risk',likelihood:2,impact:2}],
+  ['/api/grc/assurance',{title:'Forbidden AR case',requestText:'No write',source:'auditor'}]
+ ];
+ const denied=[];for(const [route,input] of forbiddenRoutes){
+  const result=await h.request('POST',route,input,'auditor','local-auditor');
+  assert.equal(result.status,403,`auditor write must be denied: ${route}: ${JSON.stringify(result.body)}`);
+  denied.push({route,status:result.status});
+ }
  const after=await get('/api/grc');assert.equal(after.objects.counts.active,1,'denied write must leave objects unchanged');
+ const revisionAfterDenials=(await h.bootstrap('admin','local-admin')).body.revision;
+ assert.equal(revisionAfterDenials,revisionBeforeDenials,'forbidden writes must not change the persisted revision');
  const health=await get('/api/health');assert.equal(health.integrity.ok,true,'audit head must match persisted snapshot');
  const expected=procedureAdapters().map(x=>x.id);assert.deepEqual(expected,['monitoring','incidents','objects','coverage','actions','risks','assurance']);
  const processList=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'];
  assert.deepEqual([...new Set(actions.map(x=>x.process))],processList,'seven native procedure mutations');
  assert.equal(new Set(actions.map(x=>x.revision)).size,actions.length,'each HTTP mutation has one distinct persisted revision');
  const receipt={schema:'ictc-e2e-7process-real-write/v2',authority:'HTTP server + isolated SQLite + immutable hashed receipts',
+  gitHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   processes:processList,runtimeCommands:actions.length,commandReceipts:actions,
-  asserts:{sevenProcesses:true,allWritesHadHashedReceipts:true,grcReadback:true,contributionReadback:true,incidentReadback:true,privateActorIsolation:true,objectEvidence:true,objectExport:true,deniedAuditorWrite:true,noMutationAfterDenial:true,integrityBinding:true},
-  negative:{endpoint:'POST /api/grc/objects',actor:'auditor',status:auditor.status},
+  asserts:{sevenProcesses:true,allWritesHadHashedReceipts:true,semanticEventBindings:true,grcReadback:true,contributionReadback:true,incidentReadback:true,privateActorIsolation:true,objectEvidence:true,objectExport:true,deniedAuditorWrite:true,deniedAuditorRoutes:denied.length,noMutationAfterDenial:true,integrityBinding:true},
+  negative:{actor:'auditor',results:denied,revisionBeforeDenials,revisionAfterDenials},
   journeyStepCoverage:null,globalProductE2ECoverage:null,
   claimBoundary:'Actual seven-process HTTP mutations, readback, receipts, actor isolation and auditor denial; not native browser, not every workflow step, not independent human judgement, not external deployment.'};
  await mkdir(new URL('../../artifacts/',import.meta.url),{recursive:true});
  await writeFile(new URL('../../artifacts/e2e-cross-process-receipts.json',import.meta.url),JSON.stringify(receipt,null,2)+'\n');
- console.log(JSON.stringify({ok:true,processes:receipt.processes.length,writes:receipt.runtimeCommands,receiptHashes:receipt.commandReceipts.length,negative:auditor.status,globalProductE2ECoverage:null}));
+ console.log(JSON.stringify({ok:true,processes:receipt.processes.length,writes:receipt.runtimeCommands,receiptHashes:receipt.commandReceipts.length,negative:denied.length,globalProductE2ECoverage:null}));
 }finally{await h.close();}
