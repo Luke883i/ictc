@@ -66,10 +66,28 @@ const runs=[];let killed=0,valid=0,survived=0,positiveRejected=0;
 const sha=v=>createHash('sha256').update(v).digest('hex');
 function evaluate(kind,index,raw){const d=JSON.parse(raw);let ok,reason='';try{validateSbomGraph({pkg,lock,sbom:d});ok=true;}catch(e){ok=false;reason=String(e.message).slice(0,170);}if(kind.negative){if(ok)survived++;else killed++;}else{if(ok)valid++;else positiveRejected++;}if(runs.length<100)runs.push({index,family:kind.id,negative:kind.negative,accepted:ok,reason,digest:sha(raw)});return ok;}
 const start=process.hrtime.bigint();
-// One input is materially rewritten and validated for each seed, not a counter-only simulation.
-for(let i=0;i<cases;i++){
- const family=mutants[rng()%mutants.length],d=structuredClone(base);family.change(d,i);const raw=JSON.stringify(d);
- evaluate(family,i,raw);
+// In normal mode every case is a freshly materialized JSON document and parsed
+// by the same production oracle. Fast mode reuses *already mutated* real objects
+// and reexecutes the full oracle for large seeded schedules; those executions
+// are NOT independent, byte-distinct source patches.
+if(options.fast){
+ const variants=mutants.map((family,i)=>{const d=structuredClone(base);family.change(d,i);return d;});
+ for(let i=0;i<cases;i++){
+  const index=rng()%mutants.length,family=mutants[index],d=variants[index];
+  // Vary a genuine invalid semantic property on parameterized families.
+  if(index===0)d.metadata.component.version=`0.0.${i+1}`;
+  if(index===1)d.metadata.component.purl=`pkg:npm/ictc@forged-${i+1}`;
+  if(index===5)d.components[transitive].version=`2.2.${i+1}`;
+  if(index===6)d.components[transitive].purl=`pkg:npm/pg-types@2.2.${i+1}`;
+  let accepted=false,reason='';try{validateSbomGraph({pkg,lock,sbom:d});accepted=true;}catch(error){reason=String(error.message).slice(0,170);}
+  if(family.negative){if(accepted)survived++;else killed++;}else{if(accepted)valid++;else positiveRejected++;}
+  if(runs.length<100)runs.push({index:i,family:family.id,negative:family.negative,accepted,reason,digest:sha(JSON.stringify(d))});
+ }
+}else{
+ for(let i=0;i<cases;i++){
+  const family=mutants[rng()%mutants.length],d=structuredClone(base);family.change(d,i);const raw=JSON.stringify(d);
+  evaluate(family,i,raw);
+ }
 }
 const physicalFile=path.join(root,'artifacts','c2-semantic-mutant.cdx.json');await mkdir(path.dirname(physicalFile),{recursive:true});
 let physicalRuns=0,physicalKilled=0;
@@ -82,7 +100,7 @@ try{
  }
 }finally{await unlink(physicalFile).catch(()=>{});}
 const durationMs=Number(process.hrtime.bigint()-start)/1e6;
-const report={schemaVersion:'1.0.0',seed:initialSeed,cases,physicalRuns,semanticFamilies:mutants.length,negativeDetected:killed,positiveAccepted:valid,negativeSurvivors:survived,positiveRejected,physicalKilled,sourceBase:'actual package.json and package-lock.json at candidate tree',durationMs:Math.round(durationMs),firstSamples:runs,boundary:'Deterministic actual JSON semantic mutations and on-disk JSON rewrites; not independently patched Git trees, not production npm install, not 2026 SBOM certification.'};
+const report={schemaVersion:'1.0.0',seed:initialSeed,cases,physicalRuns,semanticFamilies:mutants.length,negativeDetected:killed,positiveAccepted:valid,negativeSurvivors:survived,positiveRejected,physicalKilled,sourceBase:'actual package.json and package-lock.json at candidate tree',fastMode:Boolean(options.fast),durationMs:Math.round(durationMs),firstSamples:runs,boundary:'Deterministic actual JSON semantic mutations and on-disk JSON rewrites; not independently patched Git trees, not production npm install, not 2026 SBOM certification.'};
 const dest=path.join(root,'artifacts','c2-semantic-falsification.json');await writeFile(dest,JSON.stringify(report,null,2)+'\n');
 assert.equal(survived,0,`invalid C2 mutants survived: ${survived}`);assert.equal(positiveRejected,0,`valid C2 mutants rejected: ${positiveRejected}`);
 console.log(JSON.stringify({ok:true,seed:initialSeed,cases,physicalRuns,negativeDetected:killed,positiveAccepted:valid,semanticFamilies:mutants.length,durationMs:report.durationMs}));
