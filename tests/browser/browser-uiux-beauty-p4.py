@@ -342,8 +342,9 @@ def v8_native_owner_probe(page, viewport, width, surface):
                 summary.focus()
                 page.keyboard.press('Enter' if should_open else 'Space')
             page.wait_for_function(
-                """({open})=>{const d=document.querySelector('#homeView details[data-home-business-guide]');
-                   return !!d && d.open===open}""",arg={'open':should_open})
+                """({open,expected})=>{const d=document.querySelector('#homeView details[data-home-business-guide]');
+                   const label=d?.querySelector('[data-home-guide-action]')?.textContent?.trim();
+                   return !!d && d.open===open && label===expected}""",arg={'open':should_open,'expected':expected})
             label=guide.locator('[data-home-guide-action]').inner_text().strip()
             assert label==expected,('V8 Home disclosure label mismatch',expected,label)
             metrics=guide.evaluate("""d=>{
