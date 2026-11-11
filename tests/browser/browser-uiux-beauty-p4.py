@@ -481,12 +481,15 @@ def v9_native_ux_probe(page, viewport, width, surface):
           return {rows:rows.length,placeholders:placeholders.length,
             gridRows:getComputedStyle(hub).gridAutoRows,info};
         }""")
-        assert metric['rows']==7 and metric['placeholders']==2,('V9: catalogue counts',metric)
-        assert all(x['detailDirect'] and not x['insidePurpose'] and x['handoffInsideDetail'] for x in metric['info']),('V9: secondary detail ownership',metric)
-        assert all(x['detailBelowAction'] and not x['labelOverflow'] and x['ellipsis']!='ellipsis' for x in metric['info']),('V9: action readability / detail geometry',metric)
-        assert all(x['detailHeight']>=43.5 for x in metric['info']),('V9: disclosure target',metric)
-        assert all(x['cardHeight']<= (300 if width<=390 else 210) for x in metric['info']),('V9: process row excess height',metric)
-        assert '1fr' not in metric['gridRows'],('V9: equal-height row coupling',metric)
+        def require_process(check_id,ok):
+            if not ok:
+                raise AssertionError(json.dumps([{'id':check_id,'detail':metric}],ensure_ascii=False))
+        require_process('v9-process-seven-plus-two',metric['rows']==7 and metric['placeholders']==2)
+        require_process('v9-process-detail-owner',all(x['detailDirect'] and not x['insidePurpose'] and x['handoffInsideDetail'] for x in metric['info']))
+        require_process('v9-process-action-layout',all(x['detailBelowAction'] and not x['labelOverflow'] and x['ellipsis']!='ellipsis' for x in metric['info']))
+        require_process('v9-process-disclosure-hit-target',all(x['detailHeight']>=43.5 for x in metric['info']))
+        require_process('v9-process-compact-height',all(x['cardHeight']<= (300 if width<=390 else 210) for x in metric['info']))
+        require_process('v9-process-intrinsic-grid-rows','1fr' not in metric['gridRows'])
         capture('compact-secondary-row',metric)
     elif surface=='proof':
         metric=page.locator('#proofContent').evaluate("""root=>{
