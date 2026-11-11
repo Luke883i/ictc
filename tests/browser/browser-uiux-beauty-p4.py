@@ -522,7 +522,20 @@ try:
             page.set_viewport_size({'width':width,'height':height})
             for surface,view,procedure,root in SURFACES:
                 PHASE=f'{viewport}:{surface}'
-                mount(page,surface,view,procedure,root)
+                try:
+                    mount(page,surface,view,procedure,root)
+                except Exception as mount_error:
+                    details=page.evaluate("""()=>({readyState:document.readyState,href:location.href,
+                      composition:document.documentElement.dataset.enduserComposition||'unset',
+                      activeView:document.querySelector('#homeView')?.getBoundingClientRect()?.toJSON?.()||null,
+                      homeDisplay:document.querySelector('#homeView')?getComputedStyle(document.querySelector('#homeView')).display:null,
+                      onboardingOpen:!!document.querySelector('#ictcOnboardingDialog')?.open,
+                      appRoot:!!document.querySelector('#homeView'),
+                      shell:!!document.querySelector('#stableProfileMenu'),
+                      heading:document.querySelector('#homeView h1')?.textContent||null})""")
+                    raise AssertionError(json.dumps([{'id':'p4-native-mount-diagnostic',
+                        'detail':{'surface':surface,'original':str(mount_error)[:220],
+                            'page':details,'pageErrors':p4_page_error_kinds[-5:]}}],ensure_ascii=False)) from mount_error
                 result=page.evaluate(JS_AUDIT,{'surface':surface,'width':width})
                 failures=[x for x in result['checks'] if not x['pass']]
                 result['viewport']=viewport; result['failures']=failures
