@@ -154,6 +154,13 @@ async function staticCheck(){
  for(const token of ['exact candidate','CycloneDX','GitHub OIDC','Sigstore','gh attestation verify','merge non equivale a release'])assert.ok(release.includes(token),`RELEASE missing ${token}`);
  const report={schemaVersion:'1.0.0',ok:true,control:'C2-DELIVERY-PROVENANCE',mode:'static-contract',owner:'F-06',actionPins:{build:BUILD_ATTEST,sbom:SBOM_ATTEST,upload:UPLOAD},claimBoundary};
  const falsify=spawnSync(process.execPath,['tests/verification/delivery-provenance-semantic-falsification.mjs','--cases=80','--physical=0'],{cwd:ROOT,encoding:'utf8',maxBuffer:4*1024*1024});assert.equal(falsify.status,0,`C2 source-bound semantic falsification failed: ${falsify.stderr||falsify.stdout}`);
+ // The same canonical gate exercises the REAL npm CycloneDX generator on
+ // isolated lockfile-shaped metadata on Linux CI. The GitHub hosted --prepare
+ // step separately validates npm ci's genuinely installed package inventory.
+ if(process.platform==='linux'){
+  const native=spawnSync(process.execPath,['tests/verification/delivery-provenance-native-cli-check.mjs','--cases=96','--seed=1430797'],{cwd:ROOT,encoding:'utf8',timeout:60000,maxBuffer:4*1024*1024});
+  assert.equal(native.status,0,`C2 npm CLI differential falsification failed: ${native.stderr||native.stdout}`);
+ }
  await mkdir(ARTIFACTS,{recursive:true});await writeFile(path.join(ARTIFACTS,'delivery-provenance-contract.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }
 
