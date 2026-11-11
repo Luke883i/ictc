@@ -43,3 +43,24 @@ html[data-ictc-experience="market-1"] dialog[open] :is(button,a[href],input,sele
 .onboarding-dialog .onboarding-acknowledgment input{min-width:20px;min-height:20px;flex:0 0 20px;margin:.15rem 0}
 .onboarding-dialog .onboarding-current-chapter :focus-visible,.onboarding-dialog .onboarding-acknowledgment:focus-within{outline:3px solid var(--color-brand,#4657d9);outline-offset:2px}
 @media(max-width:760px){.onboarding-dialog .onboarding-steps{grid-template-columns:repeat(5,minmax(0,1fr))}.onboarding-dialog .onboarding-steps>li>span:last-child{display:none}.onboarding-dialog .onboarding-why-how{grid-template-columns:minmax(0,1fr)}}
+
+/* Native onboarding dialog and progressive lesson details; no competing modal owner. */
+html[data-ictc-experience="market-1"] dialog.onboarding-dialog{border-radius:24px;overflow:hidden!important;background:var(--color-surface);box-shadow:0 28px 76px rgba(15,23,42,.3)}
+html[data-ictc-experience="market-1"] dialog.onboarding-dialog>.dialog-shell{border-radius:inherit!important;overflow:hidden!important;isolation:isolate}
+.onboarding-dialog .onboarding-lessons{display:grid;gap:.55rem;min-width:0}
+.onboarding-dialog .onboarding-lessons>details{min-width:0;border:1px solid var(--color-border);border-radius:12px;overflow:hidden;background:var(--color-surface)}
+.onboarding-dialog .onboarding-lessons>details>summary{display:flex;align-items:center;justify-content:space-between;gap:.7rem;min-height:48px;padding:.68rem .85rem;list-style:none;cursor:pointer;font-weight:720;color:var(--color-text)}
+.onboarding-dialog .onboarding-lessons>details>summary::-webkit-details-marker{display:none}
+.onboarding-dialog .onboarding-lesson-title{min-width:0;overflow-wrap:anywhere}
+.onboarding-dialog .onboarding-lesson-action{display:inline-flex;align-items:center;gap:.35rem;flex:0 0 auto;padding:.22rem .38rem;border-radius:8px;border:1px solid var(--color-border);background:var(--color-surface-subtle);color:var(--color-brand-strong);font-size:.79rem;font-weight:700;white-space:nowrap}
+.onboarding-dialog .onboarding-lesson-chevron{width:1rem;height:1rem;transition:transform var(--motion-fast,.18s ease)}
+.onboarding-dialog .onboarding-lesson-close,.onboarding-dialog .onboarding-lessons>details[open] .onboarding-lesson-open{display:none}
+.onboarding-dialog .onboarding-lessons>details[open] .onboarding-lesson-close{display:inline}
+.onboarding-dialog .onboarding-lessons>details[open] .onboarding-lesson-chevron{transform:rotate(90deg)}
+.onboarding-dialog .onboarding-lessons>details[open]>summary{border-bottom:1px solid var(--color-border);background:var(--color-surface-subtle)}
+.onboarding-dialog .onboarding-lessons>details>p{margin:.2rem 0;padding:.45rem .85rem;line-height:1.55;overflow-wrap:anywhere}
+.onboarding-dialog .onboarding-lessons>details>p:last-child{padding-bottom:.75rem}
+.onboarding-dialog .onboarding-lessons>details>summary:focus-visible{outline:3px solid var(--color-brand);outline-offset:-3px}
+@media(max-width:620px){html[data-ictc-experience="market-1"] dialog.onboarding-dialog{width:calc(100vw - .75rem)!important;max-height:calc(100dvh - .75rem)!important;border-radius:16px!important}html[data-ictc-experience="market-1"] dialog.onboarding-dialog>.dialog-shell{min-height:calc(100dvh - .75rem)!important;max-height:calc(100dvh - .75rem)!important;border-radius:inherit!important}.onboarding-dialog .onboarding-lesson-action{font-size:.73rem}}
+@media(forced-colors:active){.onboarding-dialog .onboarding-lessons>details{border-color:CanvasText}.onboarding-dialog .onboarding-lesson-action{border-color:ButtonText;color:ButtonText}}
+@media(prefers-reduced-motion:reduce){.onboarding-dialog .onboarding-lesson-chevron{transition:none}}

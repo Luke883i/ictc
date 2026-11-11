@@ -59,7 +59,7 @@ with sync_playwright() as pw:
   p.locator('.service-nav [data-service="processes"]').click()
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
-  # Read a single settled Processi epoch; do not weaken the structure, maturity or alignment assertions below.
+  # Read a single settled Processi epoch; allow independently sized compact records, but enforce upper height, badges, 7 secondary disclosures and legend.
   p.wait_for_function("""()=>{const hub=document.querySelector('#procedureHub'),root=document.querySelector('#processesView');
    if(!hub||!root||hub.dataset.catalogueItemCount!=='9')return false;
    const records=[...hub.querySelectorAll(':scope > [data-process-code]')],legend=root.querySelector('[data-maturity-legend]');
@@ -67,8 +67,10 @@ with sync_playwright() as pw:
    const badges=records.map(e=>e.querySelector(':scope > .procedure-maturity'));
    const heights=records.map(e=>e.getBoundingClientRect().height);
    const offsets=badges.map(e=>e?.getBoundingClientRect().left);
-   const ready=badges.every(b=>b&&b.querySelector('svg.maturity-icon'))&&heights.every(h=>h>=44)&&
-    Math.max(...heights)-Math.min(...heights)<=2&&offsets.every(Number.isFinite)&&
+   const nativeSecondary=records.filter(e=>e.dataset.catalogueKind==='procedure');
+   const ready=badges.every(b=>b&&b.querySelector('svg.maturity-icon'))&&heights.every(h=>h>=44&&h<=(innerWidth<=390?360:240))&&
+    nativeSecondary.length===7&&nativeSecondary.every(e=>!!e.querySelector(':scope > details[data-process-secondary-detail]'))&&
+    getComputedStyle(hub).gridAutoRows!=='1fr'&&offsets.every(Number.isFinite)&&
     Math.max(...offsets)-Math.min(...offsets)<=2&&getComputedStyle(root).display!=='none'&&document.fonts.status==='loaded';
    if(!ready){delete window.__ictcProcessAlignmentSample;return false;}
    // A three-frame geometry-only signature can precede late semantic updates.
@@ -131,7 +133,8 @@ with sync_playwright() as pw:
    offsets=badges.evaluate_all("els=>els.map(e=>e.getBoundingClientRect().left)")
    assert max(offsets)-min(offsets)<=2,offsets
    heights=hub.locator(':scope > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
-   assert len(heights)==9 and max(heights)-min(heights)<=2,heights
+   assert len(heights)==9 and all(44<=h<=240 for h in heights),heights
+   assert hub.locator(':scope > [data-procedure-id] > details[data-process-secondary-detail]').count()==7, 'Seven native secondary details must remain outside compact rows'
    unavailable=hub.locator('[data-catalogue-placeholder-id] .procedure-unavailable')
    expect(unavailable).to_have_count(2)
    assert unavailable.evaluate_all("els=>els.every(e=>e.tagName==='SPAN'&&e.getAttribute('aria-disabled')==='true'&&!e.hasAttribute('tabindex')&&e.getBoundingClientRect().height>=44&&getComputedStyle(e).pointerEvents==='none')")
@@ -166,7 +169,8 @@ with sync_playwright() as pw:
   p.locator('.service-nav [data-service="processes"]').click()
   expect(p.locator('#procedureHub')).to_have_attribute('data-catalogue-item-count','9')
   h=p.locator('#procedureHub > [data-process-code]').evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
-  assert len(h)==9 and max(h)-min(h)<=2,h
+  assert len(h)==9 and all(44<=value<=360 for value in h),h
+  assert p.locator('#procedureHub > [data-procedure-id] > details[data-process-secondary-detail]').count()==7
   assert p.locator('#procedureHub [data-catalogue-placeholder-id] .procedure-unavailable').count()==2
   p.locator('.service-nav [data-service="home"]').click()
   open_admin(p);m=p.evaluate('()=>({w:innerWidth,h:document.documentElement.scrollWidth,b:document.body.scrollWidth})');assert max(m['h'],m['b'])<=m['w']+1,m

@@ -41,7 +41,11 @@ const source={
       processUi.includes('<dt>Traccia prodotta</dt>') &&
       processUi.includes('esc(process.requirementClass)') &&
       processUi.includes('esc(process.produces)') &&
-      procCss.includes(':has(.process-inline-detail[open])') &&
+      processUi.includes('</footer>${process?') &&
+      processUi.includes('data-process-secondary-detail') &&
+      procCss.includes('#procedureHub{grid-auto-rows:auto!important;align-items:start!important}') &&
+      procCss.includes('grid-column:1/-1;grid-row:auto') &&
+      !procCss.includes(':has(.process-inline-detail[open])') &&
       procCss.includes('grid-template-columns:3.6rem minmax(0,1fr)!important')
 };
 for(const id of ['D02','D04','D05'])assert.equal(source[id],true,'source regression '+id);

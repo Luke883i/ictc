@@ -16,6 +16,11 @@ const ICONS=Object.freeze({
   'list-todo':'<rect x="3" y="4" width="6" height="6" rx="1"/><path d="m4 7 2 2 2-3M13 7h8M3 17h6M13 17h8M3 21h6"/>',
   'shield-alert':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v5M12 17h.01"/>',
   'clipboard-check':'<rect x="5" y="4" width="14" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/>',
+  'radar':'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 12 18 6M12 2v2M22 12h-2"/>',
+  'database':'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/>',
+  'shield-check':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m8 12 3 3 5-6"/>',
+  'scale':'<path d="M12 3v17M5 7h14M8 7l-4 7h8L8 7ZM16 7l-4 7h8l-4-7ZM8 20h8"/>',
+  'file-search':'<path d="M6 2h8l5 5v6M14 2v6h5M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h7"/><circle cx="16.5" cy="16.5" r="3.5"/><path d="m19 19 3 3"/>',
   'book-search':'<path d="M12 6.5c-1.3-1.3-3-2-5-2H3v14h4c2.1 0 3.7.7 5 2v-14Z"/><path d="M12 6.5c1.3-1.3 3-2 5-2h2v7"/><path d="M12 20.5v-5"/><circle cx="18" cy="16" r="2.7"/><path d="m20 18 2 2"/>',
   'clipboard-search':'<rect x="5" y="4" width="14" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><circle cx="11" cy="14" r="3"/><path d="m13.4 16.4 2.6 2.6"/>',
   'list-checks':'<path d="M9 6h12M9 12h12M9 18h12"/><path d="m3 6 1.5 1.5L7 4M3 12h4M3 18h4"/>',
@@ -29,5 +34,5 @@ export function uiIcon(name,className='ui-icon'){
 export const UI_ICON_NAMES=Object.freeze(Object.keys(ICONS));
 
 // Single presentation mapping; process identity and availability remain in procedureRegistry.
-export const PROCESS_ICON_BY_CODE=Object.freeze({'RN-01':'book-search','EC-01':'siren','AO-01':'boxes','MC-01':'list-checks','AP-01':'list-todo','RC-01':'shield-alert','AR-01':'clipboard-search'});
+export const PROCESS_ICON_BY_CODE=Object.freeze({'RN-01':'radar','EC-01':'triangle-alert','AO-01':'database','MC-01':'shield-check','AP-01':'clipboard-check','RC-01':'scale','AR-01':'file-search'});
 export const processIcon=code=>PROCESS_ICON_BY_CODE[code]||'info';

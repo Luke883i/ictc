@@ -397,8 +397,138 @@ def v8_native_owner_probe(page, viewport, width, surface):
             receipts.append(capture(key,'#processesView',metrics))
     return receipts
 
+def v9_native_ux_probe(page, viewport, width, surface):
+    """Exact-product Chromium proof. No fixture or human accessibility claim."""
+    import hashlib
+    records=[]
+    def capture(label, metrics):
+        png=page.screenshot(path=str(ART/f'{viewport}-{surface}-v9-{label}.png'),full_page=True)
+        records.append({
+            'suite':'P4/V9-native-ux', 'surface':surface,'viewport':viewport,'width':width,
+            'state':label,'source':'ICTC_NATIVE_BROWSER','synthetic':False,
+            'dom':True,'cssom':True,'screenshotSha256':hashlib.sha256(png).hexdigest(),
+            'metrics':metrics
+        })
+    if surface=='home':
+        cta=page.locator('#homeView [data-onboarding-open][data-onboarding-replay]')
+        assert cta.count()==1 and cta.is_visible(),('V9: Home onboarding CTA missing',cta.count())
+        assert cta.inner_text().strip()=='Onboarding'
+        profile_menu=page.locator('#stableProfileMenu')
+        was_open=profile_menu.get_attribute('open') is not None
+        if not was_open:
+            profile_menu.locator(':scope > summary').click()
+        profile=profile_menu.locator('[data-onboarding-replay]')
+        expect(profile).to_be_visible()
+        assert profile.count()==1 and profile.inner_text().strip()=='Onboarding',json.dumps(
+            [{'id':'v9-profile-visible-onboarding-action',
+              'detail':{'count':profile.count(),'label':profile.inner_text().strip()}}],ensure_ascii=False)
+        if not was_open:
+            profile_menu.locator(':scope > summary').click()
+        widths=page.locator('#homeView .home-compliance-answer p').evaluate_all(
+            """nodes=>nodes.map(n=>{
+               const parent=n.parentElement,pc=getComputedStyle(parent);
+               const contentWidth=parent.clientWidth-parseFloat(pc.paddingLeft)-parseFloat(pc.paddingRight);
+               return {maxWidth:getComputedStyle(n).maxWidth,width:n.getBoundingClientRect().width,
+                 contentWidth,parentWidth:parent.getBoundingClientRect().width,
+                 paddingLeft:pc.paddingLeft,paddingRight:pc.paddingRight};
+            })""")
+        assert len(widths)>=2 and all(x['maxWidth']=='none' and x['width']>=x['contentWidth']-3 for x in widths),json.dumps(
+            [{'id':'v9-home-text-not-full-content-width','detail':{'count':len(widths),'paragraphs':widths}}],ensure_ascii=False)
+        cta.click()
+        dialog=page.locator('#ictcOnboardingDialog')
+        expect(dialog).to_be_visible()
+        box=dialog.evaluate("""d=>{
+           const shell=d.querySelector('.dialog-shell'),a=getComputedStyle(d),b=getComputedStyle(shell);
+           return {borderRadius:parseFloat(a.borderTopLeftRadius),shellRadius:parseFloat(b.borderTopLeftRadius),
+             outerWidth:d.getBoundingClientRect().width,outerHeight:d.getBoundingClientRect().height,
+             overflow:a.overflow,bodyScroll:b.overflow};
+        }""")
+        assert box['borderRadius']>=12 and box['shellRadius']>=12 and box['outerWidth']<=width+1,('V9 dialog rounded clipping',box)
+        lessons=dialog.locator('details[data-homeboarding-lesson]')
+        assert lessons.count()==15,('V9: completed guide must expose 15 lessons',lessons.count())
+        assert 'successivi' not in dialog.locator('.onboarding-lessons-section > p').inner_text().lower(), 'V9: stale completed-mode copy'
+        first=lessons.first
+        opener=first.locator(':scope > summary')
+        assert first.locator('.onboarding-lesson-open').is_visible()
+        opener.focus()
+        page.keyboard.press('Enter')
+        page.wait_for_function("""()=>!!document.querySelector('#ictcOnboardingDialog details[data-homeboarding-lesson]')?.open""")
+        assert first.locator('.onboarding-lesson-close').is_visible(), 'V9: expanded lesson must signal Comprimi'
+        capture('lesson-open',dict(box,lessons=15,answerParagraphs=widths))
+        opener.focus()
+        page.keyboard.press('Space')
+        page.wait_for_function("""()=>document.querySelector('#ictcOnboardingDialog details[data-homeboarding-lesson]')?.open===false""")
+        assert first.locator('.onboarding-lesson-open').is_visible(), 'V9: collapsed lesson must signal Espandi'
+        capture('lesson-closed',{'lessons':15,'keyboard':True,'open':False})
+        dialog.locator('footer [data-onboarding-close]').click()
+        expect(dialog).not_to_be_visible()
+    elif surface=='processes':
+        # V8 captures the expanded detail first; compactness must measure the closed row.
+        expanded=page.locator('#processesView #procedureHub details[data-process-secondary-detail][open]')
+        prior_expanded=expanded.count()
+        assert prior_expanded<=7,json.dumps([{'id':'v9-process-expand-state-sane','detail':{'count':prior_expanded}}])
+        for _ in range(prior_expanded):
+            expanded.first.locator(':scope > summary').click()
+        assert expanded.count()==0,json.dumps([{'id':'v9-process-reset-closed-state','detail':{'count':expanded.count()}}])
+        metric=page.locator('#processesView #procedureHub').evaluate("""hub=>{
+          const rows=[...hub.querySelectorAll('.procedure-card')],placeholders=hub.querySelectorAll('.catalogue-placeholder');
+          const info=rows.map(row=>{
+            const d=row.querySelector(':scope > details[data-process-secondary-detail]');
+            const purpose=row.querySelector(':scope > .procedure-purpose');
+            const action=row.querySelector(':scope > footer .procedure-primary'),label=action?.querySelector('span');
+            const summary=d?.querySelector('summary');
+            return {detailDirect:!!d,insidePurpose:!!purpose?.querySelector('details'),
+              handoffInsideDetail:!!d?.querySelector('.process-inline-handoff'),
+              detailBelowAction:!!d&&!!action&&d.getBoundingClientRect().top>=action.getBoundingClientRect().bottom-2,
+              labelOverflow:!!label&&label.scrollWidth>label.clientWidth+2,
+              ellipsis:label?.style.textOverflow|| (label?getComputedStyle(label).textOverflow:''),
+              detailHeight:summary?.getBoundingClientRect().height||0,
+              cardHeight:row.getBoundingClientRect().height};
+          });
+          return {rows:rows.length,placeholders:placeholders.length,
+            gridRows:getComputedStyle(hub).gridAutoRows,info};
+        }""")
+        def require_process(check_id,ok):
+            if not ok:
+                raise AssertionError(json.dumps([{'id':check_id,'detail':metric}],ensure_ascii=False))
+        require_process('v9-process-seven-plus-two',metric['rows']==7 and metric['placeholders']==2)
+        require_process('v9-process-detail-owner',all(x['detailDirect'] and not x['insidePurpose'] and x['handoffInsideDetail'] for x in metric['info']))
+        require_process('v9-process-action-layout',all(x['detailBelowAction'] and not x['labelOverflow'] and x['ellipsis']!='ellipsis' for x in metric['info']))
+        require_process('v9-process-disclosure-hit-target',all(x['detailHeight']>=43.5 for x in metric['info']))
+        require_process('v9-process-compact-height',all(x['cardHeight']<= (300 if width<=390 else 210) for x in metric['info']))
+        require_process('v9-process-intrinsic-grid-rows','1fr' not in metric['gridRows'])
+        capture('compact-secondary-row',metric)
+    elif surface=='proof':
+        metric=page.locator('#proofContent').evaluate("""root=>{
+          const all=[...root.querySelectorAll(':scope > details.proof-section')].filter(x=>!x.hidden);
+          return {cards:all.length,items:all.map(d=>{
+            const s=d.querySelector(':scope > summary'),note=s?.querySelector('small'),icon=s?.querySelector('[data-proof-chevron]');
+            const span=s?.querySelector(':scope > span');
+            return {hasChevron:!!icon,descriptionMaxWidth:note?getComputedStyle(note).maxWidth:null,
+              noteWidth:note?.getBoundingClientRect().width||0,
+              textColumnWidth:span?.getBoundingClientRect().width||0};
+          })};
+        }""")
+        assert metric['cards']>=4 and all(x['hasChevron'] for x in metric['items']),('V9: proof expandable affordance',metric)
+        assert all(x['descriptionMaxWidth'] in (None,'none') for x in metric['items']),('V9: proof text width',metric)
+        assert all(x['noteWidth']>=x['textColumnWidth']-3 for x in metric['items'] if x['descriptionMaxWidth']),('V9: proof narrow card descriptions',metric)
+        capture('full-width-descriptions',metric)
+    return records
+
 def fail(error):
     payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
+    try:
+        p=globals().get('page')
+        if p is not None:
+            payload['browserState']=p.evaluate("""()=>({
+                readyState:document.readyState,route:location.pathname,
+                homeVisible:(()=>{const x=document.querySelector('#homeView');return !!x&&getComputedStyle(x).display!=='none'&&x.getClientRects().length>0})(),
+                composition:document.documentElement.dataset.enduserComposition||'unset',
+                nativeLattice:document.documentElement.dataset.nativeSemanticLattice||'unset',
+                onboardingPresent:!!document.querySelector('#ictcOnboardingDialog')
+            })""")
+    except Exception as diagnostic_error:payload['browserDiagnosticError']=type(diagnostic_error).__name__
+    payload['pageErrorKinds']=globals().get('p4_page_error_kinds',[])[-6:]
     (ART/'error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
     print(f'::error title=uiux-beauty-p4::{PHASE}: {type(error).__name__}: {error}',flush=True)
 
@@ -409,13 +539,29 @@ try:
         if os.environ.get('ICTC_CHROMIUM'): launch['executable_path']=os.environ['ICTC_CHROMIUM']
         browser=pw.chromium.launch(**launch)
         page=browser.new_page()
+        p4_page_error_kinds=[]
+        page.on('pageerror',lambda error:p4_page_error_kinds.append(type(error).__name__))
         page.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','home')")
         ensure_onboarded(page,BASE,'admin')
         for viewport,width,height in VIEWPORTS:
             page.set_viewport_size({'width':width,'height':height})
             for surface,view,procedure,root in SURFACES:
                 PHASE=f'{viewport}:{surface}'
-                mount(page,surface,view,procedure,root)
+                try:
+                    mount(page,surface,view,procedure,root)
+                except Exception as mount_error:
+                    details=page.evaluate("""()=>({readyState:document.readyState,href:location.href,
+                      composition:document.documentElement.dataset.enduserComposition||'unset',
+                      activeView:document.querySelector('#homeView')?.getBoundingClientRect()?.toJSON?.()||null,
+                      homeDisplay:document.querySelector('#homeView')?getComputedStyle(document.querySelector('#homeView')).display:null,
+                      onboardingOpen:!!document.querySelector('#ictcOnboardingDialog')?.open,
+                      appRoot:!!document.querySelector('#homeView'),
+                      shell:!!document.querySelector('#stableProfileMenu'),
+                      heading:document.querySelector('#homeView h1')?.textContent||null})""")
+                    raise AssertionError(json.dumps([{'id':'p4-native-mount-diagnostic',
+                        'detail':{'surface':surface,'original':str(mount_error)[:220],
+                            'page':details,'pageErrors':p4_page_error_kinds[-5:]}}],ensure_ascii=False)) from mount_error
+                PHASE=f'{viewport}:{surface}:js-audit'
                 result=page.evaluate(JS_AUDIT,{'surface':surface,'width':width})
                 failures=[x for x in result['checks'] if not x['pass']]
                 result['viewport']=viewport; result['failures']=failures
@@ -424,7 +570,11 @@ try:
                 if failures:
                     raise AssertionError(f'{viewport}/{surface}: '+json.dumps(failures[:6],ensure_ascii=False))
                 if surface in ('home','processes'):
+                    PHASE=f'{viewport}:{surface}:v8-native'
                     observations.extend(v8_native_owner_probe(page,viewport,width,surface))
+                if surface in ('home','processes','proof'):
+                    PHASE=f'{viewport}:{surface}:v9-native'
+                    observations.extend(v9_native_ux_probe(page,viewport,width,surface))
                 if surface=='coverage':
                     observations.extend(audit_coverage_overlays(page,viewport,width))
         browser.close()

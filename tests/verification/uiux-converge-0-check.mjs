@@ -82,7 +82,7 @@ for(const name of ["'badge-check'","'circle-half'","'wrench'","'circle-slash'"])
 for(const name of ["badge-check","circle-half","wrench","circle-slash"])assert.ok(frame.includes("icon:'"+name+"'"),'maturity model must retain distinct pictogram '+name);
 assert.ok(frame.includes('role="img" aria-label="Maturità dichiarata:')&&frame.includes("uiIcon(meta.icon,'ui-icon maturity-icon')"),'icon-only badges require accessible text and a typed SVG');
 assert.ok(!frame.includes("meta.color")&&!frame.includes("Indicativa: non certifica conformità né disponibilità."),'maturity legend must omit the redundant boundary sentence');
-assert.ok(closureCss.includes('#procedureHub{grid-auto-rows:1fr!important}')&&closureCss.includes('grid-template-columns:4.4rem minmax(0,1fr) 2.6rem 12rem!important;'),'row height and small badge column must have one owner');
+assert.ok(closureCss.includes('#procedureHub{grid-auto-rows:auto!important;align-items:start!important}')&&closureCss.includes('grid-template-columns:6rem minmax(0,1fr) 2.6rem 12rem!important;')&&frame.includes('</footer>${process?')&&frame.includes('data-process-secondary-detail')&&!closureCss.includes(':has(.process-inline-detail[open])'),'compact independent rows and native secondary detail must have one owner');
 assert.ok(frame.includes('aria-disabled="true"')&&frame.includes('Non disponibile</span>')&&!frame.includes('In preparazione · nessuna azione operativa'),'placeholder should be an inert affordance, not a business button');
 assert.ok(closureCss.includes('pointer-events:none;user-select:none;')&&closureCss.includes('min-height:44px;'),'disabled visual control must be inert and accessible in size');
 
