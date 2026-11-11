@@ -416,9 +416,15 @@ def v9_native_ux_probe(page, viewport, width, surface):
         profile=page.locator('#stableProfileMenu [data-onboarding-replay]')
         assert profile.count()==1 and profile.inner_text().strip()=='Onboarding'
         widths=page.locator('#homeView .home-compliance-answer p').evaluate_all(
-            """nodes=>nodes.map(n=>({maxWidth:getComputedStyle(n).maxWidth,width:n.getBoundingClientRect().width,
-              parentWidth:n.parentElement.getBoundingClientRect().width}))""")
-        assert len(widths)>=2 and all(x['maxWidth']=='none' and x['width']>=x['parentWidth']-3 for x in widths),('V9: Home answer width',widths)
+            """nodes=>nodes.map(n=>{
+               const parent=n.parentElement,pc=getComputedStyle(parent);
+               const contentWidth=parent.clientWidth-parseFloat(pc.paddingLeft)-parseFloat(pc.paddingRight);
+               return {maxWidth:getComputedStyle(n).maxWidth,width:n.getBoundingClientRect().width,
+                 contentWidth,parentWidth:parent.getBoundingClientRect().width,
+                 paddingLeft:pc.paddingLeft,paddingRight:pc.paddingRight};
+            })""")
+        assert len(widths)>=2 and all(x['maxWidth']=='none' and x['width']>=x['contentWidth']-3 for x in widths),json.dumps(
+            [{'id':'v9-home-text-not-full-content-width','detail':{'count':len(widths),'paragraphs':widths}}],ensure_ascii=False)
         cta.click()
         dialog=page.locator('#ictcOnboardingDialog')
         expect(dialog).to_be_visible()
