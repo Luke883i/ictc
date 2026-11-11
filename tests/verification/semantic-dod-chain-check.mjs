@@ -1,5 +1,6 @@
 // Audit-only proof projection. Canonical states remain in the existing owner registers.
 import assert from 'node:assert/strict';
+import {runSemanticDODMutations} from './semantic-dod-reticular-mutation-100k.mjs';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -130,6 +131,8 @@ assert.equal(v8Disposition.filter(x=>x.disposition==='ADAPTED_SOURCE_SCOPED').le
 // The original local pre-PR replay proves its own tree, never rebasing onto post-283 main.
 assert.equal(state.D03,'HOLD','all 24 commits are not semantically absorbed on this PR');
 
+const reticularFalsification=runSemanticDODMutations(ROOT);
+assert.equal(reticularFalsification.globalDoD,false);
 const receipt={
  schema:'ictc.semantic-dod-chain.derived.v2',
  authority:'none; receipt only; canonical owners unchanged',
@@ -138,6 +141,7 @@ const receipt={
  gates:rows.map(x=>({...x,status:state[x.id]})),
  coverage:{obligations:15,structurallyValidated:15,independentlyEvidenceQualified:0,dag:true,sourceScoped:Object.values(state).filter(v=>v==='SOURCE_SCOPED').length},
  blockers,global:false,
+ reticularFalsification,
  v8PrePrLineage:{
   origin:'uploaded immutable V8 pre-PR git-mailbox; historical local base, not post-283 main',
   originalPatchSha256:'e5b7480d8730378ab9604d8f80ca606e8bd86deca766eb4968f09d6afd131b01',
