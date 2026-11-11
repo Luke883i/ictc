@@ -438,7 +438,7 @@ The historical V8 mailbox is identified by patch SHA-256
 `e5b7480d8730378ab9604d8f80ca606e8bd86deca766eb4968f09d6afd131b01`
 and uploaded ZIP SHA-256 `f2f1435aa832f188ff675f8018b3b56f607b2d8a18423c1542e0a1d72640ee18`.
 The derived DoD receipt enumerates all 24 source commit SHAs and deliberately retains
-**OPEN_DIFF_RECONCILIATION** for 19, **ADAPTED_SOURCE_SCOPED** for V8 #21/#22,
+**OPEN_DIFF_RECONCILIATION** for 17, **ADAPTED_SOURCE_SCOPED** for V8 #1/#2/#21/#22,
 **ADAPTED_BROWSER_SCOPED** for #23 and **GENERATED_COMPASS_REPROJECTED** for #8/#24.
 These dispositions do **not** claim 24/24 lossless replay on post-#283 main, and
 cannot close D03 until every source delta is qualified against actual current owners.
