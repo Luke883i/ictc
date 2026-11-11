@@ -42,7 +42,15 @@ paths:
   /api/work/traces:
     get:
       summary: Proietta le tracce procedurali accessibili al ruolo
-      responses: { '200': { description: Originale, assist, decisioni, epistemica, audit ed evidence } }
+      description: Senza parametri mantiene il contratto legacy completo. Con limit/cursor restituisce una pagina deterministica vincolata ad attore e revisione; il cursor non conferisce autorizzazioni e diventa stale dopo una scrittura.
+      parameters:
+        - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 50, default: 20 } }
+        - { name: cursor, in: query, required: false, schema: { type: string, maxLength: 4096 } }
+      responses:
+        '200': { description: Tracce role-scoped (pagina opt-in oppure formato legacy) }
+        '400': { description: Cursor o limit non valido }
+        '403': { description: Cursor generato per un altro attore }
+        '409': { description: Cursor stale dopo una revisione di stato }
   /api/work/traces/{type}/{id}:
     get:
       summary: Ricostruisce una traccia procedurale specifica
