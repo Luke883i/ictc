@@ -36,7 +36,8 @@ const rules=[
  ['placeholder-not-operational','P',"placeholder?'<span class=\"procedure-unavailable\""],
  ['onboarding-nonbypass','C','data-onboarding-mode="first-run-gate"] [data-onboarding-close]{display:none!important}'],
  ['proof-icon-idempotence','E',"summary.lastElementChild?.setAttribute('data-proof-chevron','1')"],
- ['equal-process-cta-height','R','procedure-card .procedure-primary{height:3.5rem!important;min-height:3.5rem!important']
+ ['equal-process-cta-height','R','procedure-card .procedure-primary{height:3.5rem!important;min-height:3.5rem!important'],
+ ['process-detail-visible','R','>:not(header,h2,.procedure-purpose,footer,[data-process-secondary-detail]){display:none!important}']
 ];
 function good(id,s){
  switch(id){
@@ -63,6 +64,7 @@ function good(id,s){
  case 20:return s.includes('data-onboarding-mode="first-run-gate"] [data-onboarding-close]{display:none!important}');
  case 21:return s.includes("summary.lastElementChild?.setAttribute('data-proof-chevron','1')");
  case 22:return /procedure-card \.procedure-primary\{height:3\.5rem!important;min-height:3\.5rem!important/.test(s);
+ case 23:return s.includes('>:not(header,h2,.procedure-purpose,footer,[data-process-secondary-detail]){display:none!important}');
  default:throw Error('Unrecognized family '+id);
  }
 }
@@ -92,6 +94,7 @@ function mutate(id,body,n){
  case 20:return body.replace('display:none!important','display:block!important;/*escaped-'+v+'*/');
  case 21:return body.replace("'data-proof-chevron'","'proof-wrong-"+v+"'");
  case 22:return body.replace('height:3.5rem!important;min-height:3.5rem!important','height:'+(n%500000+1)+'rem!important;min-height:'+(n%500000+1)+'rem!important');
+ case 23:return body.replace('footer,[data-process-secondary-detail])','footer,[data-unintended-hidden-'+v+'])');
  default:throw Error('Unknown mutation family '+id);
  }
 }
