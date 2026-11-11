@@ -28,6 +28,7 @@ async function validateNode(command) {
     (target==='scripts/repository-retirement-mutations.mjs'&&args==='--cases=1 --negatives=1 --exhaustive-proof') ||
     (target==='tests/verification/consumer-writer-evidence-gate.mjs'&&args==='--require-browser') ||
     (target==='tests/verification/convergence-reticular-dod-check.mjs'&&(args==='--require-global'||/^--mutations=[1-9][0-9]*$/.test(args))) ||
+    (target==='tests/verification/semantic-dod-chain-check.mjs'&&args==='--require-global') ||
     (target==='tests/verification/release-readiness-e2-check.mjs'&&args==='--require-release') ||
     (target==='scripts/recovery-cli.mjs'&&/^(?:backup\s+--tenant\s+\S+\s+--destination\s+\S+|restore\s+--source\s+\S+\s+--target\s+\S+)$/.test(args));
   return allowed?null:`unsupported node arguments for ${target}: ${args}`;
