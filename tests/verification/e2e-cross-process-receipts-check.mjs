@@ -1,17 +1,20 @@
-/** Real HTTP cross-process E2E: AO -> MC -> AP -> RC -> AR.
- * Scoped witness, not coverage of RN/EC or every journey step.
+/** Real HTTP cross-process E2E: RN + EC + AO -> MC -> AP -> RC -> AR.
+ * Scoped witness over all seven processes, not every journey step or browser.
  */
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {runtimeHarness} from './runtime-test-harness.mjs';
+import {procedureAdapters} from '../../src/runtime/procedure-adapters.mjs';
 
 const h=await runtimeHarness('ictc-e2e-cross-receipts');
 const actions=[];
 const record=(process,operation,r)=>{
  assert.equal(r.status>=200&&r.status<300,true,`${process} ${operation}: ${JSON.stringify(r.body)}`);
- assert.match(r.body.receipt?.hash||'',/^[0-9a-f]{64}$/,`${process} ${operation} missing hashed receipt`);
- actions.push({process,operation,status:r.status,receiptHash:r.body.receipt.hash,id:r.body.result?.id||null});
- return r.body.result;
+ const payload=r.body.raw||r.body;
+ assert.match(payload.receipt?.hash||'',/^[0-9a-f]{64}$/,`${process} ${operation} missing hashed receipt`);
+ assert.equal(typeof payload.receipt.revision,'number');
+ actions.push({process,operation,status:r.status,receiptHash:payload.receipt.hash,revision:payload.receipt.revision,id:payload.result?.id||null});
+ return payload.result;
 };
 const get=async(path,role='admin')=>{
  const response=await fetch(`${h.base}${path}`,{headers:h.identity(role,`test-${role}`)});
@@ -22,6 +25,17 @@ try{
  assert.equal(seed.status,200);
  await h.onboard('admin','local-admin');
  await h.onboard('auditor','local-auditor');
+ await h.onboard('user','alice');
+ await h.onboard('user','bob');
+ const contribution=record('RN-01','contribute-source',await h.ok('POST','/api/contributions',
+  {text:'RN evidence: source observed, no legal applicability automatically decided'},'user','alice'));
+ const incident=record('EC-01','incident-intake',await h.ok('POST','/api/incidents/intake',
+  {eventKind:'incident',operationalSeverity:'not-assessed',originalNarrative:'EC observation pending human assessment',awarenessAt:'2026-11-10T09:00:00.000Z'},'user','alice'));
+ const own=await h.bootstrap('user','alice'),foreign=await h.bootstrap('user','bob');
+ assert.ok(own.body.contributions.some(x=>x.id===contribution.id));
+ assert.ok(own.body.incidents.some(x=>x.id===incident.id));
+ assert.equal(foreign.body.contributions.some(x=>x.id===contribution.id),false,'contributor privacy');
+ assert.equal(foreign.body.incidents.some(x=>x.id===incident.id),false,'incident privacy');
  const object=record('AO-01','create',await h.ok('POST','/api/grc/objects',
   {type:'server',name:'E2E ERP application',criticality:'high',owner:'IT',sourceAuthority:'CMDB'},'admin','local-admin'));
  const objectId=object.id;
@@ -59,12 +73,17 @@ try{
   {type:'server',name:'Forbidden auditor write',criticality:'high',owner:'auditor'},'auditor','local-auditor');
  assert.equal(auditor.status,403,`auditor write must be denied: ${JSON.stringify(auditor.body)}`);
  const after=await get('/api/grc');assert.equal(after.objects.counts.active,1,'denied write must leave objects unchanged');
- const receipt={schema:'ictc-e2e-5process-real-write/v1',authority:'HTTP server + isolated SQLite + immutable hashed receipts',
-  processes:['AO-01','MC-01','AP-01','RC-01','AR-01'],runtimeCommands:actions.length,commandReceipts:actions,
-  asserts:{fiveProcesses:true,allWritesHadHashedReceipts:true,grcReadback:true,objectEvidence:true,objectExport:true,deniedAuditorWrite:true,noMutationAfterDenial:true},
+ const health=await get('/api/health');assert.equal(health.integrity.ok,true,'audit head must match persisted snapshot');
+ const expected=procedureAdapters().map(x=>x.id);assert.deepEqual(expected,['monitoring','incidents','objects','coverage','actions','risks','assurance']);
+ const processList=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'];
+ assert.deepEqual([...new Set(actions.map(x=>x.process))],processList,'seven native procedure mutations');
+ assert.equal(new Set(actions.map(x=>x.revision)).size,actions.length,'each HTTP mutation has one distinct persisted revision');
+ const receipt={schema:'ictc-e2e-7process-real-write/v2',authority:'HTTP server + isolated SQLite + immutable hashed receipts',
+  processes:processList,runtimeCommands:actions.length,commandReceipts:actions,
+  asserts:{sevenProcesses:true,allWritesHadHashedReceipts:true,grcReadback:true,contributionReadback:true,incidentReadback:true,privateActorIsolation:true,objectEvidence:true,objectExport:true,deniedAuditorWrite:true,noMutationAfterDenial:true,integrityBinding:true},
   negative:{endpoint:'POST /api/grc/objects',actor:'auditor',status:auditor.status},
   journeyStepCoverage:null,globalProductE2ECoverage:null,
-  claimBoundary:'Actual cross-process HTTP mutations, readback, receipts and auditor denial; not RN/EC, not every workflow step, not independent human judgement, not external deployment.'};
+  claimBoundary:'Actual seven-process HTTP mutations, readback, receipts, actor isolation and auditor denial; not native browser, not every workflow step, not independent human judgement, not external deployment.'};
  await mkdir(new URL('../../artifacts/',import.meta.url),{recursive:true});
  await writeFile(new URL('../../artifacts/e2e-cross-process-receipts.json',import.meta.url),JSON.stringify(receipt,null,2)+'\n');
  console.log(JSON.stringify({ok:true,processes:receipt.processes.length,writes:receipt.runtimeCommands,receiptHashes:receipt.commandReceipts.length,negative:auditor.status,globalProductE2ECoverage:null}));
