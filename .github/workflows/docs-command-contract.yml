@@ -54,6 +54,8 @@ jobs:
         run: node tests/verification/consumer-writer-reticular-check.mjs
       - name: Prove scoped cross-process writes and receipts under live HTTP
         run: node tests/verification/e2e-cross-process-receipts-check.mjs
+      - name: Falsify 24 physically edited consumer and writer contracts with positive control
+        run: node tests/verification/consumer-writer-physical-falsification.mjs
       - name: Reconcile observed route writers against live HTTP receipts without claiming browser closure
         run: node tests/verification/consumer-writer-evidence-gate.mjs
       - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
@@ -86,6 +88,7 @@ jobs:
             artifacts/e2e-cross-process-receipts.json
             artifacts/consumer-writer-reticulum.json
             artifacts/consumer-writer-convergence.json
+            artifacts/consumer-writer-physical-falsification.json
             artifacts/e2e-step-evidence-ledger.json
             artifacts/retirement-minimality-certificate.json
             artifacts/document-retirement-gate.json
