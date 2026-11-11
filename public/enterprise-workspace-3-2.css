@@ -256,7 +256,7 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #homeView .home-compliance-questions li::before{content:"";position:absolute;left:.58rem;top:.93rem;width:.35rem;height:.35rem;border-radius:50%;background:var(--color-brand)}
 #homeView .home-compliance-questions h4{font-weight:750;color:var(--color-text)}
 #homeView .home-compliance-questions li p{max-width:64ch}
-#homeView .home-compliance-answer p{max-width:70ch}
+
 @media(max-width:540px){
  #homeView .home-compliance-full>summary{align-items:flex-start;flex-wrap:wrap;gap:.55rem}
  #homeView .home-guide-heading{flex-basis:100%}
@@ -264,3 +264,10 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 }
 @media(forced-colors:active){#homeView .home-guide-toggle{border-color:ButtonText;background:ButtonFace;color:ButtonText}#homeView .home-compliance-questions li::before{background:CanvasText}}
 @media(prefers-reduced-motion:reduce){#homeView .home-guide-toggle .home-guide-chevron{transition:none}}
+
+/* HOME: two entry points, same existing onboarding replay handler. */
+#homeView .home-compliance-heading>button[data-onboarding-open]{margin:.65rem 0 0 .55rem;display:inline-flex;align-items:center;gap:.45rem;min-height:44px;max-width:100%;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface);color:var(--color-brand-strong);font-weight:720;cursor:pointer}
+#homeView .home-compliance-heading>button[data-onboarding-open]:hover{border-color:var(--color-brand);background:var(--chrome-control-hover)}
+#homeView .home-compliance-heading>button[data-onboarding-open]:focus-visible{outline:3px solid var(--color-brand);outline-offset:3px}
+#homeView .home-compliance-answer p{inline-size:100%;min-width:0;max-width:none;overflow-wrap:break-word}
+@media(max-width:540px){#homeView .home-compliance-heading>button[data-onboarding-open]{margin-left:0}}
