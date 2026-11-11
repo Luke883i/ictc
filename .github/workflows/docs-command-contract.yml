@@ -24,6 +24,10 @@ jobs:
         run: node tests/verification/docs-command-contract-check.mjs
       - name: Falsify CTO README claims against canonical owner registries
         run: node tests/verification/cto-docs-falsification.mjs
+      - name: Falsify filesystem portability on real isolated paths
+        run: node tests/verification/repository-path-portability-falsification.mjs
+      - name: Falsify documentation claims against executable source and browser assets
+        run: node tests/verification/semantic-document-source-falsification.mjs
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts
@@ -76,6 +80,8 @@ jobs:
           name: ictc-docs-command-contract
           path: |
             artifacts/docs-command-contract.json
+            artifacts/repository-path-portability-falsification.json
+            artifacts/semantic-doc-source-falsification.json
             artifacts/cto-docs-falsification.json
             artifacts/repository-inventory.json
             artifacts/repository-retirement-mutations.json

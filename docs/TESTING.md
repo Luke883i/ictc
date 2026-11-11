@@ -49,6 +49,12 @@ node tests/verification/convergence-reticular-dod-check.mjs --require-global
 
 L'ultima invocazione e una **prova NO-GO**, non un gate da aggiungere alla CI verde. La relativa receipt `artifacts/convergence-reticular-dod.json` deriva soltanto dai registri canonici e dal Git tree; non e una nuova autorita di chiusura. Il test di paginazione non dimostra capacity/HA del deployment; il gate AI non misura autonomamente accuratezza, drift o efficacia del provider.
 
+## Integrità del filesystem e semantica implementata
+
+`node scripts/repository-contract.mjs` verifica la topologia del checkout, inclusa la portabilità dei nomi e l'assenza di collisioni case-insensitive. Per riprodurre i controesempi fisici usare `node tests/verification/repository-path-portability-falsification.mjs`. Le dichiarazioni current di `PRODUCT` e Atlas sono anche confrontate con i contratti procedurali realmente caricati, `src/server.mjs`, `src/runtime/model.mjs` e i consumer degli asset `public/` dal gate `npm run docs:check`; usare `node tests/verification/semantic-document-source-falsification.mjs` per le modifiche fisiche avversariali.
+
+I due test sono già eseguiti nel workflow documentale esistente. Non conferiscono authority, non provano equivalenza browser o assenza di chiamanti URL esterni e non autorizzano il ritiro dei CSS byte-identici.
+
 ## Feedback per tipo di modifica
 
 Usa prima il falsificatore più vicino al cambiamento; usa poi la rail di convergenza. La tabella orienta, non crea una seconda authority.

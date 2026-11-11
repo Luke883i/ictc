@@ -84,6 +84,12 @@ l'efficacia dei controlli e non autorizzano rimozione. Le campagne su modelli
 non sono milioni di patch fisiche; `NO_NOVELTY` nel set mutazionale prefissato
 non dimostra saturazione di tutte le possibili failure family.
 
+## Verifica della semantica interna e portabilità del checkout
+
+La coerenza documentale non si riduce alla presenza del file o a un link valido. Il gate già canonico `scripts/documentation-lattice-check.mjs` confronta i sette processi descritti da `docs/PRODUCT.md` con `src/runtime/procedure-contracts.mjs` e gli adapter effettivi; confronta inoltre l’identità della release, la distinzione tra proiezione intermedia e risposta HTTP, i riferimenti `public/` e le importazioni CSS/JavaScript correnti con i byte eseguibili. Un mismatch documentale o software è una **controprova**, non una nuova fonte di verità. I relativi mutanti fisici sono eseguiti da `tests/verification/semantic-document-source-falsification.mjs` in una worktree temporanea.
+
+Il contratto root esistente `scripts/repository-contract.mjs` verifica anche la portabilità dei nomi del filesystem osservato: collisioni insensibili a maiuscole, nomi di dispositivo riservati, Unicode non normalizzato, segmenti incompatibili con Windows e symlink non qualificati. La falsificazione fisica è `tests/verification/repository-path-portability-falsification.mjs`. I due verificatori sono collegati al workflow documentale esistente, non rappresentano una seconda governance. Nessuna di queste prove autorizza un `DELETE` o dimostra consumer esterni assenti; i percorsi generati/ignorati non sono inclusi nel denominatore di portabilità.
+
 ## Product truth e lineage
 
 `docs/PRODUCT.md` è l'autorità corrente per identità, scope e confini del prodotto. `docs/00_PROMPT_CLARIFICATION.md` è `source-input`; documenti TO-BE/roadmap restano futuro intenzionale. Quando una decisione di lineage diventa AS-IS, si aggiorna l'owner current e si conserva il documento storico come evidence, senza duplicare l'autorità.

@@ -2,6 +2,8 @@
  * They do not prove external consumer absence or authorize file retirement. */
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,symlinkSync,rmSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {inspectRepositoryFilesystem} from '../../scripts/repository-path-portability.mjs';
@@ -41,7 +43,11 @@ try{
  ];
  reset();for(const name of positives)put(name);
  assert.deepEqual(inspectRepositoryFilesystem(root).errors,[],'valid source/reference filenames must remain allowed');
- const real=inspectRepositoryFilesystem(new URL('../../',import.meta.url).pathname);
+ const projectRoot=resolve(fileURLToPath(new URL('../../',import.meta.url)));
+ const real=inspectRepositoryFilesystem(projectRoot);
  assert.deepEqual(real.errors,[],'current tracked/source checkout must remain portable');
- console.log(JSON.stringify({ok:true,seed:SEED,physicalNegativeCases:cases.length,killed:cases.filter(x=>x.detected).length,positiveFiles:positives.length,repositoryPaths:real.examined,symlinks:real.symlinks.length,claimBoundary:'Real disposable filesystem edits; not an external URL, dynamic consumer, or SAFE_DELETE proof.'}));
+ const report={ok:true,schema:'ictc-repository-path-portability/v1',seed:SEED,physicalNegativeCases:cases.length,killed:cases.filter(x=>x.detected).length,positiveFiles:positives.length,repositoryPaths:real.examined,symlinks:real.symlinks.length,claimBoundary:'Real disposable filesystem edits; not an external URL, dynamic consumer, or SAFE_DELETE proof.'};
+ mkdirSync(join(projectRoot,'artifacts'),{recursive:true});
+ writeFileSync(join(projectRoot,'artifacts/repository-path-portability-falsification.json'),JSON.stringify(report,null,2)+'\n');
+ console.log(JSON.stringify(report));
 }finally{rmSync(root,{recursive:true,force:true});}
