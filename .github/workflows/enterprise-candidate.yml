@@ -48,10 +48,15 @@ jobs:
         with:
           subject-path: ${{ steps.delivery.outputs.bundle_path }}
           sbom-path: artifacts/ictc-sbom.cdx.json
-      - name: Verify candidate attestations
+      - name: Verify both candidate attestations against their signed bundles
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh attestation verify "${{ steps.delivery.outputs.bundle_path }}" --repo "$GITHUB_REPOSITORY"
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Two independent predicate checks, both bound to the same archive SHA-256.
+          gh attestation verify "${{ steps.delivery.outputs.bundle_path }}" --repo "$GITHUB_REPOSITORY" --bundle "${{ steps.build_attest.outputs.bundle-path }}" --predicate-type https://slsa.dev/provenance/v1
+          gh attestation verify "${{ steps.delivery.outputs.bundle_path }}" --repo "$GITHUB_REPOSITORY" --bundle "${{ steps.sbom_attest.outputs.bundle-path }}" --predicate-type https://cyclonedx.org/bom
       - name: Finalize delivery provenance receipt
         env:
           ICTC_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -61,7 +66,8 @@ jobs:
           ICTC_SBOM_ATTEST_ID: ${{ steps.sbom_attest.outputs.attestation-id }}
           ICTC_SBOM_ATTEST_URL: ${{ steps.sbom_attest.outputs.attestation-url }}
           ICTC_SBOM_BUNDLE_PATH: ${{ steps.sbom_attest.outputs.bundle-path }}
-          ICTC_GH_VERIFY: passed
+          ICTC_GH_BUILD_VERIFY: passed
+          ICTC_GH_SBOM_VERIFY: passed
         run: node tests/verification/delivery-provenance-check.mjs --finalize
       - run: node tests/verification/enterprise-gate-manifest-check.mjs
       - run: node tests/verification/convergence-authority-check.mjs
