@@ -415,3 +415,18 @@ L'oracolo usa i byte di `preimage commit dcf90ae2 (non current-main authority)` 
 ### C1-3d · Seconda tranche, oracolo multi-preimage
 
 `node scripts/test-boundary-migration-check.mjs --falsify` preserva la prova originale sui sei test TRAMA e aggiunge sedici verificatori in quattro famiglie (`gov-intent-assurance`, `public-demo`, `epistemic-lattice`, `demo-suite-3-0`). La prima preimage rimane `dcf90ae2`, la seconda è il merge #256 `14d39211`. Le differenze accettate sono soltanto import/URL relativi e lo spostamento verificabile della root negli esecutori GOV; tutti i vecchi comandi rimangono raggiungibili. La campagna richiede 44 mutazioni fisiche temporanee con ripristino, sei confronti esecutivi old/new e 10 milioni di casi su un modello finito a cinque assi (243 profili): queste tre classi di prova **non sono intercambiabili**. La ricevuta `artifacts/c1-3d-test-boundary.json` non può approvare cancellazioni né chiudere C1-3d globale. Richiedere CI exact-head, dieci cicli CI locali integrali e review indipendente prima di dichiarare il DoD di delivery.
+
+
+## DoD semantico cumulativo 3/N e UX V8 — oracle derivato
+
+`npm run check` esegue `tests/verification/semantic-dod-chain-check.mjs` e scrive
+`artifacts/semantic-dod-chain.json`. La receipt traccia D01–D15, dependency DAG,
+owners, classi di evidenza e crosswalk ai predicati R01–R24 del bundle audit 3/N.
+Non modifica `gaps.json`, `remediation-registry.json` o `convergence-authority.json`.
+D02/D04/D05 sono esclusivamente SOURCE_SCOPED; browser ICTC, review umane, governance
+GitHub e deployment restano evidenze distinte non autocertificabili. I test negativi
+rifiutano dependency orfane e substitution da fixture sintetiche a prove E3/E4.
+
+`node tests/verification/semantic-dod-chain-check.mjs --require-global` deve
+uscire con codice 27 sullo stato corrente: e una prova NO-GO intenzionale,
+non un comando per la CI positiva. L'oracle non e una nuova autorita.
