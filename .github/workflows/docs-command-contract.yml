@@ -28,6 +28,8 @@ jobs:
         run: node tests/verification/repository-path-portability-falsification.mjs
       - name: Falsify documentation claims against executable source and browser assets
         run: node tests/verification/semantic-document-source-falsification.mjs
+      - name: Verify SLSA OWASP and CTO evidence limitations
+        run: node tests/verification/enterprise-standards-evidence-check.mjs
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts

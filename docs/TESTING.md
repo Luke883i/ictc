@@ -12,6 +12,10 @@ Il percorso E2 conserva gli owner già esistenti. `node tests/verification/consu
 
 Eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test`, `npm run release:check` sulla **stessa** revisione; registrare Git SHA, ambiente, exit code e artifact. Verificare separatamente il workflow [Enterprise Candidate](../.github/workflows/enterprise-candidate.yml), i required check e la review server-side osservati su GitHub, non dedotti dalle policy versionate. I gate repository E2 non chiudono F-13/F-15, GAP-012/022 o i rail E4: vedere [README](../README.md#executive-view-per-cto--enterprise-candidate-non-enterprise-ready) e [GAP_REGISTER](GAP_REGISTER.md). La procedura di release rimane in [RELEASE](RELEASE.md); non serve creare un nuovo release owner.
 
+## Matrice standard → implementazione → falsificatore → claim boundary
+
+La [matrice CTO](RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite) e verificata da `node tests/verification/enterprise-standards-evidence-check.mjs`, innestato in `npm run docs:check` e nel workflow documentale **gia esistente**. Il gate confronta realmente sorgenti SLSA/OWASP, percorsi canonici e stati E3/E4 e rifiuta promozioni artificiose a certificazione. La via runtime per symlink esterni e testata da `node tests/verification/http-security-headers-check.mjs`; la delivery hosted deve confermare separatamente i due predicati con `gh attestation verify`. Il controllo di matrice e solo E2 locale: non sostituisce una valutazione completa OWASP ASVS o una determinazione giuridica NIS2/DORA.
+
 ## Superficie normativa
 
 ```bash

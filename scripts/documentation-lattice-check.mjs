@@ -337,6 +337,9 @@ try{rootContractReceipt=JSON.parse(rootContractRun.stdout||'null')}catch{}
 check(rootContractRun.status===0&&rootContractReceipt?.status==='PASS_SCOPED','root current repository contract failed: '+String(rootContractRun.stderr||rootContractRun.stdout).slice(0,280));
 check(rootContractReceipt?.filesystem?.errors?.length===0, 'repository portability guard did not execute on the current tree');
 check(rootContractReceipt?.retirementAuthorized===false&&rootContractReceipt?.legacyDisposition==='HOLD_CONSUMERS','root contract must not authorize legacy deletion');
+// Standards evidence is a zero-authority projection; fail when documentation or executable boundaries drift.
+const standardsRun=spawnSync(process.execPath,[path.join(root,'tests/verification/enterprise-standards-evidence-check.mjs'),'--root',root],{cwd:root,encoding:'utf8',timeout:30000});
+check(standardsRun.status===0,'standard/evidence reticulum drift: '+String(standardsRun.stderr||standardsRun.stdout).slice(0,400));
 const documentationStandard=await read('docs/DOCUMENTATION_STANDARD.md');
 check(/## Valore per le imprese/.test(readme)&&/Rispettare le norme\. Governare rischi e costi\./.test(readme)&&/Non determina da solo/.test(readme),'engineer-first value/claim boundary missing');
 check(/## Razionalizzazione e archiviazione: decisioni basate sui consumer/.test(atlas)&&/HOLD_CONSUMERS/.test(atlas)&&/HOLD_PUBLIC_URL/.test(atlas),'legacy pocket classification/URL hold missing');
