@@ -19,7 +19,8 @@ export const WITNESSES=[
  {code:'RC-01',id:'risks',route:'/api/grc/risks',owner:'src/runtime/grc-runtime-legacy.mjs'},
  {code:'AR-01',id:'assurance',route:'/api/grc/assurance',owner:'src/runtime/grc-runtime-legacy.mjs'}
 ];
-const reticulum=deriveObservedConsumerWriterReticulum({adapters:procedureAdapters(),handlerKeys:runtimeHandlerKeysByProcedure(),handlerPlan:runtimeHandlerPlan(),sourceByPath,trackedPaths:paths,witnesses:WITNESSES});
+const gitHead=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const reticulum={...deriveObservedConsumerWriterReticulum({adapters:procedureAdapters(),handlerKeys:runtimeHandlerKeysByProcedure(),handlerPlan:runtimeHandlerPlan(),sourceByPath,trackedPaths:paths,witnesses:WITNESSES}),gitHead};
 mkdirSync(path.join(root,'artifacts'),{recursive:true});writeFileSync(path.join(root,'artifacts/consumer-writer-reticulum.json'),JSON.stringify(reticulum,null,2)+'\n');
 assert.deepEqual(reticulum.failures,[],JSON.stringify(reticulum.failures));assert.equal(reticulum.witnesses,7);
 assert.equal(reticulum.externalConsumers,'UNKNOWN_HOLD');assert.equal(reticulum.automaticMoveOrDeleteAuthorized,false);

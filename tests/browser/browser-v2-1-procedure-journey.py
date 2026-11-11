@@ -5,6 +5,11 @@ from browser_test_support import ensure_onboarded
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
+# A failed or partial run cannot reuse successful witnesses from an earlier run.
+for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json'):
+    (ART/stale).unlink(missing_ok=True)
+WITNESS_RUN_ID = os.urandom(16).hex()
+GIT_HEAD = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
@@ -402,6 +407,7 @@ try:
         assert not errors, errors
         out = {
             'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1+s4-a3',
+            'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
             'observedNetworkWriters':browser_writer_witness,'networkWriteWitnessCount':len(browser_writer_witness),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
@@ -417,7 +423,7 @@ try:
         (ART/'browser-v2-1-procedure-journey.json').write_text(json.dumps(out, indent=2), encoding='utf8')
         (ART/'browser-consumer-writer-witness.json').write_text(json.dumps({
             'schema':'ictc-browser-consumer-writer-witness/v1','ok':True,
-            'gitHead':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+            'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,
             'procedures':browser_writer_witness,'baseRevision':initial,'finalRevision':final_rev,
             'evidenceClass':'E2_NATIVE_PLAYWRIGHT_NETWORK_OBSERVATION',
             'claimBoundary':'Executed browser network responses and observed UI revision advances, not exact internal handler identity, external callers or production deployment.'
