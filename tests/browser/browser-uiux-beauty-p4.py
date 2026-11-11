@@ -397,6 +397,99 @@ def v8_native_owner_probe(page, viewport, width, surface):
             receipts.append(capture(key,'#processesView',metrics))
     return receipts
 
+def v9_native_ux_probe(page, viewport, width, surface):
+    """Exact-product Chromium proof. No fixture or human accessibility claim."""
+    import hashlib
+    records=[]
+    def capture(label, metrics):
+        png=page.screenshot(path=str(ART/f'{viewport}-{surface}-v9-{label}.png'),full_page=True)
+        records.append({
+            'suite':'P4/V9-native-ux', 'surface':surface,'viewport':viewport,'width':width,
+            'state':label,'source':'ICTC_NATIVE_BROWSER','synthetic':False,
+            'dom':True,'cssom':True,'screenshotSha256':hashlib.sha256(png).hexdigest(),
+            'metrics':metrics
+        })
+    if surface=='home':
+        cta=page.locator('#homeView [data-onboarding-open][data-onboarding-replay]')
+        assert cta.count()==1 and cta.is_visible(),('V9: Home onboarding CTA missing',cta.count())
+        assert cta.inner_text().strip()=='Onboarding'
+        profile=page.locator('#stableProfileMenu [data-onboarding-replay]')
+        assert profile.count()==1 and profile.inner_text().strip()=='Onboarding'
+        widths=page.locator('#homeView .home-compliance-answer p').evaluate_all(
+            """nodes=>nodes.map(n=>({maxWidth:getComputedStyle(n).maxWidth,width:n.getBoundingClientRect().width,
+              parentWidth:n.parentElement.getBoundingClientRect().width}))""")
+        assert len(widths)>=2 and all(x['maxWidth']=='none' and x['width']>=x['parentWidth']-3 for x in widths),('V9: Home answer width',widths)
+        cta.click()
+        dialog=page.locator('#ictcOnboardingDialog')
+        expect(dialog).to_be_visible()
+        box=dialog.evaluate("""d=>{
+           const shell=d.querySelector('.dialog-shell'),a=getComputedStyle(d),b=getComputedStyle(shell);
+           return {borderRadius:parseFloat(a.borderTopLeftRadius),shellRadius:parseFloat(b.borderTopLeftRadius),
+             outerWidth:d.getBoundingClientRect().width,outerHeight:d.getBoundingClientRect().height,
+             overflow:a.overflow,bodyScroll:b.overflow};
+        }""")
+        assert box['borderRadius']>=12 and box['shellRadius']>=12 and box['outerWidth']<=width+1,('V9 dialog rounded clipping',box)
+        lessons=dialog.locator('details[data-homeboarding-lesson]')
+        assert lessons.count()==15,('V9: completed guide must expose 15 lessons',lessons.count())
+        assert 'successivi' not in dialog.locator('.onboarding-lessons-section > p').inner_text().lower(), 'V9: stale completed-mode copy'
+        first=lessons.first
+        opener=first.locator(':scope > summary')
+        assert first.locator('.onboarding-lesson-open').is_visible()
+        opener.focus()
+        page.keyboard.press('Enter')
+        page.wait_for_function("""()=>!!document.querySelector('#ictcOnboardingDialog details[data-homeboarding-lesson]')?.open""")
+        assert first.locator('.onboarding-lesson-close').is_visible(), 'V9: expanded lesson must signal Comprimi'
+        capture('lesson-open',dict(box,lessons=15,answerParagraphs=widths))
+        opener.focus()
+        page.keyboard.press('Space')
+        page.wait_for_function("""()=>document.querySelector('#ictcOnboardingDialog details[data-homeboarding-lesson]')?.open===false""")
+        assert first.locator('.onboarding-lesson-open').is_visible(), 'V9: collapsed lesson must signal Espandi'
+        capture('lesson-closed',{'lessons':15,'keyboard':True,'open':False})
+        dialog.locator('footer [data-onboarding-close]').click()
+        expect(dialog).not_to_be_visible()
+    elif surface=='processes':
+        metric=page.locator('#processesView #procedureHub').evaluate("""hub=>{
+          const rows=[...hub.querySelectorAll('.procedure-card')],placeholders=hub.querySelectorAll('.catalogue-placeholder');
+          const info=rows.map(row=>{
+            const d=row.querySelector(':scope > details[data-process-secondary-detail]');
+            const purpose=row.querySelector(':scope > .procedure-purpose');
+            const action=row.querySelector(':scope > footer .procedure-primary'),label=action?.querySelector('span');
+            const summary=d?.querySelector('summary');
+            return {detailDirect:!!d,insidePurpose:!!purpose?.querySelector('details'),
+              handoffInsideDetail:!!d?.querySelector('.process-inline-handoff'),
+              detailBelowAction:!!d&&!!action&&d.getBoundingClientRect().top>=action.getBoundingClientRect().bottom-2,
+              labelOverflow:!!label&&label.scrollWidth>label.clientWidth+2,
+              ellipsis:label?.style.textOverflow|| (label?getComputedStyle(label).textOverflow:''),
+              detailHeight:summary?.getBoundingClientRect().height||0,
+              cardHeight:row.getBoundingClientRect().height};
+          });
+          return {rows:rows.length,placeholders:placeholders.length,
+            gridRows:getComputedStyle(hub).gridAutoRows,info};
+        }""")
+        assert metric['rows']==7 and metric['placeholders']==2,('V9: catalogue counts',metric)
+        assert all(x['detailDirect'] and not x['insidePurpose'] and x['handoffInsideDetail'] for x in metric['info']),('V9: secondary detail ownership',metric)
+        assert all(x['detailBelowAction'] and not x['labelOverflow'] and x['ellipsis']!='ellipsis' for x in metric['info']),('V9: action readability / detail geometry',metric)
+        assert all(x['detailHeight']>=43.5 for x in metric['info']),('V9: disclosure target',metric)
+        assert all(x['cardHeight']<= (300 if width<=390 else 210) for x in metric['info']),('V9: process row excess height',metric)
+        assert '1fr' not in metric['gridRows'],('V9: equal-height row coupling',metric)
+        capture('compact-secondary-row',metric)
+    elif surface=='proof':
+        metric=page.locator('#proofContent').evaluate("""root=>{
+          const all=[...root.querySelectorAll(':scope > details.proof-section')].filter(x=>!x.hidden);
+          return {cards:all.length,items:all.map(d=>{
+            const s=d.querySelector(':scope > summary'),note=s?.querySelector('small'),icon=s?.querySelector('[data-proof-chevron]');
+            const span=s?.querySelector(':scope > span');
+            return {hasChevron:!!icon,descriptionMaxWidth:note?getComputedStyle(note).maxWidth:null,
+              noteWidth:note?.getBoundingClientRect().width||0,
+              textColumnWidth:span?.getBoundingClientRect().width||0};
+          })};
+        }""")
+        assert metric['cards']>=4 and all(x['hasChevron'] for x in metric['items']),('V9: proof expandable affordance',metric)
+        assert all(x['descriptionMaxWidth'] in (None,'none') for x in metric['items']),('V9: proof text width',metric)
+        assert all(x['noteWidth']>=x['textColumnWidth']-3 for x in metric['items'] if x['descriptionMaxWidth']),('V9: proof narrow card descriptions',metric)
+        capture('full-width-descriptions',metric)
+    return records
+
 def fail(error):
     payload={'ok':False,'phase':PHASE,'type':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
     (ART/'error.json').write_text(json.dumps(payload,indent=2),encoding='utf8')
@@ -425,6 +518,8 @@ try:
                     raise AssertionError(f'{viewport}/{surface}: '+json.dumps(failures[:6],ensure_ascii=False))
                 if surface in ('home','processes'):
                     observations.extend(v8_native_owner_probe(page,viewport,width,surface))
+                if surface in ('home','processes','proof'):
+                    observations.extend(v9_native_ux_probe(page,viewport,width,surface))
                 if surface=='coverage':
                     observations.extend(audit_coverage_overlays(page,viewport,width))
         browser.close()
