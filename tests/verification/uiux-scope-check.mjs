@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT=path.join(here,'uiux-scope-model.json');
+const DEFAULT=path.join(here,'../contracts/uiux-scope-model.json');
 export const REQUIRED_SURFACES=['home','processes','monitoring','incidents','objects','coverage','actions','risks','assurance','proof','epistemic','admin','ai-settings'];
 export const PROCEDURES=['monitoring','incidents','objects','coverage','actions','risks','assurance'];
 export const EXPECTED_ROOTS={home:'#homeView',processes:'#processesView',monitoring:'#monitoringView',incidents:'#incidentsView',objects:'#grcWorkspace',coverage:'#grcWorkspace',actions:'#grcWorkspace',risks:'#grcWorkspace',assurance:'#grcWorkspace',proof:'#proofView',epistemic:'#epistemicView',admin:'#adminCenter','ai-settings':'#settingsDialog'};
