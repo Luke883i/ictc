@@ -8,7 +8,7 @@ import {runtimeHandlerKeysByProcedure,runtimeHandlerPlan} from '../../src/runtim
 import {deriveObservedConsumerWriterReticulum} from '../../src/lib/write-authority-census-lib.mjs';
 const root=path.resolve(new URL('../..',import.meta.url).pathname);
 const paths=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
-const sourceByPath={};for(const p of paths)if((p.startsWith('src/')||p.startsWith('public/'))&&/\.(?:js|mjs)$/.test(p))sourceByPath[p]=readFileSync(path.join(root,p),'utf8');
+const sourceByPath={};for(const p of paths)if(((p.startsWith('src/')||p.startsWith('public/'))&&/\.(?:js|mjs|html|css)$/.test(p))||(p.startsWith('.github/workflows/')&&/\.ya?ml$/.test(p)))sourceByPath[p]=readFileSync(path.join(root,p),'utf8');
 // Test witnesses, not a parallel route registry: each must match canonical adapter.
 export const WITNESSES=[
  {code:'RN-01',id:'monitoring',route:'/api/contributions',owner:'src/runtime/contributions.mjs'},
@@ -19,7 +19,7 @@ export const WITNESSES=[
  {code:'RC-01',id:'risks',route:'/api/grc/risks',owner:'src/runtime/grc-runtime-legacy.mjs'},
  {code:'AR-01',id:'assurance',route:'/api/grc/assurance',owner:'src/runtime/grc-runtime-legacy.mjs'}
 ];
-const reticulum=deriveObservedConsumerWriterReticulum({adapters:procedureAdapters(),handlerKeys:runtimeHandlerKeysByProcedure(),handlerPlan:runtimeHandlerPlan(),sourceByPath,witnesses:WITNESSES});
+const reticulum=deriveObservedConsumerWriterReticulum({adapters:procedureAdapters(),handlerKeys:runtimeHandlerKeysByProcedure(),handlerPlan:runtimeHandlerPlan(),sourceByPath,trackedPaths:paths,witnesses:WITNESSES});
 mkdirSync(path.join(root,'artifacts'),{recursive:true});writeFileSync(path.join(root,'artifacts/consumer-writer-reticulum.json'),JSON.stringify(reticulum,null,2)+'\n');
 assert.deepEqual(reticulum.failures,[],JSON.stringify(reticulum.failures));assert.equal(reticulum.witnesses,7);
 assert.equal(reticulum.externalConsumers,'UNKNOWN_HOLD');assert.equal(reticulum.automaticMoveOrDeleteAuthorized,false);

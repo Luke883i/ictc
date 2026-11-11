@@ -9,8 +9,8 @@ export function duplicateRouteOwners(records=[]){const owners=new Map();for(cons
  * All claims are deliberately bounded to literal imports, observed canonical
  * procedure adapters, HTTP dispatch sources and known browser assets.
  */
-export function deriveObservedConsumerWriterReticulum({adapters,handlerKeys,handlerPlan,sourceByPath,witnesses}){
- const paths=new Set(Object.keys(sourceByPath)),edges=[],unresolved=[],dynamic=[],writers=[];
+export function deriveObservedConsumerWriterReticulum({adapters,handlerKeys,handlerPlan,sourceByPath,witnesses,trackedPaths=Object.keys(sourceByPath)}){
+ const paths=new Set(trackedPaths),edges=[],unresolved=[],dynamic=[],writers=[];
  const imports=/(?:^|[;\n])\s*(?:import\s+(?:[^;\n]*?\s+from\s*)?|export\s+(?:\*|\{[^}\n]*\})\s+from\s*)['"]([^'"\n]+)['"]/gm;
  const lazy=/\bimport\(\s*(['"])([^'"\n]+)\1\s*\)/g;
  const resolve=(from,spec,kind)=>{
@@ -21,10 +21,26 @@ export function deriveObservedConsumerWriterReticulum({adapters,handlerKeys,hand
   else unresolved.push({from,spec,target,kind});
  };
  for(const [file,body] of Object.entries(sourceByPath).sort(([a],[b])=>a.localeCompare(b))){
+  if(file.startsWith('public/')&&file.endsWith('.html')){
+   for(const m of body.matchAll(/<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*['"]([^'"]+)['"]/g)){
+    const ref=m[1].split(/[?#]/)[0];if(ref&&!/^(?:https?:|data:|\/\/|#)/.test(ref))resolve(file,ref.startsWith('/')?'.'+ref:ref,'html-asset-literal');
+   }
+  }
+  if(file.startsWith('public/')&&file.endsWith('.css')){
+   for(const m of body.matchAll(/@import\s+(?:url\(\s*)?['"]([^'"]+)['"]/g)){
+    if(!/^(?:https?:|data:|\/\/)/.test(m[1]))resolve(file,m[1],'css-import-literal');
+   }
+  }
+  if(file.startsWith('.github/workflows/')&&/\.ya?ml$/.test(file)){
+   for(const m of body.matchAll(/\b(?:node|python3?|bash)\s+(?:-[^\s]+\s+)*((?:src|tests|scripts)\/[A-Za-z0-9_./-]+\.(?:mjs|js|py|sh))/g)){
+    if(paths.has(m[1]))edges.push({from:file,to:m[1],kind:'workflow-executable-literal'});
+   }
+  }
   if(!/\.(?:mjs|js)$/i.test(file))continue;
   for(const m of body.matchAll(imports))resolve(file,m[1],'esm-static');
   for(const m of body.matchAll(lazy))resolve(file,m[2],'esm-lazy-literal');
-  if(/\bimport\(\s*(?!['"])/.test(body)||/\breaddir\s*\(/.test(body)||/\bglob\s*\(/.test(body))dynamic.push(file);
+  for(const m of body.matchAll(/\bnew\s+URL\(\s*['"](\.{1,2}\/[^'"]+)['"]\s*,\s*import\.meta\.url/g))if(/\.[A-Za-z0-9]+$/.test(m[1]))resolve(file,m[1],'import-meta-asset-literal');
+  if(/\bimport\(\s*(?!['"])/.test(body)||/\breaddir(?:Sync)?\s*\(/.test(body)||/\bglob\s*\(/.test(body)||/\bnew\s+URL\s*\(/.test(body)||/\b(?:readFile|readFileSync)\s*\(/.test(body))dynamic.push(file);
   if(file.startsWith('src/')&&(/\bstore\.mutate(?:Decided|Proposed|Attested)?\s*\(/.test(body)||/\bstore\.persistence\.[A-Za-z]+\s*\(/.test(body)))writers.push(file);
  }
  const map=new Map(adapters.map(a=>[a.id,a]));
@@ -49,8 +65,8 @@ export function deriveObservedConsumerWriterReticulum({adapters,handlerKeys,hand
  }
  if(unresolved.length)failures.push('unresolved relative ESM source imports: '+unresolved.slice(0,8).map(e=>e.from+'>'+e.spec).join(','));
  return {schema:'ictc-observed-consumer-writer-reticulum/v1',authority:'NONE_DERIVED',
-  source:'Git tracked source + canonical procedure adapters + current handler plan',
-  pathsScanned:paths.size,staticEdges:edges.length,unresolved,observedDynamicSources:dynamic.length,
+  source:'Git tracked source/HTML/CSS/workflow literals + canonical procedure adapters + current handler plan',
+  pathsScanned:Object.keys(sourceByPath).length,trackedPaths:paths.size,staticEdges:edges.length,unresolved,observedDynamicSources:dynamic.length,
   dynamicExamples:dynamic.slice(0,12),writerCandidateFiles:writers.length,procedures:observed,
   witnesses:observed.length,failures,
   browserProof:'REQUIRED_SEPARATELY',runtimeReceiptProof:'REQUIRED_SEPARATELY',
