@@ -152,6 +152,10 @@ async function staticCheck(){
  const gate=manifest.localGates.find(x=>x.id==='delivery-provenance');assert.deepEqual(gate,{id:'delivery-provenance',command:'node tests/verification/delivery-provenance-check.mjs',grade:'E2'});assert.equal(manifest.externalBlockers.includes('signed build provenance verification'),false);
  assert.equal(gates.split("'tests/verification/delivery-provenance-check.mjs'").length-1,1,'delivery gate must be mounted once');
  for(const token of ['exact candidate','CycloneDX','GitHub OIDC','Sigstore','gh attestation verify','merge non equivale a release'])assert.ok(release.includes(token),`RELEASE missing ${token}`);
+ // Historical diagnostic manifest must never reintroduce untracked secret inventory
+ // or claim the authority of the already-mounted C2 release pipeline.
+ const manifestSafety=spawnSync(process.execPath,['tests/verification/release-manifest-safety-check.mjs'],{cwd:ROOT,encoding:'utf8',timeout:30000});
+ assert.equal(manifestSafety.status,0,`C2 historic manifest safety regression: ${manifestSafety.stderr||manifestSafety.stdout}`);
  const report={schemaVersion:'1.0.0',ok:true,control:'C2-DELIVERY-PROVENANCE',mode:'static-contract',owner:'F-06',actionPins:{build:BUILD_ATTEST,sbom:SBOM_ATTEST,upload:UPLOAD},claimBoundary};
  const falsify=spawnSync(process.execPath,['tests/verification/delivery-provenance-semantic-falsification.mjs','--cases=80','--physical=0'],{cwd:ROOT,encoding:'utf8',maxBuffer:4*1024*1024});assert.equal(falsify.status,0,`C2 source-bound semantic falsification failed: ${falsify.stderr||falsify.stdout}`);
  // The same canonical gate exercises the REAL npm CycloneDX generator on
