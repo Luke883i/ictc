@@ -27,7 +27,7 @@ collect('');
 const formatRef=(name,version)=>`${name}@${version}`;
 const pname=p=>p.slice(p.lastIndexOf('node_modules/')+'node_modules/'.length);
 const rootRef=formatRef(pkg.name,pkg.version);
-const component=p=>({type:'library','bom-ref':formatRef(pname(p),packages[p].version),name:pname(p),version:packages[p].version,purl:`pkg:npm/${pname(p)}@${packages[p].version}`,licenses:[{license:{id:packages[p].license||'NOASSERTION'}}]});
+const component=p=>({type:'library','bom-ref':formatRef(pname(p),packages[p].version),name:pname(p),version:packages[p].version,purl:`pkg:npm/${pname(p)}@${packages[p].version}`,licenses:[{license:{id:packages[p].license||'NOASSERTION'}}],hashes:packages[p].integrity?.split(/\s+/).map(token=>{const [alg,value]=token.split('-');return {alg:alg.toUpperCase().replace('SHA','SHA-'),content:Buffer.from(value,'base64').toString('hex')};})||[]});
 const requiredPaths=[...mandatory].sort();
 function fixture(){
  const comps=requiredPaths.map(component),deps=[{ref:rootRef,dependsOn:Object.keys(pkg.dependencies||{}).map(name=>formatRef(name,packages[`node_modules/${name}`].version))}];
@@ -59,8 +59,11 @@ const mutants=[
  {id:'unknown-relationship-target',negative:true,change:(d,i)=>{getEdge(d,pgRef).dependsOn.push(`ghost@${i}`);}},
  {id:'duplicate-component-ref',negative:true,change:d=>{d.components[transitive]['bom-ref']=d.components[pg]['bom-ref'];}},
  {id:'unknown-component',negative:true,change:(d,i)=>{d.components.push({name:`ghost-${i}`,version:'1.0.0','bom-ref':`ghost-${i}@1.0.0`,purl:`pkg:npm/ghost-${i}@1.0.0`});}},
- {id:'missing-license-advisory',negative:false,change:d=>{delete d.components[pg].licenses;}},
- {id:'missing-hashes-advisory',negative:false,change:d=>{delete d.components[pg].hashes;}},
+ {id:'generator-timestamp-advisory',negative:false,change:(d,i)=>{d.metadata.timestamp=`2026-11-10T00:00:${String(i%60).padStart(2,'0')}Z`;}},
+ {id:'tampered-digest',negative:true,change:d=>{d.components[pg].hashes[0].content='0'.repeat(128);}},
+ {id:'missing-locked-digest',negative:true,change:d=>{delete d.components[pg].hashes;}},
+ {id:'tampered-locked-license',negative:true,change:d=>{d.components[pg].licenses=[{license:{id:'GPL-3.0'}}];}},
+ {id:'missing-locked-license',negative:true,change:d=>{delete d.components[pg].licenses;}},
 ];
 const runs=[];let killed=0,valid=0,survived=0,positiveRejected=0;
 const sha=v=>createHash('sha256').update(v).digest('hex');

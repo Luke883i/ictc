@@ -87,6 +87,30 @@ export function validateSbomGraph({pkg,lock,sbom}){
  traverse('',lockPackages['']);
  // Every component must correspond to this exact lockfile, even when optional.
  for(const [key] of components){insist([...paths.values()].some(x=>`${x.name}@${x.version}`===key),`unlocked SBOM component ${key}`);}
+ // A component list can be complete yet falsely attribute different bytes or a
+ // different licence. Compare fields only when backed by the committed lock.
+ // This does NOT claim legal licence clearance or authenticity of downloaded bytes.
+ let integrityMatches=0,licenceMatches=0;
+ for(const {entry,name,version} of paths.values()){
+  const actual=components.get(`${name}@${version}`)?.component;
+  if(!actual)continue; // uninstalled optional platform package
+  if(entry.integrity){
+   const candidates=String(entry.integrity).trim().split(/\s+/).filter(Boolean);
+   const expected=candidates.map(token=>{
+    const match=/^(sha256|sha384|sha512)-([A-Za-z0-9+/]+={0,2})$/i.exec(token);
+    insist(match,`unrecognized locked integrity for ${name}`);
+    return {algorithm:match[1].toUpperCase(),content:Buffer.from(match[2],'base64').toString('hex')};
+   });
+   const hashes=Array.isArray(actual.hashes)?actual.hashes:[];
+   insist(expected.some(x=>hashes.some(h=>String(h.alg||'').replace(/-/g,'').toUpperCase()===x.algorithm && String(h.content||'').toLowerCase()===x.content)),`locked digest disagreement ${name}@${version}`);
+   integrityMatches++;
+  }
+  if(entry.license){
+   const licenses=Array.isArray(actual.licenses)?actual.licenses:[];
+   insist(licenses.some(x=>x?.license?.id===entry.license || x?.expression===entry.license),`locked license disagreement ${name}@${version}`);
+   licenceMatches++;
+  }
+ }
  const graph=new Map();
  for(const record of sbom.dependencies){
   insist(record && refs.has(record.ref) && Array.isArray(record.dependsOn),'invalid dependency source');
@@ -107,7 +131,7 @@ export function validateSbomGraph({pkg,lock,sbom}){
   if(!Array.isArray(component.licenses)||!component.licenses.length)missingLicense++;
   if(!Array.isArray(component.hashes)||!component.hashes.length)missingHashes++;
  }
- return {schema:'C2-SBOM-SOURCE-VALIDATION/2',ok:true,requiredComponents:mandatory.size,listedComponents:components.size,dependencyEdges:expectedEdges.length,ignoredOptional:ignoredOptional.length,advisory:{componentsMissingLicense:missingLicense,componentsMissingHashes:missingHashes},claimBoundary:'Exact-lock repository completeness and graph connectivity only; optional platform packages and 2026 completeness fields require qualified evidence. Not deployment assurance.'};
+ return {schema:'C2-SBOM-SOURCE-VALIDATION/3',ok:true,requiredComponents:mandatory.size,listedComponents:components.size,dependencyEdges:expectedEdges.length,lockedDigestMatches:integrityMatches,lockedLicenseMatches:licenceMatches,ignoredOptional:ignoredOptional.length,advisory:{componentsMissingLicense:missingLicense,componentsMissingHashes:missingHashes},claimBoundary:'Exact-lock component graph, digest and declared license matching only. Does not prove binary authenticity, license clearance, external attestation or deployment assurance.'};
 }
 
 async function staticCheck(){
