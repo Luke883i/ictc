@@ -16,6 +16,27 @@ ICTC è un **sistema locale di governance della conoscenza di compliance**. Coll
 
 L'AI puo aiutare a interpretare richieste, localizzare owner, generare proposte e controesempi, ma **non** decide l'applicabilita legale, approva stati business, crea nuove autorita software o attesta che un merge sia sicuro. La sua attivita di manutenzione resta soggetta agli stessi test, review, provenance e controllo umano degli altri contributi.
 
+## Executive view per CTO — enterprise candidate, non enterprise ready
+
+**Posizionamento attuale:** `releaseStage=candidate` ([identità di release](src/contracts/release-identity.json)). ICTC è esercitabile come prototipo locale repository-bounded; **non** è attestato come servizio enterprise in produzione. I fatti live (HEAD, check, review e ruleset) si verificano su GitHub: questa sezione non è uno status dashboard e non crea un secondo registro di conformità.
+
+| Capacità già presente | Valore ingegneristico | Evidenza/owner da verificare |
+| --- | --- | --- |
+| Sette processi, Home e Evidenze ICTC | Lavoro di compliance con review/decisione umana e provenienza, non legal verdict automatici | [PRODUCT](docs/PRODUCT.md), [contratto prodotto](tests/contracts/product-contract.json), [journey](docs/04_USER_JOURNEYS.md) |
+| Runtime locale Node.js, RBAC, tenant boundary e SQLite | Stato persistente, mutation receipt/readback e audit attribuibile; profilo locale, non HA distribuita | [ARCHITECTURE](docs/11_ARCHITECTURE.md), [security](docs/SECURITY_HARDENING.md), [test](docs/TESTING.md) |
+| Supply chain candidate E2 | Workflow esistente con SBOM CycloneDX, provenance, attestazioni e verifica del candidato esatto | [release workflow](.github/workflows/enterprise-candidate.yml), [validatore C2](tests/verification/delivery-provenance-check.mjs), [RELEASE](docs/RELEASE.md) |
+| Test e governance repository | Contratti, mutazioni, browser probes, ownership e gate CI per modifiche falsificabili | [Actions](.github/workflows/), [owner map](docs/authority-matrix.yaml), [TESTING](docs/TESTING.md) |
+
+**Decisioni ancora bloccate, non omissioni da mascherare:** `F-13` (paginazione/capacity API) e `F-15` (AI evaluation/drift/rollback) nel [registro remediation](audit/remediation-registry.json); `C1/C3/C4`, `S4-A6-CLOSE` e `S5-CANDIDATE-SEAL` nella [convergence authority](docs/convergence/convergence-authority.json); `GAP-022` (review/protezione `main`), `GAP-012` (usabilità/assistive technology), `GAP-007`, `GAP-009`, `GAP-014` (scanner, identità, osservabilità del deployment) nel [registro gap](tests/contracts/gaps.json). Questi identificativi indicano **obblighi di verifica**, non un'autocertificazione dello stato live. Ulteriori blocker E4, inclusi backup/restore, capacità e key custody, sono nel registro remediation.
+
+**Evoluzione E2 in pre-PR (non ancora released):** il gate [F-13](tests/verification/c3-trace-pagination-check.mjs) verifica la paginazione opzionale `GET /api/work/traces?limit=20` (limite 1–50), i cursori role/revision-bound, i rifiuti 400/403/409 e la compatibilità delle risposte senza query. Resta aperta la capacity di calcolo della proiezione completa e la prova di carico su deployment. Il gate [F-15](tests/verification/c4-ai-eval-drift-check.mjs) verifica policy AI amministrative versionate, finestre modello/prompt, sospensione, drift e scadenza; la modalità predefinita osserva ma non attesta una valutazione indipendente. Le due famiglie sono dunque **parzialmente implementate, non terminali**. Il [verificatore reticolare C1/C3/C4/S4/S5](tests/verification/convergence-reticular-dod-check.mjs) produce una receipt derivata; con `--require-global` deve fallire finché mancano condizioni e evidenze esterne. Il registro e il workbook restano le sole autorità dei rispettivi stati.
+
+**Consumer e writer, verifica senza duplicare authority:** il [grafo osservato](tests/verification/consumer-writer-reticular-check.mjs) collega adapter, handler, client, workflow e asset ai sette percorsi rappresentativi; il [test HTTP con ricevute](tests/verification/e2e-cross-process-receipts-check.mjs) prova le scritture/readback e i 403, mentre la [prova browser](tests/browser/browser-v2-1-procedure-journey.py) deve attestare richieste POST realmente osservate sulla stessa revisione Git. La [congiunzione fail-closed](tests/verification/consumer-writer-evidence-gate.mjs) non promuove mai l'assenza di una prova browser o la reachability esterna sconosciuta a chiusura C1. Le istruzioni replicabili sono in [TESTING](docs/TESTING.md).
+
+**Matrice comparativa CTO:** [SLSA/OWASP/CycloneDX e benchmark NIS2/DORA → controllo → codice → test → evidenza → limite](docs/RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite). È una proiezione fail-closed, non una certificazione né un secondo registro di compliance.
+
+**Go/no-go CTO:** eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test` e `npm run release:check` sulla stessa revisione Git, poi verificare [CI e artifact exact-head](.github/workflows/enterprise-candidate.yml), review indipendente, controllo di `main`, prova E3 con utenti e prove E4 del deployment. Prima di tali evidenze, **GO solo per valutazione locale controllata; NO-GO per attestare enterprise-ready, conformità o deploy produttivo**. [Release procedure](docs/RELEASE.md) e [operazioni](docs/OPERATIONS.md) spiegano responsabilità e verifica delle evidenze. La CI verde non sostituisce queste condizioni.
+
 ## Valore per le imprese — cosa ICTC aiuta a governare
 
 **Rispettare le norme. Governare rischi e costi.** ICTC collega fonti, requisiti, rischi, controlli e interventi: aiuta imprese e PMI a **organizzare la risposta agli obblighi applicabili** e a usare con criterio le risorse. Non determina da solo quali norme siano applicabili né certifica la conformità. Le decisioni, le verifiche e le approvazioni rimangono umane.
@@ -78,8 +99,6 @@ Node.js ESM, UI vanilla e SQLite: ingresso `src/bootstrap.mjs`, HTTP `src/server
 [![Programme Role](https://img.shields.io/badge/role-COMPLIANCE_VERTICAL-6f42c1)](https://github.com/Luke883i/academics#repository-map)
 
 <!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
-
-> **Contesto di programma.** ICTC partecipa al [ROA Research Programme](https://github.com/Luke883i/academics), con riferimento teorico a [ROA](https://github.com/Luke883i/ROA). L'appartenenza indica coordinamento, **non** conformità teorica dimostrata, validazione indipendente o readiness produttiva. Le autorità di questo repository restano locali.
 
 ## Che cosa governa
 

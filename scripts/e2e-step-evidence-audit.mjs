@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {root} from './repository-inventory.mjs';
 const dir=join(root,'artifacts');
@@ -15,10 +16,18 @@ assert.equal(simulated.independentHumanApproval,false,'simulation cannot masquer
 assert.equal(simulated.classification,'SIMULATION_ONLY');
 assert.equal(steps.declaredStepDenominator,53,'reconcile journey owner before changing denominators');
 assert.equal(steps.journeys,9);
-assert.equal(runtime.runtimeCommands,10);
-assert.equal(runtime.commandReceipts.length,10);
-assert.ok(Object.values(runtime.asserts).every(x=>x===true),'runtime cross-process readback must be proved');
-assert.equal(runtime.negative.status,403,'auditor negative control');
+assert.equal(runtime.schema,'ictc-e2e-7process-real-write/v2','ledger must consume the current seven-process runtime receipt');
+assert.equal(runtime.gitHead,execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),'runtime witness must match exact Git HEAD');
+assert.equal(runtime.runtimeCommands,12);
+assert.equal(runtime.commandReceipts.length,12);
+assert.deepEqual(runtime.processes,['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01']);
+assert.equal(new Set(runtime.commandReceipts.map(x=>x.revision)).size,12,'writes must have distinct persistence revisions');
+assert.ok(runtime.commandReceipts.every(x=>/^[0-9a-f]{64}$/.test(x.receiptHash)&&typeof x.event==='string'),'runtime evidence must bind hashed receipts to semantic audit events');
+assert.ok(Object.entries(runtime.asserts).every(([key,value])=>key==='deniedAuditorRoutes'?value===7:value===true),'runtime cross-process readback and seven route denials must be proved');
+assert.equal(runtime.negative.actor,'auditor','auditor negative control must be attributable');
+assert.equal(runtime.negative.results.length,7,'one forbidden write per process');
+assert.ok(runtime.negative.results.every(x=>x.status===403),'all forbidden writes must fail closed');
+assert.equal(runtime.negative.revisionBeforeDenials,runtime.negative.revisionAfterDenials,'forbidden writes must not mutate SQLite state');
 // An operation + hashed receipt + readback is evidence of a machine-executed
 // COMPONENT of one declared step, not of a full human-governed step.
 const simulatedMapping=[
@@ -37,7 +46,7 @@ const mapping=[
  ['AR-01','Questionari e verifiche',1,'intake-original-request',/richiesta originale/]
 ];
 function build(){
- const entries=[],mapped=new Set();
+ const entries=[],mapped=new Set(),mappedRuntime=new Set();
  for(const journey of steps.details){
   for(const step of journey.steps){
    const key=`${journey.id}|${journey.scenario}|${step.number}`;
@@ -52,7 +61,7 @@ function build(){
     assert.match(command[0].receiptHash,/^[a-f0-9]{64}$/);
     replay={operation:witness[3],receiptHash:command[0].receiptHash,readback:runtime.asserts.grcReadback===true,
       simulatedActor:true,source:'artifacts/e2e-cross-process-receipts.json'};
-    mapped.add(witness[3]);
+    mapped.add(witness[3]);mappedRuntime.add(witness[3]);
    }
    if(modeled.length){
     const model=modeled[0];assert.match(step.description,model[4],`changed simulated journey semantics ${key}`);
@@ -61,8 +70,21 @@ function build(){
     const receipt=hits[0];assert.match(receipt.receiptHash||'',/^[a-f0-9]{64}$/);
     assert.ok(receipt.http>=200&&receipt.http<300);
     assert.equal(simulated.checks[model[5]],true);
-    replay={operation:model[3],receiptHash:receipt.receiptHash,readback:simulated.checks[model[5]]===true,
-      simulatedActor:true,independentHumanApproval:false,source:'artifacts/model-assisted-decision-receipts.json'};
+    // The current runtime also records RN/EC as real HTTP writes. Join these
+    // two receipts to the existing modeled step without double-counting it or
+    // laundering simulated human judgement into E3 approval.
+    const operation=journey.id==='RN-01'?'contribute-source':'incident-intake';
+    const native=runtime.commandReceipts.filter(x=>x.process===journey.id&&x.operation===operation);
+    assert.equal(native.length,1,'missing or ambiguous native RN/EC command '+key);
+    assert.match(native[0].receiptHash,/^[a-f0-9]{64}$/);
+    assert.equal(native[0].event,journey.id==='RN-01'?'contribution.recorded':'incident.intake.recorded');
+    const liveReadback=journey.id==='RN-01'?runtime.asserts.contributionReadback:runtime.asserts.incidentReadback;
+    assert.equal(liveReadback,true,'missing real RN/EC actor-scoped readback');
+    mappedRuntime.add(operation);
+    replay={operation,receiptHash:native[0].receiptHash,readback:liveReadback&&simulated.checks[model[5]]===true,
+      simulatedActor:true,independentHumanApproval:false,source:'artifacts/e2e-cross-process-receipts.json',
+      companionSimulatedOperation:model[3],companionSimulatedReceiptHash:receipt.receiptHash,
+      companionSource:'artifacts/model-assisted-decision-receipts.json'};
     mapped.add(model[3]);
    }
    entries.push({key,process:journey.id,scenario:journey.scenario,step:step.number,
@@ -75,6 +97,8 @@ function build(){
  }
  assert.equal(entries.length,53);
  assert.equal(mapped.size,mapping.length+simulatedMapping.length);
+ assert.equal(mappedRuntime.size,11,'unique journey-mapped runtime operations');
+ assert.ok(runtime.commandReceipts.some(x=>x.operation==='create-remediation'),'twelfth real writer still retained as unclaimed supporting command');
  const count=entries.filter(e=>e.machineReplay).length;
  return {schema:'ictc-53-step-evidence-ledger/v1',source:'docs/04_USER_JOURNEYS.md',
   inputs:{declaredStepsSha256:sha(stepsFile.bytes),runtimeReceiptsSha256:sha(runtimeFile.bytes),simulatedReceiptsSha256:sha(simulatedFile.bytes)},

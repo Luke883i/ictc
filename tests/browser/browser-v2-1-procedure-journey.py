@@ -1,10 +1,15 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, subprocess
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
+# A failed or partial run cannot reuse successful witnesses from an earlier run.
+for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json'):
+    (ART/stale).unlink(missing_ok=True)
+WITNESS_RUN_ID = os.urandom(16).hex()
+GIT_HEAD = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
 BASE = os.environ.get('ICTC_BASE_URL', 'http://127.0.0.1:4173').rstrip('/')
 PHASE = 'init'
 PROCS = {'RN-01':'monitoring','EC-01':'incidents','AO-01':'objects','MC-01':'coverage','AP-01':'actions','RC-01':'risks','AR-01':'assurance'}
@@ -216,7 +221,12 @@ try:
         page = ctx.new_page()
         page.set_default_timeout(30000)
         errors = []
+        observed_writes = []
         page.on('pageerror', lambda e: errors.append(str(e)))
+        page.on('response', lambda response: observed_writes.append({
+            'method': response.request.method, 'path': response.url.split('?', 1)[0][len(BASE):],
+            'status': response.status
+        }) if response.url.startswith(BASE + '/api/') and response.request.method in ('POST', 'PATCH', 'PUT', 'DELETE') else None)
 
         PHASE = 'bootstrap'
         page.goto(BASE+'/?view=processes', wait_until='networkidle'); ensure_onboarded(page,BASE,'admin')
@@ -282,6 +292,19 @@ try:
             fill_user(form.locator('textarea[name="requestText"]'), 'Richiesta assurance preservata dal journey end-user V2.1.', 'AR-01-request')
             fill_user(form.locator('input[name="source"]'), 'browser-v21', 'AR-01-source')
         r7 = submit_grc(page, 'AR-01', 'assurance', ar, 'AR-01 V2.1 Assurance')
+
+        # Browser-owned network evidence: do not infer writer execution from DOM alone.
+        expected_writer_routes = {
+            'RN-01':'/api/contributions', 'EC-01':'/api/incidents/intake',
+            'AO-01':'/api/grc/objects', 'MC-01':'/api/grc/mappings',
+            'AP-01':'/api/grc/actions', 'RC-01':'/api/grc/risks',
+            'AR-01':'/api/grc/assurance'
+        }
+        browser_writer_witness = {}
+        for code, route in expected_writer_routes.items():
+            matches = [r for r in observed_writes if r['path'] == route and r['method'] == 'POST' and 200 <= r['status'] < 300]
+            assert matches, f'{code}: browser POST did not reach writer {route}; observed={observed_writes}'
+            browser_writer_witness[code] = matches[-1]
 
         final_rev = current_revision(page)
         assert final_rev >= r7 > r6 > r5 > r4 > mc_scope_rev > r3 > r2 > r1 >= initial
@@ -384,7 +407,9 @@ try:
         assert not errors, errors
         out = {
             'ok':True,'profile':'2.1-procedure-journey+semantic-composition-3.1+s4-a3',
+            'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,
             'baseRevision':initial,'finalRevision':final_rev,'sevenVisibleUiWrites':list(PROCS.keys()),
+            'observedNetworkWriters':browser_writer_witness,'networkWriteWitnessCount':len(browser_writer_witness),
             'coverageWrites':['standard-scope-decision','mapping-proposal'],'coverageFramework':mc_framework,
             'coverageRequirementRef':mc_requirement,'coverageEntryGrammar':'standard-library -> scope-disclosure -> scope-decision -> operational-mapping',
             'projectionConvergence':True,'surfaceRevisionStamp':True,'epistemicLoadedRevision':final_rev,
@@ -396,6 +421,13 @@ try:
             'evidenceClass':'E2-server-backed-browser+seven-procedure-writes+page-local-progressive-epistemic-exploration'
         }
         (ART/'browser-v2-1-procedure-journey.json').write_text(json.dumps(out, indent=2), encoding='utf8')
+        (ART/'browser-consumer-writer-witness.json').write_text(json.dumps({
+            'schema':'ictc-browser-consumer-writer-witness/v1','ok':True,
+            'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,
+            'procedures':browser_writer_witness,'baseRevision':initial,'finalRevision':final_rev,
+            'evidenceClass':'E2_NATIVE_PLAYWRIGHT_NETWORK_OBSERVATION',
+            'claimBoundary':'Executed browser network responses and observed UI revision advances, not exact internal handler identity, external callers or production deployment.'
+        }, indent=2), encoding='utf8')
         print('browser-v2-1-procedure-journey: complete', flush=True)
         ctx.close(); browser.close()
 except BaseException as e:

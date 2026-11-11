@@ -1,5 +1,21 @@
 # Strategia di test, mutation e saturation
 
+## Consumer / writer — prova reticolare C1 limitata ai witness osservati
+
+Il percorso E2 conserva gli owner già esistenti. `node tests/verification/consumer-writer-reticular-check.mjs` costruisce il grafo derivato da import ESM, asset HTML/CSS, riferimenti `import.meta.url`, comandi CI e dagli adapter/handler canonici. Verifica sette writer rappresentativi senza attribuire diritti di cancellazione o inventare un secondo registro delle route. Le dipendenze dinamiche e gli eventuali consumer esterni rimangono **UNKNOWN/HOLD**, anche quando gli import letterali risultano risolti.
+
+`node tests/verification/e2e-cross-process-receipts-check.mjs` esegue dodici scritture reali distribuite su RN, EC, AO, MC, AP, RC e AR; verifica azione audit, hash, revisioni distinte, readback, privacy fra attori e sette rifiuti 403 come auditor. `node tests/verification/consumer-writer-evidence-gate.mjs` collega ricevute sorgente e runtime alla stessa SHA; senza browser nativo il suo esito resta **PASS_WITH_BROWSER_HOLD**, non un E2E globale. `node tests/verification/consumer-writer-evidence-gate.mjs --require-browser` fallisce con exit nonzero senza il witness indipendente `browser-consumer-writer-witness.json`, emesso dal test Playwright esistente `tests/browser/browser-v2-1-procedure-journey.py` e richiesto nella matrice CI esistente. `node tests/verification/consumer-writer-physical-falsification.mjs` applica modifiche vere e sintatticamente valide in una worktree disposable, con seed riproducibile; il numero dei mutanti non equivale a milioni di patch complete.
+
+**DoD globale C1:** grafo sorgente qualificato **AND** HTTP/SQLite con receipt **AND** browser reale sullo stesso HEAD **AND** consumer dinamici/esterni qualificati nei rispettivi owner. Se una condizione manca, C1 non è terminale. Nessun test repository può provare l'assenza universale di consumer esterni; il registro di convergenza è l'unica authority che può aggiornare lo stato dopo evidenze e decisioni appropriate. I percorsi E3/E4 restano esterni.
+
+## Prova minima per CTO / adopter
+
+Eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test`, `npm run release:check` sulla **stessa** revisione; registrare Git SHA, ambiente, exit code e artifact. Verificare separatamente il workflow [Enterprise Candidate](../.github/workflows/enterprise-candidate.yml), i required check e la review server-side osservati su GitHub, non dedotti dalle policy versionate. I gate repository E2 non chiudono F-13/F-15, GAP-012/022 o i rail E4: vedere [README](../README.md#executive-view-per-cto--enterprise-candidate-non-enterprise-ready) e [GAP_REGISTER](GAP_REGISTER.md). La procedura di release rimane in [RELEASE](RELEASE.md); non serve creare un nuovo release owner.
+
+## Matrice standard → implementazione → falsificatore → claim boundary
+
+La [matrice CTO](RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite) e verificata da `node tests/verification/enterprise-standards-evidence-check.mjs`, innestato in `npm run docs:check` e nel workflow documentale **gia esistente**. Il gate confronta realmente sorgenti SLSA/OWASP, percorsi canonici e stati E3/E4 e rifiuta promozioni artificiose a certificazione. La via runtime per symlink esterni e testata da `node tests/verification/http-security-headers-check.mjs`; la delivery hosted deve confermare separatamente i due predicati con `gh attestation verify`. Il controllo di matrice e solo E2 locale: non sostituisce una valutazione completa OWASP ASVS o una determinazione giuridica NIS2/DORA.
+
 ## Superficie normativa
 
 ```bash
@@ -21,6 +37,27 @@ cat artifacts/repository-retirement-mutations.json
 ```
 
 L'inventario censisce e marca **ogni file Git tracciato** nella versione esaminata; i file documentali non dichiarati nel manifest passano a `HOLD_REVIEW`, non a `DELETE`. Il gate garantisce censimento e fail-closed della classificazione, non completezza di reachability runtime, sicurezza di cancellazione, E2E globale o correttezza del contenuto. Il falsificatore copre anche un tentativo di attribuire falsamente `retirement-candidate` a `LICENSE.md`. La seconda prova applica mutazioni semantiche **al modello decisionale di ritiro** su 12 obblighi; distinguere sempre `cases/negatives` da mutazioni fisiche dei sorgenti e verifiche su deployment.
+
+## Contratti aggiuntivi di frontiera C3/C4 e chiusura reticolare
+
+I seguenti controlli sono innestati nel workflow `enterprise-candidate.yml` esistente, senza crearne un secondo. Restano prove E2, non promuovono gli stati C1/C3/C4/S4/S5:
+
+```bash
+node tests/verification/c3-trace-pagination-check.mjs
+node tests/verification/c4-ai-eval-drift-check.mjs
+node tests/verification/convergence-reticular-dod-check.mjs --mutations=50000
+node tests/verification/c3-c4-physical-falsification.mjs
+# Test negativo intenzionale: deve uscire con codice 27 se il DoD globale resta aperto.
+node tests/verification/convergence-reticular-dod-check.mjs --require-global
+```
+
+L'ultima invocazione e una **prova NO-GO**, non un gate da aggiungere alla CI verde. La relativa receipt `artifacts/convergence-reticular-dod.json` deriva soltanto dai registri canonici e dal Git tree; non e una nuova autorita di chiusura. Il test di paginazione non dimostra capacity/HA del deployment; il gate AI non misura autonomamente accuratezza, drift o efficacia del provider.
+
+## Integrità del filesystem e semantica implementata
+
+`node scripts/repository-contract.mjs` verifica la topologia del checkout, inclusa la portabilità dei nomi e l'assenza di collisioni case-insensitive. Per riprodurre i controesempi fisici usare `node tests/verification/repository-path-portability-falsification.mjs`. Le dichiarazioni current di `PRODUCT` e Atlas sono anche confrontate con i contratti procedurali realmente caricati, `src/server.mjs`, `src/runtime/model.mjs` e i consumer degli asset `public/` dal gate `npm run docs:check`; usare `node tests/verification/semantic-document-source-falsification.mjs` per le modifiche fisiche avversariali.
+
+I due test sono già eseguiti nel workflow documentale esistente. Non conferiscono authority, non provano equivalenza browser o assenza di chiamanti URL esterni e non autorizzano il ritiro dei CSS byte-identici.
 
 ## Feedback per tipo di modifica
 

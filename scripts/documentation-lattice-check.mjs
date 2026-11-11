@@ -4,6 +4,8 @@ import path from 'node:path';
 import process from 'node:process';
 import {spawnSync} from 'node:child_process';
 import {ALLOWED_LIFECYCLES,ALLOWED_MODES,validateDocumentationModel,validatePost275DocCoverage,currentAtlasGuides,validateCurrentAtlasGuides} from './documentation-lattice-lib.mjs';
+import {canonicalProcedureContracts} from '../src/runtime/procedure-contracts.mjs';
+import {procedureAdapters} from '../src/runtime/procedure-adapters.mjs';
 const root=path.resolve(process.argv[2]||process.cwd());
 const read=async p=>readFile(path.join(root,p),'utf8');
 const exists=async p=>{try{await stat(path.join(root,p));return true}catch{return false}};
@@ -11,6 +13,11 @@ const manifest=JSON.parse(await read('docs/documentation-manifest.json'));
 const docs=manifest.documents||[];const failures=[];const check=(c,m)=>{if(!c)failures.push(m)};
 check(manifest.schemaVersion==='1.2.0','manifest schemaVersion');
 check(new Set(docs.map(d=>d.id)).size===docs.length,'duplicate document id');
+check(docs.every(d=>typeof d.id==='string'&&d.id.trim().length>0),'document id must be non-empty');
+// Root-facing operating/policy documents are registered in the current canonical
+// manifest. Root AGENTS/NOTICE/LICENSE are intentionally outside this cohort.
+for(const file of ['README.md','GOVERNANCE.md','CONTRIBUTING.md','SECURITY.md','SUPPORT.md','CODE_OF_CONDUCT.md','CHANGELOG.md'])
+ check(docs.some(d=>d.path===file),'registered root document missing: '+file);
 check(new Set(docs.map(d=>d.path)).size===docs.length,'duplicate document path');
 const authoritative=docs.filter(d=>d.authoritative),topics=authoritative.map(d=>d.authorityTopic).filter(Boolean);
 check(new Set(topics).size===topics.length,'duplicate authority topic');
@@ -21,6 +28,32 @@ for(const d of docs.filter(d=>d.path.startsWith('docs/legacy/')))
 for(const p of Object.values(manifest.communitySurfaces||{}))check(await exists(p),`missing community surface ${p}`);
 for(const [name,axis] of Object.entries(manifest.versionAxes||{})){const owners=axis.owners||[axis.owner].filter(Boolean);check(owners.length>0,`missing version-axis owner ${name}`);for(const p of owners)check(await exists(p),`missing version-axis owner ${p}`)}
 const [start,readme,atlas,authority,bug,pr,support,testing,development,trajectory,documentationAuthorityGate,productText,designDoc,fineTuningDoc]=await Promise.all([read('docs/START_HERE.md'),read('README.md'),read('docs/REPOSITORY_ATLAS.md'),read('docs/authority-matrix.yaml'),read('.github/ISSUE_TEMPLATE/bug.yml'),read('.github/PULL_REQUEST_TEMPLATE.md'),read('SUPPORT.md'),read('docs/TESTING.md'),read('docs/DEVELOPMENT.md'),read('docs/PROJECT_TRAJECTORY.md'),read('tests/verification/documentation-authority-check.mjs'),read('docs/PRODUCT.md'),read('docs/21_DESIGN_SYSTEM.md'),read('docs/UI_FINE_TUNING_3_4_DOD.md')]);
+// CTO front-door is a projection of existing owners and current blockers, not a
+// self-declared enterprise-ready badge or a second governance authority.
+const [releaseIdentity,canonicalGaps,remediationRegistry,convergenceState]=await Promise.all([
+ read('src/contracts/release-identity.json'),read('tests/contracts/gaps.json'),
+ read('audit/remediation-registry.json'),read('docs/convergence/convergence-authority.json')
+].map(p=>p.then(JSON.parse)));
+check(releaseIdentity.releaseStage==='candidate','cto: candidate release identity changed, reconcile executive view');
+const openGapIds=new Set(canonicalGaps.gaps.filter(g=>g.status==='open').map(g=>g.id));
+const findingById=new Map(remediationRegistry.findings.map(f=>[f.id,f]));
+const sliceById=new Map(convergenceState.conditionalSlices.map(s=>[s.id,s]));
+for(const id of ['F-13','F-15']){
+ check(findingById.has(id)&&findingById.get(id).status!=='resolved','cto: remediation state changed: '+id);
+ check(readme.includes('`'+id+'`'),'cto: executive view hides open finding '+id);
+}
+for(const id of ['GAP-007','GAP-009','GAP-012','GAP-014','GAP-022']){
+ check(openGapIds.has(id),'cto: gap status changed, executive view requires reconciliation: '+id);
+ check(readme.includes(id),'cto: executive view hides external blocker '+id);
+}
+for(const id of ['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT'])
+ check(sliceById.has(id)&&!['done','not-required'].includes(sliceById.get(id).state),'cto: convergence changed, reconcile '+id);
+const executive=readme.split('## Executive view per CTO — enterprise candidate, non enterprise ready')[1]?.split('## Valore per le imprese')[0]||'';
+for(const required of ['releaseStage=candidate','tests/contracts/gaps.json','audit/remediation-registry.json',
+ 'docs/convergence/convergence-authority.json','.github/workflows/enterprise-candidate.yml',
+ 'npm run release:check','NO-GO','review indipendente','GAP-022','F-13','F-15'])
+ check(executive.includes(required),'cto: missing evidence/limit in README executive view: '+required);
+check(!/enterprise[- ]ready\s*[:=]\s*(?:true|PASS)/i.test(executive),'cto: unsupported enterprise-ready declaration');
 // Post-#274 AS-IS must not route newcomers to retired v3 executable paths.
 // Historical/source-input references remain valid and are intentionally excluded.
 for(const failure of validateCurrentAtlasGuides(currentAtlasGuides(atlas)))check(false,failure);
@@ -93,6 +126,41 @@ check(!productText.includes('un’unica tinta carta da zucchero'),'obsolete mono
 const pkg=JSON.parse(await read('package.json'));
 const reviewerReadiness=checkReadiness(root); check(reviewerReadiness.ok,`review-readiness E2 invariants: ${reviewerReadiness.failures.join(',')}`);
 const [semanticOwnerText,openapi,uiuxContractText,gateRegistry,repositoryContract,runtimeModel,serverText,securityText,gapsText]=await Promise.all([read('tests/contracts/semantic-owner-contract.json'),read('docs/openapi.yaml'),read('tests/contracts/uiux-converge-0-contract.json'),read('scripts/current-gate-registry.mjs'),read('scripts/repository-contract.mjs'),read('src/runtime/model.mjs'),read('src/server.mjs'),read('SECURITY.md'),read('tests/contracts/gaps.json')]);
+// Cross-check current prose against executable contract and real CSS/browser consumers.
+// This is derived verification, never a new product/document authority.
+const declaredProcedures=canonicalProcedureContracts(),declaredAdapters=procedureAdapters();
+const productRows=[...productText.matchAll(/^\|\s*((?:RN|EC|AO|MC|AP|RC|AR)-01)\s*\|\s*([^|]+)\|/gm)]
+ .map(([,code,label])=>({code,label:label.trim()}));
+const expectedRows=declaredProcedures.map(({code,label})=>({code,label}));
+check(JSON.stringify(productRows)===JSON.stringify(expectedRows),
+ 'semantic-source: PRODUCT process rows disagree with canonical executable procedure contracts');
+check(declaredAdapters.length===declaredProcedures.length&&declaredAdapters.every((a,i)=>a.id===declaredProcedures[i].id),
+ 'semantic-source: business adapter list is not the seven canonical procedures');
+check(!declaredAdapters.some(a=>['OP-01','OG-01','EP-01'].includes(a.id)),
+ 'semantic-source: informational placeholders/view acquired business adapter authority');
+const semanticReleaseIdentity=JSON.parse(await read('src/contracts/release-identity.json'));
+check(semanticReleaseIdentity.productVersion===pkg.version && semanticReleaseIdentity.releaseStage==='candidate' &&
+ readme.includes('`releaseStage=candidate`'),
+ 'semantic-source: CTO release claim disagrees with release identity/package');
+const asisTable=atlas.split('| Superficie da riesaminare |')[1]?.split('**C1-3c')[0]||'';
+check(asisTable.includes('`tests/legacy/`') && !asisTable.includes('`v3/tests/legacy/`') &&
+ asisTable.includes('`public/grc-v2.css`') && asisTable.includes('`public/grc-workspace.css`') &&
+ !asisTable.includes('`v3/public/grc-v2.css`'),
+ 'semantic-source: current Atlas table advertises retired filesystem owner');
+const [grcV2,grcWorkspace,cssImports,uiRoot,finetuningJs,grcRuntime]=await Promise.all([
+ read('public/grc-v2.css'),read('public/grc-workspace.css'),read('public/styles.css'),
+ read('public/ui/active-experience.js'),read('public/ui/procedure-finetuning-2-3.js'),
+ read('src/runtime/grc-runtime.mjs')]);
+check(grcV2===grcWorkspace && cssImports.includes("@import url('./grc-workspace.css')") &&
+ asisTable.includes('I byte coincidono'),
+ 'semantic-source: current CSS duplicate/consumer claims disagree with source bytes');
+check(uiRoot.includes("from './procedure-finetuning-2-3.js'") &&
+ finetuningJs.includes("'/procedure-finetuning-2-3.css'") &&
+ grcRuntime.includes("from './grc-runtime-legacy.mjs'"),
+ 'semantic-source: Atlas legacy/2.3 consumer semantics not supported by executable imports');
+check(runtimeModel.includes('experience:{services:2') && serverText.includes('projected.experience.services=7') &&
+ asisTable.includes('`src/runtime/model.mjs`') && asisTable.includes('`src/server.mjs`'),
+ 'semantic-source: Atlas source-vs-HTTP projection explanation disagrees with runtime');
 const semanticOwner=JSON.parse(semanticOwnerText),debt=semanticOwner.repositoryCoherenceDebt||{},debtFindings=Array.isArray(debt.findings)?debt.findings:[],debtById=Object.fromEntries(debtFindings.map(item=>[item.id,item])),uiuxContract=JSON.parse(uiuxContractText),gaps=JSON.parse(gapsText);
 const linkTargets=new Map();
 function localTargets(rel,text){const out=[];for(const m of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){const href=m[1].trim();if(!href||/^(https?:|mailto:|#)/.test(href))continue;out.push(path.normalize(path.join(path.dirname(rel),href.split('#')[0])))}return out}
@@ -267,7 +335,11 @@ const rootContractRun=spawnSync(process.execPath,[path.join(root,'scripts/reposi
 let rootContractReceipt=null;
 try{rootContractReceipt=JSON.parse(rootContractRun.stdout||'null')}catch{}
 check(rootContractRun.status===0&&rootContractReceipt?.status==='PASS_SCOPED','root current repository contract failed: '+String(rootContractRun.stderr||rootContractRun.stdout).slice(0,280));
+check(rootContractReceipt?.filesystem?.errors?.length===0, 'repository portability guard did not execute on the current tree');
 check(rootContractReceipt?.retirementAuthorized===false&&rootContractReceipt?.legacyDisposition==='HOLD_CONSUMERS','root contract must not authorize legacy deletion');
+// Standards evidence is a zero-authority projection; fail when documentation or executable boundaries drift.
+const standardsRun=spawnSync(process.execPath,[path.join(root,'tests/verification/enterprise-standards-evidence-check.mjs'),'--root',root],{cwd:root,encoding:'utf8',timeout:30000});
+check(standardsRun.status===0,'standard/evidence reticulum drift: '+String(standardsRun.stderr||standardsRun.stdout).slice(0,400));
 const documentationStandard=await read('docs/DOCUMENTATION_STANDARD.md');
 check(/## Valore per le imprese/.test(readme)&&/Rispettare le norme\. Governare rischi e costi\./.test(readme)&&/Non determina da solo/.test(readme),'engineer-first value/claim boundary missing');
 check(/## Razionalizzazione e archiviazione: decisioni basate sui consumer/.test(atlas)&&/HOLD_CONSUMERS/.test(atlas)&&/HOLD_PUBLIC_URL/.test(atlas),'legacy pocket classification/URL hold missing');

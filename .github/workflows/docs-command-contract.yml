@@ -22,6 +22,16 @@ jobs:
         with: {node-version: '22'}
       - name: Validate documented commands
         run: node tests/verification/docs-command-contract-check.mjs
+      - name: Falsify CTO README claims against canonical owner registries
+        run: node tests/verification/cto-docs-falsification.mjs
+      - name: Falsify filesystem portability on real isolated paths
+        run: node tests/verification/repository-path-portability-falsification.mjs
+      - name: Falsify documentation claims against executable source and browser assets
+        run: node tests/verification/semantic-document-source-falsification.mjs
+      - name: Verify SLSA OWASP and CTO evidence limitations
+        run: node tests/verification/enterprise-standards-evidence-check.mjs
+      - name: Falsify standard evidence mapping on real source and document files
+        run: node tests/verification/enterprise-standards-evidence-mutations.mjs --cases 100000 --seed 20261110 --physical 1
       - name: Inventory tracked source and fail closed on unknown retirement
         run: npm run repo:inventory
       - name: Reject fabricated census, hash and deletion receipts
@@ -48,8 +58,14 @@ jobs:
         run: node tests/verification/e2e-guide-7x3-check.mjs
       - name: Qualify remaining document retention exposure individually
         run: node scripts/document-retention-review.mjs --falsify
+      - name: Qualify observed consumer and writer graph against canonical runtime owners
+        run: node tests/verification/consumer-writer-reticular-check.mjs
       - name: Prove scoped cross-process writes and receipts under live HTTP
         run: node tests/verification/e2e-cross-process-receipts-check.mjs
+      - name: Falsify 24 physically edited consumer and writer contracts with positive control
+        run: node tests/verification/consumer-writer-physical-falsification.mjs
+      - name: Reconcile observed route writers against live HTTP receipts without claiming browser closure
+        run: node tests/verification/consumer-writer-evidence-gate.mjs
       - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
         run: node tests/verification/e2e-simulated-decisions-check.mjs
       - name: Enumerate canonical business-journey E2E denominator
@@ -67,7 +83,12 @@ jobs:
         with:
           name: ictc-docs-command-contract
           path: |
+            artifacts/enterprise-standards-evidence.json
+            artifacts/enterprise-standards-falsification.json
             artifacts/docs-command-contract.json
+            artifacts/repository-path-portability-falsification.json
+            artifacts/semantic-doc-source-falsification.json
+            artifacts/cto-docs-falsification.json
             artifacts/repository-inventory.json
             artifacts/repository-retirement-mutations.json
             artifacts/repository-inventory-falsification.json
@@ -77,6 +98,9 @@ jobs:
             artifacts/executable-doc-reference.json
             artifacts/document-retention-review.json
             artifacts/e2e-cross-process-receipts.json
+            artifacts/consumer-writer-reticulum.json
+            artifacts/consumer-writer-convergence.json
+            artifacts/consumer-writer-physical-falsification.json
             artifacts/e2e-step-evidence-ledger.json
             artifacts/retirement-minimality-certificate.json
             artifacts/document-retirement-gate.json

@@ -8,6 +8,8 @@ Repository checks, deterministic simulations and GitHub CI are E2 engineering ev
 
 The machine-readable local DoD is `audit/security-enterprise-dod.json`. Reproduced breaker findings are recorded in `audit/security-attack-findings.json`. The M+10,000 run writes `artifacts/security-attack-saturation.json` and records the seed, family counts, false allow/deny counters, rolling family checksums, a global trace digest and representative witnesses.
 
+La [matrice CTO di controlli e limiti](RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite) traccia SLSA/OWASP e benchmark analogici verso sorgenti e test esistenti, senza promuovere una receipt E2 a livello SLSA o certificazione ASVS. Il server statico risolve i percorsi reali prima della lettura e respinge symlink verso file o directory fuori da `public/`: l'oracle dedicato prova anche l'URL interno legittimo, evitando regressioni per un hardening eccessivo.
+
 ## Security boundaries
 
 ### AI egress
