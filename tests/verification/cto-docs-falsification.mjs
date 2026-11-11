@@ -41,8 +41,10 @@ try{
   await writeFile(file,baseline);
  }
  // A content-neutral copy clarification must not fail the CTO gate.
- const positive=baseline.replace('**Go/no-go CTO:**','**Go/no-go CTO:**');
- assert.equal(positive,baseline);
+ const positive=baseline.replace('**Go/no-go CTO:**',
+  '**Go/no-go CTO:** Una valutazione dimostrativa non attribuisce poteri decisionali ulteriori. ');
+ assert.notEqual(positive,baseline,'benign positive must change physical README');
+ await writeFile(file,positive);r=run();assert.equal(r.status,0,'benign positive rejected: '+r.stdout.slice(-700));
  await writeFile(file,baseline);r=run();assert.equal(r.status,0,'restored baseline not accepted');
  const report={schemaVersion:'1.0.0',head:git('rev-parse','HEAD').stdout.trim(),seed,source:'physical README rewrites in detached worktree',
   cases:rows.length,killed:rows.filter(x=>x.detected).length,survivors:rows.filter(x=>!x.detected).length,positive:1,rows,
