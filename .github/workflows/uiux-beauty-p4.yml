@@ -33,6 +33,8 @@ jobs:
         run: node tests/verification/ui-cosmetic-pr164-mutation-lattice.mjs
       - name: Three million deterministic beauty mutations
         run: node tests/verification/uiux-beauty-p4-mutation-3m.mjs
+      - name: V9 seeded material UX source mutation (1 million)
+        run: node tests/verification/ux-native-disclosure-mutation-1m.mjs
       - name: Browser rail syntax
         run: python -m py_compile tests/browser/browser-uiux-beauty-p4.py
       - name: Resolve system Chromium
