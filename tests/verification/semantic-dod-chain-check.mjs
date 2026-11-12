@@ -28,11 +28,26 @@ for(const label of staticFilterLabels){
 }
 
 const source={
- D02:read('README.md').includes('merged con la PR #283') &&
-      !read('README.md').includes('in pre-PR (non ancora released)') &&
-      read('docs/GAP_REGISTER.md').includes('La PR #283 merged integra') &&
-      read('docs/PROJECT_TRAJECTORY.md').includes('non sostituisce `src/contracts/release-identity.json`') &&
-      !read('docs/PROJECT_TRAJECTORY.md').includes('non sostituisce `v3/release-identity.json`'),
+ D02:(()=>{
+      // Source evidence follows current capability links, not a historical PR number.
+      const rootReadme=read('README.md'),gapGuide=read('docs/GAP_REGISTER.md'),trajectory=read('docs/PROJECT_TRAJECTORY.md');
+      const anchors=[
+       '**E2 — capacità parziali, non release:**',
+       '[F-13](tests/verification/c3-trace-pagination-check.mjs)',
+       '[F-15](tests/verification/c4-ai-eval-drift-check.mjs)',
+       '[gate C1/C3/C4/S4/S5](tests/verification/convergence-reticular-dod-check.mjs)'
+      ];
+      const valid=text=>anchors.every(part=>text.includes(part));
+      for(const anchor of anchors){
+       assert.equal(valid(rootReadme.replace(anchor,'REMOVED_CANONICAL_EVIDENCE_LINK')),false,
+        'D02 negative source-link mutation survived: '+anchor);
+      }
+      return valid(rootReadme)&&!rootReadme.includes('in pre-PR (non ancora released)')&&
+       gapGuide.includes('`tests/contracts/gaps.json`')&&gapGuide.includes('**F-13 → C3-CAPACITY-CONTRACT**')&&
+       gapGuide.includes('**F-15 → C4-AI-EVAL-DRIFT**')&&
+       trajectory.includes('non sostituisce `src/contracts/release-identity.json`')&&
+       !trajectory.includes('non sostituisce `v3/release-identity.json`');
+     })(),
  D04:home.includes('data-home-guide-action>Comprimi guida') &&
       home.includes("guide.open?'Comprimi guida':'Espandi guida'") &&
       home.includes("guide.addEventListener('toggle',syncGuide)") &&
