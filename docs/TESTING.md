@@ -427,6 +427,14 @@ D02/D04/D05 sono esclusivamente SOURCE_SCOPED; browser ICTC, review umane, gover
 GitHub e deployment restano evidenze distinte non autocertificabili. I test negativi
 rifiutano dependency orfane e substitution da fixture sintetiche a prove E3/E4.
 
+### Post-CORA #52-#56: distinzioni DoD e falsificazione source-only
+
+La receipt `artifacts/semantic-dod-chain.json` usa `structurallyValidated: 15` per il solo DAG D01-D15 e `independentlyEvidenceQualified: 0` per il perimetro di questo oracle derivato. Il precedente campo `qualified: 15` era equivoco: validare la definizione di quindici obblighi non significa provare quindici comportamenti. D02/D04/D05 conservano lo status `SOURCE_SCOPED`, non una certificazione di esecuzione.
+
+L'oracle esistente esegue anche `runSemanticDODMutations` su dieci file originali di prodotto, repository e delivery: **100.000** mutazioni seeded `0x056c0285`, 18 famiglie, una-quattro mutazioni di testo/JSON sorgente per caso. Verifica separatamente ogni famiglia; confronta release/package, sette processi, stati C1/C3/C4/S4/S5 e F-13/F-15, gate E3/E4, onboarding lato server/Home, conflitto di revisione, integrità di persistenza e le due verifiche di attestazione. La receipt conserva conteggi, firma SHA-256 della sorgente e del transcript, combinazioni e finestra finale senza nuove classi di errore del **catalogo fissato**. Nessuna modifica dei file originali e nessun nuovo registro di authority.
+
+Queste sono alterazioni *in memoria* di contenuti reali della codebase, **non** 100.000 commit applicati, compilazioni, test HTTP/SQLite o sessioni Chromium. I claim runtime restano ai test originali e al CI exact-head; review umana, protezione branch e deployment rimangono E3/E4. La saturazione e la compressione sono qualificate solo per il vocabolario mutazionale fissato e non dimostrano minimizzazione globale.
+
 `node tests/verification/semantic-dod-chain-check.mjs --require-global` deve
 uscire con codice 27 sullo stato corrente: e una prova NO-GO intenzionale,
 non un comando per la CI positiva. L'oracle non e una nuova autorita.

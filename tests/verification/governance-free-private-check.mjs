@@ -111,6 +111,8 @@ function selfTest(policy) {
   const tests = [
     ['valid-pr', evaluatePullRequest(validPr, policy).ok === true],
     ['reject-main-pr', evaluatePullRequest(invalidPr, policy).code === 'direct-main-pr'],
+    ['accept-audit-branch', evaluatePullRequest({ pull_request: { number: 3, base: { ref: 'main' }, head: { ref: 'audit/cora-52-56-reticular-truth-20261111', sha } } }, policy).ok === true],
+    ['reject-unknown-branch-prefix', evaluatePullRequest({ pull_request: { number: 4, base: { ref: 'main' }, head: { ref: 'unknown/do-not-admit', sha } } }, policy).code === 'branch-prefix'],
     ['valid-merged-push', evaluateMainPush({ ref: 'refs/heads/main', after: sha }, merged, policy).ok === true],
     ['accept-green-checks', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
     ['prefer-latest-duplicate-check', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'failure' }, { id: 2, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],

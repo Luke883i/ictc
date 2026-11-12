@@ -1,5 +1,6 @@
 // Audit-only proof projection. Canonical states remain in the existing owner registers.
 import assert from 'node:assert/strict';
+import {runSemanticDODMutations} from './semantic-dod-reticular-mutation-100k.mjs';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -95,14 +96,21 @@ for(const x of rows){
 }
 function qualifies(e,kind){
  if(!e||e.exactHead!==true||e.contentVerified!==true||e.claimMatched!==true)return false;
- if(kind.includes('BROWSER')||kind==='E2-CSSOM')return e.kind==='ICTC_NATIVE_BROWSER'&&e.synthetic===false&&e.dom===true&&e.cssom===true&&/^[a-f0-9]{64}$/.test(e.screenshotSha256||'');
- if(kind.startsWith('E3'))return e.kind==='INDEPENDENT_E3'&&e.independent===true&&e.authorized===true;
- if(kind==='E4-DEPLOY')return e.kind==='INDEPENDENT_E4'&&e.independent===true&&e.environmentVerified===true;
+ // This audit has no trusted native-browser observer or independent host attester.
+ // Caller-written flags and screenshot hashes cannot supply those missing trust roots.
+ if(kind.includes('BROWSER')||kind==='E2-CSSOM'||kind.startsWith('E3')||kind==='E4-DEPLOY')return false;
  return e.kind==='ACTUAL_SCOPED_PROOF';
 }
 const synthetic={kind:'SYNTHETIC_FIXTURE',synthetic:true,exactHead:true,contentVerified:true,claimMatched:true,dom:true,cssom:true,screenshotSha256:'a'.repeat(64)};
 for(const x of rows)assert.equal(qualifies(synthetic,x.evidenceClass),false,'fixture falsely proves '+x.id);
 for(const t of ['E3-GOV','E3-HUMAN+GOV','E4-DEPLOY'])assert.equal(qualifies({...synthetic,kind:'ACTUAL_SCOPED_PROOF'},t),false,'external proof substituted '+t);
+const forgedHost={...synthetic,kind:'INDEPENDENT_E3',synthetic:false,independent:true,authorized:true};
+const forgedDeploy={...synthetic,kind:'INDEPENDENT_E4',synthetic:false,independent:true,environmentVerified:true};
+const forgedBrowser={...synthetic,kind:'ICTC_NATIVE_BROWSER',synthetic:false};
+assert.equal(qualifies(forgedHost,'E3-GOV'),false,'self-asserted independent host receipt escaped');
+assert.equal(qualifies(forgedDeploy,'E4-DEPLOY'),false,'self-asserted deployment receipt escaped');
+assert.equal(qualifies(forgedBrowser,'E2-REAL-BROWSER'),false,'caller-provided DOM/CSSOM/hash impersonated native browser');
+
 const blockers={
  C1:find(authority.conditionalSlices,'C1-COMPAT-CONTRACTION'),
  C3:find(authority.conditionalSlices,'C3-CAPACITY-CONTRACT'),
@@ -130,14 +138,17 @@ assert.equal(v8Disposition.filter(x=>x.disposition==='ADAPTED_SOURCE_SCOPED').le
 // The original local pre-PR replay proves its own tree, never rebasing onto post-283 main.
 assert.equal(state.D03,'HOLD','all 24 commits are not semantically absorbed on this PR');
 
+const reticularFalsification=runSemanticDODMutations(ROOT);
+assert.equal(reticularFalsification.globalDoD,false);
 const receipt={
- schema:'ictc.semantic-dod-chain.derived.v1',
+ schema:'ictc.semantic-dod-chain.derived.v2',
  authority:'none; receipt only; canonical owners unchanged',
  abstractDoD:'intent AND owner AND scope AND claim-matched witness AND no contradictory evidence AND independent evidence where required',
  scope:'source-only + fail-closed counterfactuals; NOT global ICTC runtime',
  gates:rows.map(x=>({...x,status:state[x.id]})),
- coverage:{obligations:15,qualified:15,dag:true,sourceScoped:Object.values(state).filter(v=>v==='SOURCE_SCOPED').length},
+ coverage:{obligations:15,structurallyValidated:15,independentlyEvidenceQualified:0,dag:true,sourceScoped:Object.values(state).filter(v=>v==='SOURCE_SCOPED').length},
  blockers,global:false,
+ reticularFalsification,
  v8PrePrLineage:{
   origin:'uploaded immutable V8 pre-PR git-mailbox; historical local base, not post-283 main',
   originalPatchSha256:'e5b7480d8730378ab9604d8f80ca606e8bd86deca766eb4968f09d6afd131b01',
