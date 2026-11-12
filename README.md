@@ -16,29 +16,6 @@ ICTC è un **sistema locale di governance della conoscenza di compliance**. Coll
 
 L'AI puo aiutare a interpretare richieste, localizzare owner, generare proposte e controesempi, ma **non** decide l'applicabilita legale, approva stati business, crea nuove autorita software o attesta che un merge sia sicuro. La sua attivita di manutenzione resta soggetta agli stessi test, review, provenance e controllo umano degli altri contributi.
 
-## Executive view per CTO — enterprise candidate, non enterprise ready
-
-**Posizionamento attuale:** `releaseStage=candidate` ([identità di release](src/contracts/release-identity.json)). ICTC è esercitabile come prototipo locale repository-bounded; **non** è attestato come servizio enterprise in produzione. I fatti live (HEAD, check, review e ruleset) si verificano su GitHub: questa sezione non è uno status dashboard e non crea un secondo registro di conformità.
-
-**Livelli delle evidenze (L1/L2/L3, non una nuova authority):** **L1 — prova ingegneristica**: sorgenti, test e ricevute verificati nel loro perimetro ([testing](docs/TESTING.md)); **L2 — validazione sperimentale di prodotto**: journey e prove con utenti/scenari dichiarati, non deducibili dalla sola CI ([journey](docs/04_USER_JOURNEYS.md)); **L3 — assurance esterna**: review, governance e deployment attestati da soggetti e ambienti competenti ([gap canonici](tests/contracts/gaps.json)). L3 non è obbligatorio per una sperimentazione locale; resta indispensabile per attribuire una validazione esterna o autorizzazione enterprise. Nessun livello supplisce a quello mancante.
-
-| Capacità già presente | Valore ingegneristico | Evidenza/owner da verificare |
-| --- | --- | --- |
-| Sette processi, Home e Evidenze ICTC | Lavoro di compliance con review/decisione umana e provenienza, non legal verdict automatici | [PRODUCT](docs/PRODUCT.md), [contratto prodotto](tests/contracts/product-contract.json), [journey](docs/04_USER_JOURNEYS.md) |
-| Runtime locale Node.js, RBAC, tenant boundary e SQLite | Stato persistente, mutation receipt/readback e audit attribuibile; profilo locale, non HA distribuita | [ARCHITECTURE](docs/11_ARCHITECTURE.md), [security](docs/SECURITY_HARDENING.md), [test](docs/TESTING.md) |
-| Supply chain candidate E2 | Workflow esistente con SBOM CycloneDX, provenance, attestazioni e verifica del candidato esatto | [release workflow](.github/workflows/enterprise-candidate.yml), [validatore C2](tests/verification/delivery-provenance-check.mjs), [RELEASE](docs/RELEASE.md) |
-| Test e governance repository | Contratti, mutazioni, browser probes, ownership e gate CI per modifiche falsificabili | [Actions](.github/workflows/), [owner map](docs/authority-matrix.yaml), [TESTING](docs/TESTING.md) |
-
-**Decisioni ancora bloccate, non omissioni da mascherare:** `F-13` (paginazione/capacity API) e `F-15` (AI evaluation/drift/rollback) nel [registro remediation](audit/remediation-registry.json); `C1/C3/C4`, `S4-A6-CLOSE` e `S5-CANDIDATE-SEAL` nella [convergence authority](docs/convergence/convergence-authority.json); `GAP-022` (review/protezione `main`), `GAP-012` (usabilità/assistive technology), `GAP-007`, `GAP-009`, `GAP-014` (scanner, identità, osservabilità del deployment) nel [registro gap](tests/contracts/gaps.json). Questi identificativi indicano **obblighi di verifica**, non un'autocertificazione dello stato live. Ulteriori blocker E4, inclusi backup/restore, capacità e key custody, sono nel registro remediation.
-
-**Evoluzione E2 merged con la PR #283 (non ancora released né terminale):** il gate [F-13](tests/verification/c3-trace-pagination-check.mjs) verifica la paginazione opzionale `GET /api/work/traces?limit=20` (limite 1–50), i cursori role/revision-bound, i rifiuti 400/403/409 e la compatibilità delle risposte senza query. Resta aperta la capacity di calcolo della proiezione completa e la prova di carico su deployment. Il gate [F-15](tests/verification/c4-ai-eval-drift-check.mjs) verifica policy AI amministrative versionate, finestre modello/prompt, sospensione, drift e scadenza; la modalità predefinita osserva ma non attesta una valutazione indipendente. Le due famiglie sono dunque **parzialmente implementate, non terminali**. Il [verificatore reticolare C1/C3/C4/S4/S5](tests/verification/convergence-reticular-dod-check.mjs) produce una receipt derivata; con `--require-global` deve fallire finché mancano condizioni e evidenze esterne. Il registro e il workbook restano le sole autorità dei rispettivi stati.
-
-**Consumer e writer, verifica senza duplicare authority:** il [grafo osservato](tests/verification/consumer-writer-reticular-check.mjs) collega adapter, handler, client, workflow e asset ai sette percorsi rappresentativi; il [test HTTP con ricevute](tests/verification/e2e-cross-process-receipts-check.mjs) prova le scritture/readback e i 403, mentre la [prova browser](tests/browser/browser-v2-1-procedure-journey.py) deve attestare richieste POST realmente osservate sulla stessa revisione Git. La [congiunzione fail-closed](tests/verification/consumer-writer-evidence-gate.mjs) non promuove mai l'assenza di una prova browser o la reachability esterna sconosciuta a chiusura C1. Le istruzioni replicabili sono in [TESTING](docs/TESTING.md).
-
-**Matrice comparativa CTO:** [SLSA/OWASP/CycloneDX e benchmark NIS2/DORA → controllo → codice → test → evidenza → limite](docs/RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite). È una proiezione fail-closed, non una certificazione né un secondo registro di compliance.
-
-**Go/no-go CTO:** eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test` e `npm run release:check` sulla stessa revisione Git, poi verificare [CI e artifact exact-head](.github/workflows/enterprise-candidate.yml), review indipendente, controllo di `main`, prova E3 con utenti e prove E4 del deployment. Prima di tali evidenze, **GO solo per valutazione locale controllata; NO-GO per attestare enterprise-ready, conformità o deploy produttivo**. [Release procedure](docs/RELEASE.md) e [operazioni](docs/OPERATIONS.md) spiegano responsabilità e verifica delle evidenze. La CI verde non sostituisce queste condizioni.
-
 ## Valore per le imprese — cosa ICTC aiuta a governare
 
 **Rispettare le norme. Governare rischi e costi.** ICTC collega fonti, requisiti, rischi, controlli e interventi: aiuta imprese e PMI a **organizzare la risposta agli obblighi applicabili** e a usare con criterio le risorse. Non determina da solo quali norme siano applicabili né certifica la conformità. Le decisioni, le verifiche e le approvazioni rimangono umane.
@@ -61,9 +38,58 @@ Per esercire: [OPERATIONS](docs/OPERATIONS.md). `AGENTS.md` e TRAMA sono special
 **Maturità:** candidate. Per le versioni correnti prevale [release-identity.json](src/contracts/release-identity.json). Una CI verde, un receipt o una proposta AI **non** dimostrano conformità legale, efficacia dei controlli, autenticità esterna, assurance indipendente o deployment di produzione.
 
 
+## Avvio locale
+
+Requisiti: Node.js **>=22.16.0**, npm e una copia locale del repository.
+
+```bash
+npm ci --ignore-scripts
+npm start
+# apri http://127.0.0.1:4173
+```
+
+Il bind predefinito è su loopback. Non esporre pubblicamente il profilo standard senza i controlli di identità, proxy, segreti e rete richiesti dal runtime. Come launcher locale alternativo: `./ictc.sh start --no-open`. Vedi [DEVELOPMENT](docs/DEVELOPMENT.md).
+
+Per la **DEMO sintetica e isolata**, usa `npm run demo`. `ICTC_PUBLIC_DEMO=1` è un profilo separato, anonimo e in sola lettura, riservato esclusivamente a dati sintetici; non è il profilo di deployment standard. Per il trasporto su Render DEMO servono `ICTC_HOST=0.0.0.0` e `ICTC_ALLOW_NETWORK_BIND=1`; il server usa `demo-runtime-3-0` e nel profilo pubblico `ICTC_TRUSTED_PROXY_SECRET` deve restare non impostato. Requisiti e limiti sono in [ARCHITECTURE](docs/11_ARCHITECTURE.md) e [RELEASE](docs/RELEASE.md).
+
+## Verifiche prima di una proposta
+
+```bash
+npm run docs:check
+npm test
+npm run release:check
+```
+
+Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE.md) collega le modifiche agli owner e ai test. Questi sono **comandi da eseguire**, non attestazioni di passaggio in un ambiente specifico. Browser, sicurezza e verifiche di delivery hanno workflow distinti. Un milione di trial sul modello non equivale a un milione di mutazioni del codice o test con utenti.
+
+## Executive view per CTO — enterprise candidate, non enterprise ready
+
+**Posizionamento attuale:** `releaseStage=candidate` ([identità di release](src/contracts/release-identity.json)). ICTC è esercitabile come prototipo locale repository-bounded; **non** è attestato come servizio enterprise in produzione. I fatti live (HEAD, check, review e ruleset) si verificano su GitHub: questa sezione non è uno status dashboard e non crea un secondo registro di conformità.
+
+**Livelli delle evidenze (L1/L2/L3, non una nuova authority):** **L1 — prova ingegneristica**: sorgenti, test e ricevute verificati nel loro perimetro ([testing](docs/TESTING.md)); **L2 — validazione sperimentale di prodotto**: journey e prove con utenti/scenari dichiarati, non deducibili dalla sola CI ([journey](docs/04_USER_JOURNEYS.md)); **L3 — assurance esterna**: review, governance e deployment attestati da soggetti e ambienti competenti ([gap canonici](tests/contracts/gaps.json)). L3 non è obbligatorio per una sperimentazione locale; resta indispensabile per attribuire una validazione esterna o autorizzazione enterprise. Nessun livello supplisce a quello mancante.
+
+| Capacità già presente | Valore ingegneristico | Evidenza/owner da verificare |
+| --- | --- | --- |
+| Sette processi, Home e Evidenze ICTC | Lavoro di compliance con review/decisione umana e provenienza, non legal verdict automatici | [PRODUCT](docs/PRODUCT.md), [contratto prodotto](tests/contracts/product-contract.json), [journey](docs/04_USER_JOURNEYS.md) |
+| Runtime locale Node.js, RBAC, tenant boundary e SQLite | Stato persistente, mutation receipt/readback e audit attribuibile; profilo locale, non HA distribuita | [ARCHITECTURE](docs/11_ARCHITECTURE.md), [security](docs/SECURITY_HARDENING.md), [test](docs/TESTING.md) |
+| Supply chain candidate E2 | Workflow esistente con SBOM CycloneDX, provenance, attestazioni e verifica del candidato esatto | [release workflow](.github/workflows/enterprise-candidate.yml), [validatore C2](tests/verification/delivery-provenance-check.mjs), [RELEASE](docs/RELEASE.md) |
+| Test e governance repository | Contratti, mutazioni, browser probes, ownership e gate CI per modifiche falsificabili | [Actions](.github/workflows/), [owner map](docs/authority-matrix.yaml), [TESTING](docs/TESTING.md) |
+
+**Decisioni ancora bloccate, non omissioni da mascherare:** `F-13` (paginazione/capacity API) e `F-15` (AI evaluation/drift/rollback) nel [registro remediation](audit/remediation-registry.json); `C1/C3/C4`, `S4-A6-CLOSE` e `S5-CANDIDATE-SEAL` nella [convergence authority](docs/convergence/convergence-authority.json); `GAP-022` (review/protezione `main`), `GAP-012` (usabilità/assistive technology), `GAP-007`, `GAP-009`, `GAP-014` (scanner, identità, osservabilità del deployment) nel [registro gap](tests/contracts/gaps.json). Questi identificativi indicano **obblighi di verifica**, non un'autocertificazione dello stato live. Ulteriori blocker E4, inclusi backup/restore, capacità e key custody, sono nel registro remediation.
+
+**E2 — capacità parziali, non release:** [F-13](tests/verification/c3-trace-pagination-check.mjs) copre cursori, versioni, ruoli ed errori della paginazione API, ma non la capacità del deployment. [F-15](tests/verification/c4-ai-eval-drift-check.mjs) verifica versioni e sospensione delle policy AI senza attestare drift reale indipendente. Il [gate C1/C3/C4/S4/S5](tests/verification/convergence-reticular-dod-check.mjs) produce ricevute derivate e deve rifiutare la chiusura globale non provata; stati e decisioni restano ai rispettivi registri canonici. Dettagli e obblighi in [RELEASE](docs/RELEASE.md).
+
+**Consumer e writer:** [grafo dei consumer](tests/verification/consumer-writer-reticular-check.mjs), [ricevute HTTP/readback](tests/verification/e2e-cross-process-receipts-check.mjs) e [journey browser](tests/browser/browser-v2-1-procedure-journey.py) sono prove diverse. Il [gate di congiunzione](tests/verification/consumer-writer-evidence-gate.mjs) non considera un browser non eseguito o la reachability sconosciuta come PASS. Riproduzione in [TESTING](docs/TESTING.md).
+
+**Artefatti della supply chain:** SBOM CycloneDX, digest, archivio candidato e provenance sono generati e attestati nel job [Enterprise candidate](.github/workflows/enterprise-candidate.yml) sull’HEAD esatto. Per ogni claim controllare che gli artefatti siano disponibili nel run pertinente e che le verifiche di attestazione abbiano realmente avuto esito positivo. Un workflow configurato o uno SBOM rigenerato in locale **non** dimostrano esecuzione hosted, firma valida, protezione del branch o clearance delle licenze. Il [percorso di controllo](docs/RELEASE.md#c2--provenance-e-attestazione-del-candidato-esatto) resta l’owner, senza un nuovo registro di provenance.
+
+**Matrice comparativa CTO:** [SLSA/OWASP/CycloneDX e benchmark NIS2/DORA → controllo → codice → test → evidenza → limite](docs/RELEASE.md#reticolo-cto-standard--requisito--implementazione--test--evidenza--limite). È una proiezione fail-closed, non una certificazione né un secondo registro di compliance.
+
+**Go/no-go CTO:** eseguire `npm ci --ignore-scripts`, `npm run docs:check`, `npm test` e `npm run release:check` sulla stessa revisione Git, poi verificare [CI e artifact exact-head](.github/workflows/enterprise-candidate.yml), review indipendente, controllo di `main`, prova E3 con utenti e prove E4 del deployment. Prima di tali evidenze, **GO solo per valutazione locale controllata; NO-GO per attestare enterprise-ready, conformità o deploy produttivo**. [Release procedure](docs/RELEASE.md) e [operazioni](docs/OPERATIONS.md) spiegano responsabilità e verifica delle evidenze. La CI verde non sostituisce queste condizioni.
+
 ## Navigazione progressiva — cinque prospettive
 
-Prima lettura: **capisci il valore**, avvia la DEMO, individua l'owner e verifica una modifica. Queste sono scorciatoie verso le fonti canoniche, non cinque nuove autorita. Per l'esercizio pratico usa [DEVELOPMENT](docs/DEVELOPMENT.md).
+Per approfondire dopo i percorsi iniziali. Prima lettura: **capisci il valore**, avvia la DEMO, individua l'owner e verifica una modifica. Queste sono scorciatoie verso le fonti canoniche, non cinque nuove autorita. Per l'esercizio pratico usa [DEVELOPMENT](docs/DEVELOPMENT.md).
 
 <details>
 <summary><strong>Prodotto</strong> — destinatari, processi, limiti</summary>
@@ -116,30 +142,6 @@ Node.js ESM, UI vanilla e SQLite: ingresso `src/bootstrap.mjs`, HTTP `src/server
 
 La navigazione principale è **Home / Processi di Compliance / Evidenze ICTC**: Home presenta al massimo **3 priorità**; il catalogo dei processi usa **one-row-per-procedure / row-list**. **EP-01 · Reticolo epistemico** è una vista trasversale sul reticolo epistemico e non costituisce un ottavo processo business. La superficie visibile «Normativa & Compliance» rende consultabili riferimenti, ma non determina autonomamente l'applicabilità legale.
 
-## Avvio locale
-
-Requisiti: Node.js **>=22.16.0**, npm e una copia locale del repository.
-
-```bash
-npm ci --ignore-scripts
-npm start
-# apri http://127.0.0.1:4173
-```
-
-Il bind predefinito è su loopback. Non esporre pubblicamente il profilo standard senza i controlli di identità, proxy, segreti e rete richiesti dal runtime. Come launcher locale alternativo: `./ictc.sh start --no-open`. Vedi [DEVELOPMENT](docs/DEVELOPMENT.md).
-
-Per la **DEMO sintetica e isolata**, usa `npm run demo`. `ICTC_PUBLIC_DEMO=1` è un profilo separato, anonimo e in sola lettura, riservato esclusivamente a dati sintetici; non è il profilo di deployment standard. Per il trasporto su Render DEMO servono `ICTC_HOST=0.0.0.0` e `ICTC_ALLOW_NETWORK_BIND=1`; il server usa `demo-runtime-3-0` e nel profilo pubblico `ICTC_TRUSTED_PROXY_SECRET` deve restare non impostato. Requisiti e limiti sono in [ARCHITECTURE](docs/11_ARCHITECTURE.md) e [RELEASE](docs/RELEASE.md).
-
-## Verifiche prima di una proposta
-
-```bash
-npm run docs:check
-npm test
-npm run release:check
-```
-
-Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE.md) collega le modifiche agli owner e ai test. Questi sono **comandi da eseguire**, non attestazioni di passaggio in un ambiente specifico. Browser, sicurezza e verifiche di delivery hanno workflow distinti. Un milione di trial sul modello non equivale a un milione di mutazioni del codice o test con utenti.
-
 ## Architettura e limiti delle evidenze
 
 `public/` (HTML/CSS/JS) -> `src/server.mjs` (HTTP, identità, permessi, handler) -> `src/runtime-store.mjs` / `src/store.mjs` -> persistenza SQLite rafforzata. Le letture usano proiezioni autorizzate; le scritture producono esiti/receipt e richiedono verifica su readback. Il benchmark enterprise PostgreSQL è un substrate distinto, non una prova sostitutiva del runtime SQLite standard.
@@ -149,14 +151,6 @@ Parti dal falsificatore più vicino al cambiamento: [START_HERE](docs/START_HERE
 **Evidenze e export:** PDF, XML, Markdown e ZIP sono rappresentazioni dello stesso dossier autorizzato; non estendono le autorizzazioni di lettura o l'assurance.
 
 **Osservato != vero; proposto != deciso; riferimento != applicabilità; mapping != conformità; completato != verificato; evidenza != conclusione; approvazione interna != assurance indipendente.** L'AI può assistere entro la policy configurata, ma non acquisisce autorità decisionale umana.
-
-## Percorsi verificabili per ricostruire ICTC
-
-- **Capire il prodotto:** [PRODUCT](docs/PRODUCT.md) definisce sette processi, due placeholder e i limiti; le [user journey](docs/04_USER_JOURNEYS.md) descrivono i percorsi operativi.
-- **Ricostruire il software:** [Repository Atlas](docs/REPOSITORY_ATLAS.md) distingue current, lineage, entrypoint e prove; [Architecture AS-IS](docs/11_ARCHITECTURE.md) collega componenti, stato e boundary; [START_HERE](docs/START_HERE.md) indirizza dall'intento all'owner e al falsificatore.
-- **Esercire, verificare, contribuire:** [OPERATIONS](docs/OPERATIONS.md), [DATA_AND_STORAGE](docs/DATA_AND_STORAGE.md), [TESTING](docs/TESTING.md) e [CONTRIBUTING](CONTRIBUTING.md). Prima di usare un asset storico come fonte current, controllare [lifecycle e authority](docs/DOCUMENTATION_STANDARD.md).
-
-**Limite della mappa:** un import non provato non autorizza la cancellazione; un riferimento storico non rende current un file. Il contratto di preservazione e ritiro è in [DOCUMENTATION_STANDARD](docs/DOCUMENTATION_STANDARD.md); PR e commit spiegano la genealogia, mentre gli owner del `main` descrivono l'AS-IS.
 
 ## Dove trovare la fonte giusta
 

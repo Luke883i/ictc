@@ -131,6 +131,14 @@ Per il software un singolo README per ogni file sarebbe rumore. La tracciabilit�
 
 I metadati storici di una PR suggeriscono accoppiamenti e finalità, ma non provano la sicurezza di una delete. Un punteggio statistico può **ordinare la revisione**; non può sostituire il veto deterministico sulle superfici esposte, sull'autorità e sulle prove di non-uso. Non alterare assieme prodotto e oracolo per creare un falso verde.
 
+## Igiene enterprise-candidate del primo ingresso (non cancellazione della lineage)
+
+L’ordine di prima lettura del README è **valore e destinatario → primo percorso operativo → evidenza e limiti CTO**. Product, runtime, governance, release, documentazione e history conservano rispettivamente gli owner correnti; riferimenti a PR e versioni ritirate appartengono a CHANGELOG, PROJECT_TRAJECTORY o ad archivi classificati e non devono apparire come stato corrente nella prima lettura. Il README presenta i limiti e collega gli owner: non è un registro di stato aggiornato automaticamente a ogni merge.
+
+Il repository contiene la **licenza MIT canonica in `LICENSE`**, un **puntatore di compatibilità `LICENSE.md`** e un **NOTICE descrittivo non restrittivo**. Il secondo file non costituisce una seconda licenza: è consumato da verifiche e inventario, quindi nessuna rimozione senza prova di compatibilità esterna e aggiornamento coordinato degli owner. Analogamente, **SBOM e attestazioni candidate sono artefatti generati dal workflow C2 exact-HEAD**, non file sorgente da duplicare manualmente. Il repository deve indicarne il percorso di prova e dichiarare quando la disponibilità hosted è sconosciuta.
+
+Il controllo documentale deve rifiutare sia la falsa promozione di attestazione/enterprise-ready sia l’inversione della prima lettura. La deduplicazione dei testi non autorizza perdita di path, ID, provenance, contratti o storia conservata dal manifest.
+
 ## Reticolo DoD retrogrado per minimalità e standard
 
 **G-MIN — repository minimo, standard e manutenibile senza perdere funzioni o verità:** `G-MIN = G-UNDERSTAND AND G-CURRENT AND G-LEGACY AND G-ASSURANCE AND G-GOVERNANCE` (composizione AND, non media). Ciascun requisito si riferisce agli owner preesistenti:
