@@ -20,6 +20,8 @@ L'AI puo aiutare a interpretare richieste, localizzare owner, generare proposte 
 
 **Posizionamento attuale:** `releaseStage=candidate` ([identità di release](src/contracts/release-identity.json)). ICTC è esercitabile come prototipo locale repository-bounded; **non** è attestato come servizio enterprise in produzione. I fatti live (HEAD, check, review e ruleset) si verificano su GitHub: questa sezione non è uno status dashboard e non crea un secondo registro di conformità.
 
+**Livelli delle evidenze (L1/L2/L3, non una nuova authority):** **L1 — prova ingegneristica**: sorgenti, test e ricevute verificati nel loro perimetro ([testing](docs/TESTING.md)); **L2 — validazione sperimentale di prodotto**: journey e prove con utenti/scenari dichiarati, non deducibili dalla sola CI ([journey](docs/04_USER_JOURNEYS.md)); **L3 — assurance esterna**: review, governance e deployment attestati da soggetti e ambienti competenti ([gap canonici](tests/contracts/gaps.json)). L3 non è obbligatorio per una sperimentazione locale; resta indispensabile per attribuire una validazione esterna o autorizzazione enterprise. Nessun livello supplisce a quello mancante.
+
 | Capacità già presente | Valore ingegneristico | Evidenza/owner da verificare |
 | --- | --- | --- |
 | Sette processi, Home e Evidenze ICTC | Lavoro di compliance con review/decisione umana e provenienza, non legal verdict automatici | [PRODUCT](docs/PRODUCT.md), [contratto prodotto](tests/contracts/product-contract.json), [journey](docs/04_USER_JOURNEYS.md) |
