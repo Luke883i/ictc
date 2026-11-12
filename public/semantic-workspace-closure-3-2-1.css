@@ -298,3 +298,9 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section[o
     grid-column:1/-1;grid-row:auto;margin-top:0;padding-top:.1rem
   }
 }
+
+/* Evidence first-reading: guidance is a short note, not a duplicate navigation authority. */
+#proofView .proof-first-read-task{border-inline-start:3px solid var(--accent,#376c98);padding:.65rem .85rem;margin:.8rem 0 1rem;background:var(--surface-muted,#f5f7fb);line-height:1.55;max-width:75ch}
+#epistemicView .epistemic-technical-identity{grid-column:1/-1;padding:.35rem .6rem;border:1px solid var(--border,#d6dee8);border-radius:9px}
+#epistemicView .epistemic-technical-identity>summary{cursor:pointer;font-weight:600}
+#epistemicView .epistemic-technical-identity[open]>div{display:inline-grid;vertical-align:top;min-width:170px;margin:.4rem .8rem .4rem 0;max-width:100%;overflow-wrap:anywhere}
