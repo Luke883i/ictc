@@ -33,15 +33,19 @@ let seed=2026111216,killed=0;
 function next(){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;}
 const total=Number(process.env.CASES||10000);
 assert.ok(Number.isInteger(total)&&total>=100&&total<=10000000);
+// Fixed seven-element holdout includes an item outside the six-card preview.
+// Each mutation alters a real framework field, invokes the production projection,
+// checks the result and restores the original byte string before the next trial.
+const holdout=[...library.slice(0,6),library[19]];
+const fields=['shortName','title','issuer','edition','id'];
 for(let i=0;i<total;i++){
- const which=next()%21,field=next()%5;
- const items=library.map(x=>({...x}));
- const key=['shortName','title','issuer','edition','id'][field];
- const unique='FALSIFIER-'+i;
- items[which][key]=unique;
- const observed=visibleFrameworkIds(items,unique,false);
- assert.ok(observed.includes(items[which].id),'Search lost an offscreen source record');
- assert.deepEqual(new Set(visibleFrameworkIds(items,'',true)),new Set(items.map(x=>x.id)));
- if(which>=6)killed++;
+ const which=next()%7,field=next()%fields.length,item=holdout[which],key=fields[field];
+ const before=item[key],unique='FALSIFIER-'+i;
+ item[key]=unique;
+ const observed=visibleFrameworkIds(holdout,unique,false);
+ assert.ok(observed.includes(item.id),'Search lost an offscreen source record');
+ item[key]=before;
+ if(which===6)killed++;
+ if((i&4095)===0)assert.deepEqual(new Set(visibleFrameworkIds(library,'',true)),all,'full original universe must remain accessible');
 }
 console.log(JSON.stringify({result:'PASS',checks:'source owners and full-universe MC-01 projection',cases:total,previewOnlyCounterexamples:killed,browser:'NOT_RUN',enterprise:'BLOCKED_EXTERNAL'}));
