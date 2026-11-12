@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { assertActiveInstallers } from '../helpers/active-experience-install.mjs';
 const read=p=>readFile(new URL(p,import.meta.url),'utf8');
 const [ui,router,tools,proofWorkspace,active,styles,baseCss,journeyCss]=await Promise.all([read('../../public/ui/epistemic-lattice.js'),read('../../public/ui/surface-router.js'),read('../../public/ui/global-tools.js'),read('../../public/ui/proof-workspace-3-2.js'),read('../../public/ui/active-experience.js'),read('../../public/styles.css'),read('../../public/epistemic-lattice.css'),read('../../public/procedure-journey-2-1.css')]);
-for(const token of ['EP-01','Reticolo epistemico','Esplora','Flat / raw','Proto-grafo','data-epistemic-mode','projectionSha256'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);
+for(const token of ['EP-01','Reticolo epistemico','Esplora','Tabella tecnica','Visualizza collegamenti','data-epistemic-mode','projectionSha256'])assert.ok(ui.includes(token),`EP-01 UI missing ${token}`);
 for(const level of ['overview','groups','relations','atom'])assert.ok(ui.includes(`${level}:`)||ui.includes(`'${level}'`),`EP-01 exploration level missing ${level}`);
 for(const token of ['Quadro','Gruppi','Relazioni','Atomo','Letture proposte','data-epistemic-basis','basisAtomIds'])assert.ok(ui.includes(token),`EP-01 progressive exploration missing ${token}`);
 for(const token of ['ictc:projection-committed','loadSequence','loadedStateRevision','projectionStale','surfaceContextLevel','ictc:context-changed'])assert.ok(ui.includes(token),`EP-01 convergence hardening missing ${token}`);
