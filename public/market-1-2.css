@@ -10,3 +10,9 @@ html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="cove
 html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] .market-mapping-panel>summary span,
 html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] .market-integrated>summary span{font-weight:var(--weight-heading)}
 html[data-enduser-composition="p2"] #grcWorkspace[data-composition-surface="coverage"] :is(.market-library,.market-mapping-panel,.market-integrated)>summary small{max-width:46ch;text-align:right;color:var(--color-muted);font-size:var(--type-caption);line-height:1.35}
+
+/* MC-01: progressive library keeps all cards/search/editors in the DOM and source universe. */
+#marketFrameworkGrid [data-framework-card][hidden]{display:none!important}
+.market-library-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-block:.75rem 0}
+.market-library-controls [data-market-framework-count]{font-size:.84rem;line-height:1.5;color:var(--muted,#59667a)}
+.market-library-controls button[hidden]{display:none!important}

@@ -54,6 +54,30 @@ for(const required of ['releaseStage=candidate','tests/contracts/gaps.json','aud
  'npm run release:check','NO-GO','review indipendente','GAP-022','F-13','F-15'])
  check(executive.includes(required),'cto: missing evidence/limit in README executive view: '+required);
 check(!/enterprise[- ]ready\s*[:=]\s*(?:true|PASS)/i.test(executive),'cto: unsupported enterprise-ready declaration');
+
+// CORA PR57 transfer: source/readme is a projection, not a second approval
+// or a surrogate for product experimentation and external assurance.
+// This guard reads the existing release, remediation and gap authorities above.
+const evidenceLevels=executive.match(/\*\*Livelli delle evidenze \(L1\/L2\/L3, non una nuova authority\):\*\*([^\n]+)/)?.[1]||'';
+const levelClauses=[
+ ['L1','L1 — prova ingegneristica','[testing](docs/TESTING.md)'],
+ ['L2','L2 — validazione sperimentale di prodotto','[journey](docs/04_USER_JOURNEYS.md)'],
+ ['L3','L3 — assurance esterna','[gap canonici](tests/contracts/gaps.json)']
+];
+const validLevels=text=>levelClauses.every(([,title,link])=>text.includes(title)&&text.includes(link))&&
+ text.includes('L3 non è obbligatorio per una sperimentazione locale')&&
+ text.includes('resta indispensabile per attribuire una validazione esterna')&&
+ text.includes('Nessun livello supplisce a quello mancante');
+check(validLevels(evidenceLevels),'cto: L1/L2/L3 must retain source, experiment, external boundaries');
+for(const [id,title] of levelClauses){
+ check(!validLevels(evidenceLevels.replace(title,id+' — livello superato')),
+  'cto: falsifier accepted unqualified '+id+' rewrite');
+}
+check(releaseIdentity.releaseStage==='candidate'&&
+ ['GAP-012','GAP-022','GAP-007','GAP-009','GAP-014'].every(id=>openGapIds.has(id))&&
+ ['F-13','F-15'].every(id=>findingById.has(id)&&findingById.get(id).status!=='resolved'),
+ 'cto: evidence levels require current, open source owners; do not infer E3/E4 PASS');
+
 // Post-#274 AS-IS must not route newcomers to retired v3 executable paths.
 // Historical/source-input references remain valid and are intentionally excluded.
 for(const failure of validateCurrentAtlasGuides(currentAtlasGuides(atlas)))check(false,failure);
