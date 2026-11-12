@@ -48,12 +48,26 @@ for(const id of ['GAP-007','GAP-009','GAP-012','GAP-014','GAP-022']){
 }
 for(const id of ['C1-COMPAT-CONTRACTION','C3-CAPACITY-CONTRACT','C4-AI-EVAL-DRIFT'])
  check(sliceById.has(id)&&!['done','not-required'].includes(sliceById.get(id).state),'cto: convergence changed, reconcile '+id);
-const executive=readme.split('## Executive view per CTO — enterprise candidate, non enterprise ready')[1]?.split('## Valore per le imprese')[0]||'';
+const executive=readme.split('## Executive view per CTO — enterprise candidate, non enterprise ready')[1]?.split(/^## /m)[0]||'';
 for(const required of ['releaseStage=candidate','tests/contracts/gaps.json','audit/remediation-registry.json',
  'docs/convergence/convergence-authority.json','.github/workflows/enterprise-candidate.yml',
  'npm run release:check','NO-GO','review indipendente','GAP-022','F-13','F-15'])
  check(executive.includes(required),'cto: missing evidence/limit in README executive view: '+required);
 check(!/enterprise[- ]ready\s*[:=]\s*(?:true|PASS)/i.test(executive),'cto: unsupported enterprise-ready declaration');
+// Enterprise-candidate front door: user value and task entry precede assurance.
+const indexOfHeading=heading=>readme.indexOf('## '+heading);
+check(indexOfHeading('Valore per le imprese')>0&&
+ indexOfHeading('Valore per le imprese')<indexOfHeading('Da zero: tre percorsi')&&
+ indexOfHeading('Da zero: tre percorsi')<indexOfHeading('Executive view per CTO'),
+ 'cto: first-read must be value -> user routes -> bounded assurance');
+check(indexOfHeading('Navigazione progressiva')>indexOfHeading('Executive view per CTO')&&
+ !/## Percorsi verificabili per ricostruire ICTC/.test(readme),
+ 'cto: five-lens deep navigation must follow first-read and not duplicate the route table');
+for(const term of ['SBOM CycloneDX','GitHub','provenance','HEAD esatto','workflow configurato'])
+ check(executive.includes(term),'cto: supply chain candidate evidence scope missing: '+term);
+check(!/Evoluzione E2 merged con la PR/.test(readme),
+ 'cto: source truth must not be described as PR-merging chronological status');
+
 
 // CORA PR57 transfer: source/readme is a projection, not a second approval
 // or a surrogate for product experimentation and external assurance.
