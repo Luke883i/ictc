@@ -38,3 +38,26 @@ main{width:min(var(--workbench-max),calc(100% - 32px));}
 @media(max-width:650px){main{width:calc(100% - 20px)}.workbench-home{padding-top:10px}.workbench-home-head h1{font-size:2.2rem}.home-recommendation{grid-template-columns:1fr}.home-recommendation button{justify-self:start}.home-context-grid,.context-matrix,.job-field-grid{grid-template-columns:1fr}.lane-status{grid-template-columns:auto 1fr}.change-types{grid-template-columns:1fr 1fr}.material-recent-body .recent-list{grid-template-columns:1fr}.job-dialog,.workbench-context-dialog{width:100vw;max-width:none;max-height:100dvh;height:100dvh;border-radius:0}.job-dialog-body{max-height:calc(100dvh - 112px)}}
 @media(max-width:420px){.change-types{grid-template-columns:1fr}.core-actions{display:grid;grid-template-columns:1fr;width:100%}.core-actions button{width:100%}}
 @media(forced-colors:active){.process-lane,.home-recommendation,.home-context-18,.job-profile-fields,.context-matrix section,.settings-section-18{border:1px solid CanvasText;background:Canvas;color:CanvasText}}
+/* RN-01: keep the native modal inside the visual viewport; only the form body scrolls. */
+html[data-ictc-experience="stable-2"] dialog#jobDialog[open],
+dialog#jobDialog[open]{
+  display:flex!important;
+  flex-direction:column!important;
+  box-sizing:border-box!important;
+  width:min(980px,calc(100vw - 16px))!important;
+  height:auto!important;
+  max-height:calc(100dvh - 16px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  margin:auto!important;
+  inset:0!important;
+}
+dialog#jobDialog .dialog-head{flex:0 0 auto;min-height:0}
+dialog#jobDialog .job-dialog-body{
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+}
+@media(max-width:650px){dialog#jobDialog[open]{width:calc(100vw - 12px)!important;border-radius:12px!important}}

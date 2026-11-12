@@ -11,8 +11,8 @@ function ensureRnSchedulerDialog(){
   if($('#jobDialog'))return $('#jobDialog');
   const form=$('#missionForm');if(!form)return null;
   const dialog=document.createElement('dialog');
-  dialog.id='jobDialog';dialog.className='job-dialog rn-scheduler-dialog';dialog.dataset.rnSchedulerOwner='rn-scheduler-dialog-1-4';
-  dialog.innerHTML='<div class="dialog-head"><div><p class="eyebrow">RN-01 · contributore AI schedulato</p><h2 id="jobDialogTitle">Programma il mining informativo</h2><p>Definisci obiettivo, baseline e frequenza. Il runtime può produrre soltanto fonti e fatti candidati da verificare.</p></div><button type="button" data-workbench-close="jobDialog" aria-label="Chiudi configurazione job">×</button></div><div class="dialog-body job-dialog-body" data-rn-scheduler-form-slot></div>';
+  dialog.id='jobDialog';dialog.className='job-dialog rn-scheduler-dialog';dialog.dataset.rnSchedulerOwner='rn-scheduler-dialog-1-4';dialog.setAttribute('aria-labelledby','jobDialogTitle');
+  dialog.innerHTML='<div class="dialog-head"><div><p class="eyebrow">RN-01 · contributore AI schedulato</p><h2 id="jobDialogTitle">Pianifica monitoraggio delle fonti</h2><p>Definisci obiettivo, baseline e frequenza. Il runtime può produrre soltanto fonti e fatti candidati da verificare.</p></div><button type="button" data-workbench-close="jobDialog" aria-label="Chiudi configurazione job">×</button></div><div class="dialog-body job-dialog-body" data-rn-scheduler-form-slot></div>';
   document.body.append(dialog);form.hidden=false;form.removeAttribute('hidden');dialog.querySelector('[data-rn-scheduler-form-slot]').append(form);form.classList.remove('focus-card');form.classList.add('rn-scheduler-form');
   dialog.querySelector('[data-workbench-close="jobDialog"]').addEventListener('click',()=>{if(dialog.open)dialog.close();});
   return dialog;
