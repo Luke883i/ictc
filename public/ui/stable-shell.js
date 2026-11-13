@@ -24,7 +24,7 @@ const onboardingLessonSeen=new Map();
 function onboardingLessonKey(chapter){return chapter?.id&&chapter?.contentDigest?chapter.id+':'+chapter.contentDigest:null;}
 function onboardingLessonGate(dialog){
  const chapter=onboardingState()?.chapter,key=onboardingLessonKey(chapter);
- const required=(chapter?.lessons||[]).map(x=>x.id),seen=key?(onboardingLessonSeen.get(key)||new Set()):new Set();
+ const required=(Array.isArray(chapter?.lessons)?chapter.lessons:[]).map(x=>x.id),seen=key?(onboardingLessonSeen.get(key)||new Set()):new Set();
  const count=required.filter(id=>seen.has(id)).length,ready=required.length===3&&count===3;
  const ack=dialog.querySelector('[data-onboarding-ack]'),next=dialog.querySelector('[data-onboarding-next]');
  const counter=dialog.querySelector('[data-onboarding-open-counter]');
