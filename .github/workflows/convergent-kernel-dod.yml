@@ -128,6 +128,25 @@ jobs:
           fi
           target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-convergent-kernel.py?phase=complete"
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state=success -f context='ictc/convergent-kernel-browser' -f description='seven-procedure convergent browser journey passed' -f target_url="$target" >/dev/null || true
+      - name: Capture convergent browser failure phase
+        if: failure()
+        id: browser_phase
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib,re
+          p=pathlib.Path('artifacts/browser-convergent-kernel-error.json')
+          data=json.loads(p.read_text()) if p.exists() else {}
+          def slug(x):
+              return re.sub(r'[^a-zA-Z0-9._:-]+','-',str(x or 'unknown'))[:90]
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as out:
+              out.write('phase='+slug(data.get('phase'))+'\n')
+              out.write('exception='+slug(data.get('type'))+'\n')
+              out.write('message='+slug(data.get('message'))+'\n')
+          PY
+      - name: "Convergent failure · ${{ steps.browser_phase.outputs.phase }} · ${{ steps.browser_phase.outputs.exception }} · ${{ steps.browser_phase.outputs.message }}"
+        if: failure()
+        run: echo "Structured browser diagnostic retained; functional failure is not bypassed."
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
