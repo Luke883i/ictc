@@ -15,6 +15,7 @@ function laws(x){
  inspector:x.anatomy.includes('r8ProcedureInspector')&&x.anatomy.includes('inspectorSources(host)')&&x.anatomy.includes('dialog.showModal()'),
  noDuplicateInspectorWriter:x.anatomy.includes('cloneNode(true)')&&x.anatomy.includes('data-r8-inspector-source')&&x.anatomy.includes('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]')&&x.anatomy.includes('duplicate.remove()'),
  mcSingleWriter:x.market.includes("mapping?.querySelector('form.market-mapping-form')")&&x.market.includes('replaceChildren(mappingForm)')&&x.market.includes("dataset.writer='existing-grc-mapping-form'"),
+ metricProvenance:x.anatomy.includes('row?.metrics')&&x.anatomy.includes('data-metric-authority="procedure-summary"')&&x.anatomy.includes('data-metric-state-revision')&&x.anatomy.includes('data-metric-computation-version')&&!x.anatomy.includes('p.counts?.open'),
  compact:x.css.includes('R8 canonical seven-procedure compact header')&&x.css.includes('min-height:0!important'),
  readable:x.recordCss.includes('minmax(19rem,1.5fr)')&&x.recordCss.includes('flex-wrap:nowrap'),
  };
@@ -29,6 +30,7 @@ const broken=[
  x=>({...x,anatomy:x.anatomy.replaceAll('dialog.showModal()','dialog.show()')}),
  x=>({...x,anatomy:x.anatomy.replaceAll('duplicate.remove()','')}),
  x=>({...x,market:x.market.replaceAll('replaceChildren(mappingForm)','append(mappingForm.cloneNode(true))')}),
+ x=>({...x,anatomy:x.anatomy.replace('data-metric-authority="procedure-summary"','data-metric-authority="unattributed"')}),
  x=>({...x,css:x.css.replaceAll('R8 canonical seven-procedure compact header','old-header')}),
  x=>({...x,recordCss:x.recordCss.replaceAll('minmax(19rem,1.5fr)','minmax(2rem,1fr)')}),
 ];
