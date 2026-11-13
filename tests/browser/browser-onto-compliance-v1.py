@@ -56,7 +56,7 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
   orientation=frame.locator('[data-procedure-orientation-token="guide"]')
   if orientation.locator('[data-orientation-basis]').count()!=1 or orientation.locator('[data-orientation-boundary]').count()!=1:anomaly('orientation-semantic-parts',role,vp,proc['code'],{'basis':orientation.locator('[data-orientation-basis]').count(),'boundary':orientation.locator('[data-orientation-boundary]').count()},{'basis':1,'boundary':1})
   if orientation.is_visible():anomaly('orientation-inline-still-visible',role,vp,proc['code'],True,False)
-  if orientation.get_attribute('data-r8-inspector-source')!='true':anomaly('orientation-source-not-attributed',role,vp,proc['code'],False,True)
+  if orientation.locator('xpath=..').get_attribute('data-r8-inspector-source')!='true':anomaly('orientation-source-not-attributed',role,vp,proc['code'],False,True)
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:6]!=['reference','advanced-context','metrics','attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','advanced-context','metrics','attention','controls','primary'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
