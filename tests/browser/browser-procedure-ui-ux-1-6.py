@@ -18,7 +18,7 @@ PROCESS_READY={
     'RN-01':"()=>{const r=document.querySelector('#monitoringView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2.1\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#missionsList .mission-card')||r.querySelector('[data-rn-open-scheduler]')));}",
     'EC-01':"()=>{const r=document.querySelector('#incidentsView'),f=r?.querySelector(':scope > .procedure-frame[data-procedure-header-contract=\"3.2.1\"]');return !!(f&&f.offsetParent!==null&&(r.querySelector('#incidentList .incident-card')||r.querySelector('.procedure-frame .procedure-primary')));}",
     'AO-01':"""()=>{const r=document.querySelector('#grcWorkspace'),q=r?.querySelector('[data-seq-queue-count]'),s=r?.querySelector('[data-seq-ao-search]'),f=r?.querySelector('[data-seq-ao-filter]'),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(q&&s&&f&&d);}""",
-    'MC-01':"""()=>{const r=document.querySelector('#grcWorkspace'),m=r?.querySelector('[data-editorial-slot="metrics"] [data-procedure-metrics="coverage"]'),f=r?.querySelector('[data-grc-form="mapping"]'),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(m&&f&&d&&r.dataset.editorialOrderValid==='true');}""",
+    'MC-01':"""()=>{const r=document.querySelector('#grcWorkspace'),m=r?.querySelector('[data-editorial-slot="metrics"] [data-procedure-metrics="coverage"]'),f=document.querySelector('#r8CoverageComposerDialog [data-grc-form="mapping"]'),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(m&&f&&d&&r.dataset.editorialOrderValid==='true');}""",
     'AP-01':"""()=>{const r=document.querySelector('#grcWorkspace'),q=r?.querySelector('[data-seq-queue-count]'),d=r?.querySelector(':scope > .procedure-support-rail > [data-editorial-slot="advanced-context"] > .procedure-anatomy');return !!(q&&d);}""",
 }
 
@@ -107,7 +107,14 @@ try:
         PHASE='MC-status-owner';expect(status_context).to_have_count(1);expect(status_context).to_be_visible();assert status_context.get_attribute('data-information-role')=='context';status_context.evaluate('(node)=>window.__mcStatusNode=node')
         PHASE='MC-status-context-stability';stable=page.evaluate("""async()=>{const before=window.__mcStatusNode;document.dispatchEvent(new CustomEvent('ictc:context-changed',{detail:{surface:'grc',procedureId:'coverage',reason:'browser-owner-stability'}}));await Promise.resolve();await Promise.resolve();return before===document.querySelector('#grcWorkspace [data-editorial-slot="metrics"] [data-procedure-metrics="coverage"]')&&document.querySelector('#grcWorkspace')?.dataset.editorialOrderValid==='true';}""");assert stable
         PHASE='MC-kpis';labels=[x.strip() for x in status_context.locator('.procedure-metric span').all_inner_texts()];assert labels[:4]==['Standard tracciati','Gap dichiarati','Irrisolti','Uso da dichiarare'],labels
-        PHASE='MC-mapping-form';form=workspace.locator('[data-grc-form="mapping"]');expect(form).to_have_count(1);assert form.locator('[name="requirementRef"]').get_attribute('required') is not None
+        PHASE='MC-mapping-form';form=page.locator('#r8CoverageComposerDialog [data-grc-form="mapping"]');expect(form).to_have_count(1);assert form.locator('[name="requirementRef"]').get_attribute('required') is not None
+        trigger=workspace.locator('.procedure-frame [data-procedure-primary="coverage"]');expect(trigger).to_be_visible()
+        before_height=page.evaluate('()=>document.documentElement.scrollHeight')
+        trigger.click();composer=page.locator('#r8CoverageComposerDialog');expect(composer).to_be_visible();expect(form).to_be_visible()
+        assert page.evaluate('()=>document.documentElement.scrollHeight')==before_height,'MC modal cannot lengthen document'
+        page.keyboard.press('Escape');expect(composer).not_to_be_visible()
+        assert trigger.evaluate('e=>document.activeElement===e'),'MC focus must return after ESC'
+        assert page.locator('[data-grc-form="mapping"]').count()==1,'MC writer must remain unique'
         PHASE='MC-scope-before-mapping';assert workspace.locator('[data-mapping-decision]').count()==0
         PHASE='MC-cards';mappings=workspace.locator('.grc-list > article');assert_primary_cards(mappings,'MC')
         PHASE='MC-touch';assert_targets(workspace,'MC')

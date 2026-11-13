@@ -183,15 +183,18 @@ def submit_coverage(page):
     scope_rev = wait_advance(page, before_scope)
     check_surface_revision(page, '#grcView', scope_rev)
 
-    PHASE = 'MC-01-mapping-panel'
-    panel = page.locator('#grcWorkspace .market-mapping-panel')
-    expect(panel).to_have_count(1)
-    if panel.get_attribute('open') is None:
-        panel.locator(':scope > summary').click()
-    expect(panel).to_have_attribute('open', '')
-    form = panel.locator('[data-grc-form="mapping"]')
+    PHASE = 'MC-01-mapping-composer'
+    trigger=page.locator('#grcWorkspace .procedure-frame [data-procedure-primary="coverage"]')
+    expect(trigger).to_be_visible()
+    before_height=page.evaluate('()=>document.documentElement.scrollHeight')
+    trigger.click()
+    dialog=page.locator('#r8CoverageComposerDialog')
+    expect(dialog).to_be_visible()
+    form=dialog.locator('[data-grc-form="mapping"]')
     expect(form).to_have_count(1)
     expect(form).to_be_visible()
+    assert page.locator('[data-grc-form="mapping"]').count()==1,'one MC mapping writer'
+    assert page.evaluate('()=>document.documentElement.scrollHeight')==before_height,'mapping dialog must not grow document'
     select_user(form.locator('#marketFrameworkSelect'), framework_id, 'MC-01-framework')
     PHASE = 'MC-01-requirements-load'
     page.wait_for_function("()=>{const s=document.querySelector('#marketRequirementSelect');return s&&!s.disabled&&s.options.length>1}")
