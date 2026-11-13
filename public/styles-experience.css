@@ -70,3 +70,10 @@ html[data-ictc-experience="market-1"] dialog.onboarding-dialog>.dialog-shell{bor
 .onboarding-info-disclosure>summary:focus-visible{outline:3px solid var(--color-brand,#4657d9)}
 .onboarding-info-disclosure p{line-height:1.5;margin:.3rem 0}
 [data-onboarding-open-counter]{margin:.15rem 0;font-size:.8rem;color:var(--color-muted)}
+
+/* MC-01 composer reuses the live form; no duplicate input binding. */
+.r8-coverage-composer{width:min(880px,calc(100vw - 20px));max-width:none;max-height:88dvh;padding:0;border-radius:14px}
+.r8-coverage-composer::backdrop{background:rgba(15,23,42,.52)}
+.r8-coverage-composer>.dialog-shell{max-height:88dvh;display:grid;grid-template-rows:auto minmax(0,1fr)}
+.r8-coverage-composer .dialog-body{overflow:auto;overscroll-behavior:contain;min-height:0}
+.r8-coverage-composer .market-mapping-form{max-width:none}
