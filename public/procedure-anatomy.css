@@ -265,3 +265,16 @@
 .procedure-support-rail .procedure-anatomy,.procedure-support-rail .procedure-anatomy-standards{margin:0}
 .procedure-anatomy-value{grid-column:1/-1}
 @media(max-width:760px){.procedure-support-rail{grid-template-columns:minmax(0,1fr)}}
+
+/* R8: references/context are one out-of-flow, read-only inspector. */
+[data-r8-inspector-source="true"]{display:none!important}
+.r8-procedure-inspector{box-sizing:border-box;width:min(900px,calc(100vw - 24px));max-width:none;max-height:88dvh;padding:0;border:1px solid var(--line,#d8dee8);border-radius:14px;background:var(--surface,#fff);color:var(--color-text,#172033)}
+.r8-procedure-inspector::backdrop{background:rgba(15,23,42,.52)}
+.r8-procedure-inspector>.dialog-shell{max-height:88dvh;display:grid;grid-template-rows:auto minmax(0,1fr)}
+.r8-procedure-inspector .r8-inspector-body{min-height:0;overflow:auto;overscroll-behavior:contain;display:grid;gap:.7rem;padding:1rem}
+.r8-procedure-inspector .r8-inspector-body>details{display:block;max-width:100%;min-width:0;margin:0}
+.r8-procedure-inspector .r8-inspector-body .procedure-anatomy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.r8-procedure-inspector [data-procedure-orientation-token]{position:static}
+.r8-procedure-inspector [data-procedure-orientation-token]>.procedure-orientation-popover{position:static;display:block;max-width:100%}
+.r8-inspector-trigger{min-height:44px;font-size:.82rem;max-width:100%;white-space:normal}
+@media(max-width:620px){.r8-procedure-inspector .r8-inspector-body .procedure-anatomy-grid{grid-template-columns:minmax(0,1fr)}.r8-procedure-inspector .r8-inspector-body{padding:.6rem}}
