@@ -3,7 +3,7 @@
 
 <!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 <!-- programme-header:v2 -->
-> **ROA Research Programme · A-OSP ecosystem** — [Author & programme hub](https://github.com/Luke883i/academics) · [ROA theory](https://github.com/Luke883i/ROA) · [CORA assurance](https://github.com/Luke883i/cora). Every repository is independently readable. Membership does not imply formal derivation, shared runtime, scientific validation, certification, or production readiness. Repository-local code, evidence, and governance remain authoritative.
+> **ROA Research Programme · AOSP ecosystem** — [Author & programme hub](https://github.com/Luke883i/academics) · [ROA theory](https://github.com/Luke883i/ROA) · [CORA assurance](https://github.com/Luke883i/cora). Every repository is independently readable. Membership does not imply formal derivation, shared runtime, scientific validation, certification, or production readiness. Repository-local code, evidence, and governance remain authoritative.
 
 # ICTC — Integrated Compliance Tower Control
 
