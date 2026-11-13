@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PROCEDURE_IDS,normalizeProcedurePresentation,procedurePolicyProjection} from '../../src/runtime/procedure-policy.mjs';
 const read=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8');
-const s=Object.freeze({frame:read('public/ui/procedure-frame.js'),anatomy:read('public/ui/procedure-anatomy.js'),shell:read('public/ui/stable-shell.js'),copy:read('public/ui/product-copy.js'),market:read('public/ui/procedure-market-ux.js'),admin:read('src/runtime/admin.mjs'),css:read('public/semantic-workspace-closure-3-2-1.css'),recordCss:read('public/procedure-record-primitives-2-4.css')});
+const s=Object.freeze({frame:read('public/ui/procedure-frame.js'),anatomy:read('public/ui/procedure-anatomy.js'),shell:read('public/ui/stable-shell.js'),copy:read('public/ui/product-copy.js'),market:read('public/ui/procedure-market-ux.js'),admin:read('src/runtime/admin.mjs'),css:read('public/semantic-workspace-closure-3-2-1.css'),recordCss:read('public/procedure-record-primitives-2-4.css'),anatomyCss:read('public/procedure-anatomy.css')});
 function laws(x){
  return {
  seven:PROCEDURE_IDS.length===7,
@@ -16,7 +16,7 @@ function laws(x){
  noDuplicateInspectorWriter:x.anatomy.includes('cloneNode(true)')&&x.anatomy.includes('data-r8-inspector-source')&&x.anatomy.includes('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]')&&x.anatomy.includes('duplicate.remove()'),
  mcSingleWriter:x.market.includes("mapping?.querySelector('form.market-mapping-form')")&&x.market.includes('replaceChildren(mappingForm)')&&x.market.includes("dataset.writer='existing-grc-mapping-form'"),
  metricProvenance:x.anatomy.includes('row?.metrics')&&x.anatomy.includes('data-metric-authority="procedure-summary"')&&x.anatomy.includes('data-metric-state-revision')&&x.anatomy.includes('data-metric-computation-version')&&!x.anatomy.includes('p.counts?.open'),
- compact:x.css.includes('R8 canonical seven-procedure compact header')&&x.css.includes('min-height:0!important'),
+ compact:x.anatomyCss.includes('R8 canonical seven-procedure compact header')&&x.anatomyCss.includes('min-height:0!important')&& !x.css.includes('#grcWorkspace'),
  readable:x.recordCss.includes('minmax(19rem,1.5fr)')&&x.recordCss.includes('flex-wrap:nowrap'),
  };
 }
@@ -31,7 +31,7 @@ const broken=[
  x=>({...x,anatomy:x.anatomy.replaceAll('duplicate.remove()','')}),
  x=>({...x,market:x.market.replaceAll('replaceChildren(mappingForm)','append(mappingForm.cloneNode(true))')}),
  x=>({...x,anatomy:x.anatomy.replace('data-metric-authority="procedure-summary"','data-metric-authority="unattributed"')}),
- x=>({...x,css:x.css.replaceAll('R8 canonical seven-procedure compact header','old-header')}),
+ x=>({...x,anatomyCss:x.anatomyCss.replaceAll('R8 canonical seven-procedure compact header','old-header')}),
  x=>({...x,recordCss:x.recordCss.replaceAll('minmax(19rem,1.5fr)','minmax(2rem,1fr)')}),
 ];
 for(const [i,mutation] of broken.entries()){const observed=laws(mutation(s));assert.ok(Object.values(observed).some(v=>!v),'mutant survived '+i);}

@@ -52,6 +52,12 @@ html[data-uiux-absorption="656"] .market-framework-card{min-width:0;overflow-wra
  html[data-uiux-absorption="656"] #grcWorkspace .grc-list>.procedure-record-card{grid-template-columns:minmax(19rem,1.5fr) minmax(0,1.6fr) minmax(0,1.2fr) minmax(7rem,auto)!important;grid-template-areas:"head summary facts actions"!important;column-gap:.5rem!important}
  html[data-uiux-absorption="656"] #grcWorkspace .grc-list>.procedure-record-card>header{min-width:19rem!important}
 }
+@media(min-width:1200px){
+ html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>.procedure-record-card>header{min-width:19rem!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"status" "title" "meta"!important;align-items:start!important}
+ html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>.procedure-record-card>header>h3{grid-area:title!important;min-width:0!important;width:100%!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important}
+ html[data-native-semantic-lattice="3.2.0"] #grcWorkspace .grc-list>.procedure-record-card>header>.status-pill{grid-area:status!important;justify-self:start!important;max-width:100%!important}
+}
+
 @media(min-width:1024px){
  #grcWorkspace .procedure-queue-tools.surface-toolbar{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:.35rem;min-height:44px}
  #grcWorkspace .procedure-queue-tools.surface-toolbar>input[type="search"]{flex:1 1 230px;min-width:130px;max-width:none;width:auto}

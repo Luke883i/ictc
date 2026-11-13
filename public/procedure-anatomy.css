@@ -278,3 +278,13 @@
 .r8-procedure-inspector [data-procedure-orientation-token]>.procedure-orientation-popover{position:static;display:block;max-width:100%}
 .r8-inspector-trigger{min-height:44px;font-size:.82rem;max-width:100%;white-space:normal}
 @media(max-width:620px){.r8-procedure-inspector .r8-inspector-body .procedure-anatomy-grid{grid-template-columns:minmax(0,1fr)}.r8-procedure-inspector .r8-inspector-body{padding:.6rem}}
+
+/* Procedure-owned compact R8 header; leave Processi/Evidenze closure isolated. */
+/* R8 canonical seven-procedure compact header; preserve minimum touch targets. */
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"]{
+ padding:.38rem .72rem!important;margin:.12rem 0 .32rem!important;min-height:0!important;
+}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main{gap:.28rem!important;min-height:0!important;align-items:center}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{font-size:.875rem!important;line-height:1.27!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity{gap:.28rem!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-actions{gap:.3rem!important}
