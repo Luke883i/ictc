@@ -91,13 +91,22 @@ def audit_procedure(page,code,pid,root):
     visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
     if pid not in ['monitoring','incidents']:
         PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
-    PHASE=f'{code}-orientation'
-    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Perché esiste'); expect(orientation).to_contain_text('Cosa non conclude'); expect(orientation).not_to_contain_text('Riferimenti')
-    PHASE=f'{code}-context'
-    anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]'); expect(anatomy).to_have_count(1); expect(anatomy).to_be_visible()
+    PHASE=f'{code}-inspector-source'
+    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_hidden()
+    anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]');expect(anatomy).to_have_count(1);expect(anatomy).to_be_hidden()
     assert r.locator('.procedure-decision-frame details.composition-process-context:visible').count()==0
-    refs=r.locator('.procedure-anatomy-standard-head[data-a6-ux4-reference-band="canonical"]')
-    if refs.count(): expect(refs.first).to_be_visible()
+    trigger=r.locator(f'.procedure-frame [data-r8-inspector-open="{pid}"]');expect(trigger).to_be_visible()
+    assert trigger.get_attribute('data-a6-ux4-effect')=='read-only-disclosure',(code,'unclassified inspector action')
+    before_height=page.evaluate('()=>document.documentElement.scrollHeight')
+    trigger.click();inspector=page.locator('#r8ProcedureInspector');expect(inspector).to_be_visible()
+    PHASE=f'{code}-inspector-content'
+    clone=inspector.locator('[data-procedure-orientation="compact"]');expect(clone).to_be_visible();expect(clone).to_contain_text('Perché esiste');expect(clone).to_contain_text('Cosa non conclude');expect(clone).not_to_contain_text('Riferimenti')
+    context=inspector.locator(f'[data-procedure-anatomy="{pid}"]');expect(context).to_be_visible()
+    refs=inspector.locator('.procedure-anatomy-standard-head[data-a6-ux4-reference-band="canonical"]')
+    if refs.count():expect(refs.first).to_be_visible()
+    assert page.evaluate('()=>document.documentElement.scrollHeight')==before_height,(code,'modal grew document')
+    assert inspector.locator('form,input,select,textarea,[data-service],button:not([data-r8-inspector-close])').count()==0,(code,'inspector duplicated writer')
+    page.keyboard.press('Escape');expect(inspector).not_to_be_visible();assert trigger.evaluate('e=>document.activeElement===e'),(code,'focus-return')
     PHASE=f'{code}-action-effects'
     visible=r.locator('button:visible,a[href]:visible,summary:visible'); sample=min(visible.count(),30); assert sample>0
     assert all(visible.nth(i).get_attribute('data-a6-ux4-effect') for i in range(sample)),(code,'unclassified control')
