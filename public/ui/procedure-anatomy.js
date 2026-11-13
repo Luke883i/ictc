@@ -52,7 +52,9 @@ function openR8Inspector(id,trigger){
  let count=0;
  for(const node of inspectorSources(host)){
   const copy=node.cloneNode(true);copy.hidden=false;copy.inert=false;copy.removeAttribute('aria-hidden');copy.removeAttribute('data-r8-inspector-source');
-  for(const duplicate of copy.querySelectorAll('[data-service="proof"]'))duplicate.remove();
+  // The inspector is a read-only projection. Do not clone any command surface,
+  // including delegated writers, buttons, form fields, in-app routing, or proof CTAs.
+  for(const duplicate of copy.querySelectorAll('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]'))duplicate.remove();
   if(copy.matches('details'))copy.open=true;
   body.append(copy);count++;
  }

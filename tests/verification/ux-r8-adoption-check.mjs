@@ -13,7 +13,7 @@ function laws(x){
  noComprehension:x.shell.includes('Conferma')&&x.shell.includes('onboarding')&&x.copy.includes('problemNarrative:'),
  homeActions:x.copy.includes('responseSteps:Object.freeze(')&&x.shell.includes('home-compliance-response-steps'),
  inspector:x.anatomy.includes('r8ProcedureInspector')&&x.anatomy.includes('inspectorSources(host)')&&x.anatomy.includes('dialog.showModal()'),
- noDuplicateInspectorWriter:x.anatomy.includes('cloneNode(true)')&&x.anatomy.includes('data-r8-inspector-source')&&x.anatomy.includes('duplicate.remove()'),
+ noDuplicateInspectorWriter:x.anatomy.includes('cloneNode(true)')&&x.anatomy.includes('data-r8-inspector-source')&&x.anatomy.includes('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]')&&x.anatomy.includes('duplicate.remove()'),
  mcSingleWriter:x.market.includes("mapping?.querySelector('form.market-mapping-form')")&&x.market.includes('replaceChildren(mappingForm)')&&x.market.includes("dataset.writer='existing-grc-mapping-form'"),
  compact:x.css.includes('R8 canonical seven-procedure compact header')&&x.css.includes('min-height:0!important'),
  readable:x.recordCss.includes('minmax(19rem,1.5fr)')&&x.recordCss.includes('flex-wrap:nowrap'),
