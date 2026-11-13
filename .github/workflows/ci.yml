@@ -148,6 +148,24 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Capture V2.1 exact failure phase
+        id: v21_failure
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          evidence=json.loads(p.read_text()) if p.exists() else {}
+          def clean(value):
+              return re.sub(r'[^a-zA-Z0-9._-]+','-',str(value or 'none'))[:90]
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as out:
+              out.write('phase='+clean(evidence.get('phase'))+'\n')
+              out.write('error='+clean(evidence.get('type'))+'\n')
+          PY
+      - name: "V2.1 phase witness · ${{ steps.v21_failure.outputs.phase }} · ${{ steps.v21_failure.outputs.error }}"
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        run: echo "Exact failed phase recorded in the previous step; no oracle bypass."
       - name: Verify native browser writer network evidence for seven-process journey
         if: ${{ matrix.id == 'v2-1-procedure-journey' }}
         run: node tests/verification/consumer-writer-evidence-gate.mjs --browser-only --require-browser
