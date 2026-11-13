@@ -42,7 +42,7 @@ const broken=[
  x=>({...x,anatomy:x.anatomy.replace('data-metric-authority="procedure-summary"','data-metric-authority="unattributed"')}),
  x=>({...x,anatomy:x.anatomy.replaceAll('data-metric-state-revision','data-metric-stale-revision')}),
  x=>({...x,anatomy:x.anatomy.replaceAll('data-metric-computation-version','data-metric-unknown-version')}),
- x=>({...x,frame:x.frame.replace('ensureMaturityLegend(host)','void 0')}),
+ x=>({...x,frame:x.frame.replaceAll('ensureMaturityLegend(host)','void 0')}),
  x=>({...x,market:x.market.replace("dataset.writer='existing-grc-mapping-form'","dataset.writer='duplicate-form'")}),
  x=>({...x,anatomyCss:x.anatomyCss.replaceAll('R8 canonical seven-procedure compact header','old-header')}),
  x=>({...x,recordCss:x.recordCss.replaceAll('minmax(19rem,1.5fr)','minmax(2rem,1fr)')}),
