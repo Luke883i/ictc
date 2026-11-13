@@ -64,3 +64,9 @@ html[data-ictc-experience="market-1"] dialog.onboarding-dialog>.dialog-shell{bor
 @media(max-width:620px){html[data-ictc-experience="market-1"] dialog.onboarding-dialog{width:calc(100vw - .75rem)!important;max-height:calc(100dvh - .75rem)!important;border-radius:16px!important}html[data-ictc-experience="market-1"] dialog.onboarding-dialog>.dialog-shell{min-height:calc(100dvh - .75rem)!important;max-height:calc(100dvh - .75rem)!important;border-radius:inherit!important}.onboarding-dialog .onboarding-lesson-action{font-size:.73rem}}
 @media(forced-colors:active){.onboarding-dialog .onboarding-lessons>details{border-color:CanvasText}.onboarding-dialog .onboarding-lesson-action{border-color:ButtonText;color:ButtonText}}
 @media(prefers-reduced-motion:reduce){.onboarding-dialog .onboarding-lesson-chevron{transition:none}}
+
+.onboarding-info-disclosure{margin:.45rem 0;padding:.35rem .55rem;border:1px solid var(--color-border,#dce4ef);border-radius:9px}
+.onboarding-info-disclosure>summary{cursor:pointer;min-height:32px;font-size:.82rem;font-weight:650}
+.onboarding-info-disclosure>summary:focus-visible{outline:3px solid var(--color-brand,#4657d9)}
+.onboarding-info-disclosure p{line-height:1.5;margin:.3rem 0}
+[data-onboarding-open-counter]{margin:.15rem 0;font-size:.8rem;color:var(--color-muted)}

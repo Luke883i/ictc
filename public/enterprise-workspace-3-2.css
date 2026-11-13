@@ -271,3 +271,8 @@ html[data-native-semantic-lattice="3.2.0"] #homeView #homePriorities{margin-top:
 #homeView .home-compliance-heading>button[data-onboarding-open]:focus-visible{outline:3px solid var(--color-brand);outline-offset:3px}
 #homeView .home-compliance-answer p{inline-size:100%;min-width:0;max-width:none;overflow-wrap:break-word}
 @media(max-width:540px){#homeView .home-compliance-heading>button[data-onboarding-open]{margin-left:0}}
+
+/* R8 narrative problem versus actionable answer; no decorative bullets in the former. */
+#homeView .home-compliance-narrative{line-height:1.62;max-width:90ch;overflow-wrap:break-word}
+#homeView .home-compliance-response-steps{margin:.2rem 0;padding-left:1.4rem;list-style:disc;display:grid;gap:.3rem}
+#homeView .home-compliance-response-steps li{line-height:1.5;min-width:0;overflow-wrap:anywhere}
