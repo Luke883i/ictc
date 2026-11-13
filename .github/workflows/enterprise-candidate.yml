@@ -117,7 +117,7 @@ jobs:
         if: steps.release_contract.outcome == 'failure'
         continue-on-error: true
         run: npm run test:current:runtime
-      - name: Propagate release contract failure
+      - name: "Release contract failed · stable=${{ steps.release_stable.outcome }} · semantic=${{ steps.release_semantic.outcome }} · runtime=${{ steps.release_runtime.outcome }}"
         if: steps.release_contract.outcome == 'failure'
         run: |
           echo "release=${{ steps.release_contract.outcome }} stable=${{ steps.release_stable.outcome }} semantic=${{ steps.release_semantic.outcome }} runtime=${{ steps.release_runtime.outcome }}"
