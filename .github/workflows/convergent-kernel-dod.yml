@@ -13,6 +13,19 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact checked-out source SHA
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
@@ -41,6 +54,19 @@ jobs:
       statuses: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact checked-out source SHA
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
