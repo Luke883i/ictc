@@ -53,7 +53,15 @@ try:
    PHASE=f'anatomy-standard-summary-name:{code}';expect(summary.locator('.procedure-standard-name')).not_to_be_empty()
    PHASE=f'anatomy-standard-summary-meta-cardinality:{code}';meta=summary.locator('.procedure-standard-meta');expect(meta).to_have_count(1)
    PHASE=f'anatomy-standard-summary-meta:{code}';expect(meta).to_contain_text('passaggi')
-   summary.click();PHASE=f'anatomy-standard-detail:{code}';expect(first).to_contain_text('Come ICTC applica');expect(first).to_contain_text('Prova:');expect(first).to_contain_text('Limite:')
+   PHASE=f'anatomy-standard-summary-activate:{code}'
+   try:
+    summary.click(timeout=4000)
+   except Exception as click_error:
+    geometry=summary.evaluate("""e=>{const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=Math.max(0,Math.min(innerHeight-1,r.top+r.height/2)),hit=document.elementFromPoint(x,y);return{summaryRect:[Math.round(r.x),Math.round(r.y),Math.round(r.width),Math.round(r.height)],viewport:[innerWidth,innerHeight],hit:hit?.tagName+'#'+(hit?.id||'')+'.'+(hit?.className||''),topDialogs:[...document.querySelectorAll('dialog[open]')].map(d=>d.id),inertAncestor:e.closest('[inert]')?.tagName||null,scrollY:scrollY}}""")
+    reason=('intercepted' if 'intercepts pointer events' in str(click_error) else 'unstable' if 'not stable' in str(click_error) else 'out-of-view' if 'outside of the viewport' in str(click_error) else 'no-actionable-point')
+    PHASE=f'anatomy-standard-summary-activate:{code}:{reason}:hit-{str(geometry.get("hit") or "none")[:24]}'
+    raise AssertionError({'message':'nested standard summary not pointer-operable','reason':reason,'geometry':geometry,'original':str(click_error)[-950:]}) from click_error
+   PHASE=f'anatomy-standard-detail:{code}';expect(first).to_contain_text('Come ICTC applica');expect(first).to_contain_text('Prova:');expect(first).to_contain_text('Limite:')
    expect(first.locator('.procedure-standard-practice')).not_to_be_empty();summary.click()
    assert page.evaluate('()=>document.documentElement.scrollHeight')==height_before,(pid,'inspector changed page document height')
    page.keyboard.press('Escape');expect(dialog).not_to_be_visible();assert trigger.evaluate('e=>document.activeElement===e'),(pid,'focus not returned')
