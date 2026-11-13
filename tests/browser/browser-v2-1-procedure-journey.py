@@ -6,7 +6,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 # A failed or partial run cannot reuse successful witnesses from an earlier run.
-for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json'):
+for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json', 'browser-v2-1-procedure-journey-error.json'):
     (ART/stale).unlink(missing_ok=True)
 WITNESS_RUN_ID = os.urandom(16).hex()
 GIT_HEAD = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
@@ -17,7 +17,7 @@ FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'
 PROOF_READING_ORDER = 'facts>decisions>trace>evidence-basis>epistemic>integrity>external>export'
 
 def fail(e):
-    payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
+    payload = {'ok':False,'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
     (ART/'browser-v2-1-procedure-journey-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
     print(f'::error title=browser-v2-1-procedure-journey::{PHASE}: {type(e).__name__}: {e}', flush=True)
 
