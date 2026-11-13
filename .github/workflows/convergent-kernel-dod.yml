@@ -94,7 +94,7 @@ jobs:
         id: browser_failure_phase
         shell: bash
         run: |
-          node -e 'const fs=require("node:fs");let p={};try{p=JSON.parse(fs.readFileSync("artifacts/browser-convergent-kernel-error.json","utf8"))}catch{}const slug=x=>String(x||"unattributed").replace(/[^A-Za-z0-9._-]/g,"-").slice(0,70);fs.appendFileSync(process.env.GITHUB_OUTPUT,"label="+slug(p.phase)+"-"+slug(p.type)+"\\n")'
+          node -e 'const fs=require("node:fs");let p={};try{p=JSON.parse(fs.readFileSync("artifacts/browser-convergent-kernel-error.json","utf8"))}catch{}const slug=x=>String(x||"unattributed").replace(/[^A-Za-z0-9._-]/g,"-").slice(0,70);fs.appendFileSync(process.env.GITHUB_OUTPUT,"label="+slug(p.phase)+"-"+slug(p.type)+String.fromCharCode(10))'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()
         with:
