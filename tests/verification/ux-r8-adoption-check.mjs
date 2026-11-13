@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PROCEDURE_IDS,normalizeProcedurePresentation,procedurePolicyProjection} from '../../src/runtime/procedure-policy.mjs';
 const read=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8');
-const s=Object.freeze({cross:read('public/ui/cross-procedure-create.js'),frame:read('public/ui/procedure-frame.js'),anatomy:read('public/ui/procedure-anatomy.js'),shell:read('public/ui/stable-shell.js'),copy:read('public/ui/product-copy.js'),market:read('public/ui/procedure-market-ux.js'),admin:read('src/runtime/admin.mjs'),css:read('public/semantic-workspace-closure-3-2-1.css'),recordCss:read('public/procedure-record-primitives-2-4.css'),anatomyCss:read('public/procedure-anatomy.css')});
+const s=Object.freeze({cross:read('public/ui/cross-procedure-create.js'),frame:read('public/ui/procedure-frame.js'),anatomy:read('public/ui/procedure-anatomy.js'),shell:read('public/ui/stable-shell.js'),copy:read('public/ui/product-copy.js'),market:read('public/ui/procedure-market-ux.js'),admin:read('src/runtime/admin.mjs'),css:read('public/semantic-workspace-closure-3-2-1.css'),recordCss:read('public/procedure-record-primitives-2-4.css'),semanticSurface:read('public/ui/semantic-surface-a6-ux4.js'),anatomyCss:read('public/procedure-anatomy.css')});
 function laws(x){
  return {
  seven:PROCEDURE_IDS.length===7,
@@ -14,6 +14,7 @@ function laws(x){
  homeActions:x.copy.includes('responseSteps:Object.freeze(')&&x.shell.includes('home-compliance-response-steps'),
  inspector:x.anatomy.includes('r8ProcedureInspector')&&x.anatomy.includes('inspectorSources(host)')&&x.anatomy.includes('dialog.showModal()'),
  noDuplicateInspectorWriter:x.anatomy.includes('cloneNode(true)')&&x.anatomy.includes('data-r8-inspector-source')&&x.anatomy.includes('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]')&&x.anatomy.includes('duplicate.remove()'),
+ inspectorEffectAfterSemanticConvergence:x.semanticSurface.includes("if(node.matches('[data-r8-inspector-open]'))return'read-only-disclosure'"),
  crossCreateOutsideInspector:x.cross.includes("anatomy.parentElement?.closest('[hidden]')")&&x.cross.includes("anatomy.insertAdjacentElement('afterend',row)"),
  mcRequiredBinding:x.market.includes('name="requirementRef" id="marketRequirementSelect" required disabled'),
  mcSingleWriter:x.market.includes("mapping?.querySelector('form.market-mapping-form')")&&x.market.includes('replaceChildren(mappingForm)')&&x.market.includes("dataset.writer='existing-grc-mapping-form'"),
@@ -32,6 +33,7 @@ const broken=[
  x=>({...x,copy:x.copy.replace('responseSteps:Object.freeze(','responseStepsDisabled:Object.freeze(')}),
  x=>({...x,anatomy:x.anatomy.replaceAll('dialog.showModal()','dialog.show()')}),
  x=>({...x,anatomy:x.anatomy.replaceAll('duplicate.remove()','')}),
+ x=>({...x,semanticSurface:x.semanticSurface.replace("if(node.matches('[data-r8-inspector-open]'))return'read-only-disclosure';",'')}),
  x=>({...x,market:x.market.replaceAll('replaceChildren(mappingForm)','append(mappingForm.cloneNode(true))')}),
  x=>({...x,market:x.market.replace('name="requirementRef" id="marketRequirementSelect" required disabled','name="requirementRef" id="marketRequirementSelect" disabled')}),
  x=>({...x,cross:x.cross.replace("anatomy.parentElement?.closest('[hidden]')","anatomy.closest('[hidden]')")}),
