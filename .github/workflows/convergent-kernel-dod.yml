@@ -89,6 +89,19 @@ jobs:
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
+      - name: Identify bounded browser failure provenance
+        if: failure()
+        id: browser_failure_phase
+        shell: bash
+        run: |
+          node -e 'const fs=require("node:fs");let p={};try{p=JSON.parse(fs.readFileSync("artifacts/browser-convergent-kernel-error.json","utf8"))}catch{}const slug=x=>String(x||"unattributed").replace(/[^A-Za-z0-9._-]/g,"-").slice(0,70);fs.appendFileSync(process.env.GITHUB_OUTPUT,"label="+slug(p.phase)+"-"+slug(p.type)+"\\n")'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: convergent-kernel-failure-${{ steps.browser_failure_phase.outputs.label || 'unattributed' }}
+          path: artifacts/browser-convergent-kernel-error.json
+          if-no-files-found: warn
+          retention-days: 30
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
