@@ -150,7 +150,22 @@ def desktop(browser):
         PHASE=f'home-onboarding-progress-{step+1}'
         next_button=onboarding_dialog.locator('[data-onboarding-next]:visible'); expect(next_button).to_have_count(1)
         expect(next_button).to_be_disabled()
-        onboarding_dialog.locator('[data-onboarding-ack]').check()
+        acknowledgment=onboarding_dialog.locator('[data-onboarding-ack]')
+        expect(acknowledgment).to_be_disabled()
+        counter=onboarding_dialog.locator('[data-onboarding-open-counter]')
+        expect(counter).to_have_text('0/3 approfondimenti aperti')
+        lessons=onboarding_dialog.locator('details[data-homeboarding-lesson]')
+        expect(lessons).to_have_count(3)
+        assert len(ONBOARDING_WRITES)==step,('premature onboarding write',step,ONBOARDING_WRITES)
+        for lesson_index in range(3):
+            lessons.nth(lesson_index).locator(':scope > summary').click()
+            expect(counter).to_have_text(f'{lesson_index+1}/3 approfondimenti aperti')
+            expect(next_button).to_be_disabled()
+            if lesson_index<2: expect(acknowledgment).to_be_disabled()
+        expect(acknowledgment).to_be_enabled()
+        expect(next_button).to_be_disabled()
+        acknowledgment.check()
+        expect(next_button).to_be_enabled()
         with page.expect_response(lambda response: urllib.parse.urlparse(response.url).path=='/api/profile/onboarding' and response.request.method=='PATCH') as response_info:
             next_button.click()
         assert response_info.value.ok,(step,response_info.value.status)
