@@ -36,7 +36,7 @@ function ensureR8Inspector(){
 function inspectorSources(host){
  return [host.querySelector('[data-procedure-standard-applications]'),
   host.querySelector('[data-procedure-anatomy]'),host.querySelector(':scope > [data-compliance-context]'),
-  host.querySelector('.procedure-frame [data-procedure-orientation-token]')].filter(Boolean);
+  host.querySelector('.procedure-frame [data-procedure-orientation="compact"]')].filter(Boolean);
 }
 function mountR8Inspector(host,id){
  const actions=host.querySelector(':scope > .procedure-frame .procedure-frame-actions');
@@ -56,6 +56,8 @@ function openR8Inspector(id,trigger){
   // including delegated writers, buttons, form fields, in-app routing, or proof CTAs.
   for(const duplicate of copy.querySelectorAll('button,[role="button"],form,input,select,textarea,[data-service],[data-grc-process]'))duplicate.remove();
   if(copy.matches('details'))copy.open=true;
+  // The compact orientation has an outer wrapper and inner disclosure; both matter.
+  for(const detail of copy.querySelectorAll('details[data-procedure-orientation-token]'))detail.open=true;
   body.append(copy);count++;
  }
  if(!count){const empty=document.createElement('p');empty.textContent='Nessun riferimento aggiuntivo disponibile.';body.append(empty);}
