@@ -1,11 +1,15 @@
-import json, os, pathlib, traceback
+import json, os, pathlib, traceback, subprocess
 from playwright.sync_api import expect, sync_playwright
 from browser_test_support import ensure_onboarded
 ROOT=pathlib.Path(__file__).resolve().parents[2]; ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+WITNESS_RUN_ID=os.urandom(16).hex()
+GIT_HEAD=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+for stale in ('browser-v2-epistemic.json','browser-v2-epistemic-error.json'):
+ (ART/stale).unlink(missing_ok=True)
 BASE=os.environ.get('ICTC_BASE_URL','http://127.0.0.1:4173').rstrip('/'); PHASE='init'
 PROOF_READING_ORDER='facts>decisions>trace>evidence-basis>epistemic>integrity>external>export'
 def fail(e):
- payload={'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v2-epistemic-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-v2-epistemic::{PHASE}: {type(e).__name__}: {e}',flush=True)
+ payload={'ok':False,'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}; (ART/'browser-v2-epistemic-error.json').write_text(json.dumps(payload,indent=2),encoding='utf8'); print(f'::error title=browser-v2-epistemic::{PHASE}: {type(e).__name__}: {e}',flush=True)
 def no_overflow(page):
  m=page.evaluate('()=>[innerWidth,document.documentElement.scrollWidth,document.body.scrollWidth]'); assert m[1]<=m[0]+1 and m[2]<=m[0]+1,m
 def named(page):
@@ -54,6 +58,6 @@ try:
   PHASE='auditor-rbac';ac=browser.new_context(viewport={'width':1280,'height':850});ac.add_init_script("localStorage.setItem('ictc-role','auditor');localStorage.setItem('ictc-service','processes')");a=ac.new_page();a.goto(BASE+'/?view=processes',wait_until='networkidle');ensure_onboarded(a,BASE,'auditor');entry=open_epistemic_entry(a,True);entry.click();expect(a.locator('#epistemicView')).to_be_visible();open_deep_tools(a);expect(a.locator('#epistemicInferencePanel')).to_be_visible();openp(a,'AP-01');assert a.locator('.procedure-cross-tools[data-cross-tools="actions"] [data-cross-create]').count()==0;ac.close()
   PHASE='mobile-epistemic';mc=browser.new_context(viewport={'width':390,'height':844});mc.add_init_script("localStorage.setItem('ictc-role','admin');localStorage.setItem('ictc-service','processes')");m=mc.new_page();m.goto(BASE+'/?view=processes',wait_until='networkidle');ensure_onboarded(m,BASE,'admin');entry=open_epistemic_entry(m,True);entry.click();expect(m.locator('#epistemicView')).to_be_visible();no_overflow(m);open_technical_modes(m);m.locator('[data-epistemic-mode="graph"]').click();no_overflow(m);expect(m.locator('.epistemic-graph-canvas')).to_be_visible();m.screenshot(path=str(ART/'ux-v20-epistemic-mobile.png'),full_page=True);mc.close()
   assert not errors,errors
-  out={'ok':True,'profile':'2.0-epistemic-lattice-pre-candidate+semantic-composition-3.1+s4-a3+p2','businessProcedures':7,'metaProcedure':'EP-01','metaEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'proofSecondaryDefault':'closed','duplicateProofMetaEntry':False,'evidenceEntryReadiness':'condition-based','flatRaw':True,'protoGraph':True,'technicalModesProgressive':True,'deepToolsProgressive':True,'sameProjectionDigest':True,'humanOnUiGate':True,'humanOnServerGate':True,'adminAccess':True,'auditorAccess':True,'userDenied':True,'crossProcedureReceipt':True,'mobileOverflow':False,'surfacePrimitiveContract':'3.1','enduserComposition':'P2','evidenceClass':'E2-server-backed-browser+epistemic-lattice'};(ART/'browser-v2-epistemic.json').write_text(json.dumps(out,indent=2),encoding='utf8');print('browser-v2-epistemic: complete',flush=True);ctx.close();browser.close()
+  out={'ok':True,'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,'profile':'2.0-epistemic-lattice-pre-candidate+semantic-composition-3.1+s4-a3+p2','businessProcedures':7,'metaProcedure':'EP-01','metaEntrySurface':'Evidenze ICTC / progressive canonical disclosure after evidence meaning','proofReadingOrder':PROOF_READING_ORDER,'proofSecondaryDefault':'closed','duplicateProofMetaEntry':False,'evidenceEntryReadiness':'condition-based','flatRaw':True,'protoGraph':True,'technicalModesProgressive':True,'deepToolsProgressive':True,'sameProjectionDigest':True,'humanOnUiGate':True,'humanOnServerGate':True,'adminAccess':True,'auditorAccess':True,'userDenied':True,'crossProcedureReceipt':True,'mobileOverflow':False,'surfacePrimitiveContract':'3.1','enduserComposition':'P2','evidenceClass':'E2-server-backed-browser+epistemic-lattice'};(ART/'browser-v2-epistemic.json').write_text(json.dumps(out,indent=2),encoding='utf8');print('browser-v2-epistemic: complete',flush=True);ctx.close();browser.close()
 except BaseException as e:
  fail(e);traceback.print_exc();raise
