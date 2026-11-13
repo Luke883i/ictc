@@ -34,9 +34,9 @@ def placement_ok(page,key,root):
 
 def check_context(page,key,root):
  def mark(name): out['phase']=f'{key}-{name}'
- mark('present'); loc=page.locator(f'{root} [data-compliance-context="{key}"]'); assert loc.count()==1,(key,loc.count()); expect(loc).to_be_visible()
+ mark('present'); loc=page.locator(f'{root} [data-compliance-context="{key}"]'); assert loc.count()==1,(key,loc.count())
  if key in ('monitoring','incidents','grc_objects','grc_coverage','grc_actions','grc_risks','grc_assurance'):
-  mark('inspector-source');assert loc.get_attribute('data-r8-inspector-source')=='true',(key,'source not moved');assert loc.is_hidden(),(key,'old context occupies page')
+  mark('inspector-source');assert loc.get_attribute('data-r8-inspector-source')=='true',(key,'source not moved');expect(loc).to_be_hidden()
   mark('placement');assert placement_ok(page,key,root),(key,'source position lost')
   trigger=page.locator(f'{root} .procedure-frame [data-r8-inspector-open]');expect(trigger).to_be_visible()
   page_height=page.evaluate('()=>document.documentElement.scrollHeight');trigger.click()
@@ -51,6 +51,7 @@ def check_context(page,key,root):
   mark('close');page.keyboard.press('Escape');expect(dialog).not_to_be_visible()
   mark('focus-return');assert trigger.evaluate('e=>document.activeElement===e'),(key,'focus-return')
   mark('overflow');no_overflow(page);return
+ mark('present-visible');expect(loc).to_be_visible()
  mark('closed-default'); assert loc.get_attribute('open') is None,key
  mark('placement'); assert placement_ok(page,key,root),(key,'context-before-work')
  mark('open'); summary=loc.locator(':scope > summary'); expect(summary).to_be_visible(); summary.focus(); summary.press('Enter'); expect(loc.locator('.compliance-context-body')).to_be_visible()
