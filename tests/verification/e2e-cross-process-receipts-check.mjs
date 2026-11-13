@@ -99,6 +99,32 @@ try{
  const revisionAfterDenials=(await h.bootstrap('admin','local-admin')).body.revision;
  assert.equal(revisionAfterDenials,revisionBeforeDenials,'forbidden writes must not change the persisted revision');
  const health=await get('/api/health');assert.equal(health.integrity.ok,true,'audit head must match persisted snapshot');
+ // Same persistent SQLite database, new server process: no test fixture reseed.
+ const beforeRestart=await h.bootstrap('admin','local-admin');
+ const revisionBeforeRestart=beforeRestart.body.revision;
+ const readbackBeforeRestart=await get('/api/grc');
+ await h.restart();
+ const afterRestart=await h.bootstrap('admin','local-admin');
+ assert.equal(afterRestart.status,200);
+ assert.equal(afterRestart.body.revision,revisionBeforeRestart,'restart must not change canonical revision');
+ const observationClockFree=value=>{
+  if(Array.isArray(value))return value.map(observationClockFree);
+  if(!value||typeof value!=='object')return value;
+  return Object.fromEntries(Object.entries(value).map(([key,entry])=>[key,key==='projection'&&entry&&typeof entry==='object'
+   ?Object.fromEntries(Object.entries(observationClockFree(entry)).filter(([field])=>!['asOf','transactionAsOf','validAsOf'].includes(field)))
+   :observationClockFree(entry)]));
+ };
+ assert.deepEqual(observationClockFree(await get('/api/grc')),observationClockFree(readbackBeforeRestart),'seven-process GRC semantic projections must survive restart (excluding observation-time clock only)');
+ const aliceAfterRestart=await h.bootstrap('user','alice');
+ const bobAfterRestart=await h.bootstrap('user','bob');
+ assert.ok(aliceAfterRestart.body.contributions.some(x=>x.id===contribution.id),'RN source must survive restart');
+ assert.ok(aliceAfterRestart.body.incidents.some(x=>x.id===incident.id),'EC event must survive restart');
+ assert.ok(!bobAfterRestart.body.contributions.some(x=>x.id===contribution.id),'RN privacy must survive restart');
+ assert.ok(!bobAfterRestart.body.incidents.some(x=>x.id===incident.id),'EC privacy must survive restart');
+ const exportedAfterRestart=await get('/api/export/current.json');
+ assert.ok(exportedAfterRestart.rows.some(x=>x.type==='grc-object'&&x.id===objectId),'AO export must survive restart');
+ assert.equal((await get('/api/health')).integrity.ok,true,'audit/state binding must survive restart');
+ const restartWitness={sameRuntimeDirectory:true,serverProcessRestarted:true,revisionBeforeRestart,revisionAfterRestart:afterRestart.body.revision,sevenProcessGrcProjectionEqual:true,rnEcAndPrivacyEqual:true,exportAndIntegrityEqual:true};
  const expected=procedureAdapters().map(x=>x.id);assert.deepEqual(expected,['monitoring','incidents','objects','coverage','actions','risks','assurance']);
  const processList=['RN-01','EC-01','AO-01','MC-01','AP-01','RC-01','AR-01'];
  assert.deepEqual([...new Set(actions.map(x=>x.process))],processList,'seven native procedure mutations');
@@ -107,6 +133,7 @@ try{
   gitHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   processes:processList,runtimeCommands:actions.length,commandReceipts:actions,
   asserts:{sevenProcesses:true,allWritesHadHashedReceipts:true,semanticEventBindings:true,grcReadback:true,contributionReadback:true,incidentReadback:true,privateActorIsolation:true,objectEvidence:true,objectExport:true,deniedAuditorWrite:true,deniedAuditorRoutes:denied.length,noMutationAfterDenial:true,integrityBinding:true},
+  restartWitness,
   negative:{actor:'auditor',results:denied,revisionBeforeDenials,revisionAfterDenials},
   journeyStepCoverage:null,globalProductE2ECoverage:null,
   claimBoundary:'Actual seven-process HTTP mutations, readback, receipts, actor isolation and auditor denial; not native browser, not every workflow step, not independent human judgement, not external deployment.'};

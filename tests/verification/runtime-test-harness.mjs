@@ -18,7 +18,10 @@ export async function runtimeHarness(prefix='ictc-test') {
   const request=async(method,url,body={},role='admin',actor=`test-${role}`,opts={})=>{if(opts.refresh!==false)await bootstrap(role,actor);const r=await fetch(`${base}${url}`,{method,headers:{'content-type':'application/json',...identity(role,actor),'x-ictc-command-id':opts.commandId||`${prefix}-${++seq}`,'x-ictc-expected-revision':String(opts.expectedRevision??revision)},body:JSON.stringify(body)});return {status:r.status,body:await r.json().catch(()=>({})),headers:r.headers};};
   const ok=async(...args)=>{const r=await request(...args);if(r.status<200||r.status>=300)throw Object.assign(new Error(`${args[0]} ${args[1]}: ${r.body.error}`),r);return r;};
   mock=spawnOne(['tests/helpers/mock-ai-provider.mjs'],{MOCK_AI_PORT:String(aiPort)});await wait(`http://127.0.0.1:${aiPort}`);
-  server=spawnOne(['src/server.mjs'],{PORT:String(apiPort),ICTC_HOST:'127.0.0.1',ICTC_RUNTIME_DIR:dir,ICTC_ALLOW_LOCAL_ACTOR_SWITCH:'1',ICTC_ALLOW_PRIVATE_AI:'1',ICTC_ALLOW_INSECURE_AI:'1',ICTC_LLM_API_KEY:'test-key',ICTC_SCHEDULER_TICK_MS:'100000',ICTC_RATE_LIMIT_BURST:'100000',ICTC_RATE_LIMIT_PER_SECOND:'10000'});await wait(`${base}/api/health`);
+  const serverEnv={PORT:String(apiPort),ICTC_HOST:'127.0.0.1',ICTC_RUNTIME_DIR:dir,ICTC_ALLOW_LOCAL_ACTOR_SWITCH:'1',ICTC_ALLOW_PRIVATE_AI:'1',ICTC_ALLOW_INSECURE_AI:'1',ICTC_LLM_API_KEY:'test-key',ICTC_SCHEDULER_TICK_MS:'100000',ICTC_RATE_LIMIT_BURST:'100000',ICTC_RATE_LIMIT_PER_SECOND:'10000'};
+  const startServer=async()=>{server=spawnOne(['src/server.mjs'],serverEnv);await wait(`${base}/api/health`);};
+  await startServer();
+  const restart=async()=>{await closeChildProcess(server);await startServer();};
   // Test-only preparation via existing user-administration and onboarding Store routes.
   // No bypass, synthetic acceptance or business writer is introduced.
   const onboard=async(role='admin',actor=`test-${role}`)=>{
@@ -46,5 +49,5 @@ export async function runtimeHarness(prefix='ictc-test') {
     if(value.accepted!==true||value.completedChapters!==5||value.readOnly!==true)throw Error('Incomplete onboarding attestation for '+actor);
     return value;
   };
-  return {base,aiPort,identity,bootstrap,request,ok,onboard,close:async()=>{await closeChildProcess(server);await closeChildProcess(mock);await cleanupTempDir(dir);}};
+  return {base,aiPort,identity,bootstrap,request,ok,onboard,restart,close:async()=>{await closeChildProcess(server);await closeChildProcess(mock);await cleanupTempDir(dir);}};
 }
