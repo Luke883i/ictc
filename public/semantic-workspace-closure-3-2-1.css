@@ -320,7 +320,7 @@ html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-heade
  padding:.38rem .72rem!important;margin:.12rem 0 .32rem!important;min-height:0!important;
 }
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-main{gap:.28rem!important;min-height:0!important;align-items:center}
-html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{font-size:.83rem!important;line-height:1.27!important}
+html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-purpose{font-size:.875rem!important;line-height:1.27!important}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-identity{gap:.28rem!important}
 html[data-native-semantic-lattice="3.2.0"] .procedure-frame[data-procedure-header-contract="3.2.1"] .procedure-frame-actions{gap:.3rem!important}
 @media(min-width:1200px){
