@@ -60,6 +60,10 @@ function renderStandardWorkspace(){let id=state.activeProcessId||'';if(!id)try{i
   if(dialog.open)dialog.close();
   dialog.querySelector('[data-r8-coverage-form-host]').replaceChildren(mappingForm);
   dialog.dataset.writer='existing-grc-mapping-form';
+ }else{
+  // Rendered role must be authoritative: never retain an earlier actor's writer.
+  const retired=document.querySelector('#r8CoverageComposerDialog');
+  if(retired){if(retired.open)retired.close();retired.querySelector('[data-r8-coverage-form-host]')?.replaceChildren();retired.removeAttribute('data-writer');}
  }
  applyFrameworkLibraryView();
 }
