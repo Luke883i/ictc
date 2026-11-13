@@ -162,7 +162,10 @@ def submit_coverage(page):
     assert page.locator('#grcPrimaryForm').count() == 0, 'legacy coverage disclosure competes with active Standard e Controlli surface'
     expect(page.locator('[data-grc-form="mapping"]')).to_have_count(1)
 
-    page.locator('.procedure-frame:visible .procedure-primary').click()
+    # R8 opens the modal mapping writer from the primary CTA. Scope decisions
+    # belong to the framework library behind it: finish the scope disclosure
+    # before opening the modal, never click through the modal backdrop.
+    expect(page.locator('#r8CoverageComposerDialog')).not_to_be_visible()
     expect(page.locator('#marketFrameworkGrid')).to_be_visible()
 
     card = page.locator('#marketFrameworkGrid [data-framework-card]').first
