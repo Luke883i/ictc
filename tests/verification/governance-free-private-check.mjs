@@ -112,6 +112,8 @@ function selfTest(policy) {
     ['valid-pr', evaluatePullRequest(validPr, policy).ok === true],
     ['reject-main-pr', evaluatePullRequest(invalidPr, policy).code === 'direct-main-pr'],
     ['accept-audit-branch', evaluatePullRequest({ pull_request: { number: 3, base: { ref: 'main' }, head: { ref: 'audit/cora-52-56-reticular-truth-20261111', sha } } }, policy).ok === true],
+    ['accept-cora-ictc-agent-branch', evaluatePullRequest({ pull_request: { number: 5, base: { ref: 'main' }, head: { ref: 'cora/ictc-r8-exact-head-proof', sha } } }, policy).ok === true],
+    ['reject-unscoped-cora-branch', evaluatePullRequest({ pull_request: { number: 6, base: { ref: 'main' }, head: { ref: 'cora/other-project', sha } } }, policy).code === 'branch-prefix'],
     ['reject-unknown-branch-prefix', evaluatePullRequest({ pull_request: { number: 4, base: { ref: 'main' }, head: { ref: 'unknown/do-not-admit', sha } } }, policy).code === 'branch-prefix'],
     ['valid-merged-push', evaluateMainPush({ ref: 'refs/heads/main', after: sha }, merged, policy).ok === true],
     ['accept-green-checks', evaluateRequiredChecks(required, [{ id: 1, name: 'enterprise-candidate', status: 'completed', conclusion: 'success' }]).ok === true],
