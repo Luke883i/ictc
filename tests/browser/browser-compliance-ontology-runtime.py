@@ -35,6 +35,22 @@ def placement_ok(page,key,root):
 def check_context(page,key,root):
  def mark(name): out['phase']=f'{key}-{name}'
  mark('present'); loc=page.locator(f'{root} [data-compliance-context="{key}"]'); assert loc.count()==1,(key,loc.count()); expect(loc).to_be_visible()
+ if key in ('monitoring','incidents','grc_objects','grc_coverage','grc_actions','grc_risks','grc_assurance'):
+  mark('inspector-source');assert loc.get_attribute('data-r8-inspector-source')=='true',(key,'source not moved');assert loc.is_hidden(),(key,'old context occupies page')
+  mark('placement');assert placement_ok(page,key,root),(key,'source position lost')
+  trigger=page.locator(f'{root} .procedure-frame [data-r8-inspector-open]');expect(trigger).to_be_visible()
+  page_height=page.evaluate('()=>document.documentElement.scrollHeight');trigger.click()
+  dialog=page.locator('#r8ProcedureInspector');expect(dialog).to_be_visible()
+  actual=dialog.locator(f'[data-compliance-context="{key}"]');expect(actual).to_have_count(1);expect(actual).to_be_visible()
+  mark('atoms');assert actual.locator('[data-compliance-atom]').count()==3,(key,'lost atoms')
+  txt=actual.inner_text()
+  for token in ['Capire','Decidere','Dimostrare','Limite']: assert token in txt,(key,token)
+  mark('regimes');assert actual.locator('.compliance-regime-chip').count()>=3,(key,'lost regulatory context')
+  assert dialog.locator('form,input,select,textarea,[data-service],button:not([data-r8-inspector-close])').count()==0,(key,'duplicated action authority')
+  assert page.evaluate('()=>document.documentElement.scrollHeight')==page_height,(key,'document grew on dialog open')
+  mark('close');page.keyboard.press('Escape');expect(dialog).not_to_be_visible()
+  mark('focus-return');assert trigger.evaluate('e=>document.activeElement===e'),(key,'focus-return')
+  mark('overflow');no_overflow(page);return
  mark('closed-default'); assert loc.get_attribute('open') is None,key
  mark('placement'); assert placement_ok(page,key,root),(key,'context-before-work')
  mark('open'); summary=loc.locator(':scope > summary'); expect(summary).to_be_visible(); summary.focus(); summary.press('Enter'); expect(loc.locator('.compliance-context-body')).to_be_visible()
