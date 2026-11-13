@@ -57,6 +57,22 @@ with sync_playwright() as pw:
   open_admin(p);a=p.locator('#adminCenter');expect(a.locator('[data-admin-nav]')).to_have_count(3);expect(a.locator('[data-admin-view]:visible')).to_have_count(1);a.locator('[data-admin-nav="ai"]').click();expect(a.locator('[data-admin-view="ai"]')).to_be_visible();a.locator('[data-admin-nav="identity"]').click();expect(a.locator('[data-admin-view="identity"]')).to_be_visible()
  elif PROBE=='procedures' or PROBE in ('procedures-structure','procedures-legend','procedures-alignment'):
   p.locator('.service-nav [data-service="processes"]').click()
+  expect(p.locator('#procedureHub')).to_have_attribute('data-maturity-visible','false')
+  expect(p.locator('#processesView [data-maturity-legend]')).to_have_count(0)
+  assert p.locator('#procedureHub [data-maturity]').count()==0
+  # Existing geometry checks still exercise all nine badges, but only after
+  # the admin opts in using the real procedure-policy writer and readback.
+  headers={'x-ictc-role':'admin','x-ictc-actor-id':'local-admin'}
+  policy=p.request.get(BASE+'/api/admin/procedures',headers=headers)
+  assert policy.ok,('policy-read',policy.status,policy.text()[:300])
+  configuration=policy.json()
+  update=p.request.put(BASE+'/api/admin/procedures',headers={**headers,'content-type':'application/json'},data={'features':configuration['features'],'presentation':{'showMaturity':True}})
+  assert update.ok,('policy-write',update.status,update.text()[:300])
+  persisted=p.request.get(BASE+'/api/admin/procedures',headers=headers)
+  assert persisted.ok and persisted.json()['presentation']['showMaturity'] is True,'presentation flag readback'
+  p.reload(wait_until='networkidle')
+  p.locator('.service-nav [data-service="processes"]').click()
+  expect(p.locator('#procedureHub')).to_have_attribute('data-maturity-visible','true')
   hub=p.locator('#procedureHub')
   expect(hub).to_have_attribute('data-catalogue-item-count','9')
   # Read a single settled Processi epoch; allow independently sized compact records, but enforce upper height, badges, 7 secondary disclosures and legend.
