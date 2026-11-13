@@ -1,3 +1,7 @@
+[![ROA Research Programme](https://img.shields.io/badge/ROA-Research_Programme-1f6feb)](https://github.com/Luke883i/academics)
+[![Programme Role](https://img.shields.io/badge/role-COMPLIANCE_VERTICAL-6f42c1)](https://github.com/Luke883i/academics#repository-map)
+
+<!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 <!-- programme-header:v2 -->
 > **ROA Research Programme · A-OSP ecosystem** — [Author & programme hub](https://github.com/Luke883i/academics) · [ROA theory](https://github.com/Luke883i/ROA) · [CORA assurance](https://github.com/Luke883i/cora). Every repository is independently readable. Membership does not imply formal derivation, shared runtime, scientific validation, certification, or production readiness. Repository-local code, evidence, and governance remain authoritative.
 
@@ -121,12 +125,7 @@ Node.js ESM, UI vanilla e SQLite: ingresso `src/bootstrap.mjs`, HTTP `src/server
 [TESTING](docs/TESTING.md) definisce gli oracle; [GAP_REGISTER](docs/GAP_REGISTER.md) separa debiti interni da E3/E4. Nessuna receipt autorizza eliminazioni o decisioni umane.
 </details>
 
-## Contesto di programma (non autorità di prodotto)
 
-[![ROA Research Programme](https://img.shields.io/badge/ROA-Research_Programme-1f6feb)](https://github.com/Luke883i/academics)
-[![Programme Role](https://img.shields.io/badge/role-COMPLIANCE_VERTICAL-6f42c1)](https://github.com/Luke883i/academics#repository-map)
-
-<!-- roa-programme-header:v1 hub=Luke883i/academics framework=Luke883i/ROA role=COMPLIANCE_VERTICAL -->
 
 ## Che cosa governa
 
