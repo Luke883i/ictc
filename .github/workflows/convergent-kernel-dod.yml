@@ -29,8 +29,24 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Syntax
-        run: npm run check && python3 -m py_compile tests/browser/browser-convergent-kernel.py
+      - name: Check JavaScript syntax
+        run: node scripts/syntax-check.mjs
+      - name: Check bootstrap contract
+        run: node tests/verification/bootstrap-contract-check.mjs
+      - name: Check public demo boundary
+        run: node tests/verification/public-demo-boundary-check.mjs
+      - name: Check onboarding semantics
+        run: node tests/verification/onboarding-semantic-check.mjs
+      - name: Check semantic DoD chain
+        run: node tests/verification/semantic-dod-chain-check.mjs
+      - name: Check UIUX owner convergence
+        run: node tests/verification/uiux-owner-convergence-check.mjs
+      - name: Check R8 presentation policy
+        run: node tests/verification/ux-r8-presentation-policy-check.mjs
+      - name: Check R8 adoption and mutants
+        run: node tests/verification/ux-r8-adoption-check.mjs
+      - name: Check kernel browser syntax
+        run: python3 -m py_compile tests/browser/browser-convergent-kernel.py
       - name: Canonical procedure and projection contracts
         run: node tests/verification/procedure-contracts-check.mjs && node tests/verification/procedure-guide-check.mjs && node tests/verification/product-contract-check.mjs && node tests/verification/semantic-api-contract-check.mjs
       - name: Convergent kernel invariants
