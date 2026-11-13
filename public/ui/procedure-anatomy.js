@@ -43,7 +43,7 @@ function mountR8Inspector(host,id){
  if(!actions)return;
  let trigger=actions.querySelector('[data-r8-inspector-open]');
  if(!trigger){trigger=document.createElement('button');trigger.type='button';trigger.className='secondary r8-inspector-trigger';trigger.textContent='Riferimenti e contesto';actions.append(trigger);}
- trigger.dataset.r8InspectorOpen=id;trigger.dataset.a6Ux4Effect='read-only-disclosure';trigger.setAttribute('aria-haspopup','dialog');trigger.setAttribute('aria-controls','r8ProcedureInspector');
+ trigger.dataset.r8InspectorOpen=id;trigger.dataset.a6Ux4Effect='read-only-disclosure';trigger.dataset.journeyProcess=id;trigger.dataset.journeyStage='reference';trigger.dataset.journeyIntent='inspect-progressive-detail';trigger.dataset.journeyAuthority='navigation';trigger.dataset.journeyEvidenceEffect='none';trigger.setAttribute('aria-haspopup','dialog');trigger.setAttribute('aria-controls','r8ProcedureInspector');
  for(const node of inspectorSources(host)){node.hidden=true;node.inert=true;node.setAttribute('aria-hidden','true');node.dataset.r8InspectorSource='true';}
 }
 function openR8Inspector(id,trigger){
