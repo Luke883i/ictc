@@ -24,6 +24,7 @@ if(!browserOnly){
  must(runtime?.asserts?.sevenProcesses===true&&runtime?.asserts?.integrityBinding===true&&runtime?.asserts?.semanticEventBindings===true&&runtime?.asserts?.privateActorIsolation===true&&runtime?.asserts?.deniedAuditorWrite===true&&runtime?.asserts?.deniedAuditorRoutes===7,'runtime-readback-and-negative');
  must(runtime?.negative?.results?.length===7&&runtime.negative.results.every(r=>r.status===403)&&runtime.negative.revisionBeforeDenials===runtime.negative.revisionAfterDenials,'seven-denials-no-write');
  must(runtime?.commandReceipts?.every(r=>/^[0-9a-f]{64}$/.test(r.receiptHash)&&Number.isInteger(r.revision)),'runtime-receipt-hashes');
+ must(runtime?.restartWitness?.sameRuntimeDirectory===true&&runtime.restartWitness.serverProcessRestarted===true&&runtime.restartWitness.revisionBeforeRestart===runtime.restartWitness.revisionAfterRestart&&runtime.restartWitness.sevenProcessGrcProjectionEqual===true&&runtime.restartWitness.rnEcAndPrivacyEqual===true&&runtime.restartWitness.exportAndIntegrityEqual===true,'same-sqlite-seven-process-restart-and-binding');
  must(runtime?.processes?.length===7&&WITNESSES.every(w=>runtime.processes.includes(w.code)),'runtime-process-mapping');
 }
 const native=load('browser-consumer-writer-witness.json'),journey=load('browser-v2-1-procedure-journey.json');
