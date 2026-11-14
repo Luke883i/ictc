@@ -53,6 +53,15 @@ try:
    applications=standard.locator('.procedure-standard-application');expect(applications).to_have_count(EXPECTED_STANDARD_COUNT[pid])
    assert all(applications.nth(i).get_attribute('open') is None for i in range(applications.count())),(pid,'nested details not closed')
    expect(standard).to_contain_text(EXPECTED_STANDARD[pid]);first=applications.first;summary=first.locator(':scope > summary')
+   # The copied compliance context must be in-flow in the R8 modal. Its
+   # original fixed sidecar/backdrop obscures native standard-summary clicks.
+   PHASE=f'anatomy-inline-compliance-sidecar:{code}'
+   sidecar=dialog.locator('.compliance-context[open]')
+   if code=='RN-01': expect(sidecar).to_have_count(1)
+   for n in range(sidecar.count()):
+    item=sidecar.nth(n)
+    assert item.evaluate("e=>getComputedStyle(e,'::before').content")=='none',(code,'cloned compliance overlay must be absent')
+    assert item.locator(':scope > .compliance-context-body').evaluate("e=>getComputedStyle(e).position")=='static',(code,'cloned compliance content must not be fixed')
    PHASE=f'anatomy-standard-outer-open:{code}';expect(standard).to_have_attribute('open','')
    PHASE=f'anatomy-standard-summary-visible:{code}';expect(summary).to_be_visible()
    PHASE=f'anatomy-standard-summary-name:{code}';expect(summary.locator('.procedure-standard-name')).not_to_be_empty()
