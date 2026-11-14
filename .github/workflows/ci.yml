@@ -15,7 +15,21 @@ jobs:
     timeout-minutes: 22
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: {fetch-depth: 0, persist-credentials: false}
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
@@ -34,6 +48,20 @@ jobs:
     timeout-minutes: 22
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
@@ -70,6 +98,20 @@ jobs:
           - {id: ao-activation, script: tests/browser/browser-ao-activation.py}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
@@ -106,6 +148,24 @@ jobs:
             FAILED_BROWSER_SCRIPT="${{ matrix.script }}" node scripts/browser-failure-provenance.mjs || true
             exit "$status"
           fi
+      - name: Capture V2.1 exact failure phase
+        id: v21_failure
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re
+          p=pathlib.Path('artifacts/browser-v2-1-procedure-journey-error.json')
+          evidence=json.loads(p.read_text()) if p.exists() else {}
+          def clean(value):
+              return re.sub(r'[^a-zA-Z0-9._-]+','-',str(value or 'none'))[:90]
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as out:
+              out.write('phase='+clean(evidence.get('phase'))+'\n')
+              out.write('error='+clean(evidence.get('type'))+'\n')
+          PY
+      - name: "V2.1 phase witness · ${{ steps.v21_failure.outputs.phase }} · ${{ steps.v21_failure.outputs.error }}"
+        if: ${{ always() && matrix.id == 'v2-1-procedure-journey' }}
+        run: echo "Exact failed phase recorded in the previous step; no oracle bypass."
       - name: Verify native browser writer network evidence for seven-process journey
         if: ${{ matrix.id == 'v2-1-procedure-journey' }}
         run: node tests/verification/consumer-writer-evidence-gate.mjs --browser-only --require-browser
@@ -1201,6 +1261,20 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
@@ -1268,6 +1342,20 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
@@ -1290,6 +1378,20 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out PR source
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=CI-exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6

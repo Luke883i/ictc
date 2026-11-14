@@ -5,10 +5,28 @@
   "mode": "FREE_PRIVATE_COMPENSATING",
   "serverSidePrevention": false,
   "defaultBranch": "main",
-  "allowedBranchPrefixes": ["agent/", "codex/", "fix/", "feat/", "docs/", "chore/", "refactor/", "test/", "ci/", "research/", "audit/", "dependabot/"],
+  "allowedBranchPrefixes": [
+    "agent/",
+    "codex/",
+    "fix/",
+    "feat/",
+    "docs/",
+    "chore/",
+    "refactor/",
+    "test/",
+    "ci/",
+    "research/",
+    "audit/",
+    "dependabot/",
+    "cora/ictc-"
+  ],
   "gateManifest": ".github/enterprise-gate-manifest.json",
-  "requiredPreMergeChecks": ["enterprise-candidate"],
-  "requiredPostMergeChecks": ["enterprise-candidate"],
+  "requiredPreMergeChecks": [
+    "enterprise-candidate"
+  ],
+  "requiredPostMergeChecks": [
+    "enterprise-candidate"
+  ],
   "limitations": [
     "This is compensating governance, not GitHub branch protection.",
     "A direct push can only be detected after GitHub accepts it.",

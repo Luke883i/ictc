@@ -11,12 +11,15 @@ const root=path.resolve(fileURLToPath(new URL('../..',import.meta.url))),out=pat
 const sha=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 const browserOnly=process.argv.includes('--browser-only');
 const requireBrowser=browserOnly||process.argv.includes('--require-browser');
+const requirePhysical=process.argv.includes('--require-physical');
 const failures=[];
 const must=(bool,label)=>{if(!bool)failures.push(label);};
 const load=file=>{const p=path.join(out,file);return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):null;};
 const graph=load('consumer-writer-reticulum.json');
 must(graph?.authority==='NONE_DERIVED'&&graph?.gitHead===sha&&graph?.failures?.length===0&&graph?.witnesses===7,'observed-source-graph-exact-sha');
 must(graph?.externalConsumers==='UNKNOWN_HOLD'&&graph?.automaticMoveOrDeleteAuthorized===false,'no-external-consumer-clearance');
+const physical=requirePhysical?load('consumer-writer-physical-falsification.json'):null;
+if(requirePhysical)must(physical?.gitHead===sha&&physical?.mutations===25&&physical?.killed===24&&physical?.validControls===1&&physical?.survivors?.length===0&&physical?.syntheticBrowserGuard?.length===8&&physical.syntheticBrowserGuard.every(x=>x.correct===true),'physical-consumer-writer-mutants-bound-to-head');
 const runtime=browserOnly?null:load('e2e-cross-process-receipts.json');
 if(!browserOnly){
  must(runtime?.schema==='ictc-e2e-7process-real-write/v2'&&runtime?.gitHead===sha,'runtime-receipt-exact-sha');
@@ -24,6 +27,7 @@ if(!browserOnly){
  must(runtime?.asserts?.sevenProcesses===true&&runtime?.asserts?.integrityBinding===true&&runtime?.asserts?.semanticEventBindings===true&&runtime?.asserts?.privateActorIsolation===true&&runtime?.asserts?.deniedAuditorWrite===true&&runtime?.asserts?.deniedAuditorRoutes===7,'runtime-readback-and-negative');
  must(runtime?.negative?.results?.length===7&&runtime.negative.results.every(r=>r.status===403)&&runtime.negative.revisionBeforeDenials===runtime.negative.revisionAfterDenials,'seven-denials-no-write');
  must(runtime?.commandReceipts?.every(r=>/^[0-9a-f]{64}$/.test(r.receiptHash)&&Number.isInteger(r.revision)),'runtime-receipt-hashes');
+ must(runtime?.restartWitness?.sameRuntimeDirectory===true&&runtime.restartWitness.serverProcessRestarted===true&&runtime.restartWitness.revisionBeforeRestart===runtime.restartWitness.revisionAfterRestart&&runtime.restartWitness.sevenProcessGrcProjectionEqual===true&&runtime.restartWitness.rnEcAndPrivacyEqual===true&&runtime.restartWitness.exportAndIntegrityEqual===true,'same-sqlite-seven-process-restart-and-binding');
  must(runtime?.processes?.length===7&&WITNESSES.every(w=>runtime.processes.includes(w.code)),'runtime-process-mapping');
 }
 const native=load('browser-consumer-writer-witness.json'),journey=load('browser-v2-1-procedure-journey.json');

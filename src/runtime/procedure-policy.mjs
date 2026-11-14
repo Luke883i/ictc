@@ -21,6 +21,13 @@ function definitions(){const byId=new Map(surfaceProcessDefinitions().filter(ite
 function defaults(){return Object.fromEntries(CATALOGUE_IDS.map(id=>[id,true]));}
 function currentFeatures(state){return{...defaults(),...(state?.settings?.procedures?.features||{})};}
 export function normalizeProcedureFeatures(input={},current={}){const source=input.features&&typeof input.features==='object'?input.features:input,next={...defaults(),...(current.features||current||{})};for(const id of CATALOGUE_IDS)if(Object.prototype.hasOwnProperty.call(source,id))next[id]=source[id]!==false;if(!PROCEDURE_IDS.some(id=>next[id]))throw Object.assign(new Error('Almeno una procedura deve restare attiva'),{status:409,code:'procedure-policy-empty'});return next;}
+// Presentation preference is independent of process availability and fails closed.
+export function normalizeProcedurePresentation(input={},current={}){
+ const raw=input?.presentation;
+ if(raw!==undefined&&(raw===null||typeof raw!=='object'||Array.isArray(raw)||typeof raw.showMaturity!=='boolean'))
+  throw Object.assign(new Error('Flag di presentazione non valido'),{status:422,code:'procedure-presentation-invalid'});
+ return {showMaturity:raw===undefined?current?.presentation?.showMaturity===true:raw.showMaturity};
+}
 export function procedurePolicy(state){const features=currentFeatures(state);return{schemaVersion:'1.3.0',authority:'runtime-procedure-policy<-procedure-adapter-registry',features,enabled:PROCEDURE_IDS.filter(id=>features[id]),disabled:PROCEDURE_IDS.filter(id=>!features[id]),dataRetention:'disabled-procedures-retain-history-evidence-and-readability'};}
 export function procedurePolicyProjection(state,actor){
   const policy=procedurePolicy(state),defs=new Map(definitions().map(def=>[def.id,def]));
@@ -31,7 +38,7 @@ export function procedurePolicyProjection(state,actor){
     return {...item,enabled:policy.features[item.id]!==false,operational:item.kind==='procedure',maturityBasis:'product-declared-not-runtime-certification'};
   });
   const isAdmin=actor?.role==='admin';
-  return {...policy,procedures:isAdmin?entries:entries.filter(item=>item.enabled),catalogue:isAdmin?catalogue:catalogue.filter(item=>item.enabled)};
+  return {...policy,presentation:normalizeProcedurePresentation({},state?.settings?.procedures||{}),procedures:isAdmin?entries:entries.filter(item=>item.enabled),catalogue:isAdmin?catalogue:catalogue.filter(item=>item.enabled)};
 }
 export function procedureEnabled(state,id){return PROCEDURE_IDS.includes(id)&&currentFeatures(state)[id]!==false;}
 export function enabledProcedureIds(state){return PROCEDURE_IDS.filter(id=>procedureEnabled(state,id));}

@@ -91,13 +91,22 @@ def audit_procedure(page,code,pid,root):
     visible_actionable=r.locator('[data-a6-ux4-actionable="true"]:visible').count(); assert visible_actionable==expected,(code,'visible actionable/native mismatch',visible_actionable,expected); assert r.locator('.procedure-worklist-reveal:visible').count()==0
     if pid not in ['monitoring','incidents']:
         PHASE=f'{code}-scope-control'; scope.select_option('all'); assert scope.input_value()=='all'; scope.select_option('actionable'); assert scope.input_value()=='actionable'
-    PHASE=f'{code}-orientation'
-    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_visible(); expect(orientation).to_contain_text('Perché esiste'); expect(orientation).to_contain_text('Cosa non conclude'); expect(orientation).not_to_contain_text('Riferimenti')
-    PHASE=f'{code}-context'
-    anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]'); expect(anatomy).to_have_count(1); expect(anatomy).to_be_visible()
+    PHASE=f'{code}-inspector-source'
+    orientation=r.locator(':scope > .procedure-frame [data-procedure-orientation="compact"]'); expect(orientation).to_have_count(1); expect(orientation).to_be_hidden()
+    anatomy=r.locator('[data-procedure-anatomy][data-a6-ux4-context="canonical"]');expect(anatomy).to_have_count(1);expect(anatomy).to_be_hidden()
     assert r.locator('.procedure-decision-frame details.composition-process-context:visible').count()==0
-    refs=r.locator('.procedure-anatomy-standard-head[data-a6-ux4-reference-band="canonical"]')
-    if refs.count(): expect(refs.first).to_be_visible()
+    trigger=r.locator(f'.procedure-frame [data-r8-inspector-open="{pid}"]');expect(trigger).to_be_visible()
+    assert trigger.get_attribute('data-a6-ux4-effect')=='read-only-disclosure',(code,'unclassified inspector action')
+    before_height=page.evaluate('()=>document.documentElement.scrollHeight')
+    trigger.click();inspector=page.locator('#r8ProcedureInspector');expect(inspector).to_be_visible()
+    PHASE=f'{code}-inspector-content'
+    clone=inspector.locator('[data-procedure-orientation="compact"]');expect(clone).to_be_visible();expect(clone).to_contain_text('Perché esiste');expect(clone).to_contain_text('Cosa non conclude');expect(clone).not_to_contain_text('Riferimenti')
+    context=inspector.locator(f'[data-procedure-anatomy="{pid}"]');expect(context).to_be_visible()
+    refs=inspector.locator('.procedure-anatomy-standard-head[data-a6-ux4-reference-band="canonical"]')
+    if refs.count():expect(refs.first).to_be_visible()
+    assert page.evaluate('()=>document.documentElement.scrollHeight')==before_height,(code,'modal grew document')
+    assert inspector.locator('form,input,select,textarea,[data-service],button:not([data-r8-inspector-close])').count()==0,(code,'inspector duplicated writer')
+    page.keyboard.press('Escape');expect(inspector).not_to_be_visible();assert trigger.evaluate('e=>document.activeElement===e'),(code,'focus-return')
     PHASE=f'{code}-action-effects'
     visible=r.locator('button:visible,a[href]:visible,summary:visible'); sample=min(visible.count(),30); assert sample>0
     assert all(visible.nth(i).get_attribute('data-a6-ux4-effect') for i in range(sample)),(code,'unclassified control')
@@ -141,7 +150,22 @@ def desktop(browser):
         PHASE=f'home-onboarding-progress-{step+1}'
         next_button=onboarding_dialog.locator('[data-onboarding-next]:visible'); expect(next_button).to_have_count(1)
         expect(next_button).to_be_disabled()
-        onboarding_dialog.locator('[data-onboarding-ack]').check()
+        acknowledgment=onboarding_dialog.locator('[data-onboarding-ack]')
+        expect(acknowledgment).to_be_disabled()
+        counter=onboarding_dialog.locator('[data-onboarding-open-counter]')
+        expect(counter).to_have_text('0/3 approfondimenti aperti')
+        lessons=onboarding_dialog.locator('details[data-homeboarding-lesson]')
+        expect(lessons).to_have_count(3)
+        assert len(ONBOARDING_WRITES)==step,('premature onboarding write',step,ONBOARDING_WRITES)
+        for lesson_index in range(3):
+            lessons.nth(lesson_index).locator(':scope > summary').click()
+            expect(counter).to_have_text(f'{lesson_index+1}/3 approfondimenti aperti')
+            expect(next_button).to_be_disabled()
+            if lesson_index<2: expect(acknowledgment).to_be_disabled()
+        expect(acknowledgment).to_be_enabled()
+        expect(next_button).to_be_disabled()
+        acknowledgment.check()
+        expect(next_button).to_be_enabled()
         with page.expect_response(lambda response: urllib.parse.urlparse(response.url).path=='/api/profile/onboarding' and response.request.method=='PATCH') as response_info:
             next_button.click()
         assert response_info.value.ok,(step,response_info.value.status)

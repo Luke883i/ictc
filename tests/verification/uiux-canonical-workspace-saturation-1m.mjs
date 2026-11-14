@@ -43,7 +43,7 @@ function sourceLaws(s){
     incidentRowGrammar:s.operational.includes("card.classList.add('p2-record-row')")&&s.operational.includes("card.dataset.recordGrammar='row-list'"),
     localScopeRetired:s.semantic.includes("const LOCAL_NATIVE_SCOPE=new Set(['monitoring','incidents'])")&&s.semantic.includes('retireLocalScope(root,id)')&&s.semantic.includes("!LOCAL_NATIVE_SCOPE.has(id)"),
     marketHierarchy:marketOrder.every(x=>x>=0)&&marketOrder[0]<marketOrder[1]&&marketOrder[1]<marketOrder[2],
-    mappingProgressive:s.market.includes('mappingOpen=priorMapping??false')&&s.market.includes('<details class="market-mapping-panel"'),
+    mappingProgressive:s.market.includes('mappingOpen=priorMapping??true')&&s.market.includes('<details class="market-mapping-panel"')&&s.market.includes('r8CoverageComposerDialog')&&s.market.includes('data-grc-form="mapping"'),
     contextBusinessLabel:s.anatomy.includes('Contesto e pratiche applicate')&&!s.anatomy.includes('Contesto e tracciabilità'),
     processStartsAtTop:s.grcBase.includes('function resetProcessStart()')&&s.grcBase.includes('queueMicrotask(resetProcessStart)'),
     decisionFrameOutsideOwnedBlock:s.harmonizationBase.includes("const primary=root.querySelector(':scope > [data-editorial-slot=\"primary\"]')")&&s.harmonizationBase.includes("const frameAfterPrimary=primary&&Boolean(primary.compareDocumentPosition(frame)&Node.DOCUMENT_POSITION_FOLLOWING)")&&s.harmonizationBase.includes("if(primary&&!frameAfterPrimary)primary.after(frame)")&&!s.harmonizationBase.includes("rail.after(frame)"),

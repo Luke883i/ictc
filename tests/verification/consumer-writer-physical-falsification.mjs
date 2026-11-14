@@ -74,7 +74,7 @@ try{
  }
  browserGuardContract=guardResults;
 }finally{run('git',['worktree','remove','--force',directory],root);rmSync(directory,{recursive:true,force:true});}
-const summary={schema:'ictc-cw-physical-mutants/v1',seed,mutations:record.length,invalidMutations:record.filter(x=>x.mode!=='static-positive').length,validControls:record.filter(x=>x.mode==='static-positive').length,killed:record.filter(x=>x.mode!=='static-positive'&&x.detected).length,syntheticBrowserGuard:browserGuardContract,survivors:record.filter(x=>!x.detected),cases:record,
+const summary={schema:'ictc-cw-physical-mutants/v1',gitHead:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),seed,mutations:record.length,invalidMutations:record.filter(x=>x.mode!=='static-positive').length,validControls:record.filter(x=>x.mode==='static-positive').length,killed:record.filter(x=>x.mode!=='static-positive'&&x.detected).length,syntheticBrowserGuard:browserGuardContract,survivors:record.filter(x=>!x.detected),cases:record,
  claimBoundary:'Actual syntactically valid source edits applied and reverted in disposable Git worktree; finite catalog, not 10M patched executions, not native browser or proof of external consumer absence.'};
 mkdirSync(path.join(root,'artifacts'),{recursive:true});writeFileSync(path.join(root,'artifacts/consumer-writer-physical-falsification.json'),JSON.stringify(summary,null,2)+'\n');
 assert.equal(summary.survivors.length,0);console.log(JSON.stringify({ok:true,seed,mutations:summary.mutations,killed:summary.killed,validControls:summary.validControls,syntheticBrowserGuardCases:summary.syntheticBrowserGuard.length}));

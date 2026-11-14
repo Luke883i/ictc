@@ -2,7 +2,7 @@ import { asString, id, now, uniqueStrings } from '../domain.mjs';
 import { bodyJson, commandFrom, httpError, json, requirePermission, routeMatch } from './http.mjs';
 import { enterpriseReadiness, normalizeGovernance, usageSummary } from '../enterprise.mjs';
 import { assertIdentityConfiguration, evaluateIdentityClaims, identityRuntimeProjection, normalizeIdentitySettings } from './identity.mjs';
-import { normalizeProcedureFeatures, procedurePolicyProjection } from './procedure-policy.mjs';
+import { normalizeProcedureFeatures, normalizeProcedurePresentation, procedurePolicyProjection } from './procedure-policy.mjs';
 import { currentRuntimeIdentity } from './runtime-identity.mjs';
 import { validateSettings } from './model.mjs';
 import { testAiProvider } from '../ai.mjs';
@@ -10,7 +10,7 @@ function activeAdmins(users){return(users||[]).filter(item=>item.role==='admin'&
 function actorClaims(actor){return actor.presentedIdentity||{subject:actor.id,displayName:actor.displayName||actor.id,email:actor.email||'',groups:actor.groups||[]};}
 export function createAdminHandler({store,permissions,posture=()=>({integrity:store.verifyChain()})}){return async function handle(request,response,pathname,actor){const method=request.method||'GET';
 if(method==='GET'&&pathname==='/api/admin/procedures'){requirePermission(actor,'manage-enterprise',permissions);json(response,200,procedurePolicyProjection(store.snapshot(),actor));return true;}
-if(method==='PUT'&&pathname==='/api/admin/procedures'){requirePermission(actor,'manage-enterprise',permissions);const input=await bodyJson(request);const snapshot=store.snapshot(),features=normalizeProcedureFeatures(input,snapshot.settings.procedures||{}),envelope=await store.mutate(actor,'admin.procedure-policy.updated',{type:'settings',id:'procedures'},{features},draft=>{draft.settings.procedures={schemaVersion:'1.1.0',features,updatedAt:now(),updatedBy:actor.id};return procedurePolicyProjection(draft,actor);},commandFrom(request));json(response,200,envelope);return true;}
+if(method==='PUT'&&pathname==='/api/admin/procedures'){requirePermission(actor,'manage-enterprise',permissions);const input=await bodyJson(request);const snapshot=store.snapshot(),features=normalizeProcedureFeatures(input,snapshot.settings.procedures||{}),presentation=normalizeProcedurePresentation(input,snapshot.settings.procedures||{}),envelope=await store.mutate(actor,'admin.procedure-policy.updated',{type:'settings',id:'procedures'},{features,presentation},draft=>{draft.settings.procedures={schemaVersion:'1.2.0',features,presentation,updatedAt:now(),updatedBy:actor.id};return procedurePolicyProjection(draft,actor);},commandFrom(request));json(response,200,envelope);return true;}
 if(method==='POST'&&pathname==='/api/admin/ai/test'){requirePermission(actor,'configure-ai',permissions);const input=await bodyJson(request),snapshot=store.snapshot(),settings=validateSettings({organization:snapshot.settings.organization,llm:input.llm||snapshot.settings.llm,prompts:snapshot.settings.prompts},snapshot.settings);const result=await testAiProvider({...snapshot.settings,...settings});json(response,200,{result});return true;}
 if(method==='GET'&&pathname==='/api/admin/readiness'){requirePermission(actor,'manage-enterprise',permissions);json(response,200,enterpriseReadiness(store.snapshot(),posture()));return true;}
 if(method==='GET'&&pathname==='/api/admin/usage'){requirePermission(actor,'view-ai-usage',permissions);json(response,200,usageSummary(store.snapshot()));return true;}

@@ -61,7 +61,7 @@ def check_frame(page,code):
             const legacy=frame?.querySelector(':scope > details.composition-process-context');
             const w=r.querySelector(`:scope > [data-procedure-attention-slot="${x.pid}"] [data-procedure-worklist]`);
             const predecessorReady=!!(frame&&frame.dataset.procedureGuidanceAuthority==='procedure-guidance-projection');
-            const anatomyReady=!!(a&&a.getClientRects().length&&s?.getAttribute('aria-label')==='Contesto e pratiche applicate'&&(s.textContent||'').includes('Contesto e pratiche applicate'));
+            const trigger=r.querySelector(`.procedure-frame [data-r8-inspector-open="${x.pid}"]`);const anatomyReady=!!(a&&a.dataset.r8InspectorSource==='true'&&a.getClientRects().length===0&&trigger&&s?.getAttribute('aria-label')==='Contesto e pratiche applicate'&&(s.textContent||'').includes('Contesto e pratiche applicate'));
             const legacyReady=!legacy||(legacy.hidden&&legacy.dataset.a6Ux4Context==='superseded');
             const collectionReady=!!(w?.dataset.a6Ux4Mount&&['native','fallback'].includes(r.dataset.a6Ux4SingleCollection));
             return predecessorReady&&anatomyReady&&legacyReady&&collectionReady;
@@ -69,10 +69,22 @@ def check_frame(page,code):
         PHASE=f'{code}-ux4-assert'
         anatomy=page.locator(f'{root} [data-procedure-anatomy="{process_id}"][data-a6-ux4-context="canonical"]')
         expect(anatomy).to_have_count(1)
-        expect(anatomy).to_be_visible()
-        summary=anatomy.locator(':scope > summary')
+        expect(anatomy).to_be_hidden()
+        trigger=page.locator(f'{root} .procedure-frame [data-r8-inspector-open="{process_id}"]')
+        expect(trigger).to_be_visible()
+        before_scroll=page.evaluate('()=>document.documentElement.scrollHeight')
+        trigger.click()
+        inspector=page.locator('#r8ProcedureInspector')
+        expect(inspector).to_be_visible()
+        clone=inspector.locator(f'[data-procedure-anatomy="{process_id}"]')
+        expect(clone).to_be_visible()
+        assert inspector.locator('form,input,select,textarea,[data-service],button:not([data-r8-inspector-close])').count()==0
+        assert page.evaluate('()=>document.documentElement.scrollHeight')==before_scroll
+        summary=clone.locator(':scope > summary')
         expect(summary).to_have_attribute('aria-label','Contesto e pratiche applicate')
         expect(summary).to_contain_text('Contesto e pratiche applicate')
+        page.keyboard.press('Escape');expect(inspector).not_to_be_visible()
+        assert trigger.evaluate('e=>document.activeElement===e')
         if legacy.count():
             expect(legacy).to_be_hidden()
             expect(legacy).to_have_attribute('data-a6-ux4-context','superseded')

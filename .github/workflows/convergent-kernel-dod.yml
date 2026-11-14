@@ -13,11 +13,40 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact checked-out source SHA
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - run: npm ci --ignore-scripts
-      - name: Syntax
-        run: npm run check && python3 -m py_compile tests/browser/browser-convergent-kernel.py
+      - name: Check JavaScript syntax
+        run: node scripts/syntax-check.mjs
+      - name: Check bootstrap contract
+        run: node tests/verification/bootstrap-contract-check.mjs
+      - name: Check public demo boundary
+        run: node tests/verification/public-demo-boundary-check.mjs
+      - name: Check onboarding semantics
+        run: node tests/verification/onboarding-semantic-check.mjs
+      - name: Check semantic DoD chain
+        run: node tests/verification/semantic-dod-chain-check.mjs
+      - name: Check UIUX owner convergence
+        run: node tests/verification/uiux-owner-convergence-check.mjs
+      - name: Check R8 presentation policy
+        run: node tests/verification/ux-r8-presentation-policy-check.mjs
+      - name: Check R8 adoption and mutants
+        run: node tests/verification/ux-r8-adoption-check.mjs
+      - name: Check kernel browser syntax
+        run: python3 -m py_compile tests/browser/browser-convergent-kernel.py
       - name: Canonical procedure and projection contracts
         run: node tests/verification/procedure-contracts-check.mjs && node tests/verification/procedure-guide-check.mjs && node tests/verification/product-contract-check.mjs && node tests/verification/semantic-api-contract-check.mjs
       - name: Convergent kernel invariants
@@ -41,6 +70,19 @@ jobs:
       statuses: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact checked-out source SHA
+        env:
+          ICTC_EXPECT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$ICTC_EXPECT_HEAD" ]; then
+            echo "::error title=exact-head-drift::checkout=$actual expected=$ICTC_EXPECT_HEAD"
+            exit 1
+          fi
+          echo "Exact source SHA verified: $actual"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: {node-version: '22', cache: npm}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
@@ -86,9 +128,41 @@ jobs:
           fi
           target="https://github.com/${GITHUB_REPOSITORY}/blob/${HEAD_SHA}/tests/browser/browser-convergent-kernel.py?phase=complete"
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state=success -f context='ictc/convergent-kernel-browser' -f description='seven-procedure convergent browser journey passed' -f target_url="$target" >/dev/null || true
+      - name: Capture convergent browser failure phase
+        if: failure()
+        id: browser_phase
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib,re
+          p=pathlib.Path('artifacts/browser-convergent-kernel-error.json')
+          data=json.loads(p.read_text()) if p.exists() else {}
+          def slug(x):
+              return re.sub(r'[^a-zA-Z0-9._:-]+','-',str(x or 'unknown'))[:90]
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as out:
+              out.write('phase='+slug(data.get('phase'))+'\n')
+              out.write('exception='+slug(data.get('type'))+'\n')
+              out.write('message='+slug(data.get('message'))+'\n')
+          PY
+      - name: "Convergent failure · ${{ steps.browser_phase.outputs.phase }} · ${{ steps.browser_phase.outputs.exception }} · ${{ steps.browser_phase.outputs.message }}"
+        if: failure()
+        run: echo "Structured browser diagnostic retained; functional failure is not bypassed."
       - name: Stop runtime
         if: always()
         run: ./ictc.sh stop --profile current || true
+      - name: Identify bounded browser failure provenance
+        if: failure()
+        id: browser_failure_phase
+        shell: bash
+        run: |
+          node -e 'const fs=require("node:fs");let p={};try{p=JSON.parse(fs.readFileSync("artifacts/browser-convergent-kernel-error.json","utf8"))}catch{}const slug=x=>String(x||"unattributed").replace(/[^A-Za-z0-9._-]/g,"-").slice(0,70);fs.appendFileSync(process.env.GITHUB_OUTPUT,"label="+slug(p.phase)+"-"+slug(p.type)+String.fromCharCode(10))'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: convergent-kernel-failure-${{ steps.browser_failure_phase.outputs.label || 'unattributed' }}
+          path: artifacts/browser-convergent-kernel-error.json
+          if-no-files-found: warn
+          retention-days: 30
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:

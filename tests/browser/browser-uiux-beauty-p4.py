@@ -87,8 +87,11 @@ JS_AUDIT = r'''({surface,width}) => {
     }
     const palette=[...root.querySelectorAll('.procedure-maturity-legend .procedure-maturity[data-maturity]')];
     const paletteStates=palette.map(n=>n.dataset.maturity),paletteColors=palette.map(n=>style(n).backgroundColor);
-    check('processes-four-maturity-states',paletteStates.join('|')==='ready|scaffold-yellow|scaffold-orange|placeholder',{states:paletteStates});
-    check('processes-four-rendered-colors',new Set(paletteColors).size===4,{colors:paletteColors});
+    const enabled=root.querySelector('#procedureHub')?.dataset.maturityVisible==='true';
+    // R8: 4-color visual proof is opt-in only. The separate shell browser probe
+    // exercises the actual authorized admin mutation and four-state palette.
+    check('processes-maturity-default-off',!enabled&&paletteStates.length===0&&root.querySelectorAll('#procedureHub [data-maturity]').length===0,{enabled,states:paletteStates});
+    check('processes-no-stale-maturity-colors',!enabled&&paletteColors.length===0,{colors:paletteColors});
     const context=root.querySelector('[data-compliance-context="processes"] > summary');
     const redundant=root.querySelector('[data-compliance-process-placement],[data-compliance-overview-host],[data-compliance-process-map]');
     const handoffs=[...root.querySelectorAll('#procedureHub .process-inline-handoff')];

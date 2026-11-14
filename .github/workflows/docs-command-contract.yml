@@ -65,7 +65,7 @@ jobs:
       - name: Falsify 24 physically edited consumer and writer contracts with positive control
         run: node tests/verification/consumer-writer-physical-falsification.mjs
       - name: Reconcile observed route writers against live HTTP receipts without claiming browser closure
-        run: node tests/verification/consumer-writer-evidence-gate.mjs
+        run: node tests/verification/consumer-writer-evidence-gate.mjs --require-physical
       - name: Simulated reasoned decisions across RN EC AO with real HTTP receipts
         run: node tests/verification/e2e-simulated-decisions-check.mjs
       - name: Enumerate canonical business-journey E2E denominator

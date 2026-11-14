@@ -53,19 +53,10 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
  orientation_tokens=frame.locator('.procedure-orientation-token')
  if orientation_tokens.count()!=1:anomaly('orientation-token-count',role,vp,proc['code'],orientation_tokens.count(),1)
  else:
-  orientation=frame.locator('[data-procedure-orientation-token="guide"]');summary=orientation.locator(':scope > summary')
+  orientation=frame.locator('[data-procedure-orientation-token="guide"]')
   if orientation.locator('[data-orientation-basis]').count()!=1 or orientation.locator('[data-orientation-boundary]').count()!=1:anomaly('orientation-semantic-parts',role,vp,proc['code'],{'basis':orientation.locator('[data-orientation-basis]').count(),'boundary':orientation.locator('[data-orientation-boundary]').count()},{'basis':1,'boundary':1})
-  if orientation.get_attribute('open') is not None:anomaly('orientation-open-by-default',role,vp,proc['code'],True,False)
-  fine_pointer=page.evaluate("()=>matchMedia('(hover: hover) and (pointer: fine)').matches")
-  coarse_pointer=page.evaluate("()=>matchMedia('(hover: none) and (pointer: coarse)').matches")
-  if width>=768 and fine_pointer:
-   summary.hover();expect(orientation).to_have_attribute('open','')
-   size=page.viewport_size or {'width':width,'height':900};page.mouse.move(size['width']-2,size['height']-2);page.wait_for_timeout(130);expect(orientation).not_to_have_attribute('open','')
-   summary.focus();expect(orientation).to_have_attribute('open','');page.keyboard.press('Escape');expect(orientation).not_to_have_attribute('open','')
-  elif width<=390 and coarse_pointer:
-   summary.click();expect(orientation).to_have_attribute('open','');summary.click();expect(orientation).not_to_have_attribute('open','')
-  elif width<=390 and orientation.evaluate("e=>e.tagName")!='DETAILS':
-   anomaly('orientation-native-touch-fallback',role,vp,proc['code'],orientation.evaluate("e=>e.tagName"),'DETAILS')
+  if orientation.is_visible():anomaly('orientation-inline-still-visible',role,vp,proc['code'],True,False)
+  if orientation.locator('xpath=..').get_attribute('data-r8-inspector-source')!='true':anomaly('orientation-source-not-attributed',role,vp,proc['code'],False,True)
  root=page.locator(proc['root']);order=(root.get_attribute('data-editorial-order') or '').split('>')
  if order[:6]!=['reference','advanced-context','metrics','attention','controls','primary']:anomaly('editorial-order-prefix',role,vp,proc['code'],order,['reference','advanced-context','metrics','attention','controls','primary'])
  rail=root.locator(':scope > .procedure-support-rail'); embedded=frame.locator(':scope > .procedure-support-rail')
@@ -79,21 +70,35 @@ def audit_process(page,role,vp,width,proc,contract,families,revision):
   physical_ok=physical_ok and controls.nth(controls.count()-1).evaluate('(c,p)=>c.nextElementSibling===p',primary.element_handle())
   if not physical_ok:anomaly('editorial-owned-block-order',role,vp,proc['code'],False,'frame>support(reference>advanced-context)>metrics>attention>controls[1..n]>primary')
  context=page.locator(proc['context']);anatomy=page.locator(proc['anatomy']);work=page.locator(proc['work']).first
- try:context.wait_for(state='visible',timeout=5000);anatomy.wait_for(state='visible',timeout=5000);work.wait_for(state='visible',timeout=5000)
- except Exception:anomaly('technical-trace-not-visible',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'owner-declared context slot with visible anatomy before native work');return
+ try:context.wait_for(state='attached',timeout=5000);anatomy.wait_for(state='attached',timeout=5000);work.wait_for(state='visible',timeout=5000)
+ except Exception:anomaly('technical-source-or-work-missing',role,vp,proc['code'],{'context':context.count(),'anatomy':anatomy.count(),'work':page.locator(proc['work']).count()},'attached source and visible business work');return
+ if context.is_visible() or anatomy.is_visible():anomaly('out-of-flow-source-leaked',role,vp,proc['code'],{'context':context.is_visible(),'anatomy':anatomy.is_visible()},'source hidden; inspector out of flow')
  if context.get_attribute('data-editorial-slot-owner')!=OWNER[proc['id']]:anomaly('technical-context-owner',role,vp,proc['code'],context.get_attribute('data-editorial-slot-owner'),OWNER[proc['id']])
  context_before_work=page.evaluate("x=>{const w=document.querySelector(x.w),c=document.querySelector(x.c);return !!(w&&c&&(c.compareDocumentPosition(w)&Node.DOCUMENT_POSITION_FOLLOWING))}",{'w':proc['work'],'c':proc['context']})
  if not context_before_work:anomaly('context-not-before-native-work',role,vp,proc['code'],False,True)
- was_open=anatomy.get_attribute('open') is not None
- if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).to_have_attribute('open','')
- body=anatomy.locator('.procedure-anatomy-grid')
+ trigger=frame.locator('[data-r8-inspector-open]')
+ if trigger.count()!=1 or not trigger.is_visible():anomaly('inspector-entry-missing',role,vp,proc['code'],trigger.count(),1);return
+ page_height=page.evaluate('()=>document.documentElement.scrollHeight')
+ trigger.click();dialog=page.locator('#r8ProcedureInspector');expect(dialog).to_be_visible()
+ if dialog.get_attribute('data-procedure-id')!=proc['id']:anomaly('inspector-procedure-mismatch',role,vp,proc['code'],dialog.get_attribute('data-procedure-id'),proc['id'])
+ for atom in ['form','input','select','textarea','[data-service]']:
+  if dialog.locator(atom).count():anomaly('inspector-cloned-writer',role,vp,proc['code'],atom,0)
+ copied_orientation=dialog.locator('[data-procedure-orientation-token="guide"]')
+ if copied_orientation.count()!=1 or not copied_orientation.is_visible():anomaly('inspector-orientation-copy-missing',role,vp,proc['code'],copied_orientation.count(),1)
+ elif not all(token in copied_orientation.inner_text() for token in ['Perché esiste','Cosa non conclude']):anomaly('inspector-orientation-semantics',role,vp,proc['code'],copied_orientation.inner_text()[:160],'basis and boundary')
+ cloned=dialog.locator(f'[data-procedure-anatomy="{proc["id"]}"]')
+ try:cloned.wait_for(state='visible',timeout=5000)
+ except Exception:anomaly('inspector-anatomy-missing',role,vp,proc['code'],cloned.count(),1);dialog.press('Escape');return
+ body=cloned.locator('.procedure-anatomy-grid')
  try:body.wait_for(state='visible',timeout=5000)
- except Exception:anomaly('technical-trace-body-not-visible',role,vp,proc['code'],anatomy.text_content(),'visible anatomy body after disclosure');return
- actual=[x.strip() for x in anatomy.locator('.procedure-anatomy-epistemic span').all_text_contents()]
+ except Exception:anomaly('technical-trace-body-not-visible',role,vp,proc['code'],cloned.text_content(),'visible anatomy body in inspector');dialog.press('Escape');return
+ actual=[x.strip() for x in cloned.locator('.procedure-anatomy-epistemic span').all_text_contents()]
  if actual!=families:anomaly('epistemic-family-convergence',role,vp,proc['code'],actual,families)
  boundary=(contract or {}).get('claimBoundary','')
- if boundary and boundary not in (anatomy.text_content() or ''):anomaly('claim-boundary-not-present-in-process-trace',role,vp,proc['code'],False,'canonical claim boundary visible after disclosure')
- if not was_open:anatomy.locator(':scope > summary').click();expect(anatomy).not_to_have_attribute('open','')
+ if boundary and boundary not in (cloned.text_content() or ''):anomaly('claim-boundary-not-present-in-process-trace',role,vp,proc['code'],False,'canonical claim boundary in inspector')
+ if page.evaluate('()=>document.documentElement.scrollHeight')!=page_height:anomaly('inspector-expanded-main-page',role,vp,proc['code'],True,False)
+ page.keyboard.press('Escape');expect(dialog).not_to_be_visible()
+ if not trigger.evaluate('e=>document.activeElement===e'):anomaly('inspector-focus-not-restored',role,vp,proc['code'],False,True)
  if proc['code']=='RN-01':
   cards=page.locator('#catalogList .catalog-card')
   if cards.count():

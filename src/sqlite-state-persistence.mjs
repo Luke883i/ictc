@@ -70,7 +70,12 @@ CREATE TABLE IF NOT EXISTS command_result (id TEXT PRIMARY KEY, actor_id TEXT NO
   load({verifySemanticHistory=true}={}){
     const row=this.db.prepare('SELECT revision,payload FROM snapshot WHERE id=1').get();if(!row)return null;
     const state=JSON.parse(row.payload);
-    state.audit=this.db.prepare('SELECT event_json FROM audit ORDER BY revision').all().map(r=>JSON.parse(r.event_json));
+    state.audit=this.db.prepare('SELECT revision,hash,event_json FROM audit ORDER BY revision').all().map(row=>{
+      const event=parseJson(row.event_json,null);
+      if(!event||event.hash!==row.hash||Number(event.revision)!==Number(row.revision))
+        fail('sqlite-ledger-row-mismatch','Riga audit SQLite non coincide con evento e digest persistiti',{revision:row.revision});
+      return event;
+    });
     state.subjectVersions=this._versionRows(SUBJECT_VERSION_WORKING_SET_LIMIT).map(row=>this._materializeVersion(row));
     if(Number(row.revision)!==Number(state.revision))fail('sqlite-revision-mismatch','Revision snapshot SQLite incoerente',{snapshotRevision:row.revision,stateRevision:state.revision});
     if(verifySemanticHistory)this._verifySemanticHistory(state);

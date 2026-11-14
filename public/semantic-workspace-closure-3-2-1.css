@@ -304,3 +304,13 @@ html[data-native-semantic-lattice="3.2.0"] #proofContent>details.proof-section[o
 #epistemicView .epistemic-technical-identity{grid-column:1/-1;padding:.35rem .6rem;border:1px solid var(--border,#d6dee8);border-radius:9px}
 #epistemicView .epistemic-technical-identity>summary{cursor:pointer;font-weight:600}
 #epistemicView .epistemic-technical-identity[open]>div{display:inline-grid;vertical-align:top;min-width:170px;margin:.4rem .8rem .4rem 0;max-width:100%;overflow-wrap:anywhere}
+
+/* R8: a disabled presentation-only maturity indicator must reserve no track. */
+html[data-native-semantic-lattice="3.2.0"] #procedureHub[data-maturity-visible="false"] :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+ grid-template-columns:6rem minmax(0,1fr) 12rem!important;
+ grid-template-areas:"code title action" "code purpose action"!important;
+}
+@media(max-width:719px){html[data-native-semantic-lattice="3.2.0"] #procedureHub[data-maturity-visible="false"] :is(.procedure-card,.catalogue-placeholder)[data-uiux-layout="row"]{
+ grid-template-columns:3.6rem minmax(0,1fr)!important;
+ grid-template-areas:"code title" "purpose purpose" "action action"!important;
+}}

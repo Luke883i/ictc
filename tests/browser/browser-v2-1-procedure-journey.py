@@ -6,7 +6,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 ART = ROOT / 'artifacts'
 ART.mkdir(exist_ok=True)
 # A failed or partial run cannot reuse successful witnesses from an earlier run.
-for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json'):
+for stale in ('browser-v2-1-procedure-journey.json', 'browser-consumer-writer-witness.json', 'browser-v2-1-procedure-journey-error.json'):
     (ART/stale).unlink(missing_ok=True)
 WITNESS_RUN_ID = os.urandom(16).hex()
 GIT_HEAD = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
@@ -17,7 +17,7 @@ FORM_TYPES = {'objects':'object','actions':'action','risks':'risk','assurance':'
 PROOF_READING_ORDER = 'facts>decisions>trace>evidence-basis>epistemic>integrity>external>export'
 
 def fail(e):
-    payload = {'ok':False,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
+    payload = {'ok':False,'gitHead':GIT_HEAD,'witnessRunId':WITNESS_RUN_ID,'phase':PHASE,'type':type(e).__name__,'message':str(e),'traceback':traceback.format_exc()}
     (ART/'browser-v2-1-procedure-journey-error.json').write_text(json.dumps(payload, indent=2), encoding='utf8')
     print(f'::error title=browser-v2-1-procedure-journey::{PHASE}: {type(e).__name__}: {e}', flush=True)
 
@@ -162,7 +162,10 @@ def submit_coverage(page):
     assert page.locator('#grcPrimaryForm').count() == 0, 'legacy coverage disclosure competes with active Standard e Controlli surface'
     expect(page.locator('[data-grc-form="mapping"]')).to_have_count(1)
 
-    page.locator('.procedure-frame:visible .procedure-primary').click()
+    # R8 opens the modal mapping writer from the primary CTA. Scope decisions
+    # belong to the framework library behind it: finish the scope disclosure
+    # before opening the modal, never click through the modal backdrop.
+    expect(page.locator('#r8CoverageComposerDialog')).not_to_be_visible()
     expect(page.locator('#marketFrameworkGrid')).to_be_visible()
 
     card = page.locator('#marketFrameworkGrid [data-framework-card]').first
@@ -183,15 +186,18 @@ def submit_coverage(page):
     scope_rev = wait_advance(page, before_scope)
     check_surface_revision(page, '#grcView', scope_rev)
 
-    PHASE = 'MC-01-mapping-panel'
-    panel = page.locator('#grcWorkspace .market-mapping-panel')
-    expect(panel).to_have_count(1)
-    if panel.get_attribute('open') is None:
-        panel.locator(':scope > summary').click()
-    expect(panel).to_have_attribute('open', '')
-    form = panel.locator('[data-grc-form="mapping"]')
+    PHASE = 'MC-01-mapping-composer'
+    trigger=page.locator('#grcWorkspace .procedure-frame [data-procedure-primary="coverage"]')
+    expect(trigger).to_be_visible()
+    before_height=page.evaluate('()=>document.documentElement.scrollHeight')
+    trigger.click()
+    dialog=page.locator('#r8CoverageComposerDialog')
+    expect(dialog).to_be_visible()
+    form=dialog.locator('[data-grc-form="mapping"]')
     expect(form).to_have_count(1)
     expect(form).to_be_visible()
+    assert page.locator('[data-grc-form="mapping"]').count()==1,'one MC mapping writer'
+    assert page.evaluate('()=>document.documentElement.scrollHeight')==before_height,'mapping dialog must not grow document'
     select_user(form.locator('#marketFrameworkSelect'), framework_id, 'MC-01-framework')
     PHASE = 'MC-01-requirements-load'
     page.wait_for_function("()=>{const s=document.querySelector('#marketRequirementSelect');return s&&!s.disabled&&s.options.length>1}")
