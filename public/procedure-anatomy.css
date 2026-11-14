@@ -273,6 +273,21 @@
 .r8-procedure-inspector>.dialog-shell{max-height:88dvh;display:grid;grid-template-rows:auto minmax(0,1fr)}
 .r8-procedure-inspector .r8-inspector-body{min-height:0;overflow:auto;overscroll-behavior:contain;display:grid;gap:.7rem;padding:1rem}
 .r8-procedure-inspector .r8-inspector-body>details{display:block;max-width:100%;min-width:0;margin:0}
+
+/* R8 inspector presents a read-only copy of the compliance sidecar in-flow.
+   Never clone its viewport-wide backdrop or fixed drawer into a modal dialog:
+   the backdrop otherwise intercepts clicks on sibling standard details. */
+.r8-procedure-inspector .compliance-context[open]::before{content:none}
+.r8-procedure-inspector .compliance-context-body{
+ position:static;z-index:auto;top:auto;right:auto;bottom:auto;
+ width:auto;height:auto;max-height:none;min-height:0;
+ overflow:visible;padding:.75rem;border:0;box-shadow:none;
+ animation:none;background:transparent;
+}
+.r8-procedure-inspector .compliance-context-body>header{
+ position:static;top:auto;margin:0 0 .65rem;padding:0 0 .65rem;
+}
+
 .r8-procedure-inspector .r8-inspector-body .procedure-anatomy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .r8-procedure-inspector [data-procedure-orientation-token]{position:static}
 .r8-procedure-inspector [data-procedure-orientation-token]>.procedure-orientation-popover{position:static;display:block;max-width:100%}
