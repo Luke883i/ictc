@@ -1,12 +1,11 @@
 <!-- programme-header:v2 -->
 > **ROA Research Programme · AOSP ecosystem** — [Author & programme hub](https://github.com/Luke883i/academics) · [ROA theory](https://github.com/Luke883i/ROA) · [CORA assurance](https://github.com/Luke883i/cora). Every repository is independently readable. Membership does not imply formal derivation, shared runtime, scientific validation, certification, or production readiness. Repository-local code, evidence, and governance remain authoritative.
 
+# ICTC — Integrated Compliance Tower Control
+
 [![Experimental prototype](https://img.shields.io/badge/status-experimental_prototype-orange)](https://github.com/Luke883i/academics) ![Enterprise readiness not demonstrated](https://img.shields.io/badge/enterprise_ready-not_demonstrated-red) ![Certification not claimed](https://img.shields.io/badge/certification-not_claimed-lightgrey)
 
 > **Status:** Experimental prototype developed and refined with replaceable AI coding agents guided by [CORA-METHOD](https://github.com/Luke883i/cora). This describes the engineering approach, not independently proven authorship of every historical commit. **Not enterprise-ready:** safe enterprise use has not been demonstrated or claimed. **Not certified:** no independent production-security, regulatory or enterprise certification is claimed.
-
-
-# ICTC — Integrated Compliance Tower Control
 
 **Purpose:** ICTC manages compliance knowledge, applicable requirements, risk, work, attributable human decisions and evidence, without substituting for legal interpretation or independently certifying compliance.
 
